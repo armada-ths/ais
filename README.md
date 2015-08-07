@@ -78,10 +78,12 @@ In ais/restart_uwsgi_server.sh change:
 Link (sudo ln -s /home/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/) and unlink /etc/nginx/sites-enabled/default
 Add your user to the group www-data with: sudo adduser username www-data
 
+
 Other changes:
 If you dont have a local postgresql server, delete lines " from secrets import *" and replace 
 the database entry with:
 'ENGINE': 'django.db.backends.sqlite3',
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
+*WARNING* If you want to upload changes, be sure to make git ignore your local configuration files *WARNING* 
 </pre>
