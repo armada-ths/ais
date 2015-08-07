@@ -1,4 +1,4 @@
 #!/bin/bash
 
-PID=cat '/tmp/ais-master.pid'
+PID=cat '/home/deployment/ais-master.pid'
 kill -HUP $PID
