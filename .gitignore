@@ -1,3 +1,6 @@
 *.pyc
 ais/secrets.py
 ais.sock
+ais/restart_uwsgi_server.sh
+ais/ais_uwsgi.ini
+ais/ais_nginx.conf
