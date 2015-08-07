@@ -1,0 +1,6 @@
+Django
+django-cas-client
+psycopg2
+setuptools
+uWSGI
+wheel
