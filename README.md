@@ -49,11 +49,16 @@ host all all 127.0.0.1/32 trust
 
 
 How to setup a local dev server:
-* Install as pre above
+Install OS req:
+* apt-get update
+* apt-get -y install sudo wget git python gcc python-dev nginx libpcre3 libpcre3-dev libpq-dev vim
+
 * git clone -b newen git@github.com:armada-ths/newen.git
 * Rename newen/ to ais/
 * . ais_venv/bin/activate
-* folder structure should be:
+* Install pip requirements with pip install -r requirements.txt
+
+Folder structure should now be:
 d+-ais_venv
 d+-ais
   |->ais
@@ -69,6 +74,9 @@ In ais/ais_uwsgi.ini change:
 
 In ais/restart_uwsgi_server.sh change:
 * Line 5 to correct local dir
+
+Link (sudo ln -s /home/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/) and unlink /etc/nginx/sites-enabled/default
+Add your user to the group www-data with: sudo adduser username www-data
 
 Other changes:
 If you dont have a local postgresql server, delete lines " from secrets import *" and replace 
