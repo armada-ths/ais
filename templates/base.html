@@ -11,17 +11,16 @@
     <div class="container">
         {% block header %}
         <div class="row">
-        <div class="col-md-10 col-md-offset-1" style="outline: 1px solid orange">
+        <div class="col-md-10 col-md-offset-1">
           <a href="/"><img src="{% static 'images/ship.png' %}" alt="Armada Ship"></a>
           <div class="pull-right">
-            <p>{{request.user.username}} | <a href="logout">Logout</a></p>
+            <p>{{request.user.username}} | <a href="logout">Log Out</a></p>
           </div>
         </div>
       </div>
         
         {% endblock %}
-        {% block navigation %}<p>Hello {{request.user.username}}, please <a href="logout">Logout</a></p>
-        {% endblock %}
+        {% block navigation %}{% endblock %}
         {% block content %}{% endblock %}
         {% block footer %}{% endblock %}
     </div>
