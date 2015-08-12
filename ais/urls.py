@@ -20,7 +20,7 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', include('root.urls')),
-    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico'))
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico')),
     url(r'^login/$', 'cas.views.login', name='login'), 
     url(r'^logout/$', 'cas.views.logout', name='logout'),
 ]
