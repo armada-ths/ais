@@ -20,7 +20,16 @@
       </div>
         
         {% endblock %}
-        {% block navigation %}{% endblock %}
+        {% block navigation %}
+        <div class="row">
+
+        <div class="col-md-10 col-md-offset-1" role="navigation">
+          <ul class="nav nav-pills">
+            <li role="presentation"><a href="/">Home</a></li>
+          </ul>
+        </div>
+      </div>
+        {% endblock %}
         {% block content %}{% endblock %}
         {% block footer %}{% endblock %}
     </div>
