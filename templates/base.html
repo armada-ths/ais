@@ -5,9 +5,8 @@
   </head>
 
   <body>
-    {% block content %}
+    {% block navigation %}<p>Hello {{request.user.username}}, please <a href="logout">Logout</a></p>
     {% endblock %}
-    <p>You are not logged in</p>, please <a href="login">Login</a>
-    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    {% block content %}{% endblock %}
   </body>
 </html>
