@@ -29,7 +29,7 @@
                 {% block nav-people %}<li role="presentation"><a href="#">People</a></li>{% endblock %}
                 {% block nav-companies %}<li role="presentation"><a href="#">Companies</a></li>{% endblock %}
                 </ul>
-                <p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">{{request.user.username}}</a></p>
+                <p class="navbar-text navbar-right">Signed in as <a href="/logout" class="navbar-link">{{request.user.username}}</a></p>
             </div>
         </nav>
         {% endblock %}
