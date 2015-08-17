@@ -20,15 +20,18 @@
       </div>-->
         {% endblock %}
         {% block navigation %}
-        <div class="navbar navbar-fixed-top">
-              <a class="navbar-brand" href="/"><img src="{% static 'images/ship.png' %}" alt="Armada Ship" style="max-height: 20px"></a>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container"> 
+                <a class="navbar-brand" href="/"><img src="{% static 'images/ship.png' %}" alt="Armada Ship" style="max-height: 20px"></a>
 
                 <ul class="nav navbar-nav">
-                  {% block nav-home %}<li role="presentation"><a href="{% url 'home' %}">Home</a></li>{% endblock %}
-                  {% block nav-people %}<li role="presentation"><a href="#">People</a></li>{% endblock %}
-                  {% block nav-companies %}<li role="presentation"><a href="#">Companies</a></li>{% endblock %}
+                {% block nav-home %}<li role="presentation"><a href="{% url 'home' %}">Home</a></li>{% endblock %}
+                {% block nav-people %}<li role="presentation"><a href="#">People</a></li>{% endblock %}
+                {% block nav-companies %}<li role="presentation"><a href="#">Companies</a></li>{% endblock %}
                 </ul>
-        </div>
+                <p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">{{request.user.username}}</a></p>
+            </div>
+        </nav>
         {% endblock %}
         {% block content %}{% endblock %}
         {% block footer %}{% endblock %}
