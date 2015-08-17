@@ -7,6 +7,7 @@ git
 nginx
 libpcre3 # For pcre options when running uwsgi
 libpcre3-dev # For pcre options when running uwsgi
+libldap2-dev # For LDAP lookups
 
 # For mysql database
 mysql-server
@@ -85,5 +86,4 @@ the database entry with:
 'ENGINE': 'django.db.backends.sqlite3',
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
-*WARNING* If you want to upload changes, be sure to make git ignore your local configuration files *WARNING* 
 </pre>
