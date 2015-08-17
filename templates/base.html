@@ -9,7 +9,6 @@
   </head>
 
   <body>
-    <div class="container">
         {% block header %}
     <!--    <div class="row margin-top5">
         <div class="col-md-10 col-md-offset-1">
@@ -21,24 +20,17 @@
       </div>-->
         {% endblock %}
         {% block navigation %}
-        <div class="row margin-top5">
         <div class="navbar navbar-fixed-top">
-            <div class="col-md-10 col-md-offset-1">
-              <a class="navbar-brand" href="/"><img src="{% static 'images/ship.png' %}" alt="Armada Ship"></a>
+              <a class="navbar-brand" href="/"><img src="{% static 'images/ship.png' %}" alt="Armada Ship" style="max-height: 20px"></a>
 
-              <nav class="navbar navbar-default" role="navigation">
                 <ul class="nav navbar-nav">
                   {% block nav-home %}<li role="presentation"><a href="{% url 'home' %}">Home</a></li>{% endblock %}
                   {% block nav-people %}<li role="presentation"><a href="#">People</a></li>{% endblock %}
                   {% block nav-companies %}<li role="presentation"><a href="#">Companies</a></li>{% endblock %}
                 </ul>
-              </nav>
-            </div>
-        </div>
         </div>
         {% endblock %}
         {% block content %}{% endblock %}
         {% block footer %}{% endblock %}
-    </div>
   </body>
 </html>
