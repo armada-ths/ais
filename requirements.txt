@@ -4,3 +4,4 @@ psycopg2
 setuptools
 uWSGI
 wheel
+python-ldap
