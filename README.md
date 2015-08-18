@@ -87,4 +87,5 @@ If you dont have a local postgresql server, delete lines " from secrets import *
 the database entry with:
 'ENGINE': 'django.db.backends.sqlite3',
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+Hello!
 </pre>
