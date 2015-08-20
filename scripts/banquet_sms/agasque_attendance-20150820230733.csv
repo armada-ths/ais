@@ -1,0 +1,4 @@
+Id;Name;Attending;Owner;Gender;Cell Phone Number;Email;Allergies;Vegetarian;Alcohol;Ignore From Placement;Organisation;Superiors;Type;Table;Placement Number;Afterparty;Paid;Placement Friend
+5967;Test test;true;;Female;07079212467;walaro@kth.se;"";false;true;false;;"";Special;Bort1;K;false;true;
+5969;test2 test2;true;;Female;+4670-79 25 506;walaro@gmail.com;"";false;true;false;;"";Special;Bort1;A;false;true;
+5970;test3  test3;true;;Male;0707925506;walaro@gmail.com;"";false;true;false;;"";Special;Bort1;B;false;true;
