@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+'''
+# *WARNING* Be sure that the encoding of this file is UTF-8.
+# Lots of terminals run in latin-1 for example,
+# so if you edit with vim and save, it will be latin-1 again.
+'''
 import sys
 import csv
-import re
 import urllib
-'''
+
 def send_sms(phone_number, message):
     sms_url='http://smsserver.pixie.se/sendsms?'
     data=urllib.urlencode({
@@ -17,7 +21,7 @@ def send_sms(phone_number, message):
     response = sms_service.read()
     sms_service.close()
     return response
-'''
+
 def make_message_for(attendee):
     name=attendee['Name'].split(" ")
     name=name[0]
@@ -31,19 +35,22 @@ def main():
     number_of_readins = 0
 
     with open(str(sys.argv[1]), 'rb') as csvfile:
+        # Read the CSV as a python dict
         banquet_attendence = csv.DictReader(csvfile, delimiter=';')
         for attendee in banquet_attendence:
-            phone="".join(_ for _ in attendee['Cell Phone Number'] if _ in "1234567890")
-            if phone.startswith("07"):
-                phone=phone[1:]
+            # This simply strips out everything that is not a number (1234567890)
+            phone_number="".join(_ for _ in attendee['Cell Phone Number'] if _ in "1234567890")
 
-            if phone.startswith("46"):
-                phone=phone[2:]
+            if phone_number.startswith("07"):
+                phone_number=phone_number[1:]
 
-            phone="46"+phone
+            if phone_number.startswith("46"):
+                phone_number=phone_number[2:]
+
+            phone_number="46"+phone_number
             send_to_this=1
-            if len(phone)!=11:
-                error_file.write("Phone number error: "+phone+"("+attendee['Cell Phone Number']+"), ")
+            if len(phone_number)!=11:
+                error_file.write("Phone number error: "+phone_number+"("+attendee['Cell Phone Number']+"), ")
                 send_to_this=0
 
             if attendee['Table']=="" or attendee['Placement Number']=="":
@@ -52,7 +59,7 @@ def main():
 
             if send_to_this:
                 #touple will be (phone_number, message)
-                attendees.append( (phone, make_message_for(attendee)) )
+                attendees.append( (phone_number, make_message_for(attendee)) )
                 number_of_readins += 1
             else:
                 error_file.write("Error with "+attendee['Name']+"(id:"+attendee['Id']+")\n")
@@ -68,7 +75,7 @@ def main():
                 number=attendee[0]
                 message=attendee[1]
                 print("To: %s\n%s\n" % (number, message) )
-
+                #send_sms(number, message)
             except Exception as inst:
                 print(type(inst))
                 print(inst)
