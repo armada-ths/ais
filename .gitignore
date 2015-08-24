@@ -5,6 +5,4 @@ ais/restart_uwsgi_server.sh
 ais/ais_uwsgi.ini
 ais/ais_nginx.conf
 ais/deploy
-ais/settings.py
-ais/ais/settings.py
 db.sqlite3
