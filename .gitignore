@@ -1,3 +1,4 @@
+*.swp
 *.pyc
 ais/secrets.py
 ais.sock
