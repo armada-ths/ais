@@ -5,6 +5,7 @@ def callback(tree):
     user, user_created = User.objects.get_or_create(username=username)
     if user_created:
         #add email
+        user.email='test'
         user.save()
         pass
         
