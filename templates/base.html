@@ -15,7 +15,6 @@
             <div class="container">
                 <a class="navbar-brand" href="/"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px"></a>
                 <ul class="nav navbar-nav">
-                  {% block nav-home %}<li role="presentation"><a href="{% url 'home' %}">Home</a></li>{% endblock %}
                   {% block nav-people %}<li role="presentation"><a href="#">People</a></li>{% endblock %}
                   {% block nav-companies %}<li role="presentation"><a href="#">Companies</a></li>{% endblock %}
                   {% block nav-events %}<li role="presentation"><a href="{% url 'events' %}">Events</a></li>{% endblock %}
