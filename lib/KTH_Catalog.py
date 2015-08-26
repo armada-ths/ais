@@ -1,7 +1,7 @@
 import ldap
 from ais.secrets import KTH_CATALOG_PW
 
-def lookup_person_with_id(kth_id):
+def lookup_user(kth_id):
     con = ldap.initialize('ldaps://ldap.sys.kth.se:636')
     dn='uid=armada,ou=people,dc=kth,dc=se'
     base='ou=Addressbook,dc=kth,dc=se'
