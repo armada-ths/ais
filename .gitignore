@@ -5,6 +5,6 @@ ais.sock
 ais/restart_uwsgi_server.sh
 ais/ais_uwsgi.ini
 ais/ais_nginx.conf
-ais/deploy
+deploy
 db.sqlite3
 local_settings.py
