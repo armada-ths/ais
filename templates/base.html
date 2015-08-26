@@ -20,7 +20,7 @@
                   {% block nav-companies %}<li role="presentation"><a href="#">Companies</a></li>{% endblock %}
                   {% block nav-events %}<li role="presentation"><a href="{% url 'events' %}">Events</a></li>{% endblock %}
                 </ul>
-                <p class="navbar-text navbar-right">Signed in as <a href="/logout" class="navbar-link">{{request.user.username}}</a></p>
+                <p class="navbar-text navbar-right">Signed in as <a href="/logout" class="navbar-link">{{request.user.get_full_name()}}</a></p>
             </div>
         </div>
         {% endblock %}
