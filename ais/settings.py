@@ -61,6 +61,11 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', 
     'cas.backends.CASBackend',
 )
+CAS_AUTO_CREATE_USER = False
+
+CAS_RESPONSE_CALLBACKS = (
+    'lib.CAS_callback.callback',
+)
 
 ROOT_URLCONF = 'ais.urls'
 

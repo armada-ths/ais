@@ -6,3 +6,4 @@ ais/ais_uwsgi.ini
 ais/ais_nginx.conf
 ais/deploy
 db.sqlite3
+local_settings.py
