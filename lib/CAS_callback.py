@@ -9,4 +9,7 @@ def callback(tree):
         user.first_name=KTH_user['first_name']
         user.last_name=KTH_user['last_name']
         user.email=KTH_user['email']
+
+        # Disable password auth, we auth with CAS
+        user.set_unusable_password()
         user.save()        

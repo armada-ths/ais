@@ -1,4 +1,4 @@
-# django_newen
+# django/ais
 <pre>
 System req:
 GCC
