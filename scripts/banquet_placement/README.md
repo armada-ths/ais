@@ -23,6 +23,6 @@ How to use:
 6. An output file "placement.json" will be generated, copy the content 
    of this file into the "Import placement" window, as text.
    (The window says "ID in order of placement (comma separated)",
-   That is not correct)
+   that is not correct)
 
 7. All done!

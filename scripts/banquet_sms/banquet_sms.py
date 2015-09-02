@@ -67,8 +67,10 @@ def main():
 
     print("\nWe had %d errors, but %d attendee's where read in correctly, see errors.txt for more information.\n"%(number_of_errors, number_of_readins))
     print("A total of %d text messages will be sent out. The price will be %.2f SEK" % (len(attendees), len(attendees)*0.50 ))
-    print("Would you like to continue? (yes/no)")
+    print("Would you like to continue? (yes/no)") 
+    error_file.close()
     choice = raw_input().lower()
+    
     if choice=="yes":
         for attendee in attendees:
             try:
@@ -79,16 +81,7 @@ def main():
             except Exception as inst:
                 print(type(inst))
                 print(inst)
-                error_file.write("ERROR TYPE: %s\nERROR INSTANCE: %s"%(type(inst),inst))
     else:
         print("Operation canceled.\nNo texts have been sent, you may fix any errors and then try again.")
-    error_file.close()
 
-    #input("Press Enter to continue...")
-
-#send_sms(number, message)
-            #'46707925506'
-            #'så mörkt är det nu\nmen snön är inte på åkern än!'
 main()
-#send_sms('46707925506', 'så mörkt är det nu\nmen snön är inte på åkern än!')
-#Response: <?xml version="1.0" encoding = "ISO-8859-1" ?><response code="0"><cost>50</cost></response>
