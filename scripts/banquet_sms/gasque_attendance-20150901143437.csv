@@ -1,0 +1,4 @@
+Id;Name;Attending;Owner;Gender;Cell Phone Number;Email;Allergies;Vegetarian;Alcohol;Ignore From Placement;Organisation;Superiors;Type;Table;Placement Number;Afterparty;Paid;Placement Friend
+5971;Test1 Test1;true;;Female;0842707925506;walaro@kth.se;"";false;true;false;;"";Special;Bord1;K;false;false;
+5972;Johannes Wålarö;true;;Male;076 311 90 44;ericmol@kth.se;"";false;false;false;;Rikard PetterssonMarkus FelldinFrida Haugsbakk;Person;Bord1;A;false;true;
+5973;Malin Lundström;true;;Female;+46737573536;maljl@kth.se;"";false;true;false;;"";Special;Bord2;K;false;false;

@@ -75,7 +75,7 @@ def main():
                 number=attendee[0]
                 message=attendee[1]
                 print("To: %s\n%s\n" % (number, message) )
-                #send_sms(number, message)
+                send_sms(number, message)
             except Exception as inst:
                 print(type(inst))
                 print(inst)

@@ -1,5 +1,5 @@
 [
-{"id":5967,"name": "Test test","gender":"female","type":{"student":19},"interests": [],"placement": {"table_id": -1, "seat": -1}},
-{"id":5969,"name": "test2 test2","gender":"female","type":{"student":19},"interests": [],"placement": {"table_id": -1, "seat": -1}},
-{"id":5970,"name": "test3  test3","gender":"male","type":{"student":3},"interests": [],"placement": {"table_id": -1, "seat": -1}}
+{"id":5971,"name": "Test1 Test1","gender":"female","type":{"student":19},"interests": [],"placement": {"table_id": -1, "seat": -1}},
+{"id":5972,"name": "Johannes Wålarö","gender":"male","type":{"student":1},"interests": [],"placement": {"table_id": -1, "seat": -1}},
+{"id":5973,"name": "Malin Lundström","gender":"female","type":{"student":24},"interests": [],"placement": {"table_id": -1, "seat": -1}}
 ]
