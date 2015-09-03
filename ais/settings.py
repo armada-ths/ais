@@ -28,7 +28,7 @@ CAS_SERVER_URL = 'https://login.kth.se/'
 #CAS_REDIRECT_URL = 'armada.nu/login'
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['*.armada.nu']
+ALLOWED_HOSTS = ['.armada.nu']
 
 
 # Application definition
