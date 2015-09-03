@@ -2,7 +2,7 @@
 <pre>
 System req:
 GCC
-python-dev
+python3-dev
 git
 nginx
 libpcre3 # For pcre options when running uwsgi
@@ -26,24 +26,23 @@ virtualenv
 
 
 Virtualenv req:
-django
-uwsgi # For connecting django to webserver (nginx)
+See "requirements.txt"
 
 *Change addr/ip, paths in _nginx.conf
 *Change paths in _uwsgi.ini
 *add user to www-data group
 
 Commands:
-uwsgi --ini HelloWorld_uwsgi.ini
+uwsgi --ini ais_uwsgi.ini
 sudo /etc/init.d/nginx start/stop/restart
 sudo tail -n 10 /var/log/nginx/error.log
 sudo adduser username www-data
-sudo ln -s ~/django/HelloWorld/helloworld_nginx.conf /etc/nginx/sites-enabled/
+sudo ln -s ~/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/
 
 Setup postgresql:
 sudo apt-get install postgresql
 sudo apt-get install libpq-dev
-. newen_venv/bin/active
+. ais_venv/bin/active
 pip install psycopg2
 
 vim /etc/postgresql/[version]/main/pg_hba.conf
@@ -54,10 +53,9 @@ host all all 127.0.0.1/32 trust
 How to setup a local dev server:
 Install OS req:
 * apt-get update
-* apt-get -y install sudo wget git python gcc python-dev nginx libpcre3 libpcre3-dev libpq-dev vim
+* apt-get -y install sudo wget git python gcc python3-dev nginx libpcre3 libpcre3-dev libpq-dev vim
 
-* git clone -b newen git@github.com:armada-ths/newen.git
-* Rename newen/ to ais/
+* git clone -b master git@github.com:armada-ths/ais.git
 * . ais_venv/bin/activate
 * Install pip requirements with pip install -r requirements.txt
 
@@ -67,6 +65,7 @@ d+-ais
   |->ais
   |->files/dirs etc
 
+(Lines changed, no longer number accurate, the idea is the same)
 In ais/ais_nginx.conf change:
 * Line 4 to correct local dirs
 * Line 36 to local public IP
@@ -83,9 +82,10 @@ Add your user to the group www-data with: sudo adduser username www-data
 
 
 Other changes:
-If you dont have a local postgresql server, delete lines " from secrets import *" and replace 
+If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace 
 the database entry with:
 'ENGINE': 'django.db.backends.sqlite3',
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-Hello!
+You can then run for example:
+python manage.py shell --settings local_settings
 </pre>
