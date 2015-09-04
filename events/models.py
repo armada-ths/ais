@@ -9,6 +9,8 @@ class Event(models.Model):
     registration_close_time=models.DateTimeField()
     event_start=models.DateTimeField()
     event_end=models.DateTimeField()
+    public_event = models.BooleanField(default=False)
+    capacity = models.IntegerField()
 
 class Event_field(models.Model):
     event=models.ForeignKey(Event)
