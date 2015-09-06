@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from ais.secrets import *
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,11 +20,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'yojegss^aecmgw1561gu6!40ar@*g(nvelfuu$-2d#er)!d7l!'
 
-CAS_SERVER_URL = 'https://login.kth.se/'
+#CAS_SERVER_URL = 'https://login.kth.se/'
 #CAS_IGNORE_REFERER = True
 #CAS_REDIRECT_URL = 'armada.nu/login'
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
 ALLOWED_HOSTS = ['.armada.nu']
 
@@ -40,7 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cas',
+    #'cas',
     'root',
     'events',
 )
@@ -54,18 +54,19 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'cas.middleware.CASMiddleware',
+    #'cas.middleware.CASMiddleware',
 )
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', 
-    'cas.backends.CASBackend',
-)
-CAS_AUTO_CREATE_USER = False
+#AUTHENTICATION_BACKENDS = (
+#    'django.contrib.auth.backends.ModelBackend',
+#    'cas.backends.CASBackend',
+#)
 
-CAS_RESPONSE_CALLBACKS = (
-    'lib.CAS_callback.callback',
-)
+#CAS_AUTO_CREATE_USER = False
+
+#CAS_RESPONSE_CALLBACKS = (
+#    'lib.CAS_callback.callback',
+#)
 
 ROOT_URLCONF = 'ais.urls'
 
@@ -94,12 +95,14 @@ WSGI_APPLICATION = 'ais.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': DB_NAME,                      # Or path to database file if using sqlite3.
-            # The following settings are not used with sqlite3:
-            'USER': DB_USERNAME,
-            'PASSWORD': DB_PASSWORD,
-            'HOST': 'mnemosyne.armada.nu',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        #'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        #'NAME': DB_NAME,                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        #'USER': DB_USERNAME,
+        #'PASSWORD': DB_PASSWORD,
+        #'HOST': 'mnemosyne.armada.nu',
     }
 }
 
@@ -120,9 +123,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT = 'static'
+STATIC_ROOT = '/static/'
 
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
 )
