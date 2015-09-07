@@ -57,6 +57,7 @@ Install OS req:
 
 * git clone -b master git@github.com:armada-ths/ais.git
 * . ais_venv/bin/activate
+* Install pip with "wget https://bootstrap.pypa.io/get-pip.py" and "python get-pip.py"
 * Install pip requirements with pip install -r requirements.txt
 
 Folder structure should now be:
