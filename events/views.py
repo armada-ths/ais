@@ -6,5 +6,7 @@ def index(request):
     #    username = request.user.username
     #    return render(request, 'events.html')
     #return render(request, 'login.html')
-    return render(request,'events.html')
-# Create your views here.
+    return render(request,'events/index.html')
+
+def event(request):
+    return render(request,'events/new.html')

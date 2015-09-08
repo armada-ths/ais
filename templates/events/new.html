@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block nav-events %}
+<li role="presentation" class="active"><a href="{% url 'events' %}">Events</a></li>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <h3>New Event</h3>
+  </div>
+
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="name" class="col-sm-2 control-label">Name: *</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" id="name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="start" class="col-sm-2 control-label">When does the event start? *</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" id="start">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="start" class="col-sm-2 control-label">When does the event end? *</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" id="stop">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="capactiy" class="col-sm-2 control-label">Capacity</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" id="capacity">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="approval" class="col-sm-2 control-label">Needs approval?</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="checkbox" id="approval">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="description" class="col-sm-2 control-label">Description of the event for internal use</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="description" rows="8" cols="40"></textarea>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="open_at" class="col-sm-2 control-label">When does the registration open?</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" id="open_at">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="rsvp_at" class="col-sm-2 control-label">When is the last day of registration?</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" id="rsvp_at">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="cancel_at" class="col-sm-2 control-label">When is the last day to cancel your registration?</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="text" id="cancel_at">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="public_event" class="col-sm-2 control-label">Make event public (homepage, mobile application)</label>
+      <div class="col-sm-10">
+        <input class="form-control" type="checkbox" id="public_event">
+      </div>
+    </div>
+    <br>
+    <div class="form-group">
+      <label for="submit" class="col-sm-2 control-label"></label>
+      <input class="btn btn-primary btn-lg" id="submit" type="submit" value="Create">
+    </div>
+    <br>
+    <br>
+  </form>
+</div>
+    {% endblock %}

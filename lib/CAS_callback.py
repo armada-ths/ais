@@ -15,4 +15,4 @@ def callback(tree):
             user.set_unusable_password()
             user.save()
         except:
-            user.delete()        
+            user.delete()

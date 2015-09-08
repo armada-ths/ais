@@ -20,7 +20,7 @@ libpq-dev
 
 System recommended:
 Vim
- 
+
 Global req:
 virtualenv
 
@@ -82,7 +82,7 @@ Add your user to the group www-data with: sudo adduser username www-data
 
 
 Other changes:
-If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace 
+If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
 the database entry with:
 'ENGINE': 'django.db.backends.sqlite3',
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
