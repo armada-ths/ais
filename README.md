@@ -19,7 +19,7 @@ d+-ais
   
 * Install pip requirements with pip install -r requirements.txt
 * Run the server with "python manage.py runserver [your localip]:80 --settings local_settings
-  Where local_settings.py is your local settings file (notice the lack of .py in manage)
+  Where local_settings.py is your local settings file (notice the lack of .py in local_settings)
   in your local_settings file, you can disable "from ais.secrets import *" and just 
   hardcode all your variables
 * You dont have to install nginx and postgre on a local machine, just use runserver and sqlite3
