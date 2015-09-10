@@ -17,9 +17,23 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
+    #admin
     url(r'^admin/', include(admin.site.urls)),
+
+    #root
     url(r'^$', include('root.urls')),
+
+    #events
     url(r'^events/', include('events.urls')),
-    url(r'^login/$', 'cas.views.login', name='login'), 
+
+    #login logout
+    url(r'^login/$', 'cas.views.login', name='login'),
     url(r'^logout/$', 'cas.views.logout', name='logout'),
+
+    #companies
+    url(r'^companies/$', views.companies_list, name='companies_list'),
+    url(r'^companies/new$', views.company_create, name='company_new'),
+    url(r'^companies/edit/(?P<pk>\d+)$', views.company_update, name='company_edit'),
+    url(r'^companies/delete/(?P<pk>\d+)$', views.company_delete, name='company_delete'),
+
 ]
