@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'cas',
     'root',
     'events',
+    'companies',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,7 +59,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', 
+    'django.contrib.auth.backends.ModelBackend',
     'cas.backends.CASBackend',
 )
 CAS_AUTO_CREATE_USER = False
