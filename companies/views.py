@@ -16,7 +16,7 @@ def companies_list(request, template_name='companies/companies_list.html'):
     return render(request, template_name, data)
 
 #crate a company
-def server_create(request, template_name='companies/company_form.html'):
+def company_create(request, template_name='companies/company_form.html'):
     form = CompanyForm(request.POST or None)
     if form.is_valid():
         form.save()
