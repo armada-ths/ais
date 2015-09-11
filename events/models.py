@@ -1,19 +1,20 @@
 from django.db import models
-
-# Create your models here.
+from django.core.urlresolvers import reverse
 
 class Event(models.Model):
-    name=models.CharField(max_length=75)
-    description=models.CharField(max_length=500)
-    registration_open_time=models.DateTimeField()
-    registration_close_time=models.DateTimeField()
-    event_start=models.DateTimeField()
-    event_end=models.DateTimeField()
-    public_event = models.BooleanField(default=False)
+    name = models.CharField(max_length=75)
+    capacity = models.IntegerField(default=1, blank=True, null=True)
+    description = models.TextField(blank=True)
 
-class Event_field(models.Model):
-    event=models.ForeignKey(Event)
-    name=models.CharField(max_length=75)
-    data=models.CharField(max_length=200)
-    mandatory=models.BooleanField(default=False)
-    position_priority=models.IntegerField(default=0)
+    def __unicode__(self):
+        return self.name
+
+def get_absolute_url(self):
+    return reverse('event_edit', kwargs={'pk': self.pk})
+
+class EventAttendence(models.Model):
+    name = models.CharField(max_length=75)
+    mobile = models.IntegerField(default=1, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name

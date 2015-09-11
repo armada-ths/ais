@@ -1,7 +1,11 @@
-from django.conf.urls import url
-from . import views
+from django.conf.urls import patterns, url
 
-urlpatterns = [
-    url(r'^$', views.index, name='events'),
-    url(r'^new/$', views.event, name='events'),
-]
+from events import views
+
+urlpatterns = patterns('',
+  url(r'^$', views.event_list, name='event_list'),
+  url(r'^new/$', views.event_create, name='event_new'),
+  url(r'^attendence/$',views.event_create_attendence, name='event_new_attendence'),
+  url(r'^edit/(?P<pk>\d+)$', views.event_update, name='event_edit'),
+  url(r'^delete/(?P<pk>\d+)$', views.event_delete, name='event_delete'),
+)
