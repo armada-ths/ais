@@ -1,3 +1,5 @@
 from django.contrib import admin
+from fair import Fair
 
-# Register your models here.
+#Create a fair will be done in Admin GUI
+admin.site.register(Fair)
