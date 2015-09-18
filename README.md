@@ -7,7 +7,7 @@ How to setup a local dev server:
 
 * git clone -b master git@github.com:armada-ths/ais.git
 * Install pip with "wget https://bootstrap.pypa.io/get-pip.py" and "python3 get-pip.py"
-* Install virtualenv with pip: "sudo pip install virtualenv"
+* Install virtualenv with pip: "sudo pip install virtualenv" (might use pip3 for python3)
 * Make a virtualenv by running: "virtualenv ais_venv"
 * Activate the virtualenv with ". ais_venv/bin/activate" (source can be used instead of . )
 
