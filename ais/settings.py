@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'root',
     'events',
     'companies',
+    'fair',
 )
 
 MIDDLEWARE_CLASSES = (
