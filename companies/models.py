@@ -1,4 +1,4 @@
-from django.db import models
+    from django.db import modelsfair
 from fair.models import Fair
 # Model for company
 class Company(models.Model):
@@ -20,7 +20,7 @@ class CompanyContact(models.Model):
 # Model to be able to add a company to a specific Armada year
 class CompanyParticipationYear(models.Model):
     company = models.ForeignKey(Company)
-    fair = models.ForeignKey('fair.Fair')
+    fair = models.ForeignKey('Fair')
 
 # TODO some model to be able to add a company to sales/sponsorship
 
