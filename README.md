@@ -1,5 +1,6 @@
 # django/ais
 <pre>
+!Please only develop on branches!
 How to setup a local dev server:
 * All settings files assume that the user is named "deployment" and that we use that home folder.
 * apt-get update
