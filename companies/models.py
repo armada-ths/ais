@@ -1,5 +1,5 @@
 from django.db import models
-
+from fair.models import Fair
 # Model for company
 class Company(models.Model):
     name = models.CharField(max_length=30)
