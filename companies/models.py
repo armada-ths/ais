@@ -1,4 +1,4 @@
-from django.db import modelsfair
+from django.db import models
 from fair.models import Fair
 # Model for company
 class Company(models.Model):
