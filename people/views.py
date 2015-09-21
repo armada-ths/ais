@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from person.models import Person
 # Create your views here.
 
 @login_required(login_url='/login/')
