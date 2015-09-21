@@ -26,7 +26,7 @@ class People(models.Model):
     #user = models.OneToOneField(User)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1)
     birth_date = models.DateField()
-    gender = models.CharField(max_length=1, default='U')
+    gender = models.CharField(max_length=1, default='U', choices=GENDERS)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
     #phone_number = models.IntegerField()
     #drivers_license = models.CharField(max_length=10)
