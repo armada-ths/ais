@@ -19,7 +19,7 @@ class People(models.Model):
         ('MXL', 'Man X-Large'),
     )
     #user = models.OneToOneField(User)
-    user = models.ForeignKey(User.first_name)
+    user = models.ForeignKey(User)
     birth_date = models.DateField()
     gender = models.CharField(max_length=15)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
