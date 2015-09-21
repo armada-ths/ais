@@ -3,10 +3,7 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
 # Create your views here.
 
+@login_required(login_url='/login/')
 def list_people(request):
-    if request.user.is_authenticated():
-        username = request.user.username
-        return TemplateResponse(request, 'people.html', {'users': User.objects.all()})
-        #return render(request, 'people.html')
-    return render(request, 'login.html')
+    return TemplateResponse(request, 'people.html', {'users': User.objects.all()})
     
