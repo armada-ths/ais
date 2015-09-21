@@ -25,6 +25,7 @@ class People(models.Model):
     )
     #user = models.OneToOneField(User)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1, primary_key=True)
+    first_name = user.first_name
     birth_date = models.DateField()
     gender = models.CharField(max_length=1, default='U', choices=GENDERS)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
