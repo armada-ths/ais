@@ -2,10 +2,10 @@
 {% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people' %}">People</a></li>{% endblock %}
 
 {% block content %}
-    <h2>Users</h2>
+    <h2>People</h2>
     <ul>
         {% for user in users %}
-            <li>{{ user.first_name }}</li>
+            <li>{{ user.first_name }}, {{user.id}}</li>
         {% endfor %}
     </ul>
 {% endblock %}
