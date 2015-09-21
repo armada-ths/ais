@@ -11,5 +11,5 @@ def list_people(request):
 
 @login_required(login_url='/login/')
 def view_person(request, pk):
-    return TemplateResponse(request, 'view_person.html', {'person': People.objects.get(id=pk)})
+    return TemplateResponse(request, 'view_person.html', {'person': People.objects.get(user_id=pk)})
     
