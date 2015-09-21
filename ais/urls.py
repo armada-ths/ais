@@ -20,19 +20,22 @@ urlpatterns = [
     #admin
     url(r'^admin/', include(admin.site.urls)),
 
-    #root
-    url(r'^$', include('root.urls')),
-
-    #events
-    url(r'^events/', include('events.urls')),
-
     #login logout
     url(r'^login/$', 'cas.views.login', name='login'),
     url(r'^logout/$', 'cas.views.logout', name='logout'),
 
-    #companies
-    url(r'^companies/', include('companies.urls')),
+    # Root
+    url(r'^$', include('root.urls')),
 
+    # Events
+    url(r'^events/', include('events.urls')),
+
+    # Companies
+    url(r'^companies/', include('companies.urls')),
+    
+    # People
+    url(r'^people/', include('people.urls')),
+    
 
 
 ]
