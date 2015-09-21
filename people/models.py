@@ -19,7 +19,7 @@ class People(models.Model):
         ('MXL', 'Man X-Large'),
     )
     #user = models.OneToOneField(User)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, default=3)
     birth_date = models.DateField()
     gender = models.CharField(max_length=15)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
