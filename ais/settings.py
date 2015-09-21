@@ -21,8 +21,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-
 CAS_SERVER_URL = 'https://login.kth.se/'
 #CAS_IGNORE_REFERER = True
 #CAS_REDIRECT_URL = 'armada.nu/login'
@@ -30,6 +28,12 @@ CAS_SERVER_URL = 'https://login.kth.se/'
 
 ALLOWED_HOSTS = ['.armada.nu']
 
+# Email settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587 
+DEFAULT_FROM_EMAIL = 'system@armada.nu'
+DEFAULT_TO_EMAIL = 'system@armada.nu'
 
 # Application definition
 
