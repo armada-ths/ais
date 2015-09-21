@@ -1,0 +1,136 @@
+[AIS](http://ais.armada.nu/) — (THS) Armada Internal System
+==================================================
+
+Contribution Guides
+--------------------------------------
+
+In the spirit of open source software development, AIS always encourages community code contribution. To help you get started and before you jump into writing code, be sure to read these important contribution guidelines thoroughly:
+
+1. Nothing to see here, continue to next section.
+
+Prerequisites
+-------------
+
+- Linux system
+- Installing the required applications:
+Updating:
+```bash
+apt-get update
+```
+Installing:
+```bash
+apt-get -y install sudo wget git python gcc python3-dev nginx libpcre3 libpcre3-dev libldap2-dev libsasl2-dev libpq-dev
+```
+- Installing pip:
+Downloading pip:
+```bash
+wget https://bootstrap.pypa.io/get-pip.py
+```
+Installing pip:
+```bash
+python3 get-pip.py
+```
+- Installing virtualenv
+Installing virtualenv:
+```bash
+sudo pip install virtualenv
+```
+Creating virtualenv:
+```bash
+virtualenv ais_venv
+```
+Activate virutalenv:
+```bash
+. ais_venv/bin/activate
+```
+Install pip requirements:
+```bash
+pip install -r requirements.txt
+```
+
+Running the local server
+------------------------
+Create a local_settngs.py file (see local_settings.py.example). Remove postgresql, remove secrets, setup templates directory etc.
+Activate virutalenv:
+```bash
+. ais_venv/bin/activate
+```
+Run server:
+```bash
+python manage.py runserver [your local ip]:[port] --settings local_settings
+```
+
+Setting up a new AIS server
+System req:
+GCC
+python3-dev
+git
+nginx
+libpcre3 # For pcre options when running uwsgi
+libpcre3-dev # For pcre options when running uwsgi
+libldap2-dev # For LDAP lookups
+libsasl2-dev # Also for LDAP
+
+# For mysql database
+mysql-server
+libmysqlclient-dev
+
+# For postgre database
+postgresql
+libpq-dev
+
+System recommended:
+Vim
+
+Global req:
+virtualenv
+
+
+Virtualenv req:
+See "requirements.txt"
+
+*Change addr/ip, paths in _nginx.conf
+*Change paths in _uwsgi.ini
+*add user to www-data group
+
+Commands:
+uwsgi --ini ais_uwsgi.ini
+sudo /etc/init.d/nginx start/stop/restart
+sudo tail -n 10 /var/log/nginx/error.log
+sudo adduser username www-data
+sudo ln -s ~/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/
+
+Setup postgresql:
+sudo apt-get install postgresql
+sudo apt-get install libpq-dev
+. ais_venv/bin/activate
+
+vim /etc/postgresql/[version]/main/pg_hba.conf
+local all all trust
+host all all 127.0.0.1/32 trust
+
+
+(Lines changed, no longer number accurate, the idea is the same)
+In ais/ais_nginx.conf change:
+* Line 4 to correct local dirs
+* Line 36 to local public IP
+* Line 62, 66 and 75 to correct local dirs
+
+In ais/ais_uwsgi.ini change:
+* Line 6, 12, 23, 29 and 33  to correct local dirs
+
+In ais/restart_uwsgi_server.sh change:
+* Line 5 to correct local dir
+
+Link (sudo ln -s /home/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/) and unlink /etc/nginx/sites-enabled/default
+Add your user to the group www-data with: sudo adduser username www-data
+
+
+Other changes:
+If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
+the database entry with:
+'ENGINE': 'django.db.backends.sqlite3',
+'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+You can then run for example:
+python manage.py shell --settings local_settings
+---------------------------
