@@ -1,16 +1,40 @@
 {% extends "people.html" %}
 {% block content %}
-    <table class="table table-striped">
-        <tr>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Email</th>
-        </tr>
-        <tr>
-            <td>{{ person.user.first_name }}</td>
-            <td>{{ person.user.last_name }}</td>
-            <td>{{ person.user.email }}</td>
-        </tr>
-    </table>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Basic information</h3>
+  </div>
+  <div class="panel-body">
+    First name: {{ person.user.first_name }}
+    Last name: {{ person.user.last_name }}
+    Birth date: {{ person.birth_date }}
+    Gender: {{ person.gender }}
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Contact information</h3>
+  </div>
+  <div class="panel-body">
+    Phone number: {{ person.phone_number }}
+    Email: {{ person.user.email }}
+  </div>
+</div>  
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Other information</h3>
+  </div>
+  <div class="panel-body">
+    Drivers license: {{ person.drivers_license }}
+    Allergy: {{ person.allergy }}
+    Programme: {{ person.programme }}
+    Registration year: {{ person.registration_year }}
+    Planned graduation: {{ person.planned_graduation }}
+    Shirt size: {{ person.shirt_size }}
+    
+  </div>
+</div>
 {% endblock %}
 
