@@ -6,7 +6,8 @@ from django.db import models
 # http://pythoncentral.io/how-to-use-python-django-forms/
 class People(models.Model):
     #defining shirt sizes
-    SHIRT_SIZES = (
+    SHIRT_SIZES = 
+    (
         ('WXS', 'Woman X-Small'),
         ('WS', 'Woman Small'),
         ('WM', 'Woman Medium'),
@@ -18,14 +19,14 @@ class People(models.Model):
         ('ML', 'Man Large'),
         ('MXL', 'Man X-Large'),
     )
-    GENDERS = (
-                ('M', 'Male'),
-                ('F', 'Female'),
-                ('U', 'Undefined'),
+    GENDERS = 
+    (
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('U', 'Undefined'),
     )
     #user = models.OneToOneField(User)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1, primary_key=True)
-    first_name = user.first_name
     birth_date = models.DateField()
     gender = models.CharField(max_length=1, default='U', choices=GENDERS)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
