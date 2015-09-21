@@ -1,10 +1,18 @@
 {% extends "people.html" %}
 {% block content %}
-    <h2>People</h2>
-    <ul>
+    <table class="table table-striped">
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Email</th>
+        </tr>
         {% for user in users %}
-            <li>{{ user.first_name }}, {{user.id}}</li>
+        <tr>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
 {% endblock %}
 
