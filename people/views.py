@@ -6,5 +6,5 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='/login/')
 def list_people(request):
-    return TemplateResponse(request, 'people.html', {'users': User.objects.all()})
+    return TemplateResponse(request, 'people_list.html', {'users': User.objects.all()})
     
