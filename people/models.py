@@ -32,7 +32,7 @@ class People(models.Model):
     shirt_size = models.CharField(max_length=3, default='N', choices=SHIRT_SIZES)
     phone_number = models.IntegerField(null=True)
     drivers_license = models.CharField(max_length=10, null=True)
-    #allergy = models.CharField(max_length=30, null=True)
+    allergy = models.CharField(max_length=30, null=True)
     programme = models.CharField(max_length=30, null=True)
     registration_year = models.IntegerField(null=True)
     planned_graduation = models.IntegerField(null=True)
