@@ -7,11 +7,11 @@
             <th>Email</th>
         </tr>
         {% for user in users %}
-        <tr>
+        <a href="#"><tr>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>{{ user.email }}</td>
-        </tr>
+        </tr></a>
         {% endfor %}
     </table>
 {% endblock %}
