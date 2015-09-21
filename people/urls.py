@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.list_people, name='list_people'),
-    url(r'^(?P<user_id)>[0-9]+)$', views.view_person, name='view_person'),
+    url(r'^(?P<pk>\d+)$', views.view_person, name='view_person'),
 ]
