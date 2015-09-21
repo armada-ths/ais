@@ -6,8 +6,7 @@ from django.db import models
 # http://pythoncentral.io/how-to-use-python-django-forms/
 class People(models.Model):
     #defining shirt sizes
-    SHIRT_SIZES = 
-    (
+    SHIRT_SIZES = (
         ('WXS', 'Woman X-Small'),
         ('WS', 'Woman Small'),
         ('WM', 'Woman Medium'),
@@ -19,8 +18,7 @@ class People(models.Model):
         ('ML', 'Man Large'),
         ('MXL', 'Man X-Large'),
     )
-    GENDERS = 
-    (
+    GENDERS = (
         ('M', 'Male'),
         ('F', 'Female'),
         ('U', 'Undefined'),
