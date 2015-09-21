@@ -7,11 +7,12 @@
             <th>Email</th>
         </tr>
         {% for user in users %}
-        <a href="#"><tr>
+        <tr>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>{{ user.email }}</td>
-        </tr></a>
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+        </tr>
         {% endfor %}
     </table>
 {% endblock %}
