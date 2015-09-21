@@ -26,7 +26,6 @@ class People(models.Model):
         ('U', 'Undefined'),
     )
 
-    #user = models.OneToOneField(User)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1, primary_key=True)
     birth_date = models.DateField(null=True)
     gender = models.CharField(max_length=1, default='U', choices=GENDERS)
