@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth import User
+
 # TODO fix view
 # https://docs.djangoproject.com/en/1.8/topics/forms/modelforms/
 # http://pythoncentral.io/how-to-use-python-django-forms/
@@ -16,9 +18,7 @@ class People(models.Model):
         ('ML', 'Man Large'),
         ('MXL', 'Man X-Large'),
     )
-
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
+    user = models.OneToOneField(User, primary_key=True)
     birth_date = models.DateField()
     gender = models.CharField(max_length=15)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
