@@ -9,7 +9,6 @@ def list_people(request):
     return TemplateResponse(request, 'people_list.html', {'users': User.objects.all()})
 
 @login_required(login_url='/login/')
-def view_person(request, id):
-
-    return TemplateResponse(request, 'people_list.html', {'users': User.objects.all(id=id)})
+def view_person(request, user_id):
+    return TemplateResponse(request, 'people_list.html', {'users': User.objects.all(id=user_id)})
     
