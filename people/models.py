@@ -18,10 +18,10 @@ class People(models.Model):
         ('ML', 'Man Large'),
         ('MXL', 'Man X-Large'),
     )
-    user = models.OneToOneField(User, primary_key=True)
-    #birth_date = models.DateField()
-    #gender = models.CharField(max_length=15)
-   # shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
+    #user = models.OneToOneField(User, primary_key=True)
+    birth_date = models.DateField()
+    gender = models.CharField(max_length=15)
+    shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
     #phone_number = models.IntegerField()
     #drivers_license = models.CharField(max_length=10)
    # allergy = models.CharField(max_length=30)
