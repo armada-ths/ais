@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'events',
     'companies',
     'fair',
+    'people',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^companies/', include('companies.urls')),
     
     # People
-    #url(r'^people/', include('people.urls')),
+    url(r'^people/', include('people.urls')),
     
 
 
