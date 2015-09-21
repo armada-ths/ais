@@ -1,5 +1,5 @@
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
 
 # TODO fix view
 # https://docs.djangoproject.com/en/1.8/topics/forms/modelforms/
@@ -19,7 +19,7 @@ class People(models.Model):
         ('MXL', 'Man X-Large'),
     )
     #user = models.OneToOneField(User)
-    user = models.ForeignKey(User)
+    user = user = models.OneToOneField(settings.AUTH_USER_MODEL)
     birth_date = models.DateField()
     gender = models.CharField(max_length=15)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
