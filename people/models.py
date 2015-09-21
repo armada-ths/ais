@@ -34,3 +34,5 @@ class People(models.Model):
     #programme = models.CharField(max_length=30)
     #regestration_year = models.IntegerField()
     #planned_graduation = models.IntegerField()
+    def __str__(self):
+        return '%s' % (self.user.fullname())
