@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth import User
+from django.contrib.auth.models import User
 
 # TODO fix view
 # https://docs.djangoproject.com/en/1.8/topics/forms/modelforms/
