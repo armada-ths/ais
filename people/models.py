@@ -28,15 +28,15 @@ class People(models.Model):
 
     #user = models.OneToOneField(User)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1, primary_key=True)
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True)
     gender = models.CharField(max_length=1, default='U', choices=GENDERS)
     shirt_size = models.CharField(max_length=3, default='N', choices=SHIRT_SIZES)
-    phone_number = models.IntegerField()
-    drivers_license = models.CharField(max_length=10)
-    allergy = models.CharField(max_length=30)
-    programme = models.CharField(max_length=30)
-    regestration_year = models.IntegerField()
-    planned_graduation = models.IntegerField()
+    phone_number = models.IntegerField(null=True)
+    drivers_license = models.CharField(max_length=10, null=True)
+    allergy = models.CharField(max_length=30, null=True)
+    programme = models.CharField(max_length=30, null=True)
+    regestration_year = models.IntegerField(null=True)
+    planned_graduation = models.IntegerField(null=True)
     
     def __str__(self):
         return '%s' % (self.user.get_full_name())
