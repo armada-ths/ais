@@ -35,4 +35,4 @@ class People(models.Model):
     #regestration_year = models.IntegerField()
     #planned_graduation = models.IntegerField()
     def __str__(self):
-        return '%s' % (self.user.fullname())
+        return '%s' % (self.user.get_full_name())
