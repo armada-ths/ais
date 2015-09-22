@@ -61,12 +61,16 @@ python manage.py runserver [your local ip]:[port] --settings local_settings
 
 Local settings
 --------------
+- Install SQLite
+```bash
+apt-get -y install sqlite3
+```
 If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
 the database entry with:
+
 'ENGINE': 'django.db.backends.sqlite3',
+
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-You can then run for example:
-python manage.py shell --settings local_settings
 
 To run the local server you will need to always run within the vritual environment.
 
