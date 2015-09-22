@@ -9,7 +9,7 @@
     <li>First name: {{ person.user.first_name }}</li>
     <li>Last name: {{ person.user.last_name }}</li>
     <li>Birth date: {{ person.birth_date }}</li>
-    <li>Gender: {{ person.gender }}</li>
+    <li>Gender: {{ person.get_gender_display }}</li>
     </ul>
   </div>
 </div>
@@ -37,7 +37,7 @@
     <li>Programme: {{ person.programme }}</li>
     <li>Registration year: {{ person.registration_year }}</li>
     <li>Planned graduation: {{ person.planned_graduation }}</li>
-    <li>Shirt size: {{ person.shirt_size }}</li>
+    <li>Shirt size: {{ person.get_shirt_size_display }}</li>
     </ul>
   </div>
 </div>
