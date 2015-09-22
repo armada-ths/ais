@@ -42,7 +42,7 @@ virtualenv ais_venv
 ```bash
 . ais_venv/bin/activate
 ```
-Install pip requirements:
+- Install pip requirements
 ```bash
 pip install -r requirements.txt
 ```
@@ -50,11 +50,11 @@ pip install -r requirements.txt
 Running the local server
 ------------------------
 Create a local_settngs.py file (see local_settings.py.example). Remove postgresql, remove secrets, setup templates directory etc.
-Activate virutalenv:
+- Activate virutal environment
 ```bash
 . ais_venv/bin/activate
 ```
-Run server:
+- Run server
 ```bash
 python manage.py runserver [your local ip]:[port] --settings local_settings
 ```
