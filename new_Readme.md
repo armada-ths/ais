@@ -72,7 +72,7 @@ the database entry with:
 
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
-You also need to setup the directory's for templates.
+You also need to setup the directories for templates (so it points to your local directories for static files and templates)
 
 To run the local server you will need to always run within the vritual environment.
 
