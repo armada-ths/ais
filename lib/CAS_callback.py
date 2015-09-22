@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from people.models import People
+from people.models import Profile
 from lib.KTH_Catalog import lookup_user
 
 def callback(tree):
@@ -15,7 +15,7 @@ def callback(tree):
             # Disable password auth, we auth with CAS
             user.set_unusable_password()
             user.save()
-            person = People(user=user)
+            person = Profile(user=user)
             person.save()
         except:
             user.delete()
