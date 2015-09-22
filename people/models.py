@@ -28,7 +28,7 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDERS, blank=True)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES,blank=True)
-    phone_number = models.IntegerField(null=True, blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
     drivers_license = models.CharField(max_length=10, null=True,blank=True)
     allergy = models.CharField(max_length=30, null=True,blank=True)
     programme = models.CharField(max_length=30, null=True,blank=True)
