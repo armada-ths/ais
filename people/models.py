@@ -4,7 +4,7 @@ from django.db import models
 # TODO fix view
 # https://docs.djangoproject.com/en/1.8/topics/forms/modelforms/
 # http://pythoncentral.io/how-to-use-python-django-forms/
-class People(models.Model):
+class Profile(models.Model):
     #defining shirt sizes
     SHIRT_SIZES = (
         ('WXS', 'Woman X-Small'),

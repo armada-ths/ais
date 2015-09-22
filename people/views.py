@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from people.models import People
+from people.models import Profile
 # Create your views here.
 
 @login_required(login_url='/login/')
@@ -11,5 +11,5 @@ def list_people(request):
 
 @login_required(login_url='/login/')
 def view_person(request, pk):
-    return TemplateResponse(request, 'view_person.html', {'person': People.objects.get(user_id=pk)})
+    return TemplateResponse(request, 'view_person.html', {'person': Profile.objects.get(user_id=pk)})
     
