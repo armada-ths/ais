@@ -1,4 +1,4 @@
-[AIS](http://ais.armada.nu/) — (THS) Armada Internal System
+[AIS](http://ais.armada.nu/) — Armada Internal System
 ==================================================
 
 Contribution Guides
