@@ -32,7 +32,7 @@ python3 get-pip.py
 ```
 - Installing virtualenv:
 ```bash
-sudo pip install virtualenv
+sudo pip install virtualenv (might need to use pip3 to force python3)
 ```
 - Creating virtualenv:
 ```bash
