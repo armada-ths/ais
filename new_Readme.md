@@ -72,9 +72,9 @@ the database entry with:
 
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 
-You also need to setup the directories for templates (so it points to your local directories for static files and templates)
+- You also need to setup the directories (so it points to your local directories for static files, templates and such)
 
-To run the local server you will need to always run within the vritual environment.
+- To run the local server you will need to always run within the vritual environment.
 
 # Setting up a new AIS server
 This instructions are used for settings up a new instance of AIS
