@@ -67,11 +67,10 @@ apt-get -y install sqlite3
 ```
 If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
 the database entry with:
-
+```bash
 'ENGINE': 'django.db.backends.sqlite3',
-
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-
+```
 - You also need to setup the directories (so it points to your local directories for static files, templates and such)
 
 - To run the local server you will need to always run within the vritual environment.
