@@ -1,0 +1,7 @@
+#!/bin/sh
+/bin/bash -c ". /home/[USER]/ais_venv/bin/activate; 
+python /home/[USER]/ais/manage.py makemigrations --settings local_settings;
+echo making migrations...;
+python /home/[USER]/ais/manage.py migrate --settings local_settings;
+echo migrating...;
+python /home/[USER]/ais/manage.py runserver 127.0.0.1:8080 --settings local_settings"
