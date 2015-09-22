@@ -59,39 +59,24 @@ Run server:
 ```bash
 python manage.py runserver [your local ip]:[port] --settings local_settings
 ```
+# Setting up a new AIS server
+This instructions are used for settings up a new instance of AIS
 
-Setting up a new AIS server
-System req:
-GCC
-python3-dev
-git
-nginx
-libpcre3 # For pcre options when running uwsgi
-libpcre3-dev # For pcre options when running uwsgi
-libldap2-dev # For LDAP lookups
-libsasl2-dev # Also for LDAP
-
-# For mysql database
+Installing MySQL
+------------------
 mysql-server
 libmysqlclient-dev
 
-# For postgre database
+Installing PostgreSQL
+--------------------
 postgresql
 libpq-dev
 
-System recommended:
-Vim
-
-Global req:
-virtualenv
-
-
-Virtualenv req:
-See "requirements.txt"
-
-*Change addr/ip, paths in _nginx.conf
-*Change paths in _uwsgi.ini
-*add user to www-data group
+Server configuration
+-------------------
+- Change addr/ip, paths in _nginx.conf
+- Change paths in _uwsgi.ini
+- add user to www-data group
 
 Commands:
 uwsgi --ini ais_uwsgi.ini
@@ -100,11 +85,9 @@ sudo tail -n 10 /var/log/nginx/error.log
 sudo adduser username www-data
 sudo ln -s ~/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/
 
-Setup postgresql:
-sudo apt-get install postgresql
-sudo apt-get install libpq-dev
+Setup postgresql
+----------------
 . ais_venv/bin/activate
-
 vim /etc/postgresql/[version]/main/pg_hba.conf
 local all all trust
 host all all 127.0.0.1/32 trust
@@ -133,4 +116,4 @@ the database entry with:
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 You can then run for example:
 python manage.py shell --settings local_settings
----------------------------
+
