@@ -16,7 +16,6 @@ Prerequisites
 ```bash
 apt-get update
 ```
-Installing:
 ```bash
 apt-get -y install sudo wget git python gcc python3-dev nginx libpcre3 libpcre3-dev libldap2-dev libsasl2-dev libpq-dev
 ```
@@ -35,11 +34,11 @@ python3 get-pip.py
 ```bash
 sudo pip install virtualenv
 ```
-Creating virtualenv:
+- Creating virtualenv:
 ```bash
 virtualenv ais_venv
 ```
-Activate virutalenv:
+- Activate virutalenv:
 ```bash
 . ais_venv/bin/activate
 ```
@@ -59,6 +58,9 @@ Run server:
 ```bash
 python manage.py runserver [your local ip]:[port] --settings local_settings
 ```
+
+To run the local server you will need to always run within the vritual environment.
+
 # Setting up a new AIS server
 This instructions are used for settings up a new instance of AIS
 
