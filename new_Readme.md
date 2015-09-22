@@ -49,7 +49,7 @@ pip install -r requirements.txt
 
 Running the local server
 ------------------------
-Create a local_settngs.py file (see local_settings.py.example). Remove postgresql, remove secrets, setup templates directory etc.
+Create a local_settngs.py file (see local_settings.py.example) or the Local settings section.
 - Activate virutal environment
 ```bash
 . ais_venv/bin/activate
@@ -71,6 +71,8 @@ the database entry with:
 'ENGINE': 'django.db.backends.sqlite3',
 
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+You also need to setup the directory's for templates.
 
 To run the local server you will need to always run within the vritual environment.
 
