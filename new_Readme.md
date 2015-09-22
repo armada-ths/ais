@@ -65,8 +65,12 @@ Local settings
 ```bash
 apt-get -y install sqlite3
 ```
-If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
-the database entry with:
+If you dont have a local postgresql server, copy the settings file to "local_settings.py":
+- Delete line about secrets (this file is not present in git and will NEVER be)
+```bash
+from ais.secrets import *
+```
+- Delete database lines and replace with SQLite3
 ```bash
 'ENGINE': 'django.db.backends.sqlite3',
 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
