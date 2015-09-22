@@ -61,11 +61,12 @@ python manage.py runserver [your local ip]:[port] --settings local_settings
 
 Local settings
 --------------
+Read this section if you do not want to use a PostgreSQL.
+- Copy a the settings.py file to the /ais/ root directory or use the the local_settings.py.example file
 - Install SQLite
 ```bash
 apt-get -y install sqlite3
 ```
-If you dont have a local postgresql server, copy the settings file to "local_settings.py":
 - Delete line about secrets (this file is not present in git and will NEVER be)
 ```bash
 from ais.secrets import *
