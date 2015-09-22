@@ -59,6 +59,15 @@ Create a local_settngs.py file (see local_settings.py.example). Remove postgresq
 python manage.py runserver [your local ip]:[port] --settings local_settings
 ```
 
+Local settings
+--------------
+If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
+the database entry with:
+'ENGINE': 'django.db.backends.sqlite3',
+'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+You can then run for example:
+python manage.py shell --settings local_settings
+
 To run the local server you will need to always run within the vritual environment.
 
 # Setting up a new AIS server
@@ -66,13 +75,14 @@ This instructions are used for settings up a new instance of AIS
 
 Installing MySQL
 ------------------
-mysql-server
-libmysqlclient-dev
-
+```bash
+apt-get -y install mysql-server libmysqlclient-dev
+```
 Installing PostgreSQL
 --------------------
-postgresql
-libpq-dev
+```bash
+apt-get -y install postgresql libpq-dev
+```
 
 Server configuration
 -------------------
@@ -94,7 +104,6 @@ vim /etc/postgresql/[version]/main/pg_hba.conf
 local all all trust
 host all all 127.0.0.1/32 trust
 
-
 (Lines changed, no longer number accurate, the idea is the same)
 In ais/ais_nginx.conf change:
 * Line 4 to correct local dirs
@@ -110,12 +119,4 @@ In ais/restart_uwsgi_server.sh change:
 Link (sudo ln -s /home/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/) and unlink /etc/nginx/sites-enabled/default
 Add your user to the group www-data with: sudo adduser username www-data
 
-
-Other changes:
-If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
-the database entry with:
-'ENGINE': 'django.db.backends.sqlite3',
-'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-You can then run for example:
-python manage.py shell --settings local_settings
 
