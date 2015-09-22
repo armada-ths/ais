@@ -13,7 +13,6 @@ Prerequisites
 
 - Linux system
 - Installing the required applications:
-Updating:
 ```bash
 apt-get update
 ```
@@ -21,17 +20,18 @@ Installing:
 ```bash
 apt-get -y install sudo wget git python gcc python3-dev nginx libpcre3 libpcre3-dev libldap2-dev libsasl2-dev libpq-dev
 ```
+- Download repository from git:
+```bash
+git clone https://github.com/armada-ths/ais.git
+```
 - Installing pip:
-Downloading pip:
 ```bash
 wget https://bootstrap.pypa.io/get-pip.py
 ```
-Installing pip:
 ```bash
 python3 get-pip.py
 ```
-- Installing virtualenv
-Installing virtualenv:
+- Installing virtualenv:
 ```bash
 sudo pip install virtualenv
 ```
