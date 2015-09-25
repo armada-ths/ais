@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^delete/(?P<pk>\d+)$', views.company_delete, name='company_delete'),
 
     #CRUD Company contact person
+    url(r'^(?P<pk>\d+)/new$', views.contact_create, name='contact_new'),
 
 ]

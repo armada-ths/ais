@@ -4,4 +4,5 @@
 <p>{{company.organisation_number}}<p>
 <p>{{company.website}}</p>
 <p>{{company.phone_number}}</p>
+<a href="{% url "contact_new" company.id %}">New contact</>
 {% endblock %}

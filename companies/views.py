@@ -3,6 +3,7 @@ from django.forms import ModelForm
 
 from companies.models import Company, CompanyContact
 
+###COMPANY###
 class CompanyForm(ModelForm):
     class Meta:
         model = Company
@@ -16,7 +17,7 @@ def companies_list(request, template_name='companies/companies_list.html'):
     return render(request, template_name, data)
 
 #list one company
-def list_company(request, pk, template_name='companies/list_company.html'): 
+def list_company(request, pk, template_name='companies/list_company.html'):
     company = get_object_or_404(Company, pk=pk)
     return render(request, template_name, {'company':company})
 
@@ -44,3 +45,18 @@ def company_delete(request, pk, template_name='companies/company_confirm_delete.
         company.delete()
         return redirect('companies_list') #redirect back to company list
     return render(request, template_name, {'object':company})
+
+###COMPANY CONTACT###
+class ContactForm(ModelForm):
+    class Meta:
+        model = CompanyContact
+        fields = '__all__'
+
+#crate a company contact
+def contact_create(request, template_name='companies/contact_form.html'):
+    form = ContactForm(request.POST or None)
+    company = get_object_or_404(Company, pk=pk)
+    if form.is_valid():
+        form.save()
+        return render(request, template_name, {'company':company})
+    return render(request, template_name, {'form':form})

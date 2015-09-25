@@ -12,11 +12,12 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-#from secrets import *
+DEBUG = True
 
-DEBUG= True
+SECRET_KEY = 'gdfjngj4n"#87234isd9543988au9u89af39")3'
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = 'q1-ttj-!lz&)+*#9a!0^s!zoi@wwc5y%u-pvv5s5*bq-=j%fty'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -28,7 +29,7 @@ CAS_SERVER_URL = 'https://login.kth.se/'
 #CAS_REDIRECT_URL = 'armada.nu/login'
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.armada.nu']
 
 
 # Application definition
@@ -43,7 +44,8 @@ INSTALLED_APPS = (
     'cas',
     'root',
     'events',
-    'lib',
+    'companies',
+    'fair',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -59,8 +61,13 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', 
+    'django.contrib.auth.backends.ModelBackend',
     'cas.backends.CASBackend',
+)
+CAS_AUTO_CREATE_USER = False
+
+CAS_RESPONSE_CALLBACKS = (
+    'lib.CAS_callback.callback',
 )
 
 ROOT_URLCONF = 'ais.urls'
@@ -68,7 +75,7 @@ ROOT_URLCONF = 'ais.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "ais/templates"),
+        'DIRS': ["/home/eric/ais/templates/",
 		],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -91,7 +98,7 @@ WSGI_APPLICATION = 'ais.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/home/jw/projects/armada/mydatabase.sqlite3',
+        'NAME': os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
 
@@ -112,9 +119,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT = 'static'
+STATIC_ROOT = '/home/eric/ais/static/'
 
-STATIC_URL = '/static/'
+STATIC_URL = '/home/eric/ais/static/'
 
 STATICFILES_DIRS = (
 )
