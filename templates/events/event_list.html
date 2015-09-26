@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block nav-events %}
-<li role="presentation" class="active"><a href="{% url 'event_new' %}">Events</a></li>
+<li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
 {% endblock %}
 {% block content %}
 <div class="container">
@@ -9,12 +9,16 @@
     <table class="table table-striped">
       <tr>
         <th class="text-uppercase">name</th>
+        <th class="text-uppercase">description</th>
+        <th class="text-uppercase">start</th>
         <th class="text-uppercase">capacity</th>
         <th></th>
       </tr>
       {% for event in object_list %}
       <tr>
         <td>{{ event.name }}</td>
+        <td>{{ event.description }}</td>
+        <td>{{ event.event_start }}</td>
         <td>{{ event.capacity }}</td>
         <td>
           <a href="{% url 'event_new_attendence' %}">Sign up</a>&nbsp&nbsp
@@ -23,6 +27,9 @@
           </a>
           <a href="{% url "event_delete" event.id %}">
             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp&nbsp
+          </a>
+          <a href="{% url 'event_attendence_list' %}">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp&nbsp
           </a>
         </td>
       </tr>

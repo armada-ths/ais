@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block nav-events %}
-<li role="presentation" class="active">
-  <a href="">Events</a>
-</li>
+<li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
 {% endblock %}
 {% block content %}
 <div class="container">
@@ -10,9 +8,18 @@
     <h3>New Event</h3>
     <hr>
   </div>
-  <form method="post">
+  <form method="post" class="">
+    {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Submit" />
   </form>
 </div>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+<script>
+$(document).ready(function() {
+    $('.datepicker').datepicker();
+});
+</script>
 {% endblock %}

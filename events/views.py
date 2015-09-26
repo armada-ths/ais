@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import ModelForm
-from events.forms import Event, EventAttendence
+from events.models import Event, EventAttendence
+from events.forms import EventForm, EventAttendenceForm
 
 def event_list(request, template_name='events/event_list.html'):
     events = Event.objects.all()
@@ -34,5 +35,11 @@ def event_create_attendence(request, template_name='events/event_form.html'):
     form = EventAttendenceForm(request.POST or None)
     if form.is_valid():
         form.save()
-        return redirect('event_list')
+        return redirect('event_attendence_list')
     return render(request, template_name, {'form':form})
+
+def event_attendence_list(request, template_name='events/event_attendence_list.html'):
+    event_attendence = EventAttendence.objects.all()
+    data = {}
+    data['object_list'] = event_attendence
+    return render(request, template_name, data)

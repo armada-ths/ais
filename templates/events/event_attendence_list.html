@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block nav-events %}
+<li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <h3>Armada 2015 Attending</h3>
+    <table class="table table-striped">
+      <tr>
+        <th class="text-uppercase">person</th>
+        <th class="text-uppercase">status</th>
+        <th class="text-uppercase">mobile</th>
+        <th class="text-uppercase">allergies</th>
+        <th class="text-uppercase">attending</th>
+      </tr>
+      {% for event_attendence in object_list %}
+      <tr>
+        <td>{{ event_attendence.person }}</td>
+        <td>{{ event_attendence.status }}</td>
+        <td>{{ event_attendence.mobile }}</td>
+        <td>{{ event_attendence.allergies }}</td>
+        <td>{{ event_attendence.attending }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% endblock %}
+  {% block footer %}
+  <div class="row">
+    <hr>
+    <p>
+      For technical support please e-mail <a href="mailo:support@armada.nu" target="_top">support@armada.nu</a>, for urgent matters call 08-790 98 44.
+    </p>
+  </div>
+  {% endblock %}
