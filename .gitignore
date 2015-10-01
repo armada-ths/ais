@@ -8,4 +8,4 @@ ais/ais_nginx.conf
 deploy
 db.sqlite3
 local_settings.py
-.coverage
+run_server.sh

@@ -1,0 +1,45 @@
+{% extends "people.html" %}
+{% block content %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Basic information</h3>
+  </div>
+  <div class="panel-body">
+    <ul class="list-unstyled">
+    <li>First name: {{ person.user.first_name }}</li>
+    <li>Last name: {{ person.user.last_name }}</li>
+    <li>Birth date: {{ person.birth_date }}</li>
+    <li>Gender: {{ person.get_gender_display }}</li>
+    </ul>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Contact information</h3>
+  </div>
+  <div class="panel-body">
+    <ul class="list-unstyled">
+    <li>Phone number: {{ person.phone_number }}</li>
+    <li>Email: {{ person.user.email }}</li>
+    </ul>
+  </div>
+</div>  
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Other information</h3>
+  </div>
+  <div class="panel-body">
+    <ul class="list-unstyled">
+    <li>Drivers license: {{ person.drivers_license }}</li>
+    <li>Allergy: {{ person.allergy }}</li>
+    <li>Programme: {{ person.programme }}</li>
+    <li>Registration year: {{ person.registration_year }}</li>
+    <li>Planned graduation: {{ person.planned_graduation }}</li>
+    <li>Shirt size: {{ person.get_shirt_size_display }}</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
+

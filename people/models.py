@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.db import models
+
 # TODO fix view
 # https://docs.djangoproject.com/en/1.8/topics/forms/modelforms/
 # http://pythoncentral.io/how-to-use-python-django-forms/
-class People(models.Model):
+class Profile(models.Model):
     #defining shirt sizes
     SHIRT_SIZES = (
         ('WXS', 'Woman X-Small'),
@@ -17,14 +19,21 @@ class People(models.Model):
         ('MXL', 'Man X-Large'),
     )
 
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    birth_date = models.DateField()
-    gender = models.CharField(max_length=15)
-    shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES)
-    phone_number = models.IntegerField()
-    drivers_license = models.CharField(max_length=10)
-    allergy = models.CharField(max_length=30)
-    programme = models.CharField(max_length=30)
-    regestration_year = models.IntegerField()
-    planned_graduation = models.IntegerField()
+    GENDERS = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1, primary_key=True)
+    birth_date = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=GENDERS, blank=True)
+    shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES,blank=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    drivers_license = models.CharField(max_length=10, null=True,blank=True)
+    allergy = models.CharField(max_length=30, null=True,blank=True)
+    programme = models.CharField(max_length=30, null=True,blank=True)
+    registration_year = models.IntegerField(null=True,blank=True)
+    planned_graduation = models.IntegerField(null=True,blank=True)
+    
+    def __str__(self):
+        return '%s' % (self.user.get_full_name())

@@ -17,9 +17,25 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
+    #admin
     url(r'^admin/', include(admin.site.urls)),
+
+    #login logout
+    url(r'^login/$', 'cas.views.login', name='login'),
+    url(r'^logout/$', 'cas.views.logout', name='logout'),
+
+    # Root
     url(r'^$', include('root.urls')),
+
+    # Events
     url(r'^events/', include('events.urls')),
-    #url(r'^login/$', 'cas.views.login', name='login'),
-    #url(r'^logout/$', 'cas.views.logout', name='logout'),
+
+    # Companies
+    url(r'^companies/', include('companies.urls')),
+
+    # People
+    url(r'^people/', include('people.urls')),
+
+
+
 ]
