@@ -36,6 +36,7 @@ urlpatterns = [
     # People
     url(r'^people/', include('people.urls')),
 
-
+    # Locations
+    url(r'^locations/', include('locations.urls')),
 
 ]

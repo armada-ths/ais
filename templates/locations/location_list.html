@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block nav-events %}
+<li role="presentation" class="active"><a href="{% url 'location_list' %}">Locations</a></li>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <h3>Locations</h3>
+    <table class="table table-striped">
+      <tr>
+        <th class="text-uppercase">name</th>
+        <th class="text-uppercase">room</th>
+        <th class="text-uppercase">floor</th>
+        <th class="text-uppercase">building</th>
+        <th class="text-uppercase">address</th>
+        <th class="text-uppercase">description</th>
+        <th class="text-uppercase">capacity</th>
+        <th></th>
+        <th></th>
+      </tr>
+      {% for locations in object_list %}
+      <tr>
+        <td>{{ locations.name }}</td>
+        <td>{{ locations.room }}</td>
+        <td>{{ locations.floor }}</td>
+        <td>{{ locations.building }}</td>
+        <td>{{ locations.address }}</td>
+        <td>{{ locations.description }}</td>
+        <td>{{ locations.capacity }}</td>
+        <td>
+          <a href="{% url "location_edit" locations.id %}">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp&nbsp
+          </a>
+          <a href="{% url "location_delete" locations.id %}">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp&nbsp
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% endblock %}
+  {% block footer %}
+  <div class="row">
+    <a href="{% url "location_new" %}" class="btn btn-primary">New Location</a>
+    <hr>
+    <p>
+      For technical support please e-mail <a href="mailo:support@armada.nu" target="_top">support@armada.nu</a>, for urgent matters call 08-790 98 44.
+    </p>
+  </div>
+  {% endblock %}

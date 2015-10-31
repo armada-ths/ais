@@ -12,9 +12,8 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-DEBUG = True
+from ais.secrets import *
 
-SECRET_KEY = 'gdfjngj4n"#87234isd9543988au9u89af39")3'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,15 +21,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-
-CAS_SERVER_URL = 'https://login.kth.se/'
+#CAS_SERVER_URL = 'https://login.kth.se/'
 #CAS_IGNORE_REFERER = True
 #CAS_REDIRECT_URL = 'armada.nu/login'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = ['.armada.nu']
 
+# Email settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'system@armada.nu'
+DEFAULT_TO_EMAIL = 'system@armada.nu'
 
 # Application definition
 
@@ -41,11 +44,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cas',
+    #'cas',
     'root',
     'events',
     'companies',
     'fair',
+    'people',
+    'locations',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,25 +62,26 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'cas.middleware.CASMiddleware',
+    #'cas.middleware.CASMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'cas.backends.CASBackend',
+    #'cas.backends.CASBackend',
 )
-CAS_AUTO_CREATE_USER = False
 
-CAS_RESPONSE_CALLBACKS = (
-    'lib.CAS_callback.callback',
-)
+#CAS_AUTO_CREATE_USER = False
+
+#CAS_RESPONSE_CALLBACKS = (
+#    'lib.CAS_callback.callback',
+#)
 
 ROOT_URLCONF = 'ais.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ["/home/eric/ais/templates/",
+        'DIRS': [os.path.join(BASE_DIR, "templates"),
 		],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -103,6 +109,7 @@ DATABASES = {
 }
 
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -119,9 +126,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT = '/home/eric/ais/static/'
+STATIC_ROOT = ''
 
-STATIC_URL = '/home/eric/ais/static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),'/Users/Victor/Dev/ais/static/',
 )

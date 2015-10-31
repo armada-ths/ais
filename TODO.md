@@ -5,7 +5,7 @@ Eric:
 AIS - Companies
 
 Victor:
-AIS - Events
+AIS - Events, Locations, Banquett
 
 Olle:
 Legacy - Faktura system
