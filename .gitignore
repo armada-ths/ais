@@ -11,3 +11,4 @@ db.sqlite3
 local_settings.py
 run_server.sh
 .idea/*
+*~
