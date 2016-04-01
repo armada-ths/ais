@@ -21,9 +21,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     #login logout
-    url(r'^login/$', 'cas.views.login', name='login'),                        
-    url(r'^logout/$', 'cas.views.logout', name='logout'),
-
+    url(r'^login/$', include('django.contrib.auth.urls'), name='login'),
+    url(r'^logout/$', include('django.contrib.auth.urls'), name='logout'),
 
     # Root
     url(r'^$', include('root.urls')),

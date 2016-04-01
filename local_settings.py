@@ -79,7 +79,7 @@ AUTHENTICATION_BACKENDS = (
 #    'lib.CAS_callback.callback',
 #)
 
-ROOT_URLCONF = 'ais.urls'
+ROOT_URLCONF = 'example_urls'
 
 TEMPLATES = [
     {
