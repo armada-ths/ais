@@ -21,11 +21,11 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     #login logout
-    url(r'^login/$', include('django.contrib.auth.urls'), name='login'),
-    url(r'^logout/$', include('django.contrib.auth.urls'), name='logout'),
+    url(r'^login/', include('django.contrib.auth.urls'), name='login'),
+    url(r'^logout/', include('django.contrib.auth.urls'), name='logout'),
 
     # Root
-    url(r'^$', include('root.urls')),
+    url(r'^', include('root.urls')),
 
     # Events
     url(r'^events/', include('events.urls')),
