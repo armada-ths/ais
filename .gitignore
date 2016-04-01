@@ -1,5 +1,6 @@
 *.swp
 *.pyc
+*migrations*
 ais/secrets.py
 ais.sock
 ais/restart_uwsgi_server.sh
