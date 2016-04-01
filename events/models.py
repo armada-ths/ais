@@ -71,6 +71,9 @@ class Event(models.Model):
 
     def __unicode__(self):
         return self.name
+    
+    def __str__(self):
+        return '%s'%(self.name)
 
 def get_absolute_url(self):
     return reverse('event_edit', kwargs={'pk': self.pk})
