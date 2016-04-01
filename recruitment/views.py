@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from models import RecruitmentPeriod
+from .models import RecruitmentPeriod
 
 # Create your views here.
 #list all companies

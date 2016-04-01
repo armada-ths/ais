@@ -9,3 +9,6 @@ class RecruitmentPeriod(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     fair = models.ForeignKey('fair.Fair')
+
+    def __str__(self):
+        return '%s' % (self.name)
