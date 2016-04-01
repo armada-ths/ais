@@ -12,10 +12,13 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from ais.secrets import *
+
+DEBUG = True
+
+SECRET_KEY = 'gdfjngj4n"#87234isd9543988au9u89af39")3'
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -26,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #CAS_REDIRECT_URL = 'armada.nu/login'
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['.armada.nu']
+ALLOWED_HOSTS = ['*']
 
 # Email settings
 EMAIL_USE_TLS = True
@@ -131,5 +134,5 @@ STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),'/Users/Victor/Dev/ais/static/',
+    os.path.join(BASE_DIR, "static"),
 )
