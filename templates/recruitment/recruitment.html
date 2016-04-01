@@ -2,4 +2,9 @@
 {% block content %}
 <h1>Recruitment</h1>
 <p>And so it begins!</p>
+<ul>
+    {% for recruitment_period in recruitment_periods %}
+    <li>>{{ recruitment_period.name }}</li>
+    {% endfor %}
+</ul>
 {% endblock %}
