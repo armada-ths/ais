@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>New recruitment period</h1>
+<div class="container">
+  <div class="row">
+    <h3>New Event</h3>
+    <hr>
+  </div>
+  <form method="post" class="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+<script>
+$(document).ready(function() {
+    $('.datepicker').datepicker();
+});
+</script>
+{% endblock %}
