@@ -39,4 +39,6 @@ urlpatterns = [
     # Locations
     url(r'^locations/', include('locations.urls')),
 
+    url(r'^recruitment/', include('recruitment.urls')),
+
 ]

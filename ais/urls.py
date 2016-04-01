@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     #login logout
-    url(r'^login/$', 'cas.views.login', name='login'),                        
+    url(r'^login/$', 'cas.views.login', name='login'),
     url(r'^logout/$', 'cas.views.logout', name='logout'),
 
 
@@ -39,5 +39,9 @@ urlpatterns = [
 
     # Locations
     url(r'^locations/', include('locations.urls')),
+
+    # Recruitment
+    url(r'^recruitment/', include('recruitment.urls')),
+
 
 ]
