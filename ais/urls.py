@@ -15,15 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from cas import views
+from cas import views as cas_views
 
 urlpatterns = [
     #admin
     url(r'^admin/', include(admin.site.urls)),
 
     #login logout
-    url(r'^login/', cas.views.login, name='login'),
-    url(r'^logout/', cas.views.logout, name='logout'),
+    url(r'^login/', cas_views.login, name='login'),
+    url(r'^logout/', cas_views.logout, name='logout'),
 
 
     # Root
