@@ -50,6 +50,8 @@ INSTALLED_APPS = (
     'companies',
     'fair',
     'people',
+    'locations',
+    'recruitment'
 )
 
 MIDDLEWARE_CLASSES = (
