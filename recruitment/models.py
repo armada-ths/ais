@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 # Create your models here.
 from django.db import models
 from fair.models import Fair
+from django.contrib.auth.models import Group
+
 # Model for company
 class RecruitmentPeriod(models.Model):
     name = models.CharField(max_length=30)
@@ -12,3 +14,8 @@ class RecruitmentPeriod(models.Model):
 
     def __str__(self):
         return '%s' % (self.name)
+
+
+class RoleForRecruitmentPeriod(models.Model):
+    role = models.ForeignKey(Group)
+    recruitment_period = models.ForeignKey(RecruitmentPeriod)
