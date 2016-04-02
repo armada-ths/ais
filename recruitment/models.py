@@ -19,3 +19,6 @@ class RecruitmentPeriod(models.Model):
 class RoleForRecruitmentPeriod(models.Model):
     role = models.ForeignKey(Group)
     recruitment_period = models.ForeignKey(RecruitmentPeriod)
+
+    def __str__(self):
+        return '%s' % (self.role)

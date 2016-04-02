@@ -4,7 +4,11 @@
 <p>And so it begins!</p>
 <ul>
     {% for recruitment_period in recruitment_periods %}
-    <li>>{{ recruitment_period.name }}</li>
+    <li>>{{ recruitment_period.name }}
+    {% for role in recruitment_period.roleforrecruitmentperiod_set.all %}
+        , {{ role }}
+        {%  endfor %}
+    </li>
     {% endfor %}
 </ul>
     <p><a href="{% url "recruitment_period_new" %}">New Event</a></p>
