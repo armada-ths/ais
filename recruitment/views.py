@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from .models import RecruitmentPeriod
+from .models import RecruitmentPeriod, RoleForRecruitmentPeriod
 from django.forms import ModelForm
 from django import forms
 
@@ -14,6 +14,10 @@ class RecruitmentPeriodForm(ModelForm):
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
         }
+
+        inlines = [
+            RoleForRecruitmentPeriod
+        ]
 
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
