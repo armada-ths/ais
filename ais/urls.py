@@ -21,12 +21,12 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     #login logout
-    url(r'^login/$', 'cas.views.login', name='login'),
-    url(r'^logout/$', 'cas.views.logout', name='logout'),
+    url(r'^login/', 'cas.views.login', name='login'),
+    url(r'^logout/', 'cas.views.logout', name='logout'),
 
 
     # Root
-    url(r'^$', include('root.urls')),
+    url(r'^', include('root.urls')),
 
     # Events
     url(r'^events/', include('events.urls')),
