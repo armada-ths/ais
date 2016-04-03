@@ -5,7 +5,7 @@
 <ul>
     {% for recruitment_period in recruitment_periods %}
     <li>>{{ recruitment_period.name }}
-    {% for role in recruitment_period.roleforrecruitmentperiod_set.all %}
+    {% for role in recruitment_period.recruitablerole_set.all %}
         , {{ role }}
         {%  endfor %}
     </li>
