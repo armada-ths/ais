@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import RecruitmentPeriod, RecruitableRole
+from .models import RecruitmentPeriod, RecruitableRole, RoleApplication
 
 
 class RecruitableRoleInline(admin.TabularInline):
@@ -11,3 +11,4 @@ class RecruitmentPeriodAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(RecruitmentPeriod, RecruitmentPeriodAdmin)
+admin.site.register(RoleApplication)
