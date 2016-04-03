@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from .models import RecruitmentPeriod, RoleForRecruitmentPeriod
+from .models import RecruitmentPeriod, RecruitableRole
 from django.forms import ModelForm
 from django import forms
 
@@ -16,7 +16,7 @@ class RecruitmentPeriodForm(ModelForm):
         }
 
         inlines = [
-            RoleForRecruitmentPeriod
+            RecruitableRole
         ]
 
 

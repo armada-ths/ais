@@ -37,3 +37,6 @@ class Profile(models.Model):
     
     def __str__(self):
         return '%s' % (self.user.get_full_name())
+
+    class Meta:
+        db_table = 'profile'

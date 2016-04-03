@@ -14,11 +14,11 @@ class RecruitmentPeriod(models.Model):
 
 
     def __str__(self):
-        return '%s' % (self.name)
+        return '%s: %s' % (self.fair.name, self.name)
 
 
-class RoleForRecruitmentPeriod(models.Model):
-    role = models.ForeignKey(Group)
+class RecruitableRole(models.Model):
+    role = models.OneToOneField(Group, limit_choices_to={'is_role': True})
     recruitment_period = models.ForeignKey(RecruitmentPeriod)
 
     def __str__(self):

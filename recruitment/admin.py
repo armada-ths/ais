@@ -1,14 +1,13 @@
 from django.contrib import admin
-from .models import RecruitmentPeriod, RoleForRecruitmentPeriod
+from .models import RecruitmentPeriod, RecruitableRole
 
 
-class RoleForRecruitmentPeriodInline(admin.TabularInline):
-    model = RoleForRecruitmentPeriod
+class RecruitableRoleInline(admin.TabularInline):
+    model = RecruitableRole
 
 class RecruitmentPeriodAdmin(admin.ModelAdmin):
     inlines = [
-        RoleForRecruitmentPeriodInline,
+        RecruitableRoleInline,
     ]
 
 admin.site.register(RecruitmentPeriod, RecruitmentPeriodAdmin)
-admin.site.register(RoleForRecruitmentPeriod)
