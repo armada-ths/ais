@@ -24,9 +24,16 @@ class RecruitableRole(models.Model):
     def __str__(self):
         return '%s' % (self.role)
 
-class RoleApplication(models.Model):
-    recruitableRole = models.ForeignKey(RecruitableRole)
+class RecruitmentApplication(models.Model):
+    recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
     user = models.ForeignKey(User)
 
     def __str__(self):
-        return '%s: %s' % (self.user, self.recruitableRole.role)
+        return '%s' % (self.user)
+
+class RoleApplication(models.Model):
+    recruitmentApplication = models.ForeignKey(RecruitmentApplication, default=None)
+    recruitableRole = models.ForeignKey(RecruitableRole)
+
+    def __str__(self):
+        return '%s' % (self.recruitableRole.role)

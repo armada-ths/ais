@@ -2,13 +2,13 @@
 {% block nav-recruitment %}<li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
 {% block content %}
 <h1>Recruitment</h1>
-    {% for recruitment_period in recruitment_periods %}
-    <h2>{{ recruitment_period.name }}</h2>
-    {% for recruitableRole in recruitment_period.recruitablerole_set.all %}
-        <h3>{{ recruitableRole.role.name }}</h3>
-            {% for roleApplication in recruitableRole.roleapplication_set.all %}
+    {% for period in recruitment_periods %}
+    <h2>{{ period.name }}</h2>
+    {% for application in period.recruitmentapplication_set.all %}
+        <h3>{{ application.user }}</h3>
+            {% for role in application.roleapplication_set.all %}
                 <ul>
-        <li>{{ roleApplication.user }}</li>
+        <li>{{ role }}</li>
                 </ul>
     {%  endfor %}
     {%  endfor %}
