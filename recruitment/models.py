@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from fair.models import Fair
 from django.contrib.auth.models import Group, User
+import datetime
 
 # Model for company
 class RecruitmentPeriod(models.Model):
@@ -27,6 +28,8 @@ class RecruitableRole(models.Model):
 class RecruitmentApplication(models.Model):
     recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
     user = models.ForeignKey(User)
+    rating = models.IntegerField()
+    submissionDate = models.DateField(default=datetime.datetime.now, blank=True)
 
     def __str__(self):
         return '%s' % (self.user)
