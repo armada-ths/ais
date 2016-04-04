@@ -19,7 +19,7 @@ class RecruitmentPeriod(models.Model):
 
 
 class RecruitableRole(models.Model):
-    role = models.OneToOneField(Group, limit_choices_to={'is_role': True})
+    role = models.ForeignKey(Group, limit_choices_to={'is_role': True})
     recruitment_period = models.ForeignKey(RecruitmentPeriod)
 
     def __str__(self):

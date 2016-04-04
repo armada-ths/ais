@@ -5,6 +5,12 @@
     <p><a href="{% url "recruitment_period_new" %}">New recruitment period</a></p>
     {% for period in recruitment_periods %}
     <h2>{{ period.name }}</h2>
+        <p>We are looking for:</p>
+        <ul>
+        {% for role in period.recruitablerole_set.all %}
+        <li>{{ role }}</li>
+            {% endfor %}
+        </ul>
 
     {% for application in period.recruitmentapplication_set.all %}
         <h3>{{ application.user }}</h3>
