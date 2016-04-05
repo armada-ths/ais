@@ -12,17 +12,30 @@
             {% endfor %}
         </ul>
 
-    {% for application in period.recruitmentapplication_set.all %}
-        <h3>{{ application.user }}</h3>
-                <p>Rating: {{ application.rating }}</p>
-        <p>Submitted: {{ application.submissionDate }}</p>
-        <p>Roles:</p>
+        {% if period.recruitmentapplication_set.all %}
+
+    <table class="table">
+    <thead>
+    <tr>
+    <th>Name</th><th>Rating</th><th>Submitted</th><th>Roles</th>
+    </tr>
+    </thead>
+    <tr>
+        {% for application in period.recruitmentapplication_set.all %}
+        <td>{{ application.user }}</td>
+                <td>{{ application.rating }}</td>
+        <td>{{ application.submissionDate }}</td>
+        <td>
             {% for role in application.roleapplication_set.all %}
-                <ul>
-        <li>{{ role }}</li>
-                </ul>
+                {{ role }}{% if not forloop.last %}, {% endif %}
     {%  endfor %}
+            </td>
+            </tr>
     {%  endfor %}
+    </table>
+        {% else %}
+        <p>No applications</p>
+        {% endif %}
 
 
     {% endfor %}
