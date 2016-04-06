@@ -3,10 +3,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication
 from django.forms import ModelForm
 from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+
 
 from django.forms import inlineformset_factory
 
 class RecruitmentPeriodForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(RecruitmentPeriodForm, self).__init__(*args, **kwargs)
+
     class Meta:
         model = RecruitmentPeriod
         fields = '__all__'
@@ -26,7 +33,6 @@ class RoleApplicationForm(ModelForm):
     def __init__(self, recruitment_period,*args,**kwargs):
         super (RoleApplicationForm,self ).__init__(*args,**kwargs)
         self.fields['recruitableRole'].queryset = RecruitableRole.objects.filter(recruitment_period=recruitment_period)
-
 
     class Meta:
         model = RoleApplication

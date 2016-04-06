@@ -37,7 +37,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'system@armada.nu'
 DEFAULT_TO_EMAIL = 'system@armada.nu'
-
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Application definition
 
 INSTALLED_APPS = (
@@ -54,7 +54,8 @@ INSTALLED_APPS = (
     'fair',
     'people',
     'locations',
-    'recruitment'
+    'recruitment',
+    'crispy_forms',
 )
 
 MIDDLEWARE_CLASSES = (
