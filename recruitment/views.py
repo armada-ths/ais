@@ -78,3 +78,10 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
             print(form.errors)
         print("Ai'nt no valid form!")
     return render(request, template_name, {'form': form})
+
+
+#delete a company
+def recruitment_application_delete(request, pk):
+    recruitmentApplication = get_object_or_404(RecruitmentApplication, pk=pk)
+    recruitmentApplication.delete()
+    return redirect('recruitment') #redirect back to company list
