@@ -27,7 +27,6 @@ CAS_SERVER_URL = 'https://login.kth.se/'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = ['.armada.nu']
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # Email settings
 EMAIL_USE_TLS = True
@@ -35,7 +34,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'system@armada.nu'
 DEFAULT_TO_EMAIL = 'system@armada.nu'
-
 
 # Application definition
 
@@ -53,8 +51,7 @@ INSTALLED_APPS = (
     'fair',
     'people',
     'locations',
-    'recruitment',
-    'crispy_forms',
+    'recruitment'
 )
 
 MIDDLEWARE_CLASSES = (

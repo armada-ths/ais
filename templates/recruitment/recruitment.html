@@ -2,12 +2,11 @@
 {% block nav-recruitment %}<li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
 {% block content %}
 <h1>Recruitment</h1>
-    <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-default">New recruitment period</button></a></p>
+    <p><a href="{% url "recruitment_period_new" %}">New recruitment period</a></p>
     {% for period in recruitment_periods %}
     <h2>{{ period.name }}</h2>
-
-        <p><a href="{% url 'recruitment_application_new' period.id %}"><button class="btn btn-default btn-sm">Apply</button></a>
-            <a href="{% url 'recruitment_period_delete' period.id %}"><button class="btn btn-danger btn-sm">Delete</button></a></p>
+        <p><a href="{% url 'recruitment_application_new' period.id %}">Apply</a></p>
+        <p><a href="{% url 'recruitment_period_delete' period.id %}">Delete</a></p>
         <p>We are looking for:</p>
         <ul>
         {% for role in period.recruitablerole_set.all %}
@@ -33,7 +32,7 @@
                 {{ role }}{% if not forloop.last %}, {% endif %}
     {%  endfor %}
             </td>
-            <td><a href="{% url 'recruitment_application_delete' application.id %}"><button class="btn btn-danger btn-xs">Delete</button></a></td>
+            <td><a href="{% url 'recruitment_application_delete' application.id %}">Delete</a></td>
             </tr>
     {%  endfor %}
     </table>

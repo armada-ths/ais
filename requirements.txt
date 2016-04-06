@@ -1,6 +1,5 @@
 Django
 django-cas-client
-django-crispy-forms
 psycopg2
 setuptools
 uWSGI

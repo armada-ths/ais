@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
 {% block content %}
 <div class="container">
   <div class="row">
@@ -7,15 +6,26 @@
     <hr>
   </div>
 
+    {% for form in forms %}
+    <table>
+    {% for field in form.fields %}
+        <tr><th>{{field.label_tag}}</th><td>{{field}}{{field.errors}}</td></tr>
+    {% endfor %}
 
-   <form method="post">
-    {%  csrf_token %}
-        {{ form|crispy }}
-       {{ roles_form|crispy }}
+    {% if form.pk %} {# empty forms do not have a pk #}
+         <tr><th>Delete?</th><td>{{field.DELETE}}</td></tr>
+    {% endif %}
+    </table>
+{% endfor %}
 
-        <button type="submit" class="btn btn-primary">Submit</button>
 
-    </form>
+  <form method="post" class="">
+    {% csrf_token %}
+    {{ form.as_p }}
+      {{ roles_form.as_p }}
+    <input type="submit" value="Submit" />
+  </form>
+
 </div>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
