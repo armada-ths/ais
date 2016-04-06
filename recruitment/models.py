@@ -28,7 +28,7 @@ class RecruitableRole(models.Model):
 class RecruitmentApplication(models.Model):
     recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
     user = models.ForeignKey(User)
-    rating = models.IntegerField()
+    rating = models.IntegerField(default=1)
     submissionDate = models.DateField(default=datetime.datetime.now, blank=True)
 
     def __str__(self):
