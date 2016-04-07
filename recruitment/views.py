@@ -3,11 +3,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, InterviewQuestion, InterviewQuestionAnswer
 from django.forms import ModelForm
 from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
 
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
 
 from django.forms import inlineformset_factory
+import os
+
 
 class RecruitmentPeriodForm(ModelForm):
 
@@ -89,23 +92,40 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     print(request.POST)
-
+    print(request.FILES)
     if request.POST:
         for interviewQuestion in InterviewQuestion.objects.filter(recruitmentPeriod=application.recruitmentPeriod):
             key = '%s' % (interviewQuestion.id,)
-            if key in request.POST:
-                print("FOUND %s - %s" % (key, request.POST[key]))
-                answer, created = InterviewQuestionAnswer.objects.get_or_create(
-                    interviewQuestion=interviewQuestion,
-                    recruitmentApplication=application
-                )
-                answer.answer = request.POST[key]
-                answer.save()
+            if interviewQuestion.fieldType == InterviewQuestion.FILE or interviewQuestion.fieldType == InterviewQuestion.IMAGE:
+                if key in request.FILES:
+                    file = request.FILES[key]
+                    print("FOUND FILE")
+                    print(request.FILES[key])
+                    file_path = 'recruitment-applications/%d/%s' % (application.id, file.name,)
+                    path = default_storage.save(file_path, ContentFile(file.read()))
+                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                    print(tmp_file)
+
+                    answer, created = InterviewQuestionAnswer.objects.get_or_create(
+                        interviewQuestion=interviewQuestion,
+                        recruitmentApplication=application
+                    )
+                    answer.answer = file_path
+                    answer.save()
             else:
-                InterviewQuestionAnswer.objects.filter(
-                    interviewQuestion=interviewQuestion,
-                    recruitmentApplication=application
-                ).delete()
+                if key in request.POST:
+                    print("FOUND %s - %s" % (key, request.POST[key]))
+                    answer, created = InterviewQuestionAnswer.objects.get_or_create(
+                        interviewQuestion=interviewQuestion,
+                        recruitmentApplication=application
+                    )
+                    answer.answer = request.POST[key]
+                    answer.save()
+                else:
+                    InterviewQuestionAnswer.objects.filter(
+                        interviewQuestion=interviewQuestion,
+                        recruitmentApplication=application
+                    ).delete()
 
     interviewQuestions = []
     for interviewQuestion in InterviewQuestion.objects.all():
@@ -120,6 +140,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             'text_area': InterviewQuestion.TEXT_AREA,
             'radio_buttons': InterviewQuestion.RADIO_BUTTONS,
             'file': InterviewQuestion.FILE,
+            'image': InterviewQuestion.IMAGE,
         },
         'interviewQuestions': interviewQuestions
     })

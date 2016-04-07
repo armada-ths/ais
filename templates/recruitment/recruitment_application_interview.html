@@ -7,7 +7,7 @@
             <hr>
         </div>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {%  csrf_token %}
 
             {% for question, answer in interviewQuestions %}
@@ -39,10 +39,17 @@
                     <div class="form-group">
                     <label for="{{ question.id }}">{{ question }}</label>
                     <input type="file" id="{{ question.id }}" name="{{ question.id }}">
-                  </div>
-
+                        <p><a href="/media/{{ answer.answer }}">{{ answer.answer }}</a></p>
+                    </div>
+                {% elif question.fieldType == field_type.image %}
+                    <div class="form-group">
+                    <label for="{{ question.id }}">{{ question }}</label>
+                    <input type="file" id="{{ question.id }}" name="{{ question.id }}" accept="image/*">
+                        {% if answer.answer %}
+                        <img src="/media/{{ answer.answer }}">
+                            {% endif %}
+                    </div>
                 {%  else %}
-
                     UNKNOWN FIELD TYPE!
                 {% endif %}
             {% endfor %}
