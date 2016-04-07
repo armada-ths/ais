@@ -20,7 +20,7 @@
     <table class="table">
     <thead>
     <tr>
-    <th>Name</th><th>Rating</th><th>Submitted</th><th>Roles</th>
+    <th>Name</th><th>Rating</th><th>Submitted</th><th>Roles</th><th>Interviewer</th>
     </tr>
     </thead>
     <tr>
@@ -32,6 +32,11 @@
             {% for role in application.roleapplication_set.all %}
                 {{ role }}{% if not forloop.last %}, {% endif %}
     {%  endfor %}
+            </td>
+            <td>
+            {% if application.interviewer %}
+            {{ application.interviewer }}
+            {% endif %}
             </td>
             <td>
                 <a href="{% url 'recruitment_application_interview' application.id %}"><button class="btn btn-default btn-xs">Interview</button></a>

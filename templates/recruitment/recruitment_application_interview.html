@@ -10,6 +10,16 @@
         <form method="POST" enctype="multipart/form-data">
             {%  csrf_token %}
 
+        <div class="form-group">
+            <label>Interviewer</label>
+            <select class="form-control" name="interviewer">
+            <option value="">---------</option>
+            {% for user in users %}
+                <option value="{{ user.id }}" {% if user == application.interviewer %} selected {% endif %}>{{ user }}</option>
+            {%  endfor %}
+            </select>
+        </div>
+
             {% for question, answer in interviewQuestions %}
                 {% if question.fieldType == field_type.text_field %}
                     <div class="form-group">
@@ -47,8 +57,11 @@
                     <label for="{{ question.id }}">{{ question }}</label>
                     <input type="file" id="{{ question.id }}" name="{{ question.id }}" accept="image/*">
                         {% if answer.answer %}
-                        <img src="/media/{{ answer.answer }}">
+                            <br>
+                    <div>
+                        <img src="/media/{{ answer.answer }}" width="500">
                             {% endif %}
+                    </div>
                     </div>
                 {%  else %}
                     UNKNOWN FIELD TYPE!

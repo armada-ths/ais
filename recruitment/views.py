@@ -9,6 +9,8 @@ from django.core.files.base import ContentFile
 from django.conf import settings
 
 from django.forms import inlineformset_factory
+from django.contrib.auth.models import Group, User
+
 import os
 
 
@@ -93,7 +95,23 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     print(request.POST)
     print(request.FILES)
+
+
+    interviewerKey = 'interviewer'
     if request.POST:
+        if interviewerKey in request.POST:
+            try:
+                interviewer_id = int(request.POST[interviewerKey])
+                interviewer = User.objects.filter(id=interviewer_id).first()
+                application.interviewer = interviewer
+                application.save()
+            except ValueError:
+                if application.interviewer:
+                    application.interviewer = None
+                    application.save()
+                print('Interviewer id was not an int')
+
+
         for interviewQuestion in InterviewQuestion.objects.filter(recruitmentPeriod=application.recruitmentPeriod):
             key = '%s' % (interviewQuestion.id,)
             if interviewQuestion.fieldType == InterviewQuestion.FILE or interviewQuestion.fieldType == InterviewQuestion.IMAGE:
@@ -142,7 +160,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             'file': InterviewQuestion.FILE,
             'image': InterviewQuestion.IMAGE,
         },
-        'interviewQuestions': interviewQuestions
+        'interviewQuestions': interviewQuestions,
+        'users': User.objects.all()
     })
 
 
