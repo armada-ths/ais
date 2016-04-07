@@ -118,7 +118,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             'check_box': InterviewQuestion.CHECK_BOX,
             'text_field': InterviewQuestion.TEXT_FIELD,
             'text_area': InterviewQuestion.TEXT_AREA,
-            'radio_buttons': InterviewQuestion.RADIO_BUTTONS
+            'radio_buttons': InterviewQuestion.RADIO_BUTTONS,
+            'file': InterviewQuestion.FILE,
         },
         'interviewQuestions': interviewQuestions
     })

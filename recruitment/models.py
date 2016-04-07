@@ -49,11 +49,12 @@ class InterviewQuestion(models.Model):
     CHECK_BOX = 1
     TEXT_AREA = 2
     RADIO_BUTTONS = 3
+    FILE = 4
 
     question = models.CharField(max_length=1000)
     recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
     arguments = models.CharField(max_length=1000, blank=True)
-    fieldType = models.IntegerField(choices=((TEXT_FIELD, 'Text field'), (CHECK_BOX, 'Check boxes'), (TEXT_AREA, 'Text area'), (RADIO_BUTTONS, 'Radio buttons')), default=TEXT_FIELD)
+    fieldType = models.IntegerField(choices=((TEXT_FIELD, 'Text field'), (CHECK_BOX, 'Check boxes'), (TEXT_AREA, 'Text area'), (RADIO_BUTTONS, 'Radio buttons'), (FILE, 'File')), default=TEXT_FIELD)
 
 
     def arguments_as_list(self):

@@ -13,8 +13,8 @@
             {% for question, answer in interviewQuestions %}
                 {% if question.fieldType == field_type.text_field %}
                     <div class="form-group">
-                        <label>{{  question.question }}</label>
-                        <input type="text" class="form-control" name="{{ question.id }}" value="{{ answer.answer }}">
+                        <label for="{{ question.id }}">{{  question.question }}</label>
+                        <input type="text" class="form-control" id="{{ question.id }}" name="{{ question.id }}" value="{{ answer.answer }}">
                     </div>
                 {% elif question.fieldType == field_type.check_box %}
                     <div class="checkbox">
@@ -24,11 +24,10 @@
                     </div>
                 {% elif question.fieldType == field_type.text_area %}
                     <div class="form-group">
-                    <label>{{  question.question }}</label>
-                    <textarea class="form-control" rows="3" name="{{ question.id }}">{{ answer.answer }}</textarea>
+                    <label for="{{ question.id }}">{{  question.question }}</label>
+                    <textarea class="form-control" rows="3" id="{{ question.id }}" name="{{ question.id }}">{{ answer.answer }}</textarea>
                     </div>
                 {% elif question.fieldType == field_type.radio_buttons %}
-
                     {% for argument in question.arguments_as_list %}
                         <div class="radio">
                         <label>
@@ -36,6 +35,11 @@
                         </label>
                         </div>
                     {% endfor %}
+                {% elif question.fieldType == field_type.file %}
+                    <div class="form-group">
+                    <label for="{{ question.id }}">{{ question }}</label>
+                    <input type="file" id="{{ question.id }}" name="{{ question.id }}">
+                  </div>
 
                 {%  else %}
 
