@@ -28,6 +28,7 @@
                     <textarea class="form-control" rows="3" id="{{ question.id }}" name="{{ question.id }}">{{ answer.answer }}</textarea>
                     </div>
                 {% elif question.fieldType == field_type.radio_buttons %}
+                    <label class="radio control-label">{{ question }}</label>
                     {% for argument in question.arguments_as_list %}
                         <div class="radio">
                         <label>
