@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, InterviewQuestion, InterviewQuestionAnswer
 from django.forms import ModelForm
 from django import forms
 from crispy_forms.helper import FormHelper
@@ -85,6 +85,37 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
             print(form.errors)
         print("Ai'nt no valid form!")
     return render(request, template_name, {'form': form})
+
+def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
+    application = get_object_or_404(RecruitmentApplication, pk=pk)
+    print(request.POST)
+
+    if request.POST:
+        for interviewQuestion in InterviewQuestion.objects.filter(recruitmentPeriod=application.recruitmentPeriod):
+            key = '%s' % (interviewQuestion.id,)
+            if key in request.POST:
+                print("FOUND %s" % (key,))
+                InterviewQuestionAnswer.objects.update_or_create(
+                    interviewQuestion=interviewQuestion,
+                    recruitmentApplication=application,
+                    answer=request.POST[key]
+                )
+            else:
+                InterviewQuestionAnswer.objects.filter(
+                    interviewQuestion=interviewQuestion,
+                    recruitmentApplication=application
+                ).delete()
+
+    interviewQuestions = []
+    for interviewQuestion in InterviewQuestion.objects.all():
+        answer = InterviewQuestionAnswer.objects.filter(interviewQuestion=interviewQuestion, recruitmentApplication=application).first()
+        interviewQuestions.append((interviewQuestion, answer))
+
+    return render(request, template_name, {
+        'application': application,
+        'field_type': {'check_box': InterviewQuestion.CHECK_BOX, 'text_field': InterviewQuestion.TEXT_FIELD, 'text_area': InterviewQuestion.TEXT_AREA},
+        'interviewQuestions': interviewQuestions
+    })
 
 
 #delete a company

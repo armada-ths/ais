@@ -33,7 +33,10 @@
                 {{ role }}{% if not forloop.last %}, {% endif %}
     {%  endfor %}
             </td>
-            <td><a href="{% url 'recruitment_application_delete' application.id %}"><button class="btn btn-danger btn-xs">Delete</button></a></td>
+            <td>
+                <a href="{% url 'recruitment_application_interview' application.id %}"><button class="btn btn-default btn-xs">Interview</button></a>
+                <a href="{% url 'recruitment_application_delete' application.id %}"><button class="btn btn-danger btn-xs">Delete</button></a>
+            </td>
             </tr>
     {%  endfor %}
     </table>
