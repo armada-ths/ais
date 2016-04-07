@@ -27,9 +27,14 @@
                     <label>{{  question.question }}</label>
                     <textarea class="form-control" rows="3" name="{{ question.id }}">{{ answer.answer }}</textarea>
                     </div>
-                    {% elif question.fieldType == field_type.radio_buttons %}
+                {% elif question.fieldType == field_type.radio_buttons %}
+
                     {% for argument in question.arguments_as_list %}
-                        <input type="radio" name="{{ question.id }}" value="{{ argument }}" {% if answer.answer == argument %} checked {% endif %}> {{ argument }}<br>
+                        <div class="radio">
+                        <label>
+                        <input type="radio" name="{{ question.id }}" value="{{ argument }}" {% if answer.answer == argument %} checked {% endif %}> {{ argument }}
+                        </label>
+                        </div>
                     {% endfor %}
 
                 {%  else %}
