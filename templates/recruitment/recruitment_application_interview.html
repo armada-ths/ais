@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <h3>Interview with {{ application.user }}</h3>
+            <hr>
+        </div>
+
+        <form method="POST">
+            {%  csrf_token %}
+
+            {% for question, answer in interviewQuestions %}
+                {% if question.fieldType == field_type.text_field %}
+                    <div class="form-group">
+                        <label>{{  question.question }}</label>
+                        <input type="text" class="form-control" name="{{ question.id }}" value="{{ answer.answer }}">
+                    </div>
+                {% elif question.fieldType == field_type.check_box %}
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"  name="{{ question.id }}" {% if answer %} checked {% endif %}> {{  question.question }}
+                        </label>
+                    </div>
+                {% elif question.fieldType == field_type.text_area %}
+                    <div class="form-group">
+                    <label>{{  question.question }}</label>
+                    <textarea class="form-control" rows="3" name="{{ question.id }}">{{ answer.answer }}</textarea>
+                    </div>
+                {%  else %}
+                    UNKNOWN FIELD TYPE!
+                {% endif %}
+            {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.datepicker').datepicker();
+        });
+    </script>
+{% endblock %}
