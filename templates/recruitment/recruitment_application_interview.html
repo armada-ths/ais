@@ -68,10 +68,9 @@
                     <input type="file" id="{{ question.id }}" name="{{ question.id }}" accept="image/*">
                         {% if answer.answer %}
                             <br>
-                    <div>
-                        <img src="/media/{{ answer.answer }}" width="500">
+                            <div><img src="/media/{{ answer.answer }}" width="500"></div>
                             {% endif %}
-                    </div>
+
                     </div>
                 {%  else %}
                     UNKNOWN FIELD TYPE!
