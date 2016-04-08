@@ -23,7 +23,9 @@ class RecruitmentApplication(models.Model):
     user = models.ForeignKey(User)
     rating = models.IntegerField(default=1)
     interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')
-    submissionDate = models.DateField(default=datetime.datetime.now, blank=True)
+    interviewDate = models.CharField(null=True, blank=True, max_length=100)
+    interviewLocation = models.CharField(null=True, blank=True, max_length=100)
+    submissionDate = models.DateTimeField(default=datetime.datetime.now, blank=True)
 
     def __str__(self):
         return '%s' % (self.user)

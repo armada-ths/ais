@@ -29,6 +29,16 @@
             {%  endfor %}
             </select>
         </div>
+                    <div class="form-group">
+                        <label for="interviewDate">Interview date</label>
+                        <input type="text" class="form-control" id="interviewDate" name="interviewDate" value="{{ application.interviewDate }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interviewLocation">Interview place</label>
+                        <input type="text" class="form-control" id="interviewLocation" name="interviewLocation" value="{{ application.interviewLocation }}">
+                    </div>
+
 
             {% for question, answer in interviewQuestions %}
                 {% if question.fieldType == field_type.text_field %}

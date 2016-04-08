@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block nav-recruitment %}<li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
 {% block content %}
-<h1>Recruitment</h1>
-    <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-default">New recruitment period</button></a></p>
+
+    <div class="jumbotron">
+  <h1>Recruitment</h1>
+  <p>Armada only recruits the sweetest KTH students</p>
+        <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary btn-lg">New recruitment period</button></a></p>
+</div>
+
+
     {% for period in recruitment_periods %}
     <h2>{{ period.name }}</h2>
 

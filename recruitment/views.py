@@ -97,12 +97,15 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     print(request.FILES)
 
 
-    interviewerKey = 'interviewer'
-    ratingKey = 'rating'
+    interviewer_key = 'interviewer'
+    rating_key = 'rating'
+    interview_date_key = 'interviewDate'
+    interview_location_key = 'interviewLocation'
+
     if request.POST:
-        if interviewerKey in request.POST:
+        if interviewer_key in request.POST:
             try:
-                interviewer_id = int(request.POST[interviewerKey])
+                interviewer_id = int(request.POST[interviewer_key])
                 interviewer = User.objects.filter(id=interviewer_id).first()
                 application.interviewer = interviewer
                 application.save()
@@ -112,10 +115,24 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                     application.save()
                 print('Interviewer id was not an int')
 
-        if ratingKey in request.POST:
+        if rating_key in request.POST:
             try:
-                rating = int(request.POST[ratingKey])
+                rating = int(request.POST[rating_key])
                 application.rating = rating
+                application.save()
+            except ValueError:
+                print('Interviewer id was not an int')
+
+        if interview_location_key in request.POST:
+            try:
+                application.interviewLocation = request.POST[interview_location_key]
+                application.save()
+            except ValueError:
+                print('Interviewer id was not an int')
+
+        if interview_date_key in request.POST:
+            try:
+                application.interviewDate = request.POST[interview_date_key]
                 application.save()
             except ValueError:
                 print('Interviewer id was not an int')
