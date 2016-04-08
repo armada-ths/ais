@@ -128,7 +128,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-MEDIA_ROOT = '/Users/Sami/Desktop/media/'
+MEDIA_ROOT = '../media/'
 MEDIA_URL = '/media/'
 
 # Static files (CSS, JavaScript, Images)
