@@ -20,6 +20,16 @@
             </select>
         </div>
 
+
+        <div class="form-group">
+            <label>Rating</label>
+            <select class="form-control" name="rating">
+            {% for rating in ratings %}
+                <option value="{{ rating }}" {% if rating == application.rating %} selected {% endif %}>{{ rating }}</option>
+            {%  endfor %}
+            </select>
+        </div>
+
             {% for question, answer in interviewQuestions %}
                 {% if question.fieldType == field_type.text_field %}
                     <div class="form-group">

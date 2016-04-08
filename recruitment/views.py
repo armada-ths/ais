@@ -98,6 +98,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 
     interviewerKey = 'interviewer'
+    ratingKey = 'rating'
     if request.POST:
         if interviewerKey in request.POST:
             try:
@@ -111,6 +112,13 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                     application.save()
                 print('Interviewer id was not an int')
 
+        if ratingKey in request.POST:
+            try:
+                rating = int(request.POST[ratingKey])
+                application.rating = rating
+                application.save()
+            except ValueError:
+                print('Interviewer id was not an int')
 
         for interviewQuestion in InterviewQuestion.objects.filter(recruitmentPeriod=application.recruitmentPeriod):
             key = '%s' % (interviewQuestion.id,)
@@ -161,7 +169,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             'image': InterviewQuestion.IMAGE,
         },
         'interviewQuestions': interviewQuestions,
-        'users': User.objects.all()
+        'users': User.objects.all(),
+        'ratings': [i for i in range(1,6)],
     })
 
 
