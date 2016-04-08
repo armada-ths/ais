@@ -101,6 +101,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     rating_key = 'rating'
     interview_date_key = 'interviewDate'
     interview_location_key = 'interviewLocation'
+    recommended_role_key = 'recommended_role'
 
     if request.POST:
         if interviewer_key in request.POST:
@@ -110,10 +111,20 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                 application.interviewer = interviewer
                 application.save()
             except ValueError:
-                if application.interviewer:
-                    application.interviewer = None
-                    application.save()
+                application.interviewer = None
+                application.save()
                 print('Interviewer id was not an int')
+
+        if recommended_role_key in request.POST:
+            try:
+                role_id = int(request.POST[recommended_role_key])
+                role = RecruitableRole.objects.filter(id=role_id).first()
+                application.recommendedRole = role
+                application.save()
+            except ValueError:
+                application.interviewer = None
+                application.save()
+                print('Role id was not an int')
 
         if rating_key in request.POST:
             try:
@@ -187,12 +198,12 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         },
         'interviewQuestions': interviewQuestions,
         'users': User.objects.all(),
+        'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitmentPeriod),
         'ratings': [i for i in range(1,6)],
     })
 
 
-#delete a company
 def recruitment_application_delete(request, pk):
     recruitmentApplication = get_object_or_404(RecruitmentApplication, pk=pk)
     recruitmentApplication.delete()
-    return redirect('recruitment') #redirect back to company list
+    return redirect('recruitment')

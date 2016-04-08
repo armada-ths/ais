@@ -18,18 +18,6 @@ class RecruitmentPeriod(models.Model):
     def __str__(self):
         return '%s: %s' % (self.fair.name, self.name)
 
-class RecruitmentApplication(models.Model):
-    recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
-    user = models.ForeignKey(User)
-    rating = models.IntegerField(default=1)
-    interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')
-    interviewDate = models.CharField(null=True, blank=True, max_length=100)
-    interviewLocation = models.CharField(null=True, blank=True, max_length=100)
-    submissionDate = models.DateTimeField(default=datetime.datetime.now, blank=True)
-
-    def __str__(self):
-        return '%s' % (self.user)
-
 class RecruitableRole(models.Model):
     role = models.ForeignKey(Group, limit_choices_to={'is_role': True})
     recruitment_period = models.ForeignKey(RecruitmentPeriod)
@@ -39,13 +27,25 @@ class RecruitableRole(models.Model):
 
 
 
+class RecruitmentApplication(models.Model):
+    recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
+    user = models.ForeignKey(User)
+    rating = models.IntegerField(default=1)
+    interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')
+    interviewDate = models.CharField(null=True, blank=True, max_length=100)
+    interviewLocation = models.CharField(null=True, blank=True, max_length=100)
+    submissionDate = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    recommendedRole = models.ForeignKey(RecruitableRole, null=True, blank=True)
+
+    def __str__(self):
+        return '%s' % (self.user)
+
 class RoleApplication(models.Model):
     recruitmentApplication = models.ForeignKey(RecruitmentApplication, default=None)
     recruitableRole = models.ForeignKey(RecruitableRole)
 
     def __str__(self):
         return '%s' % (self.recruitableRole.role)
-
 
 class InterviewQuestion(models.Model):
     TEXT_FIELD = 0
