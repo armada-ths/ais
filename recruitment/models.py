@@ -13,8 +13,6 @@ class RecruitmentPeriod(models.Model):
     end_date = models.DateTimeField()
     fair = models.ForeignKey('fair.Fair')
 
-    gender = models.IntegerField(choices=((0, 'male'), (1, 'female')), default=0)
-
     def __str__(self):
         return '%s: %s' % (self.fair.name, self.name)
 

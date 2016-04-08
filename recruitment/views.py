@@ -58,6 +58,7 @@ def recruitment_period_new(request, template_name='recruitment/recruitment_perio
     print("EY YO!")
     form = RecruitmentPeriodForm(request.POST or None)
     roles_form = inlineformset_factory(RecruitmentPeriod, RecruitableRole, fields=('role',))(request.POST or None)
+    interview_questions_form = inlineformset_factory(RecruitmentPeriod, InterviewQuestion, fields=('recruitmentPeriod',))(request.POST or None)
     if form.is_valid() and roles_form.is_valid():
         recruitmentPeriod = form.save()
         roles_form.instance = recruitmentPeriod
@@ -66,7 +67,7 @@ def recruitment_period_new(request, template_name='recruitment/recruitment_perio
     else:
         print(form.errors)
         print("Ai'nt no valid form!")
-    return render(request, template_name, {'form': form, 'roles_form': roles_form})
+    return render(request, template_name, {'form': form, 'roles_form': roles_form, 'interview_questions_form': interview_questions_form})
 
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
     print("EY YO!")
