@@ -6,12 +6,25 @@
     <h3>New application</h3>
     <hr>
   </div>
-    
-  <form method="post">
-    {% csrf_token %}
-        {{ form|crispy }}
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+
+<form method="post" action="">
+{% csrf_token %}
+    {% for key in role_keys %}
+
+        <div class="form-group">
+            <label>Role {{ forloop.counter }}</label>
+            <select class="form-control" name="{{  key }}">
+            <option value="">---------</option>
+            {% for role in roles %}
+                <option value="{{ role.id }}">{{ role }}</option>
+            {%  endfor %}
+            </select>
+        </div>
+
+
+    {% endfor %}
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
 
 </div>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">

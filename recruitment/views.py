@@ -10,6 +10,7 @@ from django.conf import settings
 
 from django.forms import inlineformset_factory
 from django.contrib.auth.models import Group, User
+from django.forms import formset_factory
 
 import os
 
@@ -38,6 +39,9 @@ class RoleApplicationForm(ModelForm):
     def __init__(self, recruitment_period,*args,**kwargs):
         super (RoleApplicationForm,self ).__init__(*args,**kwargs)
         self.fields['recruitableRole'].queryset = RecruitableRole.objects.filter(recruitment_period=recruitment_period)
+
+        for x in xrange(10):  # just a dummy for 10 values
+            self.fields['col' + str(x)] = forms.CharField(label='Column ' + str(x), max_length=100, required=False)
 
     class Meta:
         model = RoleApplication
@@ -69,34 +73,34 @@ def recruitment_period_new(request, template_name='recruitment/recruitment_perio
         print("Ai'nt no valid form!")
     return render(request, template_name, {'form': form, 'roles_form': roles_form, 'interview_questions_form': interview_questions_form})
 
+
+
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
-    print("EY YO!")
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    form = [RoleApplicationForm(recruitment_period, request.POST or None) for x in range(0, 1)]
-    #form.instance = recruitment_period
-    #roles_form = inlineformset_factory(RecruitmentApplication, RoleApplication, fields=('recruitmentApplication',))(request.POST or None)
-    if all([form.is_valid() for form in form]):
-        print("IT SORTA WORKED!")
+    role_keys = ["1", "2", "3"]
+    role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
+
+    if len(role_ids) > 0:
         recruitment_application = RecruitmentApplication()
         recruitment_application.user = request.user
         recruitment_application.recruitmentPeriod = recruitment_period
         recruitment_application.save()
-        for form in form:
-            role = form.save(commit=False)
-            role.recruitmentApplication = recruitment_application
-            role.save()
+        for role_id in role_ids:
+            role_application = RoleApplication()
+            role_application.recruitmentApplication = recruitment_application
+            role_application.recruitableRole = RecruitableRole.objects.filter(pk=role_id).first()
+            role_application.save()
         return redirect('recruitment')
-    else:
-        for form in form:
-            print(form.errors)
-        print("Ai'nt no valid form!")
-    return render(request, template_name, {'form': form})
+
+
+    return render(request, template_name, {
+        'role_keys': role_keys,
+        'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)})
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     print(request.POST)
     print(request.FILES)
-
 
     interviewer_key = 'interviewer'
     rating_key = 'rating'
