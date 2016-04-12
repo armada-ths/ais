@@ -3,9 +3,20 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <h3>Interview with {{ application.user }}</h3>
+            <h3>{{ application.user.first_name }} {{ application.user.last_name }}</h3>
             <hr>
         </div>
+
+    <div class="row">
+        <form>
+                            <div class="form-group">
+                    <label for="interviewDate">Email</label>
+                    <p class="form-control-static">{{ application.user.email }}</p>
+                </div>
+    </form>
+<hr>
+    </div>
+
 
         <div class="row">
             <form method="POST" enctype="multipart/form-data">
@@ -21,7 +32,18 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="interviewDate">Interview date</label>
+                    <input type="text" class="form-control" id="interviewDate" name="interviewDate"
+                           value="{%  if application.interviewDate %}{{ application.interviewDate }}{% endif %}">
+                </div>
 
+                <div class="form-group">
+                    <label for="interviewLocation">Interview place</label>
+                    <input type="text" class="form-control" id="interviewLocation" name="interviewLocation"
+                           value="{%  if application.interviewLocation %}{{ application.interviewLocation }}{% endif %}">
+                </div>
+<hr>
                 <div class="form-group">
                     <label>Recommended role</label>
                     <select class="form-control" name="recommended_role">
@@ -43,17 +65,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="interviewDate">Interview date</label>
-                    <input type="text" class="form-control" id="interviewDate" name="interviewDate"
-                           value="{%  if application.interviewDate %}{{ application.interviewDate }}{% endif %}">
-                </div>
 
-                <div class="form-group">
-                    <label for="interviewLocation">Interview place</label>
-                    <input type="text" class="form-control" id="interviewLocation" name="interviewLocation"
-                           value="{%  if application.interviewLocation %}{{ application.interviewLocation }}{% endif %}">
-                </div>
 
 
                 {% for question, answer in interviewQuestions %}
