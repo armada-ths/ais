@@ -24,7 +24,6 @@ class RecruitableRole(models.Model):
         return '%s' % (self.role)
 
 
-
 class RecruitmentApplication(models.Model):
     recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
     user = models.ForeignKey(User)
@@ -34,6 +33,7 @@ class RecruitmentApplication(models.Model):
     interviewLocation = models.CharField(null=True, blank=True, max_length=100)
     submissionDate = models.DateTimeField(default=datetime.datetime.now, blank=True)
     recommendedRole = models.ForeignKey(RecruitableRole, null=True, blank=True)
+    delegatedRole = models.ForeignKey(RecruitableRole, null=True, blank=True, related_name='delegatedRole')
 
     def __str__(self):
         return '%s' % (self.user)

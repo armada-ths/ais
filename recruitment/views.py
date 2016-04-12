@@ -79,7 +79,6 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     role_keys = ["1", "2", "3"]
     role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
-
     if len(role_ids) > 0:
         recruitment_application = RecruitmentApplication()
         recruitment_application.user = request.user
@@ -106,6 +105,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     rating_key = 'rating'
     interview_date_key = 'interviewDate'
     interview_location_key = 'interviewLocation'
+    delegated_role_key = 'delegated_role'
     recommended_role_key = 'recommended_role'
 
     if request.POST:
@@ -127,7 +127,19 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                 application.recommendedRole = role
                 application.save()
             except ValueError:
-                application.interviewer = None
+                application.delegatedRole = None
+                application.save()
+                print('Role id was not an int')
+
+        if delegated_role_key in request.POST:
+            try:
+                print("HERE WE ARE")
+                role_id = int(request.POST[delegated_role_key])
+                role = RecruitableRole.objects.filter(id=role_id).first()
+                application.delegatedRole = role
+                application.save()
+            except ValueError:
+                application.delegatedRole = None
                 application.save()
                 print('Role id was not an int')
 

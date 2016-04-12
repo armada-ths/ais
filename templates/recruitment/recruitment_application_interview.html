@@ -7,103 +7,136 @@
             <hr>
         </div>
 
-        <form method="POST" enctype="multipart/form-data">
-            {%  csrf_token %}
+        <div class="row">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-        <div class="form-group">
-            <label>Interviewer</label>
-            <select class="form-control" name="interviewer">
-            <option value="">---------</option>
-            {% for user in users %}
-                <option value="{{ user.id }}" {% if user == application.interviewer %} selected {% endif %}>{{ user }}</option>
-            {%  endfor %}
-            </select>
-        </div>
+                <div class="form-group">
+                    <label>Interviewer</label>
+                    <select class="form-control" name="interviewer">
+                        <option value="">---------</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}" {% if user == application.interviewer %}
+                                    selected {% endif %}>{{ user }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <div class="form-group">
-            <label>Recommended role</label>
-            <select class="form-control" name="recommended_role">
-            <option value="">---------</option>
-            {% for role in roles %}
-                <option value="{{ role.id }}" {% if role == application.recommendedRole %} selected {% endif %}>{{ role }}</option>
-            {%  endfor %}
-            </select>
-        </div>
-
-
-        <div class="form-group">
-            <label>Rating</label>
-            <select class="form-control" name="rating">
-            {% for rating in ratings %}
-                <option value="{{ rating }}" {% if rating == application.rating %} selected {% endif %}>{{ rating }}</option>
-            {%  endfor %}
-            </select>
-        </div>
-                    <div class="form-group">
-                        <label for="interviewDate">Interview date</label>
-                        <input type="text" class="form-control" id="interviewDate" name="interviewDate" value="{{ application.interviewDate }}">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="interviewLocation">Interview place</label>
-                        <input type="text" class="form-control" id="interviewLocation" name="interviewLocation" value="{{ application.interviewLocation }}">
-                    </div>
+                <div class="form-group">
+                    <label>Recommended role</label>
+                    <select class="form-control" name="recommended_role">
+                        <option value="">---------</option>
+                        {% for role in roles %}
+                            <option value="{{ role.id }}" {% if role == application.recommendedRole %}
+                                    selected {% endif %}>{{ role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
 
-            {% for question, answer in interviewQuestions %}
-                {% if question.fieldType == field_type.text_field %}
-                    <div class="form-group">
-                        <label for="{{ question.id }}">{{  question.question }}</label>
-                        <input type="text" class="form-control" id="{{ question.id }}" name="{{ question.id }}" value="{{ answer.answer }}">
-                    </div>
-                {% elif question.fieldType == field_type.check_box %}
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox"  name="{{ question.id }}" {% if answer %} checked {% endif %}> {{  question.question }}
-                        </label>
-                    </div>
-                {% elif question.fieldType == field_type.text_area %}
-                    <div class="form-group">
-                    <label for="{{ question.id }}">{{  question.question }}</label>
-                    <textarea class="form-control" rows="3" id="{{ question.id }}" name="{{ question.id }}">{{ answer.answer }}</textarea>
-                    </div>
-                {% elif question.fieldType == field_type.radio_buttons %}
-                    <label class="radio control-label">{{ question }}</label>
-                    {% for argument in question.arguments_as_list %}
-                        <div class="radio">
-                        <label>
-                        <input type="radio" name="{{ question.id }}" value="{{ argument }}" {% if answer.answer == argument %} checked {% endif %}> {{ argument }}
-                        </label>
+                <div class="form-group">
+                    <label>Rating</label>
+                    <select class="form-control" name="rating">
+                        {% for rating in ratings %}
+                            <option value="{{ rating }}" {% if rating == application.rating %}
+                                    selected {% endif %}>{{ rating }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="interviewDate">Interview date</label>
+                    <input type="text" class="form-control" id="interviewDate" name="interviewDate"
+                           value="{%  if application.interviewDate %}{{ application.interviewDate }}{% endif %}">
+                </div>
+
+                <div class="form-group">
+                    <label for="interviewLocation">Interview place</label>
+                    <input type="text" class="form-control" id="interviewLocation" name="interviewLocation"
+                           value="{%  if application.interviewLocation %}{{ application.interviewLocation }}{% endif %}">
+                </div>
+
+
+                {% for question, answer in interviewQuestions %}
+                    {% if question.fieldType == field_type.text_field %}
+                        <div class="form-group">
+                            <label for="{{ question.id }}">{{ question.question }}</label>
+                            <input type="text" class="form-control" id="{{ question.id }}" name="{{ question.id }}"
+                                   value="{{ answer.answer }}">
                         </div>
-                    {% endfor %}
-                {% elif question.fieldType == field_type.file %}
-                    <div class="form-group">
-                    <label for="{{ question.id }}">{{ question }}</label>
-                    <input type="file" id="{{ question.id }}" name="{{ question.id }}">
-                        <p><a href="/media/{{ answer.answer }}">{{ answer.answer }}</a></p>
-                    </div>
-                {% elif question.fieldType == field_type.image %}
-                    <div class="form-group">
-                    <label for="{{ question.id }}">{{ question }}</label>
-                    <input type="file" id="{{ question.id }}" name="{{ question.id }}" accept="image/*">
-                        {% if answer.answer %}
-                            <br>
-                            <div><img src="/media/{{ answer.answer }}" width="500"></div>
+                    {% elif question.fieldType == field_type.check_box %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="{{ question.id }}" {% if answer %}
+                                       checked {% endif %}> {{ question.question }}
+                            </label>
+                        </div>
+                    {% elif question.fieldType == field_type.text_area %}
+                        <div class="form-group">
+                            <label for="{{ question.id }}">{{ question.question }}</label>
+                            <textarea class="form-control" rows="3" id="{{ question.id }}"
+                                      name="{{ question.id }}">{{ answer.answer }}</textarea>
+                        </div>
+                    {% elif question.fieldType == field_type.radio_buttons %}
+                        <label class="radio control-label">{{ question }}</label>
+                        {% for argument in question.arguments_as_list %}
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="{{ question.id }}" value="{{ argument }}"
+                                            {% if answer.answer == argument %} checked {% endif %}> {{ argument }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    {% elif question.fieldType == field_type.file %}
+                        <div class="form-group">
+                            <label for="{{ question.id }}">{{ question }}</label>
+                            <input type="file" id="{{ question.id }}" name="{{ question.id }}">
+                            <p><a href="/media/{{ answer.answer }}">{{ answer.answer }}</a></p>
+                        </div>
+                    {% elif question.fieldType == field_type.image %}
+                        <div class="form-group">
+                            <label for="{{ question.id }}">{{ question }}</label>
+                            <input type="file" id="{{ question.id }}" name="{{ question.id }}" accept="image/*">
+                            {% if answer.answer %}
+                                <br>
+                                <div><img src="/media/{{ answer.answer }}" width="500"></div>
                             {% endif %}
 
-                    </div>
-                {%  else %}
-                    UNKNOWN FIELD TYPE!
-                {% endif %}
-            {% endfor %}
-        <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+                        </div>
+                    {% else %}
+                        UNKNOWN FIELD TYPE!
+                    {% endif %}
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+            <div class="row">
+                        <hr>
+            <h3>Delegate role</h3>
+            <form method="post"><div class="form-group">
+            {% csrf_token %}
+                    <select class="form-control" name="delegated_role">
+                        <option value="">---------</option>
+                        {% for role in roles %}
+                            <option value="{{ role.id }}" {% if role == application.delegatedRole %}
+                                    selected {% endif %}>{{ role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <div class="row">
+        </div>
     </div>
+
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.datepicker').datepicker();
         });
     </script>
