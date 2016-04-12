@@ -6,7 +6,7 @@
     <h3>New application</h3>
     <hr>
   </div>
-
+<div class="row">
 <form method="post" action="">
 {% csrf_token %}
     {% for key in role_keys %}
@@ -27,6 +27,7 @@
 </form>
 
 </div>
+    </div>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
