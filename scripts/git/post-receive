@@ -1,0 +1,16 @@
+#!/bin/bash
+unset GIT_INDEX_FILE
+echo "Post-receive started"
+git --work-tree=/home/deployment/ais --git-dir=/home/deployment/git checkout -f master
+git --work-tree=/home/deployment/ais --git-dir=/home/deployment/git clean -fdx
+cp /home/deployment/secrets.py /home/deployment/ais/ais/
+/bin/bash /home/deployment/ais/restart_uwsgi_server.sh
+/bin/bash -c ". /home/deployment/ais_venv/bin/activate;
+#echo 'Clear tables database'
+#python /home/deployment/ais/manage.py sqlclear;
+echo 'Making migrations';
+python /home/deployment/ais/manage.py makemigrations;
+echo 'Running migrate';
+python /home/deployment/ais/manage.py migrate;
+"
+echo "Post-receive finished"
