@@ -9,7 +9,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0008_group_is_role'),
         ('recruitment', '0001_initial'),
     ]
 
