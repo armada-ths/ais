@@ -8,43 +8,52 @@ In the spirit of open source software development, AIS always encourages communi
 
 1. Nothing to see here, continue to next section.
 
-Prerequisites
+Installation
 -------------
+Our preferred build environment is a Debian 8.3 x64 [Digital Ocean](https://www.digitalocean.com) droplet (the cheapest one will do for testing). Mileage may vary on other systems. If something doesn't work (likely) then [let us know](https://github.com/armada-ths/ais/issues/new) 🍻
 
-- Linux system
-- Installing the required applications:
+### Setting up the locale
+First off, you're going to need to fix your locale if you're on a clean DO droplet. Add the following lines to `/etc/default/locale`:
+```bash
+LANG="en_US.UTF-8"
+LC_ALL="en_US.UTF-8"
+LANGUAGE="en_US.UTF-8"
+```
+and then **log out** before logging back in again. The output of the `locale` command should now look something like this:
+```bash
+LANG=en_US.UTF-8
+LANGUAGE=en_US.UTF-8
+LC_CTYPE="en_US.UTF-8"
+LC_NUMERIC="en_US.UTF-8"
+LC_TIME="en_US.UTF-8"
+LC_COLLATE="en_US.UTF-8"
+LC_MONETARY="en_US.UTF-8"
+LC_MESSAGES="en_US.UTF-8"
+LC_PAPER="en_US.UTF-8"
+LC_NAME="en_US.UTF-8"
+LC_ADDRESS="en_US.UTF-8"
+LC_TELEPHONE="en_US.UTF-8"
+LC_MEASUREMENT="en_US.UTF-8"
+LC_IDENTIFICATION="en_US.UTF-8"
+LC_ALL=en_US.UTF-8
+```
+### Installing all the things
 ```bash
 apt-get update
+apt-get -y install sudo wget git python gcc python3-dev python3-pip nginx libpcre3 libpcre3-dev libpq-dev vim
+pip3 install virtualenv
 ```
-```bash
-apt-get -y install sudo wget git python gcc python3-dev nginx libpcre3 libpcre3-dev libldap2-dev libsasl2-dev libpq-dev
-```
-- Download repository from git:
+
+### Download and install the AIS code:
 ```bash
 git clone https://github.com/armada-ths/ais.git
 ```
-- Installing pip:
+It's all downhill from here!
 ```bash
-wget https://bootstrap.pypa.io/get-pip.py
-```
-```bash
-python3 get-pip.py
-```
-- Installing virtualenv:
-```bash
-sudo pip install virtualenv (might need to use pip3 to force python3)
-```
-- Creating virtualenv:
-```bash
+cd ais
 virtualenv ais_venv
-```
-- Activate virutalenv:
-```bash
 . ais_venv/bin/activate
-```
-- Install pip requirements
-```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Running the local server
