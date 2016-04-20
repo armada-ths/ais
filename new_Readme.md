@@ -12,7 +12,7 @@ Installation
 -------------
 Our preferred build environment is a Debian 8.3 x64 [Digital Ocean](https://www.digitalocean.com) droplet (the cheapest one will do for testing). Mileage may vary on other systems. If something doesn't work (likely) then [let us know](https://github.com/armada-ths/ais/issues/new) 🍻
 
-### Setting up the locale
+### Set up the locale
 First off, you're going to need to fix your locale if you're on a clean DO droplet. Add the following lines to `/etc/default/locale`:
 ```bash
 LANG="en_US.UTF-8"
@@ -37,7 +37,7 @@ LC_MEASUREMENT="en_US.UTF-8"
 LC_IDENTIFICATION="en_US.UTF-8"
 LC_ALL=en_US.UTF-8
 ```
-### Installing all the things
+### Install all the things
 ```bash
 apt-get update
 apt-get -y install sudo wget git python gcc python3-dev python3-pip nginx libpcre3 libpcre3-dev libpq-dev vim
