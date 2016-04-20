@@ -1,31 +1,18 @@
-# django/ais
+# AIS - Armada Internal Systems
 <pre>
 !Please only develop on branches!
 How to setup a local dev server:
-* All settings files assume that the user is named "deployment" and that we use that home folder.
 * apt-get update
 * apt-get -y install sudo wget git python gcc python3-dev nginx libpcre3 libpcre3-dev libpq-dev vim
-
 * git clone -b master git@github.com:armada-ths/ais.git
 * Install pip with "wget https://bootstrap.pypa.io/get-pip.py" and "python3 get-pip.py"
-* Install virtualenv with pip: "sudo pip install virtualenv" (might use pip3 for python3)
-* Make a virtualenv by running: "virtualenv ais_venv"
+* Install virtualenv with pip: "sudo pip install virtualenv"
+* Make a virtualenv by running: "virtualenv -p python3 ais_venv"
 * Activate the virtualenv with ". ais_venv/bin/activate" (source can be used instead of . )
-
-Folder structure should now be:
-d+-ais_venv
-d+-ais
-  |->ais
-  |->files/dirs etc
-  
 * Install pip requirements with pip install -r requirements.txt
-* Run the server with "python manage.py runserver [your localip]:80 --settings local_settings
-  Where local_settings.py is your local settings file (notice the lack of .py in local_settings)
-  in your local_settings file, you can disable "from ais.secrets import *" and just 
-  hardcode all your variables
-* You dont have to install nginx and postgre on a local machine, just use runserver and sqlite3
+* Run "python manage.py migrate --settings local_settings" to run migrations
+* Run the server with "python manage.py runserver --settings local_settings"
 
-## IF ANY PART WAS UNCLEAR, ASK AND THEN AMEND THE DOCUMENTATION ##
 
 System req:
 GCC
