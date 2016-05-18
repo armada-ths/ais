@@ -78,11 +78,6 @@ from ais.secrets import *
 # Setting up a new AIS server
 This instructions are used for settings up a new instance of AIS
 
-Installing MySQL
-------------------
-```bash
-apt-get -y install mysql-server libmysqlclient-dev
-```
 Installing PostgreSQL
 --------------------
 ```bash
