@@ -13,30 +13,12 @@ Installation
 Our preferred build environment is a Debian 8.3 x64 [Digital Ocean](https://www.digitalocean.com) droplet (the cheapest one will do for testing). Mileage may vary on other systems. If something doesn't work (likely) then [let us know](https://github.com/armada-ths/ais/issues/new) 🍻
 
 ### Set up the locale
-First off, you're going to need to fix your locale if you're on a clean DO droplet. Add the following lines to `/etc/default/locale`:
+First off, your DO droplet will likely complain about your locale settings. To fix this you can comment out the line
 ```bash
-LANG="en_US.UTF-8"
-LC_ALL="en_US.UTF-8"
-LANGUAGE="en_US.UTF-8"
+SendEnv LANG LC_*
 ```
-and then **log out** before logging back in again. The output of the `locale` command should now look something like this:
-```bash
-LANG=en_US.UTF-8
-LANGUAGE=en_US.UTF-8
-LC_CTYPE="en_US.UTF-8"
-LC_NUMERIC="en_US.UTF-8"
-LC_TIME="en_US.UTF-8"
-LC_COLLATE="en_US.UTF-8"
-LC_MONETARY="en_US.UTF-8"
-LC_MESSAGES="en_US.UTF-8"
-LC_PAPER="en_US.UTF-8"
-LC_NAME="en_US.UTF-8"
-LC_ADDRESS="en_US.UTF-8"
-LC_TELEPHONE="en_US.UTF-8"
-LC_MEASUREMENT="en_US.UTF-8"
-LC_IDENTIFICATION="en_US.UTF-8"
-LC_ALL=en_US.UTF-8
-```
+in your **local** machine's `ssh_config` (might be at `/etc/ssh/ssh_config`). 
+
 ### Install all the things
 ```bash
 apt-get update
