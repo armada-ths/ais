@@ -1,51 +1,99 @@
-# AIS - Armada Internal Systems
-<pre>
-!Please only develop on branches!
-How to setup a local dev server:
-* apt-get update
-* apt-get -y install sudo wget git python gcc python3-dev nginx libpcre3 libpcre3-dev libpq-dev vim
-* git clone -b master git@github.com:armada-ths/ais.git
-* Install pip with "wget https://bootstrap.pypa.io/get-pip.py" and "python3 get-pip.py"
-* Install virtualenv with pip: "sudo pip install virtualenv"
-* Make a virtualenv by running: "virtualenv -p python3 ais_venv"
-* Activate the virtualenv with ". ais_venv/bin/activate" (source can be used instead of . )
-* Install pip requirements with pip install -r requirements.txt
-* Run "python manage.py makemigration --settings local_settings" to make migrations
-* Run "python manage.py migrate --settings local_settings" to run migrations
-* Run the server with "python manage.py runserver --settings local_settings"
+[AIS](http://ais.armada.nu/) — Armada Internal System
+==================================================
 
+Contribution Guides
+--------------------------------------
 
-System req:
-GCC
-python3-dev
-git
-nginx
-libpcre3 # For pcre options when running uwsgi
-libpcre3-dev # For pcre options when running uwsgi
-libldap2-dev # For LDAP lookups
-libsasl2-dev # Also for LDAP
+In the spirit of open source software development, AIS always encourages community code contribution. To help you get started and before you jump into writing code, be sure to read these important contribution guidelines thoroughly:
 
-# For mysql database
-mysql-server
-libmysqlclient-dev
+1. Nothing to see here, continue to next section.
 
-# For postgre database
-postgresql
-libpq-dev
+Installation
+-------------
+Our preferred build environment is a Debian 8.3 x64 [Digital Ocean](https://www.digitalocean.com) droplet (the cheapest one will do for testing). Mileage may vary on other systems. If something doesn't work (likely) then [let us know](https://github.com/armada-ths/ais/issues/new) 🍻
 
-System recommended:
-Vim
+### Set up the locale
+First off, your DO droplet will likely complain about your locale settings. To fix this you can comment out the line
+```bash
+SendEnv LANG LC_*
+```
+in your **local** machine's `ssh_config` (might be at `/etc/ssh/ssh_config`). 
 
-Global req:
-virtualenv
+### Install all the things
+```bash
+apt-get update
+apt-get -y install sudo wget git python gcc python3-dev python3-pip nginx libpcre3 libpcre3-dev libpq-dev vim
+pip3 install virtualenv
+```
 
+### Download and install the AIS code:
+```bash
+git clone https://github.com/armada-ths/ais.git
+```
+It's all downhill from here!
+```bash
+cd ais
+virtualenv ais_venv
+. ais_venv/bin/activate
+pip3 install -r requirements.txt
+```
 
-Virtualenv req:
-See "requirements.txt"
+Running the local server
+------------------------
+Create a local_settngs.py file (see local_settings.py.example) or the Local settings section.
+- Make migrations
+```bash
+python manage.py makemigration --settings local_settings
+```
+- Activate virutal environment
+```bash
+. ais_venv/bin/activate
+```
+- Run server
+```bash
+python manage.py runserver [your local ip]:[port] --settings local_settings
+```
 
-*Change addr/ip, paths in _nginx.conf
-*Change paths in _uwsgi.ini
-*add user to www-data group
+Local settings
+--------------
+Read this section if you do not want to use a PostgreSQL.
+- Copy a the settings.py file to the /ais/ root directory or use the the local_settings.py.example file
+- Install SQLite
+```bash
+apt-get -y install sqlite3
+```
+- Delete line about secrets (this file is not present in git and will NEVER be)
+```bash
+from ais.secrets import *
+```
+- Delete database lines and replace with SQLite3
+```bash
+'ENGINE': 'django.db.backends.sqlite3',
+'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+```
+- You also need to setup the directories (so it points to your local directories for static files, templates and such)
+
+- To run the local server you will need to always run within the vritual environment.
+
+# Setting up a new AIS server
+This instructions are used for settings up a new instance of AIS
+
+Installing MySQL
+------------------
+```bash
+apt-get -y install mysql-server libmysqlclient-dev
+```
+Installing PostgreSQL
+--------------------
+```bash
+apt-get -y install postgresql libpq-dev
+```
+
+Server configuration
+-------------------
+- Change addr/ip, paths in _nginx.conf
+- Change paths in _uwsgi.ini
+- add user to www-data group
 
 Commands:
 uwsgi --ini ais_uwsgi.ini
@@ -54,15 +102,12 @@ sudo tail -n 10 /var/log/nginx/error.log
 sudo adduser username www-data
 sudo ln -s ~/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/
 
-Setup postgresql:
-sudo apt-get install postgresql
-sudo apt-get install libpq-dev
+Setup postgresql
+----------------
 . ais_venv/bin/activate
-
 vim /etc/postgresql/[version]/main/pg_hba.conf
 local all all trust
 host all all 127.0.0.1/32 trust
-
 
 (Lines changed, no longer number accurate, the idea is the same)
 In ais/ais_nginx.conf change:
@@ -80,11 +125,3 @@ Link (sudo ln -s /home/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/) 
 Add your user to the group www-data with: sudo adduser username www-data
 
 
-Other changes:
-If you dont have a local postgresql server, copy the settings file to "local_settings.py" and delete lines " from ais.secrets import *" and replace
-the database entry with:
-'ENGINE': 'django.db.backends.sqlite3',
-'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-You can then run for example:
-python manage.py shell --settings local_settings
-</pre>
