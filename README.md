@@ -10,6 +10,7 @@ How to setup a local dev server:
 * Make a virtualenv by running: "virtualenv -p python3 ais_venv"
 * Activate the virtualenv with ". ais_venv/bin/activate" (source can be used instead of . )
 * Install pip requirements with pip install -r requirements.txt
+* Run "python manage.py makemigration --settings local_settings" to make migrations
 * Run "python manage.py migrate --settings local_settings" to run migrations
 * Run the server with "python manage.py runserver --settings local_settings"
 
