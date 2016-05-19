@@ -7,6 +7,7 @@ Contribution Guides
 In the spirit of open source software development, AIS always encourages community code contribution. To help you get started and before you jump into writing code, be sure to read these important contribution guidelines thoroughly:
 
 1. Nothing to see here, continue to next section.
+2. Actually yes there is, work on branches and send a PR for anything non-trivial. No long-running branches.
 
 Installation
 -------------
