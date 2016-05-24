@@ -190,13 +190,20 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                         interviewQuestion=interviewQuestion,
                         recruitmentApplication=application
                     )
-                    answer.answer = request.POST[key]
-                    answer.save()
-                else:
-                    InterviewQuestionAnswer.objects.filter(
-                        interviewQuestion=interviewQuestion,
-                        recruitmentApplication=application
-                    ).delete()
+                    answer_string = request.POST[key]
+                    if answer_string:
+                        answer.answer = answer_string
+                        answer.save()
+
+                    else:
+                        InterviewQuestionAnswer.objects.filter(
+                            interviewQuestion=interviewQuestion,
+                            recruitmentApplication=application
+                        ).delete()
+
+
+
+
 
     interviewQuestions = []
     for interviewQuestion in InterviewQuestion.objects.all():

@@ -90,11 +90,11 @@
                         </div>
                     {% elif question.fieldType == field_type.radio_buttons %}
                         <label class="radio control-label">{{ question }}</label>
-                        {% for argument in question.arguments_as_list %}
+                        {% for argument in question.argument.all %}
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="{{ question.id }}" value="{{ argument }}"
-                                            {% if answer.answer == argument %} checked {% endif %}> {{ argument }}
+                                    <input type="radio" name="{{ question.id }}" value="{{ argument.id }}"
+                                            {% if answer.answer == argument.id_as_string %} checked {% endif %}> {{ argument.value }}
                                 </label>
                             </div>
                         {% endfor %}

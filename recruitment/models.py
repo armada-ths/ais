@@ -55,7 +55,7 @@ class InterviewQuestion(models.Model):
 
     question = models.CharField(max_length=1000)
     recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
-    arguments = models.CharField(max_length=1000, blank=True)
+
     fieldType = models.IntegerField(choices=(
         (TEXT_FIELD, 'Text field'),
         (CHECK_BOX, 'Check boxes'),
@@ -65,12 +65,15 @@ class InterviewQuestion(models.Model):
         (IMAGE, 'Image'),
     ), default=TEXT_FIELD)
 
-
-    def arguments_as_list(self):
-        return self.arguments.split(',')
-
     def __str__(self):
         return '%s' % (self.question)
+
+class InterviewQuestionFieldArgument(models.Model):
+    value = models.CharField(max_length=100)
+    interview_question = models.ForeignKey(InterviewQuestion, related_name="argument")
+
+    def id_as_string(self):
+        return "%s" % self.id
 
 class InterviewQuestionAnswer(models.Model):
     interviewQuestion = models.ForeignKey(InterviewQuestion)
