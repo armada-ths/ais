@@ -6,10 +6,10 @@ from .serializers import company_serializer, event_serializer
 def root(request):
     return JsonResponse({'message':'Welcome to the Armada API!'})
 
-def companies(request):
+def exhibitors(request):
     companies = Company.objects.all();
     data = [company_serializer(company) for company in companies]
-    return JsonResponse({'companies': data})
+    return JsonResponse({'exhibitors': data})
 
 def events(request):
     events = Event.objects.filter(make_event_public=True)
