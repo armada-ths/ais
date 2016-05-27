@@ -42,3 +42,7 @@ urlpatterns = [
     url(r'^recruitment/', include('recruitment.urls')),
 
 ]
+
+admin.site.site_title = 'AIS administration'
+admin.site.site_header = 'AIS administration'
+admin.site.index_title = 'AIS administration'
