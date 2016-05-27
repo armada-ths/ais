@@ -12,6 +12,10 @@ class ProfileInline(admin.StackedInline):
 
 class CustomUserAdmin(UserAdmin):
 	inlines = [ProfileInline,]
+	
+	# We need double __ to search in foreign keys. We've added search
+	# results from profile
+	search_fields = ['first_name', 'last_name', 'email', 'profile__drivers_license', 'profile__phone_number', 'profile__programme',]
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
