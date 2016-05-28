@@ -44,7 +44,7 @@ Running the local server
 Create a local_settngs.py file (see local_settings.py.example) or the Local settings section.
 - Make migrations
 ```bash
-python manage.py makemigration --settings local_settings
+python manage.py makemigrations --settings local_settings
 ```
 - Activate virutal environment
 ```bash
