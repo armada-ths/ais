@@ -9,74 +9,19 @@ In the spirit of open source software development, AIS always encourages communi
 1. Nothing to see here, continue to next section.
 2. Actually yes there is, work on branches and send a PR for anything non-trivial. No long-running branches.
 
-Installation
+Development setup
 -------------
-Our preferred build environment is a Debian 8.3 x64 [Digital Ocean](https://www.digitalocean.com) droplet (the cheapest one will do for testing). Mileage may vary on other systems. If something doesn't work (likely) then [let us know](https://github.com/armada-ths/ais/issues/new) 🍻
+1. Download [VirtualBox](https://www.virtualbox.org) and [Vagrant](https://www.vagrantup.com/downloads.html)
+3. Clone the repo and run `vagrant up` from the repo's root
+4. ☕️
+5. Browse to [localhost:8080/admin](http://localhost:8080/admin) and log in with username "admin" and password "admin"
+6. Browse to [localhost:8080/](http://localhost:8080/). Bam! That's your local AIS environment.
 
-### Set up the locale
-First off, your DO droplet will likely complain about your locale settings. To fix this you can comment out the line
-```bash
-SendEnv LANG LC_*
-```
-in your **local** machine's `ssh_config` (might be at `/etc/ssh/ssh_config`). 
+This will set up a dev environment in a virtual machine for you and port-forward the Django server so you can access it from your host operating system. The repo folder is shared with the VM and the AIS app will reload whenever files change. Basically: Write code, refresh your browser tab, repeat.
 
-### Install all the things
-```bash
-apt-get update
-apt-get -y install sudo wget git python gcc python3-dev python3-pip nginx libpcre3 libpcre3-dev libpq-dev vim
-pip3 install virtualenv
-```
+If you need ssh access to the VM just run `vagrant ssh` from the repo's root. The repo is mirrored in the `/vagrant` folder of the VM. The [Vagrant documentation](https://www.vagrantup.com/docs/) is really nice if you want to do something fancy.
 
-### Download and install the AIS code:
-```bash
-git clone https://github.com/armada-ths/ais.git
-```
-It's all downhill from here!
-```bash
-cd ais
-virtualenv ais_venv
-. ais_venv/bin/activate
-pip3 install -r requirements.txt
-```
-
-Running the local server
-------------------------
-Create a local_settngs.py file (see local_settings.py.example) or the Local settings section.
-- Make migrations
-```bash
-python manage.py makemigration --settings local_settings
-```
-- Activate virutal environment
-```bash
-. ais_venv/bin/activate
-```
-- Run server
-```bash
-python manage.py runserver [your local ip]:[port] --settings local_settings
-```
-
-Local settings
---------------
-Read this section if you do not want to use a PostgreSQL.
-- Copy a the settings.py file to the /ais/ root directory or use the the local_settings.py.example file
-- Install SQLite
-```bash
-apt-get -y install sqlite3
-```
-- Delete line about secrets (this file is not present in git and will NEVER be)
-```bash
-from ais.secrets import *
-```
-- Delete database lines and replace with SQLite3
-```bash
-'ENGINE': 'django.db.backends.sqlite3',
-'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-```
-- You also need to setup the directories (so it points to your local directories for static files, templates and such)
-
-- To run the local server you will need to always run within the vritual environment.
-
-# Setting up a new AIS server
+# Setting up a new production server
 This instructions are used for settings up a new instance of AIS
 
 Installing PostgreSQL
