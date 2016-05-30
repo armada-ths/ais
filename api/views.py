@@ -9,12 +9,12 @@ def root(request):
 def exhibitors(request):
     companies = Company.objects.all();
     data = [company_serializer(company) for company in companies]
-    return JsonResponse({'exhibitors': data})
+    return JsonResponse(data, safe=False)
 
 def events(request):
     events = Event.objects.filter(make_event_public=True)
     data = [event_serializer(event) for event in events]
-    return JsonResponse({'events':data})
+    return JsonResponse(data, safe=False)
 
 def news(request):
-    return JsonResponse({'news':[]})
+    return JsonResponse([], safe=False)

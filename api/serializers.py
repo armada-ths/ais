@@ -1,5 +1,11 @@
+from collections import OrderedDict
+
 def company_serializer(company):
-    return {'name': company.name}
+    return OrderedDict({'id': company.pk,
+            'name': company.name,
+    })
 
 def event_serializer(event):
-    return {'name': event.name}
+    return OrderedDict({'id': event.pk,
+            'name': event.name,
+    })
