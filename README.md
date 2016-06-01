@@ -9,6 +9,8 @@ In the spirit of open source software development, AIS always encourages communi
 1. Nothing to see here, continue to next section.
 2. Actually yes there is, work on branches and send a PR for anything non-trivial. No long-running branches.
 
+Also, check out the [CONTRIBUTING.md](CONTRIBUTING.md).
+
 Development setup
 -------------
 1. Download [VirtualBox](https://www.virtualbox.org) and [Vagrant](https://www.vagrantup.com/downloads.html)
