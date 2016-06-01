@@ -9,6 +9,8 @@ In the spirit of open source software development, AIS always encourages communi
 1. Nothing to see here, continue to next section.
 2. Actually yes there is, work on branches and send a PR for anything non-trivial. No long-running branches.
 
+Also, check out the [CONTRIBUTING.md](CONTRIBUTING.md).
+
 Installation
 -------------
 Our preferred build environment is a Debian 8.3 x64 [Digital Ocean](https://www.digitalocean.com) droplet (the cheapest one will do for testing). Mileage may vary on other systems. If something doesn't work (likely) then [let us know](https://github.com/armada-ths/ais/issues/new) 🍻
