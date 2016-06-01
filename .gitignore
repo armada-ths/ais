@@ -11,3 +11,5 @@ local_settings.py
 run_server.sh
 .idea/*
 *~
+.vagrant/
+
