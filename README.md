@@ -11,6 +11,10 @@ In the spirit of open source software development, AIS always encourages communi
 
 Also, check out the [CONTRIBUTING.md](CONTRIBUTING.md).
 
+Getting Started: Local Development
+-----------------------------------
+Instructions for [OSX](docs/getting_started_mac.md), [Ubuntu](docs/getting_started_linux.md), and [Windows](docs/getting_started_windows.md) are available.
+
 Installation
 -------------
 Our preferred build environment is a Debian 8.3 x64 [Digital Ocean](https://www.digitalocean.com) droplet (the cheapest one will do for testing). Mileage may vary on other systems. If something doesn't work (likely) then [let us know](https://github.com/armada-ths/ais/issues/new) 🍻
@@ -20,7 +24,7 @@ First off, your DO droplet will likely complain about your locale settings. To f
 ```bash
 SendEnv LANG LC_*
 ```
-in your **local** machine's `ssh_config` (might be at `/etc/ssh/ssh_config`). 
+in your **local** machine's `ssh_config` (might be at `/etc/ssh/ssh_config`).
 
 ### Install all the things
 ```bash
@@ -121,5 +125,3 @@ In ais/restart_uwsgi_server.sh change:
 
 Link (sudo ln -s /home/deployment/ais/ais_nginx.conf /etc/nginx/sites-enabled/) and unlink /etc/nginx/sites-enabled/default
 Add your user to the group www-data with: sudo adduser username www-data
-
-
