@@ -8,11 +8,12 @@ import sys
 import csv
 import urllib
 
+sms_password = ""
 def send_sms(phone_number, message):
     sms_url='http://smsserver.pixie.se/sendsms?'
     data=urllib.urlencode({
                             'account':'10910843',
-                            'pwd':'wecuTE2U',
+                            'pwd':sms_password,
                             'receivers':phone_number,
                             'sender':'Armada',
                             'message':message
@@ -33,6 +34,8 @@ def main():
     error_file = open('errors.txt', 'w')
     number_of_errors = 0
     number_of_readins = 0
+
+    sms_password = raw_input("SMS service password: ")
 
     with open(str(sys.argv[1]), 'rb') as csvfile:
         # Read the CSV as a python dict
