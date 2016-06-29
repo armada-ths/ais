@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^login/', cas_views.login, name='login'),
     url(r'^logout/', cas_views.logout, name='logout'),
 
+    # WSIWYG
+    url(r'^tinymce/', include('tinymce.urls')),
+
 
     # Root
     url(r'^', include('root.urls')),
