@@ -53,6 +53,12 @@ def recruitment(request, template_name='recruitment/recruitment.html'):
     data['recruitment_periods'] = recruitmentPeriods
     return render(request, template_name, data)
 
+def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
+    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    data = {}
+    data['period'] = recruitment_period
+    return render(request, template_name, data)
+
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     recruitment_period.delete()

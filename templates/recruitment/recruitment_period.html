@@ -2,32 +2,10 @@
 {% block nav-recruitment %}<li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
 {% block content %}
 
+
     <div class="jumbotron">
-  <h1>Recruitment</h1>
-  <p>Armada only recruits the sweetest KTH students</p>
-        <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary btn-lg">New recruitment period</button></a></p>
-</div>
-    <table class="table">
-    <thead>
-    <tr>
-    <th>Name</th><th>Start</th><th>End</th>
-    </tr>
-    </thead>
-
-    {% for period in recruitment_periods %}
-    <tr>
-    <td><a href="{% url 'recruitment_period' period.id %}">{{period.name}}</a></td>
-    <td>{{ period.start_date }}</td>
-    <td>{{ period.end_date }}</td>
-    </tr>
-    {% endfor %}
-    </table>
-    <!--
-    {% for period in recruitment_periods %}
-    <h2>{{ period.name }}</h2>
-
-        <p><a href="{% url 'recruitment_application_new' period.id %}"><button class="btn btn-default btn-sm">Apply</button></a>
-            <a href="{% url 'recruitment_period_delete' period.id %}"><button class="btn btn-danger btn-sm">Delete</button></a></p>
+  <h1>{{ period.name }}</h1>
+    <p>Apply between <strong>{{ period.start_date }}</strong> and <strong>{{ period.end_date }}</strong></p>
         <p>We are looking for:</p>
         <ul>
         {% for role in period.recruitablerole_set.all %}
@@ -35,9 +13,14 @@
             {% endfor %}
         </ul>
 
+
+    <p><a href="{% url 'recruitment_application_new' period.id %}"><button class="btn btn-default">Apply</button></a>
+            <a href="{% url 'recruitment_period_delete' period.id %}"><button class="btn btn-danger">Delete</button></a></p>
+
+</div>
+
         {% if period.recruitmentapplication_set.all %}
 
-            <!--
     <table class="table">
     <thead>
     <tr>
@@ -71,6 +54,6 @@
         {% endif %}
 
 
-    {% endfor %}
+
 
 {% endblock %}
