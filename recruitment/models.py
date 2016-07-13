@@ -34,6 +34,7 @@ class RecruitmentApplication(models.Model):
     submissionDate = models.DateTimeField(default=datetime.datetime.now, blank=True)
     recommendedRole = models.ForeignKey(RecruitableRole, null=True, blank=True)
     delegatedRole = models.ForeignKey(RecruitableRole, null=True, blank=True, related_name='delegatedRole')
+    superiorUser = models.ForeignKey(User, null=True, blank=True, related_name='superiorUser')
 
     def __str__(self):
         return '%s' % (self.user)

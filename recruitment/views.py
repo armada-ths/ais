@@ -102,6 +102,25 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
         'role_keys': role_keys,
         'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)})
 
+
+def set_model_value_from_request_key(request, application, model, model_field, request_key):
+    if request_key in request.POST:
+        try:
+            print("HERE WE ARE")
+            role_id = int(request.POST[request_key])
+            role = model.objects.filter(id=role_id).first()
+            # application.delegatedRole = role
+            setattr(application, model_field, role)
+            #setattr(application, 'delegatedRole', role)
+            # application['delegatedRole'] = role
+            application.save()
+        except ValueError:
+            setattr(application, model_field, None)
+            application.delegatedRole = None
+            application.save()
+            print('Role id was not an int')
+
+
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     print(request.POST)
@@ -112,6 +131,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     interview_date_key = 'interviewDate'
     interview_location_key = 'interviewLocation'
     delegated_role_key = 'delegated_role'
+    superior_user_key = 'superior_user'
     recommended_role_key = 'recommended_role'
 
     if request.POST:
@@ -133,7 +153,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                 application.recommendedRole = role
                 application.save()
             except ValueError:
-                application.delegatedRole = None
+                application.recommendedRole = None
                 application.save()
                 print('Role id was not an int')
 
@@ -142,10 +162,25 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                 print("HERE WE ARE")
                 role_id = int(request.POST[delegated_role_key])
                 role = RecruitableRole.objects.filter(id=role_id).first()
-                application.delegatedRole = role
+
+                #application.delegatedRole = role
+                setattr(application, 'delegatedRole', role)
+                #application['delegatedRole'] = role
                 application.save()
             except ValueError:
                 application.delegatedRole = None
+                application.save()
+                print('Role id was not an int')
+
+        if superior_user_key in request.POST:
+            try:
+                print("HERE WE ARE")
+                role_id = int(request.POST[superior_user_key])
+                role = User.objects.filter(id=role_id).first()
+                application.superiorUser = role
+                application.save()
+            except ValueError:
+                application.superiorUser = None
                 application.save()
                 print('Role id was not an int')
 
@@ -197,12 +232,14 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                         recruitmentApplication=application
                     )
                     answer_string = request.POST[key]
+                    print(key + " " + answer_string)
+
                     if answer_string:
                         answer.answer = answer_string
                         answer.save()
 
-                    else:
-                        InterviewQuestionAnswer.objects.filter(
+                else:
+                    InterviewQuestionAnswer.objects.filter(
                             interviewQuestion=interviewQuestion,
                             recruitmentApplication=application
                         ).delete()

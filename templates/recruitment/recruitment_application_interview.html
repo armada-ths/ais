@@ -118,17 +118,9 @@
                         UNKNOWN FIELD TYPE!
                     {% endif %}
                 {% endfor %}
-                <button type="submit" class="btn btn-primary">Save</button>
-            </form>
-        </div>
-
-            <div class="row">
-                        <hr>
-            <h3>Delegate role</h3>
-        </div>
-                    <div class="row">
-            <form method="post"><div class="form-group">
-            {% csrf_token %}
+                <hr>
+                        <div class="form-group">
+            <label>Delegated role</label>
                     <select class="form-control" name="delegated_role">
                         <option value="">---------</option>
                         {% for role in roles %}
@@ -136,12 +128,22 @@
                                     selected {% endif %}>{{ role }}</option>
                         {% endfor %}
                     </select>
-                </div>
-
-            <button type="submit" class="btn btn-primary">Save</button>
-            </form><br>
-
+            </div>
+        <div class="form-group">
+        <label>Superior</label>
+            <select class="form-control" name="superior_user">
+                        <option value="">---------</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}" {% if user == application.superiorUser %}
+                                    selected {% endif %}>{{ user }}</option>
+                        {% endfor %}
+                    </select>
         </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+
+
     </div>
 
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
