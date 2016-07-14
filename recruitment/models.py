@@ -59,15 +59,18 @@ class RoleApplication(models.Model):
 
 
 class CustomField(models.Model):
-    extra_field = models.ForeignKey(ExtraField)
-    question = models.CharField(max_length=1000)
-    field_type = models.CharField(choices=[
+
+    fields = [
         ('text_field', 'Text field'),
         ('check_box', 'Check box'),
         ('text_area', 'Text area'),
         ('radio_buttons', 'Radio buttons'),
         ('file', 'File'),
-        ('image', 'Image')], default='text_field', max_length=20)
+        ('image', 'Image')]
+
+    extra_field = models.ForeignKey(ExtraField)
+    question = models.CharField(max_length=1000)
+    field_type = models.CharField(choices=fields, default='text_field', max_length=20)
 
     def __str__(self):
         return '%s' % (self.question)

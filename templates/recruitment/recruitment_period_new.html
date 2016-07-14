@@ -7,6 +7,9 @@
     <hr>
   </div>
 
+
+
+
 <div class="row">
    <form method="post">
     {%  csrf_token %}
@@ -22,6 +25,11 @@
                             </label>
                         </div>
        {% endfor %}
+
+
+        <div id="interview-questions"></div>
+<button onclick="newInterviewQuestion(Math.round((Math.random() * 100000)) % 10000, 'text_field', '', '')" type="button" class="btn btn-default">New question</button>
+
 </div>
         <button type="submit" class="btn btn-primary">Submit</button>
 
@@ -32,8 +40,47 @@
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 <script>
+
+function domElementFromString(html) {
+        const dummy = document.createElement('div')
+        dummy.innerHTML = html.trim()
+        return dummy.firstChild
+    }
+    function newInterviewQuestion(id, fieldType, question, arguments) {
+        //const id = Math.round((Math.random() * 100000)) % 10000
+        document.getElementById('interview-questions').appendChild(domElementFromString(`<div class="form-group" id="${id}">
+                                <label for="{{ question.id }}">Question</label>
+                                <div class="form-group row">
+
+                                <div class="col-md-2">
+                                    <select class="form-control" name="question-type_${id}">
+
+                                    {% for field in fields %}
+                                    <option value="{{ field.0 }}" ${'{{ field.0 }}' === fieldType ? 'selected' : ''}>{{ field.1 }}</option>
+                            {% endfor %}
+                        </select>
+                        </div>
+                        <div class="col-md-7"><input type="text" class="form-control" id="{{ question.id }}" name="question_${id}" value="${question}" placeholder="Question"></div>
+                        <div class="col-md-2"><input type="text" class="form-control" id="{{ question.id }}" name="question-arguments_${id}" value="${arguments}" placeholder="Arguments"></div>
+                        <div class="col-md-1"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger">Remove</div>
+                        </div>`))
+    }
+
+
+
 $(document).ready(function() {
     $('.datepicker').datepicker();
+    //newInterviewQuestion()
+        {%  for custom_field in custom_fields %}
+        newInterviewQuestion({{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', 'trol')
+    {% endfor %}
 });
+
+
+
+
+
+
+
 </script>
 {% endblock %}

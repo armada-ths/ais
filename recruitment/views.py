@@ -85,15 +85,57 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
                 print(role_key)
             else:
                 RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role).delete()
+
+
+
+        question_ids = []
+        for key in request.POST:
+            question_key_prefix = 'question_'
+            key_split = key.split(question_key_prefix)
+            if len(key_split) == 2:
+                question_ids.append(int(key_split[1]))
+
+        print(question_ids)
+
+
+        for question in recruitment_period.extra_field.customfield_set.all():
+            print(question)
+            if question.id not in question_ids:
+                question.delete()
+
+        for question_id in question_ids:
+            custom_field = CustomField.objects.filter(pk=question_id).first()
+            if not custom_field:
+                custom_field = CustomField()
+
+            custom_field.extra_field = recruitment_period.extra_field
+            custom_field.question = request.POST['question_%d' % question_id]
+            custom_field.field_type = request.POST['question-type_%d' % question_id]
+            #custom_field.field_type = request.POST['question-type_%d' % question_id]
+
+            custom_field.save()
+
+
+            print('Storing custom field %d' % question_id)
+            print('Field type %s' % custom_field.field_type)
+            print('Extra Field type %s' % custom_field.extra_field.id)
+            print('Question %s' % custom_field.question)
+
+
+
+
         return redirect('/recruitment/%d' % recruitment_period.id)
     else:
         print(form.errors)
         print("Ai'nt no valid form!")
 
-    return render(request, template_name, {'form': form, 'roles': roles})
+    custom_fields = []
+    if recruitment_period:
+        for question in recruitment_period.extra_field.customfield_set.all():
+            custom_fields.append(question)
 
 
-
+    return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields, 'custom_fields': custom_fields})
 
 
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
