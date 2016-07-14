@@ -11,7 +11,18 @@
    <form method="post">
     {%  csrf_token %}
         {{ form|crispy }}
-       {{ roles_form|crispy }}
+
+<div class="form-group">
+        <label>Roles</label>
+       {% for role in roles %}
+           <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="role_{{ role.role.id }}" {% if role.checked %}
+                                       checked {% endif %}> {{  role.role }}
+                            </label>
+                        </div>
+       {% endfor %}
+</div>
         <button type="submit" class="btn btn-primary">Submit</button>
 
     </form>

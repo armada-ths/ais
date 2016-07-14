@@ -15,6 +15,7 @@
 
 
     <p><a href="{% url 'recruitment_application_new' period.id %}"><button class="btn btn-default">Apply</button></a>
+        <a href="{% url 'recruitment_period_edit' period.id %}"><button class="btn btn-default">Edit</button></a>
             <a href="{% url 'recruitment_period_delete' period.id %}"><button class="btn btn-danger">Delete</button></a></p>
 
 </div>

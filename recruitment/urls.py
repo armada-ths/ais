@@ -6,7 +6,8 @@ from django.conf.urls.static import  static
 urlpatterns = [
     url(r'^$', views.recruitment, name='recruitment'),
     url(r'^(?P<pk>\d+)$', views.recruitment_period, name='recruitment_period'),
-    url(r'^new$', views.recruitment_period_new, name='recruitment_period_new'),
+    url(r'^edit/(?P<pk>\d+)$', views.recruitment_period_edit, name='recruitment_period_edit'),
+    url(r'^new$', views.recruitment_period_edit, name='recruitment_period_new'),
     url(r'^(?P<pk>\d+)/delete$', views.recruitment_period_delete, name='recruitment_period_delete'),
     url(r'^(?P<pk>\d+)/application/new$', views.recruitment_application_new, name='recruitment_application_new'),
 

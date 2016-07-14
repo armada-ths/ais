@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, InterviewQuestion, InterviewQuestionAnswer
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, CustomField, CustomFieldAnswer, CustomFieldArgument
 from django.forms import ModelForm
 from django import forms
 
@@ -20,6 +20,7 @@ class RecruitmentPeriodForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(RecruitmentPeriodForm, self).__init__(*args, **kwargs)
 
+
     class Meta:
         model = RecruitmentPeriod
         fields = '__all__'
@@ -27,6 +28,7 @@ class RecruitmentPeriodForm(ModelForm):
         widgets = {
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
+            "extra_field": forms.HiddenInput(),
         }
 
 class RecruitmentApplicationForm(ModelForm):
@@ -38,14 +40,14 @@ class RoleApplicationForm(ModelForm):
 
     def __init__(self, recruitment_period,*args,**kwargs):
         super (RoleApplicationForm,self ).__init__(*args,**kwargs)
-        self.fields['recruitableRole'].queryset = RecruitableRole.objects.filter(recruitment_period=recruitment_period)
+        self.fields['recruitable_role'].queryset = RecruitableRole.objects.filter(recruitment_period=recruitment_period)
 
         for x in xrange(10):  # just a dummy for 10 values
             self.fields['col' + str(x)] = forms.CharField(label='Column ' + str(x), max_length=100, required=False)
 
     class Meta:
         model = RoleApplication
-        fields = ('recruitableRole',)
+        fields = ('recruitable_role',)
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
     recruitmentPeriods = RecruitmentPeriod.objects.all()
@@ -62,22 +64,35 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     recruitment_period.delete()
-    return redirect('recruitment')
+    return redirect('/recruitment/%d' % recruitment_period.id)
 
-def recruitment_period_new(request, template_name='recruitment/recruitment_period_new.html'):
-    print("EY YO!")
-    form = RecruitmentPeriodForm(request.POST or None)
-    roles_form = inlineformset_factory(RecruitmentPeriod, RecruitableRole, fields=('role',))(request.POST or None)
-    interview_questions_form = inlineformset_factory(RecruitmentPeriod, InterviewQuestion, fields=('recruitmentPeriod',))(request.POST or None)
-    if form.is_valid() and roles_form.is_valid():
-        recruitmentPeriod = form.save()
-        roles_form.instance = recruitmentPeriod
-        roles_form.save()
-        return redirect('recruitment')
+
+def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
+    recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
+    form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
+    roles = []
+
+    for role in Group.objects.filter(is_role=True):
+        roles.append({'role': role, 'checked': len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) > 0})
+
+    if form.is_valid():
+        recruitment_period = form.save()
+        for role in Group.objects.filter(is_role=True):
+            role_key = 'role_%d' % role.id
+            if role_key in request.POST:
+                if len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) == 0:
+                    RecruitableRole.objects.create(recruitment_period=recruitment_period, role=role)
+                print(role_key)
+            else:
+                RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role).delete()
+        return redirect('/recruitment/%d' % recruitment_period.id)
     else:
         print(form.errors)
         print("Ai'nt no valid form!")
-    return render(request, template_name, {'form': form, 'roles_form': roles_form, 'interview_questions_form': interview_questions_form})
+
+    return render(request, template_name, {'form': form, 'roles': roles})
+
+
 
 
 
@@ -88,14 +103,14 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
     if len(role_ids) > 0:
         recruitment_application = RecruitmentApplication()
         recruitment_application.user = request.user
-        recruitment_application.recruitmentPeriod = recruitment_period
+        recruitment_application.recruitment_period = recruitment_period
         recruitment_application.save()
         for role_id in role_ids:
             role_application = RoleApplication()
-            role_application.recruitmentApplication = recruitment_application
-            role_application.recruitableRole = RecruitableRole.objects.filter(pk=role_id).first()
+            role_application.recruitment_application = recruitment_application
+            role_application.recruitable_role = RecruitableRole.objects.filter(pk=role_id).first()
             role_application.save()
-        return redirect('recruitment')
+        return redirect('/recruitment/%d' % recruitment_period.id)
 
 
     return render(request, template_name, {
@@ -103,10 +118,10 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
         'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)})
 
 
-def set_foreign_key_from_request(request, model, model_field, foreign_key_model, request_key):
-    if request_key in request.POST:
+def set_foreign_key_from_request(request, model, model_field, foreign_key_model):
+    if model_field in request.POST:
         try:
-            foreign_key_id = int(request.POST[request_key])
+            foreign_key_id = int(request.POST[model_field])
             role = foreign_key_model.objects.filter(id=foreign_key_id).first()
             setattr(model, model_field, role)
             model.save()
@@ -114,25 +129,66 @@ def set_foreign_key_from_request(request, model, model_field, foreign_key_model,
             setattr(model, model_field, None)
             model.save()
 
-def set_int_key_from_request(request, model, model_field, request_key):
-    if request_key in request.POST:
+def set_int_key_from_request(request, model, model_field):
+    if model_field in request.POST:
         try:
-            setattr(model, model_field, int(request.POST[request_key]))
+            setattr(model, model_field, int(request.POST[model_field]))
             model.save()
         except ValueError:
             setattr(model, model_field, None)
             model.save()
             print('Role id was not an int')
 
-def set_string_key_from_request(request, model, model_field, request_key):
-    if request_key in request.POST:
+def set_string_key_from_request(request, model, model_field):
+    if model_field in request.POST:
         try:
-            setattr(model, model_field, request.POST[request_key])
+            setattr(model, model_field, request.POST[model_field])
             model.save()
         except ValueError:
             setattr(model, model_field, None)
             model.save()
 
+
+def handleCustomFieldsFromRequest(request, extra_field, file_storage_directory_path):
+    for custom_field in extra_field.customfield_set.all():
+        key = '%s' % (custom_field.id,)
+        if custom_field.field_type == 'file' or custom_field.field_type == 'image':
+            if key in request.FILES:
+                file = request.FILES[key]
+                print(request.FILES[key])
+                file_path = file_storage_directory_path
+
+                file_path = file_storage_directory_path + '/' + file.name
+                file_path = 'recruitment-applications/%d/%s' % (application.id, file.name,)
+                path = default_storage.save(file_path, ContentFile(file.read()))
+                tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                print(tmp_file)
+
+                answer, created = CustomFieldAnswer.objects.get_or_create(
+                    custom_field=custom_field,
+                    user=request.user
+                )
+                answer.answer = file_path
+                answer.save()
+        else:
+            if key in request.POST:
+                print("FOUND %s - %s" % (key, request.POST[key]))
+                answer, created = CustomFieldAnswer.objects.get_or_create(
+                    custom_field=custom_field,
+                    user=request.user
+                )
+                answer_string = request.POST[key]
+                print(key + " " + answer_string)
+
+                if answer_string:
+                    answer.answer = answer_string
+                    answer.save()
+
+            else:
+                CustomFieldAnswer.objects.filter(
+                    custom_field=custom_field,
+                    user=request.user
+                ).delete()
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
@@ -140,75 +196,32 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     print(request.FILES)
 
     if request.POST:
-        set_foreign_key_from_request(request, application, 'interviewer', User, 'interviewer')
-        set_foreign_key_from_request(request, application, 'recommendedRole', RecruitableRole, 'recommended_role')
-        set_foreign_key_from_request(request, application, 'delegatedRole', RecruitableRole, 'delegated_role')
-        set_foreign_key_from_request(request, application, 'superiorUser', User, 'superior_user')
-        set_int_key_from_request(request, application, 'rating', 'rating')
-        set_string_key_from_request(request, application, 'interviewLocation', 'interviewLocation')
-        set_string_key_from_request(request, application, 'interviewDate', 'interviewDate')
+        set_foreign_key_from_request(request, application, 'interviewer', User)
+        set_foreign_key_from_request(request, application, 'recommended_role', RecruitableRole)
+        set_foreign_key_from_request(request, application, 'delegated_role', RecruitableRole)
+        set_foreign_key_from_request(request, application, 'superior_user', User)
+        set_int_key_from_request(request, application, 'rating')
+        set_string_key_from_request(request, application, 'interview_location')
+        set_string_key_from_request(request, application, 'interview_date')
+        handleCustomFieldsFromRequest(request, application.recruitmentPeriod.extra_field, 'recruitment-applications/%d' % (application.id,))
 
-        for interviewQuestion in InterviewQuestion.objects.filter(recruitmentPeriod=application.recruitmentPeriod):
-            key = '%s' % (interviewQuestion.id,)
-            if interviewQuestion.fieldType == InterviewQuestion.FILE or interviewQuestion.fieldType == InterviewQuestion.IMAGE:
-                if key in request.FILES:
-                    file = request.FILES[key]
-                    print("FOUND FILE")
-                    print(request.FILES[key])
-                    file_path = 'recruitment-applications/%d/%s' % (application.id, file.name,)
-                    path = default_storage.save(file_path, ContentFile(file.read()))
-                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
-                    print(tmp_file)
 
-                    answer, created = InterviewQuestionAnswer.objects.get_or_create(
-                        interviewQuestion=interviewQuestion,
-                        recruitmentApplication=application
-                    )
-                    answer.answer = file_path
-                    answer.save()
-            else:
-                if key in request.POST:
-                    print("FOUND %s - %s" % (key, request.POST[key]))
-                    answer, created = InterviewQuestionAnswer.objects.get_or_create(
-                        interviewQuestion=interviewQuestion,
-                        recruitmentApplication=application
-                    )
-                    answer_string = request.POST[key]
-                    print(key + " " + answer_string)
-
-                    if answer_string:
-                        answer.answer = answer_string
-                        answer.save()
-
-                else:
-                    InterviewQuestionAnswer.objects.filter(
-                            interviewQuestion=interviewQuestion,
-                            recruitmentApplication=application
-                        ).delete()
-
-    interviewQuestions = []
-    for interviewQuestion in InterviewQuestion.objects.all():
-        answer = InterviewQuestionAnswer.objects.filter(interviewQuestion=interviewQuestion, recruitmentApplication=application).first()
-        interviewQuestions.append((interviewQuestion, answer))
+    custom_fields = []
+    for custom_field in application.recruitmentPeriod.extra_field.customfield_set.all():
+        answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
+                                                            user=request.user).first()
+        custom_fields.append((custom_field, answer))
 
     return render(request, template_name, {
         'application': application,
-        'field_type': {
-            'check_box': InterviewQuestion.CHECK_BOX,
-            'text_field': InterviewQuestion.TEXT_FIELD,
-            'text_area': InterviewQuestion.TEXT_AREA,
-            'radio_buttons': InterviewQuestion.RADIO_BUTTONS,
-            'file': InterviewQuestion.FILE,
-            'image': InterviewQuestion.IMAGE,
-        },
-        'interviewQuestions': interviewQuestions,
+        'custom_fields': custom_fields,
         'users': User.objects.all(),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitmentPeriod),
-        'ratings': [i for i in range(1,6)],
+        'ratings': [i for i in range(1,6)]
     })
 
 
 def recruitment_application_delete(request, pk):
-    recruitmentApplication = get_object_or_404(RecruitmentApplication, pk=pk)
-    recruitmentApplication.delete()
-    return redirect('recruitment')
+    recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
+    recruitment_application.delete()
+    return redirect('/recruitment/%d' % recruitment_application.recruitmentPeriod.id)

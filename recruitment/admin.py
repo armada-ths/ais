@@ -1,31 +1,33 @@
 from django.contrib import admin
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, InterviewQuestion, InterviewQuestionAnswer, InterviewQuestionFieldArgument
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, ExtraField, CustomField, CustomFieldAnswer, CustomFieldArgument
 
 class RecruitableRoleInline(admin.TabularInline):
     model = RecruitableRole
 
-class InterviewQuestionInline(admin.TabularInline):
-    model = InterviewQuestion
+class CustomFieldInline(admin.TabularInline):
+    model = CustomField
 
-class InterviewQuestionAnswerInline(admin.TabularInline):
-    model = InterviewQuestionAnswer
+class CustomFieldAnswerInline(admin.TabularInline):
+    model = CustomFieldAnswer
 
-class InterviewQuestionFieldArgumentInline(admin.TabularInline):
-    model = InterviewQuestionFieldArgument
+class CustomFieldArgumentInline(admin.TabularInline):
+    model = CustomFieldArgument
 
-class InterviewQuestionAdmin(admin.ModelAdmin):
-
-    inlines = [InterviewQuestionFieldArgumentInline]
+class CustomFieldAdmin(admin.ModelAdmin):
+    inlines = [CustomFieldArgumentInline]
 
 class RecruitmentPeriodAdmin(admin.ModelAdmin):
-    inlines = [RecruitableRoleInline, InterviewQuestionInline]
+    inlines = [RecruitableRoleInline]
 
 class RoleApplicationInline(admin.TabularInline):
     model = RoleApplication
 
 class RecruitmentApplicationAdmin(admin.ModelAdmin):
-    inlines = [RoleApplicationInline, InterviewQuestionAnswerInline]
+    inlines = [RoleApplicationInline]
 
 admin.site.register(RecruitmentPeriod, RecruitmentPeriodAdmin)
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)
-admin.site.register(InterviewQuestion, InterviewQuestionAdmin)
+admin.site.register(CustomField, CustomFieldAdmin)
+
+#admin.site.register(ExtraField)
+#admin.site.register(CustomField)
