@@ -18,6 +18,7 @@ class RecruitmentPeriod(models.Model):
     end_date = models.DateTimeField()
     fair = models.ForeignKey('fair.Fair')
     extra_field = models.ForeignKey(ExtraField, blank=True, null=True)
+    eligible_roles = models.IntegerField(default=3)
 
     def save(self, *args, **kwargs):
         if not self.pk:

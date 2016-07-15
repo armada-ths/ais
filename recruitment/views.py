@@ -94,12 +94,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
                 question_ids.append(int(key_split[1]))
 
 
-
-
-
-
-
-
         for question in recruitment_period.extra_field.customfield_set.all():
             print(question)
             if question.id not in question_ids:
@@ -113,8 +107,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
             custom_field.extra_field = recruitment_period.extra_field
             custom_field.question = request.POST['question_%d' % question_id]
             custom_field.field_type = request.POST['question-type_%d' % question_id]
-            #custom_field.field_type = request.POST['question-type_%d' % question_id]
-
             custom_field.save()
 
             print('Storing custom field %d' % question_id)
@@ -143,12 +135,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
                     custom_field_argument.value = request.POST[argument_key]
                     custom_field_argument.save()
 
-
-
-
-
-
-
         return redirect('/recruitment/%d' % recruitment_period.id)
     else:
         print(form.errors)
@@ -165,7 +151,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    role_keys = ["1", "2", "3"]
+    role_keys = [str(i) for i in range(0, recruitment_period.eligible_roles)]
     role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
     if len(role_ids) > 0:
         recruitment_application = RecruitmentApplication()
