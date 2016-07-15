@@ -8,9 +8,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 
-from django.forms import inlineformset_factory
 from django.contrib.auth.models import Group, User
-from django.forms import formset_factory
 
 import os
 
@@ -95,7 +93,11 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
             if len(key_split) == 2:
                 question_ids.append(int(key_split[1]))
 
-        print(question_ids)
+
+
+
+
+
 
 
         for question in recruitment_period.extra_field.customfield_set.all():
@@ -115,11 +117,34 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
             custom_field.save()
 
-
             print('Storing custom field %d' % question_id)
             print('Field type %s' % custom_field.field_type)
             print('Extra Field type %s' % custom_field.extra_field.id)
             print('Question %s' % custom_field.question)
+
+            for argument in custom_field.customfieldargument_set.all():
+                if 'argument_%d_%d' % (question_id, argument.id) not in request.POST:
+                    argument.delete()
+
+            for key in request.POST:
+                argument_key_prefix = 'argument_%d_' % question_id
+                key_split = key.split(argument_key_prefix)
+                if len(key_split) == 2:
+                    print(key)
+                    print(key_split)
+                    argument_id = int(key_split[1])
+                    argument_key = 'argument_%d_%d' % (question_id, argument_id)
+
+                    custom_field_argument = CustomFieldArgument.objects.filter(pk=argument_id).first()
+                    if not custom_field_argument:
+                        custom_field_argument = CustomFieldArgument()
+
+                    custom_field_argument.custom_field = custom_field
+                    custom_field_argument.value = request.POST[argument_key]
+                    custom_field_argument.save()
+
+
+
 
 
 
@@ -135,7 +160,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
             custom_fields.append(question)
 
 
-    return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields, 'custom_fields': custom_fields})
+    return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields, 'custom_fields': custom_fields, 'custom_field_ids': map(lambda x: x.id, custom_fields)})
 
 
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
@@ -198,10 +223,7 @@ def handleCustomFieldsFromRequest(request, extra_field, file_storage_directory_p
             if key in request.FILES:
                 file = request.FILES[key]
                 print(request.FILES[key])
-                file_path = file_storage_directory_path
-
                 file_path = file_storage_directory_path + '/' + file.name
-                file_path = 'recruitment-applications/%d/%s' % (application.id, file.name,)
                 path = default_storage.save(file_path, ContentFile(file.read()))
                 tmp_file = os.path.join(settings.MEDIA_ROOT, path)
                 print(tmp_file)
@@ -245,11 +267,11 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         set_int_key_from_request(request, application, 'rating')
         set_string_key_from_request(request, application, 'interview_location')
         set_string_key_from_request(request, application, 'interview_date')
-        handleCustomFieldsFromRequest(request, application.recruitmentPeriod.extra_field, 'recruitment-applications/%d' % (application.id,))
+        handleCustomFieldsFromRequest(request, application.recruitment_period.extra_field, 'recruitment-applications/%d' % (application.id,))
 
 
     custom_fields = []
-    for custom_field in application.recruitmentPeriod.extra_field.customfield_set.all():
+    for custom_field in application.recruitment_period.extra_field.customfield_set.all():
         answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
                                                             user=request.user).first()
         custom_fields.append((custom_field, answer))
@@ -258,7 +280,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'application': application,
         'custom_fields': custom_fields,
         'users': User.objects.all(),
-        'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitmentPeriod),
+        'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'ratings': [i for i in range(1,6)]
     })
 
@@ -266,4 +288,4 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
     recruitment_application.delete()
-    return redirect('/recruitment/%d' % recruitment_application.recruitmentPeriod.id)
+    return redirect('/recruitment/%d' % recruitment_application.recruitment_period.id)

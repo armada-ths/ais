@@ -36,7 +36,7 @@ class RecruitableRole(models.Model):
 
 
 class RecruitmentApplication(models.Model):
-    recruitmentPeriod = models.ForeignKey(RecruitmentPeriod)
+    recruitment_period = models.ForeignKey(RecruitmentPeriod)
     user = models.ForeignKey(User)
     rating = models.IntegerField(default=1)
     interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')

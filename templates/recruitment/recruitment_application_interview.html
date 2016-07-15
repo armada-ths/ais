@@ -164,7 +164,7 @@
                         </div>
                     {% elif question.field_type == 'radio_buttons' %}
                         <label class="radio control-label">{{ question }}</label>
-                        {% for argument in question.argument.all %}
+                        {% for argument in question.customfieldargument_set.all %}
                             <div class="radio">
                                 <label>
                                     <input type="radio" name="{{ question.id }}" value="{{ argument.id }}"
