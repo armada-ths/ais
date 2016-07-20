@@ -11,6 +11,14 @@ class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)
 
+    def questions_with_answers_for_user(self, user):
+        questions_with_answers = []
+        for custom_field in self.customfield_set.all():
+            answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
+                                                      user=user).first()
+            questions_with_answers.append((custom_field, answer))
+        return questions_with_answers
+
 # Model for company
 class RecruitmentPeriod(models.Model):
     name = models.CharField(max_length=30)
@@ -81,6 +89,9 @@ class CustomField(models.Model):
 class CustomFieldArgument(models.Model):
     value = models.CharField(max_length=100)
     custom_field = models.ForeignKey(CustomField)
+
+    def user_answer(self, user):
+        return CustomFieldAnswer.objects.filter(user=user).first()
 
     def id_as_string(self):
         return "%s" % self.id

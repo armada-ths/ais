@@ -193,7 +193,11 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
         return redirect('/recruitment/%d' % recruitment_period.id)
 
 
+    print(recruitment_period.application_questions.questions_with_answers_for_user(request.user))
+
     return render(request, template_name, {
+        'application_questions': recruitment_period.application_questions.questions_with_answers_for_user(request.user),
+        'recruitment_period': recruitment_period,
         'custom_fields': custom_fields,
         'role_keys': role_keys,
         'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)})
@@ -310,6 +314,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
     return render(request, template_name, {
         'application': application,
+        'application_questions': application.recruitment_period.application_questions.questions_with_answers_for_user(request.user),
+        'interview_questions': application.recruitment_period.extra_field.questions_with_answers_for_user(request.user),
         'custom_field_sections': custom_field_sections,
         'users': User.objects.all(),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
