@@ -161,8 +161,8 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
     #return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields, 'custom_fields': custom_fields, 'custom_field_ids': map(lambda x: x.id, custom_fields)})
     return render(request, template_name, {'form': form, 'roles': roles,
-                                           'extra_field': recruitment_period.extra_field.customfield_set.all(),
-                                           'application_questions': recruitment_period.application_questions.customfield_set.all(),
+                                           'extra_field': [] if not recruitment_period else recruitment_period.extra_field.customfield_set.all(),
+                                           'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
                                            })
 
 
