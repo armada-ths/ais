@@ -10,7 +10,6 @@
 <form method="post" action="" enctype="multipart/form-data">
 {% csrf_token %}
     {% for key in role_keys %}
-
         <div class="form-group">
             <label>Role {{ forloop.counter }}</label>
             <select class="form-control" name="{{  key }}">
@@ -20,10 +19,9 @@
             {%  endfor %}
             </select>
         </div>
-
     {% endfor %}
 
-    {%  include 'recruitment/custom_fields.html' with questions_with_answers=application_questions %}
+    {%  include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
 
 <button type="submit" class="btn btn-primary">Submit</button>

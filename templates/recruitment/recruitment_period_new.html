@@ -47,13 +47,15 @@
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 <script>
 
-var custom_field_ids = {}
+var nextCustomFieldId = (function() {
+    var nextValue = Number.MAX_SAFE_INTEGER
 
-{%  for custom_fields, values in custom_field_ids.items %}
-    custom_field_ids['{{ custom_fields }}'] = {{ values }}
-{% endfor %}
-
-var argument_ids = []
+    return function() {
+        const tmp = nextValue;
+        nextValue--;
+        return tmp;
+    }
+})()
 
 function domElementFromString(html) {
         const dummy = document.createElement('div')
@@ -62,9 +64,7 @@ function domElementFromString(html) {
     }
 
     function newInterviewQuestion(extraFieldId) {
-        const id = custom_field_ids[extraFieldId].length > 0 ? Math.max.apply(null, custom_field_ids[extraFieldId])+1 : 1
-        custom_field_ids[extraFieldId].push(id)
-        addInterviewQuestion(extraFieldId, id, 'text_field', '', '')
+        addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '', '')
     }
 
     function addInterviewQuestion(extraFieldId, id, fieldType, question, arguments) {
@@ -103,9 +103,7 @@ function domElementFromString(html) {
     }
 
     function newArgumentToInterviewQuestion(interviewQuestionId) {
-        const id = argument_ids.length > 0 ? Math.max.apply(null, argument_ids)+1 : 1
-        argument_ids.push(id)
-        addArgumentToInterviewQuestion(id, interviewQuestionId, '')
+        addArgumentToInterviewQuestion(nextCustomFieldId(), interviewQuestionId, '')
     }
 
     function addArgumentToInterviewQuestion(argumentId, interviewQuestionId, value) {
@@ -127,7 +125,6 @@ $(document).ready(function() {
         {%  for custom_field in values%}
         addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', 'trol')
             {% for argument in custom_field.customfieldargument_set.all %}
-                argument_ids.push({{argument.id}})
                 addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}')
             {% endfor %}
         {% endfor %}

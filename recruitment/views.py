@@ -74,7 +74,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     for role in Group.objects.filter(is_role=True):
         roles.append({'role': role, 'checked': len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) > 0})
 
-    #('application_question', [], recruitment_period.application_questions, []),
 
     if form.is_valid():
 
@@ -147,7 +146,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
         print("Ai'nt no valid form!")
 
     custom_fields = {'question': [], 'application_questions': []}
-    custom_field_ids = {'question': [], 'application_questions': []}
+
     if recruitment_period:
         extra_fields = [('question', [], recruitment_period.extra_field, []),
                         ('application_questions', [], recruitment_period.application_questions, [])]
@@ -155,23 +154,18 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
             for question in extra_field[2].customfield_set.all():
                 #custom_fields[]
                 custom_fields[extra_field[0]].append(question)
-                custom_field_ids[extra_field[0]].append(question.id)
                 #extra_field[3].append(question)
 
 
     #return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields, 'custom_fields': custom_fields, 'custom_field_ids': map(lambda x: x.id, custom_fields)})
     return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields,
-                                                       'custom_fields': custom_fields,
-                                                       'custom_field_ids': custom_field_ids})
+                                                       'custom_fields': custom_fields})
 
 
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     role_keys = [str(i) for i in range(0, recruitment_period.eligible_roles)]
     role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
-
-
-
     handleCustomFieldsFromRequest(request, recruitment_period.application_questions)
 
     custom_fields = []
@@ -196,7 +190,7 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
     print(recruitment_period.application_questions.questions_with_answers_for_user(request.user))
 
     return render(request, template_name, {
-        'application_questions': recruitment_period.application_questions.questions_with_answers_for_user(request.user),
+        'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(request.user),
         'recruitment_period': recruitment_period,
         'custom_fields': custom_fields,
         'role_keys': role_keys,
@@ -293,30 +287,10 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         handleCustomFieldsFromRequest(request, application.recruitment_period.extra_field)
         handleCustomFieldsFromRequest(request, application.recruitment_period.application_questions)
 
-
-    custom_field_sections = []
-
-    interviewQuestions = []
-    for custom_field in application.recruitment_period.extra_field.customfield_set.all():
-        answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
-                                                            user=request.user).first()
-        interviewQuestions.append((custom_field, answer))
-
-    custom_field_sections.append({'section_name': 'Interview questions', 'custom_fields': interviewQuestions})
-
-    applicationQuestions = []
-    for custom_field in application.recruitment_period.application_questions.customfield_set.all():
-        answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
-                                                  user=request.user).first()
-        applicationQuestions.append((custom_field, answer))
-    custom_field_sections.append({'section_name': 'Application questions', 'custom_fields': applicationQuestions})
-
-
     return render(request, template_name, {
         'application': application,
-        'application_questions': application.recruitment_period.application_questions.questions_with_answers_for_user(request.user),
-        'interview_questions': application.recruitment_period.extra_field.questions_with_answers_for_user(request.user),
-        'custom_field_sections': custom_field_sections,
+        'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(request.user),
+        'interview_questions_with_answers': application.recruitment_period.extra_field.questions_with_answers_for_user(request.user),
         'users': User.objects.all(),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'ratings': [i for i in range(1,6)]

@@ -66,16 +66,8 @@
                     </select>
                 </div>
 
-
-                    <hr>
-            <h3>Application questions</h3>
-                    {%  include 'recruitment/custom_fields.html' with questions_with_answers=application_questions %}
-                    <hr>
-                    <h3>Interview questions</h3>
-                    {%  include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions %}
-
-
-                                    <div class="form-group">
+            <hr>
+                                                <div class="form-group">
             <label>Delegated role</label>
                     <select class="form-control" name="delegated_role">
                         <option value="">---------</option>
@@ -95,6 +87,17 @@
                         {% endfor %}
                     </select>
                 </div>
+
+
+                    <hr>
+            <h3>Application questions</h3>
+                    {%  include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
+                    <hr>
+                    <h3>Interview questions</h3>
+                    {%  include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
+
+
+
                 <hr>
 
                 <button type="submit" class="btn btn-primary">Save</button>
