@@ -27,8 +27,14 @@
        {% endfor %}
 
 
-        <div id="interview-questions"></div>
-<button onclick="newInterviewQuestion()" type="button" class="btn btn-default">New question</button>
+{% for custom_field in custom_fields %}
+    <hr>
+    <h3>{{ custom_field }}</h3>
+    <div id="{{ custom_field }}"></div>
+    <div class="form-group">
+    <button onclick="newInterviewQuestion('{{ custom_field }}')" type="button" class="btn btn-default">New {{ custom_field }}</button>
+    </div>
+{% endfor %}
 
 </div>
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -41,7 +47,12 @@
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 <script>
 
-var custom_field_ids = {{ custom_field_ids }}
+var custom_field_ids = {}
+
+{%  for custom_fields, values in custom_field_ids.items %}
+    custom_field_ids['{{ custom_fields }}'] = {{ values }}
+{% endfor %}
+
 var argument_ids = []
 
 function domElementFromString(html) {
@@ -50,27 +61,27 @@ function domElementFromString(html) {
         return dummy.firstChild
     }
 
-    function newInterviewQuestion() {
-        const id = custom_field_ids.length > 0 ? Math.max.apply(null, custom_field_ids)+1 : 1
-        custom_field_ids.push(id)
-        addInterviewQuestion(id, 'text_field', '', '')
+    function newInterviewQuestion(extraFieldId) {
+        const id = custom_field_ids[extraFieldId].length > 0 ? Math.max.apply(null, custom_field_ids[extraFieldId])+1 : 1
+        custom_field_ids[extraFieldId].push(id)
+        addInterviewQuestion(extraFieldId, id, 'text_field', '', '')
     }
 
-    function addInterviewQuestion(id, fieldType, question, arguments) {
+    function addInterviewQuestion(extraFieldId, id, fieldType, question, arguments) {
         //const id = Math.round((Math.random() * 100000)) % 10000
 
-        document.getElementById('interview-questions').appendChild(domElementFromString(`<div class="form-group" id="${id}">
+        document.getElementById(extraFieldId).appendChild(domElementFromString(`<div class="form-group" id="${id}">
                                 <label>Question</label>
                                 <div class="form-group row">
                                 <div class="col-md-2">
-                                    <select class="form-control" name="question-type_${id}" onchange="(function() { document.getElementById('arguments_${id}_container').hidden = document.forms[0]['question-type_${id}'].value !== 'radio_buttons' })()">
+                                    <select class="form-control" name="${extraFieldId}-type_${id}" onchange="(function() { document.getElementById('arguments_${id}_container').hidden = document.forms[0]['${extraFieldId}-type_${id}'].value !== 'radio_buttons' })()">
 
                                     {% for field in fields %}
                                     <option value="{{ field.0 }}" ${'{{ field.0 }}' === fieldType ? 'selected' : ''}>{{ field.1 }}</option>
                             {% endfor %}
                         </select>
                         </div>
-                        <div class="col-md-9"><input type="text" class="form-control" name="question_${id}" value="${question}" placeholder="Question"></div>
+                        <div class="col-md-9"><input type="text" class="form-control" name="${extraFieldId}_${id}" value="${question}" placeholder="Question"></div>
                         <div class="col-md-1"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button>
 
                         </div>
@@ -112,14 +123,16 @@ function domElementFromString(html) {
 $(document).ready(function() {
     $('.datepicker').datepicker();
     //newInterviewQuestion()
-        {%  for custom_field in custom_fields %}
-        addInterviewQuestion({{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', 'trol')
+        {%  for custom_field_name,values in custom_fields.items %}
+        {%  for custom_field in values%}
+        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', 'trol')
             {% for argument in custom_field.customfieldargument_set.all %}
                 argument_ids.push({{argument.id}})
                 addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}')
             {% endfor %}
         {% endfor %}
 
+    {%  endfor %}
 
 });
 

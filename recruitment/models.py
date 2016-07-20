@@ -18,11 +18,13 @@ class RecruitmentPeriod(models.Model):
     end_date = models.DateTimeField()
     fair = models.ForeignKey('fair.Fair')
     extra_field = models.ForeignKey(ExtraField, blank=True, null=True)
+    application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions')
     eligible_roles = models.IntegerField(default=3)
 
     def save(self, *args, **kwargs):
         if not self.pk:
             self.extra_field = ExtraField.objects.create()
+            self.application_questions = ExtraField.objects.create()
         super(RecruitmentPeriod, self).save(*args, **kwargs)
 
     def __str__(self):
