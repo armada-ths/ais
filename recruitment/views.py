@@ -66,6 +66,59 @@ def recruitment_period_delete(request, pk):
     return redirect('/recruitment/')
 
 
+
+def handleExtraField(request, model, field_name):
+    extra = getattr(model, field_name)
+
+    question_ids = []
+    print("EXTRA_FIELD: " + field_name)
+    for key in request.POST:
+        question_key_prefix = field_name + '_'
+        key_split = key.split(question_key_prefix)
+        if len(key_split) == 2:
+            question_ids.append(int(key_split[1]))
+
+    for question in extra.customfield_set.all():
+        # print(question)
+        if question.id not in question_ids:
+            question.delete()
+
+    for question_id in question_ids:
+        custom_field = CustomField.objects.filter(pk=question_id).first()
+        if not custom_field:
+            custom_field = CustomField()
+
+        custom_field.extra_field = extra
+        custom_field.question = request.POST['%s_%d' % (field_name, question_id)]
+        custom_field.field_type = request.POST['%s-type_%d' % (field_name, question_id)]
+        custom_field.save()
+
+        print('Storing custom field %d' % question_id)
+        print('Field type %s' % custom_field.field_type)
+        print('Extra Field type %s' % custom_field.extra_field.id)
+        print('Question %s' % custom_field.question)
+
+        for argument in custom_field.customfieldargument_set.all():
+            if 'argument_%d_%d' % (question_id, argument.id) not in request.POST:
+                argument.delete()
+
+        for key in request.POST:
+            argument_key_prefix = 'argument_%d_' % question_id
+            key_split = key.split(argument_key_prefix)
+            if len(key_split) == 2:
+                print(key)
+                print(key_split)
+                argument_id = int(key_split[1])
+                argument_key = 'argument_%d_%d' % (question_id, argument_id)
+
+                custom_field_argument = CustomFieldArgument.objects.filter(pk=argument_id).first()
+                if not custom_field_argument:
+                    custom_field_argument = CustomFieldArgument()
+
+                custom_field_argument.custom_field = custom_field
+                custom_field_argument.value = request.POST[argument_key]
+                custom_field_argument.save()
+
 def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
@@ -74,6 +127,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     for role in Group.objects.filter(is_role=True):
         roles.append({'role': role, 'checked': len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) > 0})
 
+    extra_field_names = ['extra_field', 'application_questions']
 
     if form.is_valid():
 
@@ -87,79 +141,29 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
             else:
                 RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role).delete()
 
-        extra_fields = [('question', [], recruitment_period.extra_field, []), ('application_questions', [], recruitment_period.application_questions, [])]
-
-        for extra_field in extra_fields:
-
-            question_ids = extra_field[1]
-            print("EXTRA_FIELD: " + extra_field[0])
-            for key in request.POST:
-                question_key_prefix = extra_field[0] + '_'
-                key_split = key.split(question_key_prefix)
-                if len(key_split) == 2:
-                    question_ids.append(int(key_split[1]))
-
-            for question in extra_field[2].customfield_set.all():
-                print(question)
-                if question.id not in question_ids:
-                    question.delete()
-
-            for question_id in question_ids:
-                custom_field = CustomField.objects.filter(pk=question_id).first()
-                if not custom_field:
-                    custom_field = CustomField()
-
-                custom_field.extra_field = extra_field[2]
-                custom_field.question = request.POST['%s_%d' % (extra_field[0], question_id)]
-                custom_field.field_type = request.POST['%s-type_%d' % (extra_field[0], question_id)]
-                custom_field.save()
-
-                print('Storing custom field %d' % question_id)
-                print('Field type %s' % custom_field.field_type)
-                print('Extra Field type %s' % custom_field.extra_field.id)
-                print('Question %s' % custom_field.question)
-
-                for argument in custom_field.customfieldargument_set.all():
-                    if 'argument_%d_%d' % (question_id, argument.id) not in request.POST:
-                        argument.delete()
-
-                for key in request.POST:
-                    argument_key_prefix = 'argument_%d_' % question_id
-                    key_split = key.split(argument_key_prefix)
-                    if len(key_split) == 2:
-                        print(key)
-                        print(key_split)
-                        argument_id = int(key_split[1])
-                        argument_key = 'argument_%d_%d' % (question_id, argument_id)
-
-                        custom_field_argument = CustomFieldArgument.objects.filter(pk=argument_id).first()
-                        if not custom_field_argument:
-                            custom_field_argument = CustomFieldArgument()
-
-                        custom_field_argument.custom_field = custom_field
-                        custom_field_argument.value = request.POST[argument_key]
-                        custom_field_argument.save()
+        for field_name in extra_field_names:
+            handleExtraField(request, recruitment_period, field_name)
 
         return redirect('/recruitment/%d' % recruitment_period.id)
     else:
         print(form.errors)
         print("Ai'nt no valid form!")
 
-    custom_fields = {'question': [], 'application_questions': []}
+    custom_fields = {'extra_field': [], 'application_questions': []}
+    for field_name in extra_field_names:
+        custom_fields[field_name] = []
 
     if recruitment_period:
-        extra_fields = [('question', [], recruitment_period.extra_field, []),
-                        ('application_questions', [], recruitment_period.application_questions, [])]
-        for extra_field in extra_fields:
-            for question in extra_field[2].customfield_set.all():
-                #custom_fields[]
-                custom_fields[extra_field[0]].append(question)
-                #extra_field[3].append(question)
+        for field_name in extra_field_names:
+            for question in getattr(recruitment_period, field_name).customfield_set.all():
+                custom_fields[field_name].append(question)
 
 
     #return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields, 'custom_fields': custom_fields, 'custom_field_ids': map(lambda x: x.id, custom_fields)})
-    return render(request, template_name, {'form': form, 'roles': roles, 'fields': CustomField.fields,
-                                                       'custom_fields': custom_fields})
+    return render(request, template_name, {'form': form, 'roles': roles,
+                                           'extra_field': recruitment_period.extra_field.customfield_set.all(),
+                                           'application_questions': recruitment_period.application_questions.customfield_set.all(),
+                                           })
 
 
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):

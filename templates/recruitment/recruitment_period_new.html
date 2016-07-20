@@ -7,9 +7,6 @@
     <hr>
   </div>
 
-
-
-
 <div class="row">
    <form method="post">
     {%  csrf_token %}
@@ -25,19 +22,18 @@
                             </label>
                         </div>
        {% endfor %}
-
-
-{% for custom_field in custom_fields %}
-    <hr>
-    <h3>{{ custom_field }}</h3>
-    <div id="{{ custom_field }}"></div>
-    <div class="form-group">
-    <button onclick="newInterviewQuestion('{{ custom_field }}')" type="button" class="btn btn-default">New {{ custom_field }}</button>
-    </div>
-{% endfor %}
-
 </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+
+<hr>
+<h3>Interview questions</h3>
+{% include 'recruitment/create_fields.html' with custom_field_name='extra_field' values=extra_field %}
+
+<hr>
+<h3>Application questions</h3>
+    {% include 'recruitment/create_fields.html' with custom_field_name='application_questions' values=application_questions %}
+
+
+       <button type="submit" class="btn btn-primary">Submit</button>
 
     </form>
 </div>
@@ -45,95 +41,12 @@
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
 <script>
-
-var nextCustomFieldId = (function() {
-    var nextValue = Number.MAX_SAFE_INTEGER
-
-    return function() {
-        const tmp = nextValue;
-        nextValue--;
-        return tmp;
-    }
-})()
-
-function domElementFromString(html) {
-        const dummy = document.createElement('div')
-        dummy.innerHTML = html.trim()
-        return dummy.firstChild
-    }
-
-    function newInterviewQuestion(extraFieldId) {
-        addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '', '')
-    }
-
-    function addInterviewQuestion(extraFieldId, id, fieldType, question, arguments) {
-        //const id = Math.round((Math.random() * 100000)) % 10000
-
-        document.getElementById(extraFieldId).appendChild(domElementFromString(`<div class="form-group" id="${id}">
-                                <label>Question</label>
-                                <div class="form-group row">
-                                <div class="col-md-2">
-                                    <select class="form-control" name="${extraFieldId}-type_${id}" onchange="(function() { document.getElementById('arguments_${id}_container').hidden = document.forms[0]['${extraFieldId}-type_${id}'].value !== 'radio_buttons' })()">
-
-                                    {% for field in fields %}
-                                    <option value="{{ field.0 }}" ${'{{ field.0 }}' === fieldType ? 'selected' : ''}>{{ field.1 }}</option>
-                            {% endfor %}
-                        </select>
-                        </div>
-                        <div class="col-md-9"><input type="text" class="form-control" name="${extraFieldId}_${id}" value="${question}" placeholder="Question"></div>
-                        <div class="col-md-1"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button>
-
-                        </div>
-                        </div>
-
-
-                        <div id="arguments_${id}_container" ${fieldType !== 'radio_buttons' ? 'hidden' : ''}>
-                        <div id="arguments_${id}"></div>
-
-                        <div class="form-group row">
-                        <div class="col-lg-12">
-                        <button onclick="(function() { newArgumentToInterviewQuestion(${id}) })()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add argument</button>
-                        </div>
-                        </div>
-                        </div>
-
-                        </div>
-                        `))
-    }
-
-    function newArgumentToInterviewQuestion(interviewQuestionId) {
-        addArgumentToInterviewQuestion(nextCustomFieldId(), interviewQuestionId, '')
-    }
-
-    function addArgumentToInterviewQuestion(argumentId, interviewQuestionId, value) {
-            var id = `argument_${interviewQuestionId}_${argumentId}`
-             document.getElementById(`arguments_${interviewQuestionId}`).appendChild(domElementFromString(`
-                        <div class="form-group row" id="${id}">
-                            <div class="col-md-2"><input type="text" class="form-control" value="${value}" name="argument_${interviewQuestionId}_${argumentId}" placeholder="Argument"></div>
-                            <div class="col-md-2"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger">
-<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button></div>
-                        </div>
-                        `))
-    }
-
-
 $(document).ready(function() {
     $('.datepicker').datepicker();
     //newInterviewQuestion()
-        {%  for custom_field_name,values in custom_fields.items %}
-        {%  for custom_field in values%}
-        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', 'trol')
-            {% for argument in custom_field.customfieldargument_set.all %}
-                addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}')
-            {% endfor %}
-        {% endfor %}
-
-    {%  endfor %}
-
 });
-
-
-
 </script>
+
 {% endblock %}
