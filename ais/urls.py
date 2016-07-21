@@ -44,10 +44,10 @@ urlpatterns = [
     url(r'^recruitment/', include('recruitment.urls')),
 
     # Api
-    url(r'^api/', include('api.urls'))
+    url(r'^api/', include('api.urls')),
 
     # News
-    url(r'^news/', include('news.urls'))
+    url(r'^news/', include('news.urls')),
 ]
 admin.site.site_title = 'AIS administration'
 admin.site.site_header = 'AIS administration'
