@@ -54,7 +54,8 @@ INSTALLED_APPS = (
     'people',
     'locations',
     'recruitment',
-    'api'
+    'api',
+    'news'
 )
 
 MIDDLEWARE_CLASSES = (

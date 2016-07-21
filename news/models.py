@@ -1,5 +1,4 @@
 from django.db import models
-from tinymce.models import HTMLField
 from django.utils import timezone
 
 
@@ -10,7 +9,7 @@ class NewsArticleManager(models.Manager):
 
 class NewsArticle(models.Model):
     title = models.CharField(max_length=150)
-    html_article_text = HTMLField(default="")
+    html_article_text = models.CharField(default="", max_length=5000)
     publication_date = models.DateTimeField()
 
     def __str__(self):
