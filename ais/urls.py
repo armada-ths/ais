@@ -25,7 +25,6 @@ urlpatterns = [
     url(r'^login/', cas_views.login, name='login'),
     url(r'^logout/', cas_views.logout, name='logout'),
 
-
     # Root
     url(r'^', include('root.urls')),
 
@@ -46,6 +45,9 @@ urlpatterns = [
 
     # Api
     url(r'^api/', include('api.urls'))
+
+    # News
+    url(r'^news/', include('news.urls'))
 ]
 admin.site.site_title = 'AIS administration'
 admin.site.site_header = 'AIS administration'
