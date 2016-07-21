@@ -54,7 +54,6 @@ INSTALLED_APPS = (
     'recruitment',
     'api',
     'news',
-    'tinymce'
 )
 
 MIDDLEWARE_CLASSES = (
