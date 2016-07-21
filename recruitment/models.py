@@ -6,7 +6,6 @@ from fair.models import Fair
 from django.contrib.auth.models import Group, User
 import datetime
 
-
 class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)
@@ -18,6 +17,103 @@ class ExtraField(models.Model):
                                                       user=user).first()
             questions_with_answers.append((custom_field, answer))
         return questions_with_answers
+
+    def handle_questions_from_request(self, request, field_name):
+        extra = self
+
+        question_ids = []
+        print("EXTRA_FIELD: " + field_name)
+        for key in request.POST:
+            question_key_prefix = field_name + '_'
+            key_split = key.split(question_key_prefix)
+            if len(key_split) == 2:
+                question_ids.append(int(key_split[1]))
+
+        for question in extra.customfield_set.all():
+            # print(question)
+            if question.id not in question_ids:
+                question.delete()
+
+        for question_id in question_ids:
+            custom_field = CustomField.objects.filter(pk=question_id).first()
+            if not custom_field:
+                custom_field = CustomField()
+
+            custom_field.extra_field = extra
+            custom_field.question = request.POST['%s_%d' % (field_name, question_id)]
+            custom_field.field_type = request.POST['%s-type_%d' % (field_name, question_id)]
+            custom_field.save()
+
+            print('Storing custom field %d' % question_id)
+            print('Field type %s' % custom_field.field_type)
+            print('Extra Field type %s' % custom_field.extra_field.id)
+            print('Question %s' % custom_field.question)
+
+            for argument in custom_field.customfieldargument_set.all():
+                if 'argument_%d_%d' % (question_id, argument.id) not in request.POST:
+                    argument.delete()
+
+            for key in request.POST:
+                argument_key_prefix = 'argument_%d_' % question_id
+                key_split = key.split(argument_key_prefix)
+                if len(key_split) == 2:
+                    print(key)
+                    print(key_split)
+                    argument_id = int(key_split[1])
+                    argument_key = 'argument_%d_%d' % (question_id, argument_id)
+
+                    custom_field_argument = CustomFieldArgument.objects.filter(pk=argument_id).first()
+                    if not custom_field_argument:
+                        custom_field_argument = CustomFieldArgument()
+
+                    custom_field_argument.custom_field = custom_field
+                    custom_field_argument.value = request.POST[argument_key]
+                    custom_field_argument.save()
+
+    def handle_answers_from_request(self, request):
+        extra_field = self
+        print(request.FILES)
+        print("Number of extra fields: %d" % len(extra_field.customfield_set.all()))
+
+        for custom_field in extra_field.customfield_set.all():
+            key = '%s' % (custom_field.id,)
+            print('looking for key: %s' % key)
+            if custom_field.field_type == 'file' or custom_field.field_type == 'image':
+                print("looking for %s" % custom_field.field_type)
+                if key in request.FILES:
+                    file = request.FILES[key]
+                    print(request.FILES[key])
+                    file_path = 'custom-field/%d_%s.%s' % (request.user.id, key, file.name.split('.')[-1])
+                    path = default_storage.save(file_path, ContentFile(file.read()))
+                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                    print(tmp_file)
+
+                    answer, created = CustomFieldAnswer.objects.get_or_create(
+                        custom_field=custom_field,
+                        user=request.user
+                    )
+                    answer.answer = file_path
+                    answer.save()
+            else:
+                if key in request.POST:
+                    print("FOUND %s - %s" % (key, request.POST[key]))
+                    answer, created = CustomFieldAnswer.objects.get_or_create(
+                        custom_field=custom_field,
+                        user=request.user
+                    )
+                    answer_string = request.POST[key]
+                    print(key + " " + answer_string)
+
+                    if answer_string:
+                        answer.answer = answer_string
+                        answer.save()
+
+                else:
+                    CustomFieldAnswer.objects.filter(
+                        custom_field=custom_field,
+                        user=request.user
+                    ).delete()
+
 
 # Model for company
 class RecruitmentPeriod(models.Model):
