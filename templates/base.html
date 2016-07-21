@@ -3,6 +3,7 @@
 <html lang="en">
   <head>
 	{% include "header.html" %}
+	{% block head-extra %}{% endblock %} 
   </head>
 
   <body>
@@ -16,6 +17,7 @@
                   {% block nav-companies %}<li role="presentation"><a href="{% url 'companies_list' %}">Companies</a></li>{% endblock %}
                   {% block nav-events %}<li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
                   {% block nav-recruitment %}<li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
+                  {% block nav-news %}<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}
                 </ul>
                 <p class="navbar-text navbar-right">Signed in as <a href="/logout" class="navbar-link">{{request.user.get_full_name}}</a></p>
             </div>
