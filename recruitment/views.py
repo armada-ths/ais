@@ -4,7 +4,7 @@ from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, 
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import Group, User
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 
 
 def user_is_pg(user):
@@ -89,14 +89,14 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     })
 
 
-@user_passes_test(user_is_pg)
+@login_required
 def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
     role_keys = [str(i) for i in range(0, recruitment_period.eligible_roles)]
     role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
 
-    if len(role_ids) > 0:
+    if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request)
         if not recruitment_application:
             recruitment_application = RecruitmentApplication()
@@ -111,7 +111,10 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             role_application.recruitment_application = recruitment_application
             role_application.recruitable_role = RecruitableRole.objects.filter(pk=role_id).first()
             role_application.save()
-        return redirect('/recruitment/%d' % recruitment_period.id)
+
+
+
+        #return redirect('/recruitment/%d' % recruitment_period.id)
 
     chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
 
