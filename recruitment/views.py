@@ -4,6 +4,12 @@ from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, 
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import Group, User
+from django.contrib.auth.decorators import user_passes_test
+
+
+def user_is_pg(user):
+    return user.groups.filter(name='PG').exists()
+
 
 class RecruitmentPeriodForm(ModelForm):
 
@@ -21,29 +27,31 @@ class RecruitmentPeriodForm(ModelForm):
             "application_questions": forms.HiddenInput(),
         }
 
-class RecruitmentApplicationForm(ModelForm):
-    class Meta:
-        model = RecruitmentApplication
-        fields = '__all__'
 
+@user_passes_test(user_is_pg)
 def recruitment(request, template_name='recruitment/recruitment.html'):
     recruitmentPeriods = RecruitmentPeriod.objects.all()
     data = {}
     data['recruitment_periods'] = recruitmentPeriods
     return render(request, template_name, data)
 
+
+@user_passes_test(user_is_pg)
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     data = {}
     data['period'] = recruitment_period
     return render(request, template_name, data)
 
+
+@user_passes_test(user_is_pg)
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     recruitment_period.delete()
     return redirect('/recruitment/')
 
 
+@user_passes_test(user_is_pg)
 def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
@@ -81,13 +89,14 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     })
 
 
+@user_passes_test(user_is_pg)
 def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     role_keys = [str(i) for i in range(0, recruitment_period.eligible_roles)]
     role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
-    recruitment_period.application_questions.handle_answers_from_request(request)
 
     if len(role_ids) > 0:
+        recruitment_period.application_questions.handle_answers_from_request(request)
         recruitment_application = RecruitmentApplication()
         recruitment_application.user = request.user
         recruitment_application.recruitment_period = recruitment_period
@@ -137,6 +146,7 @@ def set_string_key_from_request(request, model, model_field):
             model.save()
 
 
+@user_passes_test(user_is_pg)
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     print(request.POST)
@@ -163,6 +173,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     })
 
 
+@user_passes_test(user_is_pg)
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
     recruitment_application.delete()
