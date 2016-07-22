@@ -118,6 +118,7 @@ class RecruitmentPeriod(models.Model):
     name = models.CharField(max_length=30)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    interview_end_date = models.DateTimeField()
     fair = models.ForeignKey('fair.Fair')
     extra_field = models.ForeignKey(ExtraField, blank=True, null=True)
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions')

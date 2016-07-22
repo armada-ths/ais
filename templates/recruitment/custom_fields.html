@@ -33,9 +33,6 @@
                         <label class="radio control-label">{{ question }}</label>
                         <select class="form-control" name="{{ question.id }}">
                         <option>---</option>
-
-
-
                         {% for argument in question.customfieldargument_set.all %}
                             <option value="{{ argument.id }}" {% if answer.answer == argument.id_as_string %} selected {% endif %}>{{ argument.value }}</option>
                         {% endfor %}

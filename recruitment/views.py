@@ -23,6 +23,7 @@ class RecruitmentPeriodForm(ModelForm):
         widgets = {
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
+            "interview_end_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "extra_field": forms.HiddenInput(),
             "application_questions": forms.HiddenInput(),
         }
@@ -185,6 +186,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(request.user),
         'interview_questions_with_answers': application.recruitment_period.extra_field.questions_with_answers_for_user(request.user),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
+        'users': User.objects.all,
         'ratings': [i for i in range(1,6)]
     })
 
