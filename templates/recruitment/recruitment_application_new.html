@@ -7,15 +7,17 @@
     <hr>
   </div>
 <div class="row">
+
 <form method="post" action="" enctype="multipart/form-data">
 {% csrf_token %}
-    {% for key in role_keys %}
+    {% for chosen_role in chosen_roles %}
+
         <div class="form-group">
             <label>Role {{ forloop.counter }}</label>
-            <select class="form-control" name="{{  key }}">
+            <select class="form-control" name="{{ forloop.counter }}">
             <option value="">---------</option>
             {% for role in roles %}
-                <option value="{{ role.id }}">{{ role }}</option>
+                <option value="{{ role.id }}" {% if role == chosen_role %} selected {% endif %}>{{ role }}</option>
             {%  endfor %}
             </select>
         </div>

@@ -4,23 +4,23 @@
 
 
     <div class="jumbotron">
-  <h1>{{ period.name }}</h1>
-    <p>Apply between <strong>{{ period.start_date }}</strong> and <strong>{{ period.end_date }}</strong></p>
+  <h1>{{ recruitment_period.name }}</h1>
+    <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
         <p>We are looking for:</p>
         <ul>
-        {% for role in period.recruitablerole_set.all %}
+        {% for role in recruitment_period.recruitablerole_set.all %}
         <li>{{ role }}</li>
             {% endfor %}
         </ul>
 
 
-    <p><a href="{% url 'recruitment_application_new' period.id %}"><button class="btn btn-default">Apply</button></a>
-        <a href="{% url 'recruitment_period_edit' period.id %}"><button class="btn btn-default">Edit</button></a>
-            <a href="{% url 'recruitment_period_delete' period.id %}"><button class="btn btn-danger">Delete</button></a></p>
+    <p><a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-default">Apply</button></a>
+        <a href="{% url 'recruitment_period_edit' recruitment_period.id %}"><button class="btn btn-default">Edit</button></a>
+            <a href="{% url 'recruitment_period_delete' recruitment_period.id %}"><button class="btn btn-danger">Delete</button></a></p>
 
 </div>
 
-        {% if period.recruitmentapplication_set.all %}
+        {% if recruitment_period.recruitmentapplication_set.all %}
 
     <table class="table">
     <thead>
@@ -29,7 +29,7 @@
     </tr>
     </thead>
     <tr>
-        {% for application in period.recruitmentapplication_set.all %}
+        {% for application in recruitment_period.recruitmentapplication_set.all %}
         <td>{{ application.user }}</td>
                 <td>{{ application.rating }}</td>
         <td>{{ application.submissionDate }}</td>
@@ -44,8 +44,8 @@
             {% endif %}
             </td>
             <td>
-                <a href="{% url 'recruitment_application_interview' application.id %}"><button class="btn btn-default btn-xs">Interview</button></a>
-                <a href="{% url 'recruitment_application_delete' application.id %}"><button class="btn btn-danger btn-xs">Delete</button></a>
+                <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}"><button class="btn btn-default btn-xs">Interview</button></a>
+                <a href="{% url 'recruitment_application_delete' recruitment_period.id application.id %}"><button class="btn btn-danger btn-xs">Delete</button></a>
             </td>
             </tr>
     {%  endfor %}

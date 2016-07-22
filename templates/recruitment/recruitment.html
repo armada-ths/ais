@@ -37,35 +37,6 @@
 
         {% if period.recruitmentapplication_set.all %}
 
-            <!--
-    <table class="table">
-    <thead>
-    <tr>
-    <th>Name</th><th>Rating</th><th>Submitted</th><th>Roles</th><th>Interviewer</th>
-    </tr>
-    </thead>
-    <tr>
-        {% for application in period.recruitmentapplication_set.all %}
-        <td>{{ application.user }}</td>
-                <td>{{ application.rating }}</td>
-        <td>{{ application.submissionDate }}</td>
-        <td>
-            {% for role in application.roleapplication_set.all %}
-                {{ role }}{% if not forloop.last %}, {% endif %}
-    {%  endfor %}
-            </td>
-            <td>
-            {% if application.interviewer %}
-            {{ application.interviewer }}
-            {% endif %}
-            </td>
-            <td>
-                <a href="{% url 'recruitment_application_interview' application.id %}"><button class="btn btn-default btn-xs">Interview</button></a>
-                <a href="{% url 'recruitment_application_delete' application.id %}"><button class="btn btn-danger btn-xs">Delete</button></a>
-            </td>
-            </tr>
-    {%  endfor %}
-    </table>
         {% else %}
         <p>No applications</p>
         {% endif %}

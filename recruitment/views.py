@@ -40,7 +40,7 @@ def recruitment(request, template_name='recruitment/recruitment.html'):
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     data = {}
-    data['period'] = recruitment_period
+    data['recruitment_period'] = recruitment_period
     return render(request, template_name, data)
 
 
@@ -90,14 +90,19 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
 
 @user_passes_test(user_is_pg)
-def recruitment_application_new(request, pk, template_name='recruitment/recruitment_application_new.html'):
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
+    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
+    recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
     role_keys = [str(i) for i in range(0, recruitment_period.eligible_roles)]
     role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
 
     if len(role_ids) > 0:
         recruitment_period.application_questions.handle_answers_from_request(request)
-        recruitment_application = RecruitmentApplication()
+        if not recruitment_application:
+            recruitment_application = RecruitmentApplication()
+
+        recruitment_application.roleapplication_set.all().delete()
+
         recruitment_application.user = request.user
         recruitment_application.recruitment_period = recruitment_period
         recruitment_application.save()
@@ -108,11 +113,19 @@ def recruitment_application_new(request, pk, template_name='recruitment/recruitm
             role_application.save()
         return redirect('/recruitment/%d' % recruitment_period.id)
 
+    chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
+
+    if recruitment_application:
+        role_applications = RoleApplication.objects.filter(recruitment_application=recruitment_application)
+        for i in range(len(role_applications)):
+            chosen_roles[i] = role_applications[i].recruitable_role
+
     return render(request, template_name, {
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(request.user),
         'recruitment_period': recruitment_period,
-        'role_keys': role_keys,
-        'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)})
+        'chosen_roles': chosen_roles,
+        'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)
+    })
 
 
 def set_foreign_key_from_request(request, model, model_field, foreign_key_model):
