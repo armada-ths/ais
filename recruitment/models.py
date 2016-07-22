@@ -5,6 +5,9 @@ from django.db import models
 from fair.models import Fair
 from django.contrib.auth.models import Group, User
 import datetime
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
 
 class ExtraField(models.Model):
     def __str__(self):
@@ -43,11 +46,6 @@ class ExtraField(models.Model):
             custom_field.question = request.POST['%s_%d' % (field_name, question_id)]
             custom_field.field_type = request.POST['%s-type_%d' % (field_name, question_id)]
             custom_field.save()
-
-            print('Storing custom field %d' % question_id)
-            print('Field type %s' % custom_field.field_type)
-            print('Extra Field type %s' % custom_field.extra_field.id)
-            print('Question %s' % custom_field.question)
 
             for argument in custom_field.customfieldargument_set.all():
                 if 'argument_%d_%d' % (question_id, argument.id) not in request.POST:

@@ -1,17 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, CustomField, CustomFieldAnswer, CustomFieldArgument
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication
 from django.forms import ModelForm
 from django import forms
-
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from django.conf import settings
-
 from django.contrib.auth.models import Group, User
-
-import os
-
 
 class RecruitmentPeriodForm(ModelForm):
 
@@ -33,19 +25,6 @@ class RecruitmentApplicationForm(ModelForm):
     class Meta:
         model = RecruitmentApplication
         fields = '__all__'
-
-class RoleApplicationForm(ModelForm):
-
-    def __init__(self, recruitment_period,*args,**kwargs):
-        super (RoleApplicationForm,self ).__init__(*args,**kwargs)
-        self.fields['recruitable_role'].queryset = RecruitableRole.objects.filter(recruitment_period=recruitment_period)
-
-        for x in xrange(10):  # just a dummy for 10 values
-            self.fields['col' + str(x)] = forms.CharField(label='Column ' + str(x), max_length=100, required=False)
-
-    class Meta:
-        model = RoleApplication
-        fields = ('recruitable_role',)
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
     recruitmentPeriods = RecruitmentPeriod.objects.all()
