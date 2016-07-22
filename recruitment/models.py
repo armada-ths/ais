@@ -153,6 +153,13 @@ class RecruitmentApplication(models.Model):
     delegated_role = models.ForeignKey(RecruitableRole, null=True, blank=True, related_name='delegated_role')
     superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user')
 
+    statuses = [
+        ('undecided', 'Undecided'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected')]
+
+    status = models.CharField(choices=statuses, default='undecided', max_length=20)
+
     def __str__(self):
         return '%s' % (self.user)
 

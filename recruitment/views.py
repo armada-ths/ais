@@ -177,6 +177,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         set_int_key_from_request(request, application, 'rating')
         set_string_key_from_request(request, application, 'interview_location')
         set_string_key_from_request(request, application, 'interview_date')
+        set_string_key_from_request(request, application, 'status')
 
         application.recruitment_period.extra_field.handle_answers_from_request(request)
         application.recruitment_period.application_questions.handle_answers_from_request(request)

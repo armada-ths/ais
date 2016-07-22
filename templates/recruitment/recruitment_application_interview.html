@@ -10,8 +10,8 @@
     <div class="row">
         <form>
                             <div class="form-group">
-                    <label for="interviewDate">Email</label>
-                    <p class="form-control-static">{{ application.user.email }}</p>
+                    <label for="interviewDate">User</label>
+                    <p class="form-control-static">{{ application.user }}</p>
                 </div>
     </form>
 <hr>
@@ -87,6 +87,18 @@
                         {% endfor %}
                     </select>
                 </div>
+
+                                                <div class="form-group">
+            <label>Accepted / Rejected</label>
+                    <select class="form-control" name="status">
+                        <option value="undecided" {% if application.status == "undecided" %}
+                                    selected {% endif %}>---------</option>
+                        <option value="rejected" {% if application.status == "rejected" %}
+                                    selected {% endif %}>Rejected</option>
+                        <option value="accepted" {% if application.status == "accepted" %}
+                                    selected {% endif %}>Accepted</option>
+                    </select>
+            </div>
 
 
                     <hr>
