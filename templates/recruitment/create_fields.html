@@ -30,11 +30,12 @@ function domElementFromString(html) {
         document.getElementById(extraFieldId).appendChild(domElementFromString(`<div class="form-group" id="${id}">
                                 <div class="form-group row">
                                 <div class="col-md-2">
-<select class="form-control" name="${extraFieldId}-type_${id}" onchange="(function() { document.getElementById('arguments_${id}_container').hidden = document.forms[0]['${extraFieldId}-type_${id}'].value !== 'radio_buttons' })()">
+<select class="form-control" name="${extraFieldId}-type_${id}" onchange="(function() { document.getElementById('arguments_${id}_container').hidden = document.forms[0]['${extraFieldId}-type_${id}'].value !== 'radio_buttons' && document.forms[0]['${extraFieldId}-type_${id}'].value !== 'select' })()">
                                     <option value="text_field" ${'text_field' === fieldType ? 'selected' : ''}>Text field</option>
                                     <option value="check_box" ${'check_box' === fieldType ? 'selected' : ''}>Check box</option>
                                     <option value="text_area" ${'text_area' === fieldType ? 'selected' : ''}>Text area</option>
                                     <option value="radio_buttons" ${'radio_buttons' === fieldType ? 'selected' : ''}>Radio buttons</option>
+                                    <option value="select" ${'select' === fieldType ? 'selected' : ''}>Drop-down list</option>
                                    <option value="file" ${'file' === fieldType ? 'selected' : ''}>File</option>
                                     <option value="image" ${'image' === fieldType ? 'selected' : ''}>Image</option>
                         </select>
@@ -46,7 +47,7 @@ function domElementFromString(html) {
                         </div>
 
 
-                        <div id="arguments_${id}_container" ${fieldType !== 'radio_buttons' ? 'hidden' : ''}>
+                        <div id="arguments_${id}_container" ${fieldType !== 'radio_buttons' && fieldType !== 'select'  ? 'hidden' : ''}>
                         <div id="arguments_${id}"></div>
 
                         <div class="form-group row">

@@ -170,6 +170,7 @@ class CustomField(models.Model):
         ('check_box', 'Check box'),
         ('text_area', 'Text area'),
         ('radio_buttons', 'Radio buttons'),
+        ('select', 'Drop-down list'),
         ('file', 'File'),
         ('image', 'Image')]
 
