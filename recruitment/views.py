@@ -117,7 +117,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
                 role_application.save()
 
 
-        #return redirect('/recruitment/%d' % recruitment_period.id)
+        return redirect('/recruitment/%d' % recruitment_period.id)
 
     chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
 

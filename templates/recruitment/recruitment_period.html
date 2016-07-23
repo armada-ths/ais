@@ -32,7 +32,7 @@
         {% for application in recruitment_period.recruitmentapplication_set.all %}
         <td>{{ application.user }}</td>
                 <td>{{ application.rating }}</td>
-        <td>{{ application.submissionDate }}</td>
+        <td>{{ application.submission_date }}</td>
         <td>
             {% for role in application.roleapplication_set.all %}
                 {{ role }}{% if not forloop.last %}, {% endif %}

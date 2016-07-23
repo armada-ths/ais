@@ -8,7 +8,7 @@ import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
-
+import os.path
 
 def create_group(group_name):
     group = Group()
