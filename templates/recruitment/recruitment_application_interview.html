@@ -102,10 +102,18 @@
 
 
                     <hr>
+
+
             <h3>Application questions</h3>
+            {%  if not application_questions_with_answers %}
+                <p>No interview questions</p>
+            {% endif %}
                     {%  include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
                     <hr>
                     <h3>Interview questions</h3>
+            {%  if not interview_questions_with_answers %}
+                <p>No interview questions</p>
+            {% endif %}
                     {%  include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
 
 

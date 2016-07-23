@@ -1,60 +1,63 @@
 {% extends "base.html" %}
-{% block nav-recruitment %}<li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
+{% block nav-recruitment %}
+    <li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>
+{% endblock %}
 {% block content %}
-
-
     <div class="jumbotron">
-  <h1>{{ recruitment_period.name }}</h1>
-    <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
+        <h1>{{ recruitment_period.name }}</h1>
+        <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
         <p>We are looking for:</p>
         <ul>
-        {% for role in recruitment_period.recruitablerole_set.all %}
-        <li>{{ role }}</li>
+            {% for role in recruitment_period.recruitablerole_set.all %}
+                <li>{{ role }}</li>
             {% endfor %}
         </ul>
 
+        <div>
+            <a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-default">Apply</button></a>
+            <a href="{% url 'recruitment_period_edit' recruitment_period.id %}"><button class="btn btn-default">Edit</button></a>
+            <a href="{% url 'recruitment_period_delete' recruitment_period.id %}"><button class="btn btn-danger">Delete</button></a>
+        </div>
+    </div>
 
-    <p><a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-default">Apply</button></a>
-        <a href="{% url 'recruitment_period_edit' recruitment_period.id %}"><button class="btn btn-default">Edit</button></a>
-            <a href="{% url 'recruitment_period_delete' recruitment_period.id %}"><button class="btn btn-danger">Delete</button></a></p>
-
-</div>
-
-        {% if recruitment_period.recruitmentapplication_set.all %}
-
-    <table class="table">
-    <thead>
-    <tr>
-    <th>Name</th><th>Rating</th><th>Submitted</th><th>Roles</th><th>Interviewer</th>
-    </tr>
-    </thead>
-    <tr>
-        {% for application in recruitment_period.recruitmentapplication_set.all %}
-        <td>{{ application.user }}</td>
-                <td>{{ application.rating }}</td>
-        <td>{{ application.submission_date }}</td>
-        <td>
-            {% for role in application.roleapplication_set.all %}
-                {{ role }}{% if not forloop.last %}, {% endif %}
-    {%  endfor %}
-            </td>
-            <td>
-            {% if application.interviewer %}
-            {{ application.interviewer }}
-            {% endif %}
-            </td>
-            <td>
-                <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}"><button class="btn btn-default btn-xs">Interview</button></a>
-                <a href="{% url 'recruitment_application_delete' recruitment_period.id application.id %}"><button class="btn btn-danger btn-xs">Delete</button></a>
-            </td>
+    {% if recruitment_period.recruitmentapplication_set.all %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Rating</th>
+                <th>Submitted</th>
+                <th>Roles</th>
+                <th>Interviewer</th>
             </tr>
-    {%  endfor %}
-    </table>
-        {% else %}
+            </thead>
+                {% for application in recruitment_period.recruitmentapplication_set.all %}
+                    <tr>
+                    <td>{{ application.user }}</td>
+                    <td>{{ application.rating }}</td>
+                    <td>{{ application.submission_date }}</td>
+                    <td>
+                        {% for role in application.roleapplication_set.all %}
+                            {{ role }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if application.interviewer %}
+                            {{ application.interviewer }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                            <button class="btn btn-default btn-xs">Interview</button>
+                        </a>
+                        <a href="{% url 'recruitment_application_delete' recruitment_period.id application.id %}">
+                            <button class="btn btn-danger btn-xs">Delete</button>
+                        </a>
+                    </td>
+                    </tr>
+                {% endfor %}
+        </table>
+    {% else %}
         <p>No applications</p>
-        {% endif %}
-
-
-
-
+    {% endif %}
 {% endblock %}
