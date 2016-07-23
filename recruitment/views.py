@@ -31,7 +31,7 @@ class RecruitmentPeriodForm(ModelForm):
 
 @user_passes_test(user_is_pg)
 def recruitment(request, template_name='recruitment/recruitment.html'):
-    recruitmentPeriods = RecruitmentPeriod.objects.all()
+    recruitmentPeriods = RecruitmentPeriod.objects.all().order_by('-start_date')
     data = {}
     data['recruitment_periods'] = recruitmentPeriods
     return render(request, template_name, data)
