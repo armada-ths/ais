@@ -16,7 +16,7 @@
         <div>
             <a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-default">Apply</button></a>
             <a href="{% url 'recruitment_period_edit' recruitment_period.id %}"><button class="btn btn-default">Edit</button></a>
-            <a href="{% url 'recruitment_period_delete' recruitment_period.id %}"><button class="btn btn-danger">Delete</button></a>
+            <a href="{% url 'recruitment_period_delete' recruitment_period.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><button class="btn btn-danger">Delete</button></a>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
                         <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
                             <button class="btn btn-default btn-xs">Interview</button>
                         </a>
-                        <a href="{% url 'recruitment_application_delete' recruitment_period.id application.id %}">
+                        <a href="{% url 'recruitment_application_delete' recruitment_period.id application.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')">
                             <button class="btn btn-danger btn-xs">Delete</button>
                         </a>
                     </td>
