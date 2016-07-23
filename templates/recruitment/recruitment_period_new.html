@@ -1,55 +1,50 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <h3>New recruitment period</h3>
-    <hr>
-  </div>
+    <div class="container">
+        <div class="row">
+            <h3>New recruitment period</h3>
+            <hr>
+        </div>
 
-<div class="row">
-   <form method="post">
-    {%  csrf_token %}
-    {{ form|crispy }}
+        <div class="row">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
 
-<div class="form-group">
-        <label>Roles</label>
-       {% for role in roles %}
-           <div class="checkbox">
+                <div class="form-group">
+                    <label>Roles</label>
+                    {% for role in roles %}
+                        <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="role_{{ role.role.id }}" {% if role.checked %}
-                                       checked {% endif %}> {{  role.role }}
+                                       checked {% endif %}> {{ role.role }}
                             </label>
                         </div>
-       {% endfor %}
-</div>
+                    {% endfor %}
+                </div>
 
-<hr>
-<h3>Interview questions</h3>
+                <hr>
+                <h3>Interview questions</h3>
+                {% include 'recruitment/create_fields.html' with custom_field_name='extra_field' values=extra_field %}
 
+                <hr>
+                <h3>Application questions</h3>
+                {% include 'recruitment/create_fields.html' with custom_field_name='application_questions' values=application_questions %}
 
-
-{% include 'recruitment/create_fields.html' with custom_field_name='extra_field' values=extra_field %}
-
-<hr>
-<h3>Application questions</h3>
-    {% include 'recruitment/create_fields.html' with custom_field_name='application_questions' values=application_questions %}
-
-
-       <button type="submit" class="btn btn-primary">Submit</button>
-
-    </form>
-</div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
-<script>
-$(document).ready(function() {
-    $('.datepicker').datepicker();
-    //newInterviewQuestion()
-});
-</script>
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker();
+            //newInterviewQuestion()
+        });
+    </script>
 
 {% endblock %}
