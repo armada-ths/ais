@@ -94,7 +94,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
-    role_keys = [str(i) for i in range(0, recruitment_period.eligible_roles)]
+    role_keys = [str(i) for i in range(recruitment_period.eligible_roles)]
     role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
 
     if request.POST:
@@ -107,12 +107,14 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         recruitment_application.user = request.user
         recruitment_application.recruitment_period = recruitment_period
         recruitment_application.save()
-        for role_id in role_ids:
-            role_application = RoleApplication()
-            role_application.recruitment_application = recruitment_application
-            role_application.recruitable_role = RecruitableRole.objects.filter(pk=role_id).first()
-            role_application.save()
-
+        for role_number in range(recruitment_period.eligible_roles):
+            if str(role_number) in request.POST and request.POST[str(role_number)].isdigit():
+                role_id = int(request.POST[str(role_number)])
+                role_application = RoleApplication()
+                role_application.recruitment_application = recruitment_application
+                role_application.recruitable_role = RecruitableRole.objects.filter(pk=role_id).first()
+                role_application.order = role_number
+                role_application.save()
 
 
         #return redirect('/recruitment/%d' % recruitment_period.id)
@@ -120,8 +122,10 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
 
     if recruitment_application:
-        role_applications = RoleApplication.objects.filter(recruitment_application=recruitment_application)
+        role_applications = RoleApplication.objects.filter(recruitment_application=recruitment_application).order_by('order')
+
         for i in range(len(role_applications)):
+            print(role_applications[i].recruitable_role, role_applications[i].order)
             chosen_roles[i] = role_applications[i].recruitable_role
 
     return render(request, template_name, {

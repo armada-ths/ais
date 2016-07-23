@@ -9,6 +9,21 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 
+
+def create_group(group_name):
+    group = Group()
+    group.name = group_name
+    group.is_role = True
+    group.save()
+
+hosts_string = 'Photographer, Banquet Host, Banquet Host: Entertainment, Event Host, Lounge Host, Service Host, Career Fair Host, Task force and University Relations Host'
+hosts = [role.strip() for role in hosts_string.split(',')]
+
+team_leaders_string = 'Developer: Android , Developer: Back End , Developer: Front End , Developer: iOS, Developer: Systems, Film Team Coordinator, Graphic designer, Green Room Creator, Marketing Coordinator, Photo Team Coordinator , Sponsorship Coordinator, Team Leader: Banquet Entertainment, Team Leader: Banquet Logistics, Team Leader: Banquet Interior, Team Leader: Banquet Technology, Team Leader: Career Fair , Team Leader: Events, Team Leader: Logistics Task Force, Team Leader: Lounches, Team Leader: Service, Team Leader: Technical Task Force, Team Leader: University Relations, Team Leader: University Relations Banquet and Web-TV Coordinator'
+team_leaders = [role.strip() for role in team_leaders_string.split(',')]
+
+
+
 class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)
@@ -166,6 +181,7 @@ class RecruitmentApplication(models.Model):
 class RoleApplication(models.Model):
     recruitment_application = models.ForeignKey(RecruitmentApplication, default=None)
     recruitable_role = models.ForeignKey(RecruitableRole)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return '%s' % (self.recruitable_role.role)
