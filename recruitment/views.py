@@ -28,12 +28,19 @@ class RecruitmentPeriodForm(ModelForm):
             "application_questions": forms.HiddenInput(),
         }
 
+class RoleForm(ModelForm):
+
+    class Meta:
+        model = Group
+        #fields = '__all__'
+        fields = ['name','permissions']
 
 @user_passes_test(user_is_pg)
 def recruitment(request, template_name='recruitment/recruitment.html'):
     recruitmentPeriods = RecruitmentPeriod.objects.all().order_by('-start_date')
     data = {}
     data['recruitment_periods'] = recruitmentPeriods
+    data['roles'] = Group.objects.filter(is_role=True)
     return render(request, template_name, data)
 
 
@@ -44,6 +51,26 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     data['recruitment_period'] = recruitment_period
     return render(request, template_name, data)
 
+
+@user_passes_test(user_is_pg)
+def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
+    role = Group.objects.filter(pk=pk).first()
+
+    form = RoleForm(request.POST or None, instance=role)
+
+    if form.is_valid():
+        role = form.save()
+        role.is_role = True
+        role.save()
+        return redirect('/recruitment/')
+    return render(request, template_name, {'role_form': form, 'role': role})
+
+
+@user_passes_test(user_is_pg)
+def roles_delete(request, pk):
+    role = get_object_or_404(Group, pk=pk)
+    role.delete()
+    return redirect('/recruitment/')
 
 @user_passes_test(user_is_pg)
 def recruitment_period_delete(request, pk):

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <h3>New role</h3>
+            <hr>
+        </div>
+
+    <div class="row">
+
+    <form method="post">
+        {% csrf_token %}
+        {{ role_form|crispy }}
+        <button class="btn btn-primary">Save</button>
+        {% if role != None %}
+            <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}">Delete</a>
+        {%  endif %}
+    </form>
+
+    </div>
+
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker();
+        });
+    </script>
+{% endblock %}

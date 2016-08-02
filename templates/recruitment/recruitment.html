@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 {% block nav-recruitment %}<li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
 {% block content %}
-
+<div class="row">
     <div class="jumbotron">
   <h1>Recruitment</h1>
 
   <p>Armada only recruits the sweetest KTH students</p>
         <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary btn-lg">New recruitment period</button></a></p>
 </div>
+    </div>
+
+<div class="row">
+    <h2>Recruitment periods</h2>
     <table class="table">
     <thead>
     <tr>
@@ -23,26 +27,14 @@
     </tr>
     {% endfor %}
     </table>
-    <!--
-    {% for period in recruitment_periods %}
-    <h2>{{ period.name }}</h2>
+</div>
+<div class="row">
+    <h2>Roles</h2>
+    {% for role in roles %}
 
-        <p><a href="{% url 'recruitment_application_new' period.id %}"><button class="btn btn-default btn-sm">Apply</button></a>
-            <a href="{% url 'recruitment_period_delete' period.id %}"><button class="btn btn-danger btn-sm">Delete</button></a></p>
-        <p>We are looking for:</p>
-        <ul>
-        {% for role in period.recruitablerole_set.all %}
-        <li>{{ role }}</li>
-            {% endfor %}
-        </ul>
-
-        {% if period.recruitmentapplication_set.all %}
-
-        {% else %}
-        <p>No applications</p>
-        {% endif %}
-
-
-    {% endfor %}
-
+<p><a href="{% url "roles_new" role.pk %}">{{ role }}</a></p>
+{% endfor %}
+    <a class="btn btn-primary" href="{% url "roles_new" %}">New role</a>
+</div>
 {% endblock %}
+

@@ -26,6 +26,7 @@
             <tr>
                 <th>Name</th>
                 <th>Rating</th>
+                <th>State</th>
                 <th>Submitted</th>
                 <th>Roles</th>
                 <th>Interviewer</th>
@@ -35,6 +36,7 @@
                     <tr>
                     <td>{{ application.user }}</td>
                     <td>{{ application.rating }}</td>
+                    <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
                     <td>{{ application.submission_date }}</td>
                     <td>
                         {% for role in application.roleapplication_set.all %}
