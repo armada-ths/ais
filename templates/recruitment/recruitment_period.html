@@ -14,9 +14,8 @@
         </ul>
 
         <div>
-            <a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-default">Apply</button></a>
+            <a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-primary">Apply</button></a>
             <a href="{% url 'recruitment_period_edit' recruitment_period.id %}"><button class="btn btn-default">Edit</button></a>
-            <a href="{% url 'recruitment_period_delete' recruitment_period.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><button class="btn btn-danger">Delete</button></a>
         </div>
     </div>
 
@@ -30,6 +29,7 @@
                 <th>Submitted</th>
                 <th>Roles</th>
                 <th>Interviewer</th>
+                <th>Interview</th>
             </tr>
             </thead>
                 {% for application in recruitment_period.recruitmentapplication_set.all %}
@@ -50,11 +50,9 @@
                     </td>
                     <td>
                         <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                            <button class="btn btn-default btn-xs">Interview</button>
+                            Interview
                         </a>
-                        <a href="{% url 'recruitment_application_delete' recruitment_period.id application.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')">
-                            <button class="btn btn-danger btn-xs">Delete</button>
-                        </a>
+
                     </td>
                     </tr>
                 {% endfor %}

@@ -33,6 +33,9 @@
                 {% include 'recruitment/create_fields.html' with custom_field_name='application_questions' values=application_questions %}
 
                 <button type="submit" class="btn btn-primary">Submit</button>
+                {% if recruitment_period %}
+                    <a class="btn btn-danger" href="{% url 'recruitment_period_delete' recruitment_period.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+                {% endif %}
             </form>
         </div>
 
