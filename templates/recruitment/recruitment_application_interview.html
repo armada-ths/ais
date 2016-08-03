@@ -3,10 +3,6 @@
 {% block content %}
     <div class="container">
         <div class="row">
-        {{ application_questions_with_answers }}
-            {% if perms.recruitment.change_recruitmentapplication %}
-                YOLO
-            {% endif %}
             <h3>{{ application.user.first_name }} {{ application.user.last_name }}</h3>
             <hr>
         </div>
@@ -29,7 +25,7 @@
                 <div class="form-group">
                     <label>Interviewer</label>
 
-                {% if perms.recruitment.change_recruitmentapplication %}
+                {% if can_edit_recruitment_application %}
                     <select class="form-control" name="interviewer">
                         <option value="">---------</option>
                         {% for user in users %}

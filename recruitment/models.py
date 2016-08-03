@@ -22,8 +22,6 @@ hosts = [role.strip() for role in hosts_string.split(',')]
 team_leaders_string = 'Developer: Android , Developer: Back End , Developer: Front End , Developer: iOS, Developer: Systems, Film Team Coordinator, Graphic designer, Green Room Creator, Marketing Coordinator, Photo Team Coordinator , Sponsorship Coordinator, Team Leader: Banquet Entertainment, Team Leader: Banquet Logistics, Team Leader: Banquet Interior, Team Leader: Banquet Technology, Team Leader: Career Fair , Team Leader: Events, Team Leader: Logistics Task Force, Team Leader: Lounches, Team Leader: Service, Team Leader: Technical Task Force, Team Leader: University Relations, Team Leader: University Relations Banquet and Web-TV Coordinator'
 team_leaders = [role.strip() for role in team_leaders_string.split(',')]
 
-
-
 class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)

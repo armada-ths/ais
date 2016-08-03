@@ -4,8 +4,19 @@ from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, 
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import Group, User
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+
+def user_has_permission(user, needed_permission):
+    if user.has_perm(needed_permission):
+        return True
+    for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
+        for permission in application.delegated_role.role.permissions.all():
+
+            print(permission.codename)
+            if permission.codename == needed_permission:
+                return True
+    return False
 
 class RecruitmentPeriodForm(ModelForm):
     class Meta:
@@ -30,19 +41,22 @@ class RoleForm(ModelForm):
 def recruitment(request, template_name='recruitment/recruitment.html'):
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
-        'roles': Group.objects.filter(is_role=True)
+        'roles': Group.objects.filter(is_role=True),
+        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
+        'can_edit_roles': user_has_permission(request.user, 'change_group'),
     })
 
 
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     return render(request, template_name, {
-        'recruitment_period': recruitment_period
+        'recruitment_period': recruitment_period,
+        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod')
     })
 
 
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
-    if not request.user.has_perm('auth.change_group'):
+    if not user_has_permission(request.user, 'change_group'):
         return HttpResponseForbidden()
     role = Group.objects.filter(pk=pk).first()
     form = RoleForm(request.POST or None, instance=role)
@@ -58,7 +72,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
 
 def roles_delete(request, pk):
     role = get_object_or_404(Group, pk=pk)
-    if not request.user.has_perm('auth.change_group'):
+    if not user_has_permission(request.user, 'change_group'):
         return HttpResponseForbidden()
     role.delete()
     return redirect('/recruitment/')
@@ -66,14 +80,14 @@ def roles_delete(request, pk):
 
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    if not request.user.has_perm('recruitment.change_recruitmentperiod'):
+    if not user_has_permission(request.user, 'change_recruitmentperiod'):
         return HttpResponseForbidden()
     recruitment_period.delete()
     return redirect('/recruitment/')
 
 
 def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
-    if not request.user.has_perm('recruitment.change_recruitmentperiod'):
+    if not user_has_permission(request.user, 'change_recruitmentperiod'):
         return HttpResponseForbidden()
 
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
@@ -193,7 +207,7 @@ def set_string_key_from_request(request, model, model_field):
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not request.user.has_perm('recruitment.change_recruitmentapplication') and application.interviewer != request.user:
+    if not user_has_permission(request.user, 'change_recruitmentapplication') and application.interviewer != request.user:
         return HttpResponseForbidden()
 
     if request.POST:
@@ -213,6 +227,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
         'interview_questions_with_answers': application.recruitment_period.extra_field.questions_with_answers_for_user(request.user),
+        'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'users': User.objects.all,
         'ratings': [i for i in range(1,6)]
@@ -221,7 +236,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not request.user.has_perm('recruitment.change_recruitmentapplication') and recruitment_application.user != request.user:
+    if not user_has_permission(request.user, 'recruitment.change_recruitmentapplication') and recruitment_application.user != request.user:
         return HttpResponseForbidden()
     recruitment_application.delete()
     return redirect('/recruitment/%d' % recruitment_application.recruitment_period.id)
