@@ -14,7 +14,12 @@
         </ul>
 
         <div>
+        {% if application %}
+            <a href="{% url 'recruitment_application_new' recruitment_period.id application.id %}"><button class="btn btn-primary">View application</button></a>
+        {% else %}
             <a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-primary">Apply</button></a>
+        {% endif %}
+
             {% if can_edit_recruitment_period %}
             <a href="{% url 'recruitment_period_edit' recruitment_period.id %}"><button class="btn btn-default">Edit</button></a>
             {% endif %}

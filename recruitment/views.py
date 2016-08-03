@@ -49,9 +49,11 @@ def recruitment(request, template_name='recruitment/recruitment.html'):
 
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
-        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod')
+        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
+        'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
     })
 
 
