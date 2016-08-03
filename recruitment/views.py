@@ -152,7 +152,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             chosen_roles[i] = role_applications[i].recruitable_role
 
     return render(request, template_name, {
-        'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(request.user),
+        'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
         'chosen_roles': chosen_roles,
         'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)
@@ -211,7 +211,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
     return render(request, template_name, {
         'application': application,
-        'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(request.user),
+        'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
         'interview_questions_with_answers': application.recruitment_period.extra_field.questions_with_answers_for_user(request.user),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'users': User.objects.all,
