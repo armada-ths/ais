@@ -32,31 +32,28 @@
                 <th>Submitted</th>
                 <th>Roles</th>
                 <th>Interviewer</th>
-                <th>Interview</th>
             </tr>
             </thead>
                 {% for application in recruitment_period.recruitmentapplication_set.all %}
                     <tr>
-                    <td><a>{{ application.user }}</a></td>
+
+                    <td><a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                            {{ application.user.get_full_name }}
+                        </a></td>
                     <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
                     <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
                     <td>{{ application.submission_date }}</td>
                     <td>
                         {% for role in application.roleapplication_set.all %}
-                            <a>{{ role }}</a>{% if not forloop.last %}, {% endif %}
+                            {{ role }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
                     <td>
                         {% if application.interviewer %}
-                            {{ application.interviewer }}
+                            {{ application.interviewer.get_full_name }}
                         {% endif %}
                     </td>
-                    <td>
-                        <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                            Interview
-                        </a>
 
-                    </td>
                     </tr>
                 {% endfor %}
         </table>
