@@ -82,7 +82,7 @@
                         <option value="">---------</option>
                         {% for user in users %}
                             <option value="{{ user.id }}" {% if user == application.superior_user %}
-                                    selected {% endif %}>{{ user }}</option>
+                                    selected {% endif %}>{{ user.get_full_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
