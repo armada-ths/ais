@@ -159,7 +159,7 @@ class RecruitableRole(models.Model):
 class RecruitmentApplication(models.Model):
     recruitment_period = models.ForeignKey(RecruitmentPeriod)
     user = models.ForeignKey(User)
-    rating = models.IntegerField(default=1)
+    rating = models.IntegerField(null=True, blank=True)
     interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')
     interview_date = models.CharField(null=True, blank=True, max_length=100)
     interview_location = models.CharField(null=True, blank=True, max_length=100)

@@ -34,13 +34,13 @@
             </thead>
                 {% for application in recruitment_period.recruitmentapplication_set.all %}
                     <tr>
-                    <td>{{ application.user }}</td>
-                    <td>{{ application.rating }}</td>
+                    <td><a>{{ application.user }}</a></td>
+                    <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
                     <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
                     <td>{{ application.submission_date }}</td>
                     <td>
                         {% for role in application.roleapplication_set.all %}
-                            {{ role }}{% if not forloop.last %}, {% endif %}
+                            <a>{{ role }}</a>{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
                     <td>

@@ -58,7 +58,10 @@
 
                 <div class="form-group">
                     <label>Rating</label>
+
                     <select class="form-control" name="rating">
+                    <option {% if application.rating == None %}
+                                    selected {% endif %}>------</option>
                         {% for rating in ratings %}
                             <option value="{{ rating }}" {% if rating == application.rating %}
                                     selected {% endif %}>{{ rating }}</option>
