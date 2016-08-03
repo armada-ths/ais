@@ -3,6 +3,12 @@
     <li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>
 {% endblock %}
 {% block content %}
+
+    <ol class="breadcrumb">
+    <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li class="active">{{ recruitment_period.name }}</li>
+    </ol>
+
     <div class="jumbotron">
         <h1>{{ recruitment_period.name }}</h1>
         <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>

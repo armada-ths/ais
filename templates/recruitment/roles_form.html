@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+
+    <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li class="active">New role</li>
+    </ol>
+
     <div class="container">
         <div class="row">
             <h3>New role</h3>

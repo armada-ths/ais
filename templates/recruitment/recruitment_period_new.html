@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
+
+{% if recruitment_period %}
+        <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+        <li class="active">Edit</li>
+    </ol>
+
+{% else %}
+        <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li class="active">New</li>
+    </ol>
+    {% endif %}
+
     <div class="container">
         <div class="row">
             <h3>New recruitment period</h3>
