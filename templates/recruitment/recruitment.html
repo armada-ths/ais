@@ -13,7 +13,7 @@
 
   <p>Armada only recruits the sweetest KTH students</p>
         {% if can_edit_recruitment_period %}
-        <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary btn-lg">New recruitment period</button></a></p>
+        <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> New recruitment period</button></a></p>
         {% endif %}
 </div>
     </div>
@@ -45,7 +45,7 @@
 <p><a href="{% url "roles_new" role.pk %}">{{ role }}</a></p>
 {% endfor %}
 
-        <a class="btn btn-primary" href="{% url "roles_new" %}">New role</a>
+        <a class="btn btn-primary" href="{% url "roles_new" %}"><span class="glyphicon glyphicon-plus"></span> New role</a>
 </div>
     {% endif %}
 {% endblock %}
