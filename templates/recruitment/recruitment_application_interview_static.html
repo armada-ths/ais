@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+
+    <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment_period' application.recruitment_period.id %}">{{ application.recruitment_period.name }}</a></li>
+        <li class="active">{{ application.user.get_full_name }}</li>
+    </ol>
+
+    <div class="container">
+
+        <div class="row">
+            <h3>{{ application.user.get_full_name }}</h3>
+            <hr>
+        </div>
+
+
+
+        <div class="row">
+        <h3>Pre interview</h3>
+            <form method="POST" enctype="multipart/form-data" class="form-horizonal">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Interviewer</label>
+                    <p class="form-control-static">{{ application.interviewer.get_full_name }}</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="interviewDate">Interview date</label>
+                    <p class="form-control-static">{{ application.interview_date }}</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="interviewLocation">Interview place</label>
+                    <p class="form-control-static">{{ application.interview_location }}</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Recommended role</label>
+                    <p class="form-control-static">{{ application.recommended_role }}</p>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Rating</label>
+                    <p class="form-control-static">{{ application.rating }}</p>
+                </div>
+
+            <hr>
+            <h3>Post interview</h3>
+                                                <div class="form-group">
+            <label>Delegated role</label>
+                <p class="form-control-static">{{ application.delegated_role }}</p>
+            </div>
+        <div class="form-group">
+            <label>Superior</label>
+            <p class="form-control-static">{{ application.superior_user }}</p>
+        </div>
+
+                                                <div class="form-group">
+            <label>Accepted / Rejected</label>
+                <p class="form-control-static">{{ application.status }}</p>
+            </div>
+
+
+                    <hr>
+
+
+            <h3>Application</h3>
+            <label>Roles</label>
+                <ol>
+
+
+                {% for role in application.roleapplication_set.all %}
+                            <li>{{ role }}</li>
+                {% endfor %}
+</ol>
+                {%  include 'recruitment/custom_fields_static.html' with questions_with_answers=application_questions_with_answers %}
+                <hr>
+
+
+                    <h3>Interview</h3>
+
+            {%  if not interview_questions_with_answers %}
+                <p>No interview questions</p>
+            {% endif %}
+                    {%  include 'recruitment/custom_fields_static.html' with questions_with_answers=interview_questions_with_answers %}
+
+
+
+                <hr>
+            </form>
+        </div>
+
+
+    </div>
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker();
+        });
+    </script>
+{% endblock %}

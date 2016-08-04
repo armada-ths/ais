@@ -53,7 +53,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
-        'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
+        'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
+        'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all()
     })
 
 
@@ -134,7 +135,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
     role_keys = [str(i) for i in range(recruitment_period.eligible_roles)]
-    role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
+    #role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
 
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request)
@@ -211,6 +212,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     if not user_has_permission(request.user, 'change_recruitmentapplication') and application.interviewer != request.user:
         return HttpResponseForbidden()
+
 
     if request.POST:
         set_foreign_key_from_request(request, application, 'interviewer', User)

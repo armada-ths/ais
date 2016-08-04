@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-{% block nav-recruitment %}
-    <li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>
-{% endblock %}
+
 {% block content %}
 
     <ol class="breadcrumb">
@@ -34,6 +32,7 @@
 
     {% if can_edit_recruitment_period %}
     {% if recruitment_period.recruitmentapplication_set.all %}
+        <h2>Applications</h2>
         <table class="table">
             <thead>
             <tr>
@@ -72,4 +71,46 @@
         <p>No applications</p>
     {% endif %}
     {% endif %}
+
+        {% if interviews %}
+            <h2>Your interviews</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Rating</th>
+                <th>State</th>
+                <th>Submitted</th>
+                <th>Roles</th>
+                <th>Interviewer</th>
+            </tr>
+            </thead>
+                {% for application in interviews %}
+                    <tr>
+
+                    <td><a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                            {{ application.user.get_full_name }}
+                        </a></td>
+                    <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
+                    <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
+                    <td>{{ application.submission_date }}</td>
+                    <td>
+                        {% for role in application.roleapplication_set.all %}
+                            {{ role }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if application.interviewer %}
+                            {{ application.interviewer.get_full_name }}
+                        {% endif %}
+                    </td>
+
+                    </tr>
+                {% endfor %}
+        </table>
+    {% else %}
+
+    {% endif %}
+
+
 {% endblock %}
