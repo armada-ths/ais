@@ -22,4 +22,8 @@ urlpatterns = [
     url(r'^(\d+)/application/(?P<pk>\d+)/delete$', views.recruitment_application_delete, name='recruitment_application_delete'),
 
 
+    url(r'^(\d+)/application/(?P<pk>\d+)/comment$', views.recruitment_application_comment_new,
+        name='recruitment_application_comment_new'),
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

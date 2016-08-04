@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import Group, User
@@ -128,6 +128,15 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
         'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
         'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
     })
+
+def recruitment_application_comment_new(request, pk):
+    application = get_object_or_404(RecruitmentApplication, pk=pk)
+    comment = RecruitmentApplicationComment()
+    comment.user = request.user
+    comment.recruitment_application = application
+    comment.comment = request.POST['comment']
+    comment.save()
+    return redirect('/recruitment/%d/application/%d/interview' % (application.recruitment_period.id, application.id))
 
 
 @login_required

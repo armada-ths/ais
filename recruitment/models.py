@@ -176,6 +176,12 @@ class RecruitmentApplication(models.Model):
     def __str__(self):
         return '%s' % (self.user)
 
+class RecruitmentApplicationComment(models.Model):
+    comment = models.CharField(null=True, blank=True, max_length=1000)
+    recruitment_application = models.ForeignKey(RecruitmentApplication)
+    created_date = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    user = models.ForeignKey(User)
+
 class RoleApplication(models.Model):
     recruitment_application = models.ForeignKey(RecruitmentApplication, default=None)
     recruitable_role = models.ForeignKey(RecruitableRole)
