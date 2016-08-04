@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment
 from django.forms import ModelForm
 from django import forms
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group, User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
@@ -62,14 +62,40 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     if not user_has_permission(request.user, 'change_group'):
         return HttpResponseForbidden()
     role = Group.objects.filter(pk=pk).first()
-    form = RoleForm(request.POST or None, instance=role)
 
-    if form.is_valid():
-        role = form.save()
+    permissions = [
+        {'codename': 'change_recruitmentperiod', 'name': 'Administer recruitment', 'checked': False},
+        {'codename': 'change_group', 'name': 'Administer roles', 'checked': False},
+        {'codename': 'change_recruitmentapplication', 'name': 'Administer applications', 'checked': False},
+    ]
+
+    if role:
+        for permission in permissions:
+            for role_permission in role.permissions.all():
+                if permission['codename'] == role_permission.codename:
+                    permission['checked'] = True
+
+    if request.POST:
+        if not role:
+            role = Group()
+        role.name = request.POST['name']
         role.is_role = True
         role.save()
+
+        for permission in permissions:
+            codename = permission['codename']
+            permission_object = Permission.objects.get(codename=permission['codename'])
+            if codename in request.POST:
+                role.permissions.add(permission_object)
+            else:
+                role.permissions.remove(permission_object)
+
         return redirect('/recruitment/')
-    return render(request, template_name, {'role_form': form, 'role': role})
+
+
+
+
+    return render(request, template_name, {'role': role, 'permissions': permissions})
 
 
 

@@ -17,11 +17,28 @@
 
     <form method="post">
         {% csrf_token %}
-        {{ role_form|crispy }}
+
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input class="form-control" id="name" name="name" value="{{ role.name }}">
+        </div>
+
+        <label>Permissions</label>
+        {% for permission in permissions %}
+            <div class="checkbox">
+            <label>
+            <input type="checkbox" name="{{ permission.codename }}" id="{{ permission.codename }}" {% if permission.checked %} checked {% endif %}> {{permission.name}}
+            </label>
+            </div>
+        {% endfor %}
+
         <button class="btn btn-primary">Save</button>
         {% if role != None %}
             <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}">Delete</a>
         {%  endif %}
+
+
+
     </form>
 
     </div>
