@@ -27,7 +27,7 @@ class RecruitmentPeriodForm(ModelForm):
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "interview_end_date": forms.TextInput(attrs={'class': 'datepicker'}),
-            "extra_field": forms.HiddenInput(),
+            "interview_questions": forms.HiddenInput(),
             "application_questions": forms.HiddenInput(),
         }
 
@@ -112,7 +112,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
                 RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role).delete()
 
 
-        recruitment_period.extra_field.handle_questions_from_request(request, 'extra_field')
+        recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
         recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
 
         return redirect('/recruitment/%d' % recruitment_period.id)
@@ -125,7 +125,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
         'form': form,
         'roles': roles,
         'recruitment_period': recruitment_period,
-        'extra_field': [] if not recruitment_period else recruitment_period.extra_field.customfield_set.all(),
+        'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
         'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
     })
 
@@ -224,13 +224,13 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         set_string_key_from_request(request, application, 'interview_date')
         set_string_key_from_request(request, application, 'status')
 
-        application.recruitment_period.extra_field.handle_answers_from_request(request)
+        application.recruitment_period.interview_questions.handle_answers_from_request(request)
         application.recruitment_period.application_questions.handle_answers_from_request(request)
 
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
-        'interview_questions_with_answers': application.recruitment_period.extra_field.questions_with_answers_for_user(request.user),
+        'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(request.user),
         'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'users': User.objects.all,
