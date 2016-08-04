@@ -53,6 +53,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
+        'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
         'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all()
     })
