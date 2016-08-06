@@ -7,16 +7,17 @@ from django.contrib.auth.models import Group, User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+import datetime
 
 def user_has_permission(user, needed_permission):
     if user.has_perm(needed_permission):
         return True
     for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
-        for permission in application.delegated_role.role.permissions.all():
-
-            print(permission.codename)
-            if permission.codename == needed_permission:
-                return True
+        if application.recruitment_period.fair.year == datetime.datetime.now().year:
+            for permission in application.delegated_role.role.permissions.all():
+                print(permission.codename)
+                if permission.codename == needed_permission:
+                    return True
     return False
 
 class RecruitmentPeriodForm(ModelForm):
