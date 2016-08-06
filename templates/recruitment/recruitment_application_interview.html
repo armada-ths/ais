@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+
+    <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li>
+            <a href="{% url 'recruitment_period' application.recruitment_period.id %}">{{ application.recruitment_period.name }}</a>
+        </li>
+        <li class="active">{{ application.user.get_full_name }}</li>
+    </ol>
+
+    <div class="container">
+
+
+        <div class="row">
+            <h3>{{ application.user.get_full_name }}</h3>
+            <hr>
+        </div>
+
+
+        <div class="row">
+            <h3>Pre interview</h3>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Interviewer</label>
+
+                    {% if can_edit_recruitment_application %}
+                        <select class="form-control" name="interviewer">
+                            <option value="">---------</option>
+                            {% for user in users %}
+                                <option value="{{ user.id }}" {% if user == application.interviewer %}
+                                        selected {% endif %}>{{ user.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <p class="form-control-static">{{ application.interviewer.get_full_name }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="interviewDate">Interview date</label>
+                    <input type="text" class="form-control" id="interviewDate" name="interview_date"
+                           value="{% if application.interview_date %}{{ application.interview_date }}{% endif %}">
+                </div>
+
+                <div class="form-group">
+                    <label for="interviewLocation">Interview place</label>
+                    <input type="text" class="form-control" id="interviewLocation" name="interview_location"
+                           value="
+
+                                   {% if application.interview_location %}{{ application.interview_location }}{% endif %}">
+                </div>
+
+                <div class="form-group">
+                    <label>Recommended role</label>
+                    <select class="form-control" name="recommended_role">
+                        <option value="">---------</option>
+                        {% for role in roles %}
+                            <option value="{{ role.id }}" {% if role == application.recommended_role %}
+                                    selected {% endif %}>{{ role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Rating</label>
+
+                    <select class="form-control" name="rating">
+                        <option {% if application.rating == None %}
+                            selected {% endif %}>------
+                        </option>
+                        {% for rating in ratings %}
+                            <option value="{{ rating }}" {% if rating == application.rating %}
+                                    selected {% endif %}>{{ rating }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <hr>
+                <h3>Post interview</h3>
+                <div class="form-group">
+                    <label>Delegated role</label>
+                    <select class="form-control" name="delegated_role">
+                        <option value="">---------</option>
+                        {% for role in roles %}
+                            <option value="{{ role.id }}" {% if role == application.delegated_role %}
+                                    selected {% endif %}>{{ role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Superior</label>
+                    <select class="form-control" name="superior_user">
+                        <option value="">---------</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}" {% if user == application.superior_user %}
+                                    selected {% endif %}>{{ user.get_full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Accepted / Rejected</label>
+                    <select class="form-control" name="status">
+                        <option value="undecided" {% if application.status == "undecided" %}
+                                selected {% endif %}>---------
+                        </option>
+                        <option value="rejected" {% if application.status == "rejected" %}
+                                selected {% endif %}>Rejected
+                        </option>
+                        <option value="accepted" {% if application.status == "accepted" %}
+                                selected {% endif %}>Accepted
+                        </option>
+                    </select>
+                </div>
+
+
+                <hr>
+
+
+                <h3>Application</h3>
+                <label>Roles</label>
+                <ol>
+
+
+                    {% for role in application.roleapplication_set.all %}
+                        <li>{{ role }}</li>
+                    {% endfor %}
+                </ol>
+                {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
+                <hr>
+
+
+                <h3>Interview</h3>
+
+                {% if not interview_questions_with_answers %}
+                    <p>No interview questions</p>
+                {% endif %}
+                {% include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
+
+
+                <hr>
+
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a class="btn btn-danger"
+                   href="{% url 'recruitment_application_delete' application.recruitment_period.id application.id %}"
+                   onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+            </form>
+
+
+            <h3>Comments</h3>
+            <hr>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    {% for comment in application.recruitmentapplicationcomment_set.all|dictsortreversed:"created_date" %}
+                        <div class="media">
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ comment.user.get_full_name }}</h4>
+                                <small class="text-muted">{{ comment.created_date }}</small>
+                                <p>{{ comment.comment }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No comments</p>
+                    {% endfor %}
+                </div>
+                <div class="col-sm-6">
+                    <form action="{% url 'recruitment_application_comment_new' application.recruitment_period.id application.id %}"
+                          method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Your comment..." name="comment"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add
+                            comment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker();
+        });
+    </script>
+{% endblock %}

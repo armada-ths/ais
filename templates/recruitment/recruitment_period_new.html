@@ -1,38 +1,71 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <h3>New recruitment period</h3>
-    <hr>
-  </div>
 
-    {% for form in forms %}
-    <table>
-    {% for field in form.fields %}
-        <tr><th>{{field.label_tag}}</th><td>{{field}}{{field.errors}}</td></tr>
-    {% endfor %}
+{% if recruitment_period %}
+        <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+        <li class="active">Edit recruitment period</li>
+    </ol>
 
-    {% if form.pk %} {# empty forms do not have a pk #}
-         <tr><th>Delete?</th><td>{{field.DELETE}}</td></tr>
+{% else %}
+        <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li class="active">New recruitment period</li>
+    </ol>
     {% endif %}
-    </table>
-{% endfor %}
+
+    <div class="container">
+        <div class="row">
+            <h3>New recruitment period</h3>
+            <hr>
+        </div>
+
+        <div class="row">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+
+                <div class="form-group">
+                    <label>Roles</label>
+                    {% for role in roles %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="role_{{ role.role.id }}" {% if role.checked %}
+                                       checked {% endif %}> {{ role.role }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <hr>
+                <h3>Interview questions</h3>
+                {% include 'recruitment/create_fields.html' with custom_field_name='interview_questions' values=interview_questions %}
+
+                <hr>
+                <h3>Application questions</h3>
+                {% include 'recruitment/create_fields.html' with custom_field_name='application_questions' values=application_questions %}
+
+                <button type="submit" class="btn btn-primary">Save</button>
+                {% if recruitment_period %}
+                    <a class="btn btn-danger" href="{% url 'recruitment_period_delete' recruitment_period.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+                {% endif %}
+            </form>
+        </div>
 
 
-  <form method="post" class="">
-    {% csrf_token %}
-    {{ form.as_p }}
-      {{ roles_form.as_p }}
-    <input type="submit" value="Submit" />
-  </form>
 
-</div>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
-<script>
-$(document).ready(function() {
-    $('.datepicker').datepicker();
-});
-</script>
+    </div>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker();
+            //newInterviewQuestion()
+        });
+    </script>
+
 {% endblock %}

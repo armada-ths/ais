@@ -1,19 +1,46 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
+
+
+        <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+        <li class="active">Application</li>
+    </ol>
+
 <div class="container">
+
   <div class="row">
-    <h3>New application</h3>
+    <h3>Application for {{ recruitment_period.name }}</h3>
     <hr>
   </div>
+<div class="row">
 
+<form method="post" action="" enctype="multipart/form-data">
+{% csrf_token %}
+    {% for chosen_role in chosen_roles %}
 
-  <form method="post" class="">
-    {% csrf_token %}
-        {{ form.as_p }}
-    <input type="submit" value="Submit" />
-  </form>
+        <div class="form-group">
+            <label>Role {{ forloop.counter }}</label>
+            <select class="form-control" name="{{ forloop.counter0 }}">
+            <option value="">---------</option>
+            {% for role in roles %}
+                <option value="{{ role.id }}" {% if role == chosen_role %} selected {% endif %}>{{ role }}</option>
+            {%  endfor %}
+            </select>
+        </div>
+    {% endfor %}
+
+    {%  include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
+
+<div class="form-group">
+<button type="submit" class="btn btn-primary">Save</button>
+</div>
+</form>
 
 </div>
+    </div>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
