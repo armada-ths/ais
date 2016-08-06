@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, ExtraField, CustomField, CustomFieldAnswer, CustomFieldArgument
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, CustomField, CustomFieldAnswer, CustomFieldArgument
 
 class RecruitableRoleInline(admin.TabularInline):
     model = RecruitableRole

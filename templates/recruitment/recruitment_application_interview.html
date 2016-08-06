@@ -9,14 +9,14 @@
         <li>
             <a href="{% url 'recruitment_period' application.recruitment_period.id %}">{{ application.recruitment_period.name }}</a>
         </li>
-        <li class="active">{{ application.user.get_full_name }}</li>
+        <li class="active">{%  include 'recruitment/user_name.html' with user=application.user %}</li>
     </ol>
 
     <div class="container">
 
 
         <div class="row">
-            <h3>{{ application.user.get_full_name }}</h3>
+            <h3>{% include 'recruitment/user_name.html' with user=application.user %}</h3>
             <hr>
         </div>
 
@@ -34,11 +34,11 @@
                             <option value="">---------</option>
                             {% for user in users %}
                                 <option value="{{ user.id }}" {% if user == application.interviewer %}
-                                        selected {% endif %}>{{ user.get_full_name }}</option>
+                                        selected {% endif %}>{% include 'recruitment/user_name.html' with user=user %}</option>
                             {% endfor %}
                         </select>
                     {% else %}
-                        <p class="form-control-static">{{ application.interviewer.get_full_name }}</p>
+                        <p class="form-control-static">{% include 'recruitment/user_name.html' with user=application.interviewer %}</p>
                     {% endif %}
                 </div>
                 <div class="form-group">
@@ -99,7 +99,7 @@
                         <option value="">---------</option>
                         {% for user in users %}
                             <option value="{{ user.id }}" {% if user == application.superior_user %}
-                                    selected {% endif %}>{{ user.get_full_name }}</option>
+                                    selected {% endif %}>{% include 'recruitment/user_name.html' with user=user %}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -161,7 +161,7 @@
                     {% for comment in application.recruitmentapplicationcomment_set.all|dictsortreversed:"created_date" %}
                         <div class="media">
                             <div class="media-body">
-                                <h4 class="media-heading">{{ comment.user.get_full_name }}</h4>
+                                <h4 class="media-heading">{% include 'recruitment/user_name.html' with user=application.user %}</h4>
                                 <small class="text-muted">{{ comment.created_date }}</small>
                                 <p>{{ comment.comment }}</p>
                             </div>

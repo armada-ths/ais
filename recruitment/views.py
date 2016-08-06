@@ -7,6 +7,7 @@ from django.contrib.auth.models import Group, User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
+
 def user_has_permission(user, needed_permission):
     if user.has_perm(needed_permission):
         return True
@@ -174,7 +175,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     #role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
 
     if request.POST:
-        recruitment_period.application_questions.handle_answers_from_request(request)
+        recruitment_period.application_questions.handle_answers_from_request(request, request.user)
         if not recruitment_application:
             recruitment_application = RecruitmentApplication()
 
@@ -260,13 +261,13 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         set_string_key_from_request(request, application, 'interview_date')
         set_string_key_from_request(request, application, 'status')
 
-        application.recruitment_period.interview_questions.handle_answers_from_request(request)
-        application.recruitment_period.application_questions.handle_answers_from_request(request)
+        application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
+        application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
 
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
-        'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(request.user),
+        'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
         'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'users': User.objects.all,

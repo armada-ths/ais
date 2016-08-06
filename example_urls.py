@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import  static
 
 urlpatterns = [
     #admin
@@ -46,7 +48,7 @@ urlpatterns = [
 
     # News
     url(r'^news/', include('news.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_title = 'AIS administration'
 admin.site.site_header = 'AIS administration'

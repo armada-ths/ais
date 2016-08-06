@@ -81,7 +81,7 @@ class ExtraField(models.Model):
                     custom_field_argument.value = request.POST[argument_key]
                     custom_field_argument.save()
 
-    def handle_answers_from_request(self, request):
+    def handle_answers_from_request(self, request, user):
         extra_field = self
         print(request.FILES)
         print("Number of extra fields: %d" % len(extra_field.customfield_set.all()))
@@ -94,14 +94,14 @@ class ExtraField(models.Model):
                 if key in request.FILES:
                     file = request.FILES[key]
                     print(request.FILES[key])
-                    file_path = 'custom-field/%d_%s.%s' % (request.user.id, key, file.name.split('.')[-1])
+                    file_path = 'custom-field/%d_%s.%s' % (user.id, key, file.name.split('.')[-1])
                     path = default_storage.save(file_path, ContentFile(file.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
                     print(tmp_file)
 
                     answer, created = CustomFieldAnswer.objects.get_or_create(
                         custom_field=custom_field,
-                        user=request.user
+                        user=user
                     )
                     answer.answer = file_path
                     answer.save()
@@ -110,7 +110,7 @@ class ExtraField(models.Model):
                     print("FOUND %s - %s" % (key, request.POST[key]))
                     answer, created = CustomFieldAnswer.objects.get_or_create(
                         custom_field=custom_field,
-                        user=request.user
+                        user=user
                     )
                     answer_string = request.POST[key]
                     print(key + " " + answer_string)
@@ -122,7 +122,7 @@ class ExtraField(models.Model):
                 else:
                     CustomFieldAnswer.objects.filter(
                         custom_field=custom_field,
-                        user=request.user
+                        user=user
                     ).delete()
 
 
@@ -139,7 +139,7 @@ class RecruitmentPeriod(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.extra_field = ExtraField.objects.create()
+            self.interview_questions = ExtraField.objects.create()
             self.application_questions = ExtraField.objects.create()
         super(RecruitmentPeriod, self).save(*args, **kwargs)
 

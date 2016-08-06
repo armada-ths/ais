@@ -1,5 +1,6 @@
 #!/bin/sh
 /bin/bash -c ". ../ais_venv/bin/activate; 
+pip install -r requirements.txt
 python manage.py makemigrations --settings local_settings;
 echo making migrations...;
 python manage.py migrate --settings local_settings;

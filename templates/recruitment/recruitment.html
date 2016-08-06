@@ -19,13 +19,13 @@
 <div class="row">
 <div class="col-md-9">
     <h2>Recruitment periods</h2>
+{% if recruitment_periods %}
     <table class="table">
     <thead>
     <tr>
     <th>Name</th><th>Start</th><th>End</th>
     </tr>
     </thead>
-
     {% for period in recruitment_periods %}
     <tr>
     <td><a href="{% url 'recruitment_period' period.id %}">{{period.name}}</a></td>
@@ -34,6 +34,9 @@
     </tr>
     {% endfor %}
     </table>
+{% else %}
+    <p>No recruitment periods yet</p>
+{% endif %}
 {% if can_edit_recruitment_period %}
 <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment period</button></a></p>
 {% endif %}

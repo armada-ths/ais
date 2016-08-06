@@ -39,6 +39,8 @@ DEFAULT_TO_EMAIL = 'system@armada.nu'
 
 # Application definition
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,7 +57,8 @@ INSTALLED_APPS = (
     'locations',
     'recruitment',
     'api',
-    'news'
+    'news',
+    'crispy_forms',
 )
 
 MIDDLEWARE_CLASSES = (
