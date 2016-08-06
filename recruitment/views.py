@@ -6,7 +6,7 @@ from django import forms
 from django.contrib.auth.models import Group, User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-
+from django.utils import timezone
 
 def user_has_permission(user, needed_permission):
     if user.has_perm(needed_permission):
@@ -170,6 +170,21 @@ def recruitment_application_comment_new(request, pk):
 @login_required
 def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
+    now = timezone.now()
+
+    if recruitment_period.start_date > now:
+        return render(request, 'recruitment/recruitment_application_closed.html', {
+            'recruitment_period': recruitment_period,
+            'message': 'Application has not opened'
+        })
+
+    if recruitment_period.end_date < now:
+        return render(request, 'recruitment/recruitment_application_closed.html', {
+            'recruitment_period': recruitment_period,
+            'message': 'Application closed'
+        })
+
+
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
     role_keys = [str(i) for i in range(recruitment_period.eligible_roles)]
     #role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]

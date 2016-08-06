@@ -1,61 +1,63 @@
 {% extends "base.html" %}
-{% block nav-recruitment %}<li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
+{% block nav-recruitment %}
+    <li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
 {% block content %}
 
+    <div class="row">
+        <div class="jumbotron">
+            <h1>Recruitment</h1>
+            <p>Armada only recruits the sweetest KTH students</p>
 
-
-
-<div class="row">
-
-
-    <div class="jumbotron">
-  <h1>Recruitment</h1>
-
-  <p>Armada only recruits the sweetest KTH students</p>
-
-</div>
+        </div>
     </div>
 
-<div class="row">
-<div class="col-md-9">
-    <h2>Recruitment periods</h2>
-{% if recruitment_periods %}
-    <table class="table">
-    <thead>
-    <tr>
-    <th>Name</th><th>Start</th><th>End</th>
-    </tr>
-    </thead>
-    {% for period in recruitment_periods %}
-    <tr>
-    <td><a href="{% url 'recruitment_period' period.id %}">{{period.name}}</a></td>
-    <td>{{ period.start_date }}</td>
-    <td>{{ period.end_date }}</td>
-    </tr>
-    {% endfor %}
-    </table>
-{% else %}
-    <p>No recruitment periods</p>
-{% endif %}
-{% if can_edit_recruitment_period %}
-<p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment period</button></a></p>
-{% endif %}
-</div>
+    <div class="row">
+        <div class="col-md-9">
+            <h2>Recruitment periods</h2>
+            {% if recruitment_periods %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Start</th>
+                        <th>End</th>
+                    </tr>
+                    </thead>
+                    {% for period in recruitment_periods %}
+                        <tr>
+                            <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
+                            <td>{{ period.start_date }}</td>
+                            <td>{{ period.end_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No recruitment periods</p>
+            {% endif %}
+            {% if can_edit_recruitment_period %}
+                <p><a href="{% url "recruitment_period_new" %}">
+                    <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
+                        period
+                    </button>
+                </a></p>
+            {% endif %}
+        </div>
 
-<div class="col-md-3">
-{% if can_edit_roles %}
+        <div class="col-md-3">
+            {% if can_edit_roles %}
 
-    <h2>Roles</h2>
-    {% for role in roles %}
-        <p><a href="{% url "roles_new" role.pk %}">{{ role }}</a></p>
-        {% empty %}
-        <p>No roles</p>
-    {% endfor %}
+                <h2>Roles</h2>
+                {% for role in roles %}
+                    <p><a href="{% url "roles_new" role.pk %}">{{ role }}</a></p>
+                    {% empty %}
+                    <p>No roles</p>
+                {% endfor %}
 
-        <a class="btn btn-primary" href="{% url "roles_new" %}"><span class="glyphicon glyphicon-plus"></span> New role</a>
+                <a class="btn btn-primary" href="{% url "roles_new" %}"><span class="glyphicon glyphicon-plus"></span>
+                    New role</a>
 
-    {% endif %}
-</div>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
 

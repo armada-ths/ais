@@ -2,10 +2,12 @@
 
 {% block content %}
 
+    <div class="row">
     <ol class="breadcrumb">
     <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
         <li class="active">{{ recruitment_period.name }}</li>
     </ol>
+
 
     <div class="jumbotron">
         <h1>{{ recruitment_period.name }}</h1>
@@ -108,9 +110,7 @@
                     </tr>
                 {% endfor %}
         </table>
-    {% else %}
-
     {% endif %}
 
-
+</div>
 {% endblock %}

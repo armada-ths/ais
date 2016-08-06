@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
+    <div class="row">
 {% if recruitment_period %}
         <ol class="breadcrumb">
         <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
@@ -16,13 +17,10 @@
     </ol>
     {% endif %}
 
-    <div class="container">
-        <div class="row">
+
             <h3>New recruitment period</h3>
             <hr>
-        </div>
 
-        <div class="row">
             <form method="post">
                 {% csrf_token %}
                 {{ form|crispy }}
@@ -57,8 +55,8 @@
         </div>
 
 
-
     </div>
+
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>

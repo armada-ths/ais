@@ -2,20 +2,29 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-
+    <div class="row">
         <ol class="breadcrumb">
         <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
         <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
         <li class="active">Application</li>
     </ol>
 
-<div class="container">
+    <div class="jumbotron">
+        <h1>{{ recruitment_period.name }}</h1>
+        <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
 
-  <div class="row">
-    <h3>Application for {{ recruitment_period.name }}</h3>
-    <hr>
-  </div>
-<div class="row">
+        {% if recruitment_period.recruitablerole_set.all %}
+            <p>We are looking for:</p>
+        <ul>
+            {% for role in recruitment_period.recruitablerole_set.all %}
+                <li>{{ role }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+    </div>
+
+
 
 <form method="post" action="" enctype="multipart/form-data">
 {% csrf_token %}
@@ -39,7 +48,6 @@
 </div>
 </form>
 
-</div>
     </div>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
