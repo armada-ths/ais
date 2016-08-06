@@ -36,6 +36,8 @@
                                        checked {% endif %}> {{ role.role }}
                             </label>
                         </div>
+                        {% empty %}
+                        <p class="form-control-static">No roles exists</p>
                     {% endfor %}
                 </div>
 
