@@ -8,6 +8,10 @@ import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
+
+from fair.models import Fair
+
+from companies.models import Company, CompanyParticipationYear
 import os.path
 
 def create_group(group_name):
@@ -132,7 +136,7 @@ class RecruitmentPeriod(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     interview_end_date = models.DateTimeField()
-    fair = models.ForeignKey('fair.Fair')
+    fair = models.ForeignKey(Fair)
     interview_questions = models.ForeignKey(ExtraField, blank=True, null=True)
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions')
     eligible_roles = models.IntegerField(default=3)
@@ -159,6 +163,7 @@ class RecruitmentApplication(models.Model):
     user = models.ForeignKey(User)
     rating = models.IntegerField(null=True, blank=True)
     interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')
+    exhibitor = models.ForeignKey(Company, null=True, blank=True)
     interview_date = models.CharField(null=True, blank=True, max_length=100)
     interview_location = models.CharField(null=True, blank=True, max_length=100)
     submission_date = models.DateTimeField(default=datetime.datetime.now, blank=True)

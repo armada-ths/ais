@@ -7,6 +7,9 @@ from django.contrib.auth.models import Group, User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+
+from companies.models import Company, CompanyParticipationYear
+
 import datetime
 
 def user_has_permission(user, needed_permission):
@@ -272,6 +275,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         set_foreign_key_from_request(request, application, 'recommended_role', RecruitableRole)
         set_foreign_key_from_request(request, application, 'delegated_role', RecruitableRole)
         set_foreign_key_from_request(request, application, 'superior_user', User)
+        set_foreign_key_from_request(request, application, 'exhibitor', Company)
         set_int_key_from_request(request, application, 'rating')
         set_string_key_from_request(request, application, 'interview_location')
         set_string_key_from_request(request, application, 'interview_date')
@@ -280,6 +284,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
         application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
 
+    exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
+
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
@@ -287,7 +293,9 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'users': User.objects.all,
-        'ratings': [i for i in range(1,6)]
+        'ratings': [i for i in range(1,6)],
+        'exhibitors': exhibitors
+
     })
 
 

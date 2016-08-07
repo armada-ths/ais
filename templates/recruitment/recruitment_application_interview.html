@@ -89,6 +89,19 @@
                     {% endfor %}
                 </select>
             </div>
+
+
+            <div class="form-group">
+                <label>Assigned exhibitor</label>
+                <select class="form-control" name="exhibitor">
+                    <option value="">---------</option>
+                    {% for exhibitor in exhibitors %}
+                        <option value="{{ exhibitor.id }}" {% if exhibitor == application.exhibitor %}
+                                selected {% endif %}>{{ exhibitor }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <div class="form-group">
                 <label>Superior</label>
                 <select class="form-control" name="superior_user">
