@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+    <div class="row">
+        <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+        <li class="active">Application</li>
+    </ol>
+
+    <div class="jumbotron">
+        <h1>{{ recruitment_period.name }}</h1>
+        <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
+
+        {% if recruitment_period.recruitablerole_set.all %}
+            <p>We are looking for:</p>
+        <ul>
+            {% for role in recruitment_period.recruitablerole_set.all %}
+                <li>{{ role }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+    </div>
+
+      <div class="alert alert-danger" role="alert"><p>{{ message }}</p></div>
+  </div>
+
+
+{% endblock %}
