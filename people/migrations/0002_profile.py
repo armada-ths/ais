@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0009_group_fair'),
+        #('auth', '0009_group_fair'),
         ('people', '0001_initial'),
     ]
 

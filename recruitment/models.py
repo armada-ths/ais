@@ -24,6 +24,9 @@ hosts = [role.strip() for role in hosts_string.split(',')]
 team_leaders_string = 'Developer: Android , Developer: Back End , Developer: Front End , Developer: iOS, Developer: Systems, Film Team Coordinator, Graphic designer, Green Room Creator, Marketing Coordinator, Photo Team Coordinator , Sponsorship Coordinator, Team Leader: Banquet Entertainment, Team Leader: Banquet Logistics, Team Leader: Banquet Interior, Team Leader: Banquet Technology, Team Leader: Career Fair , Team Leader: Events, Team Leader: Logistics Task Force, Team Leader: Lounches, Team Leader: Service, Team Leader: Technical Task Force, Team Leader: University Relations, Team Leader: University Relations Banquet and Web-TV Coordinator'
 team_leaders = [role.strip() for role in team_leaders_string.split(',')]
 
+
+
+
 class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)
@@ -134,6 +137,7 @@ class Role(models.Model):
     name = models.CharField(max_length=50)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
 
+
     def has_permission(self, needed_permission):
         role = self
         while role != None:
@@ -156,9 +160,6 @@ class Role(models.Model):
             if role == self:
                 return False
         return False
-
-
-
 
 
     def __str__(self):
@@ -205,8 +206,8 @@ class RecruitmentApplication(models.Model):
     interview_date = models.CharField(null=True, blank=True, max_length=100)
     interview_location = models.CharField(null=True, blank=True, max_length=100)
     submission_date = models.DateTimeField(default=datetime.datetime.now, blank=True)
-    recommended_role = models.ForeignKey(RecruitableRole, null=True, blank=True)
-    delegated_role = models.ForeignKey(RecruitableRole, null=True, blank=True, related_name='delegated_role')
+    recommended_role = models.ForeignKey(Role, null=True, blank=True)
+    delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role')
     superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user')
 
     statuses = [
@@ -270,3 +271,85 @@ class CustomFieldAnswer(models.Model):
 
     def __str__(self):
         return '%s' % (self.answer)
+
+def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_name, recruitment_period_name, fair_name):
+    username = email.split('@')[0]
+
+    user = User.objects.filter(username=username).first()
+    if not user:
+        user = User.objects.create(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=first_name,
+            is_staff=True,
+            is_superuser=True
+        )
+
+
+    fair = Fair.objects.filter(name=fair_name).first()
+    if not fair:
+        fair = Fair.objects.create(
+            year=2016,
+            name=fair_name
+        )
+
+
+
+    parent_role = Role.objects.filter(name=parent_role_name).first()
+    if not parent_role and parent_role_name:
+        parent_role = Role.objects.create(name=parent_role_name)
+
+    recruitment_period = RecruitmentPeriod.objects.filter(name=recruitment_period_name).first()
+    if not recruitment_period:
+        recruitment_period = RecruitmentPeriod.objects.create(
+            fair=fair,
+            name=recruitment_period_name,
+            start_date=datetime.datetime(2016, 1, 1),
+            end_date=datetime.datetime(2016, 1, 1),
+            interview_end_date=datetime.datetime(2016, 1, 1)
+        )
+
+    role = Role.objects.filter(name=role_name).first()
+    if not role:
+        role = Role.objects.create(
+            name=role_name,
+            parent_role=parent_role,
+        )
+
+    recruitable_role = RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role).first()
+    if not recruitable_role:
+        recruitable_role = RecruitableRole.objects.create(
+            role=role,
+            recruitment_period=recruitment_period
+        )
+
+    recruitment_application = RecruitmentApplication.objects.filter(user=user, delegated_role=role)
+    if not recruitment_application:
+        RecruitmentApplication.objects.create(
+            delegated_role=role,
+            status='accepted',
+            user=user,
+            recruitment_period=recruitment_period
+        )
+
+def create_project_group():
+    fair_name = 'Armada 2016'
+    create_user_and_stuff('Oscar', 'Alsing', 'oalsing@kth.se', 'Project Manager', None, 'Project Manager', fair_name)
+    with open('/Users/Sami/Desktop/aisfinal/recruitment/project_group.csv') as f:
+        first_line = True
+        for line in f:
+            if not first_line:
+                if line.strip():
+                    values = line.split(',')
+                    full_name = values[0].strip()
+                    first_name = full_name.split(' ')[0]
+                    last_name = full_name.split(' ')[1]
+                    role_name = values[2].strip()
+                    email = values[4].strip()
+
+                    create_user_and_stuff(first_name, last_name, email, role_name, 'Project Core Team', 'Project Core Team', fair_name)
+
+            first_line = False
+

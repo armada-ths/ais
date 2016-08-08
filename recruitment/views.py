@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, RolePermission
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, RolePermission, create_project_group
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import User, Permission
@@ -18,7 +18,7 @@ def user_has_permission(user, needed_permission):
 
     for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
         if application.recruitment_period.fair.year == datetime.datetime.now().year:
-            if application.delegated_role.role.has_permission(needed_permission):
+            if application.delegated_role.has_permission(needed_permission):
                 return True
     return False
 
@@ -37,7 +37,7 @@ class RecruitmentPeriodForm(ModelForm):
 
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
-
+    create_project_group()
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
         #'roles': Role.objects.all(),
@@ -274,8 +274,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
     if request.POST:
         set_foreign_key_from_request(request, application, 'interviewer', User)
-        set_foreign_key_from_request(request, application, 'recommended_role', RecruitableRole)
-        set_foreign_key_from_request(request, application, 'delegated_role', RecruitableRole)
+        set_foreign_key_from_request(request, application, 'recommended_role', Role)
+        set_foreign_key_from_request(request, application, 'delegated_role', Role)
         set_foreign_key_from_request(request, application, 'superior_user', User)
         set_foreign_key_from_request(request, application, 'exhibitor', Company)
         set_int_key_from_request(request, application, 'rating')
@@ -307,7 +307,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
         'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
         'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
-        'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
+        'roles': [recruitable_role.role for recruitable_role in application.recruitment_period.recruitablerole_set.all()],
         'users': User.objects.all,
         'ratings': [i for i in range(1,6)],
         'exhibitors': exhibitors,

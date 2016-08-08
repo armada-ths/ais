@@ -69,6 +69,7 @@
             <hr>
             <h3>Post interview</h3>
 
+
         {% include 'recruitment/select_field.html' with values=roles field_label='Delegated role' field_name='delegated_role' selected_value=application.delegated_role is_editable=can_edit_recruitment_application %}
         {% include 'recruitment/select_field.html' with values=exhibitors field_label='Assigned exhibitor' field_name='exhibitor' selected_value=application.exhibitor is_editable=can_edit_recruitment_application %}
         {% include 'recruitment/select_field.html' with values=users field_label='Superior' field_name='superior_user' selected_value=application.superior_user is_editable=can_edit_recruitment_application %}
