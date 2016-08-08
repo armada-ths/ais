@@ -101,7 +101,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
 
 
 
-    return render(request, template_name, {'role': role, 'permissions': permissions, 'roles': Role.objects.all()})
+    return render(request, template_name, {'role': role, 'permissions': permissions, 'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all()})
 
 
 
