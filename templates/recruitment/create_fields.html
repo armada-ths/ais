@@ -74,14 +74,23 @@ function domElementFromString(html) {
     }
 
     function newArgumentToInterviewQuestion(interviewQuestionId) {
-        addArgumentToInterviewQuestion(nextCustomFieldId(), interviewQuestionId, '')
+        addArgumentToInterviewQuestion(nextCustomFieldId(), interviewQuestionId, '', document.getElementById(`arguments_${interviewQuestionId}`).childElementCount+1)
     }
 
-    function addArgumentToInterviewQuestion(argumentId, interviewQuestionId, value) {
+    function addArgumentToInterviewQuestion(argumentId, interviewQuestionId, value, position) {
             var id = `argument_${interviewQuestionId}_${argumentId}`
              document.getElementById(`arguments_${interviewQuestionId}`).appendChild(domElementFromString(`
                         <div class="form-group row" id="${id}">
                             <div class="col-md-2"><input type="text" class="form-control" value="${value}" name="argument_${interviewQuestionId}_${argumentId}" placeholder="Argument"></div>
+                                                <div class="col-md-1">
+
+
+                                                <select class="form-control" name="argument_position_${interviewQuestionId}_${argumentId}">
+                        {% for i in "xxxxxxxxxxxxxxxxxxxxxxxxx" %}
+                                    <option value="{{ forloop.counter }}" ${ {{ forloop.counter }} === position ? 'selected' : ''}>{{ forloop.counter }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
                             <div class="col-md-2"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger">
 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button></div>
                         </div>
@@ -91,8 +100,8 @@ function domElementFromString(html) {
 
 {%  for custom_field in values %}
         addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', {{ custom_field.position }})
-            {% for argument in custom_field.customfieldargument_set.all %}
-                addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}')
+            {% for argument in custom_field.customfieldargument_set.all|dictsort:"position" %}
+                addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}', {{argument.position}})
             {% endfor %}
         {% endfor %}
 </script>

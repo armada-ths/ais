@@ -82,6 +82,7 @@ class ExtraField(models.Model):
 
                     custom_field_argument.custom_field = custom_field
                     custom_field_argument.value = request.POST[argument_key]
+                    custom_field_argument.position = request.POST['argument_position_%d_%d' % (question_id, argument_id)]
                     custom_field_argument.save()
 
     def handle_answers_from_request(self, request, user):
