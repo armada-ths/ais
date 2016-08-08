@@ -14,6 +14,7 @@ var nextCustomFieldId = (function() {
     }
 })()
 
+
 function domElementFromString(html) {
         const dummy = document.createElement('div')
         dummy.innerHTML = html.trim()
@@ -21,7 +22,7 @@ function domElementFromString(html) {
     }
 
     function newInterviewQuestion(extraFieldId) {
-        addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '')
+        addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '', document.getElementById(extraFieldId).childElementCount+1)
     }
 
     function addInterviewQuestion(extraFieldId, id, fieldType, question, position) {
