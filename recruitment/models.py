@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 # Create your models here.
 from django.db import models
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group, User, Permission
 import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -130,6 +130,44 @@ class ExtraField(models.Model):
                     ).delete()
 
 
+class Role(models.Model):
+    name = models.CharField(max_length=50)
+    parent_role = models.ForeignKey('Role', null=True, blank=True)
+
+    def has_permission(self, needed_permission):
+        role = self
+        while role != None:
+            for permission in role.rolepermission_set.all():
+                if permission.permission.codename == needed_permission:
+                    return True
+
+            role = role.parent_role
+            if role == self:
+                return False
+        return False
+
+
+    def has_parent(self, other):
+        role = self.parent_role
+        while role != None:
+            if role == other:
+                return True
+            role = role.parent_role
+            if role == self:
+                return False
+        return False
+
+
+
+
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+class RolePermission(models.Model):
+    role = models.ForeignKey(Role)
+    permission = models.ForeignKey(Permission)
+
 # Model for company
 class RecruitmentPeriod(models.Model):
     name = models.CharField(max_length=30)
@@ -151,7 +189,7 @@ class RecruitmentPeriod(models.Model):
         return '%s: %s' % (self.fair.name, self.name)
 
 class RecruitableRole(models.Model):
-    role = models.ForeignKey(Group, limit_choices_to={'is_role': True})
+    role = models.ForeignKey(Role)
     recruitment_period = models.ForeignKey(RecruitmentPeriod)
 
     def __str__(self):

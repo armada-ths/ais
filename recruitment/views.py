@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, RolePermission
 from django.forms import ModelForm
 from django import forms
-from django.contrib.auth.models import Group, User, Permission
+from django.contrib.auth.models import User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.utils import timezone
@@ -15,12 +15,11 @@ import datetime
 def user_has_permission(user, needed_permission):
     if user.has_perm(needed_permission):
         return True
+
     for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
         if application.recruitment_period.fair.year == datetime.datetime.now().year:
-            for permission in application.delegated_role.role.permissions.all():
-                print(permission.codename)
-                if permission.codename == needed_permission:
-                    return True
+            if application.delegated_role.role.has_permission(needed_permission):
+                return True
     return False
 
 class RecruitmentPeriodForm(ModelForm):
@@ -36,17 +35,13 @@ class RecruitmentPeriodForm(ModelForm):
             "application_questions": forms.HiddenInput(),
         }
 
-class RoleForm(ModelForm):
-
-    class Meta:
-        model = Group
-        fields = ['name','permissions']
-
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
+
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
-        'roles': Group.objects.filter(is_role=True),
+        #'roles': Role.objects.all(),
+        'roles': [{'parent_role': role, 'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for role in Role.objects.filter(parent_role=None)],
         'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
         'can_edit_roles': user_has_permission(request.user, 'change_group'),
     })
@@ -67,7 +62,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     if not user_has_permission(request.user, 'change_group'):
         return HttpResponseForbidden()
-    role = Group.objects.filter(pk=pk).first()
+    role = Role.objects.filter(pk=pk).first()
 
     permissions = [
         {'codename': 'change_recruitmentperiod', 'name': 'Administer recruitment', 'checked': False},
@@ -77,36 +72,41 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
 
     if role:
         for permission in permissions:
-            for role_permission in role.permissions.all():
-                if permission['codename'] == role_permission.codename:
+            for role_permission in role.rolepermission_set.all():
+                if permission['codename'] == role_permission.permission.codename:
                     permission['checked'] = True
 
     if request.POST:
         if not role:
-            role = Group()
+            role = Role()
         role.name = request.POST['name']
-        role.is_role = True
+        if request.POST['parent_role']:
+            parent_role_id = int(request.POST['parent_role'])
+            role.parent_role = Role.objects.get(pk=parent_role_id)
         role.save()
 
         for permission in permissions:
             codename = permission['codename']
             permission_object = Permission.objects.get(codename=permission['codename'])
             if codename in request.POST:
-                role.permissions.add(permission_object)
+                role_permission = RolePermission()
+                role_permission.permission = permission_object
+                role_permission.role = role
+                role_permission.save()
             else:
-                role.permissions.remove(permission_object)
+                RolePermission.objects.filter(permission=permission_object, role=role).delete()
 
         return redirect('/recruitment/')
 
 
 
 
-    return render(request, template_name, {'role': role, 'permissions': permissions})
+    return render(request, template_name, {'role': role, 'permissions': permissions, 'roles': Role.objects.all()})
 
 
 
 def roles_delete(request, pk):
-    role = get_object_or_404(Group, pk=pk)
+    role = get_object_or_404(Role, pk=pk)
     if not user_has_permission(request.user, 'change_group'):
         return HttpResponseForbidden()
     role.delete()
@@ -129,12 +129,12 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
     roles = []
 
-    for role in Group.objects.filter(is_role=True):
+    for role in Role.objects.all():
         roles.append({'role': role, 'checked': len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) > 0})
 
     if form.is_valid():
         recruitment_period = form.save()
-        for role in Group.objects.filter(is_role=True):
+        for role in Role.objects.all():
             role_key = 'role_%d' % role.id
             if role_key in request.POST:
                 if len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) == 0:

@@ -23,6 +23,9 @@
             <input class="form-control" id="name" name="name" value="{{ role.name }}">
         </div>
 
+        {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=True %}
+
+
         <label>Permissions</label>
         {% for permission in permissions %}
             <div class="checkbox">
