@@ -91,7 +91,7 @@
                     <tr>
 
                     <td><a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                            {{ application.use  r.get_full_name }}
+                            {{ application.user.get_full_name }}
                         </a></td>
                     <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
                     <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
