@@ -30,7 +30,7 @@ class ExtraField(models.Model):
 
     def questions_with_answers_for_user(self, user):
         questions_with_answers = []
-        for custom_field in self.customfield_set.all():
+        for custom_field in self.customfield_set.all().order_by('position'):
             answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
                                                       user=user).first()
             questions_with_answers.append((custom_field, answer))
@@ -60,6 +60,7 @@ class ExtraField(models.Model):
             custom_field.extra_field = extra
             custom_field.question = request.POST['%s_%d' % (field_name, question_id)]
             custom_field.field_type = request.POST['%s-type_%d' % (field_name, question_id)]
+            custom_field.position = int(request.POST['%s-position_%d' % (field_name, question_id)])
             custom_field.save()
 
             for argument in custom_field.customfieldargument_set.all():
@@ -207,6 +208,7 @@ class CustomField(models.Model):
     extra_field = models.ForeignKey(ExtraField)
     question = models.CharField(max_length=1000)
     field_type = models.CharField(choices=fields, default='text_field', max_length=20)
+    position = models.IntegerField(default=0)
 
     def __str__(self):
         return '%s' % (self.question)
@@ -214,6 +216,7 @@ class CustomField(models.Model):
 class CustomFieldArgument(models.Model):
     value = models.CharField(max_length=100)
     custom_field = models.ForeignKey(CustomField)
+    position = models.IntegerField(default=0)
 
     def user_answer(self, user):
         return CustomFieldAnswer.objects.filter(user=user).first()

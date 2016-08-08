@@ -24,7 +24,7 @@ function domElementFromString(html) {
         addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '')
     }
 
-    function addInterviewQuestion(extraFieldId, id, fieldType, question) {
+    function addInterviewQuestion(extraFieldId, id, fieldType, question, position) {
         //const id = Math.round((Math.random() * 100000)) % 10000
 
         document.getElementById(extraFieldId).appendChild(domElementFromString(`<div class="form-group" id="${id}">
@@ -40,7 +40,18 @@ function domElementFromString(html) {
                                     <option value="image" ${'image' === fieldType ? 'selected' : ''}>Image</option>
                         </select>
                         </div>
-                        <div class="col-md-9"><input type="text" class="form-control" name="${extraFieldId}_${id}" value="${question}" placeholder="Question"></div>
+                                                <div class="col-md-1">
+
+
+                                                <select class="form-control" name="${extraFieldId}-position_${id}">
+                        {% for i in "xxxxxxxxxxxxxxxxxxxxxxxxx" %}
+                                    <option value="{{ forloop.counter }}" ${ {{ forloop.counter }} === position ? 'selected' : ''}>{{ forloop.counter }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+
+                        <div class="col-md-8"><input type="text" class="form-control" name="${extraFieldId}_${id}" value="${question}" placeholder="Question"></div>
+
                         <div class="col-md-1"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button>
 
                         </div>
@@ -78,7 +89,7 @@ function domElementFromString(html) {
 
 
 {%  for custom_field in values %}
-        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', 'trol')
+        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', {{ custom_field.position }})
             {% for argument in custom_field.customfieldargument_set.all %}
                 addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}')
             {% endfor %}
