@@ -69,6 +69,7 @@
             <hr>
             <h3>Post interview</h3>
 
+        {{ statuses }}
 
         {% include 'recruitment/select_field.html' with values=roles field_label='Delegated role' field_name='delegated_role' selected_value=application.delegated_role is_editable=can_edit_recruitment_application %}
         {% include 'recruitment/select_field.html' with values=exhibitors field_label='Assigned exhibitor' field_name='exhibitor' selected_value=application.exhibitor is_editable=can_edit_recruitment_application %}
@@ -103,9 +104,12 @@
             <hr>
 
             <button type="submit" class="btn btn-primary">Save</button>
+
+        {% if can_edit_recruitment_application %}
             <a class="btn btn-danger"
                href="{% url 'recruitment_application_delete' application.recruitment_period.id application.id %}"
                onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+        {% endif %}
         </form>
 
 
