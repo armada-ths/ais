@@ -37,7 +37,7 @@ class RecruitmentPeriodForm(ModelForm):
 
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
-    create_project_group()
+    #create_project_group()
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
         #'roles': Role.objects.all(),
