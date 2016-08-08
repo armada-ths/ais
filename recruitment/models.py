@@ -320,10 +320,8 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
             recruitment_period=recruitment_period
         )
 
-def create_project_group():
-    fair_name = 'Armada 2016'
-    create_user_and_stuff('Oscar', 'Alsing', 'oalsing@kth.se', 'Project Manager', None, 'Project Manager', fair_name)
-    with open('/Users/Sami/Desktop/aisfinal/recruitment/project_group.csv') as f:
+def create_recruitment_period_from_csv(file_path, recruitment_period_name, fair_name):
+    with open(file_path) as f:
         first_line = True
         for line in f:
             if not first_line:
@@ -334,8 +332,15 @@ def create_project_group():
                     last_name = full_name.split(' ')[1]
                     role_name = values[2].strip()
                     email = values[4].strip()
-
-                    create_user_and_stuff(first_name, last_name, email, role_name, 'Project Core Team', 'Project Core Team', fair_name)
-
+                    create_user_and_stuff(first_name, last_name, email, role_name, recruitment_period_name, recruitment_period_name, fair_name)
             first_line = False
+
+
+import os
+
+def create_project_group():
+    fair_name = 'Armada 2016'
+    create_user_and_stuff('Oscar', 'Alsing', 'oalsing@kth.se', 'Project Manager', None, 'Project Manager', fair_name)
+    create_recruitment_period_from_csv(os.path.dirname(os.path.abspath(__file__))+'/project_group.csv', 'Project Core Team', fair_name)
+    create_recruitment_period_from_csv(os.path.dirname(os.path.abspath(__file__))+'/team_leaders.csv', 'Extended Project Team', fair_name)
 
