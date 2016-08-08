@@ -21,21 +21,10 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label>Interviewer</label>
 
-                {% if can_edit_recruitment_application %}
-                    <select class="form-control" name="interviewer">
-                        <option value="">---------</option>
-                        {% for user in users %}
-                            <option value="{{ user.id }}" {% if user == application.interviewer %}
-                                    selected {% endif %}>{% include 'recruitment/user_name.html' with user=user %}</option>
-                        {% endfor %}
-                    </select>
-                {% else %}
-                    <p class="form-control-static">{% include 'recruitment/user_name.html' with user=application.interviewer %}</p>
-                {% endif %}
-            </div>
+        {% include 'recruitment/select_field.html' with values=users field_label='Interviewer' field_name='interviewer' selected_value=application.interviewer is_editable=can_edit_recruitment_application %}
+
+
             <div class="form-group">
                 <label for="interviewDate">Interview date</label>
                 <input type="text" class="form-control" id="interviewDate" name="interview_date"
@@ -48,7 +37,7 @@
                        value="
 
 
-                               {% if application.interview_location %}{{ application.interview_location }}{% endif %}">
+                  {% if application.interview_location %}{{ application.interview_location }}{% endif %}">
             </div>
 
             <div class="form-group">
@@ -79,54 +68,12 @@
 
             <hr>
             <h3>Post interview</h3>
-            <div class="form-group">
-                <label>Delegated role</label>
-                <select class="form-control" name="delegated_role">
-                    <option value="">---------</option>
-                    {% for role in roles %}
-                        <option value="{{ role.id }}" {% if role == application.delegated_role %}
-                                selected {% endif %}>{{ role }}</option>
-                    {% endfor %}
-                </select>
-            </div>
 
 
-            <div class="form-group">
-                <label>Assigned exhibitor</label>
-                <select class="form-control" name="exhibitor">
-                    <option value="">---------</option>
-                    {% for exhibitor in exhibitors %}
-                        <option value="{{ exhibitor.id }}" {% if exhibitor == application.exhibitor %}
-                                selected {% endif %}>{{ exhibitor }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Superior</label>
-                <select class="form-control" name="superior_user">
-                    <option value="">---------</option>
-                    {% for user in users %}
-                        <option value="{{ user.id }}" {% if user == application.superior_user %}
-                                selected {% endif %}>{% include 'recruitment/user_name.html' with user=user %}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Accepted / Rejected</label>
-                <select class="form-control" name="status">
-                    <option value="undecided" {% if application.status == "undecided" %}
-                            selected {% endif %}>---------
-                    </option>
-                    <option value="rejected" {% if application.status == "rejected" %}
-                            selected {% endif %}>Rejected
-                    </option>
-                    <option value="accepted" {% if application.status == "accepted" %}
-                            selected {% endif %}>Accepted
-                    </option>
-                </select>
-            </div>
+        {% include 'recruitment/select_field.html' with values=roles field_label='Delegated role' field_name='delegated_role' selected_value=application.delegated_role is_editable=can_edit_recruitment_application %}
+        {% include 'recruitment/select_field.html' with values=exhibitors field_label='Assigned exhibitor' field_name='exhibitor' selected_value=application.exhibitor is_editable=can_edit_recruitment_application %}
+        {% include 'recruitment/select_field.html' with values=users field_label='Superior' field_name='superior_user' selected_value=application.superior_user is_editable=can_edit_recruitment_application %}
+        {% include 'recruitment/select_field.html' with values=statuses field_label='Accepted / Rejected' field_name='status' selected_value=selected_status is_editable=can_edit_recruitment_application %}
 
 
             <hr>

@@ -1,0 +1,15 @@
+<div class="form-group">
+    <label>{{ field_label }}</label>
+
+    {% if is_editable %}
+        <select class="form-control" name="{{ field_name }}">
+            <option value="">---------</option>
+            {% for value in values %}
+                <option value="{{ value.id }}" {% if value == selected_value %}
+                        selected {% endif %} >{% include 'recruitment/user_name.html' with user=value %}</option>
+            {% endfor %}
+        </select>
+    {% else %}
+        <p class="form-control-static">{% include 'recruitment/user_name.html' with user=selected_value %}</p>
+    {% endif %}
+</div>

@@ -270,6 +270,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         return HttpResponseForbidden()
 
 
+
+
     if request.POST:
         set_foreign_key_from_request(request, application, 'interviewer', User)
         set_foreign_key_from_request(request, application, 'recommended_role', RecruitableRole)
@@ -286,6 +288,20 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
     exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
+
+    class Status:
+        def __init__(self, id):
+            self.id = id
+
+        def __str__(self):
+            return self.id.capitalize() if self.id else 'None'
+
+
+        def __eq__(self, other):
+            return self.id == other.id
+
+
+
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
@@ -294,7 +310,9 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'roles': RecruitableRole.objects.filter(recruitment_period=application.recruitment_period),
         'users': User.objects.all,
         'ratings': [i for i in range(1,6)],
-        'exhibitors': exhibitors
+        'exhibitors': exhibitors,
+        'statuses': [Status(status[0]) for status in RecruitmentApplication.statuses],
+        'selected_status': Status(application.status)
 
     })
 

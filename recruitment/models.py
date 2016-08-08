@@ -2,16 +2,14 @@ from __future__ import unicode_literals
 
 # Create your models here.
 from django.db import models
-from fair.models import Fair
 from django.contrib.auth.models import Group, User
 import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
-
 from fair.models import Fair
 
-from companies.models import Company, CompanyParticipationYear
+from companies.models import Company
 import os.path
 
 def create_group(group_name):
@@ -172,11 +170,10 @@ class RecruitmentApplication(models.Model):
     superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user')
 
     statuses = [
-        ('undecided', 'Undecided'),
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected')]
 
-    status = models.CharField(choices=statuses, default='undecided', max_length=20)
+    status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
 
     def __str__(self):
         return '%s' % (self.user)
