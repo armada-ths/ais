@@ -12,20 +12,6 @@ from fair.models import Fair
 from companies.models import Company
 import os.path
 
-def create_group(group_name):
-    group = Group()
-    group.name = group_name
-    group.is_role = True
-    group.save()
-
-hosts_string = 'Photographer, Banquet Host, Banquet Host: Entertainment, Event Host, Lounge Host, Service Host, Career Fair Host, Task force and University Relations Host'
-hosts = [role.strip() for role in hosts_string.split(',')]
-
-team_leaders_string = 'Developer: Android , Developer: Back End , Developer: Front End , Developer: iOS, Developer: Systems, Film Team Coordinator, Graphic designer, Green Room Creator, Marketing Coordinator, Photo Team Coordinator , Sponsorship Coordinator, Team Leader: Banquet Entertainment, Team Leader: Banquet Logistics, Team Leader: Banquet Interior, Team Leader: Banquet Technology, Team Leader: Career Fair , Team Leader: Events, Team Leader: Logistics Task Force, Team Leader: Lounches, Team Leader: Service, Team Leader: Technical Task Force, Team Leader: University Relations, Team Leader: University Relations Banquet and Web-TV Coordinator'
-team_leaders = [role.strip() for role in team_leaders_string.split(',')]
-
-
-
 
 class ExtraField(models.Model):
     def __str__(self):
@@ -277,12 +263,12 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
 
     user = User.objects.filter(username=username).first()
     if not user:
-        user = User.objects.create(
+        user = User.objects.create_user(
             username=username,
             first_name=first_name,
             last_name=last_name,
             email=email,
-            password=first_name,
+            password=username,
             is_staff=True,
             is_superuser=True
         )
