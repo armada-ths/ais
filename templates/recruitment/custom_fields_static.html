@@ -19,7 +19,7 @@
                         </div>
                     {% elif question.field_type == 'radio_buttons' %}
                         <label class="radio control-label">{{ question }}</label>
-                        {% for argument in question.customfieldargument_set.all %}
+                        {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
                             <div class="radio">
                                 <label>
                                     <input type="radio" name="{{ question.id }}" value="{{ argument.id }}"
@@ -31,7 +31,7 @@
                         <label class="radio control-label">{{ question }}</label>
                         <select class="form-control" name="{{ question.id }}">
                         <option>---</option>
-                        {% for argument in question.customfieldargument_set.all %}
+                        {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
                             <option value="{{ argument.id }}" {% if answer.answer == argument.id_as_string %} selected {% endif %}>{{ argument.value }}</option>
                         {% endfor %}
                         </select>
