@@ -119,7 +119,7 @@
                 {% for comment in application.recruitmentapplicationcomment_set.all|dictsortreversed:"created_date" %}
                     <div class="media">
                         <div class="media-body">
-                            <h4 class="media-heading">{% include 'recruitment/user_name.html' with user=application.user %}</h4>
+                            <h4 class="media-heading">{% include 'recruitment/user_name.html' with user=comment.user %}</h4>
                             <small class="text-muted">{{ comment.created_date }}</small>
                             <p>{{ comment.comment }}</p>
                         </div>
