@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import User, Permission
@@ -26,6 +26,7 @@ class RecruitmentPeriodForm(ModelForm):
     class Meta:
         model = RecruitmentPeriod
         fields = '__all__'
+        exclude = ('recruitable_roles',)
 
         widgets = {
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
@@ -134,22 +135,21 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     roles = []
 
     for role in Role.objects.all():
-        roles.append({'role': role, 'checked': len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) > 0})
+        roles.append({'role': role, 'checked': role in recruitment_period.recruitable_roles.all()})
 
     if form.is_valid():
         recruitment_period = form.save()
         for role in Role.objects.all():
             role_key = 'role_%d' % role.id
             if role_key in request.POST:
-                if len(RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role)) == 0:
-                    RecruitableRole.objects.create(recruitment_period=recruitment_period, role=role)
-                print(role_key)
+                if not role in recruitment_period.recruitable_roles.all():
+                    recruitment_period.recruitable_roles.add(role)
             else:
-                RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role).delete()
-
+                recruitment_period.recruitable_roles.remove(role)
 
         recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
         recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
+        recruitment_period.save()
 
         return redirect('/recruitment/%d' % recruitment_period.id)
     else:
@@ -194,8 +194,6 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
 
 
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
-    role_keys = [str(i) for i in range(recruitment_period.eligible_roles)]
-    #role_ids = [int(request.POST[key]) for key in role_keys if key in request.POST and request.POST[key].isdigit()]
 
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, request.user)
@@ -212,11 +210,9 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
                 role_id = int(request.POST[str(role_number)])
                 role_application = RoleApplication()
                 role_application.recruitment_application = recruitment_application
-                role_application.recruitable_role = RecruitableRole.objects.filter(pk=role_id).first()
+                role_application.role = Role.objects.filter(pk=role_id).first()
                 role_application.order = role_number
                 role_application.save()
-
-
         return redirect('/recruitment/%d' % recruitment_period.id)
 
     chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
@@ -232,7 +228,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
         'chosen_roles': chosen_roles,
-        'roles': RecruitableRole.objects.filter(recruitment_period=recruitment_period)
+        'roles': recruitment_period.recruitable_roles.all()
     })
 
 
@@ -308,7 +304,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
         'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
         'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
-        'roles': [recruitable_role.role for recruitable_role in application.recruitment_period.recruitablerole_set.all()],
+        'roles': [role for role in application.recruitment_period.recruitable_roles.all()],
         'users': User.objects.all,
         'ratings': [i for i in range(1,6)],
         'exhibitors': exhibitors,

@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib.auth.models import Group, User, Permission
+from django.contrib.auth.models import User, Permission
 import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -161,6 +161,7 @@ class RecruitmentPeriod(models.Model):
     interview_questions = models.ForeignKey(ExtraField, blank=True, null=True)
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions')
     eligible_roles = models.IntegerField(default=3)
+    recruitable_roles = models.ManyToManyField(Role)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -170,13 +171,6 @@ class RecruitmentPeriod(models.Model):
 
     def __str__(self):
         return '%s: %s' % (self.fair.name, self.name)
-
-class RecruitableRole(models.Model):
-    role = models.ForeignKey(Role)
-    recruitment_period = models.ForeignKey(RecruitmentPeriod)
-
-    def __str__(self):
-        return '%s' % (self.role)
 
 
 class RecruitmentApplication(models.Model):
@@ -209,11 +203,11 @@ class RecruitmentApplicationComment(models.Model):
 
 class RoleApplication(models.Model):
     recruitment_application = models.ForeignKey(RecruitmentApplication, default=None)
-    recruitable_role = models.ForeignKey(RecruitableRole)
+    role = models.ForeignKey(Role)
     order = models.IntegerField(default=0)
 
     def __str__(self):
-        return '%s' % (self.recruitable_role.role)
+        return '%s' % (self.role)
 
 
 class CustomField(models.Model):
@@ -298,12 +292,10 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
             parent_role=parent_role,
         )
 
-    recruitable_role = RecruitableRole.objects.filter(recruitment_period=recruitment_period, role=role).first()
+
+    recruitable_role = recruitment_period.recruitable_roles.filter(role=role).first()
     if not recruitable_role:
-        recruitable_role = RecruitableRole.objects.create(
-            role=role,
-            recruitment_period=recruitment_period
-        )
+        recruitment_period.recruitable_roles.add(role)
 
     recruitment_application = RecruitmentApplication.objects.filter(user=user, delegated_role=role)
     if not recruitment_application:

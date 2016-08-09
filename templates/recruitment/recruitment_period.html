@@ -14,7 +14,7 @@
         <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
         <p>We are looking for:</p>
         <ul>
-            {% for role in recruitment_period.recruitablerole_set.all %}
+            {% for role in recruitment_period.recruitable_roles.all %}
                 <li>{{ role }}</li>
             {% endfor %}
         </ul>

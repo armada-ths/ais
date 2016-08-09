@@ -1,8 +1,6 @@
 from django.contrib import admin
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, CustomField, CustomFieldAnswer, CustomFieldArgument
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, CustomField, CustomFieldAnswer, CustomFieldArgument
 
-class RecruitableRoleInline(admin.TabularInline):
-    model = RecruitableRole
 
 class CustomFieldInline(admin.TabularInline):
     model = CustomField
@@ -17,7 +15,7 @@ class CustomFieldAdmin(admin.ModelAdmin):
     inlines = [CustomFieldArgumentInline]
 
 class RecruitmentPeriodAdmin(admin.ModelAdmin):
-    inlines = [RecruitableRoleInline]
+    inlines = []
 
 class RoleApplicationInline(admin.TabularInline):
     model = RoleApplication
