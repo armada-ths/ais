@@ -20,3 +20,7 @@ Development setup
 6. Browse to [localhost:8080/](http://localhost:8080/). Bam! That's your local AIS environment.
 
 If you don't want to use Vagrant, instructions for getting started with [OSX](docs/getting_started_mac.md), [Ubuntu](docs/getting_started_linux.md), and [Windows](docs/getting_started_windows.md) are available. See [docs/producton_setup.md](docs/production_setup.md) for details on how to get a production server up and running.
+
+License Information
+-------------------
+Please check out [LICENSE.txt](LICENSE.txt) for information.
