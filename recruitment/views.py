@@ -37,7 +37,7 @@ class RecruitmentPeriodForm(ModelForm):
 
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
-    #create_project_group()
+    create_project_group()
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
         #'roles': Role.objects.all(),
@@ -80,6 +80,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
         if not role:
             role = Role()
         role.name = request.POST['name']
+        role.description = request.POST['description']
         if request.POST['parent_role']:
             parent_role_id = int(request.POST['parent_role'])
             role.parent_role = Role.objects.get(pk=parent_role_id)
@@ -268,9 +269,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     if not user_has_permission(request.user, 'change_recruitmentapplication') and application.interviewer != request.user:
         return HttpResponseForbidden()
-
-
-
 
     if request.POST:
         set_foreign_key_from_request(request, application, 'interviewer', User)

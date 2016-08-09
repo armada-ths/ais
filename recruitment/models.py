@@ -122,6 +122,7 @@ class ExtraField(models.Model):
 class Role(models.Model):
     name = models.CharField(max_length=50)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
+    description = models.CharField(max_length=300, default="")
 
 
     def has_permission(self, needed_permission):
@@ -270,7 +271,6 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
             email=email,
             password=username,
             is_staff=True,
-            is_superuser=True
         )
 
 
@@ -280,7 +280,6 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
             year=2016,
             name=fair_name
         )
-
 
 
     parent_role = Role.objects.filter(name=parent_role_name).first()
@@ -320,7 +319,8 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
             recruitment_period=recruitment_period
         )
 
-def create_recruitment_period_from_csv(file_path, recruitment_period_name, fair_name):
+def create_recruitment_period_from_csv(file_path, recruitment_period_name, year):
+    fair_name = 'Armada ' + str(year)
     with open(file_path) as f:
         first_line = True
         for line in f:
@@ -332,15 +332,19 @@ def create_recruitment_period_from_csv(file_path, recruitment_period_name, fair_
                     last_name = full_name.split(' ')[1]
                     role_name = values[2].strip()
                     email = values[4].strip()
-                    create_user_and_stuff(first_name, last_name, email, role_name, recruitment_period_name, recruitment_period_name, fair_name)
+                    create_user_and_stuff(first_name, last_name, email, role_name, recruitment_period_name, recruitment_period_name + ' ' + str(year), fair_name)
             first_line = False
 
 
 import os
 
+def create_armada_year(year):
+    directory = os.path.dirname(os.path.abspath(__file__)) + '/Armada' + str(year)
+    create_recruitment_period_from_csv(directory+'/project_group.csv', 'Project Core Team', year)
+    create_recruitment_period_from_csv(directory+'/team_leaders.csv', 'Extended Project Team', year)
+
 def create_project_group():
-    fair_name = 'Armada 2016'
-    create_user_and_stuff('Oscar', 'Alsing', 'oalsing@kth.se', 'Project Manager', None, 'Project Manager', fair_name)
-    create_recruitment_period_from_csv(os.path.dirname(os.path.abspath(__file__))+'/project_group.csv', 'Project Core Team', fair_name)
-    create_recruitment_period_from_csv(os.path.dirname(os.path.abspath(__file__))+'/team_leaders.csv', 'Extended Project Team', fair_name)
+    create_armada_year(2016)
+    #create_armada_year(2015)
+    pass
 

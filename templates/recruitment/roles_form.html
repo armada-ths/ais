@@ -23,6 +23,11 @@
             <input class="form-control" id="name" name="name" value="{{ role.name }}">
         </div>
 
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description">{{ role.description }}</textarea>
+        </div>
+
         {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=True %}
 
 
