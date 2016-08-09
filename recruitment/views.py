@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, RolePermission, create_project_group
+from .models import RecruitmentPeriod, RecruitableRole, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import User, Permission
@@ -76,8 +76,8 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
 
     if role:
         for permission in permissions:
-            for role_permission in role.rolepermission_set.all():
-                if permission['codename'] == role_permission.permission.codename:
+            for role_permission in role.permissions.all():
+                if permission['codename'] == role_permission.codename:
                     permission['checked'] = True
 
     if request.POST:
@@ -94,12 +94,11 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
             codename = permission['codename']
             permission_object = Permission.objects.get(codename=permission['codename'])
             if codename in request.POST:
-                role_permission = RolePermission()
-                role_permission.permission = permission_object
-                role_permission.role = role
-                role_permission.save()
+                role.permissions.add(permission_object)
+                role.save()
             else:
-                RolePermission.objects.filter(permission=permission_object, role=role).delete()
+                role.permissions.remove(permission_object)
+                role.save()
 
         return redirect('/recruitment/')
 

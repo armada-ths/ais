@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-# Create your models here.
 from django.db import models
 from django.contrib.auth.models import Group, User, Permission
 import datetime
@@ -123,13 +122,13 @@ class Role(models.Model):
     name = models.CharField(max_length=50)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
     description = models.CharField(max_length=300, default="")
-
+    permissions = models.ManyToManyField(Permission)
 
     def has_permission(self, needed_permission):
         role = self
         while role != None:
-            for permission in role.rolepermission_set.all():
-                if permission.permission.codename == needed_permission:
+            for permission in role.permissions.all():
+                if permission.codename == needed_permission:
                     return True
 
             role = role.parent_role
@@ -151,10 +150,6 @@ class Role(models.Model):
 
     def __str__(self):
         return '%s' % (self.name)
-
-class RolePermission(models.Model):
-    role = models.ForeignKey(Role)
-    permission = models.ForeignKey(Permission)
 
 # Model for company
 class RecruitmentPeriod(models.Model):
