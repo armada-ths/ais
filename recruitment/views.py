@@ -37,7 +37,6 @@ class RecruitmentPeriodForm(ModelForm):
 
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
-    create_project_group()
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
         #'roles': Role.objects.all(),
@@ -45,6 +44,11 @@ def recruitment(request, template_name='recruitment/recruitment.html'):
         'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
         'can_edit_roles': user_has_permission(request.user, 'change_group'),
     })
+
+
+def import_members(request):
+    create_project_group()
+    return redirect('/recruitment/')
 
 
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):

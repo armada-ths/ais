@@ -35,11 +35,11 @@
                 <p>No recruitment periods</p>
             {% endif %}
             {% if can_edit_recruitment_period %}
-                <p><a href="{% url "recruitment_period_new" %}">
-                    <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
-                        period
-                    </button>
-                </a></p>
+                <p><a href="{% url "recruitment_period_new" %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment period</button></a></p>
+
+                <p><a href="{% url "import_members" %}"><button class="btn btn-default">Import members of Armada 2016</button></a></p>
+
+
             {% endif %}
         </div>
 
