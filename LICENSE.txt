@@ -1,9 +1,8 @@
 Copyright © 2016 THS Armada
-All rights reserved. Please email it@armada.nu if you wish to use the contents
-of this repository.
+All rights reserved.
 
-Please note that the work contained in this repository is protected under
-Swedish Copyright Law as stated in Lag (1960:729) om upphovsrätt till litterära
-och konstnärliga verk. Any usage of THS Armada's content in this repository or
-ideas expressed in the aforementioned content without THS Armada's expressed
-permission is therefore a violation of Swedish Copyright Law.
+Please note that default copyright laws apply to the contents of this repository.
+See https://help.github.com /articles/open-source-licensing/#what-happens-if-i-dont-choose-a-license for more information.
+
+You are not to use the content of this repository without the expressed consent of THS Armada.
+Please email it@armada.nu if you wish to use the contents of this repository.
