@@ -1,0 +1,8 @@
+Copyright © 2016 THS Armada
+All rights reserved.
+
+Please note that default copyright laws apply to the contents of this repository.
+See https://help.github.com /articles/open-source-licensing/#what-happens-if-i-dont-choose-a-license for more information.
+
+You are not to use the content of this repository without the expressed consent of THS Armada.
+Please email it@armada.nu if you wish to use the contents of this repository.
