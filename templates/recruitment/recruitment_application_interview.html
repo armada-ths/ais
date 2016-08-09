@@ -35,10 +35,7 @@
             <div class="form-group">
                 <label for="interviewLocation">Interview place</label>
                 <input type="text" class="form-control" id="interviewLocation" name="interview_location"
-                       value="
-
-
-                  {% if application.interview_location %}{{ application.interview_location }}{% endif %}">
+                       value="{% if application.interview_location %}{{ application.interview_location }}{% endif %}">
             </div>
 
             <div class="form-group">
