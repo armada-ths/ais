@@ -2,70 +2,70 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-    <div class="row">
-{% if recruitment_period %}
-        <ol class="breadcrumb">
-        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
-        <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
-        <li class="active">Edit recruitment period</li>
-    </ol>
 
-{% else %}
+    {% if recruitment_period %}
         <ol class="breadcrumb">
-        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
-        <li class="active">New recruitment period</li>
-    </ol>
+            <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+            <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+            <li class="active">Edit recruitment period</li>
+        </ol>
+
+    {% else %}
+        <ol class="breadcrumb">
+            <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+            <li class="active">New recruitment period</li>
+        </ol>
     {% endif %}
 
 
-            <h3>New recruitment period</h3>
-            <hr>
+    <h3>New recruitment period</h3>
+    <hr>
 
-            <form method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
 
-                <div class="form-group">
-                    <label>Roles</label>
-                    {% for role in roles %}
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="role_{{ role.role.id }}" {% if role.checked %}
-                                       checked {% endif %}> {{ role.role }}
-                            </label>
-                        </div>
-                        {% empty %}
-                        <p class="form-control-static">No roles exists</p>
-                    {% endfor %}
-                </div>
+        <div class="form-group">
+            <div class="row">
+                {% for role in roles %}
+                    <div class="col-sm-4">
+                        <label data-checked="true" id="{{ role.parent_role }}"
+                               onclick="(function() { var label = document.getElementById('{{ role.parent_role }}'); console.log(label.innerText); var inputs = label.parentNode.getElementsByTagName('input'); for (i = 0; i < inputs.length; i++) { inputs[i].checked = label.dataset.checked === 'true' ? true : false;  } label.dataset.checked = label.dataset.checked === 'true' ? 'false' : 'true' })()">{{ role.parent_role }}</label>
+                        {% for child_role in role.child_roles %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="role_{{ child_role.id }}"
+                                            {% if child_role in recruitment_period.recruitable_roles.all %}
+                                           checked {% endif %}> {{ child_role }}
+                                </label>
+                            </div>
 
-                <hr>
-                <h3>Interview questions</h3>
-                {% include 'recruitment/create_fields.html' with custom_field_name='interview_questions' values=interview_questions %}
+                            {% empty %}
+                            <p class="form-control-static">No roles exists</p>
+                        {% endfor %}
 
-                <hr>
-                <h3>Application questions</h3>
-                {% include 'recruitment/create_fields.html' with custom_field_name='application_questions' values=application_questions %}
+                    </div>
+                {% endfor %}
 
-                <button type="submit" class="btn btn-primary">Save</button>
-                {% if recruitment_period %}
-                    <a class="btn btn-danger" href="{% url 'recruitment_period_delete' recruitment_period.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
-                {% endif %}
-            </form>
+            </div>
         </div>
 
+        <hr>
+        <h3>Interview questions</h3>
+        {% include 'recruitment/create_fields.html' with custom_field_name='interview_questions' values=interview_questions %}
 
+        <hr>
+        <h3>Application questions</h3>
+        {% include 'recruitment/create_fields.html' with custom_field_name='application_questions' values=application_questions %}
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        {% if recruitment_period %}
+            <a class="btn btn-danger" href="{% url 'recruitment_period_delete' recruitment_period.id %}"
+               onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+        {% endif %}
+    </form>
     </div>
 
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
-    <script>
-        $(document).ready(function () {
-            $('.datepicker').datepicker();
-            //newInterviewQuestion()
-        });
-    </script>
 
 {% endblock %}

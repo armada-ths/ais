@@ -2,59 +2,65 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-    <div class="row">
-        <ol class="breadcrumb">
+
+    <ol class="breadcrumb">
         <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
         <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
         <li class="active">Application</li>
     </ol>
 
-    <div class="jumbotron">
-        <h1>{{ recruitment_period.name }}</h1>
-        <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
+    <div class="jumbotron recruitment-jumbotron">
+        <div class="container recruitment-jumbotron-container">
+            <h1>{{ recruitment_period.name }}</h1>
+            <p>Apply between <strong>{{ recruitment_period.start_date|date:"d M" }}</strong> and
+                <strong>{{ recruitment_period.end_date|date:"d M" }}</strong></p>
 
-        {% if recruitment_period.recruitablerole_set.all %}
-            <p>We are looking for:</p>
-        <ul>
-            {% for role in recruitment_period.recruitablerole_set.all %}
-                <li>{{ role }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
+            <div>
+            </div>
+        </div>
     </div>
 
+    <div class="row">
 
 
-<form method="post" action="" enctype="multipart/form-data">
-{% csrf_token %}
-    {% for chosen_role in chosen_roles %}
+    <div class="col-sm-6">
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ role_form|crispy }}
+
+        {{ profile_form|crispy }}
 
         <div class="form-group">
-            <label>Role {{ forloop.counter }}</label>
-            <select class="form-control" name="{{ forloop.counter0 }}">
-            <option value="">---------</option>
-            {% for role in roles %}
-                <option value="{{ role.id }}" {% if role == chosen_role %} selected {% endif %}>{{ role }}</option>
-            {%  endfor %}
-            </select>
+            <label for="image">Please upload a picture of yourself</label>
+            <input type="file" id="image" name="image" accept="image/*">
+            {% if profile.image %}
+                <br>
+                <div><img src="/media/{{ profile.image }}" style="max-width: 100%; max-height: 400px;"></div>
+            {% endif %}
         </div>
-    {% endfor %}
 
-    {%  include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
-<div class="form-group">
-<button type="submit" class="btn btn-primary">Save</button>
-</div>
-</form>
+        {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
+        <div class="form-group">
+            {% if new_application %}
+                <button type="submit" class="btn btn-success btn-lg">Apply</button>
+            {% else %}
+                <button type="submit" class="btn btn-primary btn-lg">Save</button>
+            {% endif %}
+        </div>
+    </form>
     </div>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
-<script>
-$(document).ready(function() {
-    $('.datepicker').datepicker();
-});
-</script>
+
+    <div class="col-sm-6">
+        {% for role in recruitment_period.recruitable_roles.all %}
+            <label>{{ role.name }}</label>
+            <p>{{ role.description }}</p>
+            <br>
+        {% endfor %}
+    </div>
+
+</div>
+
 {% endblock %}

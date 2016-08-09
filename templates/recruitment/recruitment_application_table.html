@@ -1,0 +1,90 @@
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Programme</th>
+        <th>Registration year</th>
+        <th>Rating</th>
+        <th>Submitted</th>
+        <th>Roles</th>
+        <th>Interviewer</th>
+        <th>State</th>
+    </tr>
+    {% if show_search_bar %}
+    <tr>
+        <form id="search-form">
+            <input type="hidden" name="scroll_y" id="scroll_y" value="0">
+        <td>{{ search_form.name }}
+            <br>
+
+
+                    <div class="btn-group">
+                <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search"></span> Search</button>
+
+            </div>
+
+        </td>
+        <td>{{ search_form.programme }}</td>
+        <td>{{ search_form.registration_year }}</td>
+        <td>{{ search_form.rating }}</td>
+        <td>{{ search_form.submission_date }}</td>
+        <td>{{ search_form.roles }}</td>
+        <td>{{ search_form.interviewer }}</td>
+        <td>
+            {{ search_form.state }}
+            <br>
+
+        </td>
+        </form>
+    </tr>
+    {% endif %}
+    </thead>
+    {% for application in applications %}
+        <tr>
+            <td>
+                {% if perms.recruitment.view_recruitment_interviews %}
+                <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                    {% include 'recruitment/user_name.html' with user=application.user %}
+                </a>
+                {% else %}
+                    {% include 'recruitment/user_name.html' with user=application.user %}
+                {% endif %}
+            </td>
+
+            <td>{{ application.user.profile.programme }}</td>
+            <td>{{ application.user.profile.registration_year }}</td>
+            <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
+
+
+            <td>{{ application.submission_date|date:"d M H:i" }}</td>
+            <td>{{ application.roles_string }}</td>
+            <td>
+                {% if application.interviewer %}
+                    {{ application.interviewer.get_full_name }}
+                {% endif %}
+            </td>
+
+            <td>
+                {% if application.state == 'accepted' %}
+                    <span class="label label-success">{{ application.status.capitalize }}</span>
+                {% elif application.state == 'rejected' %}
+                    <span class="label label-danger">{{ application.status.capitalize }}</span>
+                {% elif application.state == 'new' %}
+                    <span class="label label-default">New</span>
+                {% elif application.state == 'interview_delegated' %}
+                    <span class="label label-warning">Delegated</span>
+                {% elif application.state == 'interview_planned' %}
+                    <span class="label label-info">Planned</span>
+                {% elif application.state == 'interview_done' %}
+                    <span class="label label-primary">Done</span>
+                    {% else %}
+                    {{ application.state }}
+                {% endif %}
+            </td>
+
+        </tr>
+    {% endfor %}
+</table>
+
+

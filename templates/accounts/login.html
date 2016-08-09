@@ -1,0 +1,27 @@
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8">
+	{% include "header.html" %}
+	{% block head-extra %}{% endblock %}
+  </head>
+<body>
+
+
+<div class="container" style="max-width: 500px">
+    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form|crispy }}
+    <input type="hidden" name="next" value="/recruitment" />
+    <button class="btn btn-success">Log in</button>
+</form>
+    </div>
+</body>
+</html>

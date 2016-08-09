@@ -1,31 +1,140 @@
 <!DOCTYPE html>
 {% load staticfiles %}
 <html lang="en">
-  <head>
-	{% include "header.html" %}
-	{% block head-extra %}{% endblock %} 
-  </head>
+<head>
+    {% include "header.html" %}
+    {% block head-extra %}{% endblock %}
+</head>
 
-  <body>
-        {% block header %}{% endblock %}
-        {% block navigation %}
-        <div role="navigation" class="navbar navbar-inverse">
-            <div class="container">
-                <a class="navbar-brand" href="/"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px"></a>
+<body>
+{% block header %}{% endblock %}
+{% block navigation %}
+
+    <div role="navigation" class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship"
+                                             style="max-height: 20px"></a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#navHeaderCollapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="navHeaderCollapse">
                 <ul class="nav navbar-nav">
-                  {% block nav-people %}<li role="presentation"><a href="{% url 'people' %}">People</a></li>{% endblock %}
-                  {% block nav-companies %}<li role="presentation"><a href="{% url 'companies_list' %}">Companies</a></li>{% endblock %}
-                  {% block nav-events %}<li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
-                  {% block nav-recruitment %}<li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
-                  {% block nav-news %}<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}
+
+
+                        {% if perms.people.view_people %}
+                            {% block nav-people %}
+                                <li role="presentation"><a href="{% url 'people' %}">People</a></li>
+                            {% endblock %}
+                        {% endif %}
+
+                    {% block nav-companies %}
+                        <!--<li role="presentation"><a href="{% url 'companies_list' %}
+                        ">Companies</a></li>{% endblock %}-->
+                    {% block nav-events %}
+                        <!--<li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}-->
+                    {% block nav-recruitment %}
+                        <li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
+                    {% block nav-news %}
+                        <!--<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}-->
                 </ul>
-                <p class="navbar-text navbar-right">Signed in as <a href="/logout" class="navbar-link">{{request.user.get_full_name}}</a></p>
+                <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}"
+                                                               style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong>
+                    (<a
+                            href="/accounts/logout" class="navbar-link">Logout</a>)</p>
             </div>
         </div>
-        {% endblock %}
-        <div class="container">
-        {% block content %}{% endblock %}
-        </div> <!-- Container-->
-        {% block footer %}{% endblock %}
-  </body>
+    </div>
+
+
+{% endblock %}
+<div class="container">
+    {% block content %}{% endblock %}
+</div> <!-- Container-->
+
+{% block footer %}{% endblock %}
+<div class="container">
+    <hr>
+    <p class="text-muted">If you experience any problems please email <a href="mailto:sami.purmonen@armada.nu">sami.purmonen@armada.nu</a>
+    <p>
+</div>
+
+<br>
+
+<link rel="stylesheet" href="{% static 'bootstrap/css/datepicker.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap-datepicker.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $('.datepicker123').datepicker({
+            weekStart: 1,
+            format: 'yyyy-mm-dd hh:ss'
+        });
+
+    });
+</script>
+
+<script>
+
+    var forms = document.forms
+    var formIndex;
+
+    for (formIndex = 0; formIndex < forms.length; formIndex++) {
+        form = forms[formIndex]
+        form.onsubmit = function () {
+            var tags = ['input', 'select', 'textarea']
+            var tagIndex = 0;
+            for (tagIndex = 0; tagIndex < tags.length; tagIndex++) {
+
+                var inputs = form.getElementsByTagName(tags[tagIndex])
+                var inputIndex;
+                for (inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
+                    var input = inputs[inputIndex]
+                    if (input.required) {
+
+                        var otherInputs = document.getElementsByName(input.name)
+                        var j;
+                        var checked = false;
+                        for (j = 0; j < otherInputs.length; j++) {
+                            var otherInput = otherInputs[j]
+                            if (otherInput.type === 'checkbox' || otherInput.type === 'radio') {
+                                checked = checked || otherInput.checked
+                            } else {
+                                checked = otherInput.value !== '' && otherInput.value !== undefined
+                            }
+                        }
+                        if (!checked) {
+                            var labels = document.getElementsByTagName('label')
+                            var j;
+                            for (j = 0; j < labels.length; j++) {
+                                var label = labels[j]
+                                if (label.getAttribute('for') === input.id) {
+                                    alert('You missed filling out: ' + label.innerText)
+                                }
+                            }
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+
+</script>
+<script>
+
+
+
+</script>
+
+{% block scripts %}{% endblock scripts %}
+</body>
 </html>

@@ -1,59 +1,67 @@
+{% for question,answer in questions_with_answers %}
+    {% if question.field_type == 'text_field' %}
+        <div class="form-group">
+            <label for="{{ question.form_key }}">{{ question.question }}{% if question.required %}*{% endif %}</label>
+            <input type="text" class="form-control" id="{{ question.form_key }}" name="{{ question.form_key }}"
+                   value="{{ answer.answer }}" {% if question.required %}required{% endif %}>
+        </div>
+    {% elif question.field_type == 'check_box' %}
+        <div class="checkbox">
+            <label for="{{ question.form_key }}">
+                <input type="checkbox" id="{{ question.form_key }}" name="{{ question.form_key }}" {% if answer %}
+                       checked {% endif %} {% if question.required %}required{% endif %}> {{ question.question }}{% if question.required %}*{% endif %}
+            </label>
+        </div>
+    {% elif question.field_type == 'text_area' %}
+        <div class="form-group">
+            <label for="{{ question.form_key }}">{{ question.question|linebreaksbr }}{% if question.required %}*{% endif %}</label>
+            <textarea class="form-control" rows="3" id="{{ question.form_key }}"
+                      name="{{ question.form_key }}"
+                      {% if question.required %}required{% endif %}>{{ answer.answer }}</textarea>
+        </div>
+    {% elif question.field_type == 'radio_buttons' %}
+        <label class="radio control-label" for="{{ question.form_key }}">{{ question }}{% if question.required %}*{% endif %}</label>
+        {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
+            <div class="radio">
+                <label>
+                    <input type="radio" name="{{ question.form_key }}" id="{{ question.form_key }}"
+                           value="{{ argument.id }}"
+                            {% if answer.answer == argument.id_as_string %}  checked {% endif %}
+                           {% if question.required %}required{% endif %}> {{ argument.value }}
+                </label>
+            </div>
+        {% endfor %}
+    {% elif question.field_type == 'select' %}
+        <div class="form-group">
+        <label class="radio control-label" for="{{ question.form_key }}">{{ question }}{% if question.required %}*{% endif %}</label>
+        <select class="form-control" name="{{ question.form_key }}" id="{{ question.form_key }}"
+                {% if question.required %}required{% endif %}>
+            <option value="">---</option>
+            {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
+                <option value="{{ argument.id }}" {% if answer.answer == argument.id_as_string %}
+                        selected {% endif %}>{{ argument.value }}</option>
+            {% endfor %}
+        </select>
+        </div>
+    {% elif question.field_type == 'file' %}
+        <div class="form-group">
+            <label for="{{ question.form_key }}">{{ question }}{% if question.required %}*{% endif %}</label>
+            <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}"
+                   {% if question.required %}required{% endif %}>
+            <p><a href="/media/{{ answer.answer }}">{{ answer.answer }}</a></p>
+        </div>
+    {% elif question.field_type == 'image' %}
+        <div class="form-group">
+            <label for="{{ question.form_key }}">{{ question }}{% if question.required %}*{% endif %}</label>
+            <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}" accept="image/*"
+                   {% if question.required %}required{% endif %}>
+            {% if answer.answer %}
+                <br>
+                <div><img src="/media/{{ answer.answer }}" style="max-width: 100%; max-height: 400px;"></div>
+            {% endif %}
+        </div>
+    {% else %}
+        Unknown field type: {{ question.field_type }}
+    {% endif %}
 
-                {% for question,answer in questions_with_answers %}
-                    {% if question.field_type == 'text_field' %}
-                        <div class="form-group">
-                            <label for="{{ question.id }}">{{ question.question }}</label>
-                            <input type="text" class="form-control" id="{{ question.id }}" name="{{ question.id }}"
-                                   value="{{ answer.answer }}">
-                        </div>
-                    {% elif question.field_type == 'check_box' %}
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="{{ question.id }}" {% if answer %}
-                                       checked {% endif %}> {{ question.question }}
-                            </label>
-                        </div>
-                    {% elif question.field_type == 'text_area' %}
-                        <div class="form-group">
-                            <label for="{{ question.id }}">{{ question.question }}</label>
-                            <textarea class="form-control" rows="3" id="{{ question.id }}"
-                                      name="{{ question.id }}">{{ answer.answer }}</textarea>
-                        </div>
-                    {% elif question.field_type == 'radio_buttons' %}
-                        <label class="radio control-label">{{ question }}</label>
-                        {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
-                            <div class="radio">
-                                <label>
-                                    <input type="radio" name="{{ question.id }}" value="{{ argument.id }}"
-                                            {% if answer.answer == argument.id_as_string %} checked {% endif %}> {{ argument.value }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    {% elif question.field_type == 'select' %}
-                        <label class="radio control-label">{{ question }}</label>
-                        <select class="form-control" name="{{ question.id }}">
-                        <option>---</option>
-                        {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
-                            <option value="{{ argument.id }}" {% if answer.answer == argument.id_as_string %} selected {% endif %}>{{ argument.value }}</option>
-                        {% endfor %}
-                        </select>
-                    {% elif question.field_type == 'file' %}
-                        <div class="form-group">
-                            <label for="{{ question.id }}">{{ question }}</label>
-                            <input type="file" id="{{ question.id }}" name="{{ question.id }}">
-                            <p><a href="/media/{{ answer.answer }}">{{ answer.answer }}</a></p>
-                        </div>
-                    {% elif question.field_type == 'image' %}
-                        <div class="form-group">
-                            <label for="{{ question.id }}">{{ question }}</label>
-                            <input type="file" id="{{ question.id }}" name="{{ question.id }}" accept="image/*">
-                            {% if answer.answer %}
-                                <br>
-                                <div><img src="/media/{{ answer.answer }}" width="500"></div>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        UNKNOWN FIELD TYPE!
-                    {% endif %}
-
-                {% endfor %}
+{% endfor %}

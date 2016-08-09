@@ -1,15 +1,27 @@
-<!DOCTYPE html>
+{% load crispy_forms_tags %}
 {% load staticfiles %}
+
+<!DOCTYPE html>
 <html lang="en">
   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8">
 	{% include "header.html" %}
+	{% block head-extra %}{% endblock %}
   </head>
-  <body>
-    <div class="text-center">
-      <img src="{% static "images/ship.png" %}" alt="Armada Ship">
-      <p>Welcome to Armada Internal Systems</p>
-      <p>To continue, please click the KTH Single Sign-On button below to sign in with you KTH account.</p>
-      <a href="/login"><img src="{% static "images/kth_login_button.png" %}" alt="Login with KTH"></a>
+<body>
+
+
+<div class="container" style="max-width: 500px">
+    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
+
+<form method="post">
+    {% csrf_token %}
+
+        <p>To continue, please click the KTH Single Sign-On button below to sign in with you KTH account.</p>
+      <a href="/login{% if next %}?next={{ next }}{% endif %}"><img src="{% static "images/kth_login_button.png" %}" alt="Login with KTH"></a>
+    <p>If you don't have an KTH account log in <a href="/accounts/login">here</a>.</p>
+</form>
     </div>
-  </body>
+</body>
 </html>

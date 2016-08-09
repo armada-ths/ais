@@ -1,5 +1,3 @@
-from http import HTTPStatus
-
 from django.test import TestCase, RequestFactory
 import json
 from django.utils import timezone
@@ -8,6 +6,8 @@ from companies.models import Company
 from events.models import Event
 from .serializers import company_serializer, event_serializer
 from . import views
+
+HTTP_status_code_OK = 200
 
 class ExhibitorTestCase(TestCase):
     def setUp(self):
@@ -22,7 +22,7 @@ class ExhibitorTestCase(TestCase):
     def test_view(self):
         request = self.factory.get('/api/exhibitors/')
         response = views.exhibitors(request)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
         companies = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(companies), 1)
         self.assertEqual(companies[0]['id'], self.company.pk)
@@ -43,7 +43,7 @@ class EventTestCase(TestCase):
     def test_view(self):
         request = self.factory.get('/api/events/')
         response = views.events(request)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
         events = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]['id'], self.event.pk)
@@ -55,6 +55,6 @@ class NewsTestCase(TestCase):
     def test_view(self):
         request = self.factory.get('/api/news/')
         response = views.news(request)
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
         news = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(news), 0)

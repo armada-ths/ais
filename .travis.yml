@@ -1,0 +1,19 @@
+language: python
+services:
+- postgresql
+python:
+- 3.4
+- 3.5
+env:
+- DJANGO_SETTINGS_MODULE=local_settings
+install:
+- pip install --requirement requirements.txt
+before_script: 
+script:
+- python manage.py test
+notifications:
+  slack:
+    on_success: always
+    on_failure: always
+    rooms:
+      secure: Z7kTe7lVwl++QmEd1PixlW2qpKCn/WP5sA1hiyYZRHeRLGw/KiR1Vs+TwR0NjqkOu05Q9Lz8qrOCqT3wCuZVHr7U+MIGI8Jv5FCKHfWA9knRwOmo/VyjuhZur+iq4poF7zyQ6YhZLDgAp9Q8p+4oyW11FpLx8LaXIyvGitiWeo6TYtxq2dR7iKEff4TrAwydiMmHHcW4e4b0DbeqI7At612YPf4fZ1H6sF08e1EzSCTT28noc361Vqrkv8GsytrwyXZIsmdkR4fb3ipuNSA10MMz/2kX1/BfaZWjtUh7OHxQQnUXlnN5Q2JJZlSaKu9cfZs9vnivnYudkwKN10V5QuuATxpf2jdU3xUfoscTLFYU05V/T71MZ2iyDt+fztLWvMEabGfTvQlOAmint6PDPoy3djOGmjLJS1ScQABJd2nh8vT8Aqq2GQQNZ4+uooRpSqkjqQ2zcpVaEbJFY+4l2VYowFRf81oyxfRFENgGimB/wN4/NhWXPFVyA6pD8usPC3PuvbVNLAC4J2Y8f9tgBj2KJgwGJYLa35fjRrF8JKACzs6BPY63rXsfBXcMWg/9VUt/+Ez0aPni/ksp7D1p6ArbJnBsf8os5bLyG7gqrKhMg4PbZBzzgFqRgZdFobj4qM2W6kl/NlbCqHShjiZc8qIUyDJZ6voG2oHEPGRyeuw=
