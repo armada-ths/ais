@@ -7,7 +7,6 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
 from fair.models import Fair
-
 from companies.models import Company
 import os.path
 
@@ -36,7 +35,6 @@ class ExtraField(models.Model):
                 question_ids.append(int(key_split[1]))
 
         for question in extra.customfield_set.all():
-            # print(question)
             if question.id not in question_ids:
                 question.delete()
 
@@ -117,6 +115,42 @@ class ExtraField(models.Model):
                         user=user
                     ).delete()
 
+class CustomField(models.Model):
+    fields = [
+        ('text_field', 'Text field'),
+        ('check_box', 'Check box'),
+        ('text_area', 'Text area'),
+        ('radio_buttons', 'Radio buttons'),
+        ('select', 'Drop-down list'),
+        ('file', 'File'),
+        ('image', 'Image')]
+
+    extra_field = models.ForeignKey(ExtraField)
+    question = models.CharField(max_length=1000)
+    field_type = models.CharField(choices=fields, default='text_field', max_length=20)
+    position = models.IntegerField(default=0)
+
+    def __str__(self):
+        return '%s' % (self.question)
+
+class CustomFieldArgument(models.Model):
+    value = models.CharField(max_length=100)
+    custom_field = models.ForeignKey(CustomField)
+    position = models.IntegerField(default=0)
+
+    def user_answer(self, user):
+        return CustomFieldAnswer.objects.filter(user=user).first()
+
+    def id_as_string(self):
+        return "%s" % self.id
+
+class CustomFieldAnswer(models.Model):
+    custom_field = models.ForeignKey(CustomField)
+    user = models.ForeignKey(User)
+    answer = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return '%s' % (self.answer)
 
 class Role(models.Model):
     name = models.CharField(max_length=50)
@@ -209,44 +243,6 @@ class RoleApplication(models.Model):
     def __str__(self):
         return '%s' % (self.role)
 
-
-class CustomField(models.Model):
-
-    fields = [
-        ('text_field', 'Text field'),
-        ('check_box', 'Check box'),
-        ('text_area', 'Text area'),
-        ('radio_buttons', 'Radio buttons'),
-        ('select', 'Drop-down list'),
-        ('file', 'File'),
-        ('image', 'Image')]
-
-    extra_field = models.ForeignKey(ExtraField)
-    question = models.CharField(max_length=1000)
-    field_type = models.CharField(choices=fields, default='text_field', max_length=20)
-    position = models.IntegerField(default=0)
-
-    def __str__(self):
-        return '%s' % (self.question)
-
-class CustomFieldArgument(models.Model):
-    value = models.CharField(max_length=100)
-    custom_field = models.ForeignKey(CustomField)
-    position = models.IntegerField(default=0)
-
-    def user_answer(self, user):
-        return CustomFieldAnswer.objects.filter(user=user).first()
-
-    def id_as_string(self):
-        return "%s" % self.id
-
-class CustomFieldAnswer(models.Model):
-    custom_field = models.ForeignKey(CustomField)
-    user = models.ForeignKey(User)
-    answer = models.CharField(max_length=1000)
-
-    def __str__(self):
-        return '%s' % (self.answer)
 
 def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_name, recruitment_period_name, fair_name):
     username = email.split('@')[0]
