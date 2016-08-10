@@ -134,8 +134,9 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
     roles = []
 
-    for role in Role.objects.all():
-        roles.append({'role': role, 'checked': role in recruitment_period.recruitable_roles.all()})
+    if recruitment_period:
+        for role in Role.objects.all():
+            roles.append({'role': role, 'checked': role in recruitment_period.recruitable_roles.all()})
 
     if form.is_valid():
         recruitment_period = form.save()
