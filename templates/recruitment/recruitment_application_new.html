@@ -32,7 +32,7 @@
 
         <div class="form-group">
             <label>Role {{ forloop.counter }}</label>
-            <select class="form-control" name="{{ forloop.counter0 }}">
+            <select class="form-control" name="role_{{ forloop.counter0 }}">
             <option value="">---------</option>
             {% for role in roles %}
                 <option value="{{ role.id }}" {% if role == chosen_role %} selected {% endif %}>{{ role }}</option>

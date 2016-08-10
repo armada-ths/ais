@@ -203,8 +203,9 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         recruitment_application.recruitment_period = recruitment_period
         recruitment_application.save()
         for role_number in range(recruitment_period.eligible_roles):
-            if str(role_number) in request.POST and request.POST[str(role_number)].isdigit():
-                role_id = int(request.POST[str(role_number)])
+            role_key = 'role_%d' % role_number
+            if role_key in request.POST and request.POST[role_key].isdigit():
+                role_id = int(request.POST[role_key])
                 role_application = RoleApplication()
                 role_application.recruitment_application = recruitment_application
                 role_application.role = Role.objects.filter(pk=role_id).first()
