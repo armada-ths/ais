@@ -103,9 +103,6 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
 
         return redirect('/recruitment/')
 
-
-
-
     return render(request, template_name, {'role': role, 'permissions': permissions, 'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all()})
 
 
@@ -134,9 +131,8 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
     roles = []
 
-    if recruitment_period:
-        for role in Role.objects.all():
-            roles.append({'role': role, 'checked': role in recruitment_period.recruitable_roles.all()})
+    for role in Role.objects.all():
+        roles.append({'role': role, 'checked': role in recruitment_period.recruitable_roles.all() if recruitment_period else False})
 
     if form.is_valid():
         recruitment_period = form.save()
