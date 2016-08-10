@@ -53,7 +53,7 @@
                     <td><a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
                     {%  include 'recruitment/user_name.html' with user=application.user %}
                         </a></td>
-                    <td>{{ application.delegated_role }}</td>
+                    <td>{% if application.delegated_role %}{{ application.delegated_role }} {% endif %}</td>
                     <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
                     <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
                     <td>{{ application.submission_date }}</td>
