@@ -304,7 +304,7 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
 
 def create_recruitment_period_from_csv(file_path, recruitment_period_name, year):
     fair_name = 'Armada ' + str(year)
-    with open(file_path) as f:
+    with open(file_path, encoding='utf-8') as f:
         first_line = True
         for line in f:
             if not first_line:
