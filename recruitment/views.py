@@ -218,8 +218,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         role_applications = RoleApplication.objects.filter(recruitment_application=recruitment_application).order_by('order')
 
         for i in range(len(role_applications)):
-            print(role_applications[i].recruitable_role, role_applications[i].order)
-            chosen_roles[i] = role_applications[i].recruitable_role
+            chosen_roles[i] = role_applications[i].role
 
     return render(request, template_name, {
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
