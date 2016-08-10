@@ -19,7 +19,7 @@
                   {% block nav-recruitment %}<li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
                   {% block nav-news %}<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}
                 </ul>
-                <p class="navbar-text navbar-right">Signed in as <a href="/logout" class="navbar-link">{{request.user.get_full_name}}</a></p>
+                <p class="navbar-text navbar-right">Signed in as <a href="/accounts/logout" class="navbar-link">{{request.user.get_full_name}}</a></p>
             </div>
         </div>
         {% endblock %}

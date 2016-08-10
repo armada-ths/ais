@@ -46,6 +46,8 @@ urlpatterns = [
     # Api
     url(r'^api/', include('api.urls')),
 
+    url(r'^accounts/', include('accounts.urls')),
+
     # News
     url(r'^news/', include('news.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
