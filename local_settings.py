@@ -59,7 +59,7 @@ INSTALLED_APPS = (
     'api',
     'news',
     'crispy_forms',
-    'accounts',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -71,6 +71,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'recruitment.middleware.LoginRequiredMiddleware',
     #'cas.middleware.CASMiddleware',
 )
 
