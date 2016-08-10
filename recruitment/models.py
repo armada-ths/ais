@@ -73,11 +73,8 @@ class ExtraField(models.Model):
 
     def handle_answers_from_request(self, request, user):
         extra_field = self
-        print(request.FILES)
-        print("Number of extra fields: %d" % len(extra_field.customfield_set.all()))
-
         for custom_field in extra_field.customfield_set.all():
-            key = '%s' % (custom_field.id,)
+            key = custom_field.form_key
             print('looking for key: %s' % key)
             if custom_field.field_type == 'file' or custom_field.field_type == 'image':
                 print("looking for %s" % custom_field.field_type)
@@ -132,6 +129,10 @@ class CustomField(models.Model):
 
     def __str__(self):
         return '%s' % (self.question)
+
+    @property
+    def form_key(self):
+        return 'custom_field_%s' % self.id
 
 class CustomFieldArgument(models.Model):
     value = models.CharField(max_length=100)
