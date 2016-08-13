@@ -1,31 +1,56 @@
 <!DOCTYPE html>
 {% load staticfiles %}
 <html lang="en">
-  <head>
-	{% include "header.html" %}
-	{% block head-extra %}{% endblock %} 
-  </head>
+<head>
+    {% include "header.html" %}
+    {% block head-extra %}{% endblock %}
+</head>
 
-  <body>
-        {% block header %}{% endblock %}
-        {% block navigation %}
-        <div role="navigation" class="navbar navbar-inverse">
-            <div class="container">
-                <a class="navbar-brand" href="/"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px"></a>
+<body>
+{% block header %}{% endblock %}
+{% block navigation %}
+
+    <div role="navigation" class="navbar navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship"
+                                                      style="max-height: 20px"></a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#navHeaderCollapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="navHeaderCollapse">
                 <ul class="nav navbar-nav">
-                  {% block nav-people %}<li role="presentation"><a href="{% url 'people' %}">People</a></li>{% endblock %}
-                  {% block nav-companies %}<li role="presentation"><a href="{% url 'companies_list' %}">Companies</a></li>{% endblock %}
-                  {% block nav-events %}<li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
-                  {% block nav-recruitment %}<li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
-                  {% block nav-news %}<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}
+                    {% block nav-people %}
+                        <li role="presentation"><a href="{% url 'people' %}">People</a></li>{% endblock %}
+                    {% block nav-companies %}
+                        <li role="presentation"><a href="{% url 'companies_list' %}">Companies</a></li>{% endblock %}
+                    {% block nav-events %}
+                        <li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
+                    {% block nav-recruitment %}
+                        <li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
+                    {% block nav-news %}
+                        <li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}
                 </ul>
-                <p class="navbar-text navbar-right"><strong>{{request.user.get_full_name}}</strong> (<a href="/accounts/logout" class="navbar-link">Logout</a>)</p>
+                <p class="navbar-text navbar-right"><strong>{{ request.user.get_full_name }}</strong> (<a
+                        href="/accounts/logout" class="navbar-link">Logout</a>)</p>
             </div>
         </div>
-        {% endblock %}
-        <div class="container">
-        {% block content %}{% endblock %}
-        </div> <!-- Container-->
-        {% block footer %}{% endblock %}
-  </body>
+    </div>
+
+
+{% endblock %}
+<div class="container">
+    {% block content %}{% endblock %}
+</div> <!-- Container-->
+
+{% block footer %}{% endblock %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+</body>
 </html>
