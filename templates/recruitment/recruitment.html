@@ -21,6 +21,7 @@
                         <th>Name</th>
                         <th>Start</th>
                         <th>End</th>
+                        <th>Status</th>
                     </tr>
                     </thead>
                     {% for period in recruitment_periods %}
@@ -28,6 +29,16 @@
                             <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
                             <td>{{ period.start_date }}</td>
                             <td>{{ period.end_date }}</td>
+                        <td>
+                            {%  if period.is_past %}
+                            <span class="label label-default">Closed</span>
+                        {%  elif period.is_future %}
+                            <span class="label label-default">Not opened yet</span>
+                        {% else %}
+                                <span class="label label-success">Open</span>
+
+                        {% endif %}
+                        </td>
                         </tr>
                     {% endfor %}
                 </table>

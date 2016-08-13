@@ -41,10 +41,10 @@
                 <th>Name</th>
                 <th>Delegated role</th>
                 <th>Rating</th>
-                <th>State</th>
                 <th>Submitted</th>
                 <th>Roles</th>
                 <th>Interviewer</th>
+                <th>State</th>
             </tr>
             </thead>
                 {% for application in recruitment_period.recruitmentapplication_set.all %}
@@ -57,13 +57,7 @@
                     <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
 
 
-                    <td>
-                        {%  if application.status == 'accepted' %}
-                            <span class="label label-success">{{application.status.capitalize}}</span>
-                        {%  elif application.status == 'rejected' %}
-                            <span class="label label-danger">{{application.status.capitalize}}</span>
-                        {% endif %}
-                    </td>
+
                     <td>{{ application.submission_date }}</td>
                     <td>
                         {% for role in application.roleapplication_set.all %}
@@ -73,6 +67,14 @@
                     <td>
                         {% if application.interviewer %}
                             {{ application.interviewer.get_full_name }}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {%  if application.status == 'accepted' %}
+                            <span class="label label-success">{{application.status.capitalize}}</span>
+                        {%  elif application.status == 'rejected' %}
+                            <span class="label label-danger">{{application.status.capitalize}}</span>
                         {% endif %}
                     </td>
 

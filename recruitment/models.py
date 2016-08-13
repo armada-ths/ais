@@ -9,7 +9,7 @@ from django.conf import settings
 from fair.models import Fair
 from companies.models import Company
 import os.path
-
+from django.utils import timezone
 
 class ExtraField(models.Model):
     def __str__(self):
@@ -198,6 +198,12 @@ class RecruitmentPeriod(models.Model):
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions')
     eligible_roles = models.IntegerField(default=3)
     recruitable_roles = models.ManyToManyField(Role)
+
+    def is_past(self):
+        return self.end_date < timezone.now()
+
+    def is_future(self):
+        return self.start_date > timezone.now()
 
     def save(self, *args, **kwargs):
         if not self.pk:
