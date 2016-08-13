@@ -55,7 +55,15 @@
                         </a></td>
                     <td>{% if application.delegated_role %}{{ application.delegated_role }} {% endif %}</td>
                     <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
-                    <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
+
+
+                    <td>
+                        {%  if application.status == 'accepted' %}
+                            <span class="label label-success">{{application.status.capitalize}}</span>
+                        {%  elif application.status == 'rejected' %}
+                            <span class="label label-danger">{{application.status.capitalize}}</span>
+                        {% endif %}
+                    </td>
                     <td>{{ application.submission_date }}</td>
                     <td>
                         {% for role in application.roleapplication_set.all %}

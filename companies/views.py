@@ -53,7 +53,7 @@ class ContactForm(ModelForm):
         fields = '__all__'
 
 #crate a company contact
-def contact_create(request, template_name='companies/contact_form.html'):
+def contact_create(request, pk, template_name='companies/contact_form.html'):
     form = ContactForm(request.POST or None)
     company = get_object_or_404(Company, pk=pk)
     if form.is_valid():

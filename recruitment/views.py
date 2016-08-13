@@ -81,6 +81,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
                 if permission['codename'] == role_permission.codename:
                     permission['checked'] = True
 
+
     if request.POST:
         if not role:
             role = Role()
