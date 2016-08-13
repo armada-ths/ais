@@ -43,7 +43,7 @@
 
         {% if can_edit_recruitment_application %}
             {% if recruitment_period.recruitmentapplication_set.all %}
-                <div class="container">
+
                 <h2>Applications</h2>
                 <table class="table">
                     <thead>
@@ -94,7 +94,7 @@
             {% else %}
                 <p>No applications</p>
             {% endif %}
-            </div>
+
         {% endif %}
 
         {% if interviews %}
