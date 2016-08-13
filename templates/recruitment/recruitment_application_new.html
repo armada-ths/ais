@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-    <div class="row">
+
         <ol class="breadcrumb">
         <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
         <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
@@ -10,6 +10,7 @@
     </ol>
 
     <div class="jumbotron">
+    <div class="container">
         <h1>{{ recruitment_period.name }}</h1>
         <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
 
@@ -21,7 +22,7 @@
             {% endfor %}
         </ul>
         {% endif %}
-
+</div>
     </div>
 
 
@@ -48,7 +49,7 @@
 </div>
 </form>
 
-    </div>
+
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
