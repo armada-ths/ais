@@ -182,7 +182,9 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
     return render(request, template_name, {
         'form': form,
-        'roles': roles,
+        'roles': [{'parent_role': role,
+                   'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
+                  role in Role.objects.filter(parent_role=None)],
         'recruitment_period': recruitment_period,
         'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
         'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
