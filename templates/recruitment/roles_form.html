@@ -52,9 +52,9 @@
     <div class="col-md-3">
         <label>People</label>
         {% if role.users %}
-        <ul>
+        <ul class="list-unstyled">
             {% for user in role.users %}
-                <li>{% include 'recruitment/user_name.html' with user=user %}</li>
+                <li><a href="/people/{{ user.id }}">{% include 'recruitment/user_name.html' with user=user %}</a></li>
             {% endfor %}
         </ul>
         {% else %}
