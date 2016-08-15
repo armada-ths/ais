@@ -299,7 +299,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
     interviewers = []
     for period in RecruitmentPeriod.objects.filter(fair=application.recruitment_period.fair):
-        if period != application.recruitment_period:
+        if period.start_date < application.recruitment_period.start_date:
             for period_application in period.recruitmentapplication_set.filter(status='accepted'):
                 interviewers.append(period_application.user)
 
