@@ -7,6 +7,8 @@ from django.contrib.auth.models import User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 from companies.models import Company, CompanyParticipationYear
 
@@ -54,6 +56,19 @@ def import_members(request):
 
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    application_list = recruitment_period.recruitmentapplication_set.all()
+    number_of_applications_per_page = 25
+    paginator = Paginator(application_list, number_of_applications_per_page)
+
+    page = request.GET.get('page')
+    try:
+        applications = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        applications = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        applications = paginator.page(paginator.num_pages)
 
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
@@ -61,6 +76,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
         'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all(),
+        'paginator': paginator,
+        'applications': applications
     })
 
 

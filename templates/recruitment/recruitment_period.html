@@ -3,126 +3,74 @@
 {% block content %}
 
 
-        <ol class="breadcrumb">
-            <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
-            <li class="active">{{ recruitment_period.name }}</li>
-        </ol>
+    <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li class="active">{{ recruitment_period.name }}</li>
+    </ol>
 
 
-        <div class="jumbotron">
-            <div class="container">
-                <h1>{{ recruitment_period.name }}</h1>
-                <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and
-                    <strong>{{ recruitment_period.end_date }}</strong></p>
-                <p>We are looking for:</p>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>{{ recruitment_period.name }}</h1>
+            <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and
+                <strong>{{ recruitment_period.end_date }}</strong></p>
+            <p>We are looking for:</p>
 
-                <ul>
-                    {% for role in recruitment_period.recruitable_roles.all %}
-                        <li>{{ role }}</li>
-                    {% endfor %}
-                </ul>
+            <ul>
+                {% for role in recruitment_period.recruitable_roles.all %}
+                    <li>{{ role }}</li>
+                {% endfor %}
+            </ul>
 
 
-                <div>
-                    {% if application %}
-                        <a href="{% url 'recruitment_application_new' recruitment_period.id application.id %}">
-                            <button class="btn btn-primary">View application</button>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'recruitment_application_new' recruitment_period.id %}">
-                            <button class="btn btn-primary">Apply</button>
-                        </a>
-                    {% endif %}
+            <div>
+                {% if application %}
+                    <a href="{% url 'recruitment_application_new' recruitment_period.id application.id %}">
+                        <button class="btn btn-primary">View application</button>
+                    </a>
+                {% else %}
+                    <a href="{% url 'recruitment_application_new' recruitment_period.id %}">
+                        <button class="btn btn-primary">Apply</button>
+                    </a>
+                {% endif %}
 
-                    {% if can_edit_recruitment_period %}
-                        <a href="{% url 'recruitment_period_edit' recruitment_period.id %}">
-                            <button class="btn btn-default">Edit</button>
-                        </a>
-                    {% endif %}
-                </div>
+                {% if can_edit_recruitment_period %}
+                    <a href="{% url 'recruitment_period_edit' recruitment_period.id %}">
+                        <button class="btn btn-default">Edit</button>
+                    </a>
+                {% endif %}
             </div>
         </div>
+    </div>
 
-        {% if can_edit_recruitment_application %}
-            {% if recruitment_period.recruitmentapplication_set.all %}
-
-
-                <h2>Applications ({{ recruitment_period.recruitmentapplication_set.all.count }})</h2>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Delegated role</th>
-                        <th>Rating</th>
-                        <th>Submitted</th>
-                        <th>Roles</th>
-                        <th>Interviewer</th>
-                        <th>State</th>
-                    </tr>
-                    </thead>
-                    {% for application in recruitment_period.recruitmentapplication_set.all %}
-                        <tr>
-
-                            <td>
-                                <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                                    {% include 'recruitment/user_name.html' with user=application.user %}
-                                </a></td>
-                            <td>{% if application.delegated_role %}{{ application.delegated_role }} {% endif %}</td>
-                            <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
+    {% if can_edit_recruitment_application %}
+        {% if recruitment_period.recruitmentapplication_set.all %}
 
 
-                            <td>{{ application.submission_date }}</td>
-                            <td>
-                                {% for role in application.roleapplication_set.all %}
-                                    {{ role }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% if application.interviewer %}
-                                    {{ application.interviewer.get_full_name }}
-                                {% endif %}
-                            </td>
-
-                            <td>
-                                {% if application.status == 'accepted' %}
-                                    <span class="label label-success">{{ application.status.capitalize }}</span>
-                                {% elif application.status == 'rejected' %}
-                                    <span class="label label-danger">{{ application.status.capitalize }}</span>
-                                {% endif %}
-                            </td>
-
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p>No applications</p>
-            {% endif %}
-
-        {% endif %}
-
-        {% if interviews %}
-            <h2>Your interviews</h2>
+            <h2>Applications ({{ recruitment_period.recruitmentapplication_set.all.count }})</h2>
             <table class="table">
                 <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Delegated role</th>
                     <th>Rating</th>
-                    <th>State</th>
                     <th>Submitted</th>
                     <th>Roles</th>
                     <th>Interviewer</th>
+                    <th>State</th>
                 </tr>
                 </thead>
-                {% for application in interviews %}
+                {% for application in applications %}
                     <tr>
 
                         <td>
                             <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                                {{ application.user.get_full_name }}
+                                {% include 'recruitment/user_name.html' with user=application.user %}
                             </a></td>
+                        <td>{% if application.delegated_role %}{{ application.delegated_role }} {% endif %}</td>
                         <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
-                        <td>{% if application.status != 'undecided' %}
-                            {{ application.status.capitalize }} {% endif %}</td>
+
+
                         <td>{{ application.submission_date }}</td>
                         <td>
                             {% for role in application.roleapplication_set.all %}
@@ -135,28 +83,85 @@
                             {% endif %}
                         </td>
 
+                        <td>
+                            {% if application.status == 'accepted' %}
+                                <span class="label label-success">{{ application.status.capitalize }}</span>
+                            {% elif application.status == 'rejected' %}
+                                <span class="label label-danger">{{ application.status.capitalize }}</span>
+                            {% endif %}
+                        </td>
+
                     </tr>
                 {% endfor %}
             </table>
+        {% else %}
+            <p>No applications</p>
         {% endif %}
-<nav aria-label="Page navigation">
-  <ul class="pagination">
-    <li>
-      <a href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
-    <li><a href="#">1</a></li>
-    <li><a href="#">2</a></li>
-    <li><a href="#">3</a></li>
-    <li><a href="#">4</a></li>
-    <li><a href="#">5</a></li>
-    <li>
-      <a href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
+
+    {% endif %}
+
+    {% if interviews %}
+        <h2>Your interviews</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Rating</th>
+                <th>State</th>
+                <th>Submitted</th>
+                <th>Roles</th>
+                <th>Interviewer</th>
+            </tr>
+            </thead>
+            {% for application in interviews %}
+                <tr>
+
+                    <td>
+                        <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                            {{ application.user.get_full_name }}
+                        </a></td>
+                    <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
+                    <td>{% if application.status != 'undecided' %}
+                        {{ application.status.capitalize }} {% endif %}</td>
+                    <td>{{ application.submission_date }}</td>
+                    <td>
+                        {% for role in application.roleapplication_set.all %}
+                            {{ role }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if application.interviewer %}
+                            {{ application.interviewer.get_full_name }}
+                        {% endif %}
+                    </td>
+
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    <nav aria-label="Page navigation">
+
+    {% if applications.paginator.num_pages > 1 %}
+        <ul class="pagination">
+            <li>
+                {% if applications.previous_page_number > 0 %}
+                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                {% endif %}
+            </li>
+            {% for page_number in applications.paginator.page_range %}
+                <li {% if page_number == applications.number %}class="active"{% endif %}><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+            {% endfor %}
+            <li>
+                {% if applications.next_page_number <= applications.paginator.num_pages %}
+                    <a href="?page={{ applications.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+    {% endif %}
+    </nav>
 
 {% endblock %}
