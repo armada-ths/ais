@@ -20,8 +20,7 @@
                     <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Start</th>
-                        <th>End</th>
+                        <th>Date</th>
                         <th>Applications</th>
                         <th>Status</th>
                     </tr>
@@ -29,8 +28,7 @@
                     {% for period in recruitment_periods %}
                         <tr>
                             <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
-                            <td>{{ period.start_date|date:"d M" }}</td>
-                            <td>{{ period.end_date|date:"d M" }}</td>
+                            <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
                             <td>{{ period.recruitmentapplication_set.count }}</td>
                         <td>
                             {%  if period.is_past %}
