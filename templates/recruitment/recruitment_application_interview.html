@@ -23,7 +23,7 @@
             {% csrf_token %}
 
 
-        {% include 'recruitment/select_field.html' with values=users field_label='Interviewer' field_name='interviewer' selected_value=application.interviewer is_editable=can_edit_recruitment_application %}
+        {% include 'recruitment/select_field.html' with values=interviewers field_label='Interviewer' field_name='interviewer' selected_value=application.interviewer is_editable=can_edit_recruitment_application %}
 
 
             <div class="form-group">

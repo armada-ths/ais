@@ -60,7 +60,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
         'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-        'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all()
+        'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all(),
     })
 
 
@@ -297,6 +297,12 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 
 
+    interviewers = []
+    for period in RecruitmentPeriod.objects.filter(fair=application.recruitment_period.fair):
+        if period != application.recruitment_period:
+            for period_application in period.recruitmentapplication_set.filter(status='accepted'):
+                interviewers.append(period_application.user)
+
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
@@ -307,7 +313,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'ratings': [i for i in range(1,6)],
         'exhibitors': exhibitors,
         'statuses': [Status(status[0]) for status in RecruitmentApplication.statuses],
-        'selected_status': Status(application.status)
+        'selected_status': Status(application.status),
+        'interviewers': interviewers
 
     })
 
