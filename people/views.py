@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from recruitment.models import RecruitmentApplication
 from .models import Profile
 # Create your views here.
 
@@ -15,5 +16,11 @@ def view_person(request, pk):
     profile = Profile.objects.filter(user=user).first()
     if not profile:
         profile = Profile.objects.create(user=user)
-    return TemplateResponse(request, 'view_person.html', {'person': profile})
+
+
+    application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
+    return TemplateResponse(request, 'view_person.html', {
+        'person': profile,
+        'role': application.delegated_role if application else ""
+    })
     
