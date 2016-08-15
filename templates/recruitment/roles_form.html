@@ -7,57 +7,60 @@
         <li class="active">New role</li>
     </ol>
 
-    <div class="container">
-        <div class="row">
-            <h3>New role</h3>
-            <hr>
-        </div>
+    <h3>{% if role %}{{ role }} {% else %} New Role {% endif %}</h3>
+    <hr>
+
 
     <div class="row">
+    <div class="col-md-9">
+        <form method="post">
+            {% csrf_token %}
 
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input class="form-control" id="name" name="name" value="{{ role.name }}">
-        </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea class="form-control" id="description" name="description">{{ role.description }}</textarea>
-        </div>
-
-        {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=True %}
-
-
-        <label>Permissions</label>
-        {% for permission in permissions %}
-            <div class="checkbox">
-            <label>
-            <input type="checkbox" name="{{ permission.codename }}" id="{{ permission.codename }}" {% if permission.checked %} checked {% endif %}> {{permission.name}}
-            </label>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input class="form-control" id="name" name="name" value="{{ role.name }}">
             </div>
-        {% endfor %}
 
-        <button class="btn btn-primary">Save</button>
-        {% if role != None %}
-            <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}">Delete</a>
-        {%  endif %}
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description">{{ role.description }}</textarea>
+            </div>
+
+            {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=True %}
 
 
+            <label>Permissions</label>
+            {% for permission in permissions %}
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="{{ permission.codename }}" id="{{ permission.codename }}"
+                                {% if permission.checked %} checked {% endif %}> {{ permission.name }}
+                    </label>
+                </div>
+            {% endfor %}
 
-    </form>
+            <button class="btn btn-primary">Save</button>
+            {% if role != None %}
+                <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}">Delete</a>
+            {% endif %}
 
+
+        </form>
     </div>
 
 
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('.datepicker').datepicker();
-        });
-    </script>
+    <div class="col-md-3">
+        <label>People</label>
+        {% if role.users %}
+        <ul>
+            {% for user in role.users %}
+                <li>{% include 'recruitment/user_name.html' with user=user %}</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>None</p>
+        {% endif %}
+    </div>
+
+
 {% endblock %}

@@ -64,7 +64,7 @@
                 {% for role in roles %}
                     <p><a href="{% url "roles_new" role.parent_role.pk %}"><strong>{{ role.parent_role }}</strong></a></p>
                     {% for child_role in role.child_roles %}
-                        <p style="margin-left: 12px"><a href="{% url "roles_new" child_role.pk %}">{{ child_role }}</a></p>
+                        <p style="margin-left: 12px"><a href="{% url "roles_new" child_role.pk %}">{{ child_role }} ({{ child_role.users|length }})</a></p>
                     {% endfor %}
                     {% empty %}
                     <p>No roles</p>

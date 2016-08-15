@@ -121,7 +121,15 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
 
         return redirect('/recruitment/')
 
-    return render(request, template_name, {'role': role, 'permissions': permissions, 'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all()})
+
+    users = [application.user for application in RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
+
+    return render(request, template_name, {
+        'role': role,
+        'permissions': permissions,
+        'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all(),
+        'users': users
+    })
 
 
 

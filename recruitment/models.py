@@ -186,6 +186,9 @@ class Role(models.Model):
     def __str__(self):
         return '%s' % (self.name)
 
+    def users(self):
+        return [application.user for application in RecruitmentApplication.objects.filter(delegated_role=self, status='accepted')]
+
 
 # Model for company
 class RecruitmentPeriod(models.Model):
