@@ -47,8 +47,6 @@
 
     {% if can_edit_recruitment_application %}
         {% if recruitment_period.recruitmentapplication_set.all %}
-
-
             <h2>Applications ({{ recruitment_period.recruitmentapplication_set.all.count }})</h2>
             <table class="table">
                 <thead>

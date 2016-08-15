@@ -4,7 +4,7 @@
 
     <ol class="breadcrumb">
         <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
-        <li class="active">New role</li>
+        <li class="active">{% if role %}{{ role }} {% else %} New Role {% endif %}</li>
     </ol>
 
     <h3>{% if role %}{{ role }} {% else %} New Role {% endif %}</h3>
@@ -18,32 +18,44 @@
 
             <div class="form-group">
                 <label for="name">Name</label>
-                <input class="form-control" id="name" name="name" value="{{ role.name }}">
+                {% if editable %}
+                    <input class="form-control" id="name" name="name" value="{{ role.name }}">
+                {% else %}
+                    <p class="form-control-static">{{ role.name }}</p>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea class="form-control" id="description" name="description">{{ role.description }}</textarea>
+                {% if editable %}
+                    <textarea class="form-control" id="description" name="description">{{ role.description }}</textarea>
+                {% else %}
+                    <p class="form-control-static">{{ role.description|default:"None" }}</p>
+                {% endif %}
             </div>
 
-            {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=True %}
-
-
-            <label>Permissions</label>
-            {% for permission in permissions %}
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="{{ permission.codename }}" id="{{ permission.codename }}"
-                                {% if permission.checked %} checked {% endif %}> {{ permission.name }}
-                    </label>
-                </div>
-            {% endfor %}
-
-            <button class="btn btn-primary">Save</button>
-            {% if role != None %}
-                <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}">Delete</a>
+            {% if editable %}
+            {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=editable %}
             {% endif %}
 
+            {% if editable %}
+            <label>Permissions</label>
+            {% for permission in permissions %}
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="{{ permission.codename }}" id="{{ permission.codename }}"
+                                    {% if permission.checked %} checked {% endif %}> {{ permission.name }}
+                        </label>
+                    </div>
+            {% endfor %}
+        {% endif %}
+
+            {% if editable %}
+                <button class="btn btn-primary">Save</button>
+                {% if role != None %}
+                    <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}">Delete</a>
+                {% endif %}
+            {% endif %}
 
         </form>
     </div>
@@ -52,11 +64,12 @@
     <div class="col-md-3">
         <label>People</label>
         {% if role.users %}
-        <ul class="list-unstyled">
-            {% for user in role.users %}
-                <li><a href="/people/{{ user.id }}">{% include 'recruitment/user_name.html' with user=user %}</a></li>
-            {% endfor %}
-        </ul>
+            <ul class="list-unstyled">
+                {% for user in role.users %}
+                    <li><a href="/people/{{ user.id }}">{% include 'recruitment/user_name.html' with user=user %}</a>
+                    </li>
+                {% endfor %}
+            </ul>
         {% else %}
             <p>None</p>
         {% endif %}

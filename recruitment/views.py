@@ -82,9 +82,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 
 
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
-    if not user_has_permission(request.user, 'change_group'):
-        return HttpResponseForbidden()
     role = Role.objects.filter(pk=pk).first()
+    editable = user_has_permission(request.user, 'change_group')
 
     permissions = [
         {'codename': 'change_recruitmentperiod', 'name': 'Administer recruitment', 'checked': False},
@@ -99,7 +98,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
                     permission['checked'] = True
 
 
-    if request.POST:
+    if request.POST and user_has_permission(request.user, 'change_group'):
         if not role:
             role = Role()
         role.name = request.POST['name']
@@ -128,7 +127,8 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
         'role': role,
         'permissions': permissions,
         'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all(),
-        'users': users
+        'users': users,
+        'editable': editable
     })
 
 
@@ -295,15 +295,19 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         return HttpResponseForbidden()
 
     if request.POST:
-        set_foreign_key_from_request(request, application, 'interviewer', User)
+
         set_foreign_key_from_request(request, application, 'recommended_role', Role)
-        set_foreign_key_from_request(request, application, 'delegated_role', Role)
-        set_foreign_key_from_request(request, application, 'superior_user', User)
-        set_foreign_key_from_request(request, application, 'exhibitor', Company)
         set_int_key_from_request(request, application, 'rating')
         set_string_key_from_request(request, application, 'interview_location')
         set_string_key_from_request(request, application, 'interview_date')
-        set_string_key_from_request(request, application, 'status')
+
+        if user_has_permission(request.user, 'change_recruitmentapplication'):
+            set_foreign_key_from_request(request, application, 'interviewer', User)
+            set_foreign_key_from_request(request, application, 'delegated_role', Role)
+            set_foreign_key_from_request(request, application, 'superior_user', User)
+            set_foreign_key_from_request(request, application, 'exhibitor', Company)
+            set_string_key_from_request(request, application, 'status')
+
 
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
         application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
@@ -321,7 +325,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
         def __eq__(self, other):
             return self.id == other.id
-
 
 
     interviewers = []

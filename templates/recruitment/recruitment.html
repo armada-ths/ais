@@ -58,7 +58,6 @@
         </div>
 
         <div class="col-md-3">
-            {% if can_edit_roles %}
 
                 <h2>Roles</h2>
                 {% for role in roles %}
@@ -70,6 +69,7 @@
                     <p>No roles</p>
                 {% endfor %}
 
+        {% if can_edit_roles %}
                 <a class="btn btn-primary" href="{% url "roles_new" %}"><span class="glyphicon glyphicon-plus"></span>
                     New role</a>
 
