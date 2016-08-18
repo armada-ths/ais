@@ -30,6 +30,10 @@ silent python manage.py makemigrations --settings local_settings
 silent python manage.py migrate --settings local_settings
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', '', 'admin')" | silent python manage.py shell --settings local_settings
 
+echo "Sprinkling magic..."
+echo "cd /vagrant" >> ~/.bashrc
+echo "source ais_venv/bin/activate" >> ~/.bashrc
+
 echo "All done, good job everybody!"
 rm -f $logfile
 
