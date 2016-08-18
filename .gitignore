@@ -13,3 +13,5 @@ run_server.sh
 *~
 .vagrant/
 .DS_Store
+ais_venv/
+
