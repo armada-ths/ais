@@ -56,7 +56,7 @@ def import_members(request):
 
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = recruitment_period.recruitmentapplication_set.all()
+    application_list = recruitment_period.recruitmentapplication_set.order_by('user__first_name', 'user__last_name')
     number_of_applications_per_page = 25
     paginator = Paginator(application_list, number_of_applications_per_page)
 
