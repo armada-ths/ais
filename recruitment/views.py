@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 
 from companies.models import Company, CompanyParticipationYear
@@ -28,7 +30,7 @@ class RecruitmentPeriodForm(ModelForm):
     class Meta:
         model = RecruitmentPeriod
         fields = '__all__'
-        exclude = ('recruitable_roles',)
+        exclude = ('recruitable_roles', 'image')
 
         widgets = {
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
@@ -42,7 +44,6 @@ class RecruitmentPeriodForm(ModelForm):
 def recruitment(request, template_name='recruitment/recruitment.html'):
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
-        #'roles': Role.objects.all(),
         'roles': [{'parent_role': role, 'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for role in Role.objects.filter(parent_role=None)],
         'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
         'can_edit_roles': user_has_permission(request.user, 'change_group'),
@@ -173,6 +174,15 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
         recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
         recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
         recruitment_period.save()
+
+        image_key = 'image'
+        if image_key in request.FILES:
+            file = request.FILES[image_key]
+            print(request.FILES[image_key])
+            file_path = 'recruitment/%d/image.%s' % (recruitment_period.pk, file.name.split('.')[-1])
+            default_storage.save(file_path, ContentFile(file.read()))
+            recruitment_period.image = file_path
+            recruitment_period.save()
 
         return redirect('/recruitment/%d' % recruitment_period.id)
     else:
