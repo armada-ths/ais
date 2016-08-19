@@ -45,7 +45,7 @@
             <div class="row">
                 {% for role in roles %}
                     <div class="col-sm-4">
-                        <label>{{ role.parent_role }}</label>
+                        <label data-checked="true" id="{{ role.parent_role }}" onclick="(function() { var label = document.getElementById('{{ role.parent_role }}'); console.log(label.innerText); var inputs = label.parentNode.getElementsByTagName('input'); for (i = 0; i < inputs.length; i++) { inputs[i].checked = label.dataset.checked === 'true' ? true : false;  } label.dataset.checked = label.dataset.checked === 'true' ? 'false' : 'true' })()">{{ role.parent_role }}</label>
                         {% for child_role in role.child_roles %}
                             <div class="checkbox">
                             <label>

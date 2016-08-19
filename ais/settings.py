@@ -21,9 +21,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-#CAS_SERVER_URL = 'https://login.kth.se/'
-#CAS_IGNORE_REFERER = True
-#CAS_REDIRECT_URL = 'armada.nu/login'
+CAS_SERVER_URL = 'https://login.kth.se/'
+CAS_IGNORE_REFERER = True
+CAS_REDIRECT_URL = 'armada.nu/login'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = ['.armada.nu']
