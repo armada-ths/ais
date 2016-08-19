@@ -27,4 +27,4 @@ urlpatterns = [
         name='recruitment_application_comment_new'),
 
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
