@@ -22,10 +22,10 @@ function domElementFromString(html) {
     }
 
     function newInterviewQuestion(extraFieldId) {
-        addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '', document.getElementById(extraFieldId).childElementCount+1)
+        addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '', document.getElementById(extraFieldId).childElementCount+1, false)
     }
 
-    function addInterviewQuestion(extraFieldId, id, fieldType, question, position) {
+    function addInterviewQuestion(extraFieldId, id, fieldType, question, position, required) {
         //const id = Math.round((Math.random() * 100000)) % 10000
 
         document.getElementById(extraFieldId).appendChild(domElementFromString(`<div class="form-group" id="${id}">
@@ -51,7 +51,15 @@ function domElementFromString(html) {
                         </select>
                         </div>
 
-                        <div class="col-md-8"><input type="text" class="form-control" name="${extraFieldId}_${id}" value="${question}" placeholder="Question"></div>
+                        <div class="col-md-1">
+                                                <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="${extraFieldId}-required_${id}" ${ required ? 'checked' : ''}> Required
+                            </label>
+                        </div>
+                        </div>
+
+                        <div class="col-md-7"><input type="text" class="form-control" name="${extraFieldId}_${id}" value="${question}" placeholder="Question"></div>
 
                         <div class="col-md-1"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button>
 
@@ -83,14 +91,13 @@ function domElementFromString(html) {
                         <div class="form-group row" id="${id}">
                             <div class="col-md-2"><input type="text" class="form-control" value="${value}" name="argument_${interviewQuestionId}_${argumentId}" placeholder="Argument"></div>
                                                 <div class="col-md-1">
-
-
                                                 <select class="form-control" name="argument_position_${interviewQuestionId}_${argumentId}">
                         {% for i in "xxxxxxxxxxxxxxxxxxxxxxxxx" %}
                                     <option value="{{ forloop.counter }}" ${ {{ forloop.counter }} === position ? 'selected' : ''}>{{ forloop.counter }}</option>
                         {% endfor %}
                         </select>
                         </div>
+
                             <div class="col-md-2"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger">
 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button></div>
                         </div>
@@ -99,7 +106,7 @@ function domElementFromString(html) {
 
 
 {%  for custom_field in values %}
-        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', {{ custom_field.position }})
+        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', {{ custom_field.position }}, {% if custom_field.required %} true {% else %} false {% endif %})
             {% for argument in custom_field.customfieldargument_set.all|dictsort:"position" %}
                 addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}', {{argument.position}})
             {% endfor %}

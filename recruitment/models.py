@@ -47,6 +47,7 @@ class ExtraField(models.Model):
             custom_field.question = request.POST['%s_%d' % (field_name, question_id)]
             custom_field.field_type = request.POST['%s-type_%d' % (field_name, question_id)]
             custom_field.position = int(request.POST['%s-position_%d' % (field_name, question_id)])
+            custom_field.required = '%s-required_%d' % (field_name, question_id) in request.POST
             custom_field.save()
 
             for argument in custom_field.customfieldargument_set.all():
