@@ -14,6 +14,9 @@
             <h1>{{ recruitment_period.name }}</h1>
             <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and
                 <strong>{{ recruitment_period.end_date }}</strong></p>
+        {% if recruitment_period.image %}
+        <img src="/media/{{ recruitment_period.image }}" style="max-width: 100%; max-height: 300px;">
+        {% endif %}
 
         <!--
             <p>We are looking for:</p>

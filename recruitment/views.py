@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
+import os
 
 from companies.models import Company, CompanyParticipationYear
 
@@ -177,9 +177,13 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
         image_key = 'image'
         if image_key in request.FILES:
+
+
             file = request.FILES[image_key]
             print(request.FILES[image_key])
             file_path = 'recruitment/%d/image.%s' % (recruitment_period.pk, file.name.split('.')[-1])
+            if os._exists(file_path):
+                os.remove(file_path)
             default_storage.save(file_path, ContentFile(file.read()))
             recruitment_period.image = file_path
             recruitment_period.save()

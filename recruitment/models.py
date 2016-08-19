@@ -82,6 +82,8 @@ class ExtraField(models.Model):
                     file = request.FILES[key]
                     print(request.FILES[key])
                     file_path = 'custom-field/%d_%s.%s' % (user.id, key, file.name.split('.')[-1])
+                    if os._exists(file_path):
+                        os.remove(file_path)
                     path = default_storage.save(file_path, ContentFile(file.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
                     print(tmp_file)
