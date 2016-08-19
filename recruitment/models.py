@@ -128,6 +128,7 @@ class CustomField(models.Model):
     question = models.CharField(max_length=1000)
     field_type = models.CharField(choices=fields, default='text_field', max_length=20)
     position = models.IntegerField(default=0)
+    required = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % (self.question)
