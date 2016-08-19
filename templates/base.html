@@ -57,7 +57,9 @@
 <script src="{% static 'bootstrap/js/bootstrap-datepicker.js' %}"></script>
     <script>
         $(document).ready(function () {
-            $('.datepicker').datepicker();
+            $('.datepicker').datepicker({
+                weekStart: 1
+            });
             //newInterviewQuestion()
         });
     </script>
