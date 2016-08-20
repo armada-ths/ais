@@ -24,6 +24,10 @@
 
 <form method="post" action="" enctype="multipart/form-data" >
 {% csrf_token %}
+
+
+    {{ profile_form|crispy }}
+
     {% for chosen_role in chosen_roles %}
 
         <div class="form-group">

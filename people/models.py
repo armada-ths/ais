@@ -1,6 +1,15 @@
 from django.conf import settings
 from django.db import models
 
+
+
+class Programme(models.Model):
+    name = models.CharField(max_length=100)
+
+
+    def __str__(self):
+        return '%s' % (self.name)
+
 # TODO fix view
 # https://docs.djangoproject.com/en/1.8/topics/forms/modelforms/
 # http://pythoncentral.io/how-to-use-python-django-forms/
@@ -20,8 +29,9 @@ class Profile(models.Model):
     )
 
     GENDERS = (
-        ('M', 'Male'),
-        ('F', 'Female'),
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other')
     )
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1, primary_key=True)
@@ -30,13 +40,14 @@ class Profile(models.Model):
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES,blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     drivers_license = models.CharField(max_length=10, null=True,blank=True)
-    allergy = models.CharField(max_length=30, null=True,blank=True)
-    programme = models.CharField(max_length=30, null=True,blank=True)
-    registration_year = models.IntegerField(null=True,blank=True)
-    planned_graduation = models.IntegerField(null=True,blank=True)
+    allergy = models.CharField(max_length=30, null=True, blank=True)
+    programme = models.ForeignKey(Programme, null=True, blank=True)
+    registration_year = models.IntegerField(null=True, blank=True)
+    planned_graduation = models.IntegerField(null=True, blank=True)
     
     def __str__(self):
         return '%s' % (self.user.get_full_name())
 
     class Meta:
         db_table = 'profile'
+

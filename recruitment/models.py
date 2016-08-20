@@ -11,6 +11,8 @@ from companies.models import Company
 import os.path
 from django.utils import timezone
 
+from people.models import Profile, Programme
+
 class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)
@@ -352,6 +354,24 @@ def create_recruitment_period_from_csv(file_path, recruitment_period_name, year)
             first_line = False
 
 
+def create_programmes():
+    programmes = ["Business IT Engineering (B.Sc)", "Civil Engineering and Urban Management (M.Sc)",
+     "Constructional Engineering (B.Sc)", "Design and Product Realisation (M.Sc)",
+     "Electrical Engineering (B.Sc, M.Sc)", "Energy & Environment (M.Sc)",
+     "Industrial Engineering and Management (M.Sc)", "Information and Communication Technology (B.Sc, M.Sc)",
+     "Materials Design and Engineering (M.Sc)", "Media Technology (M.Sc)", "Computer Engineering (B.Sc)",
+     "Computer Engineering and Electronics (B.Sc)", "Engineering Physics (M.Sc)", "Mechanical Engineering (B.Sc, M.Sc)",
+     "Vehicle Engineering (M.Sc)", "Chemistry and Chemical Engineering (M.Sc)",
+     "Computer Science and Engineering (M.Sc)", "Electrical Engineering and Economics (B.Sc)",
+     "Engineering and of Education (M.Sc)", "Medical Engineering (M.Sc)", "Microelectronics (M.Sc)",
+     "Architecture Programme", "Biotechnology (M.Sc)", "Chemical Engineering (B.Sc)", "Medical Technology (B.Sc)",
+     "Property Development & Real Estate (B.Sc)", "Real Estate and Finance (B.Sc)"]
+
+    for programme in programmes:
+        if not Programme.objects.filter(name=programme).first():
+            Programme.objects.create(name=programme)
+
+
 import os
 
 def create_armada_year(year):
@@ -362,5 +382,6 @@ def create_armada_year(year):
 def create_project_group():
     create_armada_year(2016)
     #create_armada_year(2015)
+    create_programmes()
     pass
 

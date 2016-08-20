@@ -12,6 +12,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
 from django.core.exceptions import ValidationError
+from people.models import Profile
 
 from companies.models import Company, CompanyParticipationYear
 
@@ -179,8 +180,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
         image_key = 'image'
         if image_key in request.FILES:
-
-
             file = request.FILES[image_key]
             print(request.FILES[image_key])
             file_path = 'recruitment/%d/image.%s' % (recruitment_period.pk, file.name.split('.')[-1])
@@ -216,10 +215,28 @@ def recruitment_application_comment_new(request, pk):
     return redirect('/recruitment/%d/application/%d/interview' % (application.recruitment_period.id, application.id))
 
 
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('registration_year', 'programme')
+
+
 @login_required
 def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
     now = timezone.now()
+
+    recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
+
+
+    user = recruitment_application.user if recruitment_application else request.user
+    profile = Profile.objects.filter(user=user).first()
+    if not profile:
+        Profile.objects.create(user=user)
+    profile_form = ProfileForm(request.POST or None, instance=profile)
+
+    if profile_form.is_valid():
+        profile_form.save()
 
     if recruitment_period.start_date > now:
         return render(request, 'recruitment/recruitment_application_closed.html', {
@@ -234,7 +251,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         })
 
 
-    recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
+
 
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, request.user)
@@ -269,7 +286,8 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
         'chosen_roles': chosen_roles,
-        'roles': recruitment_period.recruitable_roles.all()
+        'roles': recruitment_period.recruitable_roles.all(),
+        'profile_form': profile_form
     })
 
 
