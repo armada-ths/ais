@@ -4,20 +4,20 @@
                         <div class="form-group">
                             <label for="{{ question.form_key }}">{{ question.question }}</label>
                             <input type="text" class="form-control" id="{{ question.form_key }}" name="{{ question.form_key }}"
-                                   value="{{ answer.answer }}">
+                                   value="{{ answer.answer }}" {% if question.required %}required{% endif %}>
                         </div>
                     {% elif question.field_type == 'check_box' %}
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="{{ question.form_key }}" {% if answer %}
-                                       checked {% endif %}> {{ question.question }}
+                                       checked {% endif %} {% if question.required %}required{% endif %}> {{ question.question }}
                             </label>
                         </div>
                     {% elif question.field_type == 'text_area' %}
                         <div class="form-group">
                             <label for="{{ question.form_key }}">{{ question.question }}</label>
                             <textarea class="form-control" rows="3" id="{{ question.form_key }}"
-                                      name="{{ question.form_key }}">{{ answer.answer }}</textarea>
+                                      name="{{ question.form_key }}" {% if question.required %}required{% endif %}>{{ answer.answer }}</textarea>
                         </div>
                     {% elif question.field_type == 'radio_buttons' %}
                         <label class="radio control-label">{{ question }}</label>
@@ -25,14 +25,14 @@
                             <div class="radio">
                                 <label>
                                     <input type="radio" name="{{ question.form_key }}" value="{{ argument.id }}"
-                                            {% if answer.answer == argument.id_as_string %} checked {% endif %}> {{ argument.value }}
+                                            {% if answer.answer == argument.id_as_string %} checked {% endif %} {% if question.required %}required{% endif %}> {{ argument.value }}
                                 </label>
                             </div>
                         {% endfor %}
                     {% elif question.field_type == 'select' %}
                         <label class="radio control-label">{{ question }}</label>
-                        <select class="form-control" name="{{ question.form_key }}">
-                        <option>---</option>
+                        <select class="form-control" name="{{ question.form_key }}" {% if question.required %}required{% endif %}>
+                        <option value="">---</option>
                         {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
                             <option value="{{ argument.id }}" {% if answer.answer == argument.id_as_string %} selected {% endif %}>{{ argument.value }}</option>
                         {% endfor %}
@@ -40,13 +40,13 @@
                     {% elif question.field_type == 'file' %}
                         <div class="form-group">
                             <label for="{{ question.form_key }}">{{ question }}</label>
-                            <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}">
+                            <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}" {% if question.required %}required{% endif %}>
                             <p><a href="/media/{{ answer.answer }}">{{ answer.answer }}</a></p>
                         </div>
                     {% elif question.field_type == 'image' %}
                         <div class="form-group">
                             <label for="{{ question.form_key }}">{{ question }}</label>
-                            <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}" accept="image/*">
+                            <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}" accept="image/*" {% if question.required %}required{% endif %}>
                             {% if answer.answer %}
                                 <br>
                                 <div><img src="/media/{{ answer.answer }}" style="max-width: 100%; max-height: 400px;"></div>
