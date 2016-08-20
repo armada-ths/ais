@@ -180,16 +180,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
         recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
         recruitment_period.save()
 
-        image_key = 'image'
-        if image_key in request.FILES:
-            file = request.FILES[image_key]
-            print(request.FILES[image_key])
-            file_path = 'recruitment/%d/image.%s' % (recruitment_period.pk, file.name.split('.')[-1])
-            if os._exists(file_path):
-                os.remove(file_path)
-            default_storage.save(file_path, ContentFile(file.read()))
-            recruitment_period.image = file_path
-            recruitment_period.save()
+        set_image_key_from_request(request, recruitment_period, 'image', 'recruitment')
 
         return redirect('/recruitment/%d' % recruitment_period.id)
     else:
@@ -243,23 +234,9 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         profile_form.save()
 
 
-    image_key = 'image'
-    if image_key in request.FILES:
 
-        print('IMAGE IN FILE')
+    set_image_key_from_request(request, profile, 'image', 'profile')
 
-        file = request.FILES[image_key]
-        print(request.FILES[image_key])
-        file_path = 'profile/%d/image.%s' % (profile.pk, file.name.split('.')[-1])
-
-
-
-        if default_storage.exists(file_path):
-            default_storage.delete(file_path)
-        default_storage.save(file_path, ContentFile(file.read()))
-
-        profile.image = file_path
-        profile.save()
 
     if recruitment_period.start_date > now:
         return render(request, 'recruitment/recruitment_application_closed.html', {
@@ -342,6 +319,22 @@ def set_string_key_from_request(request, model, model_field):
         except (ValueError, ValidationError) as e:
             setattr(model, model_field, None)
             model.save()
+
+def set_image_key_from_request(request, model, model_field, file_directory):
+    image_key = model_field
+    if image_key in request.FILES:
+        try:
+            file = request.FILES[image_key]
+            file_path = '%s/%d/image.%s' % (file_directory, model.pk, file.name.split('.')[-1])
+            if default_storage.exists(file_path):
+                default_storage.delete(file_path)
+            default_storage.save(file_path, ContentFile(file.read()))
+            setattr(model, model_field, file_path)
+            model.save()
+        except (ValueError, ValidationError) as e:
+            setattr(model, model_field, None)
+            model.save()
+
 
 
 

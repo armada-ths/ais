@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from recruitment.models import RecruitmentApplication
 from .models import Profile
 
+from recruitment.views import set_image_key_from_request
+
 from django.forms import ModelForm
 # Create your views here.
 
@@ -19,7 +21,6 @@ def view_person(request, pk):
     if not profile:
         profile = Profile.objects.create(user=user)
 
-
     application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
     return TemplateResponse(request, 'view_person.html', {
         'person': profile,
@@ -31,6 +32,7 @@ class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         fields = '__all__'
+        exclude = ('user', 'image')
 
 
 @login_required(login_url='/login/')
@@ -41,6 +43,10 @@ def edit_person(request, pk):
         profile = Profile.objects.create(user=user)
 
     form = ProfileForm(request.POST or None, instance=profile)
+
+    if form.is_valid():
+        form.save()
+        set_image_key_from_request(request, profile, 'image', 'profile')
 
     application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
     return TemplateResponse(request, 'edit_person.html', {
