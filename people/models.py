@@ -46,6 +46,8 @@ class Profile(models.Model):
     planned_graduation = models.IntegerField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True)
 
+    image = models.CharField(max_length=100, null=True, blank=True)
+
     
     def __str__(self):
         return '%s' % (self.user.get_full_name())

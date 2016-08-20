@@ -14,6 +14,8 @@ import os
 from django.core.exceptions import ValidationError
 from people.models import Profile
 
+from django.conf import settings
+
 from companies.models import Company, CompanyParticipationYear
 
 import datetime
@@ -235,8 +237,29 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         Profile.objects.create(user=user)
     profile_form = ProfileForm(request.POST or None, instance=profile)
 
+
+
     if profile_form.is_valid():
         profile_form.save()
+
+
+    image_key = 'image'
+    if image_key in request.FILES:
+
+        print('IMAGE IN FILE')
+
+        file = request.FILES[image_key]
+        print(request.FILES[image_key])
+        file_path = 'profile/%d/image.%s' % (profile.pk, file.name.split('.')[-1])
+
+
+
+        if default_storage.exists(file_path):
+            default_storage.delete(file_path)
+        default_storage.save(file_path, ContentFile(file.read()))
+
+        profile.image = file_path
+        profile.save()
 
     if recruitment_period.start_date > now:
         return render(request, 'recruitment/recruitment_application_closed.html', {
@@ -249,8 +272,6 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             'recruitment_period': recruitment_period,
             'message': 'Application closed'
         })
-
-
 
 
     if request.POST:
@@ -287,7 +308,8 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         'recruitment_period': recruitment_period,
         'chosen_roles': chosen_roles,
         'roles': recruitment_period.recruitable_roles.all(),
-        'profile_form': profile_form
+        'profile_form': profile_form,
+        'profile': profile
     })
 
 
