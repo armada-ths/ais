@@ -9,7 +9,7 @@
     </ol>
 
 
-    <div class="jumbotron" {% if recruitment_period.image %}style="background-image: url('/static/images/armada_2015_smaland.jpg'); background-position: 0px -180px;  background-repeat: no-repeat; background-size: 100%"{% endif %}>
+    <div class="jumbotron" style="background-image: url('/static/images/armada_2015_smaland.jpg'); background-position: 0px -180px;  background-repeat: no-repeat; background-size: 100%">
         <div class="container" style="color: white; min-height: 230px; background-color: rgba(0,0,0,0.7); padding: 30px; max-width: 500px; margin-left: -0%; border-radius:10px;">
             <h1 style="margin-top: -0px;">{{ recruitment_period.name }}</h1>
             <p>Apply between <strong>{{ recruitment_period.start_date|date:"d M" }}</strong> and
@@ -79,11 +79,11 @@
                             {% elif application.state == 'new' %}
                                 <span class="label label-default">New</span>
                             {% elif application.state == 'interview_delegated' %}
-                                <span class="label label-default">Interview delegated</span>
+                                <span class="label label-default">Delegated</span>
                             {% elif application.state == 'interview_planned' %}
-                                <span class="label label-default">Interview planned</span>
+                                <span class="label label-default">Planned</span>
                             {% elif application.state == 'interview_done' %}
-                                <span class="label label-default">Interview done</span>
+                                <span class="label label-default">Done</span>
                                 {% else %}
                                 {{ application.state }}
                             {% endif %}

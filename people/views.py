@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from recruitment.models import RecruitmentApplication
 from .models import Profile
+
+from django.forms import ModelForm
 # Create your views here.
 
 @login_required(login_url='/login/')
@@ -23,4 +25,27 @@ def view_person(request, pk):
         'person': profile,
         'role': application.delegated_role if application else ""
     })
-    
+
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+
+@login_required(login_url='/login/')
+def edit_person(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    profile = Profile.objects.filter(user=user).first()
+    if not profile:
+        profile = Profile.objects.create(user=user)
+
+    form = ProfileForm(request.POST or None, instance=profile)
+
+    application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
+    return TemplateResponse(request, 'edit_person.html', {
+        'person': profile,
+        'role': application.delegated_role if application else "",
+        'form': form
+    })
+
