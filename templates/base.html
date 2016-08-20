@@ -55,13 +55,47 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap-datepicker.js' %}"></script>
-    <script>
-        $(document).ready(function () {
-            $('.datepicker').datepicker({
-                weekStart: 1,
-                format: 'yyyy-mm-dd'
-            });
+<script>
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            weekStart: 1,
+            format: 'yyyy-mm-dd'
         });
-    </script>
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.datepicker').datepicker();
+    });
+
+    var forms = document.forms
+    var i;
+
+    for (i = 0; i < forms.length; i++) {
+        form = forms[i]
+        form.onsubmit = function () {
+            var inputs = form.getElementsByTagName('input')
+            var i;
+            for (i = 0; i < inputs.length; i++) {
+                var input = inputs[i]
+                if (input.required && (!input.value || (input.type === 'checkbox' && !input.checked))) {
+                    var labels = document.getElementsByTagName('label')
+                    var j;
+                    console.log(labels.length)
+                    for (j = 0; j < labels.length; j++) {
+                        var label = labels[j]
+                        if (label.getAttribute('for') === input.id) {
+                            alert('You missed filling out: ' + label.innerText)
+                        }
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+</script>
 </body>
 </html>

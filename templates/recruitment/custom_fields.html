@@ -8,8 +8,8 @@
                         </div>
                     {% elif question.field_type == 'check_box' %}
                         <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="{{ question.form_key }}" {% if answer %}
+                            <label for="{{ question.form_key }}">
+                                <input type="checkbox" id="{{ question.form_key }}" name="{{ question.form_key }}" {% if answer %}
                                        checked {% endif %} {% if question.required %}required{% endif %}> {{ question.question }}
                             </label>
                         </div>
