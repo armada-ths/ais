@@ -44,6 +44,8 @@ class Profile(models.Model):
     programme = models.ForeignKey(Programme, null=True, blank=True)
     registration_year = models.IntegerField(null=True, blank=True)
     planned_graduation = models.IntegerField(null=True, blank=True)
+    linkedin_url = models.URLField(null=True, blank=True)
+
     
     def __str__(self):
         return '%s' % (self.user.get_full_name())

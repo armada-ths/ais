@@ -218,7 +218,7 @@ def recruitment_application_comment_new(request, pk):
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ('registration_year', 'programme')
+        fields = ('registration_year', 'programme', 'linkedin_url')
 
 
 @login_required
