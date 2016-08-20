@@ -9,7 +9,7 @@
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="{{ question.id }}" {% if answer %}
-                                       checked {% endif %}> {{ question.question }}
+                                       checked {% endif %} disabled> {{ question.question }}
                             </label>
                         </div>
                     {% elif question.field_type == 'text_area' %}
@@ -28,13 +28,14 @@
                             </div>
                         {% endfor %}
                     {% elif question.field_type == 'select' %}
-                        <label class="radio control-label">{{ question }}</label>
-                        <select class="form-control" name="{{ question.id }}">
-                        <option>---</option>
+                        <div class="form-group">
+                        <label class="control-label">{{ question }}</label>
                         {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
-                            <option value="{{ argument.id }}" {% if answer.answer == argument.id_as_string %} selected {% endif %}>{{ argument.value }}</option>
+                            {% if answer.answer == argument.id_as_string %}
+                                <p class="form-control-static">{{argument.value}}</p>
+                            {% endif %}
                         {% endfor %}
-                        </select>
+                        </div>
                     {% elif question.field_type == 'file' %}
                         <div class="form-group">
                             <label for="{{ question.id }}">{{ question }}</label>
@@ -45,7 +46,7 @@
                             <label for="{{ question.id }}">{{ question }}</label>
                             {% if answer.answer %}
                                 <br>
-                                <div><img src="/media/{{ answer.answer }}" width="500"></div>
+                                <div><img src="/media/{{ answer.answer }}" style="max-height: 150px;"></div>
                             {% endif %}
                         </div>
                     {% else %}

@@ -9,8 +9,8 @@
     </ol>
 
 
-    <div class="jumbotron" {% if recruitment_period.image %}style="background-image: url('/static/images/armada_2015_smaland.jpg');  background-repeat: no-repeat; background-size: 100%"{% endif %}>
-        <div class="container" style="color: white; min-height: 230px;">
+    <div class="jumbotron" {% if recruitment_period.image %}style="background-image: url('/static/images/armada_2015_smaland.jpg'); background-position: 0px -180px;  background-repeat: no-repeat; background-size: 100%"{% endif %}>
+        <div class="container" style="color: white; min-height: 230px; background-color: rgba(0,0,0,0.7); padding: 30px; max-width: 500px; margin-left: -20px; border-radius:10px;">
             <h1 style="margin-top: -0px;">{{ recruitment_period.name }}</h1>
             <p>Apply between <strong>{{ recruitment_period.start_date|date:"d M" }}</strong> and
                 <strong>{{ recruitment_period.end_date|date:"d M" }}</strong></p>
@@ -127,10 +127,10 @@
             {% for application in interviews %}
                 <tr>
 
-                    <td>
-                        <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                            {{ application.user.get_full_name }}
-                        </a></td>
+<td>
+                            <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                                {% include 'recruitment/user_name.html' with user=application.user %}
+                            </a></td>
                     <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
                     <td>{% if application.status != 'undecided' %}
                         {{ application.status.capitalize }} {% endif %}</td>

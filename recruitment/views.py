@@ -326,7 +326,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
-        application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
+        #application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
 
         #application.save()
 

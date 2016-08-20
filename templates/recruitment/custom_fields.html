@@ -43,7 +43,7 @@
                             <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}" {% if question.required %}required{% endif %}>
                             <p><a href="/media/{{ answer.answer }}">{{ answer.answer }}</a></p>
                         </div>
-                    {% elif question.field_type == 'i   mage' %}
+                    {% elif question.field_type == 'image' %}
                         <div class="form-group">
                             <label for="{{ question.form_key }}">{{ question }}</label>
                             <input type="file" id="{{ question.form_key }}" name="{{ question.form_key }}" accept="image/*" {% if question.required %}required{% endif %}>
@@ -53,7 +53,7 @@
                             {% endif %}
                         </div>
                     {% else %}
-                        UNKNOWN FIELD TYPE!
+                        Unknown field type: {{ question.field_type }}
                     {% endif %}
 
                 {% endfor %}

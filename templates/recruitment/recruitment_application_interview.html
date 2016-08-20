@@ -16,7 +16,16 @@
         <h3>{% include 'recruitment/user_name.html' with user=application.user %}</h3>
         <p><a href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
         <hr>
+                <h3>Application</h3>
+            <label>Roles</label>
+            <ol>
 
+                {% for role in application.roleapplication_set.all %}
+                    <li>{{ role }}</li>
+                {% endfor %}
+            </ol>
+            {% include 'recruitment/custom_fields_static.html' with questions_with_answers=application_questions_with_answers %}
+            <hr>
 
         <h3>Pre interview</h3>
         <form method="POST" enctype="multipart/form-data">
@@ -82,17 +91,6 @@
         {% include 'recruitment/select_field.html' with values=statuses field_label='Accepted / Rejected' field_name='status' selected_value=selected_status is_editable=can_edit_recruitment_application %}
 
 
-            <hr>
-
-            <h3>Application</h3>
-            <label>Roles</label>
-            <ol>
-
-                {% for role in application.roleapplication_set.all %}
-                    <li>{{ role }}</li>
-                {% endfor %}
-            </ol>
-            {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
             <hr>
 
 
