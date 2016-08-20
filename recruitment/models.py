@@ -230,7 +230,7 @@ class RecruitmentApplication(models.Model):
     rating = models.IntegerField(null=True, blank=True)
     interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')
     exhibitor = models.ForeignKey(Company, null=True, blank=True)
-    interview_date = models.CharField(null=True, blank=True, max_length=100)
+    interview_date = models.DateTimeField(null=True, blank=True)
     interview_location = models.CharField(null=True, blank=True, max_length=100)
     submission_date = models.DateTimeField(default=datetime.datetime.now, blank=True)
     recommended_role = models.ForeignKey(Role, null=True, blank=True)
@@ -242,6 +242,22 @@ class RecruitmentApplication(models.Model):
         ('rejected', 'Rejected')]
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
+
+
+    def state(self):
+        if self.status:
+            return self.status
+        if self.interviewer:
+            if self.interview_date and self.interview_location:
+                if self.interview_date < timezone.now():
+                    return 'interview_planned'
+                else:
+                    return 'interview_done'
+            else:
+                return 'interview_delegated'
+        else:
+            return 'new'
+
 
     def __str__(self):
         return '%s' % (self.user)

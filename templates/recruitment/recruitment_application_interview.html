@@ -28,9 +28,17 @@
 
             <div class="form-group">
                 <label for="interviewDate">Interview date</label>
+
+                {% if request.method == 'POST' %}
                 <input type="text" class="form-control datepicker" id="interviewDate" name="interview_date"
                        value="{% if application.interview_date %}{{ application.interview_date }}{% endif %}">
+                {% else %}
+                <input type="text" class="form-control datepicker" id="interviewDate" name="interview_date"
+                       value="{% if application.interview_date %}{{ application.interview_date|date:"Y-m-d" }}{% endif %}">
+
+            {% endif %}
             </div>
+
 
             <div class="form-group">
                 <label for="interviewLocation">Interview place</label>
@@ -139,14 +147,4 @@
             </div>
         </div>
 
-
-
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('.datepicker').datepicker();
-        });
-    </script>
 {% endblock %}

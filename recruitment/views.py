@@ -11,6 +11,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
+from django.core.exceptions import ValidationError
 
 from companies.models import Company, CompanyParticipationYear
 
@@ -78,7 +79,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
         'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all(),
         'paginator': paginator,
-        'applications': applications
+        'applications': applications,
+        'now': timezone.now()
     })
 
 
@@ -297,7 +299,7 @@ def set_string_key_from_request(request, model, model_field):
         try:
             setattr(model, model_field, request.POST[model_field])
             model.save()
-        except ValueError:
+        except (ValueError, ValidationError) as e:
             setattr(model, model_field, None)
             model.save()
 
@@ -326,6 +328,9 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
         application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
 
+        #application.save()
+
+        #return redirect('/recruitment/%d/application/%d/interview' % (application.recruitment_period.id, application.recruitment_period.id))
     exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
 
@@ -335,7 +340,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
         def __str__(self):
             return self.id.capitalize() if self.id else 'None'
-
 
         def __eq__(self, other):
             return self.id == other.id

@@ -31,15 +31,15 @@
             <div>
                 {% if application %}
                     <a href="{% url 'recruitment_application_new' recruitment_period.id application.id %}">
-                        <button class="btn btn-primary btn-large">View application</button>
+                        <button class="btn btn-primary btn-lg">View application</button>
                     </a>
                 {% else %}
                     <a href="{% url 'recruitment_application_new' recruitment_period.id %}">
-                        <button class="btn btn-default btn-lg">Apply</button>
+                        <button class="btn btn-primary btn-lg">Apply</button>
                     </a>
                 {% endif %}
 
-                {% if can_edit_recruitment_period and False %}
+                {% if can_edit_recruitment_period %}
                     <a href="{% url 'recruitment_period_edit' recruitment_period.id %}">
                         <button class="btn btn-default btn-lg">Edit</button>
                     </a>
@@ -55,7 +55,6 @@
                 <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Delegated role</th>
                     <th>Rating</th>
                     <th>Submitted</th>
                     <th>Roles</th>
@@ -70,11 +69,10 @@
                             <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
                                 {% include 'recruitment/user_name.html' with user=application.user %}
                             </a></td>
-                        <td>{% if application.delegated_role %}{{ application.delegated_role }} {% endif %}</td>
                         <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
 
 
-                        <td>{{ application.submission_date }}</td>
+                        <td>{{ application.submission_date|date:"d M H:m" }}</td>
                         <td>
                             {% for role in application.roleapplication_set.all %}
                                 {{ role }}{% if not forloop.last %}, {% endif %}
@@ -87,10 +85,20 @@
                         </td>
 
                         <td>
-                            {% if application.status == 'accepted' %}
+                            {% if application.state == 'accepted' %}
                                 <span class="label label-success">{{ application.status.capitalize }}</span>
-                            {% elif application.status == 'rejected' %}
+                            {% elif application.state == 'rejected' %}
                                 <span class="label label-danger">{{ application.status.capitalize }}</span>
+                            {% elif application.state == 'new' %}
+                                <span class="label label-default">New</span>
+                            {% elif application.state == 'interview_delegated' %}
+                                <span class="label label-default">Interview delegated</span>
+                            {% elif application.state == 'interview_planned' %}
+                                <span class="label label-default">Interview planned</span>
+                            {% elif application.state == 'interview_done' %}
+                                <span class="label label-default">Interview done</span>
+                                {% else %}
+                                {{ application.state }}
                             {% endif %}
                         </td>
 
