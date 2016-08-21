@@ -156,6 +156,9 @@ class Role(models.Model):
     description = models.CharField(max_length=1000, default="")
     permissions = models.ManyToManyField(Permission)
 
+    class Meta:
+        ordering = ['name']
+
     def has_permission(self, needed_permission):
         role = self
         while role != None:
