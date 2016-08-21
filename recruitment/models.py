@@ -29,7 +29,6 @@ class ExtraField(models.Model):
         extra = self
 
         question_ids = []
-        print("EXTRA_FIELD: " + field_name)
         for key in request.POST:
             question_key_prefix = field_name + '_'
             key_split = key.split(question_key_prefix)
@@ -60,8 +59,6 @@ class ExtraField(models.Model):
                 argument_key_prefix = 'argument_%d_' % question_id
                 key_split = key.split(argument_key_prefix)
                 if len(key_split) == 2:
-                    print(key)
-                    print(key_split)
                     argument_id = int(key_split[1])
                     argument_key = 'argument_%d_%d' % (question_id, argument_id)
 
@@ -78,18 +75,14 @@ class ExtraField(models.Model):
         extra_field = self
         for custom_field in extra_field.customfield_set.all():
             key = custom_field.form_key
-            print('looking for key: %s' % key)
             if custom_field.field_type == 'file' or custom_field.field_type == 'image':
-                print("looking for %s" % custom_field.field_type)
                 if key in request.FILES:
                     file = request.FILES[key]
-                    print(request.FILES[key])
                     file_path = 'custom-field/%d_%s.%s' % (user.id, key, file.name.split('.')[-1])
                     if os._exists(file_path):
                         os.remove(file_path)
                     path = default_storage.save(file_path, ContentFile(file.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
-                    print(tmp_file)
 
                     answer, created = CustomFieldAnswer.objects.get_or_create(
                         custom_field=custom_field,
@@ -99,13 +92,11 @@ class ExtraField(models.Model):
                     answer.save()
             else:
                 if key in request.POST:
-                    print("FOUND %s - %s" % (key, request.POST[key]))
                     answer, created = CustomFieldAnswer.objects.get_or_create(
                         custom_field=custom_field,
                         user=user
                     )
                     answer_string = request.POST[key]
-                    print(key + " " + answer_string)
 
                     if answer_string:
                         answer.answer = answer_string

@@ -22,5 +22,4 @@ class LoginRequiredMiddleware:
         if not request.user.is_authenticated():
             path = request.path_info
             if path != '/' and not 'login' in path:
-                print('wtf', settings.LOGIN_URL)
                 return HttpResponseRedirect('/')

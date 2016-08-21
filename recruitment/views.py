@@ -184,7 +184,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
         return redirect('/recruitment/%d' % recruitment_period.id)
     else:
         print(form.errors)
-        print("Ai'nt no valid form!")
 
 
     return render(request, template_name, {
@@ -316,7 +315,6 @@ def set_int_key_from_request(request, model, model_field):
         except ValueError:
             setattr(model, model_field, None)
             model.save()
-            print('Role id was not an int')
 
 def set_string_key_from_request(request, model, model_field):
     if model_field in request.POST:
