@@ -279,8 +279,7 @@ class RoleApplication(models.Model):
         return '%s' % (self.role)
 
 
-def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_name, recruitment_period_name, fair_name):
-    username = email.split('@')[0]
+def create_user_and_stuff(username, first_name, last_name, email, role_name, parent_role_name, recruitment_period_name, fair_name):
 
     user = User.objects.filter(username=username).first()
     if not user:
@@ -340,18 +339,15 @@ def create_user_and_stuff(first_name, last_name, email, role_name, parent_role_n
 def create_recruitment_period_from_csv(file_path, recruitment_period_name, year):
     fair_name = 'Armada ' + str(year)
     with open(file_path, encoding='utf-8') as f:
-        first_line = True
         for line in f:
-            if not first_line:
                 if line.strip():
                     values = line.split(',')
-                    full_name = values[0].strip()
-                    first_name = full_name.split(' ')[0]
-                    last_name = full_name.split(' ')[1]
-                    role_name = values[2].strip()
-                    email = values[4].strip()
-                    create_user_and_stuff(first_name, last_name, email, role_name, recruitment_period_name, recruitment_period_name + ' ' + str(year), fair_name)
-            first_line = False
+                    username = values[0].strip()
+                    first_name = values[1].strip()
+                    last_name = values[2].strip()
+                    email = values[3].strip()
+                    role_name = values[4].strip()
+                    create_user_and_stuff(username, first_name, last_name, email, role_name, recruitment_period_name, recruitment_period_name + ' ' + str(year), fair_name)
 
 
 def create_programmes():
@@ -376,8 +372,8 @@ import os
 
 def create_armada_year(year):
     directory = os.path.dirname(os.path.abspath(__file__)) + '/Armada' + str(year)
-    create_recruitment_period_from_csv(directory+'/project_group.csv', 'Project Core Team', year)
-    create_recruitment_period_from_csv(directory+'/team_leaders.csv', 'Extended Project Team', year)
+    create_recruitment_period_from_csv(directory+'/pct.csv', 'Project Core Team', year)
+    create_recruitment_period_from_csv(directory+'/ept.csv', 'Extended Project Team', year)
 
 
 def create_armada_hosts():
