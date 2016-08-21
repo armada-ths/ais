@@ -213,8 +213,9 @@ class ProfileForm(ModelForm):
         fields = ('registration_year', 'programme', 'linkedin_url')
 
         widgets = {
-
-            "registration_year": forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)])
+            "registration_year": forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
+            "programme": forms.Select(
+                attrs={'required': True})
         }
 
 

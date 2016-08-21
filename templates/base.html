@@ -28,13 +28,13 @@
                     {% block nav-people %}
                         <li role="presentation"><a href="{% url 'people' %}">People</a></li>{% endblock %}
                     {% block nav-companies %}
-                        <li role="presentation"><a href="{% url 'companies_list' %}">Companies</a></li>{% endblock %}
+                        <!--<li role="presentation"><a href="{% url 'companies_list' %}">Companies</a></li>{% endblock %}-->
                     {% block nav-events %}
-                        <li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
+                        <!--<li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}-->
                     {% block nav-recruitment %}
                         <li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
                     {% block nav-news %}
-                        <li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}
+                        <!--<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}-->
                 </ul>
                 <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}" style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong> (<a
                         href="/accounts/logout" class="navbar-link">Logout</a>)</p>
