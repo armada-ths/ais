@@ -21,13 +21,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-CAS_SERVER_URL = 'https://login.kth.se/'
-CAS_IGNORE_REFERER = True
-#CAS_REDIRECT_URL = 'armada.nu/login'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = ['.armada.nu']
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+LOGIN_URL = '/'
 
 # Email settings
 EMAIL_USE_TLS = True
@@ -67,7 +67,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    #'recruitment.middleware.LoginRequiredMiddleware'
+    'recruitment.middleware.LoginRequiredMiddleware'
     #'cas.middleware.CASMiddleware',
 )
 
