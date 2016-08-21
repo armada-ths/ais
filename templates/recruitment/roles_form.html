@@ -28,7 +28,7 @@
             <div class="form-group">
                 <label for="description">Description</label>
                 {% if editable %}
-                    <textarea class="form-control" id="description" name="description">{{ role.description }}</textarea>
+                    <textarea class="form-control" id="description" name="description" rows="7">{{ role.description }}</textarea>
                 {% else %}
                     <p class="form-control-static">{{ role.description|default:"None" }}</p>
                 {% endif %}
