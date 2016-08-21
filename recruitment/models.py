@@ -289,9 +289,7 @@ def create_user_and_stuff(username, first_name, last_name, email, role_name, par
             last_name=last_name,
             email=email,
             password=username,
-            is_staff=True,
         )
-
 
     fair = Fair.objects.filter(name=fair_name).first()
     if not fair:
