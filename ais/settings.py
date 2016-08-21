@@ -31,6 +31,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #LOGIN_URL = ''
 
+
 # Email settings
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
