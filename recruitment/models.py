@@ -160,7 +160,7 @@ class CustomFieldAnswer(models.Model):
         return '%s' % (self.answer)
 
 class Role(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
     description = models.CharField(max_length=1000, default="")
     permissions = models.ManyToManyField(Permission)
