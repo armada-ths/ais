@@ -34,14 +34,12 @@ class RecruitmentPeriodForm(ModelForm):
     class Meta:
         model = RecruitmentPeriod
         fields = '__all__'
-        exclude = ('recruitable_roles', 'image')
+        exclude = ('recruitable_roles', 'image', 'interview_questions', 'application_questions')
 
         widgets = {
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "interview_end_date": forms.TextInput(attrs={'class': 'datepicker'}),
-            "interview_questions": forms.HiddenInput(),
-            "application_questions": forms.HiddenInput(),
         }
 
 
@@ -213,6 +211,11 @@ class ProfileForm(ModelForm):
         model = Profile
         fields = ('registration_year', 'programme', 'linkedin_url')
 
+        widgets = {
+
+            "registration_year": forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)])
+        }
+
 
 @login_required
 def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
@@ -273,6 +276,8 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         return redirect('/recruitment/%d' % recruitment_period.id)
 
     chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
+
+
 
     if recruitment_application:
         role_applications = RoleApplication.objects.filter(recruitment_application=recruitment_application).order_by('order')
@@ -359,11 +364,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
-        #application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
-
-        #application.save()
-
-        #return redirect('/recruitment/%d/application/%d/interview' % (application.recruitment_period.id, application.recruitment_period.id))
     exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
 
