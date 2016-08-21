@@ -18,6 +18,8 @@ from ais.secrets import *
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+CAS_SERVER_URL = 'https://login.kth.se/'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -27,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ALLOWED_HOSTS = ['.armada.nu']
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-LOGIN_URL = '/'
+#LOGIN_URL = ''
 
 # Email settings
 EMAIL_USE_TLS = True
@@ -68,7 +70,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'recruitment.middleware.LoginRequiredMiddleware'
-    #'cas.middleware.CASMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
