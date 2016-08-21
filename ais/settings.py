@@ -115,7 +115,7 @@ DATABASES = {
             # The following settings are not used with sqlite3:
             'USER': DB_USERNAME,
             'PASSWORD': DB_PASSWORD,
-            'HOST': 'localhost',
+            'HOST': DB_HOST,
     }
 }
 
