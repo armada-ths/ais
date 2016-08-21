@@ -288,7 +288,6 @@ def create_user_and_stuff(username, first_name, last_name, email, role_name, par
             first_name=first_name,
             last_name=last_name,
             email=email,
-            password=username,
         )
 
     fair = Fair.objects.filter(name=fair_name).first()
