@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from recruitment.models import RecruitmentApplication
 from .models import Profile
+from django.utils import timezone
+from django import forms
 
 from recruitment.views import set_image_key_from_request
 
@@ -33,6 +35,12 @@ class ProfileForm(ModelForm):
         model = Profile
         fields = '__all__'
         exclude = ('user', 'image')
+
+        widgets = {
+
+            "registration_year": forms.Select(
+                choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)])
+        }
 
 
 @login_required(login_url='/login/')

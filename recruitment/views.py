@@ -2,15 +2,16 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group
 from django.forms import ModelForm
-from django import forms
+
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-import os
+
 from django.core.exceptions import ValidationError
 from people.models import Profile
 
