@@ -36,7 +36,7 @@
                     {% block nav-news %}
                         <li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}
                 </ul>
-                <p class="navbar-text navbar-right"><strong>{{ request.user.get_full_name }}</strong> (<a
+                <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}" style="color: lightgray">{{ request.user.get_full_name }}</a></strong> (<a
                         href="/accounts/logout" class="navbar-link">Logout</a>)</p>
             </div>
         </div>
