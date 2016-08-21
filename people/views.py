@@ -39,7 +39,8 @@ class ProfileForm(ModelForm):
         widgets = {
 
             "registration_year": forms.Select(
-                choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)])
+                choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)]),
+            "birth_date": forms.TextInput(attrs={'class': 'datepicker'}),
         }
 
 
