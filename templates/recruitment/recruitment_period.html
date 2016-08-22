@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load tz %}
+{% localtime on %}
 
 {% block content %}
 
@@ -59,7 +61,8 @@
                         <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
 
 
-                        <td>{{ application.submission_date|date:"d M H:m" }}</td>
+                        <td>{{ application.submission_date|date:"d M H:i" }} UTC</td>
+
                         <td>
                             {% for role in application.roleapplication_set.all %}
                                 {{ role }}{% if not forloop.last %}, {% endif %}
@@ -163,3 +166,4 @@
     </nav>
 
 {% endblock %}
+{% endlocaltime %}
