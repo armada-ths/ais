@@ -6,7 +6,6 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User, Permission
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
-from django.utils import timezone
 from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
@@ -15,18 +14,16 @@ from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from people.models import Profile
 
-from django.conf import settings
-
 from companies.models import Company, CompanyParticipationYear
 
-import datetime
+from django.utils import timezone
 
 def user_has_permission(user, needed_permission):
     if user.has_perm(needed_permission):
         return True
 
     for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
-        if application.recruitment_period.fair.year == datetime.datetime.now().year:
+        if application.recruitment_period.fair.year == timezone.now().year:
             if application.delegated_role.has_permission(needed_permission):
                 return True
     return False

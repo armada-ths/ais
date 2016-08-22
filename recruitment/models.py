@@ -228,7 +228,7 @@ class RecruitmentApplication(models.Model):
     exhibitor = models.ForeignKey(Company, null=True, blank=True)
     interview_date = models.DateTimeField(null=True, blank=True)
     interview_location = models.CharField(null=True, blank=True, max_length=100)
-    submission_date = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    submission_date = models.DateTimeField(default=timezone.now, blank=True)
     recommended_role = models.ForeignKey(Role, null=True, blank=True)
     delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role')
     superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user')
@@ -261,7 +261,7 @@ class RecruitmentApplication(models.Model):
 class RecruitmentApplicationComment(models.Model):
     comment = models.CharField(null=True, blank=True, max_length=1000)
     recruitment_application = models.ForeignKey(RecruitmentApplication)
-    created_date = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    created_date = models.DateTimeField(default=timezone.now, blank=True)
     user = models.ForeignKey(User)
 
 class RoleApplication(models.Model):
