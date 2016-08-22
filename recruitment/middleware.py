@@ -1,5 +1,8 @@
 from django.http import HttpResponseRedirect
 from django.conf import settings
+from django.utils.http import urlquote
+
+
 
 class LoginRequiredMiddleware:
     """
@@ -22,4 +25,4 @@ class LoginRequiredMiddleware:
         if not request.user.is_authenticated():
             path = request.path_info
             if path != '/' and not 'login' in path:
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect("/?next=%s" % (urlquote(request.get_full_path())))
