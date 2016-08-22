@@ -374,6 +374,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
+
+        return redirect('recruitment_period', pk=application.recruitment_period.pk)
     exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
 
