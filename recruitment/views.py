@@ -227,6 +227,11 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
     now = timezone.now()
 
+    if not pk:
+        recruitment_application = recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
+        if recruitment_application:
+            return redirect('/recruitment/%d/application/%d' % (recruitment_period.pk, recruitment_application.pk))
+
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
 
 
