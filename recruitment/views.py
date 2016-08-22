@@ -394,6 +394,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             for period_application in period.recruitmentapplication_set.filter(status='accepted'):
                 interviewers.append(period_application.user)
 
+    interviewers.sort(key=lambda x: x.get_full_name())
+
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
