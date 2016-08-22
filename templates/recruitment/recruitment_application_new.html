@@ -21,10 +21,13 @@
         </div>
     </div>
 
+    <div class="row">
+
+
+    <div class="col-sm-6">
+    <!--<h2>Apply Here</h2><br>-->
     <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
-
-
 
         {% for chosen_role in chosen_roles %}
 
@@ -54,10 +57,26 @@
         {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
         <div class="form-group">
-            <button type="submit" class="btn btn-primary">Save</button>
+            {% if chosen_roles %}
+                <button type="submit" class="btn btn-primary btn-lg">Save</button>
+            {% else %}
+                <button type="submit" class="btn btn-success btn-lg">Apply</button>
+            {% endif %}
         </div>
     </form>
+    </div>
+
+    <div class="col-sm-6">
+    <!--<h2>Role Descriptions</h2><br>-->
+        {% for role in roles %}
+            <label>{{ role.name }}</label>
+            <p>{{ role.description }}</p>
+            <br>
 
 
+        {% endfor %}
+    </div>
+
+</div>
 
 {% endblock %}
