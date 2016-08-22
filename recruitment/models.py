@@ -244,7 +244,7 @@ class RecruitmentApplication(models.Model):
         if self.status:
             return self.status
         if self.interviewer:
-            if self.interview_date and self.interview_location:
+            if self.interview_date:
                 if self.interview_date > timezone.now():
                     return 'interview_planned'
                 else:

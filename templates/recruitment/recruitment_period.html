@@ -79,11 +79,11 @@
                             {% elif application.state == 'new' %}
                                 <span class="label label-default">New</span>
                             {% elif application.state == 'interview_delegated' %}
-                                <span class="label label-default">Delegated</span>
+                                <span class="label label-warning">Delegated</span>
                             {% elif application.state == 'interview_planned' %}
-                                <span class="label label-default">Planned</span>
+                                <span class="label label-info">Planned</span>
                             {% elif application.state == 'interview_done' %}
-                                <span class="label label-default">Done</span>
+                                <span class="label label-primary">Done</span>
                                 {% else %}
                                 {{ application.state }}
                             {% endif %}
