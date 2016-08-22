@@ -29,8 +29,8 @@
         {% for chosen_role in chosen_roles %}
 
             <div class="form-group">
-                <label>Role {{ forloop.counter }}</label>
-                <select class="form-control" name="role_{{ forloop.counter0 }}" {% if forloop.counter0 == 0 %}required{% endif %}>
+                <label for="role_{{ forloop.counter0 }}">Role {{ forloop.counter }}</label>
+                <select class="form-control" name="role_{{ forloop.counter0 }}" id="role_{{ forloop.counter0 }}" {% if forloop.counter0 == 0 %}required{% endif %}>
                     <option value="">---------</option>
                     {% for role in roles %}
                         <option value="{{ role.id }}" {% if role == chosen_role %}

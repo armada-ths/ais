@@ -75,7 +75,11 @@
     for (i = 0; i < forms.length; i++) {
         form = forms[i]
         form.onsubmit = function () {
-            var inputs = form.getElementsByTagName('input')
+            var tags = ['input', 'select']
+            var j = 0;
+            for (j = 0; j < tags.length; j++) {
+
+            var inputs = form.getElementsByTagName(tags[j])
             var i;
             for (i = 0; i < inputs.length; i++) {
                 var input = inputs[i]
@@ -92,6 +96,7 @@
                     return false;
                 }
             }
+        }
             return true;
         }
     }
