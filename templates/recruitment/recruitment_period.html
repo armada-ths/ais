@@ -40,61 +40,7 @@
     {% if can_edit_recruitment_application %}
         {% if recruitment_period.recruitmentapplication_set.all %}
             <h2>Applications ({{ recruitment_period.recruitmentapplication_set.all.count }})</h2>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Rating</th>
-                    <th>Submitted</th>
-                    <th>Roles</th>
-                    <th>Interviewer</th>
-                    <th>State</th>
-                </tr>
-                </thead>
-                {% for application in applications %}
-                    <tr>
-
-                        <td>
-                            <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                                {% include 'recruitment/user_name.html' with user=application.user %}
-                            </a></td>
-                        <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
-
-
-                        <td>{{ application.submission_date|date:"d M H:i" }} UTC</td>
-
-                        <td>
-                            {% for role in application.roleapplication_set.all %}
-                                {{ role }}{% if not forloop.last %}, {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% if application.interviewer %}
-                                {{ application.interviewer.get_full_name }}
-                            {% endif %}
-                        </td>
-
-                        <td>
-                            {% if application.state == 'accepted' %}
-                                <span class="label label-success">{{ application.status.capitalize }}</span>
-                            {% elif application.state == 'rejected' %}
-                                <span class="label label-danger">{{ application.status.capitalize }}</span>
-                            {% elif application.state == 'new' %}
-                                <span class="label label-default">New</span>
-                            {% elif application.state == 'interview_delegated' %}
-                                <span class="label label-warning">Delegated</span>
-                            {% elif application.state == 'interview_planned' %}
-                                <span class="label label-info">Planned</span>
-                            {% elif application.state == 'interview_done' %}
-                                <span class="label label-primary">Done</span>
-                                {% else %}
-                                {{ application.state }}
-                            {% endif %}
-                        </td>
-
-                    </tr>
-                {% endfor %}
-            </table>
+            {% include 'recruitment/recruitment_application_table.html' with applications=applications %}
         {% else %}
             <p>No applications</p>
         {% endif %}
@@ -102,43 +48,8 @@
     {% endif %}
 
     {% if interviews %}
-        <h2>Your interviews</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Rating</th>
-                <th>State</th>
-                <th>Submitted</th>
-                <th>Roles</th>
-                <th>Interviewer</th>
-            </tr>
-            </thead>
-            {% for application in interviews %}
-                <tr>
-
-<td>
-                            <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                                {% include 'recruitment/user_name.html' with user=application.user %}
-                            </a></td>
-                    <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
-                    <td>{% if application.status != 'undecided' %}
-                        {{ application.status.capitalize }} {% endif %}</td>
-                    <td>{{ application.submission_date }}</td>
-                    <td>
-                        {% for role in application.roleapplication_set.all %}
-                            {{ role }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% if application.interviewer %}
-                            {{ application.interviewer.get_full_name }}
-                        {% endif %}
-                    </td>
-
-                </tr>
-            {% endfor %}
-        </table>
+        <h2>Your interviews ({{ interviews.count }})</h2>
+        {% include 'recruitment/recruitment_application_table.html' with applications=interviews %}
     {% endif %}
     <nav aria-label="Page navigation">
 
