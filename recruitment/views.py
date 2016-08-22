@@ -209,16 +209,17 @@ def recruitment_application_comment_new(request, pk):
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ('registration_year', 'programme', 'linkedin_url')
+        fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url')
 
         labels = {
             'linkedin_url': 'Link to your LinkedIn-profile',
         }
 
         widgets = {
-            "registration_year": forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
-            "programme": forms.Select(
-                attrs={'required': True})
+            'registration_year': forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
+            'programme': forms.Select(
+                attrs={'required': True}),
+            'phone_number': forms.TextInput(attrs={'required': True})
         }
 
 
