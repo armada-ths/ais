@@ -19,7 +19,7 @@
             <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
 
 
-            <td>{{ application.submission_date|date:"d M H:i" }} UTC</td>
+            <td>{{ application.submission_date|date:"d M H:i" }}</td>
 
             <td>
                 {% for role in application.roleapplication_set.all %}
