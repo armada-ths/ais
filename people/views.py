@@ -6,6 +6,7 @@ from recruitment.models import RecruitmentApplication
 from .models import Profile
 from django.utils import timezone
 from django import forms
+from django.http import HttpResponseForbidden
 
 from recruitment.views import set_image_key_from_request
 
@@ -14,6 +15,8 @@ from django.forms import ModelForm
 
 @login_required(login_url='/login/')
 def list_people(request):
+    if not request.user.ais().can_view_recruitment_applications():
+        return HttpResponseForbidden()
     return TemplateResponse(request, 'people_list.html', {'users': User.objects.all()})
 
 @login_required(login_url='/login/')

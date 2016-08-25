@@ -26,7 +26,11 @@
             <div class="collapse navbar-collapse" id="navHeaderCollapse">
                 <ul class="nav navbar-nav">
                     {% block nav-people %}
-                        <li role="presentation"><a href="{% url 'people' %}">People</a></li>{% endblock %}
+
+                        {% if request.user.ais.can_view_recruitment_applications %}
+                        <li role="presentation"><a href="{% url 'people' %}">People</a></li>
+                        {% endif %}
+                        {% endblock %}
                     {% block nav-companies %}
                         <!--<li role="presentation"><a href="{% url 'companies_list' %}
                         ">Companies</a></li>{% endblock %}-->
