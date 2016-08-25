@@ -30,8 +30,8 @@
                             </div>
                         {% endfor %}
                     {% elif question.field_type == 'select' %}
-                        <label class="radio control-label">{{ question }}</label>
-                        <select class="form-control" name="{{ question.form_key }}" {% if question.required %}required{% endif %}>
+                        <label class="radio control-label" for="{{ question.form_key }}">{{ question }}</label>
+                        <select class="form-control" name="{{ question.form_key }}" id="{{ question.form_key }}" {% if question.required %}required{% endif %}>
                         <option value="">---</option>
                         {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
                             <option value="{{ argument.id }}" {% if answer.answer == argument.id_as_string %} selected {% endif %}>{{ argument.value }}</option>
