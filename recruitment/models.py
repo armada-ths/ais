@@ -13,6 +13,23 @@ from django.utils import timezone
 
 from people.models import Profile, Programme
 
+
+def user_has_permission(user, needed_permission):
+    if user.has_perm(needed_permission):
+        return True
+
+    for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
+        if application.recruitment_period.fair.year == timezone.now().year:
+            if application.delegated_role.has_permission(needed_permission):
+                return True
+    return False
+
+User.add_to_class('has_ais_perm', user_has_permission)
+
+
+
+
+
 class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)

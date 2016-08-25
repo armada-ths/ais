@@ -93,6 +93,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
         {'codename': 'change_recruitmentapplication', 'name': 'Administer applications', 'checked': False},
     ]
 
+
     if role:
         for permission in permissions:
             for role_permission in role.permissions.all():
@@ -352,11 +353,10 @@ def set_image_key_from_request(request, model, model_field, file_directory):
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not user_has_permission(request.user, 'change_recruitmentapplication') and application.interviewer != request.user:
+    if not request.user.has_ais_perm('change_recruitmentapplication') and application.interviewer != request.user:
         return HttpResponseForbidden()
 
     if request.POST:
-
         set_foreign_key_from_request(request, application, 'recommended_role', Role)
         set_int_key_from_request(request, application, 'rating')
         set_string_key_from_request(request, application, 'interview_location')

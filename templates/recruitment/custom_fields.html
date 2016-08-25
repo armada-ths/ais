@@ -20,12 +20,12 @@
                                       name="{{ question.form_key }}" {% if question.required %}required{% endif %}>{{ answer.answer }}</textarea>
                         </div>
                     {% elif question.field_type == 'radio_buttons' %}
-                        <label class="radio control-label">{{ question }}</label>
+                        <label class="radio control-label" for="{{ question.form_key }}">{{ question }}</label>
                         {% for argument in question.customfieldargument_set.all|dictsort:"position" %}
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="{{ question.form_key }}" value="{{ argument.id }}"
-                                            {% if answer.answer == argument.id_as_string %} checked {% endif %} {% if question.required %}required{% endif %}> {{ argument.value }}
+                                    <input type="radio" name="{{ question.form_key }}" id="{{ question.form_key }}" value="{{ argument.id }}"
+                                            {% if answer.answer == argument.id_as_string %}  checked {% endif %} {% if question.required %}required{% endif %}> {{ argument.value }}
                                 </label>
                             </div>
                         {% endfor %}

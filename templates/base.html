@@ -14,7 +14,7 @@
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship"
-                                                      style="max-height: 20px"></a>
+                                             style="max-height: 20px"></a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                         data-target="#navHeaderCollapse" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
@@ -28,7 +28,8 @@
                     {% block nav-people %}
                         <li role="presentation"><a href="{% url 'people' %}">People</a></li>{% endblock %}
                     {% block nav-companies %}
-                        <!--<li role="presentation"><a href="{% url 'companies_list' %}">Companies</a></li>{% endblock %}-->
+                        <!--<li role="presentation"><a href="{% url 'companies_list' %}
+                        ">Companies</a></li>{% endblock %}-->
                     {% block nav-events %}
                         <!--<li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}-->
                     {% block nav-recruitment %}
@@ -36,8 +37,10 @@
                     {% block nav-news %}
                         <!--<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}-->
                 </ul>
-                <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}" style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong> (<a
-                        href="/accounts/logout" class="navbar-link">Logout</a>)</p>
+                <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}"
+                                                               style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong>
+                    (<a
+                            href="/accounts/logout" class="navbar-link">Logout</a>)</p>
             </div>
         </div>
     </div>
@@ -50,9 +53,10 @@
 
 {% block footer %}{% endblock %}
 <div class="container">
-<hr>
-    <p class="text-muted">If you experience any problems please email <a href="mailto:sami.purmonen@armada.nu">sami.purmonen@armada.nu</a> <p>
-    </div>
+    <hr>
+    <p class="text-muted">If you experience any problems please email <a href="mailto:sami.purmonen@armada.nu">sami.purmonen@armada.nu</a>
+    <p>
+</div>
 
 <br>
 
@@ -80,28 +84,42 @@
     for (i = 0; i < forms.length; i++) {
         form = forms[i]
         form.onsubmit = function () {
-            var tags = ['input', 'select']
-            var j = 0;
-            for (j = 0; j < tags.length; j++) {
+            var tags = ['input', 'select', 'textarea']
+            var tagIndex = 0;
+            for (tagIndex = 0; tagIndex < tags.length; tagIndex++) {
 
-            var inputs = form.getElementsByTagName(tags[j])
-            var i;
-            for (i = 0; i < inputs.length; i++) {
-                var input = inputs[i]
-                if (input.required && (!input.value || (input.type === 'checkbox' && !input.checked))) {
-                    var labels = document.getElementsByTagName('label')
-                    var j;
-                    console.log(labels.length)
-                    for (j = 0; j < labels.length; j++) {
-                        var label = labels[j]
-                        if (label.getAttribute('for') === input.id) {
-                            alert('You missed filling out: ' + label.innerText)
+                var inputs = form.getElementsByTagName(tags[tagIndex])
+                var i;
+                for (i = 0; i < inputs.length; i++) {
+                    var input = inputs[i]
+                    if (input.required) {
+
+                        var otherInputs = document.getElementsByName(input.name)
+                        var j;
+                        var checked = false;
+                        for (j = 0; j < otherInputs.length; j++) {
+                            var otherInput = otherInputs[j]
+                            if (otherInput.type === 'checkbox' || otherInput.type === 'radio') {
+                                checked = checked || otherInput.checked
+                            } else {
+                                checked = otherInput.value !== '' && otherInput.value !== undefined
+                            }
+                        }
+                        if (!checked) {
+                            var labels = document.getElementsByTagName('label')
+                            var j;
+                            console.log(labels.length)
+                            for (j = 0; j < labels.length; j++) {
+                                var label = labels[j]
+                                if (label.getAttribute('for') === input.id) {
+                                    alert('You missed filling out: ' + label.innerText)
+                                }
+                            }
+                            return false;
                         }
                     }
-                    return false;
                 }
             }
-        }
             return true;
         }
     }
