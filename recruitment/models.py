@@ -24,11 +24,7 @@ def user_has_permission(user, needed_permission):
                 return True
     return False
 
-User.add_to_class('has_ais_perm', user_has_permission)
 
-
-def user_can_view_recruitment_applications(user):
-    return user_has_permission(user, 'change_recruitmentapplication')
 
 def create_ais_user_manager(user):
     return AisUserManager(user)
@@ -40,6 +36,7 @@ class AisUserManager:
 
     def can_view_recruitment_applications(self):
         return user_has_permission(self.user, 'change_recruitmentapplication')
+
 
 User.add_to_class('ais', create_ais_user_manager)
 
