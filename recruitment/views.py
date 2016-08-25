@@ -353,7 +353,7 @@ def set_image_key_from_request(request, model, model_field, file_directory):
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not request.user.has_ais_perm('change_recruitmentapplication') and application.interviewer != request.user:
+    if not request.user.ais().can_view_recruitment_applications() and application.interviewer != request.user:
         return HttpResponseForbidden()
 
     if request.POST:
