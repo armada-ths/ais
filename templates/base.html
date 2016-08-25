@@ -79,19 +79,19 @@
     });
 
     var forms = document.forms
-    var i;
+    var formIndex;
 
-    for (i = 0; i < forms.length; i++) {
-        form = forms[i]
+    for (formIndex = 0; formIndex < forms.length; formIndex++) {
+        form = forms[formIndex]
         form.onsubmit = function () {
             var tags = ['input', 'select', 'textarea']
             var tagIndex = 0;
             for (tagIndex = 0; tagIndex < tags.length; tagIndex++) {
 
                 var inputs = form.getElementsByTagName(tags[tagIndex])
-                var i;
-                for (i = 0; i < inputs.length; i++) {
-                    var input = inputs[i]
+                var inputIndex;
+                for (inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
+                    var input = inputs[inputIndex]
                     if (input.required) {
 
                         var otherInputs = document.getElementsByName(input.name)
