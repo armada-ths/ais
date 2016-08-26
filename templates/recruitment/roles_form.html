@@ -18,7 +18,7 @@
 
             <div class="form-group">
                 <label for="name">Name</label>
-                {% if editable %}
+                {% if 'administer_roles' in request.user.ais_permissions %}
                     <input class="form-control" id="name" name="name" value="{{ role.name }}">
                 {% else %}
                     <p class="form-control-static">{{ role.name }}</p>
@@ -27,30 +27,27 @@
 
             <div class="form-group">
                 <label for="description">Description</label>
-                {% if editable %}
+                {% if 'administer_roles' in request.user.ais_permissions %}
                     <textarea class="form-control" id="description" name="description" rows="7">{{ role.description }}</textarea>
                 {% else %}
                     <p class="form-control-static">{{ role.description|default:"None" }}</p>
                 {% endif %}
             </div>
 
-            {% if editable %}
-            {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=editable %}
-            {% endif %}
-
-            {% if editable %}
+            {% if 'administer_roles' in request.user.ais_permissions %}
+            {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=True %}
             <label>Permissions</label>
             {% for permission in permissions %}
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" name="{{ permission.codename }}" id="{{ permission.codename }}"
-                                    {% if permission.checked %} checked {% endif %}> {{ permission.name }}
+                                    {% if permission in role.permissions.all %} checked {% endif %}> {{ permission.name }}
                         </label>
                     </div>
             {% endfor %}
         {% endif %}
 
-            {% if editable %}
+            {% if 'administer_roles' in request.user.ais_permissions %}
                 <button class="btn btn-primary">Save</button>
                 {% if role != None %}
                     <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}">Delete</a>

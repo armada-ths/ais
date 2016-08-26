@@ -14,31 +14,8 @@ from django.utils import timezone
 from people.models import Profile, Programme
 
 
-def user_has_permission(user, needed_permission):
-    if user.has_perm(needed_permission):
-        return True
-
-    for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
-        if application.recruitment_period.fair.year == timezone.now().year:
-            if application.delegated_role.has_permission(needed_permission):
-                return True
-    return False
 
 
-
-def create_ais_user_manager(user):
-    return AisUserManager(user)
-
-
-class AisUserManager:
-    def __init__(self, user):
-        self.user = user
-
-    def can_view_recruitment_applications(self):
-        return user_has_permission(self.user, 'change_recruitmentapplication')
-
-
-User.add_to_class('ais', create_ais_user_manager)
 
 
 class ExtraField(models.Model):
@@ -178,11 +155,16 @@ class CustomFieldAnswer(models.Model):
     def __str__(self):
         return '%s' % (self.answer)
 
+
+class AISPermission(models.Model):
+    name = models.CharField(max_length=100)
+    codename = models.CharField(max_length=100)
+
 class Role(models.Model):
     name = models.CharField(max_length=100)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
     description = models.CharField(max_length=1000, default="")
-    permissions = models.ManyToManyField(Permission)
+    permissions = models.ManyToManyField(AISPermission)
 
     class Meta:
         ordering = ['name']
@@ -412,4 +394,19 @@ def create_project_group():
     create_armada_hosts()
 
     pass
+
+
+
+def ais_permissions_for_user(user):
+    if user.is_superuser:
+        return [permission.codename for permission in AISPermission.objects.all()]
+    permissions = []
+    for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
+        if application.recruitment_period.fair.year == timezone.now().year:
+            for permission in application.delegated_role.permissions.all():
+                permissions.append(permission.codename)
+
+    return permissions
+
+User.add_to_class('ais_permissions', ais_permissions_for_user)
 

@@ -28,7 +28,7 @@
                     </a>
                 {% endif %}
 
-                {% if can_edit_recruitment_period %}
+                {% if 'administer_recruitment' in request.user.ais_permissions %}
                     <a href="{% url 'recruitment_period_edit' recruitment_period.id %}">
                         <button class="btn btn-default btn-lg">Edit</button>
                     </a>
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    {% if can_edit_recruitment_application %}
+    {% if 'view_recruitment_applications' in request.user.ais_permissions %}
         {% if recruitment_period.recruitmentapplication_set.all %}
             <h2>Applications ({{ recruitment_period.recruitmentapplication_set.all.count }})</h2>
             {% include 'recruitment/recruitment_application_table.html' with applications=applications %}

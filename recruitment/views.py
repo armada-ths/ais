@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, AISPermission
 from django.forms import ModelForm
 
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django import forms
@@ -18,15 +18,6 @@ from companies.models import Company, CompanyParticipationYear
 
 from django.utils import timezone
 
-def user_has_permission(user, needed_permission):
-    if user.has_perm(needed_permission):
-        return True
-
-    for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
-        if application.recruitment_period.fair.year == timezone.now().year:
-            if application.delegated_role.has_permission(needed_permission):
-                return True
-    return False
 
 class RecruitmentPeriodForm(ModelForm):
     class Meta:
@@ -45,8 +36,6 @@ def recruitment(request, template_name='recruitment/recruitment.html'):
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
         'roles': [{'parent_role': role, 'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for role in Role.objects.filter(parent_role=None)],
-        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
-        'can_edit_roles': user_has_permission(request.user, 'change_group'),
     })
 
 
@@ -73,8 +62,6 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
-        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
-        'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
         'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all(),
         'paginator': paginator,
@@ -85,60 +72,38 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     role = Role.objects.filter(pk=pk).first()
-    editable = user_has_permission(request.user, 'change_group')
 
-    permissions = [
-        {'codename': 'change_recruitmentperiod', 'name': 'Administer recruitment', 'checked': False},
-        {'codename': 'change_group', 'name': 'Administer roles', 'checked': False},
-        {'codename': 'change_recruitmentapplication', 'name': 'Administer applications', 'checked': False},
-    ]
-
-
-    if role:
-        for permission in permissions:
-            for role_permission in role.permissions.all():
-                if permission['codename'] == role_permission.codename:
-                    permission['checked'] = True
-
-
-    if request.POST and user_has_permission(request.user, 'change_group'):
+    if request.POST and 'administer_roles' in request.user.ais_permissions():
         if not role:
             role = Role()
         role.name = request.POST['name']
         role.description = request.POST['description']
-        if request.POST['parent_role']:
-            parent_role_id = int(request.POST['parent_role'])
-            role.parent_role = Role.objects.get(pk=parent_role_id)
+        set_foreign_key_from_request(request, role, 'parent_role', Role)
+
+        for permission in AISPermission.objects.all():
+            if permission.codename in request.POST:
+                role.permissions.add(permission)
+            else:
+                role.permissions.remove(permission)
+
         role.save()
 
-        for permission in permissions:
-            codename = permission['codename']
-            permission_object = Permission.objects.get(codename=permission['codename'])
-            if codename in request.POST:
-                role.permissions.add(permission_object)
-                role.save()
-            else:
-                role.permissions.remove(permission_object)
-                role.save()
-
-        return redirect('/recruitment/')
+        return redirect('recruitment')
 
 
     users = [application.user for application in RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
 
     return render(request, template_name, {
         'role': role,
-        'permissions': permissions,
+        'permissions': AISPermission.objects.all(),
         'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all(),
         'users': users,
-        'editable': editable
     })
-
 
 
 def roles_delete(request, pk):
     role = get_object_or_404(Role, pk=pk)
-    if not user_has_permission(request.user, 'change_group'):
+    if not 'administer_roles' in request.user.ais_permissions():
         return HttpResponseForbidden()
     role.delete()
     return redirect('/recruitment/')
@@ -146,6 +111,7 @@ def roles_delete(request, pk):
 
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+
     if not user_has_permission(request.user, 'change_recruitmentperiod'):
         return HttpResponseForbidden()
     recruitment_period.delete()
@@ -153,7 +119,7 @@ def recruitment_period_delete(request, pk):
 
 
 def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
-    if not user_has_permission(request.user, 'change_recruitmentperiod'):
+    if not 'administer_recruitment' in request.user.ais_permissions():
         return HttpResponseForbidden()
 
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
@@ -349,32 +315,28 @@ def set_image_key_from_request(request, model, model_field, file_directory):
             model.save()
 
 
-
-
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not request.user.ais().can_view_recruitment_applications() and application.interviewer != request.user:
+    if not 'view_recruitment_applications' in request.user.ais_permissions() and application.interviewer != request.user:
         return HttpResponseForbidden()
 
-    if request.POST:
+    if request.POST and (application.interviewer == request.user or 'administer_recruitment_applications' in request.user.ais_permissions()):
         set_foreign_key_from_request(request, application, 'recommended_role', Role)
         set_int_key_from_request(request, application, 'rating')
         set_string_key_from_request(request, application, 'interview_location')
         set_string_key_from_request(request, application, 'interview_date')
 
-        if user_has_permission(request.user, 'change_recruitmentapplication'):
+        if 'administer_recruitment_applications' in request.user.ais_permissions():
             set_foreign_key_from_request(request, application, 'interviewer', User)
             set_foreign_key_from_request(request, application, 'delegated_role', Role)
             set_foreign_key_from_request(request, application, 'superior_user', User)
             set_foreign_key_from_request(request, application, 'exhibitor', Company)
             set_string_key_from_request(request, application, 'status')
 
-
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
-
         return redirect('recruitment_period', pk=application.recruitment_period.pk)
-    exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
+    exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
     class Status:
         def __init__(self, id):
@@ -399,7 +361,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
         'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
-        'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'roles': [role for role in application.recruitment_period.recruitable_roles.all()],
         'users': User.objects.all,
         'ratings': [i for i in range(1,6)],
