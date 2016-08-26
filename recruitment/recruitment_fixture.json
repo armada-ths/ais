@@ -1,0 +1,42 @@
+[
+  {
+    "model": "recruitment.AISPermission",
+    "pk": 1,
+    "fields": {
+      "codename": "administer_recruitment",
+      "name": "Administer recruitment"
+    }
+  },
+  {
+    "model": "recruitment.AISPermission",
+    "pk": 2,
+    "fields": {
+      "codename": "administer_recruitment_applications",
+      "name": "Administer recruitment applications"
+    }
+  },
+  {
+    "model": "recruitment.AISPermission",
+    "pk": 3,
+    "fields": {
+      "codename": "administer_roles",
+      "name": "Administer roles"
+    }
+  },
+  {
+    "model": "recruitment.AISPermission",
+    "pk": 4,
+    "fields": {
+      "codename": "view_recruitment_applications",
+      "name": "View recruitment applications"
+    }
+  },
+  {
+    "model": "recruitment.AISPermission",
+    "pk": 5,
+    "fields": {
+      "codename": "view_people",
+      "name": "View people"
+    }
+  }
+]
