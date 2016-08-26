@@ -106,7 +106,7 @@ def roles_delete(request, pk):
     if not 'administer_roles' in request.user.ais_permissions():
         return HttpResponseForbidden()
     role.delete()
-    return redirect('/recruitment/')
+    return redirect('recruitment')
 
 
 def recruitment_period_delete(request, pk):
@@ -115,7 +115,7 @@ def recruitment_period_delete(request, pk):
     if not 'administer_recruitment' in request.user.ais_permissions():
         return HttpResponseForbidden()
     recruitment_period.delete()
-    return redirect('/recruitment/')
+    return redirect('recruitment')
 
 
 def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
@@ -145,7 +145,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 
         set_image_key_from_request(request, recruitment_period, 'image', 'recruitment')
 
-        return redirect('/recruitment/%d' % recruitment_period.id)
+        return redirect('recruitment_period', pk=recruitment_period.id)
     else:
         print(form.errors)
 
@@ -167,7 +167,7 @@ def recruitment_application_comment_new(request, pk):
     comment.recruitment_application = application
     comment.comment = request.POST['comment']
     comment.save()
-    return redirect('/recruitment/%d/application/%d/interview' % (application.recruitment_period.id, application.id))
+    return redirect('recruitment_application_interview', application.recruitment_period.pk, application.id)
 
 
 class ProfileForm(ModelForm):
@@ -195,7 +195,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     if not pk:
         recruitment_application = recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
         if recruitment_application:
-            return redirect('/recruitment/%d/application/%d' % (recruitment_period.pk, recruitment_application.pk))
+            return redirect('recruitment_application_new', recruitment_period.pk, recruitment_application.pk)
 
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
 
@@ -248,7 +248,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
                 role_application.role = Role.objects.filter(pk=role_id).first()
                 role_application.order = role_number
                 role_application.save()
-        return redirect('/recruitment/%d' % recruitment_period.id)
+        return redirect('recruitment_period', recruitment_period.pk)
 
     chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
 
@@ -377,4 +377,4 @@ def recruitment_application_delete(request, pk):
     if not 'administer_recruitment_applications' in request.user.ais_permissions() and recruitment_application.user != request.user:
         return HttpResponseForbidden()
     recruitment_application.delete()
-    return redirect('/recruitment/%d' % recruitment_application.recruitment_period.id)
+    return redirect('recruitment_period', recruitment_application.recruitment_period.pk)
