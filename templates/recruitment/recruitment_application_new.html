@@ -9,9 +9,8 @@
         <li class="active">Application</li>
     </ol>
 
-    <div class="jumbotron" style="background-image: url('/static/images/armada_2015_smaland.jpg'); background-position: 0px -180px;  background-repeat: no-repeat; background-size: 100%">
-        <div class="container"
-             style="color: white; min-height: 230px; background-color: rgba(0,0,0,0.7); padding: 30px; max-width: 500px; margin-left: -20px; border-radius:10px;">
+    <div class="jumbotron recruitment-jumbotron">
+        <div class="container recruitment-jumbotron-container">
             <h1>{{ recruitment_period.name }}</h1>
             <p>Apply between <strong>{{ recruitment_period.start_date|date:"d M" }}</strong> and
                 <strong>{{ recruitment_period.end_date|date:"d M" }}</strong></p>
