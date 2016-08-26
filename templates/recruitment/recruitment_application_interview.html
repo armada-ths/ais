@@ -4,121 +4,145 @@
 
 
 
-        <ol class="breadcrumb">
-            <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
-            <li>
-                <a href="{% url 'recruitment_period' application.recruitment_period.id %}">{{ application.recruitment_period.name }}</a>
-            </li>
-            <li class="active">{% include 'recruitment/user_name.html' with user=application.user %}</li>
-        </ol>
+    <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li>
+            <a href="{% url 'recruitment_period' application.recruitment_period.id %}">{{ application.recruitment_period.name }}</a>
+        </li>
+        <li class="active">{% include 'recruitment/user_name.html' with user=application.user %}</li>
+    </ol>
 
-
-        <h3>{% include 'recruitment/user_name.html' with user=application.user %}</h3>
-        <p><a href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
-        <hr>
-                <h3>Application</h3>
+    <div class="page-header">
+        <h1>{% include 'recruitment/user_name.html' with user=application.user %}</h1>
+    </div>
 
     <div class="row">
 
-    {% if application.user.profile.image %}
+        {% if application.user.profile.image %}
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <img src="/media/{{ application.user.profile.image }}" style="max-width: 100%; max-height: 400px;">
+                </div>
+            </div>
+        {% endif %}
         <div class="col-sm-12">
-        <div class="form-group">
-        <img src="/media/{{ application.user.profile.image }}" style="max-width: 100%; max-height: 400px;">
-        </div>
-        </div>
-    {% endif %}
-    <div class="col-sm-12">
 
-                            <div class="form-group">
-                            <label>Registration year</label>
-                            <p class="form-control-static">{{application.user.profile.registration_year}}</p>
-                        </div>
+            <div class="form-group">
 
-                            <div class="form-group">
-                            <label>Programme</label>
-                            <p class="form-control-static">{{application.user.profile.programme}}</p>
-                        </div>
 
-                            <div class="form-group">
-                            <label>Phone number</label>
-                            <p class="form-control-static">{{application.user.profile.phone_number}}</p>
-                        </div>
+                <div class="form-group">
+                    <label>Registration year</label>
+                    <p class="form-control-static">{{ application.user.profile.registration_year }}</p>
+                </div>
 
-    {% if application.user.profile.linkedin_url %}
-                                    <div class="form-group">
-                            <label>Linkedin</label>
-                                        <p class="form-control-static"><a href="{{ application.user.profile.linkedin_url }}">{{application.user.profile.linkedin_url}}</a></p>
-                        </div>
-    {% endif %}
+                <div class="form-group">
+                    <label>Programme</label>
+                    <p class="form-control-static">{{ application.user.profile.programme }}</p>
+                </div>
+
+                <label>Email</label>
+                <p class="form-control-static"><a
+                        href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
+            </div>
+
+            <div class="form-group">
+                <label>Phone number</label>
+                <p class="form-control-static">{{ application.user.profile.phone_number }}</p>
+            </div>
+
+            {% if application.user.profile.linkedin_url %}
+                <div class="form-group">
+                    <label>Linkedin</label>
+                    <p class="form-control-static"><a
+                            href="{{ application.user.profile.linkedin_url }}">{{ application.user.profile.linkedin_url }}</a>
+                    </p>
+                </div>
+            {% endif %}
 
             <label>Roles</label>
             <ol>
 
                 {% for role in application.roleapplication_set.all %}
-                    <li>{{ role }}</li>
+                    <li data-toggle="tooltip" data-placement="left" title="{{ role.role.description }}">{{ role }}</li>
                 {% endfor %}
             </ol>
             {% include 'recruitment/custom_fields_static.html' with questions_with_answers=application_questions_with_answers %}
+        </div>
     </div>
-</div>
-            <hr>
+    <hr>
 
-        <h3>Pre interview</h3>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-
-
+    <h3>Interview planning</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
         {% include 'recruitment/select_field.html' with values=interviewers field_label='Interviewer' field_name='interviewer' selected_value=application.interviewer is_editable=can_edit_recruitment_application %}
 
+        <div class="form-group">
+            <label for="interviewDate">Interview date</label>
 
-            <div class="form-group">
-                <label for="interviewDate">Interview date</label>
-
-                {% if request.method == 'POST' %}
+            {% if request.method == 'POST' %}
                 <input type="text" class="form-control datepicker" id="interviewDate" name="interview_date"
                        value="{% if application.interview_date %}{{ application.interview_date }}{% endif %}">
-                {% else %}
+            {% else %}
                 <input type="text" class="form-control datepicker" id="interviewDate" name="interview_date"
-                       value="{% if application.interview_date %}{{ application.interview_date|date:"Y-m-d" }}{% endif %}">
+                       value="
+                               {% if application.interview_date %}{{ application.interview_date|date:"Y-m-d" }}{% endif %}">
 
             {% endif %}
-            </div>
+        </div>
 
 
-            <div class="form-group">
-                <label for="interviewLocation">Interview place</label>
-                <input type="text" class="form-control" id="interviewLocation" name="interview_location"
-                       value="{% if application.interview_location %}{{ application.interview_location }}{% endif %}">
-            </div>
+        <div class="form-group">
+            <label for="interviewLocation">Interview place</label>
+            <input type="text" class="form-control" id="interviewLocation" name="interview_location"
+                   value="{% if application.interview_location %}{{ application.interview_location }}{% endif %}">
+        </div>
 
-            <div class="form-group">
-                <label>Recommended role</label>
-                <select class="form-control" name="recommended_role">
-                    <option value="">---------</option>
-                    {% for role in roles %}
-                        <option value="{{ role.id }}" {% if role == application.recommended_role %}
-                                selected {% endif %}>{{ role }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+        <div class="form-group">
+            <label>Recommended role</label>
+            <select class="form-control" name="recommended_role">
+                <option value="">---------</option>
+                {% for role in roles %}
+                    <option value="{{ role.id }}" {% if role == application.recommended_role %}
+                            selected {% endif %}>{{ role }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
 
-            <div class="form-group">
-                <label>Rating</label>
+        <div class="form-group">
+            <label>Rating</label>
 
-                <select class="form-control" name="rating">
-                    <option {% if application.rating == None %}
-                        selected {% endif %}>------
-                    </option>
-                    {% for rating in ratings %}
-                        <option value="{{ rating }}" {% if rating == application.rating %}
-                                selected {% endif %}>{{ rating }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+            <select class="form-control" name="rating">
+                <option {% if application.rating == None %}
+                    selected {% endif %}>------
+                </option>
+                {% for rating in ratings %}
+                    <option value="{{ rating }}" {% if rating == application.rating %}
+                            selected {% endif %}>{{ rating }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-            <hr>
-            <h3>Post interview</h3>
+
+
+
+        <hr>
+
+
+        <h3>Interview</h3>
+
+        {% if not interview_questions_with_answers %}
+            <p>No interview questions</p>
+        {% endif %}
+        {% include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
+
+
+
+
+
+        <hr>
+        <h3>Role Delegation</h3>
+
 
 
         {% include 'recruitment/select_field.html' with values=roles field_label='Delegated role' field_name='delegated_role' selected_value=application.delegated_role is_editable=can_edit_recruitment_application %}
@@ -126,59 +150,46 @@
         {% include 'recruitment/select_field.html' with values=users field_label='Superior' field_name='superior_user' selected_value=application.superior_user is_editable=can_edit_recruitment_application %}
         {% include 'recruitment/select_field.html' with values=statuses field_label='Accepted / Rejected' field_name='status' selected_value=selected_status is_editable=can_edit_recruitment_application %}
 
-
             <hr>
 
-
-            <h3>Interview</h3>
-
-            {% if not interview_questions_with_answers %}
-                <p>No interview questions</p>
-            {% endif %}
-            {% include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
-
-
-            <hr>
-
-            <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary">Save</button>
 
         {% if can_edit_recruitment_application %}
             <a class="btn btn-danger"
                href="{% url 'recruitment_application_delete' application.recruitment_period.id application.id %}"
                onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
         {% endif %}
-        </form>
+    </form>
 
+    <h3>Comments</h3>
+    <hr>
 
-        <h3>Comments</h3>
-        <hr>
-
-        <div class="row">
-            <div class="col-sm-6">
-                {% for comment in application.recruitmentapplicationcomment_set.all|dictsortreversed:"created_date" %}
-                    <div class="media">
-                        <div class="media-body">
-                            <h4 class="media-heading">{% include 'recruitment/user_name.html' with user=comment.user %}</h4>
-                            <small class="text-muted">{{ comment.created_date }}</small>
-                            <p>{{ comment.comment }}</p>
-                        </div>
+    <div class="row">
+        <div class="col-sm-6">
+            {% for comment in application.recruitmentapplicationcomment_set.all|dictsortreversed:"created_date" %}
+                <div class="media">
+                    <div class="media-body">
+                        <h4 class="media-heading">{% include 'recruitment/user_name.html' with user=comment.user %}</h4>
+                        <small class="text-muted">{{ comment.created_date }}</small>
+                        <p>{{ comment.comment }}</p>
                     </div>
-                    {% empty %}
-                    <p>No comments</p>
-                {% endfor %}
-            </div>
-            <div class="col-sm-6">
-                <form action="{% url 'recruitment_application_comment_new' application.recruitment_period.id application.id %}"
-                      method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <textarea class="form-control" placeholder="Your comment..." name="comment"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add
-                        comment
-                    </button>
-                </form>
-            </div>
+                </div>
+                {% empty %}
+                <p>No comments</p>
+            {% endfor %}
         </div>
+        <div class="col-sm-6">
+            <form action="{% url 'recruitment_application_comment_new' application.recruitment_period.id application.id %}"
+                  method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea class="form-control" placeholder="Your comment..." name="comment"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add
+                    comment
+                </button>
+            </form>
+        </div>
+    </div>
 
 {% endblock %}
