@@ -24,7 +24,6 @@
 
 
     <div class="col-sm-6">
-    <!--<h2>Apply Here</h2><br>-->
     <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 
@@ -66,13 +65,10 @@
     </div>
 
     <div class="col-sm-6">
-    <!--<h2>Role Descriptions</h2><br>-->
         {% for role in roles %}
             <label>{{ role.name }}</label>
             <p>{{ role.description }}</p>
             <br>
-
-
         {% endfor %}
     </div>
 
