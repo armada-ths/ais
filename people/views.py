@@ -15,7 +15,7 @@ from django.forms import ModelForm
 
 @login_required(login_url='/login/')
 def list_people(request):
-    if not request.user.ais().can_view_recruitment_applications():
+    if not 'view_people' in request.user.ais_permissions():
         return HttpResponseForbidden()
     return TemplateResponse(request, 'people_list.html', {'users': User.objects.all()})
 
