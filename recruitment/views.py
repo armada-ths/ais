@@ -112,7 +112,7 @@ def roles_delete(request, pk):
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
 
-    if not user_has_permission(request.user, 'change_recruitmentperiod'):
+    if not 'administer_recruitment' in request.user.ais_permissions():
         return HttpResponseForbidden()
     recruitment_period.delete()
     return redirect('/recruitment/')
@@ -374,7 +374,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not user_has_permission(request.user, 'change_recruitmentapplication') and recruitment_application.user != request.user:
+    if not 'administer_recruitment_applications' in request.user.ais_permissions() and recruitment_application.user != request.user:
         return HttpResponseForbidden()
     recruitment_application.delete()
     return redirect('/recruitment/%d' % recruitment_application.recruitment_period.id)
