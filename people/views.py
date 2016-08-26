@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -59,6 +59,7 @@ def edit_person(request, pk):
     if form.is_valid():
         form.save()
         set_image_key_from_request(request, profile, 'image', 'profile')
+        return redirect('view_person', user.pk)
 
     application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
     return TemplateResponse(request, 'edit_person.html', {
