@@ -14,10 +14,6 @@ from django.utils import timezone
 from people.models import Profile, Programme
 
 
-
-
-
-
 class ExtraField(models.Model):
     def __str__(self):
         return '%d' % (self.id)
