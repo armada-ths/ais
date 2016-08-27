@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -217,8 +217,9 @@ class RecruitmentPeriod(models.Model):
         return self.start_date > timezone.now()
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if not self.interview_questions:
             self.interview_questions = ExtraField.objects.create()
+        if not self.application_questions:
             self.application_questions = ExtraField.objects.create()
         super(RecruitmentPeriod, self).save(*args, **kwargs)
 

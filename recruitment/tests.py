@@ -4,24 +4,31 @@ from fair.models import Fair
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+from django.test import Client
+
 # Create your tests here.
 
 class RecruitmentTestCase(TestCase):
 
 
     def setUp(self):
-        fair = Fair.objects.create(name="Armada 2016", year=timezone.now().year)
+        fair = Fair.objects.create(name="Armada 2016", year=timezone.now().year, pk=2)
 
         self.now = timezone.now()
         self.tomorrow = self.now + timezone.timedelta(days=1)
         self.yesterday = self.now + timezone.timedelta(days=-1)
 
         self.recruitment_period = RecruitmentPeriod.objects.create(
+            pk=1,
             name="PG",
             start_date=self.yesterday,
             end_date=self.yesterday,
             interview_end_date=self.yesterday,
             fair=fair)
+
+        self.purmonen_user = User.objects.create_user(username='purmonen', password='purmonen')
+        self.bratteby_user = User.objects.create_user(username='bratteby', password='bratteby')
+
 
         self.pg_role = Role.objects.create(name='PG')
         self.system_developer = Role.objects.create(name='System Developer', parent_role=self.pg_role)
@@ -29,19 +36,19 @@ class RecruitmentTestCase(TestCase):
 
         self.administer_roles_permission = AISPermission.objects.create(codename='administer_roles', name='Administer roles')
         self.administer_recruitment_permission = AISPermission.objects.create(codename='administer_recruitment', name='Administer recruitment')
+        self.view_recruitment_applications_permission = AISPermission.objects.create(codename='view_recruitment_applications',
+                                                                              name='View recruitment applications')
 
         self.pg_role.permissions.add(self.administer_roles_permission)
+        self.pg_role.permissions.add(self.administer_roles_permission)
+        self.pg_role.permissions.add(self.view_recruitment_applications_permission)
         self.system_developer.permissions.add(self.administer_recruitment_permission)
         self.career_fair_leader.permissions.add(self.administer_recruitment_permission)
 
-
-
         self.recruitment_period.recruitable_roles.add(self.system_developer, self.career_fair_leader)
 
-        self.purmonen_user = User.objects.create(username='purmonen')
-        self.bratteby_user = User.objects.create(username='bratteby')
-
         self.recruitment_application = RecruitmentApplication.objects.create(
+            pk=1337,
             user=self.purmonen_user,
             recruitment_period=self.recruitment_period
         )
@@ -60,8 +67,6 @@ class RecruitmentTestCase(TestCase):
 
 
     def test_recruitment_period(self):
-        self.assertNotEqual(self.recruitment_period.interview_questions, None)
-        self.assertNotEqual(self.recruitment_period.application_questions, None)
 
         self.assertEqual(len(self.recruitment_period.recruitable_roles.all()), 2)
 
@@ -113,5 +118,54 @@ class RecruitmentTestCase(TestCase):
 
         self.assertTrue('administer_recruitment' not in self.purmonen_user.ais_permissions())
         self.assertTrue('administer_roles' not in self.purmonen_user.ais_permissions())
+
+
+    def test_site_for_non_armada_member(self):
+        self.recruitment_application.status = 'rejected'
+        self.recruitment_application.save()
+
+        client = Client()
+        response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
+        response = client.get('/recruitment/')
+
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/new')
+        self.assertEqual(response.status_code, 403)
+
+        response = client.get('/recruitment/1')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/1/application/1337')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/1/application/1337/interview')
+        self.assertEqual(response.status_code, 403)
+
+    def test_site_for_armada_member(self):
+        self.recruitment_application.delegated_role = self.system_developer
+        self.recruitment_application.status = 'accepted'
+        self.recruitment_application.save()
+
+        client = Client()
+        response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
+        response = client.get('/recruitment/')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/new')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/new')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/1')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/1/application/1337')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/1/application/1337/interview')
+        self.assertEqual(response.status_code, 200)
+
 
 
