@@ -115,7 +115,6 @@ class RecruitmentTestCase(TestCase):
         self.recruitment_application.save()
         self.assertEqual(self.recruitment_application.state(), 'rejected')
 
-
         self.assertTrue('administer_recruitment' not in self.purmonen_user.ais_permissions())
         self.assertTrue('administer_roles' not in self.purmonen_user.ais_permissions())
 
@@ -142,6 +141,9 @@ class RecruitmentTestCase(TestCase):
         response = client.get('/recruitment/1/application/1337/interview')
         self.assertEqual(response.status_code, 403)
 
+        response = client.get('/recruitment/roles/1')
+        self.assertEqual(response.status_code, 200)
+
     def test_site_for_armada_member(self):
         self.recruitment_application.delegated_role = self.system_developer
         self.recruitment_application.status = 'accepted'
@@ -165,6 +167,9 @@ class RecruitmentTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response = client.get('/recruitment/1/application/1337/interview')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/recruitment/roles/1')
         self.assertEqual(response.status_code, 200)
 
 
