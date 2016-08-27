@@ -15,7 +15,6 @@ from django.core.exceptions import ValidationError
 from people.models import Profile
 
 from companies.models import Company, CompanyParticipationYear
-
 from django.utils import timezone
 
 
@@ -205,8 +204,6 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     if not profile:
         Profile.objects.create(user=user)
     profile_form = ProfileForm(request.POST or None, instance=profile)
-
-
 
     if profile_form.is_valid():
         profile_form.save()

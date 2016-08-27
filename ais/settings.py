@@ -26,7 +26,7 @@ CAS_SERVER_URL = 'https://login.kth.se/'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['.armada.nu']
+ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #LOGIN_URL = ''
@@ -119,6 +119,11 @@ DATABASES = {
     }
 }
 
+
+ADMINS = (
+   ('ME', 'sami.purmonen@armada.nu'),
+)
+MANAGERS = ADMINS
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
