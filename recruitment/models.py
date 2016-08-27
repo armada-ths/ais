@@ -403,8 +403,15 @@ def ais_permissions_for_user(user):
     permissions = []
     for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
         if application.recruitment_period.fair.year == timezone.now().year:
-            for permission in application.delegated_role.permissions.all():
-                permissions.append(permission.codename)
+
+            # Check all roles and parent roles
+            role = application.delegated_role
+            while role:
+                for permission in role.permissions.all():
+                    permissions.append(permission.codename)
+                role = role.parent_role
+                if role == application.delegated_role:
+                    break
 
     return permissions
 
