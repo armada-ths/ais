@@ -146,7 +146,7 @@ class CustomFieldArgument(models.Model):
 class CustomFieldAnswer(models.Model):
     custom_field = models.ForeignKey(CustomField)
     user = models.ForeignKey(User)
-    answer = models.CharField(max_length=1000)
+    answer = models.CharField(max_length=3000)
 
     def __str__(self):
         return '%s' % (self.answer)
