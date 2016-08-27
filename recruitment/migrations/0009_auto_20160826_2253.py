@@ -20,7 +20,11 @@ class Migration(migrations.Migration):
                 ('codename', models.CharField(max_length=100)),
             ],
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='role',
+            name='permissions',
+        ),
+        migrations.AddField(
             model_name='role',
             name='permissions',
             field=models.ManyToManyField(to='recruitment.AISPermission'),
