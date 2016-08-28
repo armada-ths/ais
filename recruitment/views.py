@@ -238,16 +238,18 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
 
     role_form = RoleApplicationForm(request.POST or None)
 
-    if recruitment_application:
-        for i in range(1, 4):
-            key = 'role%d' % i
+    for i in range(1, 4):
+        key = 'role%d' % i
+        role_form.fields[key].queryset = recruitment_period.recruitable_roles
+        if recruitment_application:
             role_application = RoleApplication.objects.filter(
                 recruitment_application=recruitment_application,
                 order=i
             ).first()
-            role_form.fields[key].queryset = recruitment_period.recruitable_roles
             if role_application:
+                print('Role', role_application.role, role_application.role.pk)
                 role_form.fields[key].initial = role_application.role.pk
+                print('initial is', role_form.fields[key].initial)
 
 
 
