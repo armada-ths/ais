@@ -23,6 +23,12 @@ class ExtraField(models.Model):
         for custom_field in self.customfield_set.all().order_by('position'):
             answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
                                                       user=user).first()
+            """
+            post_answer = request.POST.get(custom_field.form_key)
+            if post_answer:
+                #answer = answer
+                pass
+            """
             questions_with_answers.append((custom_field, answer))
         return questions_with_answers
 
@@ -83,7 +89,7 @@ class ExtraField(models.Model):
                     if os._exists(file_path):
                         os.remove(file_path)
                     path = default_storage.save(file_path, ContentFile(file.read()))
-                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                    os.path.join(settings.MEDIA_ROOT, path)
 
                     answer, created = CustomFieldAnswer.objects.get_or_create(
                         custom_field=custom_field,
@@ -146,7 +152,7 @@ class CustomFieldArgument(models.Model):
 class CustomFieldAnswer(models.Model):
     custom_field = models.ForeignKey(CustomField)
     user = models.ForeignKey(User)
-    answer = models.CharField(max_length=3000)
+    answer = models.TextField()
 
     def __str__(self):
         return '%s' % (self.answer)

@@ -170,6 +170,14 @@ def recruitment_application_comment_new(request, pk):
 
 
 class ProfileForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+
+        self.fields['registration_year'].required = True
+        self.fields['programme'].required = True
+        self.fields['phone_number'].required = True
+
     class Meta:
         model = Profile
         fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url')
@@ -177,6 +185,7 @@ class ProfileForm(ModelForm):
         labels = {
             'linkedin_url': 'Link to your LinkedIn-profile',
         }
+
 
         widgets = {
             'registration_year': forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
@@ -186,13 +195,20 @@ class ProfileForm(ModelForm):
         }
 
 
-@login_required
+class RoleApplicationForm(forms.Form):
+
+    role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.all(), widget=forms.Select(attrs={'required': True}))
+    role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.all(), required=False)
+    role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.all(), required=False)
+
+
 def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
-    now = timezone.now()
 
     if not pk:
         recruitment_application = recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
+
+        # If the user already has an application for this period redirect to it
         if recruitment_application:
             return redirect('recruitment_application_new', recruitment_period.pk, recruitment_application.pk)
 
@@ -203,15 +219,8 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     profile = Profile.objects.filter(user=user).first()
     if not profile:
         Profile.objects.create(user=user)
-    profile_form = ProfileForm(request.POST or None, instance=profile)
 
-    if profile_form.is_valid():
-        profile_form.save()
-
-
-
-    set_image_key_from_request(request, profile, 'image', 'profile')
-
+    now = timezone.now()
 
     if recruitment_period.start_date > now:
         return render(request, 'recruitment/recruitment_application_closed.html', {
@@ -225,45 +234,60 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             'message': 'Application closed'
         })
 
+    profile_form = ProfileForm(request.POST or None, instance=profile)
 
-    if request.POST:
-        recruitment_period.application_questions.handle_answers_from_request(request, request.user)
-        if not recruitment_application:
-            recruitment_application = RecruitmentApplication()
-
-        recruitment_application.roleapplication_set.all().delete()
-
-        recruitment_application.user = request.user
-        recruitment_application.recruitment_period = recruitment_period
-        recruitment_application.save()
-        for role_number in range(recruitment_period.eligible_roles):
-            role_key = 'role_%d' % role_number
-            if role_key in request.POST and request.POST[role_key].isdigit():
-                role_id = int(request.POST[role_key])
-                role_application = RoleApplication()
-                role_application.recruitment_application = recruitment_application
-                role_application.role = Role.objects.filter(pk=role_id).first()
-                role_application.order = role_number
-                role_application.save()
-        return redirect('recruitment_period', recruitment_period.pk)
-
-    chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
-
-
+    role_form = RoleApplicationForm(request.POST or None)
 
     if recruitment_application:
-        role_applications = RoleApplication.objects.filter(recruitment_application=recruitment_application).order_by('order')
+        for i in range(1, 4):
+            key = 'role%d' % i
+            role_application = RoleApplication.objects.filter(
+                recruitment_application=recruitment_application,
+                order=i
+            ).first()
+            role_form.fields[key].queryset = recruitment_period.recruitable_roles
+            if role_application:
+                role_form.fields[key].initial = role_application.role.pk
 
-        for i in range(len(role_applications)):
-            chosen_roles[i] = role_applications[i].role
+
+
+
+    if request.POST:
+        recruitment_period.application_questions.handle_answers_from_request(request, user)
+        set_image_key_from_request(request, profile, 'image', 'profile')
+
+        if role_form.is_valid() and profile_form.is_valid():
+
+            if not recruitment_application:
+                recruitment_application = RecruitmentApplication()
+
+
+            recruitment_application.user = user
+            recruitment_application.recruitment_period = recruitment_period
+            recruitment_application.save()
+
+            recruitment_application.roleapplication_set.all().delete()
+            for i in range(1,4):
+                key = 'role%d' % i
+                role = role_form.cleaned_data[key]
+                if role:
+                    RoleApplication.objects.create(
+                        recruitment_application=recruitment_application,
+                        role=role,
+                        order=i
+                    )
+
+
+            profile_form.save()
+            return redirect('recruitment_period', recruitment_period.pk)
 
     return render(request, template_name, {
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
-        'chosen_roles': chosen_roles,
         'roles': recruitment_period.recruitable_roles.all(),
         'profile_form': profile_form,
-        'profile': profile
+        'profile': profile,
+        'role_form': role_form,
     })
 
 

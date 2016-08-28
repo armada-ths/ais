@@ -27,23 +27,11 @@
     <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 
-        {% for chosen_role in chosen_roles %}
-
-            <div class="form-group">
-                <label for="role_{{ forloop.counter0 }}">Role {{ forloop.counter }}</label>
-                <select class="form-control" name="role_{{ forloop.counter0 }}" id="role_{{ forloop.counter0 }}" {% if forloop.counter0 == 0 %}required{% endif %}>
-                    <option value="">---------</option>
-                    {% for role in roles %}
-                        <option value="{{ role.id }}" {% if role == chosen_role %}
-                                selected {% endif %}>{{ role }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        {% endfor %}
+        {{ role_form|crispy }}
 
         {{ profile_form|crispy }}
 
-            <div class="form-group">
+        <div class="form-group">
             <label for="image">Please upload a picture of yourself</label>
             <input type="file" id="image" name="image" accept="image/*">
             {% if profile.image %}
@@ -51,6 +39,7 @@
                 <div><img src="/media/{{ profile.image }}" style="max-width: 100%; max-height: 400px;"></div>
             {% endif %}
         </div>
+
 
         {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
