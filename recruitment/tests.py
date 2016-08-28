@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, AISPermission
+from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, AISPermission, Programme
 from fair.models import Fair
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -18,8 +18,13 @@ class RecruitmentTestCase(TestCase):
         self.tomorrow = self.now + timezone.timedelta(days=1)
         self.yesterday = self.now + timezone.timedelta(days=-1)
 
-        self.recruitment_period = RecruitmentPeriod.objects.create(
+
+        Programme.objects.create(
+            name='Computer Science',
             pk=1,
+        )
+
+        self.recruitment_period = RecruitmentPeriod.objects.create(
             name="PG",
             start_date=self.yesterday,
             end_date=self.yesterday,
@@ -30,9 +35,9 @@ class RecruitmentTestCase(TestCase):
         self.bratteby_user = User.objects.create_user(username='bratteby', password='bratteby')
 
 
-        self.pg_role = Role.objects.create(name='PG')
-        self.system_developer = Role.objects.create(name='System Developer', parent_role=self.pg_role)
-        self.career_fair_leader = Role.objects.create(name='Career Fair Leader')
+        self.pg_role = Role.objects.create(name='PG', pk=1)
+        self.system_developer = Role.objects.create(name='System Developer', parent_role=self.pg_role, pk=2)
+        self.career_fair_leader = Role.objects.create(name='Career Fair Leader', pk=3)
 
         self.administer_roles_permission = AISPermission.objects.create(codename='administer_roles', name='Administer roles')
         self.administer_recruitment_permission = AISPermission.objects.create(codename='administer_recruitment', name='Administer recruitment')
@@ -132,13 +137,13 @@ class RecruitmentTestCase(TestCase):
         response = client.get('/recruitment/new')
         self.assertEqual(response.status_code, 403)
 
-        response = client.get('/recruitment/1')
+        response = client.get('/recruitment/%d' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/1/application/1337')
+        response = client.get('/recruitment/%d/application/1337' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/1/application/1337/interview')
+        response = client.get('/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 403)
 
         response = client.get('/recruitment/roles/1')
@@ -160,19 +165,94 @@ class RecruitmentTestCase(TestCase):
         response = client.get('/recruitment/new')
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/1')
+        response = client.get('/recruitment/%d' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/1/application/1337')
+        response = client.get('/recruitment/%d/application/1337' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/1/application/1337/interview')
+        response = client.get('/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
         response = client.get('/recruitment/roles/1')
         self.assertEqual(response.status_code, 200)
 
+    def test_create_application(self):
+        self.recruitment_period.end_date = self.tomorrow
+        self.recruitment_period.save()
+
+        client = Client()
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 1)
+
+        response = client.post('/accounts/login/', {'username': 'bratteby', 'password': 'bratteby'})
+        response = client.post('/recruitment/%d/application/new' % self.recruitment_period.pk, {
+            'username': 'purmonen', 'password': 'purmonen'
+        })
+        self.assertTrue('This field is required' in str(response.content))
+
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 1)
+        response = client.post('/recruitment/1/application/new', {
+            'role1': '3',
+            'programme': '1',
+            'registration_year': '2016',
+            'phone_number': '0735307028',
+        })
+
+        self.assertTrue('This field is required' not in str(response.content))
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
 
 
+        recruitment_application = RecruitmentApplication.objects.get(user=self.bratteby_user)
+        self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307028')
+        self.assertEquals(RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=1).role.pk, 3)
 
+        response = client.post('/recruitment/1/application/%d' % recruitment_application.pk, {
+            'role1': '2',
+            'programme': '1',
+            'registration_year': '2016',
+            'phone_number': '0735307029',
+        })
+
+        self.assertTrue('This field is required' not in str(response.content))
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
+        self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307029')
+
+        self.assertEquals(
+            RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=1).role.pk, 2)
+
+
+    def test_create_recruitment_period(self):
+        client = Client()
+
+        response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
+
+        # Test without having recruitment administration permission
+        self.recruitment_application.delegated_role = self.system_developer
+        self.recruitment_application.status = 'rejected'
+        self.recruitment_application.save()
+
+        self.assertEquals(len(RecruitmentPeriod.objects.all()), 1)
+        response = client.post('/recruitment/new', {
+            'name': 'Host Recruitment',
+            'eligible_roles': '2',
+            'fair': '2',
+            'start_date': '2016-01-1',
+            'end_date': '2016-01-2',
+            'interview_end_date': '2016-01-3'
+        })
+        self.assertEquals(len(RecruitmentPeriod.objects.all()), 1)
+        self.assertEquals(response.status_code, 403)
+        self.recruitment_application.status = 'accepted'
+        self.recruitment_application.save()
+
+
+        response = client.post('/recruitment/new', {
+            'name': 'Host Recruitment',
+            'eligible_roles': '2',
+            'fair': '2',
+            'start_date': '2016-01-1',
+            'end_date': '2016-01-2',
+            'interview_end_date': '2016-01-3'
+        })
+        self.assertEquals(len(RecruitmentPeriod.objects.all()), 2)
 
