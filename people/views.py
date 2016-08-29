@@ -13,13 +13,14 @@ from recruitment.views import set_image_key_from_request
 from django.forms import ModelForm
 # Create your views here.
 
-@login_required(login_url='/login/')
+
+
 def list_people(request):
     if not 'view_people' in request.user.ais_permissions():
         return HttpResponseForbidden()
     return TemplateResponse(request, 'people_list.html', {'users': User.objects.all()})
 
-@login_required(login_url='/login/')
+
 def view_person(request, pk):
     user = get_object_or_404(User, pk=pk)
     profile = Profile.objects.filter(user=user).first()
@@ -40,16 +41,17 @@ class ProfileForm(ModelForm):
         exclude = ('user', 'image')
 
         widgets = {
-
             "registration_year": forms.Select(
                 choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)]),
             "birth_date": forms.TextInput(attrs={'class': 'datepicker'}),
         }
 
 
-@login_required(login_url='/login/')
 def edit_person(request, pk):
     user = get_object_or_404(User, pk=pk)
+    if not request.user == user:
+        return HttpResponseForbidden()
+
     profile = Profile.objects.filter(user=user).first()
     if not profile:
         profile = Profile.objects.create(user=user)
