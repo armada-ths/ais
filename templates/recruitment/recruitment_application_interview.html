@@ -80,7 +80,11 @@
         {% if not interview_questions_with_answers %}
             <p>No interview questions</p>
         {% endif %}
+        {% if 'administer_recruitment_applications' in request.user.ais_permissions or request.user == application.interviewer %}
         {% include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
+        {% else %}
+        {% include 'recruitment/custom_fields_static.html' with questions_with_answers=interview_questions_with_answers %}
+        {% endif %}
         <hr>
 
         {% if 'administer_recruitment_applications' in request.user.ais_permissions %}
