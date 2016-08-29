@@ -260,10 +260,7 @@ class ProfileForm(ModelForm):
         }
 
 
-
-
 class RoleApplicationForm(forms.Form):
-
     role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.all(), widget=forms.Select(attrs={'required': True}))
     role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.all(), required=False)
     role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.all(), required=False)
@@ -330,7 +327,6 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             if not recruitment_application:
                 recruitment_application = RecruitmentApplication()
 
-
             recruitment_application.user = user
             recruitment_application.recruitment_period = recruitment_period
             recruitment_application.save()
@@ -345,7 +341,6 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
                         role=role,
                         order=i
                     )
-
 
             profile_form.save()
             return redirect('recruitment_period', recruitment_period.pk)
@@ -443,7 +438,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         RecruitmentApplication,
         fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else ('interview_date', 'interview_location', 'recommended_role', 'rating'),
         widgets={
-            'rating': forms.Select(choices=[(i,i) for i in range(1,6)]),
+            'rating': forms.Select(choices=[('', '---------')]+[(i,i) for i in range(1,6)]),
             'interview_date': forms.TextInput(attrs={'class': 'datepicker'}),
         }
     )
