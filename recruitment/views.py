@@ -15,6 +15,13 @@ from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
 
 
+def import_members(request):
+    if not request.user.is_superuser():
+        return HttpResponseForbidden()
+    create_project_group()
+    return redirect('recruitment')
+
+
 class RecruitmentPeriodForm(ModelForm):
     class Meta:
         model = RecruitmentPeriod
@@ -33,13 +40,6 @@ def recruitment(request, template_name='recruitment/recruitment.html'):
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
         'roles': [{'parent_role': role, 'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for role in Role.objects.filter(parent_role=None)],
     })
-
-
-def import_members(request):
-    if not request.user.is_superuser():
-        return HttpResponseForbidden()
-    create_project_group()
-    return redirect('recruitment')
 
 
 class RecruitmentApplicationSearchForm(forms.Form):
@@ -143,6 +143,50 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     })
 
 
+def recruitment_period_delete(request, pk):
+    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    if not 'administer_recruitment' in request.user.ais_permissions():
+        return HttpResponseForbidden()
+    recruitment_period.delete()
+    return redirect('recruitment')
+
+
+def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
+    if not 'administer_recruitment' in request.user.ais_permissions():
+        return HttpResponseForbidden()
+
+    recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
+    form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
+
+    if request.POST:
+        recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
+        recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
+        if form.is_valid():
+            recruitment_period = form.save()
+            for role in Role.objects.all():
+                role_key = 'role_%d' % role.id
+                if role_key in request.POST:
+                    if not role in recruitment_period.recruitable_roles.all():
+                        recruitment_period.recruitable_roles.add(role)
+                else:
+                    recruitment_period.recruitable_roles.remove(role)
+            recruitment_period.save()
+            return redirect('recruitment_period', pk=recruitment_period.id)
+        else:
+            print(form.errors)
+
+
+    return render(request, template_name, {
+        'form': form,
+        'roles': [{'parent_role': role,
+                   'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
+                  role in Role.objects.filter(parent_role=None)],
+        'recruitment_period': recruitment_period,
+        'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
+        'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
+    })
+
+
 class RolesForm(ModelForm):
     class Meta:
         model = Role
@@ -151,7 +195,6 @@ class RolesForm(ModelForm):
             'permissions': forms.CheckboxSelectMultiple(),
             'description': forms.Textarea(),
         }
-
 
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     role = Role.objects.filter(pk=pk).first()
@@ -175,56 +218,7 @@ def roles_delete(request, pk):
     return redirect('recruitment')
 
 
-def recruitment_period_delete(request, pk):
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
 
-    if not 'administer_recruitment' in request.user.ais_permissions():
-        return HttpResponseForbidden()
-    recruitment_period.delete()
-    return redirect('recruitment')
-
-
-def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
-    if not 'administer_recruitment' in request.user.ais_permissions():
-        return HttpResponseForbidden()
-
-    recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
-    form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
-    roles = []
-
-    for role in Role.objects.all():
-        roles.append({'role': role, 'checked': role in recruitment_period.recruitable_roles.all() if recruitment_period else False})
-
-    if form.is_valid():
-        recruitment_period = form.save()
-        for role in Role.objects.all():
-            role_key = 'role_%d' % role.id
-            if role_key in request.POST:
-                if not role in recruitment_period.recruitable_roles.all():
-                    recruitment_period.recruitable_roles.add(role)
-            else:
-                recruitment_period.recruitable_roles.remove(role)
-
-        recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
-        recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
-        recruitment_period.save()
-
-        set_image_key_from_request(request, recruitment_period, 'image', 'recruitment')
-
-        return redirect('recruitment_period', pk=recruitment_period.id)
-    else:
-        print(form.errors)
-
-
-    return render(request, template_name, {
-        'form': form,
-        'roles': [{'parent_role': role,
-                   'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
-                  role in Role.objects.filter(parent_role=None)],
-        'recruitment_period': recruitment_period,
-        'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
-        'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
-    })
 
 def recruitment_application_comment_new(request, pk):
     application = get_object_or_404(RecruitmentApplication, pk=pk)

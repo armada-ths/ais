@@ -217,8 +217,6 @@ class RecruitmentPeriod(models.Model):
     eligible_roles = models.IntegerField(default=3)
     recruitable_roles = models.ManyToManyField(Role)
 
-    image = models.CharField(blank=True, null=True, max_length=100)
-
     def is_past(self):
         return self.end_date < timezone.now()
 
