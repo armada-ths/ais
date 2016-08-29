@@ -1,0 +1,15 @@
+{% for field in form %}
+<div class="form-group">
+<label>{{ field.label }}</label>
+    {% if field.field.choices.queryset.all %}
+        {% for value in field.field.choices.queryset.all %}
+            {% if value.pk == field.value %}
+                <p class="form-control-static">{{ value }}</p>
+            {% endif %}
+
+        {% endfor %}
+    {% else %}
+        <p class="form-control-static">{{ field.value }}</p>
+    {% endif %}
+</div>
+{% endfor %}

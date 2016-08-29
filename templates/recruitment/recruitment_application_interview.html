@@ -27,19 +27,18 @@
         {% endif %}
         <div class="col-sm-12">
 
+
             <div class="form-group">
+                <label>Registration year</label>
+                <p class="form-control-static">{{ application.user.profile.registration_year }}</p>
+            </div>
 
+            <div class="form-group">
+                <label>Programme</label>
+                <p class="form-control-static">{{ application.user.profile.programme }}</p>
+            </div>
 
-                <div class="form-group">
-                    <label>Registration year</label>
-                    <p class="form-control-static">{{ application.user.profile.registration_year }}</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Programme</label>
-                    <p class="form-control-static">{{ application.user.profile.programme }}</p>
-                </div>
-
+            <div class="form-group">
                 <label>Email</label>
                 <p class="form-control-static"><a
                         href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
@@ -59,26 +58,31 @@
                 </div>
             {% endif %}
 
-            <label>Roles</label>
-            <ol>
+            <div class="form-group">
+                <label>Roles</label>
+                <ol>
 
-                {% for role in application.roleapplication_set.all %}
-                    <li data-toggle="tooltip" data-placement="left" title="{{ role.role.description }}">{{ role }}</li>
-                {% endfor %}
-            </ol>
+                    {% for role in application.roleapplication_set.all %}
+                        <li data-toggle="tooltip" data-placement="left"
+                            title="{{ role.role.description }}">{{ role }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
             {% include 'recruitment/custom_fields_static.html' with questions_with_answers=application_questions_with_answers %}
         </div>
     </div>
     <hr>
 
 
-
-
-
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <h3>Interview planning</h3>
-        {{ interview_planning_form|crispy }}
+        {% if 'administer_recruitment_applications' in request.user.ais_permissions or application.interviewer == request.user %}
+            {{ interview_planning_form|crispy }}
+        {% elif 'view_recruitment_applications' in request.user.ais_permissions %}
+            {% include 'recruitment/static_form.html' with form=interview_planning_form %}
+        {% endif %}
+
         <hr>
 
         <h3>Interview</h3>
@@ -89,14 +93,14 @@
         <hr>
 
         {% if 'administer_recruitment_applications' in request.user.ais_permissions %}
-        <h3>Role Delegation</h3>
-        {{ role_delegation_form|crispy }}
-        <hr>
+            <h3>Role Delegation</h3>
+            {{ role_delegation_form|crispy }}
+            <hr>
         {% endif %}
 
 
         {% if 'administer_recruitment_applications' in request.user.ais_permissions or request.user == application.interviewer %}
-        <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Save</button>
         {% endif %}
         {% if 'administer_recruitment_applications' in request.user.ais_permissions %}
             <a class="btn btn-danger"

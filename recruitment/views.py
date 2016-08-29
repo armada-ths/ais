@@ -373,6 +373,12 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
                   CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
 
+
+    ProfileForm = modelform_factory(
+        Profile,
+        fields=('registration_year', 'programme'),
+    )
+
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
         fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else ('interview_date', 'interview_location', 'recommended_role', 'rating'),
@@ -420,7 +426,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
         'interview_planning_form': interview_planning_form,
         'role_delegation_form': role_delegation_form,
-
     })
 
 
