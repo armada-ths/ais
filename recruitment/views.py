@@ -99,7 +99,7 @@ class RecruitmentApplicationSearchForm(forms.Form):
 
         submission_date = search_form.cleaned_data['submission_date']
         if submission_date:
-            application_list = [application for application in application_list if submission_date.lower() in date_filter(application.submission_date).lower()]
+            application_list = [application for application in application_list if submission_date.lower() in date_filter(application.submission_date, "d M").lower()]
 
         roles_string = search_form.cleaned_data['roles']
         if roles_string:
@@ -432,7 +432,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
     exhibitors = [participation.company for participation in
                   CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
-
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
