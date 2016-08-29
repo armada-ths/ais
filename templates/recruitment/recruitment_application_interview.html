@@ -27,17 +27,11 @@
         {% endif %}
         <div class="col-sm-12">
 
-
-
                 <label>Registration year</label>
                 <p>{{ application.user.profile.registration_year }}</p>
 
-
-
                 <label>Programme</label>
                 <p>{{ application.user.profile.programme }}</p>
-
-
 
                 <label>Email</label>
                 <p><a href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
@@ -48,7 +42,7 @@
             {% if application.user.profile.linkedin_url %}
                     <label>Linkedin</label>
                     <p><a href="{{ application.user.profile.linkedin_url }}">{{ application.user.profile.linkedin_url }}</a></p>
-                </div>
+
             {% endif %}
 
 

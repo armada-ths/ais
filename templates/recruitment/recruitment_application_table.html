@@ -1,12 +1,42 @@
+
 <table class="table">
     <thead>
     <tr>
         <th>Name</th>
+        <th>Programme</th>
+        <th>Registration year</th>
         <th>Rating</th>
         <th>Submitted</th>
         <th>Roles</th>
         <th>Interviewer</th>
         <th>State</th>
+    </tr>
+    <tr>
+        <form>
+        <td>{{ search_form.name }}
+            <br>
+
+
+                    <div class="btn-group">
+            <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+
+                <a href="{% url 'recruitment_period' recruitment_period.pk %}"><button class="btn btn-default" type="button">Reset</button></a>
+
+            </div>
+
+        </td>
+        <td>{{ search_form.programme }}</td>
+        <td>{{ search_form.registration_year }}</td>
+        <td>{{ search_form.rating }}</td>
+        <td>{{ search_form.submission_date }}</td>
+        <td>{{ search_form.roles }}</td>
+        <td>{{ search_form.interviewer }}</td>
+        <td>
+            {{ search_form.state }}
+            <br>
+
+        </td>
+        </form>
     </tr>
     </thead>
     {% for application in applications %}
@@ -16,16 +46,14 @@
                 <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
                     {% include 'recruitment/user_name.html' with user=application.user %}
                 </a></td>
+
+            <td>{{ application.user.profile.programme }}</td>
+            <td>{{ application.user.profile.registration_year }}</td>
             <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
 
 
             <td>{{ application.submission_date|date:"d M H:i" }}</td>
-
-            <td>
-                {% for role in application.roleapplication_set.all %}
-                    {{ role }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </td>
+            <td>{{ application.roles_string }}</td>
             <td>
                 {% if application.interviewer %}
                     {{ application.interviewer.get_full_name }}

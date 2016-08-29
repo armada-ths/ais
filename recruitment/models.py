@@ -268,6 +268,9 @@ class RecruitmentApplication(models.Model):
             return 'new'
 
 
+    def roles_string(self):
+        return ' '.join(['%d %s' % (role.order+1, role.role.name) for role in self.roleapplication_set.order_by('order')])
+
     def __str__(self):
         return '%s' % (self.user)
 

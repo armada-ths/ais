@@ -39,7 +39,7 @@
 
     {% if 'view_recruitment_applications' in request.user.ais_permissions %}
         {% if recruitment_period.recruitmentapplication_set.all %}
-            <h2>Applications ({{ recruitment_period.recruitmentapplication_set.all.count }})</h2>
+            <h2>Applications ({{ applications.paginator.count }})</h2>
             {% include 'recruitment/recruitment_application_table.html' with applications=applications %}
         {% else %}
             <p>No applications</p>

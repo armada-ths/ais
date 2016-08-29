@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, AISPermission
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, AISPermission, Programme
 from django.forms import ModelForm
 
 from django.contrib.auth.models import User
@@ -16,6 +16,8 @@ from people.models import Profile
 from companies.models import Company, CompanyParticipationYear
 from django.utils import timezone
 
+
+from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
 
 
@@ -44,11 +46,87 @@ def import_members(request):
     return redirect('/recruitment/')
 
 
+class RecruitmentApplicationSearchForm(forms.Form):
+
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+
+    programme = forms.ModelChoiceField(
+        queryset=Programme.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    interviewer = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+
+    )
+
+    registration_year = forms.ChoiceField(
+        choices=[('', '-------')] + [(i, i) for i in range(2001, timezone.now().year+1)],
+        widget = forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    rating = forms.ChoiceField(
+        choices=[('', '-------')] + [(i, i) for i in range(1, 6)],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    state = forms.ChoiceField(
+        choices=[('', '-------')] + [('new', 'New'), ('interview_delegated', 'Delegated'), ('interview_planned', 'Planned'), ('interview_done', 'Done'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date')
+    application_list = [i for i in recruitment_period.recruitmentapplication_set.order_by('-submission_date').all()]
+
+
+
+    search_form = RecruitmentApplicationSearchForm(request.GET or None)
+
+    searched_application_list = []
+
+    if search_form.is_valid():
+
+        name = search_form.cleaned_data['name']
+        if name:
+            application_list = [application for application in application_list if name.lower() in application.user.get_full_name().lower()]
+
+        rating = search_form.cleaned_data['rating']
+        print('rating', rating)
+        if rating:
+            application_list = [application for application in application_list if int(rating) == application.rating]
+
+        submission_date = search_form.cleaned_data['submission_date']
+        if submission_date:
+            application_list = [application for application in application_list if submission_date.lower() in date_filter(application.submission_date).lower()]
+
+        roles_string = search_form.cleaned_data['roles']
+        if roles_string:
+            application_list = [application for application in application_list if roles_string.lower() in application.roles_string().lower()]
+
+        state = search_form.cleaned_data['state']
+        if state:
+            application_list = [application for application in application_list if state == application.state()]
+
+
+        programme = search_form.cleaned_data['programme']
+        if programme:
+            application_list = [application for application in application_list if programme == application.user.profile.programme]
+
+    print(search_form.errors)
     number_of_applications_per_page = 25
     paginator = Paginator(application_list, number_of_applications_per_page)
+
+
 
     page = request.GET.get('page')
     try:
@@ -66,7 +144,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all(),
         'paginator': paginator,
         'applications': applications,
-        'now': timezone.now()
+        'now': timezone.now(),
+        'search_form': search_form
     })
 
 
@@ -194,6 +273,8 @@ class ProfileForm(ModelForm):
                 attrs={'required': True}),
             'phone_number': forms.TextInput(attrs={'required': True})
         }
+
+
 
 
 class RoleApplicationForm(forms.Form):
