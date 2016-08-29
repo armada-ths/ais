@@ -39,7 +39,7 @@ def import_members(request):
     if not request.user.is_superuser():
         return HttpResponseForbidden()
     create_project_group()
-    return redirect('/recruitment/')
+    return redirect('recruitment')
 
 
 class RecruitmentApplicationSearchForm(forms.Form):
@@ -143,34 +143,27 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     })
 
 
+class RolesForm(ModelForm):
+    class Meta:
+        model = Role
+        fields = '__all__'
+        widgets = {
+            'permissions': forms.CheckboxSelectMultiple(),
+            'description': forms.Textarea(),
+        }
+
+
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     role = Role.objects.filter(pk=pk).first()
-
-    if request.POST and 'administer_roles' in request.user.ais_permissions():
-        if not role:
-            role = Role()
-        role.name = request.POST['name']
-        role.description = request.POST['description']
-        set_foreign_key_from_request(request, role, 'parent_role', Role)
-
-        for permission in AISPermission.objects.all():
-            if permission.codename in request.POST:
-                role.permissions.add(permission)
-            else:
-                role.permissions.remove(permission)
-
-        role.save()
-
+    roles_form = RolesForm(request.POST or None, instance=role)
+    if roles_form.is_valid():
+        roles_form.save()
         return redirect('recruitment')
-
-
     users = [application.user for application in RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
-
     return render(request, template_name, {
         'role': role,
-        'permissions': AISPermission.objects.all(),
-        'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all(),
         'users': users,
+        'roles_form': roles_form
     })
 
 

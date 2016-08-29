@@ -13,50 +13,22 @@
 
     <div class="row">
         <div class="col-md-9">
-            <form method="post">
-                {% csrf_token %}
+            {% if 'administer_roles' in request.user.ais_permissions %}
 
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    {% if 'administer_roles' in request.user.ais_permissions %}
-                        <input class="form-control" id="name" name="name" value="{{ role.name }}">
-                    {% else %}
-                        <p class="form-control-static">{{ role.name }}</p>
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    {% if 'administer_roles' in request.user.ais_permissions %}
-                        <textarea class="form-control" id="description" name="description"
-                                  rows="7">{{ role.description }}</textarea>
-                    {% else %}
-                        <p class="form-control-static">{{ role.description|default:"None" }}</p>
-                    {% endif %}
-                </div>
-
-                {% if 'administer_roles' in request.user.ais_permissions %}
-                    {% include 'recruitment/select_field.html' with values=roles field_label='Parent role' field_name='parent_role' selected_value=role.parent_role is_editable=True %}
-                    <label>Permissions</label>
-                    {% for permission in permissions %}
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="{{ permission.codename }}" id="{{ permission.codename }}"
-                                        {% if permission in role.permissions.all %}
-                                       checked {% endif %}> {{ permission.name }}
-                            </label>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                {% if 'administer_roles' in request.user.ais_permissions %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ roles_form|crispy }}
                     <button class="btn btn-primary">Save</button>
                     {% if role != None %}
-                        <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}" onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+                        <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}"
+                           onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
                     {% endif %}
-                {% endif %}
 
-            </form>
+                </form>
+
+            {% else %}
+                {% include 'recruitment/static_form.html' with form=roles_form %}
+            {% endif %}
         </div>
 
 

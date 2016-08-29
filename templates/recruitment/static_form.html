@@ -1,8 +1,12 @@
 {% for field in form %}
 <label>{{ field.label }}</label>
     {% if field.field.choices.queryset.all %}
+
         {% for value in field.field.choices.queryset.all %}
+
             {% if value.pk == field.value %}
+                <p>{{ value }}</p>
+            {% elif value.pk in field.value %}
                 <p>{{ value }}</p>
             {% endif %}
 

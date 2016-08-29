@@ -162,11 +162,14 @@ class AISPermission(models.Model):
     name = models.CharField(max_length=100)
     codename = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 class Role(models.Model):
     name = models.CharField(max_length=100)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
-    description = models.CharField(max_length=1000, default="")
-    permissions = models.ManyToManyField(AISPermission)
+    description = models.CharField(max_length=1000, default="", blank=True)
+    permissions = models.ManyToManyField(AISPermission, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -196,7 +199,7 @@ class Role(models.Model):
 
 
     def __str__(self):
-        return '%s' % (self.name)
+        return self.name
 
     def users(self):
         return [application.user for application in RecruitmentApplication.objects.filter(delegated_role=self, status='accepted')]
