@@ -159,10 +159,11 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
 
     if request.POST:
-        recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
-        recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
+
         if form.is_valid():
             recruitment_period = form.save()
+            recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
+            recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
             for role in Role.objects.all():
                 role_key = 'role_%d' % role.id
                 if role_key in request.POST:
@@ -199,9 +200,12 @@ class RolesForm(ModelForm):
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     role = Role.objects.filter(pk=pk).first()
     roles_form = RolesForm(request.POST or None, instance=role)
-    if roles_form.is_valid():
-        roles_form.save()
-        return redirect('recruitment')
+
+    if 'administer_roles' in request.user.ais_permissions():
+        if roles_form.is_valid():
+            roles_form.save()
+            return redirect('recruitment')
+
     users = [application.user for application in RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
     return render(request, template_name, {
         'role': role,
