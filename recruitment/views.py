@@ -1,22 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, AISPermission, Programme
 from django.forms import ModelForm
-
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
 from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
 from django.core.exceptions import ValidationError
 from people.models import Profile
-
 from companies.models import Company, CompanyParticipationYear
 from django.utils import timezone
-
-
 from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
 
@@ -42,6 +36,8 @@ def recruitment(request, template_name='recruitment/recruitment.html'):
 
 
 def import_members(request):
+    if not request.user.is_superuser():
+        return HttpResponseForbidden()
     create_project_group()
     return redirect('/recruitment/')
 
@@ -419,8 +415,6 @@ def set_image_key_from_request(request, model, model_field, file_directory):
             setattr(model, model_field, None)
             model.save()
 
-
-
 class InterviewPlanForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -453,12 +447,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     exhibitors = [participation.company for participation in
                   CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
-
-
-    ProfileForm = modelform_factory(
-        Profile,
-        fields=('registration_year', 'programme'),
-    )
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
