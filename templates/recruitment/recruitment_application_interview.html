@@ -71,99 +71,33 @@
     </div>
     <hr>
 
-    <h3>Interview planning</h3>
+
+
+
+
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        {% if 'administer_recruitment_applications' in request.user.ais_permissions %}
-        {% include 'recruitment/select_field.html' with values=interviewers field_label='Interviewer' field_name='interviewer' selected_value=application.interviewer is_editable=True %}
-        {% else %}
-        {% include 'recruitment/select_field.html' with values=interviewers field_label='Interviewer' field_name='interviewer' selected_value=application.interviewer is_editable=False %}
-        {% endif %}
-
-        <div class="form-group">
-            <label for="interviewDate">Interview date</label>
-
-            {% if request.method == 'POST' %}
-                <input type="text" class="form-control datepicker" id="interviewDate" name="interview_date"
-                       value="{% if application.interview_date %}{{ application.interview_date }}{% endif %}">
-            {% else %}
-                <input type="text" class="form-control datepicker" id="interviewDate" name="interview_date"
-                       value="
-                               {% if application.interview_date %}{{ application.interview_date|date:"Y-m-d" }}{% endif %}">
-
-            {% endif %}
-        </div>
-
-
-        <div class="form-group">
-            <label for="interviewLocation">Interview place</label>
-            <input type="text" class="form-control" id="interviewLocation" name="interview_location"
-                   value="{% if application.interview_location %}{{ application.interview_location }}{% endif %}">
-        </div>
-
-        <div class="form-group">
-            <label>Recommended role</label>
-            <select class="form-control" name="recommended_role">
-                <option value="">---------</option>
-                {% for role in roles %}
-                    <option value="{{ role.id }}" {% if role == application.recommended_role %}
-                            selected {% endif %}>{{ role }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-
-        <div class="form-group">
-            <label>Rating</label>
-
-            <select class="form-control" name="rating">
-                <option {% if application.rating == None %}
-                    selected {% endif %}>------
-                </option>
-                {% for rating in ratings %}
-                    <option value="{{ rating }}" {% if rating == application.rating %}
-                            selected {% endif %}>{{ rating }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-
-
-
+        <h3>Interview planning</h3>
+        {{ interview_planning_form|crispy }}
         <hr>
 
-
         <h3>Interview</h3>
-
         {% if not interview_questions_with_answers %}
             <p>No interview questions</p>
         {% endif %}
         {% include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
-
-
-
-
-
         <hr>
-        <h3>Role Delegation</h3>
-
 
         {% if 'administer_recruitment_applications' in request.user.ais_permissions %}
-            {% include 'recruitment/select_field.html' with values=roles field_label='Delegated role' field_name='delegated_role' selected_value=application.delegated_role is_editable=True %}
-            {% include 'recruitment/select_field.html' with values=exhibitors field_label='Assigned exhibitor' field_name='exhibitor' selected_value=application.exhibitor is_editable=True %}
-            {% include 'recruitment/select_field.html' with values=users field_label='Superior' field_name='superior_user' selected_value=application.superior_user is_editable=True %}
-            {% include 'recruitment/select_field.html' with values=statuses field_label='Accepted / Rejected' field_name='status' selected_value=selected_status is_editable=True %}
-        {% else %}
-            {% include 'recruitment/select_field.html' with values=roles field_label='Delegated role' field_name='delegated_role' selected_value=application.delegated_role is_editable=False %}
-            {% include 'recruitment/select_field.html' with values=exhibitors field_label='Assigned exhibitor' field_name='exhibitor' selected_value=application.exhibitor is_editable=False %}
-            {% include 'recruitment/select_field.html' with values=users field_label='Superior' field_name='superior_user' selected_value=application.superior_user is_editable=False %}
-            {% include 'recruitment/select_field.html' with values=statuses field_label='Accepted / Rejected' field_name='status' selected_value=selected_status is_editable=False %}
+        <h3>Role Delegation</h3>
+        {{ role_delegation_form|crispy }}
+        <hr>
         {% endif %}
 
-            <hr>
 
+        {% if 'administer_recruitment_applications' in request.user.ais_permissions or request.user == application.interviewer %}
         <button type="submit" class="btn btn-primary">Save</button>
-
+        {% endif %}
         {% if 'administer_recruitment_applications' in request.user.ais_permissions %}
             <a class="btn btn-danger"
                href="{% url 'recruitment_application_delete' application.recruitment_period.id application.id %}"

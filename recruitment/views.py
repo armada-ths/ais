@@ -4,7 +4,6 @@ from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, 
 from django.forms import ModelForm
 
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -16,6 +15,8 @@ from people.models import Profile
 
 from companies.models import Company, CompanyParticipationYear
 from django.utils import timezone
+
+from django.forms import modelform_factory
 
 
 class RecruitmentPeriodForm(ModelForm):
@@ -338,59 +339,87 @@ def set_image_key_from_request(request, model, model_field, file_directory):
             model.save()
 
 
+
+class InterviewPlanForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(InterviewPlanForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = RecruitmentApplication
+        fields = ('interviewer', 'interview_location', 'interview_date', 'recommended_role', 'rating')
+
+        labels = {
+            'linkedin_url': 'Link to your LinkedIn-profile',
+        }
+
+        widgets = {
+            'interviewer': forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
+        }
+
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     if not 'view_recruitment_applications' in request.user.ais_permissions() and application.interviewer != request.user:
         return HttpResponseForbidden()
 
-    if request.POST and (application.interviewer == request.user or 'administer_recruitment_applications' in request.user.ais_permissions()):
-        set_foreign_key_from_request(request, application, 'recommended_role', Role)
-        set_int_key_from_request(request, application, 'rating')
-        set_string_key_from_request(request, application, 'interview_location')
-        set_string_key_from_request(request, application, 'interview_date')
-
-        if 'administer_recruitment_applications' in request.user.ais_permissions():
-            set_foreign_key_from_request(request, application, 'interviewer', User)
-            set_foreign_key_from_request(request, application, 'delegated_role', Role)
-            set_foreign_key_from_request(request, application, 'superior_user', User)
-            set_foreign_key_from_request(request, application, 'exhibitor', Company)
-            set_string_key_from_request(request, application, 'status')
-
-        application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
-        return redirect('recruitment_period', pk=application.recruitment_period.pk)
-
-    exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
-
-    class Status:
-        def __init__(self, id):
-            self.id = id
-
-        def __str__(self):
-            return self.id.capitalize() if self.id else 'None'
-
-        def __eq__(self, other):
-            return self.id == other.id
-
-
     interviewers = []
     for period in RecruitmentPeriod.objects.filter(fair=application.recruitment_period.fair):
-        if period.start_date < application.recruitment_period.start_date:
+        if period.start_date <= application.recruitment_period.start_date:
             for period_application in period.recruitmentapplication_set.filter(status='accepted'):
                 interviewers.append(period_application.user)
-
     interviewers.sort(key=lambda x: x.get_full_name())
+
+    exhibitors = [participation.company for participation in
+                  CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
+
+
+    InterviewPlanningForm = modelform_factory(
+        RecruitmentApplication,
+        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else ('interview_date', 'interview_location', 'recommended_role', 'rating'),
+        widgets={
+            'rating': forms.Select(choices=[(i,i) for i in range(1,6)]),
+            'interview_date': forms.TextInput(attrs={'class': 'datepicker'}),
+        }
+    )
+    interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
+    interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
+    if 'interviewer' in interview_planning_form.fields:
+        interview_planning_form.fields['interviewer'].choices = [('', '---------')]+[(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
+
+    RoleDelegationForm = modelform_factory(
+        RecruitmentApplication,
+        fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
+    )
+    if 'administer_recruitment_applications' in request.user.ais_permissions():
+        role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
+        role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
+        role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
+                (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+        role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
+            (exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
+    else:
+        role_delegation_form = None
+
+    if request.POST and (application.interviewer == request.user or 'administer_recruitment_applications' in request.user.ais_permissions()):
+        application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
+        if interview_planning_form.is_valid():
+            interview_planning_form.save()
+
+            if role_delegation_form:
+                if role_delegation_form.is_valid():
+                    role_delegation_form.save()
+                    return redirect('recruitment_period', pk=application.recruitment_period.pk)
+            else:
+                return redirect('recruitment_period', pk=application.recruitment_period.pk)
+
 
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
         'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
-        'roles': [role for role in application.recruitment_period.recruitable_roles.all()],
-        'users': User.objects.all,
-        'ratings': [i for i in range(1,6)],
-        'exhibitors': exhibitors,
-        'statuses': [Status(status[0]) for status in RecruitmentApplication.statuses],
-        'selected_status': Status(application.status),
-        'interviewers': interviewers
+        'interview_planning_form': interview_planning_form,
+        'role_delegation_form': role_delegation_form,
 
     })
 
