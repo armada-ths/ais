@@ -80,8 +80,8 @@ class RecruitmentApplicationSearchForm(forms.Form):
 
     def applications_matching_search(self, application_list):
         search_form = self
-        name = search_form.cleaned_data['name']
 
+        name = search_form.cleaned_data['name']
         if name:
             application_list = [application for application in application_list if name.lower() in application.user.get_full_name().lower()]
 
@@ -99,7 +99,7 @@ class RecruitmentApplicationSearchForm(forms.Form):
 
         submission_date = search_form.cleaned_data['submission_date']
         if submission_date:
-            application_list = [application for application in application_list if submission_date.lower() in date_filter(application.submission_date, "d M").lower()]
+            application_list = [application for application in application_list if submission_date.lower() in date_filter(application.submission_date+timezone.timedelta(hours=2), "d M H:i").lower()]
 
         roles_string = search_form.cleaned_data['roles']
         if roles_string:
