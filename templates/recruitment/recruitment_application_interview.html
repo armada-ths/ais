@@ -28,46 +28,37 @@
         <div class="col-sm-12">
 
 
-            <div class="form-group">
+
                 <label>Registration year</label>
-                <p class="form-control-static">{{ application.user.profile.registration_year }}</p>
-            </div>
+                <p>{{ application.user.profile.registration_year }}</p>
 
-            <div class="form-group">
+
+
                 <label>Programme</label>
-                <p class="form-control-static">{{ application.user.profile.programme }}</p>
-            </div>
+                <p>{{ application.user.profile.programme }}</p>
 
-            <div class="form-group">
+
+
                 <label>Email</label>
-                <p class="form-control-static"><a
-                        href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
-            </div>
+                <p><a href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
 
-            <div class="form-group">
                 <label>Phone number</label>
-                <p class="form-control-static">{{ application.user.profile.phone_number }}</p>
-            </div>
+                <p>{{ application.user.profile.phone_number }}</p>
 
             {% if application.user.profile.linkedin_url %}
-                <div class="form-group">
                     <label>Linkedin</label>
-                    <p class="form-control-static"><a
-                            href="{{ application.user.profile.linkedin_url }}">{{ application.user.profile.linkedin_url }}</a>
-                    </p>
+                    <p><a href="{{ application.user.profile.linkedin_url }}">{{ application.user.profile.linkedin_url }}</a></p>
                 </div>
             {% endif %}
 
-            <div class="form-group">
+
                 <label>Roles</label>
                 <ol>
-
                     {% for role in application.roleapplication_set.all %}
                         <li data-toggle="tooltip" data-placement="left"
                             title="{{ role.role.description }}">{{ role }}</li>
                     {% endfor %}
                 </ol>
-            </div>
             {% include 'recruitment/custom_fields_static.html' with questions_with_answers=application_questions_with_answers %}
         </div>
     </div>
