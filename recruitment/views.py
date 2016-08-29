@@ -62,7 +62,6 @@ class RecruitmentApplicationSearchForm(forms.Form):
         queryset=User.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=False
-
     )
 
     registration_year = forms.ChoiceField(
@@ -83,25 +82,22 @@ class RecruitmentApplicationSearchForm(forms.Form):
         required=False
     )
 
-
-def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = [i for i in recruitment_period.recruitmentapplication_set.order_by('-submission_date').all()]
-
-
-
-    search_form = RecruitmentApplicationSearchForm(request.GET or None)
-
-    searched_application_list = []
-
-    if search_form.is_valid():
-
+    def applications_matching_search(self, application_list):
+        search_form = self
         name = search_form.cleaned_data['name']
+
         if name:
             application_list = [application for application in application_list if name.lower() in application.user.get_full_name().lower()]
 
+        programme = search_form.cleaned_data['programme']
+        if programme:
+            application_list = [application for application in application_list if programme == application.user.profile.programme]
+
+        registration_year = search_form.cleaned_data['registration_year']
+        if registration_year:
+            application_list = [application for application in application_list if int(registration_year) == application.user.profile.registration_year]
+
         rating = search_form.cleaned_data['rating']
-        print('rating', rating)
         if rating:
             application_list = [application for application in application_list if int(rating) == application.rating]
 
@@ -117,17 +113,19 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         if state:
             application_list = [application for application in application_list if state == application.state()]
 
+        return application_list
 
-        programme = search_form.cleaned_data['programme']
-        if programme:
-            application_list = [application for application in application_list if programme == application.user.profile.programme]
 
-    print(search_form.errors)
+def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
+    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    application_list = [i for i in recruitment_period.recruitmentapplication_set.order_by('-submission_date').all()]
+
+    search_form = RecruitmentApplicationSearchForm(request.GET or None)
+    if search_form.is_valid():
+        application_list = search_form.applications_matching_search(application_list)
+
     number_of_applications_per_page = 25
     paginator = Paginator(application_list, number_of_applications_per_page)
-
-
-
     page = request.GET.get('page')
     try:
         applications = paginator.page(page)

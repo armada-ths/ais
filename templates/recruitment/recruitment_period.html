@@ -37,20 +37,24 @@
         </div>
     </div>
 
+        {% if interviews %}
+        <h2>Your interviews ({{ interviews.count }})</h2>
+        {% include 'recruitment/recruitment_application_table.html' with applications=interviews %}
+        <br>
+    {% endif %}
+
     {% if 'view_recruitment_applications' in request.user.ais_permissions %}
         {% if recruitment_period.recruitmentapplication_set.all %}
             <h2>Applications ({{ applications.paginator.count }})</h2>
-            {% include 'recruitment/recruitment_application_table.html' with applications=applications %}
+            {% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
         {% else %}
             <p>No applications</p>
         {% endif %}
 
+
     {% endif %}
 
-    {% if interviews %}
-        <h2>Your interviews ({{ interviews.count }})</h2>
-        {% include 'recruitment/recruitment_application_table.html' with applications=interviews %}
-    {% endif %}
+
     <nav aria-label="Page navigation">
 
     {% if applications.paginator.num_pages > 1 %}

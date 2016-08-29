@@ -11,6 +11,7 @@
         <th>Interviewer</th>
         <th>State</th>
     </tr>
+    {% if show_search_bar %}
     <tr>
         <form>
         <td>{{ search_form.name }}
@@ -38,6 +39,7 @@
         </td>
         </form>
     </tr>
+    {% endif %}
     </thead>
     {% for application in applications %}
         <tr>
