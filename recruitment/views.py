@@ -105,6 +105,11 @@ class RecruitmentApplicationSearchForm(forms.Form):
         if roles_string:
             application_list = [application for application in application_list if roles_string.lower() in application.roles_string().lower()]
 
+        interviewer = search_form.cleaned_data['interviewer']
+        if interviewer:
+            application_list = [application for application in application_list if interviewer == application.interviewer]
+
+
         state = search_form.cleaned_data['state']
         if state:
             application_list = [application for application in application_list if state == application.state()]
@@ -117,6 +122,9 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     application_list = [i for i in recruitment_period.recruitmentapplication_set.order_by('-submission_date').all()]
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
+    search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for interviewer in recruitment_period.interviewers()]
+
+
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
 
@@ -423,13 +431,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     if not 'view_recruitment_applications' in request.user.ais_permissions() and application.interviewer != request.user:
         return HttpResponseForbidden()
 
-    interviewers = []
-    for period in RecruitmentPeriod.objects.filter(fair=application.recruitment_period.fair):
-        if period.start_date <= application.recruitment_period.start_date:
-            for period_application in period.recruitmentapplication_set.filter(status='accepted'):
-                interviewers.append(period_application.user)
-    interviewers.sort(key=lambda x: x.get_full_name())
-
     exhibitors = [participation.company for participation in
                   CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
@@ -441,6 +442,10 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             'interview_date': forms.TextInput(attrs={'class': 'datepicker'}),
         }
     )
+
+
+
+    interviewers = application.recruitment_period.interviewers()
     interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
     interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
     if 'interviewer' in interview_planning_form.fields:
