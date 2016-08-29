@@ -407,12 +407,14 @@ def set_image_key_from_request(request, model, model_field, file_directory):
     if image_key in request.FILES:
         try:
             file = request.FILES[image_key]
-            file_path = '%s/%d/image.%s' % (file_directory, model.pk, file.name.split('.')[-1])
-            if default_storage.exists(file_path):
-                default_storage.delete(file_path)
-            default_storage.save(file_path, ContentFile(file.read()))
-            setattr(model, model_field, file_path)
-            model.save()
+            file_extension = file.name.split('.')[-1]
+            if file_extension in ['png', 'jpg', 'jpeg']:
+                file_path = '%s/%d/image.%s' % (file_directory, model.pk, file_extension)
+                if default_storage.exists(file_path):
+                    default_storage.delete(file_path)
+                default_storage.save(file_path, ContentFile(file.read()))
+                setattr(model, model_field, file_path)
+                model.save()
         except (ValueError, ValidationError) as e:
             setattr(model, model_field, None)
             model.save()
