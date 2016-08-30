@@ -431,8 +431,9 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else ('interview_date', 'interview_location', 'recommended_role', 'rating'),
         widgets={
             'rating': forms.Select(choices=[('', '---------')]+[(i,i) for i in range(1,6)]),
-            'interview_date': forms.TextInput(attrs={'class': 'datepicker'}),
-        }
+            'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M')
+        },
+        labels={'interview_date': 'Interview date (Format: 2016-12-24 13:37)'}
     )
 
 
