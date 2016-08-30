@@ -1,10 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from threading import Thread
+from django.shortcuts import render, redirect
+
 
 def index(request):
+    next = request.GET.get('next')
+    if next and next[-1] == '/':
+        next = next[:-1]
+    print(next)
     if request.user.is_authenticated():
-        username = request.user.username
-        return render(request, 'root.html')
-    return render(request, 'login.html')
+        return redirect('/recruitment')
+    return render(request, 'login.html', {'next': next})
 # Create your views here.

@@ -1,10 +1,10 @@
 *.swp
 *.pyc
 ais/secrets.py
-ais.sock
-ais/restart_uwsgi_server.sh
-ais/ais_uwsgi.ini
-ais/ais_nginx.conf
+#ais.sock
+#ais/restart_uwsgi_server.sh
+#ais/ais_uwsgi.ini
+#ais/ais_nginx.conf
 deploy
 db.sqlite3
 local_settings.py

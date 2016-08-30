@@ -19,4 +19,4 @@ def callback(tree):
             person.save()
         except:
             user.delete()
-            person.delete()        
+            person.delete()

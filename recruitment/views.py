@@ -1,166 +1,265 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, AISPermission, Programme
 from django.forms import ModelForm
-from django import forms
-from django.contrib.auth.models import User, Permission
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-from django.utils import timezone
-
+from django import forms
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.core.exceptions import ValidationError
+from people.models import Profile
 from companies.models import Company, CompanyParticipationYear
+from django.utils import timezone
+from django.template.defaultfilters import date as date_filter
+from django.forms import modelform_factory
 
-import datetime
 
-def user_has_permission(user, needed_permission):
-    if user.has_perm(needed_permission):
-        return True
+def import_members(request):
+    if not request.user.is_superuser():
+        return HttpResponseForbidden()
+    create_project_group()
+    return redirect('recruitment')
 
-    for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
-        if application.recruitment_period.fair.year == datetime.datetime.now().year:
-            if application.delegated_role.has_permission(needed_permission):
-                return True
-    return False
 
 class RecruitmentPeriodForm(ModelForm):
     class Meta:
         model = RecruitmentPeriod
         fields = '__all__'
-        exclude = ('recruitable_roles',)
+        exclude = ('recruitable_roles', 'image', 'interview_questions', 'application_questions')
 
         widgets = {
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "interview_end_date": forms.TextInput(attrs={'class': 'datepicker'}),
-            "interview_questions": forms.HiddenInput(),
-            "application_questions": forms.HiddenInput(),
         }
 
 
 def recruitment(request, template_name='recruitment/recruitment.html'):
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
-        #'roles': Role.objects.all(),
         'roles': [{'parent_role': role, 'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for role in Role.objects.filter(parent_role=None)],
-        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
-        'can_edit_roles': user_has_permission(request.user, 'change_group'),
     })
 
 
-def import_members(request):
-    create_project_group()
-    return redirect('/recruitment/')
+class RecruitmentApplicationSearchForm(forms.Form):
 
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+
+    programme = forms.ModelChoiceField(
+        queryset=Programme.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    interviewer = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    registration_year = forms.ChoiceField(
+        choices=[('', '-------')] + [(i, i) for i in range(2001, timezone.now().year+1)],
+        widget = forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    rating = forms.ChoiceField(
+        choices=[('', '-------')] + [(i, i) for i in range(1, 6)],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    state = forms.ChoiceField(
+        choices=[('', '-------')] + [('new', 'New'), ('interview_delegated', 'Delegated'), ('interview_planned', 'Planned'), ('interview_done', 'Done'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    def applications_matching_search(self, application_list):
+        search_form = self
+
+        name = search_form.cleaned_data['name']
+        if name:
+            application_list = [application for application in application_list if name.lower() in application.user.get_full_name().lower()]
+
+        programme = search_form.cleaned_data['programme']
+        if programme:
+            application_list = [application for application in application_list if programme == application.user.profile.programme]
+
+        registration_year = search_form.cleaned_data['registration_year']
+        if registration_year:
+            application_list = [application for application in application_list if int(registration_year) == application.user.profile.registration_year]
+
+        rating = search_form.cleaned_data['rating']
+        if rating:
+            application_list = [application for application in application_list if int(rating) == application.rating]
+
+        submission_date = search_form.cleaned_data['submission_date']
+        if submission_date:
+            application_list = [application for application in application_list if submission_date.lower() in date_filter(application.submission_date+timezone.timedelta(hours=2), "d M H:i").lower()]
+
+        roles_string = search_form.cleaned_data['roles']
+        if roles_string:
+            application_list = [application for application in application_list if roles_string.lower() in application.roles_string().lower()]
+
+        interviewer = search_form.cleaned_data['interviewer']
+        if interviewer:
+            application_list = [application for application in application_list if interviewer == application.interviewer]
+
+
+        state = search_form.cleaned_data['state']
+        if state:
+            application_list = [application for application in application_list if state == application.state()]
+
+        return application_list
+
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)+1):
+        yield start_date + timezone.timedelta(n)
 
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    application_list = [i for i in recruitment_period.recruitmentapplication_set.order_by('-submission_date').all()]
+
+    search_form = RecruitmentApplicationSearchForm(request.GET or None)
+    search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for interviewer in recruitment_period.interviewers()]
+
+    date_names = []
+    applications_per_date = []
+
+    end_date = timezone.now() if timezone.now() < recruitment_period.end_date else recruitment_period.end_date
+    end_date = end_date + timezone.timedelta(hours=2)
+    for date in daterange(recruitment_period.start_date+timezone.timedelta(hours=2), end_date):
+        date_names.append(date_filter(date, "d M"))
+        applications_per_date.append(len([application for application in recruitment_period.recruitmentapplication_set.all() if application.submission_date.date() == date.date()]))
+
+
+    role_names = []
+    first_preference_applications_per_role = []
+    applications_per_role = []
+    for role in recruitment_period.recruitable_roles.all():
+        role_names.append(role.name)
+        first_preference_number_of_applications = 0
+        number_of_applications = 0
+        for application in recruitment_period.recruitmentapplication_set.all():
+            for role_application in application.roleapplication_set.filter(role=role):
+                if role_application.order == 0:
+                    first_preference_number_of_applications += 1
+                number_of_applications += 1
+        first_preference_applications_per_role.append(first_preference_number_of_applications)
+        applications_per_role.append(number_of_applications)
+
+    print(role_names)
+    print(applications_per_role)
+
+    if search_form.is_valid():
+        application_list = search_form.applications_matching_search(application_list)
+
+    number_of_applications_per_page = 25
+    paginator = Paginator(application_list, number_of_applications_per_page)
+    page = request.GET.get('page')
+    try:
+        applications = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        applications = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        applications = paginator.page(paginator.num_pages)
 
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
-        'can_edit_recruitment_period': user_has_permission(request.user, 'change_recruitmentperiod'),
-        'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-        'interviews': recruitment_period.recruitmentapplication_set.filter(interviewer=request.user).all()
+        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user)|recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
+        'paginator': paginator,
+        'applications': applications,
+        'now': timezone.now(),
+        'search_form': search_form,
+        'applications_per_date': {'labels': date_names, 'data': applications_per_date},
+        'applications_per_role': {'labels': role_names, 'first_preference_data': first_preference_applications_per_role, 'total_data': applications_per_role},
     })
-
-
-def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
-    if not user_has_permission(request.user, 'change_group'):
-        return HttpResponseForbidden()
-    role = Role.objects.filter(pk=pk).first()
-
-    permissions = [
-        {'codename': 'change_recruitmentperiod', 'name': 'Administer recruitment', 'checked': False},
-        {'codename': 'change_group', 'name': 'Administer roles', 'checked': False},
-        {'codename': 'change_recruitmentapplication', 'name': 'Administer applications', 'checked': False},
-    ]
-
-    if role:
-        for permission in permissions:
-            for role_permission in role.permissions.all():
-                if permission['codename'] == role_permission.codename:
-                    permission['checked'] = True
-
-    if request.POST:
-        if not role:
-            role = Role()
-        role.name = request.POST['name']
-        role.description = request.POST['description']
-        if request.POST['parent_role']:
-            parent_role_id = int(request.POST['parent_role'])
-            role.parent_role = Role.objects.get(pk=parent_role_id)
-        role.save()
-
-        for permission in permissions:
-            codename = permission['codename']
-            permission_object = Permission.objects.get(codename=permission['codename'])
-            if codename in request.POST:
-                role.permissions.add(permission_object)
-                role.save()
-            else:
-                role.permissions.remove(permission_object)
-                role.save()
-
-        return redirect('/recruitment/')
-
-    return render(request, template_name, {'role': role, 'permissions': permissions, 'roles': Role.objects.exclude(pk=role.pk) if role else Role.objects.all()})
-
-
-
-def roles_delete(request, pk):
-    role = get_object_or_404(Role, pk=pk)
-    if not user_has_permission(request.user, 'change_group'):
-        return HttpResponseForbidden()
-    role.delete()
-    return redirect('/recruitment/')
 
 
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    if not user_has_permission(request.user, 'change_recruitmentperiod'):
+    if not 'administer_recruitment' in request.user.ais_permissions():
         return HttpResponseForbidden()
     recruitment_period.delete()
-    return redirect('/recruitment/')
+    return redirect('recruitment')
 
 
 def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
-    if not user_has_permission(request.user, 'change_recruitmentperiod'):
+    if not 'administer_recruitment' in request.user.ais_permissions():
         return HttpResponseForbidden()
 
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
-    roles = []
 
-    for role in Role.objects.all():
-        roles.append({'role': role, 'checked': role in recruitment_period.recruitable_roles.all() if recruitment_period else False})
-
-    if form.is_valid():
-        recruitment_period = form.save()
-        for role in Role.objects.all():
-            role_key = 'role_%d' % role.id
-            if role_key in request.POST:
-                if not role in recruitment_period.recruitable_roles.all():
-                    recruitment_period.recruitable_roles.add(role)
-            else:
-                recruitment_period.recruitable_roles.remove(role)
-
-        recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
-        recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
-        recruitment_period.save()
-
-        return redirect('/recruitment/%d' % recruitment_period.id)
-    else:
-        print(form.errors)
-        print("Ai'nt no valid form!")
+    if request.POST:
+        if form.is_valid():
+            recruitment_period = form.save()
+            recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
+            recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
+            for role in Role.objects.all():
+                role_key = 'role_%d' % role.id
+                if role_key in request.POST:
+                    if not role in recruitment_period.recruitable_roles.all():
+                        recruitment_period.recruitable_roles.add(role)
+                else:
+                    recruitment_period.recruitable_roles.remove(role)
+            recruitment_period.save()
+            return redirect('recruitment_period', pk=recruitment_period.id)
 
 
     return render(request, template_name, {
         'form': form,
-        'roles': roles,
+        'roles': [{'parent_role': role,
+                   'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
+                  role in Role.objects.filter(parent_role=None)],
         'recruitment_period': recruitment_period,
         'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
         'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
     })
+
+
+class RolesForm(ModelForm):
+    class Meta:
+        model = Role
+        fields = '__all__'
+        widgets = {
+            'permissions': forms.CheckboxSelectMultiple(),
+            'description': forms.Textarea(),
+        }
+
+def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
+    role = Role.objects.filter(pk=pk).first()
+    roles_form = RolesForm(request.POST or None, instance=role)
+
+    if 'administer_roles' in request.user.ais_permissions():
+        if roles_form.is_valid():
+            roles_form.save()
+            return redirect('recruitment')
+
+    users = [application.user for application in RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
+    return render(request, template_name, {
+        'role': role,
+        'users': users,
+        'roles_form': roles_form
+    })
+
+
+def roles_delete(request, pk):
+    role = get_object_or_404(Role, pk=pk)
+    if not 'administer_roles' in request.user.ais_permissions():
+        return HttpResponseForbidden()
+    role.delete()
+    return redirect('recruitment')
+
+
+
 
 def recruitment_application_comment_new(request, pk):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
@@ -169,12 +268,59 @@ def recruitment_application_comment_new(request, pk):
     comment.recruitment_application = application
     comment.comment = request.POST['comment']
     comment.save()
-    return redirect('/recruitment/%d/application/%d/interview' % (application.recruitment_period.id, application.id))
+    return redirect('recruitment_application_interview', application.recruitment_period.pk, application.id)
 
 
-@login_required
+class ProfileForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+
+        self.fields['registration_year'].required = True
+        self.fields['programme'].required = True
+        self.fields['phone_number'].required = True
+
+    class Meta:
+        model = Profile
+        fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url')
+
+        labels = {
+            'linkedin_url': 'Link to your LinkedIn-profile',
+        }
+
+
+        widgets = {
+            'registration_year': forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
+            'programme': forms.Select(
+                attrs={'required': True}),
+            'phone_number': forms.TextInput(attrs={'required': True})
+        }
+
+
+class RoleApplicationForm(forms.Form):
+    role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.all(), widget=forms.Select(attrs={'required': True}))
+    role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.all(), required=False)
+    role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.all(), required=False)
+
+
 def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
+
+    if not pk:
+        recruitment_application = recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
+
+        # If the user already has an application for this period redirect to it
+        if recruitment_application:
+            return redirect('recruitment_application_new', recruitment_period.pk, recruitment_application.pk)
+
+    recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
+
+
+    user = recruitment_application.user if recruitment_application else request.user
+    profile = Profile.objects.filter(user=user).first()
+    if not profile:
+        Profile.objects.create(user=user)
+
     now = timezone.now()
 
     if recruitment_period.start_date > now:
@@ -189,43 +335,55 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             'message': 'Application closed'
         })
 
+    profile_form = ProfileForm(request.POST or None, instance=profile)
 
-    recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
+    role_form = RoleApplicationForm(request.POST or None)
+
+    for i in range(1, 4):
+        key = 'role%d' % i
+        role_form.fields[key].queryset = recruitment_period.recruitable_roles
+        if recruitment_application:
+            role_application = RoleApplication.objects.filter(
+                recruitment_application=recruitment_application,
+                order=i-1
+            ).first()
+            if role_application:
+                role_form.fields[key].initial = role_application.role.pk
 
     if request.POST:
-        recruitment_period.application_questions.handle_answers_from_request(request, request.user)
-        if not recruitment_application:
-            recruitment_application = RecruitmentApplication()
+        recruitment_period.application_questions.handle_answers_from_request(request, user)
+        set_image_key_from_request(request, profile, 'image', 'profile')
 
-        recruitment_application.roleapplication_set.all().delete()
+        if role_form.is_valid() and profile_form.is_valid():
 
-        recruitment_application.user = request.user
-        recruitment_application.recruitment_period = recruitment_period
-        recruitment_application.save()
-        for role_number in range(recruitment_period.eligible_roles):
-            role_key = 'role_%d' % role_number
-            if role_key in request.POST and request.POST[role_key].isdigit():
-                role_id = int(request.POST[role_key])
-                role_application = RoleApplication()
-                role_application.recruitment_application = recruitment_application
-                role_application.role = Role.objects.filter(pk=role_id).first()
-                role_application.order = role_number
-                role_application.save()
-        return redirect('/recruitment/%d' % recruitment_period.id)
+            if not recruitment_application:
+                recruitment_application = RecruitmentApplication()
 
-    chosen_roles = [None for i in range(recruitment_period.eligible_roles)]
+            recruitment_application.user = user
+            recruitment_application.recruitment_period = recruitment_period
+            recruitment_application.save()
 
-    if recruitment_application:
-        role_applications = RoleApplication.objects.filter(recruitment_application=recruitment_application).order_by('order')
+            recruitment_application.roleapplication_set.all().delete()
+            for i in range(1,4):
+                key = 'role%d' % i
+                role = role_form.cleaned_data[key]
+                if role:
+                    RoleApplication.objects.create(
+                        recruitment_application=recruitment_application,
+                        role=role,
+                        order=i-1
+                    )
 
-        for i in range(len(role_applications)):
-            chosen_roles[i] = role_applications[i].role
+            profile_form.save()
+            return redirect('recruitment_period', recruitment_period.pk)
 
     return render(request, template_name, {
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
-        'chosen_roles': chosen_roles,
-        'roles': recruitment_period.recruitable_roles.all()
+        'profile_form': profile_form,
+        'profile': profile,
+        'role_form': role_form,
+        'new_application': pk == None
     })
 
 
@@ -248,72 +406,116 @@ def set_int_key_from_request(request, model, model_field):
         except ValueError:
             setattr(model, model_field, None)
             model.save()
-            print('Role id was not an int')
 
 def set_string_key_from_request(request, model, model_field):
     if model_field in request.POST:
         try:
             setattr(model, model_field, request.POST[model_field])
             model.save()
-        except ValueError:
+        except (ValueError, ValidationError) as e:
             setattr(model, model_field, None)
             model.save()
 
+def set_image_key_from_request(request, model, model_field, file_directory):
+    image_key = model_field
+    if image_key in request.FILES:
+        try:
+            file = request.FILES[image_key]
+            file_extension = file.name.split('.')[-1]
+            if file_extension in ['png', 'jpg', 'jpeg']:
+                file_path = '%s/%d/image.%s' % (file_directory, model.pk, file_extension)
+                if default_storage.exists(file_path):
+                    default_storage.delete(file_path)
+                default_storage.save(file_path, ContentFile(file.read()))
+                setattr(model, model_field, file_path)
+                model.save()
+        except (ValueError, ValidationError) as e:
+            setattr(model, model_field, None)
+            model.save()
 
+class InterviewPlanForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(InterviewPlanForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = RecruitmentApplication
+        fields = ('interviewer', 'interview_location', 'interview_date', 'recommended_role', 'rating')
+
+        labels = {
+            'linkedin_url': 'Link to your LinkedIn-profile',
+        }
+
+        widgets = {
+            'interviewer': forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
+        }
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not user_has_permission(request.user, 'change_recruitmentapplication') and application.interviewer != request.user:
+    if not 'view_recruitment_applications' in request.user.ais_permissions() and application.interviewer != request.user:
         return HttpResponseForbidden()
 
-    if request.POST:
-        set_foreign_key_from_request(request, application, 'interviewer', User)
-        set_foreign_key_from_request(request, application, 'recommended_role', Role)
-        set_foreign_key_from_request(request, application, 'delegated_role', Role)
-        set_foreign_key_from_request(request, application, 'superior_user', User)
-        set_foreign_key_from_request(request, application, 'exhibitor', Company)
-        set_int_key_from_request(request, application, 'rating')
-        set_string_key_from_request(request, application, 'interview_location')
-        set_string_key_from_request(request, application, 'interview_date')
-        set_string_key_from_request(request, application, 'status')
+    exhibitors = [participation.company for participation in
+                  CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
 
+    InterviewPlanningForm = modelform_factory(
+        RecruitmentApplication,
+        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else ('interview_date', 'interview_location', 'recommended_role', 'rating'),
+        widgets={
+            'rating': forms.Select(choices=[('', '---------')]+[(i,i) for i in range(1,6)]),
+            'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M')
+        },
+        labels={'interview_date': 'Interview date (Format: 2016-12-24 13:37)'}
+    )
+
+
+
+    interviewers = application.recruitment_period.interviewers()
+    interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
+    interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
+    if 'interviewer' in interview_planning_form.fields:
+        interview_planning_form.fields['interviewer'].choices = [('', '---------')]+[(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
+
+    RoleDelegationForm = modelform_factory(
+        RecruitmentApplication,
+        fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
+    )
+    if 'administer_recruitment_applications' in request.user.ais_permissions():
+        role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
+        role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
+        role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
+                (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+        role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
+            (exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
+    else:
+        role_delegation_form = None
+
+    if request.POST and (application.interviewer == request.user or 'administer_recruitment_applications' in request.user.ais_permissions()):
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
-        application.recruitment_period.application_questions.handle_answers_from_request(request, application.user)
+        if interview_planning_form.is_valid():
+            interview_planning_form.save()
 
-    exhibitors = [participation.company for participation in CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
-
-
-    class Status:
-        def __init__(self, id):
-            self.id = id
-
-        def __str__(self):
-            return self.id.capitalize() if self.id else 'None'
-
-
-        def __eq__(self, other):
-            return self.id == other.id
-
+            if role_delegation_form:
+                if role_delegation_form.is_valid():
+                    role_delegation_form.save()
+                    return redirect('recruitment_period', pk=application.recruitment_period.pk)
+            else:
+                return redirect('recruitment_period', pk=application.recruitment_period.pk)
 
 
     return render(request, template_name, {
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
         'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
-        'can_edit_recruitment_application': user_has_permission(request.user, 'change_recruitmentapplication'),
-        'roles': [role for role in application.recruitment_period.recruitable_roles.all()],
-        'users': User.objects.all,
-        'ratings': [i for i in range(1,6)],
-        'exhibitors': exhibitors,
-        'statuses': [Status(status[0]) for status in RecruitmentApplication.statuses],
-        'selected_status': Status(application.status)
-
+        'interview_planning_form': interview_planning_form,
+        'role_delegation_form': role_delegation_form,
     })
 
 
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not user_has_permission(request.user, 'change_recruitmentapplication') and recruitment_application.user != request.user:
+    if not 'administer_recruitment_applications' in request.user.ais_permissions() and recruitment_application.user != request.user:
         return HttpResponseForbidden()
     recruitment_application.delete()
-    return redirect('/recruitment/%d' % recruitment_application.recruitment_period.id)
+    return redirect('recruitment_period', recruitment_application.recruitment_period.pk)

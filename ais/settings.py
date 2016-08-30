@@ -18,16 +18,19 @@ from ais.secrets import *
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+CAS_SERVER_URL = 'https://login.kth.se/'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-CAS_SERVER_URL = 'https://login.kth.se/'
-#CAS_IGNORE_REFERER = True
-#CAS_REDIRECT_URL = 'armada.nu/login'
+
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['.armada.nu']
+ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+#LOGIN_URL = ''
+
 
 # Email settings
 EMAIL_USE_TLS = True
@@ -67,7 +70,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'cas.middleware.CASMiddleware',
+    'recruitment.middleware.LoginRequiredMiddleware'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -112,17 +115,23 @@ DATABASES = {
             # The following settings are not used with sqlite3:
             'USER': DB_USERNAME,
             'PASSWORD': DB_PASSWORD,
-            'HOST': 'mnemosyne.armada.nu',
+            'HOST': DB_HOST,
     }
 }
 
+
+ADMINS = (
+   ('ME', 'sami.purmonen@armada.nu'),
+)
+MANAGERS = ADMINS
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+#TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Stockholm'
 
 USE_I18N = True
 
@@ -133,9 +142,17 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-STATIC_ROOT = 'static'
+#STATIC_ROOT = 'static'
+
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-STATICFILES_DIRS = (
-)
+MEDIA_ROOT = '../media/'
+MEDIA_URL = '/media/'
+
+
+
+STATICFILES_DIRS = ( os.path.join(BASE_DIR, "static"), )
+
+STATIC_URL = '/static/'
+ADMIN_MEDIA_PREFIX = '/static/admin/'

@@ -2,117 +2,340 @@
 
 {% block content %}
 
-    <div class="row">
+
     <ol class="breadcrumb">
-    <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
         <li class="active">{{ recruitment_period.name }}</li>
     </ol>
 
 
-    <div class="jumbotron">
-        <h1>{{ recruitment_period.name }}</h1>
-        <p>Apply between <strong>{{ recruitment_period.start_date }}</strong> and <strong>{{ recruitment_period.end_date }}</strong></p>
-        <p>We are looking for:</p>
-        <ul>
-            {% for role in recruitment_period.recruitable_roles.all %}
-                <li>{{ role }}</li>
-            {% endfor %}
-        </ul>
+    <div class="jumbotron recruitment-jumbotron">
+        <div class="container recruitment-jumbotron-container">
+            <h1>{{ recruitment_period.name }}</h1>
+            <p>Apply between <strong>{{ recruitment_period.start_date|date:"d M" }}</strong> and
+                <strong>{{ recruitment_period.end_date|date:"d M" }}</strong></p>
 
-        <div>
-        {% if application %}
-            <a href="{% url 'recruitment_application_new' recruitment_period.id application.id %}"><button class="btn btn-primary">View application</button></a>
-        {% else %}
-            <a href="{% url 'recruitment_application_new' recruitment_period.id %}"><button class="btn btn-primary">Apply</button></a>
-        {% endif %}
+            <div>
+                {% if application %}
+                    <a href="{% url 'recruitment_application_new' recruitment_period.id application.id %}">
+                        <button class="btn btn-primary btn-lg">View application</button>
+                    </a>
+                {% else %}
+                    <a href="{% url 'recruitment_application_new' recruitment_period.id %}">
+                        <button class="btn btn-primary btn-lg">Apply</button>
+                    </a>
+                {% endif %}
 
-            {% if can_edit_recruitment_period %}
-            <a href="{% url 'recruitment_period_edit' recruitment_period.id %}"><button class="btn btn-default">Edit</button></a>
-            {% endif %}
+                {% if 'administer_recruitment' in request.user.ais_permissions %}
+                    <a href="{% url 'recruitment_period_edit' recruitment_period.id %}">
+                        <button class="btn btn-default btn-lg">Edit</button>
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 
-    {% if can_edit_recruitment_application %}
-    {% if recruitment_period.recruitmentapplication_set.all %}
-        <h2>Applications</h2>
+
+
+
+    {% if interviews %}
+        <h2>Your interviews ({{ interviews.count }})</h2>
         <table class="table">
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Delegated role</th>
-                <th>Rating</th>
-                <th>State</th>
-                <th>Submitted</th>
-                <th>Roles</th>
+                <th>Interview date</th>
+                <th>Interview Location</th>
                 <th>Interviewer</th>
             </tr>
             </thead>
-                {% for application in recruitment_period.recruitmentapplication_set.all %}
-                    <tr>
-
-                    <td><a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                    {%  include 'recruitment/user_name.html' with user=application.user %}
-                        </a></td>
-                    <td>{% if application.delegated_role %}{{ application.delegated_role }} {% endif %}</td>
-                    <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
-                    <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
-                    <td>{{ application.submission_date }}</td>
+            {% for application in interviews %}
+                <tr>
                     <td>
-                        {% for role in application.roleapplication_set.all %}
-                            {{ role }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
+                        {% if request.user == application.interviewer %}
+                            <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                                {% include 'recruitment/user_name.html' with user=application.user %}
+                            </a></td>
+                        {% else %}
+                            {% include 'recruitment/user_name.html' with user=application.user %}
+                        {% endif %}
+
+                    <td>{{ application.interview_date|date:"d M H:i" }}</td>
+                    <td>{{ application.interview_location }}</td>
                     <td>
                         {% if application.interviewer %}
                             {{ application.interviewer.get_full_name }}
                         {% endif %}
                     </td>
 
-                    </tr>
-                {% endfor %}
+                </tr>
+            {% endfor %}
         </table>
-    {% else %}
-        <p>No applications</p>
-    {% endif %}
+        <br>
     {% endif %}
 
-        {% if interviews %}
-            <h2>Your interviews</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Rating</th>
-                <th>State</th>
-                <th>Submitted</th>
-                <th>Roles</th>
-                <th>Interviewer</th>
-            </tr>
-            </thead>
-                {% for application in interviews %}
-                    <tr>
 
-                    <td><a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                            {{ application.user.get_full_name }}
-                        </a></td>
-                    <td>{%  if application.rating != None %}{{ application.rating }}{% endif %}</td>
-                    <td>{%  if application.status != 'undecided' %} {{application.status.capitalize}} {% endif %}</td>
-                    <td>{{ application.submission_date }}</td>
-                    <td>
-                        {% for role in application.roleapplication_set.all %}
-                            {{ role }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {% if application.interviewer %}
-                            {{ application.interviewer.get_full_name }}
-                        {% endif %}
-                    </td>
 
-                    </tr>
-                {% endfor %}
-        </table>
+    {% if 'view_recruitment_applications' in request.user.ais_permissions %}
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
+                                                      data-toggle="tab">Applications</a>
+            </li>
+            <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="applications">
+
+                {% if recruitment_period.recruitmentapplication_set.all %}
+                    <h2>Applications ({{ applications.paginator.count }})</h2>
+                    {% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
+                {% else %}
+                    <p>No applications</p>
+                {% endif %}
+
+                <nav aria-label="Page navigation">
+
+                    {% if applications.paginator.num_pages > 1 %}
+                        <ul class="pagination">
+                            <li>
+                                {% if applications.previous_page_number > 0 %}
+                                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                            {% for page_number in applications.paginator.page_range %}
+                                <li {% if page_number == applications.number %}class="active"{% endif %}><a
+                                        href="?page={{ page_number }}">{{ page_number }}</a></li>
+                            {% endfor %}
+                            <li>
+                                {% if applications.next_page_number <= applications.paginator.num_pages %}
+                                    <a href="?page={{ applications.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% endif %}
+                </nav>
+
+
+            </div>
+            <div role="tabpanel" class="tab-pane" id="statistics">
+                <h2>Statistics</h2>
+                <div id="stats">
+                    <canvas id="applications-per-date-chart" width="300" height="100"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-first-preference-chart" width="300" height="100"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-first-preference-pie-chart" width="300" height="100"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-total-chart" width="300" height="100"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-total-pie-chart" width="300" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+
     {% endif %}
 
-</div>
+
+
+
+
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript">
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        $(document).ready(function () {
+            var position = getParameterByName("scroll_y");
+            $(window).scroll(function (event) {
+                var scroll = $(window).scrollTop();
+                $("#scroll_y").attr('value', scroll);
+                console.log(scroll);
+            });
+            $(window).scrollTop(position);
+
+            /*
+             $('select').change(function(e) {
+             console.log('CHANGING')
+             $('#search-form').submit()
+             })
+             */
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+
+    <script>
+        new Chart(document.getElementById("applications-per-date-chart"), {
+            type: 'bar',
+            data: {
+                labels: {{ applications_per_date.labels|safe }},
+                datasets: [{
+                    label: 'Applicants per day',
+                    data: {{ applications_per_date.data }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        var randomColors = ["#ffdabc", "#5ddbf7", "#f9a7ec", "#e843bc", "#e09567", "#fcbded", "#e55622", "#d8ffa3", "#c872e5", "#a4eef9", "#acf252", "#ea4f9d"]
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+
+        var lightRandomColors = []
+        var i
+        randomColors.forEach(function (color) {
+            var rgb = hexToRgb(color)
+            lightRandomColors.push('rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.3)')
+        })
+
+
+        new Chart(document.getElementById("applications-per-role-first-preference-chart"), {
+            type: 'bar',
+            data: {
+
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.first_preference_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+
+                title: {
+                    display: true,
+                    text: 'Applicants per role first preference'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+
+        new Chart(document.getElementById("applications-per-role-first-preference-pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.first_preference_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: lightRandomColors,
+                    borderWidth: 1
+                }]
+            },
+
+            options: {
+                title: {
+                    display: true,
+                    text: 'Applicants per role first prefence'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+
+        new Chart(document.getElementById("applications-per-role-total-chart"), {
+            type: 'bar',
+            data: {
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.total_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Applicants per role any prefence'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        new Chart(document.getElementById("applications-per-role-total-pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.total_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: lightRandomColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Applicants per role any preference'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+    </script>
 {% endblock %}

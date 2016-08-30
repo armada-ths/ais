@@ -1,13 +1,27 @@
 {% extends "people.html" %}
 {% block content %}
+<div class="page-header">
+    <h1>{% include 'recruitment/user_name.html' with user=person %} <small>{{ role }}</small></h1>
+    {% if person.user == request.user %}
+        <a href="{% url "edit_person" person.pk %}">Edit</a>
+    {% endif %}
+    </div>
+
+
+    <div>
+
+                                {% if person.image %}
+                                <div><img src="/media/{{ person.image }}" style="max-width: 100%; max-height: 400px;"></div>
+                            {% endif %}
+    <br>
+    </div>
+
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Basic information</h3>
   </div>
   <div class="panel-body">
     <ul class="list-unstyled">
-    <li>First name: {{ person.user.first_name }}</li>
-    <li>Last name: {{ person.user.last_name }}</li>
     <li>Birth date: {{ person.birth_date }}</li>
     <li>Gender: {{ person.get_gender_display }}</li>
     </ul>
