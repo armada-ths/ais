@@ -54,7 +54,7 @@
     </div>
 
     <div class="col-sm-6">
-        {% for role in roles %}
+        {% for role in recruitment_period.recruitable_roles.all %}
             <label>{{ role.name }}</label>
             <p>{{ role.description }}</p>
             <br>
