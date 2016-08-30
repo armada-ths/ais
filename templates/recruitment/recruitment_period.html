@@ -35,7 +35,7 @@
         </div>
     </div>
 
-        {% if interviews %}
+    {% if interviews %}
         <h2>Your interviews ({{ interviews.count }})</h2>
         {% include 'recruitment/recruitment_application_table.html' with applications=interviews %}
         <br>
@@ -49,55 +49,56 @@
             <p>No applications</p>
         {% endif %}
 
+        <nav aria-label="Page navigation">
+
+            {% if applications.paginator.num_pages > 1 %}
+                <ul class="pagination">
+                    <li>
+                        {% if applications.previous_page_number > 0 %}
+                            <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        {% endif %}
+                    </li>
+                    {% for page_number in applications.paginator.page_range %}
+                        <li {% if page_number == applications.number %}class="active"{% endif %}><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+                    {% endfor %}
+                    <li>
+                        {% if applications.next_page_number <= applications.paginator.num_pages %}
+                            <a href="?page={{ applications.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            {% endif %}
+        </nav>
 
     {% endif %}
 
 
-    <nav aria-label="Page navigation">
 
-    {% if applications.paginator.num_pages > 1 %}
-        <ul class="pagination">
-            <li>
-                {% if applications.previous_page_number > 0 %}
-                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                {% endif %}
-            </li>
-            {% for page_number in applications.paginator.page_range %}
-                <li {% if page_number == applications.number %}class="active"{% endif %}><a href="?page={{ page_number }}">{{ page_number }}</a></li>
-            {% endfor %}
-            <li>
-                {% if applications.next_page_number <= applications.paginator.num_pages %}
-                    <a href="?page={{ applications.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                {% endif %}
-            </li>
-        </ul>
-    {% endif %}
-    </nav>
 
 {% endblock %}
-    {% block scripts %}
-<script type="text/javascript">
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-            $(document).ready(function() {
-              var position = getParameterByName("scroll_y");
-              $(window).scroll(function(event) {
+{% block scripts %}
+    <script type="text/javascript">
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        $(document).ready(function() {
+            var position = getParameterByName("scroll_y");
+            $(window).scroll(function(event) {
                 var scroll = $(window).scrollTop();
                 $("#scroll_y").attr('value',scroll);
                 console.log(scroll);
-              });
-              $(window).scrollTop(position);
             });
-        </script>
-    {% endblock %}
+            $(window).scrollTop(position);
+        });
+    </script>
+{% endblock %}
