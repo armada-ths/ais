@@ -23,18 +23,13 @@ class ExtraField(models.Model):
         for custom_field in self.customfield_set.all().order_by('position'):
             answer = CustomFieldAnswer.objects.filter(custom_field=custom_field,
                                                       user=user).first()
-            """
-            post_answer = request.POST.get(custom_field.form_key)
-            if post_answer:
-                #answer = answer
-                pass
-            """
             questions_with_answers.append((custom_field, answer))
         return questions_with_answers
 
     def handle_questions_from_request(self, request, field_name):
+        if not request.POST:
+            return
         extra = self
-
         question_ids = []
         for key in request.POST:
             question_key_prefix = field_name + '_'
@@ -85,8 +80,10 @@ class ExtraField(models.Model):
             if custom_field.field_type == 'file' or custom_field.field_type == 'image':
                 if key in request.FILES:
                     file = request.FILES[key]
+
+                    # Must think about what type of files that can be uploaded - html files lead to security vulnerabilites
                     file_path = 'custom-field/%d_%s.%s' % (user.id, key, file.name.split('.')[-1])
-                    if os._exists(file_path):
+                    if os.exists(file_path):
                         os.remove(file_path)
                     path = default_storage.save(file_path, ContentFile(file.read()))
                     os.path.join(settings.MEDIA_ROOT, path)
@@ -126,7 +123,7 @@ class CustomField(models.Model):
         ('image', 'Image')]
 
     extra_field = models.ForeignKey(ExtraField)
-    question = models.CharField(max_length=1000)
+    question = models.TextField()
     field_type = models.CharField(choices=fields, default='text_field', max_length=20)
     position = models.IntegerField(default=0)
     required = models.BooleanField(default=False)
@@ -139,7 +136,7 @@ class CustomField(models.Model):
         return 'custom_field_%s' % self.id
 
 class CustomFieldArgument(models.Model):
-    value = models.CharField(max_length=100)
+    value = models.TextField()
     custom_field = models.ForeignKey(CustomField)
     position = models.IntegerField(default=0)
 
