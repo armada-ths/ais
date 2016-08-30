@@ -109,8 +109,6 @@
     {% endif %}
 
 
-
-
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript">
@@ -131,6 +129,13 @@
                 console.log(scroll);
             });
             $(window).scrollTop(position);
+
+        /*
+        $('select').change(function(e) {
+            console.log('CHANGING')
+            $('#search-form').submit()
+        })
+        */
         });
     </script>
 {% endblock %}

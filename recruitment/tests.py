@@ -204,7 +204,7 @@ class RecruitmentTestCase(TestCase):
 
         recruitment_application = RecruitmentApplication.objects.get(user=self.bratteby_user)
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307028')
-        self.assertEquals(RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=1).role.pk, 3)
+        self.assertEquals(RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 3)
 
         response = client.post('/recruitment/1/application/%d' % recruitment_application.pk, {
             'role1': '2',
@@ -218,7 +218,7 @@ class RecruitmentTestCase(TestCase):
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307029')
 
         self.assertEquals(
-            RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=1).role.pk, 2)
+            RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 2)
 
 
     def test_create_recruitment_period(self):
