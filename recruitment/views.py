@@ -116,6 +116,9 @@ class RecruitmentApplicationSearchForm(forms.Form):
 
         return application_list
 
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + timezone.timedelta(n)
 
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
@@ -124,6 +127,17 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for interviewer in recruitment_period.interviewers()]
 
+    date_names = []
+    applications_per_date = []
+
+    end_date = timezone.now() if timezone.now() < recruitment_period.end_date else recruitment_period.end_date
+    end_date = end_date + timezone.timedelta(hours=2)
+    for date in daterange(recruitment_period.start_date+timezone.timedelta(hours=2), end_date):
+        date_names.append(date_filter(date, "d M"))
+        applications_per_date.append(len([application for application in recruitment_period.recruitmentapplication_set.all() if application.submission_date.date() == date.date()]))
+
+    print(date_names)
+    print(applications_per_date)
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
@@ -147,7 +161,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'paginator': paginator,
         'applications': applications,
         'now': timezone.now(),
-        'search_form': search_form
+        'search_form': search_form,
+        'applications_per_date': {'labels': date_names, 'data': applications_per_date}
     })
 
 

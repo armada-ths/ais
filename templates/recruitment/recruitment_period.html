@@ -35,78 +35,111 @@
         </div>
     </div>
 
-    {% if interviews %}
-        <h2>Your interviews ({{ interviews.count }})</h2>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Interview date</th>
-            <th>Interview Location</th>
-            <th>Interviewer</th>
-        </tr>
-        </thead>
-        {% for application in interviews %}
-            <tr>
-                <td>
-                    {% if request.user == application.interviewer %}
-                    <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                        {% include 'recruitment/user_name.html' with user=application.user %}
-                    </a></td>
-                {% else %}
-                        {% include 'recruitment/user_name.html' with user=application.user %}
-                {% endif %}
-
-                <td>{{ application.interview_date|date:"d M H:i" }}</td>
-                <td>{{ application.interview_location }}</td>
-                <td>
-                    {% if application.interviewer %}
-                        {{ application.interviewer.get_full_name }}
-                    {% endif %}
-                </td>
-
-            </tr>
-        {% endfor %}
-    </table>
 
 
-        <br>
-    {% endif %}
 
-    {% if 'view_recruitment_applications' in request.user.ais_permissions %}
-        {% if recruitment_period.recruitmentapplication_set.all %}
-            <h2>Applications ({{ applications.paginator.count }})</h2>
-            {% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
-        {% else %}
-            <p>No applications</p>
+        {% if interviews %}
+            <h2>Your interviews ({{ interviews.count }})</h2>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Interview date</th>
+                    <th>Interview Location</th>
+                    <th>Interviewer</th>
+                </tr>
+                </thead>
+                {% for application in interviews %}
+                    <tr>
+                        <td>
+                            {% if request.user == application.interviewer %}
+                                <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                                    {% include 'recruitment/user_name.html' with user=application.user %}
+                                </a></td>
+                            {% else %}
+                                {% include 'recruitment/user_name.html' with user=application.user %}
+                            {% endif %}
+
+                        <td>{{ application.interview_date|date:"d M H:i" }}</td>
+                        <td>{{ application.interview_location }}</td>
+                        <td>
+                            {% if application.interviewer %}
+                                {{ application.interviewer.get_full_name }}
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
         {% endif %}
 
-        <nav aria-label="Page navigation">
 
-            {% if applications.paginator.num_pages > 1 %}
-                <ul class="pagination">
-                    <li>
-                        {% if applications.previous_page_number > 0 %}
-                            <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        {% endif %}
-                    </li>
-                    {% for page_number in applications.paginator.page_range %}
-                        <li {% if page_number == applications.number %}class="active"{% endif %}><a href="?page={{ page_number }}">{{ page_number }}</a></li>
-                    {% endfor %}
-                    <li>
-                        {% if applications.next_page_number <= applications.paginator.num_pages %}
-                            <a href="?page={{ applications.next_page_number }}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        {% endif %}
-                    </li>
-                </ul>
-            {% endif %}
-        </nav>
 
-    {% endif %}
+
+
+        {% if 'view_recruitment_applications' in request.user.ais_permissions %}
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
+                                                          data-toggle="tab">Applications</a>
+                </li>
+                <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="applications">
+
+                    {% if recruitment_period.recruitmentapplication_set.all %}
+                        <h2>Applications ({{ applications.paginator.count }})</h2>
+                        {% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
+                    {% else %}
+                        <p>No applications</p>
+                    {% endif %}
+
+                    <nav aria-label="Page navigation">
+
+                        {% if applications.paginator.num_pages > 1 %}
+                            <ul class="pagination">
+                                <li>
+                                    {% if applications.previous_page_number > 0 %}
+                                        <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    {% endif %}
+                                </li>
+                                {% for page_number in applications.paginator.page_range %}
+                                    <li {% if page_number == applications.number %}class="active"{% endif %}><a
+                                            href="?page={{ page_number }}">{{ page_number }}</a></li>
+                                {% endfor %}
+                                <li>
+                                    {% if applications.next_page_number <= applications.paginator.num_pages %}
+                                        <a href="?page={{ applications.next_page_number }}" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        {% endif %}
+                    </nav>
+
+
+                </div>
+                <div role="tabpanel" class="tab-pane" id="statistics">
+                    <h2>Statistics</h2>
+                    <div id="stats" style="max-width: 600px;">
+                        <canvas id="applications-per-date-chart" width="200" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+        {% endif %}
+
+
+
 
 
 {% endblock %}
@@ -121,21 +154,49 @@
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
-        $(document).ready(function() {
+        $(document).ready(function () {
             var position = getParameterByName("scroll_y");
-            $(window).scroll(function(event) {
+            $(window).scroll(function (event) {
                 var scroll = $(window).scrollTop();
-                $("#scroll_y").attr('value',scroll);
+                $("#scroll_y").attr('value', scroll);
                 console.log(scroll);
             });
             $(window).scrollTop(position);
 
-        /*
-        $('select').change(function(e) {
-            console.log('CHANGING')
-            $('#search-form').submit()
-        })
-        */
+            /*
+             $('select').change(function(e) {
+             console.log('CHANGING')
+             $('#search-form').submit()
+             })
+             */
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+
+    <script>
+        var ctx = document.getElementById("applications-per-date-chart");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ applications_per_date.labels|safe }},
+                datasets: [{
+                    label: 'Applicants per day',
+                    data: {{ applications_per_date.data }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
         });
     </script>
 {% endblock %}
