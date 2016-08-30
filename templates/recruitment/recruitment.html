@@ -21,7 +21,9 @@
                     <tr>
                         <th>Name</th>
                         <th>Date</th>
+                        {% if 'view_recruitment_applications' in request.user.ais_permissions %}
                         <th>Applications</th>
+                        {% endif %}
                         <th>Status</th>
                     </tr>
                     </thead>
@@ -29,7 +31,9 @@
                         <tr>
                             <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
                             <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
+                            {% if 'view_recruitment_applications' in request.user.ais_permissions %}
                             <td>{{ period.recruitmentapplication_set.count }}</td>
+                            {% endif %}
                             <td>
                                 {% if period.is_past %}
                                     <span class="label label-default">Closed</span>
