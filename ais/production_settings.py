@@ -12,7 +12,9 @@ from ais.secrets import *
 # to point to AIS (which would be a security concern).
 ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 
-ROOT_URLCONF = 'ais.urls'
+# The URL scheme is slightly different in a production environment
+# since we need to accomodate the CAS integration.
+ROOT_URLCONF = 'ais.production_urls'
 
 # Use KTH CAS for authentication
 INSTALLED_APPS += ('cas',)

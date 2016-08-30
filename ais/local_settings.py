@@ -15,7 +15,9 @@ DEBUG = True
 # which you can't do in production for security reasons. 
 ALLOWED_HOSTS = ['*']
 
-ROOT_URLCONF = 'example_urls'
+# The URL scheme is slightly different in a development environment
+# since there's no CAS integration.
+ROOT_URLCONF = 'ais.local_urls'
 
 # We don't need performance here so use SQLite for ease of setup.
 DATABASES = {
