@@ -313,7 +313,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         if recruitment_application:
             role_application = RoleApplication.objects.filter(
                 recruitment_application=recruitment_application,
-                order=i
+                order=i-1
             ).first()
             if role_application:
                 role_form.fields[key].initial = role_application.role.pk
@@ -339,7 +339,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
                     RoleApplication.objects.create(
                         recruitment_application=recruitment_application,
                         role=role,
-                        order=i
+                        order=i-1
                     )
 
             profile_form.save()
