@@ -167,7 +167,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
 
     if request.POST:
-
         if form.is_valid():
             recruitment_period = form.save()
             recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
@@ -181,8 +180,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
                     recruitment_period.recruitable_roles.remove(role)
             recruitment_period.save()
             return redirect('recruitment_period', pk=recruitment_period.id)
-        else:
-            print(form.errors)
 
 
     return render(request, template_name, {
@@ -319,12 +316,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
                 order=i
             ).first()
             if role_application:
-                print('Role', role_application.role, role_application.role.pk)
                 role_form.fields[key].initial = role_application.role.pk
-                print('initial is', role_form.fields[key].initial)
-
-
-
 
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, user)
@@ -356,10 +348,10 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
     return render(request, template_name, {
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
-        'roles': recruitment_period.recruitable_roles.all(),
         'profile_form': profile_form,
         'profile': profile,
         'role_form': role_form,
+        'new_application': pk == None
     })
 
 

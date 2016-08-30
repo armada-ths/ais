@@ -44,10 +44,10 @@
         {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
         <div class="form-group">
-            {% if chosen_roles %}
-                <button type="submit" class="btn btn-primary btn-lg">Save</button>
-            {% else %}
+            {% if new_application %}
                 <button type="submit" class="btn btn-success btn-lg">Apply</button>
+            {% else %}
+                <button type="submit" class="btn btn-primary btn-lg">Save</button>
             {% endif %}
         </div>
     </form>
