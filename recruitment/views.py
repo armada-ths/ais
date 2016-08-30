@@ -136,8 +136,24 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         date_names.append(date_filter(date, "d M"))
         applications_per_date.append(len([application for application in recruitment_period.recruitmentapplication_set.all() if application.submission_date.date() == date.date()]))
 
-    print(date_names)
-    print(applications_per_date)
+
+    role_names = []
+    first_preference_applications_per_role = []
+    applications_per_role = []
+    for role in recruitment_period.recruitable_roles.all():
+        role_names.append(role.name)
+        first_preference_number_of_applications = 0
+        number_of_applications = 0
+        for application in recruitment_period.recruitmentapplication_set.all():
+            for role_application in application.roleapplication_set.filter(role=role):
+                if role_application.order == 0:
+                    first_preference_number_of_applications += 1
+                number_of_applications += 1
+        first_preference_applications_per_role.append(first_preference_number_of_applications)
+        applications_per_role.append(number_of_applications)
+
+    print(role_names)
+    print(applications_per_role)
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
@@ -162,7 +178,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'applications': applications,
         'now': timezone.now(),
         'search_form': search_form,
-        'applications_per_date': {'labels': date_names, 'data': applications_per_date}
+        'applications_per_date': {'labels': date_names, 'data': applications_per_date},
+        'applications_per_role': {'labels': role_names, 'first_preference_data': first_preference_applications_per_role, 'total_data': applications_per_role},
     })
 
 

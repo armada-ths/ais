@@ -38,105 +38,111 @@
 
 
 
-        {% if interviews %}
-            <h2>Your interviews ({{ interviews.count }})</h2>
-            <table class="table">
-                <thead>
+    {% if interviews %}
+        <h2>Your interviews ({{ interviews.count }})</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Interview date</th>
+                <th>Interview Location</th>
+                <th>Interviewer</th>
+            </tr>
+            </thead>
+            {% for application in interviews %}
                 <tr>
-                    <th>Name</th>
-                    <th>Interview date</th>
-                    <th>Interview Location</th>
-                    <th>Interviewer</th>
-                </tr>
-                </thead>
-                {% for application in interviews %}
-                    <tr>
-                        <td>
-                            {% if request.user == application.interviewer %}
-                                <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                                    {% include 'recruitment/user_name.html' with user=application.user %}
-                                </a></td>
-                            {% else %}
+                    <td>
+                        {% if request.user == application.interviewer %}
+                            <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
                                 {% include 'recruitment/user_name.html' with user=application.user %}
-                            {% endif %}
-
-                        <td>{{ application.interview_date|date:"d M H:i" }}</td>
-                        <td>{{ application.interview_location }}</td>
-                        <td>
-                            {% if application.interviewer %}
-                                {{ application.interviewer.get_full_name }}
-                            {% endif %}
-                        </td>
-
-                    </tr>
-                {% endfor %}
-            </table>
-            <br>
-        {% endif %}
-
-
-
-
-
-        {% if 'view_recruitment_applications' in request.user.ais_permissions %}
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
-                                                          data-toggle="tab">Applications</a>
-                </li>
-                <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
-                </li>
-            </ul>
-
-            <!-- Tab panes -->
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane active" id="applications">
-
-                    {% if recruitment_period.recruitmentapplication_set.all %}
-                        <h2>Applications ({{ applications.paginator.count }})</h2>
-                        {% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
-                    {% else %}
-                        <p>No applications</p>
-                    {% endif %}
-
-                    <nav aria-label="Page navigation">
-
-                        {% if applications.paginator.num_pages > 1 %}
-                            <ul class="pagination">
-                                <li>
-                                    {% if applications.previous_page_number > 0 %}
-                                        <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    {% endif %}
-                                </li>
-                                {% for page_number in applications.paginator.page_range %}
-                                    <li {% if page_number == applications.number %}class="active"{% endif %}><a
-                                            href="?page={{ page_number }}">{{ page_number }}</a></li>
-                                {% endfor %}
-                                <li>
-                                    {% if applications.next_page_number <= applications.paginator.num_pages %}
-                                        <a href="?page={{ applications.next_page_number }}" aria-label="Next">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    {% endif %}
-                                </li>
-                            </ul>
+                            </a></td>
+                        {% else %}
+                            {% include 'recruitment/user_name.html' with user=application.user %}
                         {% endif %}
-                    </nav>
+
+                    <td>{{ application.interview_date|date:"d M H:i" }}</td>
+                    <td>{{ application.interview_location }}</td>
+                    <td>
+                        {% if application.interviewer %}
+                            {{ application.interviewer.get_full_name }}
+                        {% endif %}
+                    </td>
+
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+    {% endif %}
 
 
-                </div>
-                <div role="tabpanel" class="tab-pane" id="statistics">
-                    <h2>Statistics</h2>
-                    <div id="stats" style="max-width: 600px;">
-                        <canvas id="applications-per-date-chart" width="200" height="200"></canvas>
-                    </div>
+
+    {% if 'view_recruitment_applications' in request.user.ais_permissions %}
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
+                                                      data-toggle="tab">Applications</a>
+            </li>
+            <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="applications">
+
+                {% if recruitment_period.recruitmentapplication_set.all %}
+                    <h2>Applications ({{ applications.paginator.count }})</h2>
+                    {% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
+                {% else %}
+                    <p>No applications</p>
+                {% endif %}
+
+                <nav aria-label="Page navigation">
+
+                    {% if applications.paginator.num_pages > 1 %}
+                        <ul class="pagination">
+                            <li>
+                                {% if applications.previous_page_number > 0 %}
+                                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                            {% for page_number in applications.paginator.page_range %}
+                                <li {% if page_number == applications.number %}class="active"{% endif %}><a
+                                        href="?page={{ page_number }}">{{ page_number }}</a></li>
+                            {% endfor %}
+                            <li>
+                                {% if applications.next_page_number <= applications.paginator.num_pages %}
+                                    <a href="?page={{ applications.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    {% endif %}
+                </nav>
+
+
+            </div>
+            <div role="tabpanel" class="tab-pane" id="statistics">
+                <h2>Statistics</h2>
+                <div id="stats" style="max-width: 800px;">
+                    <canvas id="applications-per-date-chart" width="200" height="200"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-first-preference-chart" width="200" height="200"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-first-preference-pie-chart" width="200" height="200"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-total-chart" width="200" height="200"></canvas>
+                    <br>
+                    <canvas id="applications-per-role-total-pie-chart" width="200" height="200"></canvas>
                 </div>
             </div>
+        </div>
 
 
-        {% endif %}
+    {% endif %}
 
 
 
@@ -175,8 +181,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
 
     <script>
-        var ctx = document.getElementById("applications-per-date-chart");
-        var myChart = new Chart(ctx, {
+        new Chart(document.getElementById("applications-per-date-chart"), {
             type: 'bar',
             data: {
                 labels: {{ applications_per_date.labels|safe }},
@@ -198,5 +203,139 @@
                 }
             }
         });
+
+        var randomColors = ["#ffdabc", "#5ddbf7", "#f9a7ec", "#e843bc", "#e09567", "#fcbded", "#e55622", "#d8ffa3", "#c872e5", "#a4eef9", "#acf252", "#ea4f9d"]
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+
+        var lightRandomColors = []
+        var i
+        randomColors.forEach(function (color) {
+            var rgb = hexToRgb(color)
+            lightRandomColors.push('rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.3)')
+        })
+
+
+        new Chart(document.getElementById("applications-per-role-first-preference-chart"), {
+            type: 'bar',
+            data: {
+
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.first_preference_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+
+                title: {
+                    display: true,
+                    text: 'Applicants per role first preference'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+
+        new Chart(document.getElementById("applications-per-role-first-preference-pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.first_preference_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                }]
+            },
+
+            options: {
+                title: {
+                    display: true,
+                    text: 'Applicants per role first prefence'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+
+        new Chart(document.getElementById("applications-per-role-total-chart"), {
+            type: 'bar',
+            data: {
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.total_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Applicants per role any prefence'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        new Chart(document.getElementById("applications-per-role-total-pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: {{ applications_per_role.labels|safe }},
+                datasets: [{
+                    label: '',
+                    data: {{ applications_per_role.total_data }},
+                    backgroundColor: lightRandomColors,
+                    borderColor: randomColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Applicants per role any preference'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
     </script>
 {% endblock %}
