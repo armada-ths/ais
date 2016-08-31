@@ -5,7 +5,7 @@ and also configures AIS to talk to external services (e.g. CAS).
 """
 
 import os
-from ais.common_settings import *
+from ais.common.settings import *
 from ais.secrets import *
 
 # This is important so other people can't set their own domains
@@ -14,7 +14,7 @@ ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 
 # The URL scheme is slightly different in a production environment
 # since we need to accomodate the CAS integration.
-ROOT_URLCONF = 'ais.production_urls'
+ROOT_URLCONF = 'ais.production.urls'
 
 # Use KTH CAS for authentication
 INSTALLED_APPS += ('cas',)

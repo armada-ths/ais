@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from ais import common_settings as settings
+from ais.common import settings
 from django.conf.urls.static import static
 
 urlpatterns = [

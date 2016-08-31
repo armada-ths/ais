@@ -1,4 +1,4 @@
-from ais.common_urls import *
+from ais.common.urls import *
 from django.conf.urls import include, url
 
 urlpatterns += [

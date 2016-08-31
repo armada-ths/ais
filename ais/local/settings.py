@@ -5,7 +5,7 @@ and is generally easier to work with.
 """
 
 import os
-from ais.common_settings import *
+from ais.common.settings import *
 
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
@@ -17,7 +17,7 @@ ALLOWED_HOSTS = ['*']
 
 # The URL scheme is slightly different in a development environment
 # since there's no CAS integration.
-ROOT_URLCONF = 'ais.local_urls'
+ROOT_URLCONF = 'ais.local.urls'
 
 # We don't need performance here so use SQLite for ease of setup.
 DATABASES = {

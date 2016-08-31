@@ -1,1 +1,1 @@
-from ais.local_settings import *
+from ais.local.settings import *
