@@ -1,3 +1,8 @@
 .margin-top5 {
     margin-top: 5px;
 }
+
+/* Remove rounded corners from navbar */
+.navbar-default {
+  border-radius: 0 !important;
+}
