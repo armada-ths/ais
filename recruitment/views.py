@@ -452,7 +452,7 @@ class InterviewPlanForm(ModelForm):
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not 'view_recruitment_applications' in request.user.ais_permissions() and application.interviewer != request.user:
+    if not 'view_recruitment_interviews' in request.user.ais_permissions() and application.interviewer != request.user:
         return HttpResponseForbidden()
 
     exhibitors = [participation.company for participation in

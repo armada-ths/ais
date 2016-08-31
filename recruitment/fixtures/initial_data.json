@@ -38,5 +38,13 @@
       "codename": "view_people",
       "name": "View people"
     }
+  },
+  {
+    "model": "recruitment.AISPermission",
+    "pk": 6,
+    "fields": {
+      "codename": "view_recruitment_interviews",
+      "name": "View interviews"
+    }
   }
 ]
