@@ -16,3 +16,8 @@
         border-radius: 10px;
     }
 }
+
+.navbar-default {
+  background-color: #e30613;
+  border-color: #bb0711;
+}

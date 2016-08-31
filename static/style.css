@@ -3,6 +3,7 @@
 }
 
 /* Remove rounded corners from navbar */
-.navbar-default {
+.navbar-inverse {
   border-radius: 0 !important;
 }
+
