@@ -32,6 +32,7 @@ echo "from django.contrib.auth.models import User; User.objects.create_superuser
 
 echo "Sprinkling magic..."
 echo "cd /vagrant" >> ~/.bashrc
+echo "export DJANGO_SETTINGS_MODULE=ais.local.settings" >> ~/.bashrc
 echo "source ais_venv/bin/activate" >> ~/.bashrc
 
 echo "All done, good job everybody!"
