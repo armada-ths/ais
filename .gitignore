@@ -7,9 +7,11 @@ ais/secrets.py
 #ais/ais_nginx.conf
 deploy
 db.sqlite3
-local_settings.py
 run_server.sh
 .idea/*
 *~
 .vagrant/
 .DS_Store
+ais_venv/
+nohup.out
+

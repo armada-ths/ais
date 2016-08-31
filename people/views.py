@@ -18,7 +18,8 @@ from django.forms import ModelForm
 def list_people(request):
     if not 'view_people' in request.user.ais_permissions():
         return HttpResponseForbidden()
-    return TemplateResponse(request, 'people_list.html', {'users': User.objects.all()})
+    users = User.objects.filter(is_superuser=False)
+    return TemplateResponse(request, 'people_list.html', {'users': users})
 
 
 def view_person(request, pk):

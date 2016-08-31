@@ -16,7 +16,7 @@ from django.forms import modelform_factory
 
 
 def import_members(request):
-    if not request.user.is_superuser():
+    if not request.user.is_superuser:
         return HttpResponseForbidden()
     create_project_group()
     return redirect('recruitment')
@@ -519,3 +519,4 @@ def recruitment_application_delete(request, pk):
         return HttpResponseForbidden()
     recruitment_application.delete()
     return redirect('recruitment_period', recruitment_application.recruitment_period.pk)
+
