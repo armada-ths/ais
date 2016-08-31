@@ -10,9 +10,9 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+from os import path
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = path.join(path.dirname(path.abspath(__file__)), '../../')
 
 # Email settings
 EMAIL_USE_TLS = True
@@ -61,7 +61,7 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates")],
+        'DIRS': [path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,7 +77,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ais.wsgi.application'
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = ( os.path.join(BASE_DIR, "static"), )
+STATICFILES_DIRS = ( path.join(BASE_DIR, "static"), )
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 MEDIA_ROOT = '../media/'
