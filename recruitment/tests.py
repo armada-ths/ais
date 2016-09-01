@@ -43,11 +43,15 @@ class RecruitmentTestCase(TestCase):
         self.administer_recruitment_permission = AISPermission.objects.create(codename='administer_recruitment', name='Administer recruitment')
         self.view_recruitment_applications_permission = AISPermission.objects.create(codename='view_recruitment_applications',
                                                                               name='View recruitment applications')
+        self.view_recruitment_interviews_permission = AISPermission.objects.create(
+            codename='view_recruitment_interviews',
+            name='View recruitment interviews')
 
         self.pg_role.permissions.add(self.administer_roles_permission)
         self.pg_role.permissions.add(self.administer_roles_permission)
         self.pg_role.permissions.add(self.view_recruitment_applications_permission)
         self.system_developer.permissions.add(self.administer_recruitment_permission)
+        self.system_developer.permissions.add(self.view_recruitment_interviews_permission)
         self.career_fair_leader.permissions.add(self.administer_recruitment_permission)
 
         self.recruitment_period.recruitable_roles.add(self.system_developer, self.career_fair_leader)
