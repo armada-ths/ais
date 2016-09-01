@@ -161,7 +161,9 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     programme_labels = []
     applications_per_programme = []
     for programme in Programme.objects.all():
-        number_of_applications = count_applications(lambda application: application.user.profile.programme == programme)
+
+        #number_of_applications = count_applications(lambda application: application.user and application.user.profile.programme == programme)
+        number_of_applications = 0
         if number_of_applications > 0:
             applications_per_programme.append(number_of_applications)
             programme_labels.append(programme.name)
