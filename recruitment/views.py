@@ -130,11 +130,14 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     date_names = []
     applications_per_date = []
 
+    count_applications = lambda is_member: len(
+        [application for application in recruitment_period.recruitmentapplication_set.all() if is_member(application)])
+
     end_date = timezone.now() if timezone.now() < recruitment_period.end_date else recruitment_period.end_date
     end_date = end_date + timezone.timedelta(hours=2)
     for date in daterange(recruitment_period.start_date+timezone.timedelta(hours=2), end_date):
         date_names.append(date_filter(date, "d M"))
-        applications_per_date.append(len([application for application in recruitment_period.recruitmentapplication_set.all() if application.submission_date.date() == date.date()]))
+        applications_per_date.append(count_applications(lambda application: application.submission_date.date() == date.date()))
 
 
     role_names = []
@@ -152,8 +155,16 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         first_preference_applications_per_role.append(first_preference_number_of_applications)
         applications_per_role.append(number_of_applications)
 
-    print(role_names)
-    print(applications_per_role)
+
+
+
+    programme_labels = []
+    applications_per_programme = []
+    for programme in Programme.objects.all():
+        number_of_applications = count_applications(lambda application: application.user.profile.programme == programme)
+        if number_of_applications > 0:
+            applications_per_programme.append(number_of_applications)
+            programme_labels.append(programme.name)
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
@@ -178,8 +189,38 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'applications': applications,
         'now': timezone.now(),
         'search_form': search_form,
-        'applications_per_date': {'labels': date_names, 'data': applications_per_date},
-        'applications_per_role': {'labels': role_names, 'first_preference_data': first_preference_applications_per_role, 'total_data': applications_per_role},
+
+        'datasets': [
+            {
+                'label': 'Applications per date',
+                'labels': date_names,
+                'data': applications_per_date,
+                'charts': ['bar'],
+                'monocolor': True
+            },
+                    {
+                        'label': 'Total_applications_per_role',
+                        'labels': role_names,
+                        'data': applications_per_role,
+                        'charts': ['pie', 'bar'],
+                        'monocolor': False
+
+                    },
+                    {
+                        'label': 'First preference applications per role',
+                        'labels': role_names,
+                        'data': first_preference_applications_per_role,
+                        'charts': ['pie', 'bar'],
+                        'monocolor': False
+                    },
+                    {
+                        'label': 'Applications per programme',
+                        'labels': programme_labels,
+                        'data': applications_per_programme,
+                        'charts': ['bar'],
+                        'monocolor': True
+                    },
+        ]
     })
 
 
@@ -467,8 +508,6 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         },
         labels={'interview_date': 'Interview date (Format: 2016-12-24 13:37)'}
     )
-
-
 
     interviewers = application.recruitment_period.interviewers()
     interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)

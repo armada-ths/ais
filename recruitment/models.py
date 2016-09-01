@@ -283,7 +283,7 @@ class RecruitmentApplication(models.Model):
         return '%s' % (self.user)
 
 class RecruitmentApplicationComment(models.Model):
-    comment = models.CharField(null=True, blank=True, max_length=1000)
+    comment = models.TextField(null=True, blank=True)
     recruitment_application = models.ForeignKey(RecruitmentApplication)
     created_date = models.DateTimeField(default=timezone.now, blank=True)
     user = models.ForeignKey(User)

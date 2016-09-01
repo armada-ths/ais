@@ -110,11 +110,14 @@
                         <small class="text-muted">{{ comment.created_date }}</small>
                         <p>{{ comment.comment }}</p>
                     </div>
+
                 </div>
                 {% empty %}
                 <p>No comments</p>
             {% endfor %}
+
         </div>
+
         <div class="col-sm-6">
             <form action="{% url 'recruitment_application_comment_new' application.recruitment_period.id application.id %}"
                   method="post">
