@@ -242,7 +242,7 @@ def recruitment_period_graphs(request, pk):
         'Applications per programme',
         True,
         ['bar'],
-        [application.user.profile.programme.name for application in application_list.prefetch_related('user', 'user__profile', 'user__profile__programme') if user_has_programme(application.user)]
+        [application.user.profile.programme.name for application in application_list.prefetch_related('user', 'user__profile', 'user__profile__programme') if user_has_programme(application.user) and application.user.profile.programme]
     )
 
     print('Counting programmes took', time.time() - start)
