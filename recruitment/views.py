@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, AISPermission, Programme
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
+    create_project_group, AISPermission, Programme
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
@@ -13,6 +14,7 @@ from companies.models import Company, CompanyParticipationYear
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def import_members(request):
@@ -38,12 +40,13 @@ class RecruitmentPeriodForm(ModelForm):
 def recruitment(request, template_name='recruitment/recruitment.html'):
     return render(request, template_name, {
         'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
-        'roles': [{'parent_role': role, 'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for role in Role.objects.filter(parent_role=None)],
+        'roles': [{'parent_role': role,
+                   'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
+                  role in Role.objects.filter(parent_role=None)],
     })
 
 
 class RecruitmentApplicationSearchForm(forms.Form):
-
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
@@ -61,8 +64,8 @@ class RecruitmentApplicationSearchForm(forms.Form):
     )
 
     registration_year = forms.ChoiceField(
-        choices=[('', '-------')] + [(i, i) for i in range(2001, timezone.now().year+1)],
-        widget = forms.Select(attrs={'class': 'form-control'}),
+        choices=[('', '-------')] + [(i, i) for i in range(2001, timezone.now().year + 1)],
+        widget=forms.Select(attrs={'class': 'form-control'}),
         required=False
     )
 
@@ -73,7 +76,9 @@ class RecruitmentApplicationSearchForm(forms.Form):
     )
 
     state = forms.ChoiceField(
-        choices=[('', '-------')] + [('new', 'New'), ('interview_delegated', 'Delegated'), ('interview_planned', 'Planned'), ('interview_done', 'Done'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
+        choices=[('', '-------')] + [('new', 'New'), ('interview_delegated', 'Delegated'),
+                                     ('interview_planned', 'Planned'), ('interview_done', 'Done'),
+                                     ('accepted', 'Accepted'), ('rejected', 'Rejected')],
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=False
     )
@@ -83,15 +88,18 @@ class RecruitmentApplicationSearchForm(forms.Form):
 
         name = search_form.cleaned_data['name']
         if name:
-            application_list = [application for application in application_list if name.lower() in application.user.get_full_name().lower()]
+            application_list = [application for application in application_list if
+                                name.lower() in application.user.get_full_name().lower()]
 
         programme = search_form.cleaned_data['programme']
         if programme:
-            application_list = [application for application in application_list if programme == application.user.profile.programme]
+            application_list = [application for application in application_list if
+                                programme == application.user.profile.programme]
 
         registration_year = search_form.cleaned_data['registration_year']
         if registration_year:
-            application_list = [application for application in application_list if int(registration_year) == application.user.profile.registration_year]
+            application_list = [application for application in application_list if
+                                int(registration_year) == application.user.profile.registration_year]
 
         rating = search_form.cleaned_data['rating']
         if rating:
@@ -99,16 +107,19 @@ class RecruitmentApplicationSearchForm(forms.Form):
 
         submission_date = search_form.cleaned_data['submission_date']
         if submission_date:
-            application_list = [application for application in application_list if submission_date.lower() in date_filter(application.submission_date+timezone.timedelta(hours=2), "d M H:i").lower()]
+            application_list = [application for application in application_list if
+                                submission_date.lower() in date_filter(
+                                    application.submission_date + timezone.timedelta(hours=2), "d M H:i").lower()]
 
         roles_string = search_form.cleaned_data['roles']
         if roles_string:
-            application_list = [application for application in application_list if roles_string.lower() in application.roles_string().lower()]
+            application_list = [application for application in application_list if
+                                roles_string.lower() in application.roles_string().lower()]
 
         interviewer = search_form.cleaned_data['interviewer']
         if interviewer:
-            application_list = [application for application in application_list if interviewer == application.interviewer]
-
+            application_list = [application for application in application_list if
+                                interviewer == application.interviewer]
 
         state = search_form.cleaned_data['state']
         if state:
@@ -116,69 +127,24 @@ class RecruitmentApplicationSearchForm(forms.Form):
 
         return application_list
 
+
 def daterange(start_date, end_date):
-    for n in range(int ((end_date - start_date).days)+1):
+    for n in range(int((end_date - start_date).days) + 1):
         yield start_date + timezone.timedelta(n)
 
+
 import time
+
+
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
-
     start = time.time()
-
 
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
-    search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for interviewer in recruitment_period.interviewers()]
-
-    date_names = []
-    applications_per_date = []
-
-    print('Interviewer stuff', time.time() - start)
-
-
-    count_applications = lambda is_member: len([application for application in application_list if is_member(application)])
-
-
-
-    end_date = timezone.now() if timezone.now() < recruitment_period.end_date else recruitment_period.end_date
-    end_date = end_date + timezone.timedelta(hours=2)
-    for date in daterange(recruitment_period.start_date+timezone.timedelta(hours=2), end_date):
-        date_names.append(date_filter(date, "d M"))
-        applications_per_date.append(count_applications(lambda application: application.submission_date.date() == date.date()))
-    print('Date took', time.time() - start)
-
-
-
-    print('Fetching role applications took', time.time() - start)
-
-    role_applications_total = {}
-    role_applications_first_preference = {}
-
-    for role_application in RoleApplication.objects.filter(recruitment_application__recruitment_period=recruitment_period).prefetch_related('role'):
-        if not role_application.role.name in role_applications_total:
-            role_applications_total[role_application.role.name] = 0
-        role_applications_total[role_application.role.name] += 1
-
-        if not role_application.role.name in role_applications_first_preference:
-            role_applications_first_preference[role_application.role.name] = 0
-        if role_application.order == 0:
-            role_applications_first_preference[role_application.role.name] += 1
-
-    print('Counting applications 2took', time.time() - start)
-    role_names = sorted(role_applications_total.keys())
-    applications_per_role = [role_applications_total[key] for key in role_names]
-    first_preference_applications_per_role = [role_applications_first_preference[key] for key in role_names]
-
-
-    programme_labels = []
-    applications_per_programme = []
-    for programme in Programme.objects.all():
-        number_of_applications = count_applications(lambda application: application.user.profile and application.user.profile.programme == programme)
-        if number_of_applications > 0:
-            applications_per_programme.append(number_of_applications)
-            programme_labels.append(programme.name)
+    search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
+                                                                       interviewer in recruitment_period.interviewers()]
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
@@ -195,49 +161,91 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         # If page is out of range (e.g. 9999), deliver last page of results.
         applications = paginator.page(paginator.num_pages)
 
+    print('Interviewer stuff', time.time() - start)
+
+
+    # Graph stuff :)
+    class ValueCounter(object):
+        def __init__(self, description, monocolor, charts, values=None, sort_key=None):
+            self.data = {}
+            self.description = description
+            self.monocolor = monocolor
+            self.charts = charts
+            self.sort_key = sort_key
+
+            if values:
+                self.addValues(values)
+
+        def addValue(self, value):
+            if not value in self.data:
+                self.data[value] = 0
+            self.data[value] += 1
+
+        def addValues(self, values):
+            for value in values:
+                self.addValue(value)
+
+        def sortedValues(self):
+            return sorted(self.data.keys(), key=self.sort_key)
+
+        def sortedValueCounts(self):
+            return [self.data[key] for key in self.sortedValues()]
+
+    date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
+    applications_per_date_count = ValueCounter(
+        'Applications per date',
+        True,
+        ['bar'],
+        [date_filter(application.submission_date, "d M") for application in application_list],
+        lambda x: date_dictionary[x]
+    )
+
+    role_applications = RoleApplication.objects.filter(recruitment_application__recruitment_period=recruitment_period).prefetch_related('role')
+
+    total_role_application_count = ValueCounter(
+        'Total number of applications per role',
+        False,
+        ['bar', 'pie'],
+        [role_application.role.name for role_application in role_applications]
+    )
+
+    first_preference_role_application_count = ValueCounter(
+        'Number of first preference applications per role',
+        False,
+        ['bar', 'pie'],
+        [role_application.role.name for role_application in role_applications.filter(order=0)]
+    )
+
+    print('Counting applications took', time.time() - start)
+
+    def user_has_programme(user):
+        try:
+            return user.profile
+        except ObjectDoesNotExist:
+            return False
+
+    programme_applications_count = ValueCounter(
+        'Applications per programme',
+        True,
+        ['bar'],
+        [application.user.profile.programme.name for application in application_list.prefetch_related('user', 'user__profile', 'user__profile__programme') if user_has_programme(application.user)]
+    )
+
+    print('Counting programmes took1', time.time() - start)
+
+
 
     print('Total time took', time.time() - start)
 
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user)|recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
+        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
         'paginator': paginator,
         'applications': applications,
         'now': timezone.now(),
         'search_form': search_form,
-
-        'datasets': [
-            {
-                'label': 'Applications per date',
-                'labels': date_names,
-                'data': applications_per_date,
-                'charts': ['bar'],
-                'monocolor': True
-            },
-                    {
-                        'label': 'Total applications per role',
-                        'labels': role_names,
-                        'data': applications_per_role,
-                        'charts': ['pie', 'bar'],
-                        'monocolor': False
-
-                    },
-                    {
-                        'label': 'First preference applications per role',
-                        'labels': role_names,
-                        'data': first_preference_applications_per_role,
-                        'charts': ['pie', 'bar'],
-                        'monocolor': False
-                    },
-                    {
-                        'label': 'Applications per programme',
-                        'labels': programme_labels,
-                        'data': applications_per_programme,
-                        'charts': ['bar'],
-                        'monocolor': True
-                    },
-        ]
+        'graph_datasets': [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count]
     })
 
 
@@ -271,7 +279,6 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
             recruitment_period.save()
             return redirect('recruitment_period', pk=recruitment_period.id)
 
-
     return render(request, template_name, {
         'form': form,
         'roles': [{'parent_role': role,
@@ -292,6 +299,7 @@ class RolesForm(ModelForm):
             'description': forms.Textarea(),
         }
 
+
 def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     role = Role.objects.filter(pk=pk).first()
     roles_form = RolesForm(request.POST or None, instance=role)
@@ -301,7 +309,8 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
             roles_form.save()
             return redirect('recruitment')
 
-    users = [application.user for application in RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
+    users = [application.user for application in
+             RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
     return render(request, template_name, {
         'role': role,
         'users': users,
@@ -317,8 +326,6 @@ def roles_delete(request, pk):
     return redirect('recruitment')
 
 
-
-
 def recruitment_application_comment_new(request, pk):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     comment = RecruitmentApplicationComment()
@@ -330,7 +337,6 @@ def recruitment_application_comment_new(request, pk):
 
 
 class ProfileForm(ModelForm):
-
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
 
@@ -346,9 +352,10 @@ class ProfileForm(ModelForm):
             'linkedin_url': 'Link to your LinkedIn-profile',
         }
 
-
         widgets = {
-            'registration_year': forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
+            'registration_year': forms.Select(
+                choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)],
+                attrs={'required': True}),
             'programme': forms.Select(
                 attrs={'required': True}),
             'phone_number': forms.TextInput(attrs={'required': True})
@@ -356,12 +363,14 @@ class ProfileForm(ModelForm):
 
 
 class RoleApplicationForm(forms.Form):
-    role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.all(), widget=forms.Select(attrs={'required': True}))
+    role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.all(),
+                                   widget=forms.Select(attrs={'required': True}))
     role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.all(), required=False)
     role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.all(), required=False)
 
 
-def recruitment_application_new(request, recruitment_period_pk, pk=None, template_name='recruitment/recruitment_application_new.html'):
+def recruitment_application_new(request, recruitment_period_pk, pk=None,
+                                template_name='recruitment/recruitment_application_new.html'):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
 
     if not pk:
@@ -372,7 +381,6 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             return redirect('recruitment_application_new', recruitment_period.pk, recruitment_application.pk)
 
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
-
 
     user = recruitment_application.user if recruitment_application else request.user
     profile = Profile.objects.filter(user=user).first()
@@ -403,7 +411,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
         if recruitment_application:
             role_application = RoleApplication.objects.filter(
                 recruitment_application=recruitment_application,
-                order=i-1
+                order=i - 1
             ).first()
             if role_application:
                 role_form.fields[key].initial = role_application.role.pk
@@ -422,21 +430,22 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None, templat
             recruitment_application.save()
 
             recruitment_application.roleapplication_set.all().delete()
-            for i in range(1,4):
+            for i in range(1, 4):
                 key = 'role%d' % i
                 role = role_form.cleaned_data[key]
                 if role:
                     RoleApplication.objects.create(
                         recruitment_application=recruitment_application,
                         role=role,
-                        order=i-1
+                        order=i - 1
                     )
 
             profile_form.save()
             return redirect('recruitment_period', recruitment_period.pk)
 
     return render(request, template_name, {
-        'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(recruitment_application.user if recruitment_application else None),
+        'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(
+            recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
         'profile_form': profile_form,
         'profile': profile,
@@ -456,6 +465,7 @@ def set_foreign_key_from_request(request, model, model_field, foreign_key_model)
             setattr(model, model_field, None)
             model.save()
 
+
 def set_int_key_from_request(request, model, model_field):
     if model_field in request.POST:
         try:
@@ -465,6 +475,7 @@ def set_int_key_from_request(request, model, model_field):
             setattr(model, model_field, None)
             model.save()
 
+
 def set_string_key_from_request(request, model, model_field):
     if model_field in request.POST:
         try:
@@ -473,6 +484,7 @@ def set_string_key_from_request(request, model, model_field):
         except (ValueError, ValidationError) as e:
             setattr(model, model_field, None)
             model.save()
+
 
 def set_image_key_from_request(request, model, model_field, file_directory):
     image_key = model_field
@@ -491,8 +503,8 @@ def set_image_key_from_request(request, model, model_field, file_directory):
             setattr(model, model_field, None)
             model.save()
 
-class InterviewPlanForm(ModelForm):
 
+class InterviewPlanForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(InterviewPlanForm, self).__init__(*args, **kwargs)
 
@@ -505,8 +517,11 @@ class InterviewPlanForm(ModelForm):
         }
 
         widgets = {
-            'interviewer': forms.Select(choices=[('', '--------')]+ [(year, year) for year in range(2000, timezone.now().year+1)], attrs={'required': True}),
+            'interviewer': forms.Select(
+                choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)],
+                attrs={'required': True}),
         }
+
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
@@ -518,9 +533,11 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
-        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else ('interview_date', 'interview_location', 'recommended_role', 'rating'),
+        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role',
+                'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else (
+        'interview_date', 'interview_location', 'recommended_role', 'rating'),
         widgets={
-            'rating': forms.Select(choices=[('', '---------')]+[(i,i) for i in range(1,6)]),
+            'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
             'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M')
         },
         labels={'interview_date': 'Interview date (Format: 2016-12-24 13:37)'}
@@ -530,8 +547,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
     interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
     if 'interviewer' in interview_planning_form.fields:
-        interview_planning_form.fields['interviewer'].choices = [('', '---------')]+[(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
-
+        interview_planning_form.fields['interviewer'].choices = [('', '---------')] + [
+            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
 
     RoleDelegationForm = modelform_factory(
         RecruitmentApplication,
@@ -541,13 +558,14 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
         role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
         role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
-                (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
         role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
             (exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
     else:
         role_delegation_form = None
 
-    if request.POST and (application.interviewer == request.user or 'administer_recruitment_applications' in request.user.ais_permissions()):
+    if request.POST and (
+            application.interviewer == request.user or 'administer_recruitment_applications' in request.user.ais_permissions()):
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
         if interview_planning_form.is_valid():
             interview_planning_form.save()
@@ -559,11 +577,12 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             else:
                 return redirect('recruitment_period', pk=application.recruitment_period.pk)
 
-
     return render(request, template_name, {
         'application': application,
-        'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(application.user),
-        'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(application.user),
+        'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(
+            application.user),
+        'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(
+            application.user),
         'interview_planning_form': interview_planning_form,
         'role_delegation_form': role_delegation_form,
     })
@@ -575,4 +594,3 @@ def recruitment_application_delete(request, pk):
         return HttpResponseForbidden()
     recruitment_application.delete()
     return redirect('recruitment_period', recruitment_application.recruitment_period.pk)
-

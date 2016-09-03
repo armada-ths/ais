@@ -227,15 +227,8 @@ class RecruitmentPeriod(models.Model):
             self.application_questions = ExtraField.objects.create()
         super(RecruitmentPeriod, self).save(*args, **kwargs)
 
-
     def interviewers(self):
-        interviewers = []
-        for period in RecruitmentPeriod.objects.filter(fair=self.fair):
-            if period.start_date <= self.start_date:
-                for period_application in period.recruitmentapplication_set.filter(status='accepted'):
-                    interviewers.append(period_application.user)
-        interviewers.sort(key=lambda x: x.get_full_name())
-        return interviewers
+        return [application.user for application in RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=self.fair, recruitment_period__start_date__lte=self.start_date).prefetch_related('user').order_by('user__first_name', 'user__last_name')]
 
     def __str__(self):
         return '%s: %s' % (self.fair.name, self.name)

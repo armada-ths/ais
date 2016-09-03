@@ -192,7 +192,7 @@
         })
 
 
-        {% for dataset in datasets %}
+        {% for dataset in graph_datasets %}
 
             {% for chart in dataset.charts %}
                 var canvas = document.createElement('canvas')
@@ -204,10 +204,10 @@
                 new Chart(canvas, {
                     type: '{{ chart }}',
                     data: {
-                        labels: {{ dataset.labels|safe }},
+                        labels: {{ dataset.sortedValues|safe }},
                         datasets: [{
-                            label: '{{ dataset.label|safe }}',
-                            data: {{ dataset.data }},
+                            label: '{{ dataset.description|safe }}',
+                            data: {{ dataset.sortedValueCounts }},
                             backgroundColor: {% if not dataset.monocolor %}lightRandomColors
                                 {% else %}'rgba(54, 162, 235, 0.2)'{% endif %},
                             borderColor: {% if not dataset.monocolor %}lightRandomColors
@@ -230,177 +230,5 @@
 
 
 
-
-        /*
-
-
-         new Chart(document.getElementById("applications-per-role-first-preference-chart"), {
-         type: 'bar',
-         data: {
-
-         labels: '{{ first_preference_applications_per_role.label|safe }}',
-         datasets: [{
-         label: {{ first_preference_applications_per_role.labels|safe }},
-         data: {{ first_preference_applications_per_role.data }},
-         backgroundColor: lightRandomColors,
-         borderColor: randomColors,
-         borderWidth: 1
-         }]
-         },
-         options: {
-         title: {
-         display: true,
-         text: 'Applicants per role first preference'
-         },
-         scales: {
-         yAxes: [{
-         ticks: {
-         beginAtZero: true
-         }
-         }]
-         }
-         }
-         });
-
-
-         new Chart(document.getElementById("applications-per-role-first-preference-pie-chart"), {
-         type: 'pie',
-         data: {
-         labels: '{{ first_preference_applications_per_role.label|safe }}',
-         datasets: [{
-         label: {{ first_preference_applications_per_role.labels|safe }},
-         data: {{ first_preference_applications_per_role.data }},
-         backgroundColor: lightRandomColors,
-         borderColor: lightRandomColors,
-         borderWidth: 1
-         }]
-         },
-
-         options: {
-         title: {
-         display: true,
-         text: 'Applicants per role first prefence'
-         },
-         scales: {
-         yAxes: [{
-         ticks: {
-         beginAtZero: true
-         }
-         }]
-         }
-         }
-         });
-
-
-         new Chart(document.getElementById("applications-per-role-total-chart"), {
-         type: 'bar',
-         data: {
-         labels: '{{ total_applications_per_role.label|safe }}',
-         datasets: [{
-         label: {{ total_applications_per_role.labels|safe }},
-         data: {{ total_applications_per_role.data }},
-         backgroundColor: lightRandomColors,
-         borderColor: randomColors,
-         borderWidth: 1
-         }]
-         },
-         options: {
-         title: {
-         display: true,
-         text: 'Applicants per role any prefence'
-         },
-         scales: {
-         yAxes: [{
-         ticks: {
-         beginAtZero: true
-         }
-         }]
-         }
-         }
-         });
-
-         new Chart(document.getElementById("applications-per-role-total-pie-chart"), {
-         type: 'pie',
-         data: {
-         labels: '{{ first_preference_applications_per_role.label|safe }}',
-         datasets: [{
-         label: {{ first_preference_applications_per_role.labels|safe }},
-         data: {{ first_preference_applications_per_role.data }},
-         backgroundColor: lightRandomColors,
-         borderColor: lightRandomColors,
-         borderWidth: 1
-         }]
-         },
-         options: {
-         title: {
-         display: true,
-         text: 'Applicants per role any preference'
-         },
-         scales: {
-         yAxes: [{
-         ticks: {
-         beginAtZero: true
-         }
-         }]
-         }
-         }
-         });
-
-
-
-         new Chart(document.getElementById("applications-per-programme-chart"), {
-         type: 'bar',
-         data: {
-         labels: '{{ applications_per_programme.label|safe }}',
-         datasets: [{
-         label: {{ applications_per_programme.labels|safe }},
-         data: {{ applications_per_programme.data }},
-         backgroundColor: lightRandomColors,
-         borderColor: randomColors,
-         borderWidth: 1
-         }]
-         },
-         options: {
-         title: {
-         display: true,
-         text: 'Applicants per role any prefence'
-         },
-         scales: {
-         yAxes: [{
-         ticks: {
-         beginAtZero: true
-         }
-         }]
-         }
-         }
-         });
-
-         new Chart(document.getElementById("applications-per-programme-pie-chart"), {
-         type: 'pie',
-         data: {
-         labels: '{{ applications_per_programme.label|safe }}',
-         datasets: [{
-         label: {{ applications_per_programme.labels|safe }},
-         data: {{ applications_per_programme.data }},
-         backgroundColor: lightRandomColors,
-         borderColor: lightRandomColors,
-         borderWidth: 1
-         }]
-         },
-         options: {
-         title: {
-         display: true,
-         text: 'Applicants per role any preference'
-         },
-         scales: {
-         yAxes: [{
-         ticks: {
-         beginAtZero: true
-         }
-         }]
-         }
-         }
-         });
-         */
     </script>
 {% endblock %}
