@@ -120,9 +120,14 @@ def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)+1):
         yield start_date + timezone.timedelta(n)
 
+import time
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
+
+    start = time.time()
+
+
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = [i for i in recruitment_period.recruitmentapplication_set.order_by('-submission_date').all()]
+    application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for interviewer in recruitment_period.interviewers()]
@@ -130,40 +135,47 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     date_names = []
     applications_per_date = []
 
-    count_applications = lambda is_member: len(
-        [application for application in recruitment_period.recruitmentapplication_set.all() if is_member(application)])
+    print('Interviewer stuff', time.time() - start)
+
+
+    count_applications = lambda is_member: len([application for application in application_list if is_member(application)])
+
+
 
     end_date = timezone.now() if timezone.now() < recruitment_period.end_date else recruitment_period.end_date
     end_date = end_date + timezone.timedelta(hours=2)
     for date in daterange(recruitment_period.start_date+timezone.timedelta(hours=2), end_date):
         date_names.append(date_filter(date, "d M"))
         applications_per_date.append(count_applications(lambda application: application.submission_date.date() == date.date()))
+    print('Date took', time.time() - start)
 
 
-    role_names = []
-    first_preference_applications_per_role = []
-    applications_per_role = []
-    for role in recruitment_period.recruitable_roles.all():
-        role_names.append(role.name)
-        first_preference_number_of_applications = 0
-        number_of_applications = 0
-        for application in recruitment_period.recruitmentapplication_set.all():
-            for role_application in application.roleapplication_set.filter(role=role):
-                if role_application.order == 0:
-                    first_preference_number_of_applications += 1
-                number_of_applications += 1
-        first_preference_applications_per_role.append(first_preference_number_of_applications)
-        applications_per_role.append(number_of_applications)
 
+    print('Fetching role applications took', time.time() - start)
 
+    role_applications_total = {}
+    role_applications_first_preference = {}
+
+    for role_application in RoleApplication.objects.filter(recruitment_application__recruitment_period=recruitment_period).prefetch_related('role'):
+        if not role_application.role.name in role_applications_total:
+            role_applications_total[role_application.role.name] = 0
+        role_applications_total[role_application.role.name] += 1
+
+        if not role_application.role.name in role_applications_first_preference:
+            role_applications_first_preference[role_application.role.name] = 0
+        if role_application.order == 0:
+            role_applications_first_preference[role_application.role.name] += 1
+
+    print('Counting applications 2took', time.time() - start)
+    role_names = sorted(role_applications_total.keys())
+    applications_per_role = [role_applications_total[key] for key in role_names]
+    first_preference_applications_per_role = [role_applications_first_preference[key] for key in role_names]
 
 
     programme_labels = []
     applications_per_programme = []
     for programme in Programme.objects.all():
-
-        #number_of_applications = count_applications(lambda application: application.user and application.user.profile.programme == programme)
-        number_of_applications = 0
+        number_of_applications = count_applications(lambda application: application.user.profile and application.user.profile.programme == programme)
         if number_of_applications > 0:
             applications_per_programme.append(number_of_applications)
             programme_labels.append(programme.name)
@@ -183,6 +195,9 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         # If page is out of range (e.g. 9999), deliver last page of results.
         applications = paginator.page(paginator.num_pages)
 
+
+    print('Total time took', time.time() - start)
+
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
@@ -201,7 +216,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
                 'monocolor': True
             },
                     {
-                        'label': 'Total_applications_per_role',
+                        'label': 'Total applications per role',
                         'labels': role_names,
                         'data': applications_per_role,
                         'charts': ['pie', 'bar'],
