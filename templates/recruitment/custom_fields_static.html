@@ -13,7 +13,7 @@
         </div>
     {% elif question.field_type == 'text_area' %}
         <div class="form-group">
-            <label for="{{ question.id }}">{{ question.question }}</label>
+            <label for="{{ question.id }}">{{ question.question|linebreaksbr }}</label>
             <p class="form-control-static">{{ answer.answer }}</p>
         </div>
     {% elif question.field_type == 'radio_buttons' %}
