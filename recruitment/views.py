@@ -163,7 +163,7 @@ def interview_state_counts(request, pk):
 
 
     return JsonResponse({
-        'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()]) for interviewer,state_counts in interview_state_count_map.items()]
+        'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()] + [('total', sum(state_counts.values()))]) for interviewer,state_counts in interview_state_count_map.items()]
     })
 
 def recruitment_period_graphs(request, pk):
