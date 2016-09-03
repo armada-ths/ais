@@ -204,10 +204,10 @@
                 new Chart(canvas, {
                     type: '{{ chart }}',
                     data: {
-                        labels: {{ dataset.sortedValues|safe }},
+                        labels: {{ dataset.sorted_values|safe }},
                         datasets: [{
                             label: '{{ dataset.description|safe }}',
-                            data: {{ dataset.sortedValueCounts }},
+                            data: {{ dataset.sorted_value_counts }},
                             backgroundColor: {% if not dataset.monocolor %}lightRandomColors
                                 {% else %}'rgba(54, 162, 235, 0.2)'{% endif %},
                             borderColor: {% if not dataset.monocolor %}lightRandomColors

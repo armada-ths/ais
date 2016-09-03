@@ -174,22 +174,22 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
             self.sort_key = sort_key
 
             if values:
-                self.addValues(values)
+                self.add_values(values)
 
-        def addValue(self, value):
+        def add_value(self, value):
             if not value in self.data:
                 self.data[value] = 0
             self.data[value] += 1
 
-        def addValues(self, values):
+        def add_values(self, values):
             for value in values:
-                self.addValue(value)
+                self.add_value(value)
 
-        def sortedValues(self):
+        def sorted_values(self):
             return sorted(self.data.keys(), key=self.sort_key)
 
-        def sortedValueCounts(self):
-            return [self.data[key] for key in self.sortedValues()]
+        def sorted_value_counts(self):
+            return [self.data[key] for key in self.sorted_values()]
 
     date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
     applications_per_date_count = ValueCounter(
