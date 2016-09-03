@@ -76,9 +76,7 @@ class RecruitmentApplicationSearchForm(forms.Form):
     )
 
     state = forms.ChoiceField(
-        choices=[('', '-------')] + [('new', 'New'), ('interview_delegated', 'Delegated'),
-                                     ('interview_planned', 'Planned'), ('interview_done', 'Done'),
-                                     ('accepted', 'Accepted'), ('rejected', 'Rejected')],
+
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=False
     )
@@ -134,11 +132,40 @@ def daterange(start_date, end_date):
 
 
 import time
+from django.http import JsonResponse
+
+def interview_state_counts(request, pk):
+    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    application_list = recruitment_period.recruitmentapplication_set.order_by(
+        '-submission_date').all().prefetch_related('roleapplication_set')
+
+    ignored_application_states = ['new', 'accepted', 'rejected']
+    interview_count_states = [state for state in recruitment_period.state_choices() if
+                              state[0] not in ignored_application_states]
+    state_index_map = dict([(interview_count_states[i][0], i) for i in range(len(interview_count_states))])
+
+    interview_state_count_map = {}
+
+    for interviewer in recruitment_period.interviewers():
+        interview_state_count_map[interviewer] = dict([(state[0], 0) for state in interview_count_states])
+
+    for application in application_list:
+        if application.interviewer:
+            if not application.interviewer in interview_state_count_map:
+                interview_state_count_map[application.interviewer] = dict([(state[0], 0) for state in interview_count_states])
+
+            application_state = application.state()
+            if application_state in interview_state_count_map[application.interviewer]:
+                interview_state_count_map[application.interviewer][application_state] += 1
 
 
-def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
+
+    return JsonResponse({
+        'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()]) for interviewer,state_counts in interview_state_count_map.items()]
+    })
+
+def recruitment_period_graphs(request, pk):
     start = time.time()
-
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
 
@@ -169,6 +196,15 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 
         def sorted_value_counts(self):
             return [self.data[key] for key in self.sorted_values()]
+
+        def json(self):
+            return {
+                'description': self.description,
+                'monocolor': self.monocolor,
+                'charts': self.charts,
+                'sorted_values': self.sorted_values(),
+                'sorted_value_counts': self.sorted_value_counts()
+            }
 
     date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
     applications_per_date_count = ValueCounter(
@@ -211,11 +247,19 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     )
 
     print('Counting programmes took', time.time() - start)
+    return JsonResponse({
+        'graph_datasets': [value_counter.json() for value_counter in [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count]]
+    })
 
+def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
+    start = time.time()
+    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
                                                                        interviewer in recruitment_period.interviewers()]
+    search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
@@ -232,8 +276,6 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         # If page is out of range (e.g. 9999), deliver last page of results.
         applications = paginator.page(paginator.num_pages)
 
-    print('Interviewer stuff', time.time() - start)
-
     print('Total time took', time.time() - start)
 
     return render(request, template_name, {
@@ -244,7 +286,6 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'applications': applications,
         'now': timezone.now(),
         'search_form': search_form,
-        'graph_datasets': [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count]
     })
 
 

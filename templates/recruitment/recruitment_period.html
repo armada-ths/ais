@@ -76,14 +76,14 @@
 
 
 
+
+
     {% if 'view_recruitment_applications' in request.user.ais_permissions %}
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
-                                                      data-toggle="tab">Applications</a>
-            </li>
-            <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
-            </li>
+            <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab" data-toggle="tab">Applications</a>
+            </li><li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a></li>
+        </li><li role="presentation"><a href="#interviews" aria-controls="statistics" role="tab" data-toggle="tab">Interviews</a></li>
         </ul>
 
         <!-- Tab panes -->
@@ -130,12 +130,37 @@
                 <div id="stats">
                 </div>
             </div>
+
+            <div role="tabpanel" class="tab-pane" id="interviews">
+            <h2>Interviews</h2>
+                <table class="table" id="interview_table">
+                <!--
+                    <thead>
+                    <tr>
+                        <th>Interviewer</th>
+                        {% for state in interview_count_states %}
+                            <th>{{ state.1 }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for interviewer,state_counts in interview_state_count_map.items %}
+                        <tr>
+                            <td><a>{{ interviewer.get_full_name }}</a></td>
+                            {% for state_count in state_counts %}
+                                <td>{{ state_count }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    -->
+                </table>
+
+            </div>
         </div>
 
 
     {% endif %}
-
-
 
 
 
@@ -159,13 +184,6 @@
                 console.log(scroll);
             });
             $(window).scrollTop(position);
-
-            /*
-             $('select').change(function(e) {
-             console.log('CHANGING')
-             $('#search-form').submit()
-             })
-             */
         });
     </script>
 
@@ -192,43 +210,64 @@
         })
 
 
-        {% for dataset in graph_datasets %}
+        function domElementFromString(html) {
+            const dummy = document.createElement('div')
+            dummy.innerHTML = html.trim()
+            return dummy.firstChild
+        }
 
-            {% for chart in dataset.charts %}
-                var canvas = document.createElement('canvas')
-                canvas.width = 300
-                canvas.height = 100
-                document.getElementById('stats').appendChild(canvas)
-                canvas.style.cssText = 'margin-bottom: 50px;'
 
-                new Chart(canvas, {
-                    type: '{{ chart }}',
-                    data: {
-                        labels: {{ dataset.sorted_values|safe }},
-                        datasets: [{
-                            label: '{{ dataset.description|safe }}',
-                            data: {{ dataset.sorted_value_counts }},
-                            backgroundColor: {% if not dataset.monocolor %}lightRandomColors
-                                {% else %}'rgba(54, 162, 235, 0.2)'{% endif %},
-                            borderColor: {% if not dataset.monocolor %}lightRandomColors
-                                {% else %}'rgba(54, 162, 235, 0.2)'{% endif %},
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
+        $.ajax({
+            url: '{% url 'recruitment_period_graphs' recruitment_period.pk %}'
+        }).done(function(data) {
+            data.graph_datasets.forEach(function(dataset) {
+                dataset.charts.forEach(function(chart) {
+                    var canvas = document.createElement('canvas')
+                    canvas.width = 300
+                    canvas.height = 100
+                    document.getElementById('stats').appendChild(canvas)
+                    canvas.style.cssText = 'margin-bottom: 50px;'
+
+                    new Chart(canvas, {
+                        type: chart,
+                        data: {
+                            labels: dataset.sorted_values,
+                            datasets: [{
+                                label: dataset.description,
+                                data: dataset.sorted_value_counts,
+                                backgroundColor: dataset.monocolor ? 'rgba(54, 162, 235, 0.2)' : lightRandomColors,
+                                borderColor: dataset.monocolor ? 'rgba(54, 162, 235, 0.2)' : lightRandomColors,
+                                borderWidth: 1
                             }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
                         }
-                    }
-                });
-            {% endfor %}
-        {% endfor %}
+                    });
+                })
+            })
+        })
 
 
+    </script>
 
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+    $(document).ready(function () {
+            $('#interview_table').DataTable({
+                'order': [[1, 'desc']],
+                'paging': false,
+                'ajax': '{% url 'interview_state_counts' recruitment_period.pk %}',
+                'columns': [{'data': 'name', 'title': 'Name'}, {'data': 'interview_delegated', 'title': 'Delegated'}, {'data': 'interview_planned', 'title': 'Planned'}, {'data': 'interview_done', 'title': 'Done'}]
+            });
+        });
     </script>
 {% endblock %}

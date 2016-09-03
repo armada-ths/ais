@@ -7,6 +7,9 @@ urlpatterns = [
     url(r'^$', views.recruitment, name='recruitment'),
     url(r'^import_members$', views.import_members, name='import_members'),
     url(r'^(?P<pk>\d+)$', views.recruitment_period, name='recruitment_period'),
+    url(r'^(?P<pk>\d+)/interview_state_counts$', views.interview_state_counts, name='interview_state_counts'),
+    url(r'^(?P<pk>\d+)/graphs$', views.recruitment_period_graphs, name='recruitment_period_graphs'),
+
     url(r'^roles/new$', views.roles_new, name='roles_new'),
 
     url(r'^roles/(?P<pk>\d+)/delete$', views.roles_delete, name='roles_delete'),

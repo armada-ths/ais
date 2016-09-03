@@ -230,6 +230,11 @@ class RecruitmentPeriod(models.Model):
     def interviewers(self):
         return [application.user for application in RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=self.fair, recruitment_period__start_date__lte=self.start_date).prefetch_related('user').order_by('user__first_name', 'user__last_name')]
 
+    def state_choices(self):
+        return [('new', 'New'), ('interview_delegated', 'Delegated'),
+         ('interview_planned', 'Planned'), ('interview_done', 'Done'),
+         ('accepted', 'Accepted'), ('rejected', 'Rejected')]
+
     def __str__(self):
         return '%s: %s' % (self.fair.name, self.name)
 
