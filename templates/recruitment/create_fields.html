@@ -59,7 +59,7 @@ function domElementFromString(html) {
                         </div>
                         </div>
 
-                        <div class="col-md-7"><input type="text" class="form-control" name="${extraFieldId}_${id}" value="${question}" placeholder="Question"></div>
+                        <div class="col-md-7"><textarea class="form-control" name="${extraFieldId}_${id}" placeholder="Question">${question}</textarea></div>
 
                         <div class="col-md-1"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button>
 
@@ -106,7 +106,7 @@ function domElementFromString(html) {
 
 
 {%  for custom_field in values %}
-        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', '{{ custom_field.question }}', {{ custom_field.position }}, {% if custom_field.required %} true {% else %} false {% endif %})
+        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', `{{ custom_field.question }}`, {{ custom_field.position }}, {% if custom_field.required %} true {% else %} false {% endif %})
             {% for argument in custom_field.customfieldargument_set.all|dictsort:"position" %}
                 addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}', {{argument.position}})
             {% endfor %}

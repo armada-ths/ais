@@ -14,7 +14,7 @@
         </div>
     {% elif question.field_type == 'text_area' %}
         <div class="form-group">
-            <label for="{{ question.form_key }}">{{ question.question }}{% if question.required %}*{% endif %}</label>
+            <label for="{{ question.form_key }}">{{ question.question|linebreaksbr }}{% if question.required %}*{% endif %}</label>
             <textarea class="form-control" rows="3" id="{{ question.form_key }}"
                       name="{{ question.form_key }}"
                       {% if question.required %}required{% endif %}>{{ answer.answer }}</textarea>
