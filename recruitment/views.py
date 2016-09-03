@@ -135,6 +135,8 @@ import time
 from django.http import JsonResponse
 
 def interview_state_counts(request, pk):
+    if not 'view_recruitment_applications' in request.user.ais_permissions():
+        return HttpResponseForbidden()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by(
         '-submission_date').all().prefetch_related('roleapplication_set')
@@ -164,6 +166,8 @@ def interview_state_counts(request, pk):
     })
 
 def recruitment_period_graphs(request, pk):
+    if not 'view_recruitment_applications' in request.user.ais_permissions():
+        return HttpResponseForbidden()
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
