@@ -142,7 +142,6 @@ def interview_state_counts(request, pk):
     ignored_application_states = ['new', 'accepted', 'rejected']
     interview_count_states = [state for state in recruitment_period.state_choices() if
                               state[0] not in ignored_application_states]
-    state_index_map = dict([(interview_count_states[i][0], i) for i in range(len(interview_count_states))])
 
     interview_state_count_map = {}
 

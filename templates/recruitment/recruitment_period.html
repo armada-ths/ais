@@ -2,12 +2,10 @@
 
 {% block content %}
 
-
     <ol class="breadcrumb">
         <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
         <li class="active">{{ recruitment_period.name }}</li>
     </ol>
-
 
     <div class="jumbotron recruitment-jumbotron">
         <div class="container recruitment-jumbotron-container">
@@ -34,8 +32,6 @@
             </div>
         </div>
     </div>
-
-
 
 
     {% if interviews %}
@@ -73,8 +69,6 @@
         </table>
         <br>
     {% endif %}
-
-
 
 
 
@@ -133,29 +127,7 @@
 
             <div role="tabpanel" class="tab-pane" id="interviews">
             <h2>Interviews</h2>
-                <table class="table" id="interview_table">
-                <!--
-                    <thead>
-                    <tr>
-                        <th>Interviewer</th>
-                        {% for state in interview_count_states %}
-                            <th>{{ state.1 }}</th>
-                        {% endfor %}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for interviewer,state_counts in interview_state_count_map.items %}
-                        <tr>
-                            <td><a>{{ interviewer.get_full_name }}</a></td>
-                            {% for state_count in state_counts %}
-                                <td>{{ state_count }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                    -->
-                </table>
-
+            <table class="table" id="interview_table" style="width: 100%"></table>
             </div>
         </div>
 
