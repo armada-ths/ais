@@ -142,27 +142,6 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
 
-    search_form = RecruitmentApplicationSearchForm(request.GET or None)
-    search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
-                                                                       interviewer in recruitment_period.interviewers()]
-
-    if search_form.is_valid():
-        application_list = search_form.applications_matching_search(application_list)
-
-    number_of_applications_per_page = 25
-    paginator = Paginator(application_list, number_of_applications_per_page)
-    page = request.GET.get('page')
-    try:
-        applications = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        applications = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        applications = paginator.page(paginator.num_pages)
-
-    print('Interviewer stuff', time.time() - start)
-
 
     # Graph stuff :)
     class ValueCounter(object):
@@ -231,9 +210,29 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         [application.user.profile.programme.name for application in application_list.prefetch_related('user', 'user__profile', 'user__profile__programme') if user_has_programme(application.user)]
     )
 
-    print('Counting programmes took1', time.time() - start)
+    print('Counting programmes took', time.time() - start)
 
 
+    search_form = RecruitmentApplicationSearchForm(request.GET or None)
+    search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
+                                                                       interviewer in recruitment_period.interviewers()]
+
+    if search_form.is_valid():
+        application_list = search_form.applications_matching_search(application_list)
+
+    number_of_applications_per_page = 25
+    paginator = Paginator(application_list, number_of_applications_per_page)
+    page = request.GET.get('page')
+    try:
+        applications = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        applications = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        applications = paginator.page(paginator.num_pages)
+
+    print('Interviewer stuff', time.time() - start)
 
     print('Total time took', time.time() - start)
 
