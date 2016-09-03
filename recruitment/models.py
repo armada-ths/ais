@@ -165,7 +165,7 @@ class AISPermission(models.Model):
 class Role(models.Model):
     name = models.CharField(max_length=100)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
-    description = models.CharField(max_length=1000, default="", blank=True)
+    description = models.TextField(default="", blank=True)
     permissions = models.ManyToManyField(AISPermission, blank=True)
 
     class Meta:
