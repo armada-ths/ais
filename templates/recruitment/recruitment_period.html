@@ -36,6 +36,7 @@
 
     {% if interviews %}
         <h2>Your interviews ({{ interviews.count }})</h2>
+        <p>Must be done before {{ recruitment_period.interview_end_date|date:"d M" }}</p>
         <table class="table">
             <thead>
             <tr>
@@ -43,6 +44,7 @@
                 <th>Interview date</th>
                 <th>Interview Location</th>
                 <th>Interviewer</th>
+                <th>State</th>
             </tr>
             </thead>
             {% for application in interviews %}
@@ -63,6 +65,23 @@
                             {{ application.interviewer.get_full_name }}
                         {% endif %}
                     </td>
+                                <td>
+                {% if application.state == 'accepted' %}
+                    <span class="label label-success">{{ application.status.capitalize }}</span>
+                {% elif application.state == 'rejected' %}
+                    <span class="label label-danger">{{ application.status.capitalize }}</span>
+                {% elif application.state == 'new' %}
+                    <span class="label label-default">New</span>
+                {% elif application.state == 'interview_delegated' %}
+                    <span class="label label-warning">Delegated</span>
+                {% elif application.state == 'interview_planned' %}
+                    <span class="label label-info">Planned</span>
+                {% elif application.state == 'interview_done' %}
+                    <span class="label label-primary">Done</span>
+                    {% else %}
+                    {{ application.state }}
+                {% endif %}
+            </td>
 
                 </tr>
             {% endfor %}
@@ -75,9 +94,14 @@
     {% if 'view_recruitment_applications' in request.user.ais_permissions %}
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab" data-toggle="tab">Applications</a>
-            </li><li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a></li>
-        </li><li role="presentation"><a href="#interviews" aria-controls="statistics" role="tab" data-toggle="tab">Interviews</a></li>
+            <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
+                                                      data-toggle="tab">Applications</a>
+            </li>
+            <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
+            </li>
+            </li>
+            <li role="presentation"><a href="#interviews" aria-controls="statistics" role="tab" data-toggle="tab">Interviews</a>
+            </li>
         </ul>
 
         <!-- Tab panes -->
@@ -126,8 +150,8 @@
             </div>
 
             <div role="tabpanel" class="tab-pane" id="interviews">
-            <h2>Interviews</h2>
-            <table class="table" id="interview_table" style="width: 100%"></table>
+                <h2>Interviews</h2>
+                <table class="table" id="interview_table" style="width: 100%"></table>
             </div>
         </div>
 
@@ -191,9 +215,9 @@
 
         $.ajax({
             url: '{% url 'recruitment_period_graphs' recruitment_period.pk %}'
-        }).done(function(data) {
-            data.graph_datasets.forEach(function(dataset) {
-                dataset.charts.forEach(function(chart) {
+        }).done(function (data) {
+            data.graph_datasets.forEach(function (dataset) {
+                dataset.charts.forEach(function (chart) {
                     var canvas = document.createElement('canvas')
                     canvas.width = 300
                     canvas.height = 100
@@ -233,12 +257,18 @@
     <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
     <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
     <script>
-    $(document).ready(function () {
+        $(document).ready(function () {
             $('#interview_table').DataTable({
                 'order': [[1, 'desc']],
                 'paging': false,
                 'ajax': '{% url 'interview_state_counts' recruitment_period.pk %}',
-                'columns': [{'data': 'name', 'title': 'Name'}, {'data': 'interview_delegated', 'title': 'Delegated'}, {'data': 'interview_planned', 'title': 'Planned'}, {'data': 'interview_done', 'title': 'Done'}, {'data': 'total', 'title': 'Total'}]
+                'columns': [{'data': 'name', 'title': 'Name'}, {
+                    'data': 'interview_delegated',
+                    'title': 'Delegated'
+                }, {'data': 'interview_planned', 'title': 'Planned'}, {
+                    'data': 'interview_done',
+                    'title': 'Done'
+                }, {'data': 'total', 'title': 'Total'}]
             });
         });
     </script>
