@@ -32,6 +32,7 @@
             </div>
         {% endfor %}
     {% elif question.field_type == 'select' %}
+        <div class="form-group">
         <label class="radio control-label" for="{{ question.form_key }}">{{ question }}{% if question.required %}*{% endif %}</label>
         <select class="form-control" name="{{ question.form_key }}" id="{{ question.form_key }}"
                 {% if question.required %}required{% endif %}>
@@ -41,6 +42,7 @@
                         selected {% endif %}>{{ argument.value }}</option>
             {% endfor %}
         </select>
+        </div>
     {% elif question.field_type == 'file' %}
         <div class="form-group">
             <label for="{{ question.form_key }}">{{ question }}{% if question.required %}*{% endif %}</label>
