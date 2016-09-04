@@ -65,23 +65,23 @@
                             {{ application.interviewer.get_full_name }}
                         {% endif %}
                     </td>
-                                <td>
-                {% if application.state == 'accepted' %}
-                    <span class="label label-success">{{ application.status.capitalize }}</span>
-                {% elif application.state == 'rejected' %}
-                    <span class="label label-danger">{{ application.status.capitalize }}</span>
-                {% elif application.state == 'new' %}
-                    <span class="label label-default">New</span>
-                {% elif application.state == 'interview_delegated' %}
-                    <span class="label label-warning">Delegated</span>
-                {% elif application.state == 'interview_planned' %}
-                    <span class="label label-info">Planned</span>
-                {% elif application.state == 'interview_done' %}
-                    <span class="label label-primary">Done</span>
-                    {% else %}
-                    {{ application.state }}
-                {% endif %}
-            </td>
+                    <td>
+                        {% if application.state == 'accepted' %}
+                            <span class="label label-success">{{ application.status.capitalize }}</span>
+                        {% elif application.state == 'rejected' %}
+                            <span class="label label-danger">{{ application.status.capitalize }}</span>
+                        {% elif application.state == 'new' %}
+                            <span class="label label-default">New</span>
+                        {% elif application.state == 'interview_delegated' %}
+                            <span class="label label-warning">Delegated</span>
+                        {% elif application.state == 'interview_planned' %}
+                            <span class="label label-info">Planned</span>
+                        {% elif application.state == 'interview_done' %}
+                            <span class="label label-primary">Done</span>
+                        {% else %}
+                            {{ application.state }}
+                        {% endif %}
+                    </td>
 
                 </tr>
             {% endfor %}
@@ -257,19 +257,28 @@
     <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
     <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
     <script>
+        var columns =  [
+                    {'data': 'name', 'title': 'Name'},
+                    {'data': 'interview_delegated', 'title': 'Delegated'},
+                    {'data': 'interview_planned', 'title': 'Planned'},
+                    {'data': 'interview_done', 'title': 'Done'},
+                    {'data': 'total', 'title': 'Total'}
+                ]
         $(document).ready(function () {
             $('#interview_table').DataTable({
                 'order': [[1, 'desc']],
                 'paging': false,
                 'ajax': '{% url 'interview_state_counts' recruitment_period.pk %}',
-                'columns': [{'data': 'name', 'title': 'Name'}, {
-                    'data': 'interview_delegated',
-                    'title': 'Delegated'
-                }, {'data': 'interview_planned', 'title': 'Planned'}, {
-                    'data': 'interview_done',
-                    'title': 'Done'
-                }, {'data': 'total', 'title': 'Total'}]
-            });
-        });
+                'columns': columns,
+                'headerCallback': function (row, data, start, end, display) {
+                    var api = this.api()
+                    var intVal = function (i) { return typeof i === 'string' ?  i * 1 :  typeof i === 'number' ?  i : 0 }
+                    for (var column = 1; column < columns.length; column++) {
+                        total = api.column(column).data().reduce(function (a, b) { return intVal(a) + intVal(b) }, 0)
+                        $(api.column(column).header()).html(columns[column].title + ' (' + total + ')' )
+                    }
+                }
+            })
+        })
     </script>
 {% endblock %}
