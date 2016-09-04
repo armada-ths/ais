@@ -713,7 +713,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not 'administer_recruitment_applications' in request.user.ais_permissions() and recruitment_application.user != request.user:
+    if not 'administer_recruitment_applications' in request.user.ais_permissions():
         return HttpResponseForbidden()
     recruitment_application.delete()
     return redirect('recruitment_period', recruitment_application.recruitment_period.pk)
