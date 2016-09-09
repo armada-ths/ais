@@ -36,6 +36,8 @@ class Profile(models.Model):
         ('other', 'Other')
     )
 
+
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, default=-1, primary_key=True)
     birth_date = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GENDERS, blank=True)
@@ -56,4 +58,4 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'profile'
-
+        permissions = (('view_people', 'View people'),)

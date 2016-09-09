@@ -180,6 +180,9 @@ class Role(models.Model):
 
     class Meta:
         ordering = ['name']
+        permissions = (
+            ('administer_roles', 'Administer roles'),
+        )
 
     def has_permission(self, needed_permission):
         role = self
@@ -223,6 +226,11 @@ class RecruitmentPeriod(models.Model):
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions')
     eligible_roles = models.IntegerField(default=3)
     recruitable_roles = models.ManyToManyField(Role)
+
+    class Meta:
+        permissions = (
+            ('administer_recruitment', 'Administer recruitment'),
+        )
 
     def is_past(self):
         return self.end_date < timezone.now()
@@ -269,6 +277,13 @@ class RecruitmentApplication(models.Model):
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
 
+    class Meta:
+        permissions = (
+            ('administer_recruitment_applications', 'Administer recruitment applications'),
+            ('view_recruitment_applications', 'View recruitment applications'),
+            ('view_recruitment_interviews', 'View recruitment interviews'),
+
+        )
 
     def state(self):
         if self.status:
@@ -405,6 +420,10 @@ def create_project_group():
 
 
 def ais_permissions_for_user(user):
+    permissions = [permission.split('.')[1] for permission in user.get_all_permissions()]
+    print(permissions)
+    return [permission.split('.')[1] for permission in user.get_all_permissions()]
+    """
     if user.is_superuser:
         return [permission.codename for permission in AISPermission.objects.all()]
     permissions = []
@@ -421,6 +440,7 @@ def ais_permissions_for_user(user):
                     break
 
     return permissions
+    """
 
 User.add_to_class('ais_permissions', ais_permissions_for_user)
 
