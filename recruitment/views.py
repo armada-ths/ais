@@ -374,7 +374,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     })
 
 
-@permission_required('recruitment.administer_recruitment3', raise_exception=True)
+@permission_required('recruitment.administer_recruitment', raise_exception=True)
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     recruitment_period.delete()
