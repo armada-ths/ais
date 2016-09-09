@@ -155,18 +155,10 @@ class CustomFieldAnswer(models.Model):
         return '%s' % (self.answer)
 
 
-class AISPermission(models.Model):
-    name = models.CharField(max_length=100)
-    codename = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
 class Role(models.Model):
     name = models.CharField(max_length=100)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
     description = models.TextField(default="", blank=True)
-    permissions = models.ManyToManyField(AISPermission, blank=True)
     group = models.ForeignKey(Group)
 
     def add_user_to_groups(self, user):
@@ -183,18 +175,6 @@ class Role(models.Model):
         permissions = (
             ('administer_roles', 'Administer roles'),
         )
-
-    def has_permission(self, needed_permission):
-        role = self
-        while role != None:
-            for permission in role.permissions.all():
-                if permission.codename == needed_permission:
-                    return True
-
-            role = role.parent_role
-            if role == self:
-                return False
-        return False
 
 
     def has_parent(self, other):
@@ -423,24 +403,6 @@ def ais_permissions_for_user(user):
     permissions = [permission.split('.')[1] for permission in user.get_all_permissions()]
     print(permissions)
     return [permission.split('.')[1] for permission in user.get_all_permissions()]
-    """
-    if user.is_superuser:
-        return [permission.codename for permission in AISPermission.objects.all()]
-    permissions = []
-    for application in RecruitmentApplication.objects.filter(user=user, status='accepted'):
-        if application.recruitment_period.fair.year == timezone.now().year:
-
-            # Check all roles and parent roles
-            role = application.delegated_role
-            while role:
-                for permission in role.permissions.all():
-                    permissions.append(permission.codename)
-                role = role.parent_role
-                if role == application.delegated_role:
-                    break
-
-    return permissions
-    """
 
 User.add_to_class('ais_permissions', ais_permissions_for_user)
 

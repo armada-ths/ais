@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, AISPermission, Programme
+    create_project_group, Programme
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden

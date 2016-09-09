@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, AISPermission, Programme
+from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
 from fair.models import Fair
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -39,20 +39,7 @@ class RecruitmentTestCase(TestCase):
         self.system_developer = Role.objects.create(name='System Developer', parent_role=self.pg_role, pk=2)
         self.career_fair_leader = Role.objects.create(name='Career Fair Leader', pk=3)
 
-        self.administer_roles_permission = AISPermission.objects.create(codename='administer_roles', name='Administer roles')
-        self.administer_recruitment_permission = AISPermission.objects.create(codename='administer_recruitment', name='Administer recruitment')
-        self.view_recruitment_applications_permission = AISPermission.objects.create(codename='view_recruitment_applications',
-                                                                              name='View recruitment applications')
-        self.view_recruitment_interviews_permission = AISPermission.objects.create(
-            codename='view_recruitment_interviews',
-            name='View recruitment interviews')
 
-        self.pg_role.permissions.add(self.administer_roles_permission)
-        self.pg_role.permissions.add(self.administer_roles_permission)
-        self.pg_role.permissions.add(self.view_recruitment_applications_permission)
-        self.system_developer.permissions.add(self.administer_recruitment_permission)
-        self.system_developer.permissions.add(self.view_recruitment_interviews_permission)
-        self.career_fair_leader.permissions.add(self.administer_recruitment_permission)
 
         self.recruitment_period.recruitable_roles.add(self.system_developer, self.career_fair_leader)
 
