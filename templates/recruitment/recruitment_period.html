@@ -24,7 +24,7 @@
                     </a>
                 {% endif %}
 
-                {% if 'administer_recruitment' in request.user.ais_permissions %}
+                {% if 'recruitment.administer_recruitment' in request.user.ais_permissions %}
                     <a href="{% url 'recruitment_period_edit' recruitment_period.id %}">
                         <button class="btn btn-default btn-lg">Edit</button>
                     </a>
@@ -91,7 +91,7 @@
 
 
 
-    {% if 'view_recruitment_applications' in request.user.ais_permissions %}
+    {% if 'recruitment.view_recruitment_applications' in request.user.ais_permissions %}
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"

@@ -21,7 +21,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Date</th>
-                        {% if 'view_recruitment_applications' in request.user.ais_permissions %}
+                        {% if 'recruitment.view_recruitment_applications' in request.user.ais_permissions %}
                         <th>Applications</th>
                         {% endif %}
                         <th>Status</th>
@@ -31,7 +31,7 @@
                         <tr>
                             <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
                             <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
-                            {% if 'view_recruitment_applications' in request.user.ais_permissions %}
+                            {% if 'recruitment.view_recruitment_applications' in request.user.ais_permissions %}
                             <td>{{ period.recruitmentapplication_set.count }}</td>
                             {% endif %}
                             <td>
@@ -50,21 +50,23 @@
             {% else %}
                 <p>No recruitment periods</p>
             {% endif %}
-            {% if 'administer_recruitment' in request.user.ais_permissions %}
+            {% if 'recruitment.administer_recruitment' in request.user.ais_permissions %}
                 <p><a href="{% url "recruitment_period_new" %}">
                     <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
                         period
                     </button>
                 </a></p>
 
-                {% if request.user.is_superuser %}
+
+
+
+            {% endif %}
+
+                        {% if request.user.is_superuser %}
                     <p><a href="{% url "import_members" %}">
                         <button class="btn btn-default">Import members of Armada 2016</button>
                     </a></p>
                 {% endif %}
-
-
-            {% endif %}
         </div>
 
         <div class="col-md-3">
@@ -80,7 +82,7 @@
                 <p>No roles</p>
             {% endfor %}
 
-            {% if 'administer_roles' in request.user.ais_permissions %}
+            {% if 'recruitment.administer_roles' in request.user.ais_permissions %}
                 <a class="btn btn-primary" href="{% url "roles_new" %}"><span class="glyphicon glyphicon-plus"></span>
                     New role</a>
 

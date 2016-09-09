@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from recruitment.models import RecruitmentApplication
 from .models import Profile
 from django.utils import timezone
@@ -16,7 +15,7 @@ from django.forms import ModelForm
 
 
 def list_people(request):
-    if not 'view_people' in request.user.ais_permissions():
+    if not 'people.view_people' in request.user.ais_permissions():
         return HttpResponseForbidden()
     users = User.objects.filter(is_superuser=False)
     return TemplateResponse(request, 'people_list.html', {'users': users})

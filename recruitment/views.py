@@ -14,6 +14,8 @@ from companies.models import Company, CompanyParticipationYear
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
+from django.contrib.auth.decorators import permission_required
+
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -135,7 +137,7 @@ import time
 from django.http import JsonResponse
 
 def interview_state_counts(request, pk):
-    if not 'view_recruitment_applications' in request.user.ais_permissions():
+    if not 'recruitment.view_recruitment_applications' in request.user.ais_permissions():
         return HttpResponseForbidden()
 
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
@@ -167,7 +169,7 @@ def interview_state_counts(request, pk):
     })
 
 def recruitment_period_graphs(request, pk):
-    if not 'view_recruitment_applications' in request.user.ais_permissions():
+    if not 'recruitment.view_recruitment_applications' in request.user.ais_permissions():
         return HttpResponseForbidden()
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
@@ -372,17 +374,15 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     })
 
 
+@permission_required('recruitment.administer_recruitment3', raise_exception=True)
 def recruitment_period_delete(request, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    if not 'administer_recruitment' in request.user.ais_permissions():
-        return HttpResponseForbidden()
     recruitment_period.delete()
     return redirect('recruitment')
 
 
+@permission_required('recruitment.administer_recruitment', raise_exception=True)
 def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
-    if not 'administer_recruitment' in request.user.ais_permissions():
-        return HttpResponseForbidden()
 
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
@@ -427,7 +427,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     role = Role.objects.filter(pk=pk).first()
     roles_form = RolesForm(request.POST or None, instance=role)
 
-    if 'administer_roles' in request.user.ais_permissions():
+    if 'recruitment.administer_roles' in request.user.ais_permissions():
         if roles_form.is_valid():
             roles_form.save()
             return redirect('recruitment')
@@ -443,7 +443,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
 
 def roles_delete(request, pk):
     role = get_object_or_404(Role, pk=pk)
-    if not 'administer_roles' in request.user.ais_permissions():
+    if not 'recruitment.administer_roles' in request.user.ais_permissions():
         return HttpResponseForbidden()
     role.delete()
     return redirect('recruitment')
@@ -648,7 +648,7 @@ class InterviewPlanForm(ModelForm):
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not 'view_recruitment_interviews' in request.user.ais_permissions() and application.interviewer != request.user:
+    if not 'recruitment.view_recruitment_interviews' in request.user.ais_permissions() and application.interviewer != request.user:
         return HttpResponseForbidden()
 
     exhibitors = [participation.company for participation in
@@ -657,7 +657,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
         fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role',
-                'rating') if 'administer_recruitment_applications' in request.user.ais_permissions() else (
+                'rating') if 'recruitment.administer_recruitment_applications' in request.user.ais_permissions() else (
         'interview_date', 'interview_location', 'recommended_role', 'rating'),
         widgets={
             'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
@@ -677,7 +677,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         RecruitmentApplication,
         fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
     )
-    if 'administer_recruitment_applications' in request.user.ais_permissions():
+    if 'recruitment.administer_recruitment_applications' in request.user.ais_permissions():
         role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
         role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
         role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
@@ -688,7 +688,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         role_delegation_form = None
 
     if request.POST and (
-            application.interviewer == request.user or 'administer_recruitment_applications' in request.user.ais_permissions()):
+            application.interviewer == request.user or 'recruitment.administer_recruitment_applications' in request.user.ais_permissions()):
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
         if interview_planning_form.is_valid():
             interview_planning_form.save()
@@ -713,7 +713,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
 
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not 'administer_recruitment_applications' in request.user.ais_permissions():
+    if not 'recruitment.administer_recruitment_applications' in request.user.ais_permissions():
         return HttpResponseForbidden()
     recruitment_application.delete()
     return redirect('recruitment_period', recruitment_application.recruitment_period.pk)

@@ -400,9 +400,7 @@ def create_project_group():
 
 
 def ais_permissions_for_user(user):
-    permissions = [permission.split('.')[1] for permission in user.get_all_permissions()]
-    print(permissions)
-    return [permission.split('.')[1] for permission in user.get_all_permissions()]
+    return user.get_all_permissions()
 
 User.add_to_class('ais_permissions', ais_permissions_for_user)
 

@@ -27,7 +27,7 @@
                 <ul class="nav navbar-nav">
 
 
-                        {% if 'view_people' in request.user.ais_permissions %}
+                        {% if 'people.view_people' in request.user.ais_permissions %}
                             {% block nav-people %}
                                 <li role="presentation"><a href="{% url 'people' %}">People</a></li>
                             {% endblock %}
