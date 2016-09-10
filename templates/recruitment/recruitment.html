@@ -21,7 +21,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Date</th>
-                        {% if 'recruitment.view_recruitment_applications' in request.user.ais_permissions %}
+                        {% if perms.recruitment.view_recruitment_applications %}
                         <th>Applications</th>
                         {% endif %}
                         <th>Status</th>
@@ -31,7 +31,7 @@
                         <tr>
                             <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
                             <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
-                            {% if 'recruitment.view_recruitment_applications' in request.user.ais_permissions %}
+                            {% if perms.recruitment.view_recruitment_applications %}
                             <td>{{ period.recruitmentapplication_set.count }}</td>
                             {% endif %}
                             <td>
@@ -50,7 +50,7 @@
             {% else %}
                 <p>No recruitment periods</p>
             {% endif %}
-            {% if 'recruitment.administer_recruitment' in request.user.ais_permissions %}
+            {% if perms.recruitment.administer_recruitment %}
                 <p><a href="{% url "recruitment_period_new" %}">
                     <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
                         period
@@ -82,7 +82,7 @@
                 <p>No roles</p>
             {% endfor %}
 
-            {% if 'recruitment.administer_roles' in request.user.ais_permissions %}
+            {% if perms.recruitment.administer_roles %}
                 <a class="btn btn-primary" href="{% url "roles_new" %}"><span class="glyphicon glyphicon-plus"></span>
                     New role</a>
 

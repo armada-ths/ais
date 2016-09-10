@@ -98,21 +98,21 @@ class RecruitmentTestCase(TestCase):
 
         self.recruitment_application.save()
 
-        self.assertTrue('administer_recruitment' in self.purmonen_user.ais_permissions())
-        self.assertTrue('administer_roles' in self.purmonen_user.ais_permissions())
+        self.assertTrue('administer_recruitment' in self.purmonen_user.get_all_permissions())
+        self.assertTrue('administer_roles' in self.purmonen_user.get_all_permissions())
 
         self.recruitment_application.delegated_role = self.career_fair_leader
         self.recruitment_application.save()
 
-        self.assertTrue('administer_recruitment' in self.purmonen_user.ais_permissions())
-        self.assertTrue('administer_roles' not in self.purmonen_user.ais_permissions())
+        self.assertTrue('administer_recruitment' in self.purmonen_user.get_all_permissions())
+        self.assertTrue('administer_roles' not in self.purmonen_user.get_all_permissions())
 
         self.recruitment_application.status = 'rejected'
         self.recruitment_application.save()
         self.assertEqual(self.recruitment_application.state(), 'rejected')
 
-        self.assertTrue('administer_recruitment' not in self.purmonen_user.ais_permissions())
-        self.assertTrue('administer_roles' not in self.purmonen_user.ais_permissions())
+        self.assertTrue('administer_recruitment' not in self.purmonen_user.get_all_permissions())
+        self.assertTrue('administer_roles' not in self.purmonen_user.get_all_permissions())
 
 
     def test_site_for_non_armada_member(self):

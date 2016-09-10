@@ -43,7 +43,7 @@
     {% for application in applications %}
         <tr>
             <td>
-                {% if 'recruitment.view_recruitment_interviews' in request.user.ais_permissions %}
+                {% if perms.recruitment.view_recruitment_interviews %}
                 <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
                     {% include 'recruitment/user_name.html' with user=application.user %}
                 </a>

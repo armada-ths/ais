@@ -10,13 +10,12 @@ from django.http import HttpResponseForbidden
 from recruitment.views import set_image_key_from_request
 
 from django.forms import ModelForm
+from django.contrib.auth.decorators import permission_required
 # Create your views here.
 
 
-
+@permission_required('people.view_people', raise_exception=True)
 def list_people(request):
-    if not 'people.view_people' in request.user.ais_permissions():
-        return HttpResponseForbidden()
     users = User.objects.filter(is_superuser=False)
     return TemplateResponse(request, 'people_list.html', {'users': users})
 

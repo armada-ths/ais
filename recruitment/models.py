@@ -398,9 +398,3 @@ def create_project_group():
     create_programmes()
     create_armada_hosts()
 
-
-def ais_permissions_for_user(user):
-    return user.get_all_permissions()
-
-User.add_to_class('ais_permissions', ais_permissions_for_user)
-

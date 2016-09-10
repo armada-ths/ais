@@ -136,10 +136,8 @@ def daterange(start_date, end_date):
 import time
 from django.http import JsonResponse
 
+@permission_required('recruitment.view_recruitment_applications', raise_exception=True)
 def interview_state_counts(request, pk):
-    if not 'recruitment.view_recruitment_applications' in request.user.ais_permissions():
-        return HttpResponseForbidden()
-
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by(
         '-submission_date').all().prefetch_related('roleapplication_set')
@@ -168,13 +166,11 @@ def interview_state_counts(request, pk):
         'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()] + [('total', sum(state_counts.values()))]) for interviewer,state_counts in interview_state_count_map.items()]
     })
 
+@permission_required('recruitment.view_recruitment_applications', raise_exception=True)
 def recruitment_period_graphs(request, pk):
-    if not 'recruitment.view_recruitment_applications' in request.user.ais_permissions():
-        return HttpResponseForbidden()
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
-
 
     # Graph stuff :)
     class ValueCounter(object):
@@ -427,7 +423,7 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     role = Role.objects.filter(pk=pk).first()
     roles_form = RolesForm(request.POST or None, instance=role)
 
-    if 'recruitment.administer_roles' in request.user.ais_permissions():
+    if request.user.has_perm('recruitment.administer_roles'):
         if roles_form.is_valid():
             roles_form.save()
             return redirect('recruitment')
@@ -441,10 +437,9 @@ def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
     })
 
 
+@permission_required('recruitment.administer_roles', raise_exception=True)
 def roles_delete(request, pk):
     role = get_object_or_404(Role, pk=pk)
-    if not 'recruitment.administer_roles' in request.user.ais_permissions():
-        return HttpResponseForbidden()
     role.delete()
     return redirect('recruitment')
 
@@ -648,7 +643,7 @@ class InterviewPlanForm(ModelForm):
 
 def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not 'recruitment.view_recruitment_interviews' in request.user.ais_permissions() and application.interviewer != request.user:
+    if not request.user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != request.user:
         return HttpResponseForbidden()
 
     exhibitors = [participation.company for participation in
@@ -657,7 +652,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
         fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role',
-                'rating') if 'recruitment.administer_recruitment_applications' in request.user.ais_permissions() else (
+                'rating') if request.user.has_perm('recruitment.administer_recruitment_applications') else (
         'interview_date', 'interview_location', 'recommended_role', 'rating'),
         widgets={
             'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
@@ -677,7 +672,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         RecruitmentApplication,
         fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
     )
-    if 'recruitment.administer_recruitment_applications' in request.user.ais_permissions():
+    if  request.user.has_perm('recruitment.administer_recruitment_applications'):
         role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
         role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
         role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
@@ -688,7 +683,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         role_delegation_form = None
 
     if request.POST and (
-            application.interviewer == request.user or 'recruitment.administer_recruitment_applications' in request.user.ais_permissions()):
+            application.interviewer == request.user or request.user.has_perm('recruitment.administer_recruitment_applications')):
         application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
         if interview_planning_form.is_valid():
             interview_planning_form.save()
@@ -711,9 +706,8 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
     })
 
 
+@permission_required('recruitment.administer_recruitment_applications', raise_exception=True)
 def recruitment_application_delete(request, pk):
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not 'recruitment.administer_recruitment_applications' in request.user.ais_permissions():
-        return HttpResponseForbidden()
     recruitment_application.delete()
     return redirect('recruitment_period', recruitment_application.recruitment_period.pk)
