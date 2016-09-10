@@ -1,0 +1,9 @@
+@media (min-width: 768px) {
+    .startpage-jumbotron {
+        background-image: url('/static/images/armada_navigating.png');
+        background-position: 0px 0px;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        height: 380px;
+    }
+}
