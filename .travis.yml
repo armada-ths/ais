@@ -8,7 +8,12 @@ env:
 - DJANGO_SETTINGS_MODULE=local_settings
 install:
 - pip install --requirement requirements.txt
-before_script:
-
+before_script: 
 script:
 - python manage.py test
+notifications:
+  slack:
+  on_success: always
+  on_failure: always
+    rooms:
+      secure: W5SW3q/QKrYAUWytmnN99Iss2F2xM5aYDITZvszD3MdhPoS9rfYHeQSuoQsyfP8oVJQBQuUI1bBvqXnURBEWRx6QUWJNrsnKPl1rNkBPvoBSLjmP/jhKz8s4/CviJAUVbfnm5IyXjTxG5XUs+vc7D/PIix5DYoRU03H6ecxWum03xwnli6MsXBcmBNrOTA419Yy1lh8A9XcZWyyviTx91rnt7xihVf4JmkA57JTzR7bzQjxjpaUE33NTNIJwrrQ/EDHZaoa9vuYkVVlYjbOm1laV80Q8uOCsNejsxjgA820SHHFUS8CuWBdCzrkcRv63qbDsIxF1zgDQ6bAMYqI2/1IFvmmGgh7R64sLTrXyttYg7EdfX0dzI0WBQC+3STQTengG5XrDP8O6YskvuZNbMZlLexZjCD7TA5Bg2eO737fS2bSrvpHCcQ/XjXjgF/U4M8J9VI9rAgxA1XXM5hohs76BT5nXmUENxtah/5rWacbVVlGfVp0ISZD2lWgplgNanHyqaFNenRp/s7pB11CWj3/WvZZPd8nHkuiKnyi424BNrEeJU50oYJFYk4U+/hmF2oxxLEuSX7CQZ6+f0LW1ZY/JxtuuGXAVbHRDaQGM4+fnTVPXgnZCytZZ2BWgImPJnR1NhMLxx0/kjg3Riw1qZ+ygKf13ZHyfshhwAQA8uog=
