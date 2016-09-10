@@ -7,7 +7,7 @@ def index(request):
         next = next[:-1]
     print(next)
     if request.user.is_authenticated():
-       return render(request, 'startpage.html', {
+       return render(request, 'home.html', {
            'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
            'roles': [{'parent_role': role,
                       'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
