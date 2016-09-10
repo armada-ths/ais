@@ -1,0 +1,14 @@
+language: python
+services:
+- postgresql
+python:
+- 3.5
+- 3.6
+env:
+- DJANGO_SETTINGS_MODULE=local_settings
+install:
+- pip install --requirement requirements.txt
+before_script:
+
+script:
+- python manage.py test
