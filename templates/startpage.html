@@ -3,4 +3,43 @@
 
 <image src="/static/images/armada_navigating.png" class="startpage-image">
 
+<div class="row">
+    <h2>Recruitment</h2>
+    {% if recruitment_periods %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                {% if perms.recruitment.view_recruitment_applications %}
+                <th>Applications</th>
+                {% endif %}
+                <th>Status</th>
+            </tr>
+        </thead>
+        {% for period in recruitment_periods %}
+        <tr>
+            <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
+            <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
+            {% if perms.recruitment.view_recruitment_applications %}
+            <td>{{ period.recruitmentapplication_set.count }}</td>
+            {% endif %}
+            <td>
+                {% if period.is_past %}
+                <span class="label label-default">Closed</span>
+                {% elif period.is_future %}
+                <span class="label label-default">Not opened yet</span>
+                {% else %}
+                <span class="label label-success">Open</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No recruitment periods</p>
+    {% endif %}
+    <h2>Events</h2>
+</div>
+
 {% endblock %}
