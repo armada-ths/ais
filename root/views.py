@@ -7,6 +7,6 @@ def index(request):
         next = next[:-1]
     print(next)
     if request.user.is_authenticated():
-        return redirect('/recruitment')
+       return render(request, 'startpage.html')
     return render(request, 'login.html', {'next': next})
 # Create your views here.
