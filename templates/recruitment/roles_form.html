@@ -13,7 +13,7 @@
 
     <div class="row">
         <div class="col-md-9">
-            {% if 'administer_roles' in request.user.get_all_permissions %}
+            {% if perms.administer_roles %}
 
                 <form method="post">
                     {% csrf_token %}

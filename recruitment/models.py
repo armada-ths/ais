@@ -303,49 +303,58 @@ class RoleApplication(models.Model):
 
 def get_or_create_role(name, description=None, parent_role=None):
     group = Group.objects.get_or_create(name=name)[0]
-    role = Role.objects.get_or_create(name=name, description=description, parent_role=parent_role, group=group)[0]
+    role = Role.objects.get_or_create(name=name)[0]
+    role.description = description
+    role.parent_role = parent_role
+    role.group = group
+    role.save()
     return role
 
 def create_user_and_stuff(username, first_name, last_name, email, role_name, parent_role_name, recruitment_period_name, fair_name):
 
     user = User.objects.filter(username=username).first()
     if not user:
-        user = User.objects.create_user(
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-        )
+        user = User.objects.create_user(username=username)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.save()
 
     fair = Fair.objects.get_or_create(
             year=2016,
             name=fair_name
-        )[0]
+    )[0]
 
     if parent_role_name:
         parent_role = get_or_create_role(parent_role_name, '')
 
-    recruitment_period = RecruitmentPeriod.objects.get_or_create(
+
+
+    recruitment_period = RecruitmentPeriod.objects.filter(fair=fair, name=recruitment_period_name).first()
+    if not recruitment_period:
+        recruitment_period = RecruitmentPeriod.objects.create(
             fair=fair,
             name=recruitment_period_name,
-            start_date=datetime.datetime(2016, 1, 1),
-            end_date=datetime.datetime(2016, 1, 1),
-            interview_end_date=datetime.datetime(2016, 1, 1)
-        )[0]
-
+            start_date = datetime.datetime(2016, 1, 1),
+            end_date = datetime.datetime(2016, 1, 1),
+            interview_end_date = datetime.datetime(2016, 1, 1)
+        )
 
     role = get_or_create_role(name=role_name, description='', parent_role=parent_role)
-    role.add_user_to_groups(user)
 
     recruitment_period.recruitable_roles.add(role)
 
-    recruitment_application = RecruitmentApplication.objects.get_or_create(
+    recruitment_application = RecruitmentApplication.objects.filter(user=user, recruitment_period=recruitment_period).first()
+    if not recruitment_application:
+        recruitment_application = RecruitmentApplication.objects.create(
             delegated_role=role,
             status='accepted',
             user=user,
             recruitment_period=recruitment_period
         )[0]
 
+    if recruitment_application.status == 'accepted':
+        role.add_user_to_groups(user)
 
 def create_recruitment_period_from_csv(file_path, recruitment_period_name, year):
     fair_name = 'Armada ' + str(year)
