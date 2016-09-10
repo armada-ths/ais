@@ -7,3 +7,17 @@
   border-radius: 0 !important;
 }
 
+.navbar-brand img {
+  opacity: 0.6;
+  transform: rotate(-20deg);
+}
+
+.navbar-brand:hover img {
+  opacity: 1;
+  animation: finger 3s infinite;
+}
+
+@keyframes finger {
+  0% {transform: rotate(-20deg);}
+  50% {transform: rotate(20deg);}
+}
