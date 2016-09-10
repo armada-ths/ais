@@ -3,11 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.core.management import call_command
 
-
-def load_fixture(apps, schema_editor):
-    call_command('loaddata', *['--app', 'recruitment', 'initial_data.json'])
 
 class Migration(migrations.Migration):
 
@@ -15,6 +11,4 @@ class Migration(migrations.Migration):
         ('recruitment', '0009_auto_20160826_2253'),
     ]
 
-    operations = [
-        migrations.RunPython(load_fixture)
-    ]
+    operations = []
