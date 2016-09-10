@@ -14,10 +14,10 @@
 
 .navbar-brand:hover img {
   opacity: 1;
-  animation: finger 3s infinite;
+  animation: sailing 3s infinite;
 }
 
-@keyframes finger {
+@keyframes sailing {
   0% {transform: rotate(-20deg);}
   50% {transform: rotate(20deg);}
 }
