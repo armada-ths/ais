@@ -1,4 +1,4 @@
-[AIS](http://ais.armada.nu/) — Armada Internal System
+[AIS](http://ais.armada.nu/) — Armada Internal System [![Build Status](https://travis-ci.org/armada-ths/ais.svg?branch=master)](https://travis-ci.org/armada-ths/ais)
 ==================================================
 
 Contribution Guides
