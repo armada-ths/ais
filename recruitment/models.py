@@ -159,7 +159,7 @@ class Role(models.Model):
     name = models.CharField(max_length=100)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
     description = models.TextField(default="", blank=True)
-    group = models.ForeignKey(Group, null=True)
+    group = models.ForeignKey(Group, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.group:

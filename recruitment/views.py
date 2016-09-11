@@ -412,7 +412,8 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
 class RolesForm(ModelForm):
     class Meta:
         model = Role
-        fields = '__all__'
+
+        exclude = ('group',)
         widgets = {
             'permissions': forms.CheckboxSelectMultiple(),
             'description': forms.Textarea(),
