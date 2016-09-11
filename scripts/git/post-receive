@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Post-receive started"
 unset GIT_INDEX_FILE
-
+read oldrev newrev refname
 DEPLOY_DIR=/home/deployment
 git --work-tree=$DEPLOY_DIR/ais --git-dir=$DEPLOY_DIR/git checkout -f master
 git --work-tree=$DEPLOY_DIR/ais --git-dir=$DEPLOY_DIR/git clean -fdx
@@ -19,5 +19,6 @@ done <$DEPLOY_DIR/ais-master.pid
   python $DEPLOY_DIR/ais/manage.py migrate;
   /bin/bash /home/deployment/ais/restart_uwsgi_server.sh
 "
+echo "Deployed $refname"
 echo "Post-receive finished"
 
