@@ -310,6 +310,13 @@ def get_or_create_role(name, description=None, parent_role=None):
     role.save()
     return role
 
+def assign_groups_to_all_users():
+    for user in User.objects.all():
+        recruitment_application = user.recruitmentapplication_set.filter(status='accepted').exclude(delegated_role=None).first()
+        if recruitment_application:
+            recruitment_application.delegated_role.add_user_to_groups(user)
+
+
 def create_user_and_stuff(username, first_name, last_name, email, role_name, parent_role_name, recruitment_period_name, fair_name):
 
     user = User.objects.filter(username=username).first()
@@ -341,7 +348,6 @@ def create_user_and_stuff(username, first_name, last_name, email, role_name, par
         )
 
     role = get_or_create_role(name=role_name, description='', parent_role=parent_role)
-
     recruitment_period.recruitable_roles.add(role)
 
     recruitment_application = RecruitmentApplication.objects.filter(user=user, recruitment_period=recruitment_period).first()
@@ -406,4 +412,5 @@ def create_project_group():
     create_armada_year(2016)
     create_programmes()
     create_armada_hosts()
+    assign_groups_to_all_users()
 

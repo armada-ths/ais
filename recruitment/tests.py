@@ -247,3 +247,20 @@ class RecruitmentTestCase(TestCase):
         })
         self.assertEquals(len(RecruitmentPeriod.objects.all()), 2)
 
+
+
+
+def check_users():
+    users_with_roles = [(user, user.recruitmentapplication_set.filter(status='accepted').first()) for user in User.objects.all()]
+    len(users_with_roles)
+
+    accepted_users_with_roles = [
+        user_with_role for user_with_role in users_with_roles if user_with_role[1] and user_with_role[1].status == 'accepted']
+    len(accepted_users_with_roles)
+
+
+    accepted_users_without_role_or_group = [user_with_role for user_with_role in accepted_users_with_roles if not user_with_role[1].delegated_role or not user_with_role[0].groups.filter(name=user_with_role[1].delegated_role.name).first()]
+    len(accepted_users_without_role_or_group)
+
+    accepted_users_with_not_2_groups = [user for user in accepted_users_with_roles if len(user[0].groups.all()) != 2]
+    len(accepted_users_with_not_2_groups)
