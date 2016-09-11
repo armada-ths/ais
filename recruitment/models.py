@@ -11,7 +11,7 @@ from companies.models import Company
 import os.path
 from django.utils import timezone
 
-from people.models import Profile, Programme
+from people.models import Programme
 
 
 class ExtraField(models.Model):
