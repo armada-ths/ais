@@ -159,7 +159,13 @@ class Role(models.Model):
     name = models.CharField(max_length=100)
     parent_role = models.ForeignKey('Role', null=True, blank=True)
     description = models.TextField(default="", blank=True)
-    group = models.ForeignKey(Group)
+    group = models.ForeignKey(Group, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.group:
+            self.group = Group.objects.get_or_create(name=self.name)[0]
+        super(Role, self).save(*args, **kwargs)
+
 
     def add_user_to_groups(self, user):
         role = self

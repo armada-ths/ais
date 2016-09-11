@@ -2,7 +2,8 @@ from django.test import TestCase
 from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
 from fair.models import Fair
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
+
 
 from django.test import Client
 
@@ -37,9 +38,18 @@ class RecruitmentTestCase(TestCase):
 
         self.pg_role = Role.objects.create(name='PG', pk=1)
         self.system_developer = Role.objects.create(name='System Developer', parent_role=self.pg_role, pk=2)
+
+
+
+        pg_permissions = [
+            'view_recruitment_applications', 'view_recruitment_interviews', 'administer_recruitment_applications',
+            'administer_roles', 'administer_recruitment']
+
+        for permission in pg_permissions:
+            Group.objects.get(name='PG').permissions.add(Permission.objects.get(codename=permission))
+
+
         self.career_fair_leader = Role.objects.create(name='Career Fair Leader', pk=3)
-
-
 
         self.recruitment_period.recruitable_roles.add(self.system_developer, self.career_fair_leader)
 
@@ -60,6 +70,8 @@ class RecruitmentTestCase(TestCase):
             role=self.career_fair_leader,
             order=1
         )
+
+        self.pg_role.add_user_to_groups(self.purmonen_user)
 
 
     def test_recruitment_period(self):
@@ -98,29 +110,15 @@ class RecruitmentTestCase(TestCase):
 
         self.recruitment_application.save()
 
-        self.assertTrue('administer_recruitment' in self.purmonen_user.get_all_permissions())
-        self.assertTrue('administer_roles' in self.purmonen_user.get_all_permissions())
+        self.assertTrue('recruitment.administer_recruitment' in self.purmonen_user.get_all_permissions())
+        self.assertTrue('recruitment.administer_roles' in self.purmonen_user.get_all_permissions())
 
-        self.recruitment_application.delegated_role = self.career_fair_leader
-        self.recruitment_application.save()
-
-        self.assertTrue('administer_recruitment' in self.purmonen_user.get_all_permissions())
-        self.assertTrue('administer_roles' not in self.purmonen_user.get_all_permissions())
-
-        self.recruitment_application.status = 'rejected'
-        self.recruitment_application.save()
-        self.assertEqual(self.recruitment_application.state(), 'rejected')
-
-        self.assertTrue('administer_recruitment' not in self.purmonen_user.get_all_permissions())
-        self.assertTrue('administer_roles' not in self.purmonen_user.get_all_permissions())
 
 
     def test_site_for_non_armada_member(self):
-        self.recruitment_application.status = 'rejected'
-        self.recruitment_application.save()
 
         client = Client()
-        response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
+        response = client.post('/accounts/login/', {'username': 'bratteby', 'password': 'bratteby'})
         response = client.get('/recruitment/')
 
         self.assertEqual(response.status_code, 200)
@@ -141,10 +139,6 @@ class RecruitmentTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_site_for_armada_member(self):
-        self.recruitment_application.delegated_role = self.system_developer
-        self.recruitment_application.status = 'accepted'
-        self.recruitment_application.save()
-
         client = Client()
         response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
         response = client.get('/recruitment/')
@@ -215,12 +209,7 @@ class RecruitmentTestCase(TestCase):
     def test_create_recruitment_period(self):
         client = Client()
 
-        response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
-
-        # Test without having recruitment administration permission
-        self.recruitment_application.delegated_role = self.system_developer
-        self.recruitment_application.status = 'rejected'
-        self.recruitment_application.save()
+        response = client.post('/accounts/login/', {'username': 'bratteby', 'password': 'bratteby'})
 
         self.assertEquals(len(RecruitmentPeriod.objects.all()), 1)
         response = client.post('/recruitment/new', {
@@ -233,8 +222,8 @@ class RecruitmentTestCase(TestCase):
         })
         self.assertEquals(len(RecruitmentPeriod.objects.all()), 1)
         self.assertEquals(response.status_code, 403)
-        self.recruitment_application.status = 'accepted'
-        self.recruitment_application.save()
+
+        response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
 
 
         response = client.post('/recruitment/new', {
