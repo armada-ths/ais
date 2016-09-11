@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0008_alter_user_username_max_length'),
+        #('auth', '0008_alter_user_username_max_length'),
         ('recruitment', '0018_auto_20160904_0056'),
     ]
 
