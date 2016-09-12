@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, Programme
+    create_project_group, Programme, CustomFieldArgument
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
@@ -233,6 +233,22 @@ def recruitment_period_graphs(request, pk):
         [role_application.role.name for role_application in role_applications.filter(order=0)]
     )
 
+    # Add graphs also for application questions where users select from a fixed set of arguments
+    custom_field_counts = []
+    for custom_field in recruitment_period.application_questions.customfield_set.all():
+        try:
+            arguments = custom_field.customfieldargument_set.all()
+            if len(arguments) > 0:
+                custom_field_count = ValueCounter(
+                    custom_field.question,
+                    False,
+                    ['bar'],
+                    [arguments.get(pk=int(answer.answer)).value for answer in custom_field.customfieldanswer_set.all()]
+                )
+                custom_field_counts.append(custom_field_count)
+        except (ValueError, ObjectDoesNotExist):
+            print('Custom field error: %s' % custom_field.question)
+
     print('Counting applications took', time.time() - start)
 
     def user_has_programme(user):
@@ -249,8 +265,11 @@ def recruitment_period_graphs(request, pk):
     )
 
     print('Counting programmes took', time.time() - start)
+
+    value_counters = [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count] + custom_field_counts
+
     return JsonResponse({
-        'graph_datasets': [value_counter.json() for value_counter in [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count]]
+        'graph_datasets': [value_counter.json() for value_counter in value_counters]
     })
 
 from django.http import HttpResponseRedirect
