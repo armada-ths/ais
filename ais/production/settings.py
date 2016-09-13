@@ -36,6 +36,6 @@ DATABASES = {
 
 # The system sends out system-related emails to these addresses.
 ADMINS = MANAGERS = (
-   ('ME', 'sami.purmonen@armada.nu'),
+   ('System', 'system@armada.nu'),
 )
 
