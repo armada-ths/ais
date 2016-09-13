@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, Programme, CustomFieldArgument
+    create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
@@ -180,9 +180,14 @@ def recruitment_period_graphs(request, pk):
             self.monocolor = monocolor
             self.charts = charts
             self.sort_key = sort_key
+            self.y_limit = None
 
             if values:
                 self.add_values(values)
+
+
+        def set_y_limit(self, y_limit):
+            self.y_limit = y_limit
 
         def add_value(self, value):
             if not value in self.data:
@@ -205,7 +210,8 @@ def recruitment_period_graphs(request, pk):
                 'monocolor': self.monocolor,
                 'charts': self.charts,
                 'sorted_values': self.sorted_values(),
-                'sorted_value_counts': self.sorted_value_counts()
+                'sorted_value_counts': self.sorted_value_counts(),
+                'y_limit': self.y_limit
             }
 
     date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
@@ -246,6 +252,40 @@ def recruitment_period_graphs(request, pk):
                     [arguments.get(pk=int(answer.answer)).value for answer in custom_field.customfieldanswer_set.all()]
                 )
                 custom_field_counts.append(custom_field_count)
+
+
+
+                # Also, for each argument we want to plot bar graphs so we can see the number of english or swedish applicants per date
+                argument_per_date_counts = []
+                y_limit = 0
+                for argument in arguments:
+                    date_dictionary = dict(
+                        [(date_filter(application.submission_date, "d M"), application.submission_date) for application in
+                         application_list])
+
+                    argument_per_date_count = ValueCounter(
+                        argument.value,
+                        True,
+                        ['bar'],
+                        [date_filter(application.submission_date, "d M") for application in application_list if CustomFieldAnswer.objects.filter(user=application.user, answer=str(argument.pk)).exists()],
+                        lambda x: date_dictionary[x]
+                    )
+
+                    for date in daterange(recruitment_period.start_date, min(timezone.now(), recruitment_period.end_date)):
+                        date_string = date_filter(date, "d M")
+                        if not date_string in argument_per_date_count.data:
+                            argument_per_date_count.data[date_string] = 0
+                            date_dictionary[date_string] = date
+
+                    y_limit = max(y_limit, max(argument_per_date_count.data.values()))
+                    argument_per_date_counts.append(argument_per_date_count)
+
+
+                for argument_per_date_count in argument_per_date_counts:
+                    argument_per_date_count.set_y_limit(y_limit)
+                    custom_field_counts.append(argument_per_date_count)
+
+
         except (ValueError, ObjectDoesNotExist):
             print('Custom field error: %s' % custom_field.question)
 
