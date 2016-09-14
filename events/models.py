@@ -25,6 +25,12 @@ class EventQuestion(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=256)
 
+    def __unicode__(self):
+        return 'Question %d'%(self.id)
+    
+    def __str__(self):
+        return 'Question %d'%(self.id)
+
 # An EventAttendence is for a specific User to attend a specific Event
 class EventAttendence(models.Model):
     STATUS = (
@@ -39,13 +45,24 @@ class EventAttendence(models.Model):
     status = models.CharField(max_length=3, choices=STATUS, default="S")
 
     def __unicode__(self):
-        return self.name
+        return '%s attending %s'%(self.user.get_full_name(), self.event.name)
+    
+    def __str__(self):
+        return '%s attending %s'%(self.user.get_full_name(), self.event.name)
+    
 
 # An EventAnswer is the answer to a specific EventQuestion for a specific User
+# This should be inlined in the admin interface
 class EventAnswer(models.Model):
     question = models.ForeignKey(EventQuestion, on_delete=models.CASCADE)
     attendence = models.ForeignKey(EventAttendence, on_delete=models.CASCADE)
     answer = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return 'Answer to question: %s'%(self.question.question_text)
+    
+    def __str__(self):
+        return 'Answer to question: %s'%(self.question.question_text)
 
 # Function in model, explore where used and then remove
 def get_absolute_url(self):
