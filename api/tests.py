@@ -32,8 +32,8 @@ class EventTestCase(TestCase):
         self.factory = RequestFactory()
 
         now = timezone.now()
-        self.event = Event.objects.create(name='test', event_start=now, event_end=now, needs_approval=False, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, make_event_public=True)
-        self.hidden_event = Event.objects.create(name='hidden event', event_start=now, event_end=now, needs_approval=False, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, make_event_public=False)
+        self.event = Event.objects.create(name='test', event_start=now, event_end=now, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, public_registration=True)
+        self.hidden_event = Event.objects.create(name='hidden event', event_start=now, event_end=now, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, public_registration=False)
 
     def test_event_serializer(self):
         data = event_serializer(self.event)
