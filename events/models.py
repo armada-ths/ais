@@ -26,10 +26,10 @@ class EventQuestion(models.Model):
     question_text = models.CharField(max_length=256)
 
     def __unicode__(self):
-        return 'Question %d'%(self.id)
+        return '%s'%(self.question_text)
     
     def __str__(self):
-        return 'Question %d'%(self.id)
+        return '%s'%(self.question_text)
 
 # An EventAttendence is for a specific User to attend a specific Event
 class EventAttendence(models.Model):
@@ -59,10 +59,10 @@ class EventAnswer(models.Model):
     answer = models.CharField(max_length=256)
 
     def __unicode__(self):
-        return 'Answer to question: %s'%(self.question.question_text)
+        return '%s'%(self.question.question_text)
     
     def __str__(self):
-        return 'Answer to question: %s'%(self.question.question_text)
+        return '%s'%(self.question.question_text)
 
 # Function in model, explore where used and then remove
 def get_absolute_url(self):

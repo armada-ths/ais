@@ -3,12 +3,18 @@ from .models import Event, EventAttendence, EventQuestion, EventAnswer
 
 class QuestionInline(admin.StackedInline):
     model = EventQuestion
-    extra = 3
-
+    extra = 5
 
 class EventAdmin(admin.ModelAdmin):
     inlines = [QuestionInline]
 
+class AnswerInline(admin.StackedInline):
+    model = EventAnswer
+
+class EventAttendenceAdmin(admin.ModelAdmin):
+    inlines = [AnswerInline]
+
 admin.site.register(Event, EventAdmin)
-admin.site.register(EventAttendence)
-admin.site.register(EventAnswer)
+
+admin.site.register(EventAttendence, EventAttendenceAdmin)
+
