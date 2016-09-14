@@ -14,9 +14,6 @@ class Event(models.Model):
     registration_last_day_cancel = models.DateTimeField(null=True)
     public_registration = models.BooleanField(default=False)
 
-    def __unicode__(self):
-        return self.name
-    
     def __str__(self):
         return '%s'%(self.name)
 
@@ -26,9 +23,6 @@ class EventQuestion(models.Model):
     question_text = models.TextField(blank=False) 
     required = models.BooleanField(default=False)
 
-    def __unicode__(self):
-        return '%s'%(self.question_text)
-    
     def __str__(self):
         return '%s'%(self.question_text)
 
@@ -45,9 +39,6 @@ class EventAttendence(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     status = models.CharField(max_length=3, choices=STATUS, default="S")
 
-    def __unicode__(self):
-        return '%s attending %s'%(self.user.get_full_name(), self.event.name)
-    
     def __str__(self):
         return '%s attending %s'%(self.user.get_full_name(), self.event.name)
     
@@ -58,9 +49,6 @@ class EventAnswer(models.Model):
     attendence = models.ForeignKey(EventAttendence, on_delete=models.CASCADE)
     answer = models.TextField(blank=True)
 
-    def __unicode__(self):
-        return '%s'%(self.question.question_text)
-    
     def __str__(self):
         return '%s'%(self.question.question_text)
 
