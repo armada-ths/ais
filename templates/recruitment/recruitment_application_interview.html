@@ -101,8 +101,11 @@
 
     <h3>Comments</h3>
     <hr>
-
+	
     <div class="row">
+		<div class="alert alert-danger" role="alert">
+		WARNING: Submit interview before trying to add comment!
+		</div>
         <div class="col-sm-6">
             {% for comment in application.recruitmentapplicationcomment_set.all|dictsortreversed:"created_date" %}
                 <div class="media">
