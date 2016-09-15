@@ -7,7 +7,7 @@ class QuestionInline(admin.StackedInline):
 
 class EventAdmin(admin.ModelAdmin):
     inlines = [QuestionInline]
-
+    filter_horizontal = ("allowed_groups",)
 class AnswerInline(admin.StackedInline):
     model = EventAnswer
 
