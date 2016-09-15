@@ -3,16 +3,7 @@
 
 Contribution Guides
 --------------------------------------
-- Please try to write clean, readable code
-- Please try to write tests for your code
-- Please try to write meaningful commit messages, PR descriptions etc.
-- Please try to help resolve any open PRs / issues
-
-Above all, be respectful towards others :)
-
-Branching strategy
---------------------------------------
-We have one long-running branch, `master`, that is more or less continuously deployed. In order to be merged into `master` your code **must** be peer reviewed by someone else on the team in a PR (this is enforced on GitHub).
+Fuck you, jag gör som jag vill // @walaro
 
 Development setup
 -------------
