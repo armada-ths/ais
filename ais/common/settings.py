@@ -77,7 +77,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ais.wsgi.application'
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = ( path.join(BASE_DIR, "static"), )
+STATICFILES_DIRS = (path.join(BASE_DIR, "static"),)
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 MEDIA_ROOT = '../media/'
