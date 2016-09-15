@@ -35,12 +35,16 @@ class EventAttendence(models.Model):
     ("S","Submitted"),
     )
 
-    user = models.ForeignKey(User, null=True, default=None)
+    user = models.ForeignKey(User, null=True, default=None, blank=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     status = models.CharField(max_length=3, choices=STATUS, default="S")
 
     def __str__(self):
-        return '%s attending %s'%(self.user.get_full_name(), self.event.name)
+        if self.user != None:
+            user = self.user.get_full_name()
+        else:
+            user = "External user"
+        return '%s attending %s'%(user, self.event.name)
     
 
 # An EventAnswer is the answer to a specific EventQuestion for a specific User
