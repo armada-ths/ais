@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 class Event(models.Model):
     # Add event attendence per model
@@ -13,6 +13,7 @@ class Event(models.Model):
     registration_last_day = models.DateTimeField()
     registration_last_day_cancel = models.DateTimeField(null=True)
     public_registration = models.BooleanField(default=False)
+    allowed_groups = models.ManyToManyField(Group)
 
     def __str__(self):
         return '%s'%(self.name)
