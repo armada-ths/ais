@@ -28,6 +28,7 @@ class CompanyParticipationYear(models.Model):
     company = models.ForeignKey(Company)
     fair = models.ForeignKey('fair.Fair')
 
+
 # TODO some model to be able to add a company to sales/sponsorship
 
 
