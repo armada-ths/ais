@@ -1,0 +1,23 @@
+@media (min-width: 768px) {
+    .recruitment-jumbotron {
+        background-image: url('/static/images/armada_2015_smaland.jpg');
+        background-position: 0px -180px;
+        background-repeat: no-repeat;
+        background-size: 100%;
+    }
+
+    .recruitment-jumbotron .recruitment-jumbotron-container {
+        color: white;
+        min-height: 230px;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 30px;
+        max-width: 500px;
+        margin-left: -0%;
+        border-radius: 10px;
+    }
+}
+
+.navbar-default {
+  background-color: #e30613;
+  border-color: #bb0711;
+}
