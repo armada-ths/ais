@@ -299,6 +299,8 @@ class RecruitmentApplicationComment(models.Model):
     user = models.ForeignKey(User)
 
 class RoleApplication(models.Model):
+    class Meta:
+        ordering = ['order']
     recruitment_application = models.ForeignKey(RecruitmentApplication, default=None)
     role = models.ForeignKey(Role)
     order = models.IntegerField(default=0)
