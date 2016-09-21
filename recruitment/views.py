@@ -166,6 +166,7 @@ def interview_state_counts(request, pk):
         'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()] + [('total', sum(state_counts.values()))]) for interviewer,state_counts in interview_state_count_map.items()]
     })
 
+
 @permission_required('recruitment.view_recruitment_applications', raise_exception=True)
 def recruitment_period_graphs(request, pk):
     start = time.time()
@@ -184,10 +185,6 @@ def recruitment_period_graphs(request, pk):
 
             if values:
                 self.add_values(values)
-
-
-        def set_y_limit(self, y_limit):
-            self.y_limit = y_limit
 
         def add_value(self, value):
             if not value in self.data:
@@ -211,7 +208,7 @@ def recruitment_period_graphs(request, pk):
                 'charts': self.charts,
                 'sorted_values': self.sorted_values(),
                 'sorted_value_counts': self.sorted_value_counts(),
-                'y_limit': self.y_limit
+                'y_limit': self.y_limit,
             }
 
     date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
@@ -253,8 +250,6 @@ def recruitment_period_graphs(request, pk):
                 )
                 custom_field_counts.append(custom_field_count)
 
-
-
                 # Also, for each argument we want to plot bar graphs so we can see the number of english or swedish applicants per date
                 argument_per_date_counts = []
                 y_limit = 0
@@ -280,11 +275,9 @@ def recruitment_period_graphs(request, pk):
                     y_limit = max(y_limit, max(argument_per_date_count.data.values()))
                     argument_per_date_counts.append(argument_per_date_count)
 
-
                 for argument_per_date_count in argument_per_date_counts:
-                    argument_per_date_count.set_y_limit(y_limit)
+                    argument_per_date_count.y_limit = y_limit
                     custom_field_counts.append(argument_per_date_count)
-
 
         except (ValueError, ObjectDoesNotExist):
             print('Custom field error: %s' % custom_field.question)
@@ -311,6 +304,7 @@ def recruitment_period_graphs(request, pk):
     return JsonResponse({
         'graph_datasets': [value_counter.json() for value_counter in value_counters]
     })
+
 
 from django.http import HttpResponseRedirect
 import urllib
