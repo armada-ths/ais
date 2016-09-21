@@ -1,4 +1,5 @@
 from django.db import models
+from lib.image import random_path
 
 
 # A company (or organisation) participating in a fair
@@ -7,7 +8,7 @@ class Exhibitor(models.Model):
     fair = models.ForeignKey('fair.Fair')
 
     def __str__(self):
-        return self.company.name
+        return '%s at %s' % (self.company.name, self.fair.name)
 
 
 # Work field that an exhibitor operates in
@@ -44,7 +45,7 @@ class Value(models.Model):
 
 # Info about an exhibitor to be displayed in apps and on website
 class CatalogInfo(models.Model):
-    company = models.OneToOneField(Exhibitor, on_delete=models.CASCADE)
+    exhibitor = models.OneToOneField(Exhibitor, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=64)
     slug = models.SlugField(db_index=False)
     short_description = models.CharField(max_length=64)
@@ -57,15 +58,23 @@ class CatalogInfo(models.Model):
     twitter_url = models.CharField(max_length=128, blank=True)
     linkedin_url = models.CharField(max_length=128, blank=True)
 
-    # TODO logo
-    # TODO ad
+    # Images
+    logo_small = models.ImageField(
+            upload_to=random_path('exhibitors', 'logo_small'), blank=True)
+    logo = models.ImageField(
+            upload_to=random_path('exhibitors', 'logo'), blank=True)
+    ad = models.ImageField(
+            upload_to=random_path('exhibitors', 'ad'), blank=True)
 
     programs = models.ManyToManyField('people.Programme', blank=True)
     main_work_field = models.ForeignKey(
-        WorkField, blank=True, related_name='+')
+            WorkField, blank=True, null=True, related_name='+')
     work_fields = models.ManyToManyField(
-        WorkField, blank=True, related_name='+')
+            WorkField, blank=True, related_name='+')
     job_types = models.ManyToManyField(JobType, blank=True)
 
     def __str__(self):
         return self.display_name
+
+    def save(self, *args, **kwargs):
+        super(CatalogInfo, self).save(*args, **kwargs)
