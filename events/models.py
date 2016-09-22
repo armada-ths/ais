@@ -17,7 +17,7 @@ class Event(models.Model):
     registration_last_day = models.DateTimeField()
     registration_last_day_cancel = models.DateTimeField(null=True)
     public_registration = models.BooleanField(default=False)
-    allowed_groups = models.ManyToManyField(Group)
+    allowed_groups = models.ManyToManyField(Group, blank=True)
     
 
     def __str__(self):
