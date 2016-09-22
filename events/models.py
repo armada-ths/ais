@@ -2,8 +2,12 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
 
+from fair.models import Fair
+
+# An 'Event' belongs to a specific 'Fair'
 class Event(models.Model):
     # Add event attendence per model
+    fair = models.ForeignKey(Fair)
     name = models.CharField(max_length=75)
     event_start = models.DateTimeField()
     event_end = models.DateTimeField()
@@ -14,6 +18,7 @@ class Event(models.Model):
     registration_last_day_cancel = models.DateTimeField(null=True)
     public_registration = models.BooleanField(default=False)
     allowed_groups = models.ManyToManyField(Group)
+    
 
     def __str__(self):
         return '%s'%(self.name)
