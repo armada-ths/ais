@@ -101,10 +101,8 @@ class ExtraField(models.Model):
                         user=user
                     )
                     answer_string = request.POST[key]
-
-                    if answer_string:
-                        answer.answer = answer_string
-                        answer.save()
+                    answer.answer = answer_string
+                    answer.save()
 
                 else:
                     CustomFieldAnswer.objects.filter(
