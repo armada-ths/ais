@@ -100,8 +100,7 @@ class ExtraField(models.Model):
                         custom_field=custom_field,
                         user=user
                     )
-                    answer_string = request.POST[key]
-                    answer.answer = answer_string
+                    answer.answer = request.POST[key]
                     answer.save()
 
                 else:
