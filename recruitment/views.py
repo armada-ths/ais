@@ -58,7 +58,6 @@ class RecruitmentApplicationSearchForm(forms.Form):
         required=False
     )
 
-
     programme = forms.ModelChoiceField(
         queryset=Programme.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'}),
@@ -365,7 +364,15 @@ def remember_last_query_params(url_name, query_params):
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
+
+
+    sort_field = request.GET.get('sort_field')
+    if not sort_field:
+        sort_field = 'submission_date'
+    sort_ascending = request.GET.get('sort_ascending') == 'true'
+
+    order_by_query = ('' if sort_ascending else '-') + sort_field
+    application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query).all().prefetch_related('roleapplication_set')
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
@@ -391,6 +398,26 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 
     print('Total time took', time.time() - start)
 
+
+    class SearchField(object):
+
+        def __init__(self, name, model_field_name):
+            self.name = name
+            self.model_field_name = model_field_name
+
+
+    search_fields = [
+        SearchField('Name', 'user__last_name'),
+        SearchField('Programme', 'user__profile__programme'),
+        SearchField('Registration year', 'user__profile__registration_year'),
+        SearchField('Rating', 'rating'),
+        SearchField('Submitted', 'submission_date'),
+        SearchField('Roles', None),
+        SearchField('Recommended role', 'recommended_role'),
+        SearchField('Interviewer', 'interviewer__last_name'),
+        SearchField('State', None),
+    ]
+
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
@@ -399,6 +426,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'applications': applications,
         'now': timezone.now(),
         'search_form': search_form,
+        'search_fields': search_fields
     })
 
 

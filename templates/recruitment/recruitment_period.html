@@ -157,7 +157,7 @@
             var position = getParameterByName("scroll_y");
             $(window).scroll(function (event) {
                 var scroll = $(window).scrollTop();
-                $("#scroll_y").attr('value', scroll);
+                $(".scroll_y").attr('value', scroll);
                 console.log(scroll);
             });
             $(window).scrollTop(position);
