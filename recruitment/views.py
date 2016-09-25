@@ -52,6 +52,12 @@ class RecruitmentApplicationSearchForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    recommended_role = forms.ModelChoiceField(
+        queryset=Role.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
 
     programme = forms.ModelChoiceField(
         queryset=Programme.objects.all(),
@@ -120,6 +126,11 @@ class RecruitmentApplicationSearchForm(forms.Form):
         if interviewer:
             application_list = [application for application in application_list if
                                 interviewer == application.interviewer]
+
+        recommended_role = search_form.cleaned_data['recommended_role']
+        if recommended_role:
+            application_list = [application for application in application_list if
+                                recommended_role == application.recommended_role]
 
         state = search_form.cleaned_data['state']
         if state:
@@ -360,6 +371,8 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
                                                                        interviewer in recruitment_period.interviewers()]
     search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
+    search_form.fields['recommended_role'].choices = [('', '---------')] + [(role.pk, role.name) for
+                                                                       role in recruitment_period.recruitable_roles.all()]
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
