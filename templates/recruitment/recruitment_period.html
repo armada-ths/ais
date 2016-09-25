@@ -102,18 +102,18 @@
                         <ul class="pagination">
                             <li>
                                 {% if applications.previous_page_number > 0 %}
-                                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                                    <a href="?{{ request.GET.urlencode }}&page={{ applications.previous_page_number }}" aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 {% endif %}
                             </li>
                             {% for page_number in applications.paginator.page_range %}
                                 <li {% if page_number == applications.number %}class="active"{% endif %}><a
-                                        href="?page={{ page_number }}">{{ page_number }}</a></li>
+                                        href="?{{ request.GET.urlencode }}&page={{ page_number }}">{{ page_number }}</a></li>
                             {% endfor %}
                             <li>
                                 {% if applications.next_page_number <= applications.paginator.num_pages %}
-                                    <a href="?page={{ applications.next_page_number }}" aria-label="Next">
+                                    <a href="?{{ request.GET.urlencode }}&page={{ applications.next_page_number }}" aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>
                                 {% endif %}
