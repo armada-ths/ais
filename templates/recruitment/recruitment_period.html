@@ -44,7 +44,6 @@
                 <th>Interview date</th>
                 <th>Interview Location</th>
                 <th>Interviewer</th>
-                <th>State</th>
             </tr>
             </thead>
             {% for application in interviews %}
@@ -65,24 +64,6 @@
                             {{ application.interviewer.get_full_name }}
                         {% endif %}
                     </td>
-                    <td>
-                        {% if application.state == 'accepted' %}
-                            <span class="label label-success">{{ application.status.capitalize }}</span>
-                        {% elif application.state == 'rejected' %}
-                            <span class="label label-danger">{{ application.status.capitalize }}</span>
-                        {% elif application.state == 'new' %}
-                            <span class="label label-default">New</span>
-                        {% elif application.state == 'interview_delegated' %}
-                            <span class="label label-warning">Delegated</span>
-                        {% elif application.state == 'interview_planned' %}
-                            <span class="label label-info">Planned</span>
-                        {% elif application.state == 'interview_done' %}
-                            <span class="label label-primary">Done</span>
-                        {% else %}
-                            {{ application.state }}
-                        {% endif %}
-                    </td>
-
                 </tr>
             {% endfor %}
         </table>
