@@ -1,5 +1,10 @@
 from django.db import models
-from lib.image import random_path
+from lib.image import random_path, optimize_png, optimize_jpg
+from django.conf import settings
+import os
+
+
+MEDIA_ROOT = settings.MEDIA_ROOT
 
 
 # A company (or organisation) participating in a fair
@@ -77,4 +82,12 @@ class CatalogInfo(models.Model):
         return self.display_name
 
     def save(self, *args, **kwargs):
+        super(CatalogInfo, self).save(*args, **kwargs)
+        if self.logo:
+            path = os.path.join(MEDIA_ROOT, self.logo.name)
+            self.logo_small = optimize_png(path, 128, 128)
+            self.logo = optimize_png(path, 400, 400)
+        if self.ad:
+            path = os.path.join(MEDIA_ROOT, self.ad.name)
+            self.ad = optimize_jpg(path, 640, 480)
         super(CatalogInfo, self).save(*args, **kwargs)

@@ -1,5 +1,8 @@
 from uuid import uuid4
-# from PIL import Image
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import SimpleUploadedFile
+import os
 
 
 # Intended to be used as an argument for upload_to option in ImageField
@@ -9,15 +12,42 @@ from uuid import uuid4
 def random_path(*args):
     def path(instance, filename):
         directory = '/'.join(args)
-        ext = filename.split('.')[-1]
+        _, ext = os.path.splitext(filename)
         random_id = uuid4().hex
-        return '{}/{}.{}'.format(directory, random_id, ext)
+        return '{}/{}{}'.format(directory, random_id, ext)
     return path
 
 
-def optimize_png(filename):
-    return
+# Converts the input image to a 256 colors png,
+# creates a thumbnail with the specified height and width
+# and returns a new file
+def optimize_png(filename, width, height):
+    img = Image.open(filename)
+    img = img.convert('P')
+    img.thumbnail((width, height))
+    path, ext = os.path.splitext(filename)
+    buf = BytesIO()
+    if ext != '.png':
+        # os.remove(filename)
+        filename = path + '.png'
+    img.save(buf, 'png')
+    print(filename)
+    return SimpleUploadedFile(
+        filename,
+        buf.getvalue(),
+        'image/png')
 
 
-def optimize_jpg(filename):
-    return
+def optimize_jpg(filename, width, height):
+    img = Image.open(filename)
+    img.thumbnail((width, height))
+    path, ext = os.path.splitext(filename)
+    buf = BytesIO()
+    if ext != '.jpg':
+        # os.remove(filename)
+        filename = path + '.jpg'
+    img.save(buf, 'jpeg', quality=80, optimize=True)
+    return SimpleUploadedFile(
+        filename,
+        buf.getvalue(),
+        'image/jpeg')

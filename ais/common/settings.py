@@ -82,7 +82,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (path.join(BASE_DIR, "ais_static"),)
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
-MEDIA_ROOT = '../media/'
+MEDIA_ROOT = path.abspath(path.join(BASE_DIR, '..', 'media'))
 MEDIA_URL = '/media/'
 
 # Internationalization
