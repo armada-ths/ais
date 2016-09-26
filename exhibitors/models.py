@@ -1,5 +1,5 @@
 from django.db import models
-from lib.image import random_path, optimize_png, optimize_jpg
+from lib.image import random_path, format_png, format_jpg
 from django.conf import settings
 import os
 
@@ -85,9 +85,9 @@ class CatalogInfo(models.Model):
         super(CatalogInfo, self).save(*args, **kwargs)
         if self.logo:
             path = os.path.join(MEDIA_ROOT, self.logo.name)
-            self.logo_small = optimize_png(path, 128, 128)
-            self.logo = optimize_png(path, 400, 400)
+            self.logo_small = format_png(path, 128, 128)
+            self.logo = format_png(path, 400, 400)
         if self.ad:
             path = os.path.join(MEDIA_ROOT, self.ad.name)
-            self.ad = optimize_jpg(path, 640, 480)
+            self.ad = format_jpg(path, 640, 480)
         super(CatalogInfo, self).save(*args, **kwargs)

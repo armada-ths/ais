@@ -20,31 +20,30 @@ def random_path(*args):
 
 # Converts the input image to a 256 colors png,
 # creates a thumbnail with the specified height and width
-# and returns a new file
-def optimize_png(filename, width, height):
+# and returns it as a new file
+def format_png(filename, width, height):
     img = Image.open(filename)
     img = img.convert('P')
     img.thumbnail((width, height))
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
     if ext != '.png':
-        # os.remove(filename)
         filename = path + '.png'
     img.save(buf, 'png')
-    print(filename)
     return SimpleUploadedFile(
         filename,
         buf.getvalue(),
         'image/png')
 
 
-def optimize_jpg(filename, width, height):
+# Creates a jpeg thumbnail of the input image
+# and returns it as a new file
+def format_jpg(filename, width, height):
     img = Image.open(filename)
     img.thumbnail((width, height))
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
     if ext != '.jpg':
-        # os.remove(filename)
         filename = path + '.jpg'
     img.save(buf, 'jpeg', quality=80, optimize=True)
     return SimpleUploadedFile(
