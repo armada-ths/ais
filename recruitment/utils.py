@@ -96,7 +96,7 @@ def create_programmes():
      "Computer Science and Engineering (M.Sc)", "Electrical Engineering and Economics (B.Sc)",
      "Engineering and of Education (M.Sc)", "Medical Engineering (M.Sc)", "Microelectronics (M.Sc)",
      "Architecture Programme", "Biotechnology (M.Sc)", "Chemical Engineering (B.Sc)", "Medical Technology (B.Sc)",
-     "Property Development & Real Estate (B.Sc)", "Real Estate and Finance (B.Sc)"]
+     "Property Development & Real Estate (B.Sc)", "Real Estate and Finance (B.Sc)", "Degree Programme Open Entrance"]
 
     for programme in programmes:
         if not Programme.objects.filter(name=programme).first():
