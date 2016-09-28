@@ -6,3 +6,4 @@ uWSGI
 wheel
 ldap3
 django-crispy-forms
+Pillow
