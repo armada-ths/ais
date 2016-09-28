@@ -10,7 +10,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from people.models import Profile
-from companies.models import Company, Exhibitor
+from companies.models import Company
+from exhibitors.models import Exhibitor
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
