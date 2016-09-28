@@ -1,23 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, Programme, CustomFieldArgument
+from django import forms
 from django.forms import ModelForm
+from django.forms import modelform_factory
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-from django import forms
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
-from people.models import Profile
-from companies.models import Company, CompanyParticipationYear
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
-from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
-
-from django.core.exceptions import ObjectDoesNotExist
-
+from django.shortcuts import render, redirect, get_object_or_404
+from people.models import Profile
+from companies.models import Company, CompanyParticipationYear
+from forms.models import CustomFieldArgument
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
+    Programme
+from .utils import create_project_group
 
 def import_members(request):
     if not request.user.is_superuser:
