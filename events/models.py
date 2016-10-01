@@ -13,6 +13,7 @@ class Event(models.Model):
     event_end = models.DateTimeField()
     capacity = models.IntegerField(default=0, blank=True, null=True)
     description = models.TextField(blank=True)
+    attendence_description = models.TextField(blank=True)
     registration_open = models.DateTimeField()
     registration_last_day = models.DateTimeField()
     registration_last_day_cancel = models.DateTimeField(null=True)
