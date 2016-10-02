@@ -13,9 +13,11 @@
   {{ event.attendence_description }}
   <br>
   <br>
-  <input class="btn btn-primary" type="submit" value="Sign up" />
   {% if request.user|user_attending_event:event %}
+    <input class="btn btn-primary" type="submit" value="Update info" />
     <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
+  {% else %}
+    <input class="btn btn-primary" type="submit" value="Sign up" />
   {% endif %}
 </form>
 {% endblock %}

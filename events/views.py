@@ -5,16 +5,15 @@ from events.templatetags.event_extras import user_attending_event
 
 def event_attend_form(request, pk, template_name='events/event_attend.html'):
     event = get_object_or_404(Event, pk=pk)
-    event_questions = EventQuestion.objects.filter(event=pk).all()
-    form = AttendenceForm(request.POST or None, questions=event_questions)
+    questions = EventQuestion.objects.filter(event=pk).all()
+    ea = EventAttendence.objects.filter(user=request.user, event=event).first()
+    questions_answers = [(question, EventAnswer.objects.filter(attendence=ea, question=question).first()) for question in questions]
+    form = AttendenceForm(request.POST or None, questions_answers=questions_answers)
     if form.is_valid():
-        if user_attending_event(request.user, event):
-            # TODO update the attendence instead
-            return redirect('event_list')
-        ea = EventAttendence.objects.create(user=request.user, event=event)
-        ea.save()
+        if not ea:
+            ea = EventAttendence.objects.create(user=request.user, event=event)
         for (question, id, answer) in form.get_answers():
-            EventAnswer.objects.create(question_id=id, attendence=ea, answer=answer)
+            EventAnswer.objects.update_or_create(question_id=id, attendence=ea, defaults={'answer':answer})
         return redirect('event_list')
 
     return render(request, template_name, {"event":event, "form":form})

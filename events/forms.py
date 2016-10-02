@@ -10,8 +10,9 @@ class AttendenceForm(forms.Form):
                 yield (self.fields[name].label, self.fields[name].id, value)
 
     def __init__(self, *args, **kwargs):
-        questions = kwargs.pop('questions')
+        questions_answers = kwargs.pop('questions_answers')
         super(AttendenceForm, self).__init__(*args, **kwargs)
-        for i, question in enumerate(questions):
+        for i, (question, answer) in enumerate(questions_answers):
             self.fields['question_%s' % i] = forms.CharField(label=question, required=question.required)
             self.fields['question_%s' % i].id = question.id
+            self.fields['question_%s' % i].initial = answer.answer if answer else ""
