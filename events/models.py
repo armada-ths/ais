@@ -1,83 +1,40 @@
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User, Group
 
+from fair.models import Fair
+
+# An 'Event' belongs to a specific 'Fair'
 class Event(models.Model):
-    ROLES = (
-    ("App", "Applikationsutvecklare"),
-    ("AD", "Art Director"),
-    ("BD","Backend Developer"),
-    ("BE","Bankett: Eventteknikkoordinator"),
-    ("BIK","Bankett: Inrednings- och Inkopsgruppledare"),
-    ("BL","Bankett: Logistikgruppledare"),
-    ("BU","Bankett: Underhallningsgruppledare"),
-    ("BH","Banquet Host"),
-    ("BRM","Business Relations Manager"),
-    ("CM","Campaign Manager"),
-    ("CFH","Career Fair Host"),
-    ("CFM","Career Fair Manager"),
-    ("CW","Copywriter"),
-    ("EH","Event Host"),
-    ("EM","Event Manager"),
-    ("EG","Eventgruppledare"),
-    ("FR","Foretagsreception"),
-    ("FL","Fotogruppledare"),
-    ("FP","Framtida projektledare"),
-    ("FU","Frontend-utvecklare"),
-    ("GF","Grafisk formgivare"),
-    ("HBRE","Head of Business Relations and Events"),
-    ("HLCF","Head of Logistics and Career Fair"),
-    ("HMCI","Head of Marketing, Communications and Internal Systems"),
-    ("H","Host"),
-    ("ISM","Internal Systems Manager"),
-    ("IWM","IT-Web Manager"),
-    ("KF","Kampanj: Filmskapare"),
-    ("KO","Kampanjkoordinator"),
-    ("LM","Logistics Manager"),
-    ("LH","Lounge Host"),
-    ("LG","Loungegruppledare"),
-    ("MGL","Massgruppledare"),
-    ("MAM","Mobile Application Manager"),
-    ("P","Photographer"),
-    ("PM","Project Manager"),
-    ("PGM","Projektgruppsmedlem"),
-    ("RM","Recruitment Manager"),
-    ("RG","Representationsgruppledare"),
-    ("RGL","Representationssittningsgruppledare"),
-    ("RGB","Representationssittningsgruppledare Bankett"),
-    ("SH","Sambandhelp"),
-    ("SH","Service Host"),
-    ("SGL","Servicegruppledare"),
-    ("SLGL","Specialstyrkan: Logistikgruppledare"),
-    ("STGL","Specialstyrkan: Teknikgruppledare"),
-    ("SK","Sponskoordinator"),
-    ("SSM","Sponsorship and Service Manager"),
-    ("SU","Systemutvecklare"),
-    ("TF","Task force"),
-    ("TL","Team Leader"),
-    ("URH","University Relations Host"),
-    )
-
+    # Add event attendence per model
+    fair = models.ForeignKey(Fair)
     name = models.CharField(max_length=75)
     event_start = models.DateTimeField()
     event_end = models.DateTimeField()
-    capacity = models.IntegerField(default=1, blank=True, null=True)
-    needs_approval = models.BooleanField()
+    capacity = models.IntegerField(default=0, blank=True, null=True)
     description = models.TextField(blank=True)
+    description_short = models.TextField(blank=True)
+    attendence_description = models.TextField(blank=True)
     registration_open = models.DateTimeField()
     registration_last_day = models.DateTimeField()
-    registration_last_day_cancel = models.DateTimeField()
-    roles = models.CharField(max_length=3, choices=ROLES)
-    make_event_public = models.BooleanField()
-
-    def __unicode__(self):
-        return self.name
+    registration_last_day_cancel = models.DateTimeField(null=True)
+    public_registration = models.BooleanField(default=False)
+    allowed_groups = models.ManyToManyField(Group, blank=True)
     
+
     def __str__(self):
         return '%s'%(self.name)
 
-def get_absolute_url(self):
-    return reverse('event_edit', kwargs={'pk': self.pk})
+# An EventQuestion belongs to a specific Event
+class EventQuestion(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    question_text = models.TextField(blank=False) 
+    required = models.BooleanField(default=False)
 
+    def __str__(self):
+        return '%s'%(self.question_text)
+
+# An EventAttendence is for a specific User to attend a specific Event
 class EventAttendence(models.Model):
     STATUS = (
     ("A","Approved"),
@@ -86,12 +43,24 @@ class EventAttendence(models.Model):
     ("S","Submitted"),
     )
 
-    person = models.CharField(max_length=75)
-    status = models.CharField(max_length=3, choices=STATUS)
-    name = models.CharField(max_length=75)
-    mobile = models.IntegerField(default=1, blank=True, null=True)
-    allergies = models.CharField(max_length=75)
-    attending = models.BooleanField()
+    user = models.ForeignKey(User, null=True, default=None, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    status = models.CharField(max_length=3, choices=STATUS, default="S")
 
-    def __unicode__(self):
-        return self.name
+    def __str__(self):
+        if self.user != None:
+            user = self.user.get_full_name()
+        else:
+            user = "External user"
+        return '%s attending %s'%(user, self.event.name)
+    
+
+# An EventAnswer is the answer to a specific EventQuestion for a specific User
+class EventAnswer(models.Model):
+    question = models.ForeignKey(EventQuestion, on_delete=models.CASCADE)
+    attendence = models.ForeignKey(EventAttendence, on_delete=models.CASCADE)
+    answer = models.TextField(blank=True)
+
+    def __str__(self):
+        return '%s'%(self.question.question_text)
+

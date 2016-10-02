@@ -1,48 +1,28 @@
 {% extends "base.html" %}
-{% block nav-events %}
-<li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
-{% endblock %}
+{% load event_extras %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <h3>Armada 2015 Events</h3>
-    <table class="table table-striped">
-      <tr>
-        <th class="text-uppercase">name</th>
-        <th class="text-uppercase">description</th>
-        <th class="text-uppercase">start</th>
-        <th class="text-uppercase">capacity</th>
-        <th></th>
-      </tr>
-      {% for event in object_list %}
-      <tr>
-        <td>{{ event.name }}</td>
-        <td>{{ event.description }}</td>
-        <td>{{ event.event_start }}</td>
-        <td>{{ event.capacity }}</td>
-        <td>
-          <a href="{% url 'event_new_attendence' %}">Sign up</a>&nbsp&nbsp
-          <a href="{% url "event_edit" event.id %}">
-            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp&nbsp
-          </a>
-          <a href="{% url "event_delete" event.id %}">
-            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>&nbsp&nbsp
-          </a>
-          <a href="{% url 'event_attendence_list' %}">
-            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp&nbsp
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
-  {% endblock %}
-  {% block footer %}
-  <div class="row">
-    <a href="{% url "event_new" %}">New Event</a>
-    <hr>
-    <p>
-      For technical support please e-mail <a href="mailo:support@armada.nu" target="_top">support@armada.nu</a>, for urgent matters call 08-790 98 44.
-    </p>
-  </div>
-  {% endblock %}
+<h2>Armada 2016 Events</h2>
+<table class="table table-striped">
+<tr>
+<th class="text-uppercase">name</th>
+<th></th>
+<th class="text-uppercase">date</th>
+<th></th>
+</tr>
+{% for event in events %}
+<tr>
+<td><a href="{% url 'event_attend_form' event.id %}">{{ event.name }}</a></td>
+<td>{{ event.description_short }}</td>
+<td>{{ event.event_start }}</td>
+<td>
+  <!-- TODO change so user can see status of the attendence -->
+  {% if request.user|user_attending_event:event %}
+    <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Attending event!</a>&nbsp&nbsp
+  {% else %}
+    <a style="width: 100px" class="btn btn-primary btn-xs" href="{% url 'event_attend_form' event.id %}">Not Attending</a>&nbsp&nbsp
+  {% endif %}
+</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
