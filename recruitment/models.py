@@ -100,11 +100,8 @@ class ExtraField(models.Model):
                         custom_field=custom_field,
                         user=user
                     )
-                    answer_string = request.POST[key]
-
-                    if answer_string:
-                        answer.answer = answer_string
-                        answer.save()
+                    answer.answer = request.POST[key]
+                    answer.save()
 
                 else:
                     CustomFieldAnswer.objects.filter(
@@ -135,6 +132,7 @@ class CustomField(models.Model):
     def form_key(self):
         return 'custom_field_%s' % self.id
 
+
 class CustomFieldArgument(models.Model):
     value = models.TextField()
     custom_field = models.ForeignKey(CustomField)
@@ -146,13 +144,16 @@ class CustomFieldArgument(models.Model):
     def id_as_string(self):
         return "%s" % self.id
 
+    def __str__(self):
+        return '%s - %s' % (self.custom_field, self.value)
+
 class CustomFieldAnswer(models.Model):
     custom_field = models.ForeignKey(CustomField)
     user = models.ForeignKey(User)
     answer = models.TextField()
 
     def __str__(self):
-        return '%s' % (self.answer)
+        return '%s - %s - %s' % (self.user.get_full_name(), self.custom_field, self.answer)
 
 
 class Role(models.Model):
