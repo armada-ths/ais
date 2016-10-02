@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load event_extras %}
+{% block content %}
+<h2>Armada 2015 Events</h2>
+<table class="table table-striped">
+<tr>
+<th class="text-uppercase">name</th>
+<th></th>
+<th class="text-uppercase">date</th>
+<th></th>
+</tr>
+{% for event in events %}
+<tr>
+<td><a href="{% url 'event_attend_form' event.id %}">{{ event.name }}</a></td>
+<td>{{ event.description_short }}</td>
+<td>{{ event.event_start }}</td>
+<td>
+  <!-- TODO change so user can see status of the attendence -->
+  {% if request.user|user_attending_event:event %}
+    <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Attending event!</a>&nbsp&nbsp
+  {% else %}
+    <a style="width: 100px" class="btn btn-primary btn-xs" href="{% url 'event_attend_form' event.id %}">Not Attending</a>&nbsp&nbsp
+  {% endif %}
+</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

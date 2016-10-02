@@ -1,11 +1,21 @@
 {% extends "base.html" %}
+{% load event_extras %}
 {% load crispy_forms_tags %}
 {% block content %}
-<h1>Signup for {{ event.name }}</h1>
-<form method="post" class="">
+<h2>{{ event.name }}</h2>
+<br>
+{{ event.description }}
+<br>
+<br>
+<form method="post">
   {% csrf_token %}
   {{ form|crispy }}
   {{ event.attendence_description }}
-  <input class="btn btn-primary" type="submit" value="Submit" />
+  <br>
+  <br>
+  <input class="btn btn-primary" type="submit" value="Sign up" />
+  {% if request.user|user_attending_event:event %}
+    <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
+  {% endif %}
 </form>
 {% endblock %}

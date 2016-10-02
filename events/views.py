@@ -10,15 +10,19 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
     if form.is_valid():
         if user_attending_event(request.user, event):
             # TODO update the attendence instead
-            return render(request, template_name, {"event":event, "form":form})
+            return redirect('event_list')
         ea = EventAttendence.objects.create(user=request.user, event=event)
         ea.save()
         for (question, id, answer) in form.get_answers():
             EventAnswer.objects.create(question_id=id, attendence=ea, answer=answer)
-        return render(request, template_name, {"event":event, "form":form})
+        return redirect('event_list')
 
     return render(request, template_name, {"event":event, "form":form})
 
+def event_list(request, template_name='events/event_list.html'):
+    events = Event.objects.all().order_by('event_start')
+    return render(request, template_name, {"events":events})
+
 def event_unattend(request, pk):
     EventAttendence.objects.filter(event_id=pk, user_id=request.user.id).delete()
-    return redirect("/")
+    return redirect('event_list')
