@@ -14,7 +14,7 @@ DEBUG = True
 # This lets us access AIS via its IP address (usually 127.0.0.1),
 # which you can't do in production for security reasons. 
 ALLOWED_HOSTS = ['*']
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # The URL scheme is slightly different in a development environment
 # since there's no CAS integration.
 ROOT_URLCONF = 'ais.local.urls'
