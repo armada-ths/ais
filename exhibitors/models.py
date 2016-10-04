@@ -1,16 +1,22 @@
 from django.db import models
-from lib.image import random_path, format_png, format_jpg
+#from lib.image import random_path, format_png, format_jpg
 from django.conf import settings
+from django.contrib.auth.models import User
 import os
 
 
 MEDIA_ROOT = settings.MEDIA_ROOT
 
 
+class ExhibitorLocation(models.Model):
+    name = models.CharField(max_length=200)
+
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
     company = models.ForeignKey('companies.Company')
     fair = models.ForeignKey('fair.Fair')
+    responsible = models.ForeignKey(User, null=True, default=None, blank=True)
+    location =  models.ForeignKey(ExhibitorLocation, null=True, default=None, blank=True)
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)
@@ -47,6 +53,12 @@ class Value(models.Model):
     def __str__(self):
         return self.name
 
+# Since these functions break when running makemigrations temporary dummy implenetations are provided!
+def random_path(a,b):
+    return ""
+
+def format_png():
+    return None
 
 # Info about an exhibitor to be displayed in apps and on website
 class CatalogInfo(models.Model):
