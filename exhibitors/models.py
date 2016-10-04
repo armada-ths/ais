@@ -11,6 +11,9 @@ MEDIA_ROOT = settings.MEDIA_ROOT
 class ExhibitorLocation(models.Model):
     name = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.name
+
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
     company = models.ForeignKey('companies.Company')
