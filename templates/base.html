@@ -36,8 +36,13 @@
                     {% block nav-companies %}
                         <!--<li role="presentation"><a href="{% url 'companies_list' %}
                         ">Companies</a></li>{% endblock %}-->
+
+                    {% if perms.exhibitors.change_exhibitor %}
+                    {% block nav-exhibitors %}
+                        <li role="presentation"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>{% endblock %}
+                    {% endif %}
                     {% block nav-events %}
-                        <!--<li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}-->
+                        <li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
                     {% block nav-recruitment %}
                         <li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
                     {% block nav-news %}

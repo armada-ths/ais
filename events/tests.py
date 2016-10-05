@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from events.models import Event
-from events.forms import EventAttendenceForm,EventForm
 
 """
 class EventTest(TestCase):
