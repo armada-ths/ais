@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block nav-exhibitors %}
+    <li role="presentation" class="active"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+{% endblock %}
+{% block content %}
+    <h1>Exhibitors ({{ exhibitors|length }})</h1>
+    <table class="table">
+        <tr>
+            <th>Exhibitor</th>
+            <th>Location</th>
+            <th>Host</th>
+        </tr>
+
+    {% for exhibitor in exhibitors %}
+        <tr>
+            <td><a href="{% url "exhibitor"  exhibitor.pk %}">{{ exhibitor.company }}</a></td>
+            <td>{{ exhibitor.location|default:"" }}</td>
+            <td>{{ exhibitor.responsible.get_full_name|default:"" }}</td>
+        </tr>
+    {% endfor %}
+
+    </table>
+{% endblock %}
+

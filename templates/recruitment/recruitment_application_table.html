@@ -2,19 +2,40 @@
 <table class="table">
     <thead>
     <tr>
-        <th>Name</th>
-        <th>Programme</th>
-        <th>Registration year</th>
-        <th>Rating</th>
-        <th>Submitted</th>
-        <th>Roles</th>
-        <th>Interviewer</th>
-        <th>State</th>
+
+        {% for search_field in search_fields %}
+            <th>
+            {% if search_field.model_field_name %}
+                <form class="search-form">
+                    <input type="hidden" name="sort_field" value="{{ search_field.model_field_name }}">
+                    {% if request.GET.sort_field == search_field.model_field_name and request.GET.sort_ascending == 'true' %}
+                        <input type="hidden" name="sort_ascending" value="false">
+                    {% else %}
+                        <input type="hidden" name="sort_ascending" value="true">
+                    {% endif %}
+                    <input type="hidden" name="scroll_y" class="scroll_y" value="0">
+                    <button class="btn btn-link">{{ search_field.name }}
+                        {% if request.GET.sort_field == search_field.model_field_name %}
+                            {% if request.GET.sort_ascending == 'true' %}↑{% else %}↓{% endif %}
+                        {% endif %}
+                    </button>
+                </form>
+            {% else %}
+                <button class="btn btn-link" disabled>
+                {{ search_field.name }}
+                </button>
+            {% endif %}
+
+            </th>
+        {% endfor %}
+
     </tr>
     {% if show_search_bar %}
     <tr>
-        <form id="search-form">
-            <input type="hidden" name="scroll_y" id="scroll_y" value="0">
+        <form class="search-form">
+            <input type="hidden" name="scroll_y" class="scroll_y" value="0">
+            <input type="hidden" name="sort_field" value="{{ request.GET.sort_field }}">
+            <input type="hidden" name="sort_ascending" value="{{ request.GET.sort_ascending }}">
         <td>{{ search_form.name }}
             <br>
 
@@ -30,6 +51,7 @@
         <td>{{ search_form.rating }}</td>
         <td>{{ search_form.submission_date }}</td>
         <td>{{ search_form.roles }}</td>
+        <td>{{ search_form.recommended_role }}</td>
         <td>{{ search_form.interviewer }}</td>
         <td>
             {{ search_form.state }}
@@ -59,6 +81,7 @@
 
             <td>{{ application.submission_date|date:"d M H:i" }}</td>
             <td>{{ application.roles_string }}</td>
+            <td>{{ application.recommended_role }}</td>
             <td>
                 {% if application.interviewer %}
                     {{ application.interviewer.get_full_name }}
