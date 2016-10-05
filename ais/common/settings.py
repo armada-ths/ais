@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'news',
     'crispy_forms',
     'exhibitors',
+    'forms',
 )
 
 MIDDLEWARE_CLASSES = (
