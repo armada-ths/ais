@@ -41,7 +41,7 @@
         </div>
 
         <h2>Recruitment</h2>
-        {% if recruitment_periods %}
+        {% if recruitment.recruitment_periods %}
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -54,7 +54,7 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-                {% for period in recruitment_periods %}
+                {% for period in recruitment.recruitment_periods %}
                 <tr>
                     <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
                     <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
