@@ -1,44 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
 
+{% load event_extras %}
+
 <div class="row">
     <div class="col-md-12">
+
+        <h2>Events</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="col-md-4">Name</th>
+                        <th class="col-md-2">Date</th>
+                        <th class="col-md-4">Description</th>
+                        <th class="col-md-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td class="col-md-4"><a href="{% url "event_attend_form" event.id %}">{{ event.name }}</a></td>
+                            <td class="col-md-2">{{ event.event_start }}</td>
+                            <td class="col-md-4">{{ event.description_short }}</td>
+                            <td class="col-md-2">
+                                {% if request.user|user_attending_event:event %}
+                                    <a class="btn btn-success btn-xs" href="{% url "event_attend_form" event.id %}">Attending event</a>
+                                {% else %}
+                                    <a class="btn btn-primary btn-xs" href="{% url "event_attend_form" event.id %}">Not attending</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td>Sorry, there's no event for the moment.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
         <h2>Recruitment</h2>
         {% if recruitment_periods %}
-        <table class="table">
-            <thead>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        {% if perms.recruitment.view_recruitment_applications %}
+                        <th>Applications</th>
+                        {% endif %}
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                {% for period in recruitment_periods %}
                 <tr>
-                    <th>Name</th>
-                    <th>Date</th>
+                    <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
+                    <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
                     {% if perms.recruitment.view_recruitment_applications %}
-                    <th>Applications</th>
+                    <td>{{ period.recruitmentapplication_set.count }}</td>
                     {% endif %}
-                    <th>Status</th>
+                    <td>
+                        {% if period.is_past %}
+                        <span class="label label-default">Closed</span>
+                        {% elif period.is_future %}
+                        <span class="label label-default">Not opened yet</span>
+                        {% else %}
+                        <span class="label label-success">Open</span>
+                        {% endif %}
+                    </td>
                 </tr>
-            </thead>
-            {% for period in recruitment_periods %}
-            <tr>
-                <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
-                <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
-                {% if perms.recruitment.view_recruitment_applications %}
-                <td>{{ period.recruitmentapplication_set.count }}</td>
-                {% endif %}
-                <td>
-                    {% if period.is_past %}
-                    <span class="label label-default">Closed</span>
-                    {% elif period.is_future %}
-                    <span class="label label-default">Not opened yet</span>
-                    {% else %}
-                    <span class="label label-success">Open</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+                {% endfor %}
+            </table>
+        </div>
         {% else %}
         <p>No recruitment periods</p>
         {% endif %}
-        <h2>Events</h2>
     </div>
 </div>
 
