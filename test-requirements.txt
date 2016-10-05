@@ -1,2 +1,2 @@
 -r requirements.txt
-factory-boy==2.7.1
+factory-boy==2.7.0
