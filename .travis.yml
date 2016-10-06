@@ -7,7 +7,7 @@ python:
 env:
 - DJANGO_SETTINGS_MODULE=local_settings
 install:
-- pip install --requirement requirements.txt
+- pip install -r test-requirements.txt
 before_script: 
 script:
 - python manage.py test
