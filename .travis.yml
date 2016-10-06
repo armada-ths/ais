@@ -4,11 +4,16 @@ services:
 python:
 - 3.4
 - 3.5
+cache:
+  directories:
+  - $HOME/.pip-cache
+  - $HOME/.pip-accel
 env:
 - DJANGO_SETTINGS_MODULE=local_settings
 install:
-- pip install -r test-requirements.txt
-before_script: 
+- pip install pip-accel --cache-dir $HOME/.pip-cache
+- pip-accel install -r test-requirements.txt
+before_script:
 script:
 - python manage.py test
 notifications:
