@@ -92,7 +92,7 @@ class CatalogInfo(models.Model):
             upload_to=UploadToDir('exhibitors', 'logo'), blank=True)
 
     ad_original = models.ImageField(
-            upload_to=UploadToDirUUID('exhibitors', 'ad'), blank=True)
+            upload_to=UploadToDirUUID('exhibitors', 'ad_original'), blank=True)
     ad = models.ImageField(
             upload_to=UploadToDir('exhibitors', 'ad'), blank=True)
 
