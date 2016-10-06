@@ -1,8 +1,12 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
-
+from django.conf import settings
+from lib.image import random_path, format_jpg
+import os
 from fair.models import Fair
+
+MEDIA_ROOT = settings.MEDIA_ROOT
 
 # An 'Event' belongs to a specific 'Fair'
 class Event(models.Model):
@@ -15,22 +19,31 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     description_short = models.TextField(blank=True)
     attendence_description = models.TextField(blank=True)
-    registration_open = models.DateTimeField()
-    registration_last_day = models.DateTimeField()
+    registration_start = models.DateTimeField()
+    registration_end = models.DateTimeField()
     registration_last_day_cancel = models.DateTimeField(null=True)
     public_registration = models.BooleanField(default=False)
     allowed_groups = models.ManyToManyField(Group, blank=True)
-    send_submission_mail = models.BooleanField(default=False) 
+    send_submission_mail = models.BooleanField(default=False)
     submission_mail_subject = models.TextField(blank=True)
     submission_mail_body = models.TextField(blank=True)
+    image = models.ImageField(
+            upload_to=random_path('events', 'image'), blank=True)
 
     def __str__(self):
         return '%s'%(self.name)
 
+    def save(self, *args, **kwargs):
+        super(Event, self).save(*args, **kwargs)
+        if self.image:
+            path = os.path.join(MEDIA_ROOT, self.image.name)
+            self.image = format_jpg(path, 640, 480)
+        super(Event, self).save(*args, **kwargs)
+
 # An EventQuestion belongs to a specific Event
 class EventQuestion(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    question_text = models.TextField(blank=False) 
+    question_text = models.TextField(blank=False)
     required = models.BooleanField(default=False)
 
     def __str__(self):
@@ -55,7 +68,7 @@ class EventAttendence(models.Model):
         else:
             user = "External user"
         return '%s attending %s'%(user, self.event.name)
-    
+
 
 # An EventAnswer is the answer to a specific EventQuestion for a specific User
 class EventAnswer(models.Model):
@@ -65,4 +78,3 @@ class EventAnswer(models.Model):
 
     def __str__(self):
         return '%s'%(self.question.question_text)
-

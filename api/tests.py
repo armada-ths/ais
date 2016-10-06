@@ -35,8 +35,8 @@ class EventTestCase(TestCase):
         now = timezone.now()
         Fair.objects.create(name="Armada 2000")
         test_fair = Fair.objects.get(name="Armada 2000")
-        self.event = Event.objects.create(fair=test_fair, name='test', event_start=now, event_end=now, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, public_registration=True)
-        self.hidden_event = Event.objects.create(fair=test_fair, name='hidden event', event_start=now, event_end=now, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, public_registration=False)
+        self.event = Event.objects.create(fair=test_fair, name='test', event_start=now, event_end=now, registration_start=now, registration_end=now, registration_last_day_cancel=now, public_registration=True)
+        self.hidden_event = Event.objects.create(fair=test_fair, name='hidden event', event_start=now, event_end=now, registration_start=now, registration_end=now, registration_last_day_cancel=now, public_registration=False)
 
     def test_event_serializer(self):
         data = event_serializer(self.event)
