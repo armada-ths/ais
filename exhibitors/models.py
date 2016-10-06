@@ -116,10 +116,15 @@ class CatalogInfo(models.Model):
             self.slug = slugify(self.display_name)
         super(CatalogInfo, self).save(*args, **kwargs)
         if should_generate(self.logo_original, self.logo):
+            if self.logo:
+                os.remove(os.path.join(MEDIA_ROOT, self.logo.name))
+                os.remove(os.path.join(MEDIA_ROOT, self.logo_small.name))
             path = os.path.join(MEDIA_ROOT, self.logo_original.name)
             self.logo_small = format_png(path, 200, 200)
             self.logo = format_png(path, 400, 400)
         if should_generate(self.ad_original, self.ad):
+            if self.ad:
+                os.remove(os.path.join(MEDIA_ROOT, self.ad.name))
             path = os.path.join(MEDIA_ROOT, self.ad_original.name)
             self.ad = format_jpg(path, 640, 480)
         super(CatalogInfo, self).save(*args, **kwargs)
