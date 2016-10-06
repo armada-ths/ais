@@ -10,12 +10,20 @@ import os
 MEDIA_ROOT = settings.MEDIA_ROOT
 
 
+class Location(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
     company = models.ForeignKey('companies.Company')
     fair = models.ForeignKey('fair.Fair')
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
+    location = models.ForeignKey(Location, null=True, blank=True)
 
     invoice_identification = models.CharField(max_length=64, blank=True)
     invoice_address = models.CharField(max_length=64, blank=True)

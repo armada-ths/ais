@@ -1,21 +1,18 @@
-from django.forms import ModelForm
-from events.models import Event, EventAttendence
+from django.forms import ModelForm, formset_factory
+from events.models import EventAttendence, EventAnswer
 from django import forms
 
-class EventForm(forms.ModelForm):
-    class Meta:
-        model = Event
-        fields = ["name","event_start","event_end","capacity","needs_approval","description","registration_open","registration_last_day","registration_last_day_cancel","roles","make_event_public"]
+class AttendenceForm(forms.Form):
 
-        widgets = {
-        "event_start":forms.TextInput(attrs={'class':'datepicker'}),
-        "event_end":forms.TextInput(attrs={'class':'datepicker'}),
-        "registration_open":forms.TextInput(attrs={'class':'datepicker'}),
-        "registration_last_day":forms.TextInput(attrs={'class':'datepicker'}),
-        "registration_last_day_cancel":forms.TextInput(attrs={'class':'datepicker'}),
-        }
+    def get_answers(self):
+        for name, value in self.cleaned_data.items():
+            if name.startswith('question_'):
+                yield (self.fields[name].label, self.fields[name].id, value)
 
-class EventAttendenceForm(ModelForm):
-    class Meta:
-        model = EventAttendence
-        fields = ["person","status","name","mobile","allergies","attending"]
+    def __init__(self, *args, **kwargs):
+        questions_answers = kwargs.pop('questions_answers')
+        super(AttendenceForm, self).__init__(*args, **kwargs)
+        for i, (question, answer) in enumerate(questions_answers):
+            self.fields['question_%s' % i] = forms.CharField(label=question, required=question.required)
+            self.fields['question_%s' % i].id = question.id
+            self.fields['question_%s' % i].initial = answer.answer if answer else ""

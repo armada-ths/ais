@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block nav-exhibitors %}
+    <li role="presentation" class="active"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+{% endblock %}
+{% block content %}
+    <h1>Exhibitors ({{ exhibitors|length }})</h1>
+    <table class="table" id="exhibitor_table">
+        <thead>
+        <tr>
+            <th>Exhibitor</th>
+            <th>Location</th>
+            <th>Host</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for exhibitor in exhibitors %}
+            <tr>
+                <td><a href="{% url "exhibitor" exhibitor.pk %}">{{ exhibitor.company }}</a></td>
+                <td>{{ exhibitor.location|default:"" }}</td>
+                <td>
+					{% for host in exhibitor.hosts.all %}
+						{{ host.get_full_name | default:"" }}
+						{% if not forloop.last %}
+							<br>
+						{% endif %}
+					{% endfor %}
+				</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+            $('#exhibitor_table').DataTable({
+                'paging': false
+            })
+        })
+    </script>
+{% endblock %}
