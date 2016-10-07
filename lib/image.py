@@ -65,7 +65,7 @@ class UploadToDir(object):
 def format_png(filename, width, height):
     img = Image.open(filename)
     img.thumbnail((width, height))
-    if img.mode is not 'P':
+    if img.mode != 'P':
         img = img.convert('P')
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
@@ -83,7 +83,7 @@ def format_png(filename, width, height):
 def format_jpg(filename, width, height):
     img = Image.open(filename)
     img.thumbnail((width, height))
-    if img.mode is 'P':
+    if img.mode == 'P':
         img = img.convert('RGB')
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
