@@ -13,7 +13,7 @@ from ast import literal_eval
 import csv
 
 
-anmalan_url = 'http://anmalan.armada.nu'
+ANMALAN_URL = 'http://anmalan.armada.nu'
 
 
 def get_objects_by_name(Model, names):
@@ -123,10 +123,10 @@ class Command(BaseCommand):
                         # Exhibitor orders
 
                         try:
-                            with urlopen(anmalan_url+row['logotype']) as response:
+                            with urlopen(ANMALAN_URL+row['logotype']) as response:
                                 if len(row['logotype']) != 0:
                                     info.logo_original.save(row['logotype'], ContentFile(response.read()))
-                            with urlopen(anmalan_url+row['ad']) as response:
+                            with urlopen(ANMALAN_URL+row['ad']) as response:
                                 if len(row['ad']) != 0:
                                     info.ad_original.save(row['ad'], ContentFile(response.read()))
                         except HTTPError:
