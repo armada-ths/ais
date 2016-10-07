@@ -13,8 +13,8 @@ from ast import literal_eval
 import csv
 
 
-ANMALAN_URL = 'http://anmalan.armada.nu'
-
+REGISTRATION_URL = 'http://register.armada.nu'
+FAIR_YEAR = 'Armada 2016'
 
 def get_objects_by_name(Model, names):
     objects = []
@@ -41,9 +41,9 @@ class Command(BaseCommand):
         with open(options['file']) as file:
             reader = csv.DictReader(
                     file, dialect='semi')
-            fair = Fair.objects.get(name='Armada 2016')
-            if fair is None:
-                raise CommandError('Fair "Armada 2016" not found')
+            if not Fair.objects.filter(name=FAIR_YEAR).exists():
+                raise CommandError('Fair not found')
+            fair = Fair.objects.get(name=FAIR_YEAR)
             for row in reader:
                 if not Company.objects.filter(name=row['company_name']).exists():
                     with transaction.atomic():
@@ -120,10 +120,10 @@ class Command(BaseCommand):
                         # Exhibitor orders
 
                         try:
-                            with urlopen(ANMALAN_URL+row['logotype']) as response:
+                            with urlopen(REGISTRATION_URL+row['logotype']) as response:
                                 if len(row['logotype']) != 0:
                                     info.logo_original.save(row['logotype'], ContentFile(response.read()))
-                            with urlopen(ANMALAN_URL+row['ad']) as response:
+                            with urlopen(REGISTRATION_URL+row['ad']) as response:
                                 if len(row['ad']) != 0:
                                     info.ad_original.save(row['ad'], ContentFile(response.read()))
                         except HTTPError:
