@@ -25,10 +25,7 @@ def get_objects_by_name(Model, names):
 
 
 def eval_list(string):
-    if string:
-        return literal_eval(string)
-    else:
-        return []
+    return literal_eval(string) if string else []
 
 
 class Command(BaseCommand):
@@ -50,7 +47,7 @@ class Command(BaseCommand):
             for row in reader:
                 if not Company.objects.filter(name=row['company_name']).exists():
                     with transaction.atomic():
-                        print("importing company %s" % row['company_name'])
+                        self.stdout.write("importing company %s" % row['company_name'])
                         contact_name = '%s %s' % (
                                 row['first_name'], row['last_name'])
                         contact = Contact.objects.create(
