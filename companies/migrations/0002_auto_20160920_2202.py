@@ -30,13 +30,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='company',
             name='delivery_address',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, related_name='delivery_address', to='companies.Address'),
-            preserve_default=False,
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='delivery_address', to='companies.Address'),
         ),
         migrations.AddField(
             model_name='company',
             name='invoice_address',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, related_name='invoice__address', to='companies.Address'),
-            preserve_default=False,
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='invoice__address', to='companies.Address'),
         ),
     ]
