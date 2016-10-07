@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import ModelForm
 
-from companies.models import Company, CompanyContact
+from companies.models import Company, Contact
 
 ###COMPANY###
 class CompanyForm(ModelForm):
@@ -49,7 +49,7 @@ def company_delete(request, pk, template_name='companies/company_confirm_delete.
 ###COMPANY CONTACT###
 class ContactForm(ModelForm):
     class Meta:
-        model = CompanyContact
+        model = Contact
         fields = '__all__'
 
 #crate a company contact

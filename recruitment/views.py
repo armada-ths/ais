@@ -10,7 +10,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from people.models import Profile
-from companies.models import Company, CompanyParticipationYear
+from companies.models import Company
+from exhibitors.models import Exhibitor
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
@@ -708,7 +709,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         return HttpResponseForbidden()
 
     exhibitors = [participation.company for participation in
-                  CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
+                  Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,

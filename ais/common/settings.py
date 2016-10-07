@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'recruitment',
     'api',
     'news',
+    'orders',
     'crispy_forms',
     'exhibitors',
 )
