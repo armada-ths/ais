@@ -24,7 +24,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	users = [(recruitment_application.user, recruitment_application.delegated_role)  for recruitment_application in RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
 
 
-	exhibitor_form.fields['responsible'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for
+	exhibitor_form.fields['hosts'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for
 																		  user in users]
 
 	return render(request, template_name, {

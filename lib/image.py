@@ -1,21 +1,62 @@
 from uuid import uuid4
-from PIL import Image
+from PIL import Image, ImageFile
 from io import BytesIO
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.deconstruct import deconstructible
 import os
 
 
-# Intended to be used as an argument for upload_to option in ImageField
-# Generates a random path for an image formatted as
-# 'MEDIA_ROOT/<args[0]>/.../<random id>.<ext>'
+# Hack for making pillow accept large images
+# (should maybe be removed after importing images)
+ImageFile.SAFEBLOCK = 1024*10000
+
+
+def path():
+    pass
+
+
+# Check if a thumbnail should be generated or not
+# Based on original image uploaded with uuid
+# and generated image having the same name
+def should_generate(original, generated):
+    if original:
+        if generated is None:
+            return True
+        else:
+            original_name, _ = os.path.splitext(os.path.basename(original.name))
+            generated_name, _ = os.path.splitext(os.path.basename(generated.name))
+            if original_name != generated_name:
+                return True
+    return False
+
+
+# Intended to be used as an argument for upload_to option in ImageField.
+# To create a callable: upload_to = UploadToDirUUID('path','to','dir')
+# Generates a random filename for an image in the specified directories
+# formatted as 'MEDIA_ROOT/<args[0]>/.../<random id>.<ext>'
 # The path keeps the file extension of the input file
-def random_path(*args):
-    def path(instance, filename):
-        directory = '/'.join(args)
+@deconstructible
+class UploadToDirUUID(object):
+    path = '{}/{}{}'
+
+    def __init__(self, *args):
+        self.directory = '/'.join(args)
+
+    def __call__(self, instance, filename):
         _, ext = os.path.splitext(filename)
         random_id = uuid4().hex
-        return '{}/{}{}'.format(directory, random_id, ext)
-    return path
+        return UploadToDirUUID.path.format(self.directory, random_id, ext)
+
+
+@deconstructible
+class UploadToDir(object):
+    path = '{}/{}'
+
+    def __init__(self, *args):
+        self.directory = '/'.join(args)
+
+    def __call__(self, instance, filename):
+        return UploadToDir.path.format(self.directory, filename)
 
 
 # Converts the input image to a 256 colors png,
@@ -23,8 +64,9 @@ def random_path(*args):
 # and returns it as a new file
 def format_png(filename, width, height):
     img = Image.open(filename)
-    img = img.convert('P')
     img.thumbnail((width, height))
+    if img.mode != 'P':
+        img = img.convert('P')
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
     if ext != '.png':
@@ -41,6 +83,8 @@ def format_png(filename, width, height):
 def format_jpg(filename, width, height):
     img = Image.open(filename)
     img.thumbnail((width, height))
+    if img.mode == 'P':
+        img = img.convert('RGB')
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
     if ext != '.jpg':
