@@ -1,8 +1,8 @@
 from collections import OrderedDict
 import time
 
-def unix_time(datetime):
-    return int(time.mktime(datetime.timetuple()))
+from lib.util import unix_time
+
 
 def company_serializer(company):
     return OrderedDict([
