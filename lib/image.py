@@ -23,9 +23,9 @@ def should_generate(original, generated):
         if generated is None:
             return True
         else:
-            original_name, _ = os.path.splitext(original.name)
-            generated_name, _ = os.path.splitext(generated.name)
-            if original_name is not generated_name:
+            original_name, _ = os.path.splitext(os.path.basename(original.name))
+            generated_name, _ = os.path.splitext(os.path.basename(generated.name))
+            if original_name != generated_name:
                 return True
     return False
 
