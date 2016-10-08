@@ -10,7 +10,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from people.models import Profile
-from companies.models import Company, CompanyParticipationYear
+from companies.models import Company
+from exhibitors.models import Exhibitor
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
@@ -52,6 +53,11 @@ class RecruitmentApplicationSearchForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    recommended_role = forms.ModelChoiceField(
+        queryset=Role.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
 
     programme = forms.ModelChoiceField(
         queryset=Programme.objects.all(),
@@ -120,6 +126,11 @@ class RecruitmentApplicationSearchForm(forms.Form):
         if interviewer:
             application_list = [application for application in application_list if
                                 interviewer == application.interviewer]
+
+        recommended_role = search_form.cleaned_data['recommended_role']
+        if recommended_role:
+            application_list = [application for application in application_list if
+                                recommended_role == application.recommended_role]
 
         state = search_form.cleaned_data['state']
         if state:
@@ -388,12 +399,22 @@ def remember_last_query_params(url_name, query_params):
 def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
+
+
+    sort_field = request.GET.get('sort_field')
+    if not sort_field:
+        sort_field = 'submission_date'
+    sort_ascending = request.GET.get('sort_ascending') == 'true'
+
+    order_by_query = ('' if sort_ascending else '-') + sort_field
+    application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query).all().prefetch_related('roleapplication_set')
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
                                                                        interviewer in recruitment_period.interviewers()]
     search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
+    search_form.fields['recommended_role'].choices = [('', '---------')] + [(role.pk, role.name) for
+                                                                       role in recruitment_period.recruitable_roles.all()]
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
@@ -412,6 +433,26 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
 
     print('Total time took', time.time() - start)
 
+
+    class SearchField(object):
+
+        def __init__(self, name, model_field_name):
+            self.name = name
+            self.model_field_name = model_field_name
+
+
+    search_fields = [
+        SearchField('Name', 'user__last_name'),
+        SearchField('Programme', 'user__profile__programme'),
+        SearchField('Registration year', 'user__profile__registration_year'),
+        SearchField('Rating', 'rating'),
+        SearchField('Submitted', 'submission_date'),
+        SearchField('Roles', None),
+        SearchField('Recommended role', 'recommended_role'),
+        SearchField('Interviewer', 'interviewer__last_name'),
+        SearchField('State', None),
+    ]
+
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
@@ -420,6 +461,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'applications': applications,
         'now': timezone.now(),
         'search_form': search_form,
+        'search_fields': search_fields
     })
 
 
@@ -701,7 +743,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         return HttpResponseForbidden()
 
     exhibitors = [participation.company for participation in
-                  CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
+                  Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,

@@ -14,7 +14,7 @@ def exhibitors(request):
     return JsonResponse(data, safe=False)
 
 def events(request):
-    events = Event.objects.filter(make_event_public=True)
+    events = Event.objects.filter(public_registration=True)
     data = [event_serializer(event) for event in events]
     return JsonResponse(data, safe=False)
 

@@ -2,6 +2,7 @@ from django.test import TestCase, RequestFactory
 import json
 from django.utils import timezone
 
+from fair.models import Fair
 from companies.models import Company
 from events.models import Event
 from .serializers import company_serializer, event_serializer
@@ -32,8 +33,10 @@ class EventTestCase(TestCase):
         self.factory = RequestFactory()
 
         now = timezone.now()
-        self.event = Event.objects.create(name='test', event_start=now, event_end=now, needs_approval=False, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, make_event_public=True)
-        self.hidden_event = Event.objects.create(name='hidden event', event_start=now, event_end=now, needs_approval=False, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, make_event_public=False)
+        Fair.objects.create(name="Armada 2000")
+        test_fair = Fair.objects.get(name="Armada 2000")
+        self.event = Event.objects.create(fair=test_fair, name='test', event_start=now, event_end=now, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, public_registration=True)
+        self.hidden_event = Event.objects.create(fair=test_fair, name='hidden event', event_start=now, event_end=now, registration_open=now, registration_last_day=now, registration_last_day_cancel=now, public_registration=False)
 
     def test_event_serializer(self):
         data = event_serializer(self.event)

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+    <ol class="breadcrumb">
+        <li><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+        <li class="active">{{ exhibitor.company }}</li>
+    </ol>
+
+    <h3>{{ exhibitor.company }}</h3>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ exhibitor_form|crispy }}
+                    <button class="btn btn-primary">Save</button>
+                </form>
+
+        </div>
+
+    </div>
+
+{% endblock %}

@@ -44,7 +44,6 @@
                 <th>Interview date</th>
                 <th>Interview Location</th>
                 <th>Interviewer</th>
-                <th>State</th>
             </tr>
             </thead>
             {% for application in interviews %}
@@ -65,24 +64,6 @@
                             {{ application.interviewer.get_full_name }}
                         {% endif %}
                     </td>
-                    <td>
-                        {% if application.state == 'accepted' %}
-                            <span class="label label-success">{{ application.status.capitalize }}</span>
-                        {% elif application.state == 'rejected' %}
-                            <span class="label label-danger">{{ application.status.capitalize }}</span>
-                        {% elif application.state == 'new' %}
-                            <span class="label label-default">New</span>
-                        {% elif application.state == 'interview_delegated' %}
-                            <span class="label label-warning">Delegated</span>
-                        {% elif application.state == 'interview_planned' %}
-                            <span class="label label-info">Planned</span>
-                        {% elif application.state == 'interview_done' %}
-                            <span class="label label-primary">Done</span>
-                        {% else %}
-                            {{ application.state }}
-                        {% endif %}
-                    </td>
-
                 </tr>
             {% endfor %}
         </table>
@@ -121,18 +102,18 @@
                         <ul class="pagination">
                             <li>
                                 {% if applications.previous_page_number > 0 %}
-                                    <a href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                                    <a href="?{{ request.GET.urlencode }}&page={{ applications.previous_page_number }}" aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 {% endif %}
                             </li>
                             {% for page_number in applications.paginator.page_range %}
                                 <li {% if page_number == applications.number %}class="active"{% endif %}><a
-                                        href="?page={{ page_number }}">{{ page_number }}</a></li>
+                                        href="?{{ request.GET.urlencode }}&page={{ page_number }}">{{ page_number }}</a></li>
                             {% endfor %}
                             <li>
                                 {% if applications.next_page_number <= applications.paginator.num_pages %}
-                                    <a href="?page={{ applications.next_page_number }}" aria-label="Next">
+                                    <a href="?{{ request.GET.urlencode }}&page={{ applications.next_page_number }}" aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>
                                 {% endif %}
@@ -176,7 +157,7 @@
             var position = getParameterByName("scroll_y");
             $(window).scroll(function (event) {
                 var scroll = $(window).scrollTop();
-                $("#scroll_y").attr('value', scroll);
+                $(".scroll_y").attr('value', scroll);
                 console.log(scroll);
             });
             $(window).scrollTop(position);
