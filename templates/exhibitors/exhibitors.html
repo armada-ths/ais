@@ -18,7 +18,14 @@
             <tr>
                 <td><a href="{% url "exhibitor" exhibitor.pk %}">{{ exhibitor.company }}</a></td>
                 <td>{{ exhibitor.location|default:"" }}</td>
-                <td>{{ exhibitor.responsible.get_full_name|default:"" }}</td>
+                <td>
+					{% for host in exhibitor.hosts.all %}
+						{{ host.get_full_name | default:"" }}
+						{% if not forloop.last %}
+							<br>
+						{% endif %}
+					{% endfor %}
+				</td>
             </tr>
         {% endfor %}
         </tbody>
