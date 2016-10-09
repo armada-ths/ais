@@ -72,7 +72,6 @@ class CatalogInfo(models.Model):
     exhibitor = models.OneToOneField(
             Exhibitor,
             on_delete=models.CASCADE,
-            primary_key=True,
             )
     display_name = models.CharField(max_length=64)
     slug = models.SlugField(db_index=False, blank=True)
