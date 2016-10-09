@@ -13,7 +13,7 @@ from ast import literal_eval
 import csv
 
 
-REGISTRATION_URL = 'http://register.armada.nu'
+REGISTRATION_URL = 'http://anmalan.armada.nu'
 FAIR_YEAR = 'Armada 2016'
 
 def get_objects_by_name(Model, names):
