@@ -32,3 +32,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		'exhibitor_form': exhibitor_form
 	})
 
+
+@permission_required('exhibitors.change_exhibitor', raise_exception=True)
+def product(request, template_name='exhibitors/exhibitors.html'):
+	return render(request, template_name, {'exhibitors': Exhibitor.objects.all().order_by('company__name')})
