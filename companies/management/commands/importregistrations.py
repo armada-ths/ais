@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils.text import slugify
 from companies.models import Company, Contact
 from people.models import Programme as Program
+from orders.models import Order, Product
 from exhibitors.models import Exhibitor, CatalogInfo, \
         WorkField, JobType, Continent, Value
 from fair.models import Fair
@@ -137,3 +138,23 @@ class Command(BaseCommand):
                         info.continents.add(*continents)
                         info.values.add(*values)
                         info.save()
+
+                company = Company.objects.get(name=row['company_name'])
+                exhibitor = Exhibitor.objects.get(company=company, fair=fair)
+
+                if row['base_kit_armada_2015'].strip() == 'THS Armada\'s base kit':
+                    product = Product.objects.get_or_create(name='Base kit', fair=fair, price=32200, coa_number=3250)[0]
+                    Order.objects.get_or_create(exhibitor=exhibitor, product=product, amount=1)
+
+                if row['height_of_stand'].strip() == '2,31 meters to 3,30 meters':
+                    product = Product.objects.get_or_create(name='Extra stand height (2,31m - 3,30m)', fair=fair, price=1000, coa_number=3250)[0]
+                    Order.objects.get_or_create(exhibitor=exhibitor, product=product, amount=1)
+
+                if row['height_of_stand'].strip() == '3,31 meters or higher':
+                    product = Product.objects.get_or_create(name='Extra stand height (3,31m or higher)', fair=fair, price=2000, coa_number=3250)[0]
+                    Order.objects.get_or_create(exhibitor=exhibitor, product=product, amount=1)
+
+                number_of_lunches_day_1 = int(row['number_of_lunches_day_1'])
+                if number_of_lunches_day_1 > 0:
+                    product = Product.objects.get_or_create(name='Lunch tickets day 1', fair=fair, price=125, coa_number=3250)[0]
+                    Order.objects.get_or_create(exhibitor=exhibitor, product=product, amount=number_of_lunches_day_1)
