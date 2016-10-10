@@ -5,7 +5,7 @@ from .models import Exhibitor
 from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
-
+from django.forms import TextInput
 from orders.models import Order, Product
 
 
@@ -21,7 +21,8 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 
 	ExhibitorForm = modelform_factory(
 		Exhibitor,
-		exclude=('company', 'fair') if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact')
+		exclude=('company', 'fair') if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact'),
+		widgets={'allergies': TextInput()}
 	)
 	exhibitor_form = ExhibitorForm(request.POST or None, instance=exhibitor)
 	if exhibitor_form.is_valid():
