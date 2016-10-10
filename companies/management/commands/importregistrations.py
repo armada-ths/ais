@@ -221,3 +221,9 @@ class Command(BaseCommand):
                                                     amount=number_of_drink_coupons)
                 except ValueError:
                     print('Bad value')
+
+
+                # Additional marketing
+                if row['campus_competence'].strip() == 'Standard ad (One ad)':
+                    product = Product.objects.get_or_create(name='Campus Competence (Standard)', fair=fair, price=2500, coa_number=3250)[0]
+                    Order.objects.get_or_create(exhibitor=exhibitor, product=product, amount=1)

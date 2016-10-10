@@ -31,6 +31,18 @@ class Exhibitor(models.Model):
     invoice_address_city = models.CharField(max_length=200, blank=True)
     invoice_address_country = models.CharField(max_length=200, blank=True)
 
+    statuses = [
+        ('accepted', 'Accepted'),
+        ('registered', 'Registered'),
+        ('complete_registration', 'Complete registration'),
+        ('contacted_by_host', 'Contacted by host'),
+        ('confirmed', 'Confirmed'),
+        ('checked_in', 'Checked in'),
+        ('checked_out', 'Checked out'),
+    ]
+
+    status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
+
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
 
