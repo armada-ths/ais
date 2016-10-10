@@ -21,5 +21,8 @@ class Order(models.Model):
     product = models.ForeignKey(Product)
     amount = models.PositiveSmallIntegerField()
 
+    def price(self):
+        return self.product.price * self.amount
+
     def __str__(self):
         return "%s order for %s" % (self.exhibitor.company.name, self.product)

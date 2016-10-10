@@ -19,7 +19,36 @@
                 </form>
 
         </div>
+    </div>
 
+    <div class="row">
+
+    <div class="col-md-12">
+    <h3>Products</h3>
+        <table class="table">
+    <thead>
+    <tr>
+        <th>Product</th>
+        <th>Amount</th>
+        <th>Price</th>
+    </tr>
+    </thead>
+        {% for order in exhibitor.order_set.all %}
+            <tr>
+            <td>{{ order.product.name }}</td>
+            <td>{{ order.amount }}</td>
+            <td>{{ order.price }}</td>
+            </tr>
+        {% endfor %}
+        <tfoot>
+        <tr>
+            <th>Total</th>
+            <th></th>
+            <th>{{ exhibitor.total_cost }}</th>
+        </tr>
+        </tfoot>
+    </table>
+    </div>
     </div>
 
 {% endblock %}
