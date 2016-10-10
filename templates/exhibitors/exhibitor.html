@@ -10,6 +10,22 @@
     <h3>{{ exhibitor.company }}</h3>
     <hr>
 
+        <div class="panel panel-default">
+      <div class="panel-heading">Contact</div>
+      <div class="panel-body">
+          <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
+        <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
+          <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
+          <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
+          <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
+
+
+
+
+
+      </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
                 <form method="post">
