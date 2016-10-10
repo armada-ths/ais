@@ -35,7 +35,7 @@
     </thead>
         {% for order in exhibitor.order_set.all %}
             <tr>
-            <td>{{ order.product.name }}</td>
+            <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
             <td>{{ order.amount }}</td>
             <td>{{ order.price }}</td>
             </tr>
@@ -48,6 +48,7 @@
         </tr>
         </tfoot>
     </table>
+    <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New order</a>
     </div>
     </div>
 

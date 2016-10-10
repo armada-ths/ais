@@ -4,6 +4,8 @@ from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 
+from orders.models import Order, Product
+
 @permission_required('exhibitors.change_exhibitor', raise_exception=True)
 def exhibitors(request, template_name='exhibitors/exhibitors.html'):
 	return render(request, template_name, {'exhibitors': Exhibitor.objects.all().order_by('company__name')})
@@ -34,5 +36,25 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 
 
 @permission_required('exhibitors.change_exhibitor', raise_exception=True)
-def product(request, template_name='exhibitors/exhibitors.html'):
-	return render(request, template_name, {'exhibitors': Exhibitor.objects.all().order_by('company__name')})
+def order(request, exhibitor_pk, order_pk=None, template_name='exhibitors/order_form.html'):
+	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
+	OrderFactory = modelform_factory(
+		Order,
+		exclude=('exhibitor',),
+	)
+	order = Order.objects.filter(pk=order_pk).first()
+	order_form = OrderFactory(request.POST or None, instance=order)
+
+	if order_form.is_valid():
+		order = order_form.save(commit=False)
+		order.exhibitor = exhibitor
+		order.save()
+		return redirect('exhibitor', exhibitor_pk)
+	return render(request, template_name, {'form': order_form, 'exhibitor': exhibitor, 'order': order})
+
+
+@permission_required('exhibitors.change_exhibitor', raise_exception=True)
+def order_delete(request, exhibitor_pk, order_pk):
+    order = get_object_or_404(Order, pk=order_pk)
+    order.delete()
+    return redirect('exhibitor', exhibitor_pk)
