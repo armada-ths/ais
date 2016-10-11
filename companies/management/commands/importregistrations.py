@@ -59,10 +59,12 @@ class Command(BaseCommand):
                                 active=True
                                 )
                         contact.save()
+                        organisation_type = [tuple[0] for tuple in Company.organisation_types if tuple[1] == row['type_of_organisation']][0]
+                        print(organisation_type)
                         company = Company.objects.create(
                                 name=row['company_name'],
-                                organisation_number=row[
-                                    'organisation_identification_number'],
+                                organisation_number=row['organisation_identification_number'],
+                                organisation_type=organisation_type,
                                 website=row['webpage'],
                                 contact=contact,
                                 address_street=row['organisation_address'],
