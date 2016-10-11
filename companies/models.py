@@ -43,6 +43,7 @@ class Company(models.Model):
 
     organisation_type = models.CharField(choices=organisation_types, null=True, blank=True, max_length=30)
 
+
     def __str__(self):
         return self.name
 

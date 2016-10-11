@@ -59,12 +59,15 @@ class Command(BaseCommand):
                                 active=True
                                 )
                         contact.save()
-                        organisation_type = [tuple[0] for tuple in Company.organisation_types if tuple[1] == row['type_of_organisation']][0]
-                        print(organisation_type)
+
+                        def tuple_value_matching_name(tuples, name):
+                            return [tuple[0] for tuple in tuples if tuple[1] == name][0]
+
+
                         company = Company.objects.create(
                                 name=row['company_name'],
                                 organisation_number=row['organisation_identification_number'],
-                                organisation_type=organisation_type,
+                                organisation_type=tuple_value_matching_name(Company.organisation_types, row['type_of_organisation']),
                                 additional_address_information=row['additional_address_information'],
                                 website=row['webpage'],
                                 contact=contact,
@@ -87,7 +90,8 @@ class Command(BaseCommand):
                                     'invoice_postal_zip_code'],
                                 requests_for_stand_placement=row['requests_for_stand_placement'],
                                 heavy_duty_electric_equipment=row['heavy_duty_electric_equipment'],
-                                other_information_about_the_stand=row['other_information_about_the_stand']
+                                other_information_about_the_stand=row['other_information_about_the_stand'],
+                                transport_to_fair_type=tuple_value_matching_name(Exhibitor.transport_to_fair_types, row['will_you_send_goods_to_ths_armadas_goods_reception_before_the_fair'])
                                 )
                         exhibitor.save()
 

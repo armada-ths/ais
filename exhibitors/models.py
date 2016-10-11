@@ -44,6 +44,17 @@ class Exhibitor(models.Model):
     other_information_about_the_stand = models.CharField(max_length=500, blank=True)
 
 
+
+    will_send_goods_to_ths_armadas_goods_reception_before_the_fair = ''
+
+    transport_to_fair_types = [
+        ('external_delivery', 'Yes, with an external delivery firm'),
+        ('arkad_delivery', 'Yes, with transport from Arkad in Lund'),
+        ('self_delivery', 'No, we will bring our goods ourselves'),
+    ]
+    transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
+
+
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
 
