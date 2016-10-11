@@ -61,7 +61,10 @@ class Command(BaseCommand):
                         contact.save()
 
                         def tuple_value_matching_name(tuples, name):
-                            return [tuple[0] for tuple in tuples if tuple[1] == name][0]
+                            tuples = [tuple[0] for tuple in tuples if tuple[1] == name]
+                            if len(tuples) > 0:
+                                return tuples[0]
+                            return None
 
                         def to_int_or_default(value, default_value):
                             try:
@@ -97,6 +100,7 @@ class Command(BaseCommand):
                                 heavy_duty_electric_equipment=row['heavy_duty_electric_equipment'],
                                 other_information_about_the_stand=row['other_information_about_the_stand'],
                                 transport_to_fair_type=tuple_value_matching_name(Exhibitor.transport_to_fair_types, row['will_you_send_goods_to_ths_armadas_goods_reception_before_the_fair']),
+                                transport_from_fair_type='armada_transport' if row['we_would_like_to_use_armada_transport'] == 'Yes' else tuple_value_matching_name(Exhibitor.transport_from_fair_types, row['if_no_please_select_one_from_fair']),
                                 number_of_packages_from_fair=to_int_or_default(row['number_of_packages_from_fair'], 0),
                                 number_of_packages_to_fair=to_int_or_default(row['number_of_packages_to_fair'], 0),
                                 number_of_pallets_from_fair=to_int_or_default(row['number_of_pallets_from_fair'], 0),
