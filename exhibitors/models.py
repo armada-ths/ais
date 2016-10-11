@@ -39,6 +39,8 @@ class Exhibitor(models.Model):
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
     allergies = models.TextField(null=True, blank=True)
+    requests_for_stand_placement = models.CharField(max_length=200, blank=True)
+
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
