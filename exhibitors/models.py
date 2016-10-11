@@ -1,13 +1,9 @@
 from django.db import models
-from lib.image import UploadToDirUUID, UploadToDir, \
-    format_png, format_jpg, should_generate
+from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 import os
-
-
-MEDIA_ROOT = settings.MEDIA_ROOT
 
 
 class Location(models.Model):
@@ -138,16 +134,13 @@ class CatalogInfo(models.Model):
         if self.pk is None:
             self.slug = slugify(self.display_name[:50])
         super(CatalogInfo, self).save(*args, **kwargs)
-        if should_generate(self.logo_original, self.logo):
-            if self.logo:
-                os.remove(os.path.join(MEDIA_ROOT, self.logo.name))
-                os.remove(os.path.join(MEDIA_ROOT, self.logo_small.name))
-            path = os.path.join(MEDIA_ROOT, self.logo_original.name)
-            self.logo_small = format_png(path, 200, 200)
-            self.logo = format_png(path, 400, 400)
-        if should_generate(self.ad_original, self.ad):
-            if self.ad:
-                os.remove(os.path.join(MEDIA_ROOT, self.ad.name))
-            path = os.path.join(MEDIA_ROOT, self.ad_original.name)
-            self.ad = format_jpg(path, 640, 480)
+        self.logo = update_image_field(
+            self.logo_original,
+            self.logo, 400, 400, 'png')
+        self.logo_small = update_image_field(
+            self.logo_original,
+            self.logo_small, 200, 200, 'png')
+        self.ad = update_image_field(
+            self.ad_original,
+            self.ad, 640, 480, 'jpg')
         super(CatalogInfo, self).save(*args, **kwargs)

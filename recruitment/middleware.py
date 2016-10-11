@@ -22,7 +22,11 @@ class LoginRequiredMiddleware:
  'django.contrib.auth.middlware.AuthenticationMiddleware'. If that doesn't\
  work, ensure your TEMPLATE_CONTEXT_PROCESSORS setting includes\
  'django.core.context_processors.auth'."
+        # PLACEHOLDER until proper authenitaction is in place
+        path = request.path_info
+        url_exceptions = ['/api/events/', '/api/exhibitors/', '/api/news/']
+        if path in url_exceptions:
+            return
         if not request.user.is_authenticated():
-            path = request.path_info
             if path != '/' and not 'login' in path:
                 return HttpResponseRedirect("/?next=%s" % (urlquote(request.get_full_path())))
