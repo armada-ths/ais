@@ -31,6 +31,18 @@ class Company(models.Model):
     address_city = models.CharField(max_length=200, blank=True)
     address_country = models.CharField(max_length=200, blank=True)
 
+
+    organisation_types = [
+        ('company', 'Company'),
+        ('county_council', 'County/County council'),
+        ('government_agency', 'Government agency'),
+        ('non_profit_organisation', 'Non-profit organisation'),
+        ('union', 'Union'),
+    ]
+
+    organisation_type = models.CharField(choices=organisation_types, null=True, blank=True, max_length=30)
+
+
     def __str__(self):
         return self.name
 
