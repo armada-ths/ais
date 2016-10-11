@@ -10,6 +10,9 @@ class Product(models.Model):
     coa_number = models.PositiveSmallIntegerField()
     price = models.IntegerField()
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self):
         return "%s, %s" % (self.name, self.fair.name)
 
@@ -20,6 +23,12 @@ class Order(models.Model):
         'exhibitors.Exhibitor', on_delete=models.CASCADE)
     product = models.ForeignKey(Product)
     amount = models.PositiveSmallIntegerField()
+
+    class Meta:
+        ordering = ["product"]
+
+    def price(self):
+        return self.product.price * self.amount
 
     def __str__(self):
         return "%s order for %s" % (self.exhibitor.company.name, self.product)
