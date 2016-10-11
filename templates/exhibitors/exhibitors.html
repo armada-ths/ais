@@ -5,6 +5,7 @@
 {% endblock %}
 {% block content %}
     <h1>Exhibitors ({{ exhibitors|length }})</h1>
+
     <table class="table" id="exhibitor_table">
         <thead>
         <tr>
@@ -16,7 +17,11 @@
         <tbody>
         {% for exhibitor in exhibitors %}
             <tr>
+                {% if perms.exhibitors.change_exhibitor or request.user in exhibitor.hosts.all %}
                 <td><a href="{% url "exhibitor" exhibitor.pk %}">{{ exhibitor.company }}</a></td>
+                {% else %}
+                    <td>{{ exhibitor.company }}</td>
+                {% endif %}
                 <td>{{ exhibitor.location|default:"" }}</td>
                 <td>
 					{% for host in exhibitor.hosts.all %}

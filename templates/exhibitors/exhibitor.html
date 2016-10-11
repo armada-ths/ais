@@ -10,6 +10,22 @@
     <h3>{{ exhibitor.company }}</h3>
     <hr>
 
+        <div class="panel panel-default">
+      <div class="panel-heading">Contact</div>
+      <div class="panel-body">
+          <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
+        <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
+          <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
+          <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
+          <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
+
+
+
+
+
+      </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12">
                 <form method="post">
@@ -19,7 +35,37 @@
                 </form>
 
         </div>
+    </div>
 
+    <div class="row">
+
+    <div class="col-md-12">
+    <h3>Products</h3>
+        <table class="table">
+    <thead>
+    <tr>
+        <th>Product</th>
+        <th>Amount</th>
+        <th>Price</th>
+    </tr>
+    </thead>
+        {% for order in exhibitor.order_set.all %}
+            <tr>
+            <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
+            <td>{{ order.amount }}</td>
+            <td>{{ order.price }}</td>
+            </tr>
+        {% endfor %}
+        <tfoot>
+        <tr>
+            <th>Total</th>
+            <th></th>
+            <th>{{ exhibitor.total_cost }}</th>
+        </tr>
+        </tfoot>
+    </table>
+    <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New order</a>
+    </div>
     </div>
 
 {% endblock %}
