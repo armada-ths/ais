@@ -9,6 +9,7 @@ class Contact(models.Model):
     cell_phone = models.CharField(max_length=200)
     work_phone = models.CharField(max_length=200)
     active = models.BooleanField(default=True)  # if the contact is active
+    phone_switchboard = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.name

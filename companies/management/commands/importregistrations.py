@@ -56,7 +56,8 @@ class Command(BaseCommand):
                                 email=row['email'],
                                 cell_phone=row['cell_phone_number'],
                                 work_phone=row['phone_number'],
-                                active=True
+                                active=True,
+                                phone_switchboard=row['phone_switchboard'],
                                 )
                         contact.save()
 
