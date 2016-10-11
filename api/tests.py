@@ -10,6 +10,7 @@ from . import views
 
 HTTP_status_code_OK = 200
 
+
 class ExhibitorTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -28,15 +29,25 @@ class ExhibitorTestCase(TestCase):
         self.assertEqual(len(companies), 1)
         self.assertEqual(companies[0]['id'], self.company.pk)
 
+
 class EventTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
         now = timezone.now()
-        Fair.objects.create(name="Armada 2000")
-        test_fair = Fair.objects.get(name="Armada 2000")
-        self.event = Event.objects.create(fair=test_fair, name='test', event_start=now, event_end=now, registration_start=now, registration_end=now, registration_last_day_cancel=now, public_registration=True)
-        self.hidden_event = Event.objects.create(fair=test_fair, name='hidden event', event_start=now, event_end=now, registration_start=now, registration_end=now, registration_last_day_cancel=now, public_registration=False)
+        test_fair = Fair(name="Armada 2000")
+        test_fair.save()
+
+        self.event = Event(
+            fair=test_fair, name='test', event_start=now, event_end=now,
+            registration_start=now, registration_end=now,
+            registration_last_day_cancel=now, public_registration=True)
+        self.event.save()
+        self.hidden_event = Event(
+            fair=test_fair, name='hidden event', event_start=now,
+            event_end=now, registration_start=now, registration_end=now,
+            registration_last_day_cancel=now, public_registration=False)
+        self.hidden_event.save()
 
     def test_event_serializer(self):
         data = event_serializer(self.event)
@@ -50,6 +61,7 @@ class EventTestCase(TestCase):
         events = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]['id'], self.event.pk)
+
 
 class NewsTestCase(TestCase):
     def setUp(self):
