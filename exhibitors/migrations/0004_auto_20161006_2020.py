@@ -22,10 +22,6 @@ class Migration(migrations.Migration):
             new_name='Location',
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='id',
-        ),
-        migrations.RemoveField(
             model_name='exhibitor',
             name='responsible',
         ),
@@ -103,11 +99,6 @@ class Migration(migrations.Migration):
             model_name='cataloginfo',
             name='employees_world',
             field=models.IntegerField(default=0),
-        ),
-        migrations.AlterField(
-            model_name='cataloginfo',
-            name='exhibitor',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='exhibitors.Exhibitor'),
         ),
         migrations.AlterField(
             model_name='cataloginfo',

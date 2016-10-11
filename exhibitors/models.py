@@ -21,11 +21,27 @@ class Exhibitor(models.Model):
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
 
-    invoice_identification = models.CharField(max_length=64, blank=True)
-    invoice_address = models.CharField(max_length=64, blank=True)
-    invoice_address_zip_code = models.CharField(max_length=8, blank=True)
-    invoice_address_city = models.CharField(max_length=32, blank=True)
-    invoice_address_country = models.CharField(max_length=32, blank=True)
+    invoice_identification = models.CharField(max_length=200, blank=True)
+    invoice_address = models.CharField(max_length=200, blank=True)
+    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
+    invoice_address_city = models.CharField(max_length=200, blank=True)
+    invoice_address_country = models.CharField(max_length=200, blank=True)
+
+    statuses = [
+        ('accepted', 'Accepted'),
+        ('registered', 'Registered'),
+        ('complete_registration', 'Complete registration'),
+        ('contacted_by_host', 'Contacted by host'),
+        ('confirmed', 'Confirmed'),
+        ('checked_in', 'Checked in'),
+        ('checked_out', 'Checked out'),
+    ]
+
+    status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
+    allergies = models.TextField(null=True, blank=True)
+
+    def total_cost(self):
+        return sum([order.price() for order in self.order_set.all()])
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)
@@ -68,19 +84,18 @@ class CatalogInfo(models.Model):
     exhibitor = models.OneToOneField(
             Exhibitor,
             on_delete=models.CASCADE,
-            primary_key=True,
             )
-    display_name = models.CharField(max_length=64)
+    display_name = models.CharField(max_length=200)
     slug = models.SlugField(db_index=False, blank=True)
-    short_description = models.CharField(max_length=64)
+    short_description = models.CharField(max_length=200)
     description = models.TextField()
     employees_sweden = models.IntegerField(default=0)
     employees_world = models.IntegerField(default=0)
     countries = models.IntegerField(default=0)
-    website_url = models.CharField(max_length=128, blank=True)
-    facebook_url = models.CharField(max_length=128, blank=True)
-    twitter_url = models.CharField(max_length=128, blank=True)
-    linkedin_url = models.CharField(max_length=128, blank=True)
+    website_url = models.CharField(max_length=300, blank=True)
+    facebook_url = models.CharField(max_length=300, blank=True)
+    twitter_url = models.CharField(max_length=300, blank=True)
+    linkedin_url = models.CharField(max_length=300, blank=True)
 
     # Image fields
     # Field with name ending with original serves as the original uploaded
@@ -117,7 +132,7 @@ class CatalogInfo(models.Model):
     # if the original has been changed
     def save(self, *args, **kwargs):
         if self.pk is None:
-            self.slug = slugify(self.display_name)
+            self.slug = slugify(self.display_name[:50])
         super(CatalogInfo, self).save(*args, **kwargs)
         self.logo = update_image_field(
             self.logo_original,
