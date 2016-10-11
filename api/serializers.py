@@ -1,5 +1,4 @@
 from collections import OrderedDict
-import time
 
 from lib.util import unix_time
 
