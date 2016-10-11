@@ -85,7 +85,8 @@ class Command(BaseCommand):
                                     'invoice_address'],
                                 invoice_address_zip_code=row[
                                     'invoice_postal_zip_code'],
-                            requests_for_stand_placement=row['requests_for_stand_placement'],
+                                requests_for_stand_placement=row['requests_for_stand_placement'],
+                                heavy_duty_electric_equipment=row['heavy_duty_electric_equipment'],
                                 )
                         exhibitor.save()
 
