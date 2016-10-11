@@ -63,6 +63,11 @@ class Command(BaseCommand):
                         def tuple_value_matching_name(tuples, name):
                             return [tuple[0] for tuple in tuples if tuple[1] == name][0]
 
+                        def to_int_or_default(value, default_value):
+                            try:
+                                return int(value)
+                            except ValueError:
+                                return default_value
 
                         company = Company.objects.create(
                                 name=row['company_name'],
@@ -91,7 +96,11 @@ class Command(BaseCommand):
                                 requests_for_stand_placement=row['requests_for_stand_placement'],
                                 heavy_duty_electric_equipment=row['heavy_duty_electric_equipment'],
                                 other_information_about_the_stand=row['other_information_about_the_stand'],
-                                transport_to_fair_type=tuple_value_matching_name(Exhibitor.transport_to_fair_types, row['will_you_send_goods_to_ths_armadas_goods_reception_before_the_fair'])
+                                transport_to_fair_type=tuple_value_matching_name(Exhibitor.transport_to_fair_types, row['will_you_send_goods_to_ths_armadas_goods_reception_before_the_fair']),
+                                number_of_packages_from_fair=to_int_or_default(row['number_of_packages_from_fair'], 0),
+                                number_of_packages_to_fair=to_int_or_default(row['number_of_packages_to_fair'], 0),
+                                number_of_pallets_from_fair=to_int_or_default(row['number_of_pallets_from_fair'], 0),
+                                number_of_pallets_to_fair=to_int_or_default(row['number_of_pallets_to_fair'], 0),
                                 )
                         exhibitor.save()
 

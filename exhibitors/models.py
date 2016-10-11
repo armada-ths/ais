@@ -54,6 +54,10 @@ class Exhibitor(models.Model):
     ]
     transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
 
+    number_of_packages_from_fair = models.IntegerField(default=0)
+    number_of_pallets_from_fair = models.IntegerField(default=0)
+    number_of_packages_to_fair = models.IntegerField(default=0)
+    number_of_pallets_to_fair = models.IntegerField(default=0)
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
