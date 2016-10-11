@@ -23,13 +23,14 @@ class Company(models.Model):
     organisation_number = models.CharField(max_length=100)
     website = models.CharField(max_length=300)
     phone_number = models.CharField(max_length=300)
-
     contact = models.ForeignKey(Contact, null=True, blank=True)
 
     address_street = models.CharField(max_length=200, blank=True)
     address_zip_code = models.CharField(max_length=200, blank=True)
     address_city = models.CharField(max_length=200, blank=True)
     address_country = models.CharField(max_length=200, blank=True)
+
+    additional_address_information = models.CharField(max_length=200, blank=True)
 
 
     organisation_types = [

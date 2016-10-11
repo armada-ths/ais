@@ -65,6 +65,7 @@ class Command(BaseCommand):
                                 name=row['company_name'],
                                 organisation_number=row['organisation_identification_number'],
                                 organisation_type=organisation_type,
+                                additional_address_information=row['additional_address_information'],
                                 website=row['webpage'],
                                 contact=contact,
                                 address_street=row['organisation_address'],
