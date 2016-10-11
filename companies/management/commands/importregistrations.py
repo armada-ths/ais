@@ -54,6 +54,7 @@ class Command(BaseCommand):
                         contact = Contact.objects.create(
                                 name=contact_name,
                                 email=row['email'],
+                                alternative_email=row['alternative_email_addresses'],
                                 cell_phone=row['cell_phone_number'],
                                 work_phone=row['phone_number'],
                                 active=True,

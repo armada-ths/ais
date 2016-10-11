@@ -5,6 +5,7 @@ from django.db import models
 class Contact(models.Model):
     name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
+    alternative_email = models.CharField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)  # work title, such as CEO or HR.
     cell_phone = models.CharField(max_length=200)
     work_phone = models.CharField(max_length=200)

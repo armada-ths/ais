@@ -67,6 +67,8 @@ class Exhibitor(models.Model):
     number_of_packages_to_fair = models.IntegerField(default=0)
     number_of_pallets_to_fair = models.IntegerField(default=0)
 
+    estimated_arrival = models.DateTimeField(null=True, blank=True)
+
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
 
