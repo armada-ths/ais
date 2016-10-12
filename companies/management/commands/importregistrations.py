@@ -107,6 +107,9 @@ class Command(BaseCommand):
                                 number_of_packages_to_fair=to_int_or_default(row['number_of_packages_to_fair'], 0),
                                 number_of_pallets_from_fair=to_int_or_default(row['number_of_pallets_from_fair'], 0),
                                 number_of_pallets_to_fair=to_int_or_default(row['number_of_pallets_to_fair'], 0),
+                                wants_information_about_events=row['would_you_like_more_information_about_our_events_before_the_fair'] == 'Yes',
+                                wants_information_about_targeted_marketing = row['would_you_like_more_information_about_targeted_marketing'] == 'Yes',
+                                wants_information_about_osqledaren=row['osqledaren'] == 'Yes, I want to be contacted regarding advertisements in Osqledaren and/or the Armada bonus number.',
                                 )
                         exhibitor.save()
 

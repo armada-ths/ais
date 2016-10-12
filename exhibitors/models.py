@@ -21,11 +21,7 @@ class Exhibitor(models.Model):
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
 
-    invoice_identification = models.CharField(max_length=200, blank=True)
-    invoice_address = models.CharField(max_length=200, blank=True)
-    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
-    invoice_address_city = models.CharField(max_length=200, blank=True)
-    invoice_address_country = models.CharField(max_length=200, blank=True)
+
 
     statuses = [
         ('accepted', 'Accepted'),
@@ -43,31 +39,36 @@ class Exhibitor(models.Model):
     heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
     other_information_about_the_stand = models.CharField(max_length=500, blank=True)
 
+    # Invoice
+    invoice_identification = models.CharField(max_length=200, blank=True)
+    invoice_address = models.CharField(max_length=200, blank=True)
+    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
+    invoice_address_city = models.CharField(max_length=200, blank=True)
+    invoice_address_country = models.CharField(max_length=200, blank=True)
 
-
-    will_send_goods_to_ths_armadas_goods_reception_before_the_fair = ''
-
+    # Transport
     transport_to_fair_types = [
         ('external_transport', 'Yes, with an external delivery firm'),
         ('arkad_transport', 'Yes, with transport from Arkad in Lund'),
         ('self_transport', 'No, we will bring our goods ourselves'),
     ]
     transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
-
-
     transport_from_fair_types = [
         ('third_party_builders_transportation', 'We use a third-party to build our stand who will transport our goods from the fair'),
         ('armada_transportation', 'We use Armada Transport'),
         ('self_transportation', 'We will arrange our own transportation immediately after the fair (note that there is limited access for larger transportation services as the fair closes and it may take some time before your equipment can be picked up)'),
     ]
     transport_from_fair_type = models.CharField(choices=transport_from_fair_types, null=True, blank=True, max_length=300)
-
     number_of_packages_from_fair = models.IntegerField(default=0)
     number_of_pallets_from_fair = models.IntegerField(default=0)
     number_of_packages_to_fair = models.IntegerField(default=0)
     number_of_pallets_to_fair = models.IntegerField(default=0)
-
     estimated_arrival = models.DateTimeField(null=True, blank=True)
+
+    # Marketing
+    wants_information_about_events = models.BooleanField()
+    wants_information_about_targeted_marketing = models.BooleanField()
+    wants_information_about_osqledaren = models.BooleanField()
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
