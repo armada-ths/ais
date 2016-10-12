@@ -1,9 +1,8 @@
 from django.db import models
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
-import os
+from recruitment.models import RecruitmentApplication
 
 
 class Location(models.Model):
@@ -75,6 +74,10 @@ class Exhibitor(models.Model):
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
+
+    def superiors(self):
+        accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.hosts.all()]
+        return [application.superior_user for application in accepted_applications if application]
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)

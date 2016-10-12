@@ -17,7 +17,8 @@
         <tbody>
         {% for exhibitor in exhibitors %}
             <tr>
-                {% if perms.exhibitors.change_exhibitor or request.user in exhibitor.hosts.all %}
+
+                {% if perms.exhibitors.change_exhibitor or request.user in exhibitor.hosts.all or request.user in exhibitor.superiors %}
                 <td><a href="{% url "exhibitor" exhibitor.pk %}">{{ exhibitor.company }}</a></td>
                 {% else %}
                     <td>{{ exhibitor.company }}</td>

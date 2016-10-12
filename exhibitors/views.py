@@ -7,19 +7,22 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.forms import TextInput
 from orders.models import Order, Product
+from exhibitors.models import Exhibitor
+
+
+def user_can_modify_exhibitor(user, exhibitor):
+	return user.has_perm('exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
 
 
 def exhibitors(request, template_name='exhibitors/exhibitors.html'):
+	print(Exhibitor.objects.all()[0].superiors())
 	return render(request, template_name, {'exhibitors': Exhibitor.objects.all().order_by('company__name')})
-
 
 
 def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	exhibitor = get_object_or_404(Exhibitor, pk=pk)
-	if not request.user.has_perm('exhibitors.change_exhibitor') and request.user not in exhibitor.hosts.all():
+	if not user_can_modify_exhibitor(request.user, exhibitor):
 		return HttpResponseForbidden()
-
-
 
 	invoice_fields = ('invoice_reference', 'invoice_reference_phone_number', 'invoice_organisation_name', 'invoice_address',
 					  'invoice_address_po_box', 'invoice_address_zip_code', 'invoice_identification', 'invoice_additional_information')
@@ -63,11 +66,10 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		'armada_transport_form': armada_transport_form,
 	})
 
-
 def order(request, exhibitor_pk, order_pk=None, template_name='exhibitors/order_form.html'):
 	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
 
-	if not request.user.has_perm('exhibitors.change_exhibitor') and request.user not in exhibitor.hosts.all():
+	if not user_can_modify_exhibitor(request.user, exhibitor):
 		return HttpResponseForbidden()
 
 	OrderFactory = modelform_factory(
@@ -88,7 +90,7 @@ def order(request, exhibitor_pk, order_pk=None, template_name='exhibitors/order_
 def order_delete(request, exhibitor_pk, order_pk):
 	order = get_object_or_404(Order, pk=order_pk)
 	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
-	if not request.user.has_perm('exhibitors.change_exhibitor') and request.user not in exhibitor.hosts.all():
+	if not user_can_modify_exhibitor(request.user, exhibitor):
 		return HttpResponseForbidden()
 	order.delete()
 	return redirect('exhibitor', exhibitor_pk)
