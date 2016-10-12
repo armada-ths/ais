@@ -115,6 +115,10 @@ class Command(BaseCommand):
                                 )
                         exhibitor.save()
 
+
+                        def parse_int(string):
+                            return int(string.replace('+', '').replace('.', '').replace(' ', ''))
+
                         # Catalog Information
                         programs = get_objects_by_name(
                                 Program, eval_list(row['programs']))
@@ -134,11 +138,9 @@ class Command(BaseCommand):
                                     'describe_what_your_organisation_does'
                                     '_in_three_words_or_less')].strip(),
                                 description=row['about_the_organisation'].strip(),
-                                employees_sweden=row[
-                                    'number_of_employees_in_sweden'],
-                                employees_world=row[
-                                    'number_of_employees_in_total'],
-                                countries=row['countries'],
+                                employees_sweden=parse_int(row['number_of_employees_in_sweden']),
+                                employees_world=parse_int(row['number_of_employees_in_total']),
+                                countries=parse_int(row['countries']),
                                 website_url=row['webpage'],
                                 facebook_url=row['facebook'],
                                 twitter_url=row['twitter'],
