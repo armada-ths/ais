@@ -12,6 +12,7 @@
             <th>Exhibitor</th>
             <th>Location</th>
             <th>Host</th>
+            <th>Superior</th>
         </tr>
         </thead>
         <tbody>
@@ -32,6 +33,9 @@
 						{% endif %}
 					{% endfor %}
 				</td>
+                <td>
+                    {{ exhibitor.superiors.0.get_full_name }}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
