@@ -7,74 +7,83 @@
         <li class="active">{{ exhibitor.company }}</li>
     </ol>
 
-    <h3>{{ exhibitor.company }}</h3>
+    <h2>{{ exhibitor.company }}</h2>
     <hr>
 
-        <div class="panel panel-default">
-      <div class="panel-heading">Contact</div>
-      <div class="panel-body">
-          <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
-        <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
-          <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
-          <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
-          <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
-
-
-
-
-
-      </div>
-    </div>
-
     <div class="row">
-        <div class="col-md-12">
-                <form method="post">
-                    {% csrf_token %}
+        <div class="col-md-6">
+            <form method="post">
+                {% csrf_token %}
 
-                    <h3>Company</h3>
-                    {{ company_form|crispy }}
-                    <h3>Exhibitor</h3>
-                    {{ exhibitor_form|crispy }}
-                    <h3>Invoice</h3>
-                    {{ invoice_form|crispy }}
-                    <h3>Armada Transport</h3>
-                    {{ armada_transport_form|crispy }}
-                    <button class="btn btn-primary">Save</button>
-                </form>
+
+                <h3>Exhibitor</h3>
+                {{ exhibitor_form|crispy }}
+                <h3>Armada Transport</h3>
+                {{ armada_transport_form|crispy }}
+                <h3>Company</h3>
+                {{ company_form|crispy }}
+                <h3>Invoice</h3>
+                {{ invoice_form|crispy }}
+
+                <button class="btn btn-primary">Save</button>
+            </form>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div>
+
+            <h3>Contact</h3>
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>{{ exhibitor.contact }}</strong></div>
+                <div class="panel-body">
+                    <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
+                    <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
+                    <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
+                    <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
+
+                </div>
+            </div>
+                <h3>Products</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Amount</th>
+                        <th>Price</th>
+                    </tr>
+                    </thead>
+                    {% for order in exhibitor.order_set.all %}
+                        <tr>
+                            <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
+                            <td>{{ order.amount }}</td>
+                            <td>{{ order.price }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th></th>
+                        <th>{{ exhibitor.total_cost }}</th>
+                    </tr>
+                    </tfoot>
+                </table>
+                <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span
+                        class="glyphicon glyphicon-plus"></span> New order</a>
+            </div>
+            <br>
+
+
+
+
+
 
         </div>
     </div>
 
-    <div class="row">
 
-    <div class="col-md-12">
-    <hr>
-    <h2>Products</h2>
-        <table class="table">
-    <thead>
-    <tr>
-        <th>Product</th>
-        <th>Amount</th>
-        <th>Price</th>
-    </tr>
-    </thead>
-        {% for order in exhibitor.order_set.all %}
-            <tr>
-            <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
-            <td>{{ order.amount }}</td>
-            <td>{{ order.price }}</td>
-            </tr>
-        {% endfor %}
-        <tfoot>
-        <tr>
-            <th>Total</th>
-            <th></th>
-            <th>{{ exhibitor.total_cost }}</th>
-        </tr>
-        </tfoot>
-    </table>
-    <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New order</a>
-    </div>
-    </div>
+
+
 
 {% endblock %}
