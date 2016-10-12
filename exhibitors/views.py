@@ -19,25 +19,48 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	if not request.user.has_perm('exhibitors.change_exhibitor') and request.user not in exhibitor.hosts.all():
 		return HttpResponseForbidden()
 
+
+
+	invoice_fields = ('invoice_reference', 'invoice_reference_phone_number', 'invoice_organisation_name', 'invoice_address',
+					  'invoice_address_po_box', 'invoice_address_zip_code', 'invoice_identification', 'invoice_additional_information')
+	InvoiceForm = modelform_factory(
+		Exhibitor,
+		fields=invoice_fields
+	)
+
+	armada_transport_fields = ('transport_to_fair_type', 'number_of_packages_from_fair', 'number_of_pallets_from_fair',
+							   'number_of_packages_to_fair', 'number_of_pallets_to_fair', 'estimated_arrival')
+	ArmadaTransportForm = modelform_factory(
+		Exhibitor,
+		fields=armada_transport_fields
+	)
+
 	ExhibitorForm = modelform_factory(
 		Exhibitor,
-		exclude=('company', 'fair') if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact'),
+		exclude=('company', 'fair') + invoice_fields + armada_transport_fields if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact') + invoice_fields + armada_transport_fields,
 		widgets={'allergies': TextInput()}
 	)
+
 	exhibitor_form = ExhibitorForm(request.POST or None, instance=exhibitor)
-	if exhibitor_form.is_valid():
+	invoice_form = InvoiceForm(request.POST or None, instance=exhibitor)
+	armada_transport_form = ArmadaTransportForm(request.POST or None, instance=exhibitor)
+
+	if exhibitor_form.is_valid() and invoice_form.is_valid() and armada_transport_form.is_valid():
 		exhibitor_form.save()
+		invoice_form.save()
+		armada_transport_form.save()
 		return redirect('exhibitors')
 
 	users = [(recruitment_application.user, recruitment_application.delegated_role)  for recruitment_application in RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
 
 	if request.user.has_perm('exhibitors.change_exhibitor'):
-		exhibitor_form.fields['hosts'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for
-																		  user in users]
+		exhibitor_form.fields['hosts'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
 
 	return render(request, template_name, {
 		'exhibitor': exhibitor,
-		'exhibitor_form': exhibitor_form
+		'exhibitor_form': exhibitor_form,
+		'invoice_form': invoice_form,
+		'armada_transport_form': armada_transport_form,
 	})
 
 
