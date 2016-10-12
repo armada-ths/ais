@@ -75,7 +75,7 @@ class Command(BaseCommand):
                                 return default_value
 
                         company = Company.objects.create(
-                                name=row['company_name'],
+                                name=row['company_name'].strip(),
                                 organisation_number=row['organisation_identification_number'],
                                 organisation_type=tuple_value_matching_name(Company.organisation_types, row['type_of_organisation']),
                                 additional_address_information=row['additional_address_information'],
