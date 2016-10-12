@@ -36,8 +36,9 @@
 
             <h3>Contact</h3>
             <div class="panel panel-default">
-                <div class="panel-heading"><strong>{{ exhibitor.contact }}</strong></div>
+                <div class="panel-heading"><strong>Contact</strong></div>
                 <div class="panel-body">
+                    <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
                     <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
                     <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
                     <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
@@ -45,6 +46,22 @@
 
                 </div>
             </div>
+
+            <h3>Hosts</h3>
+            {% for host in exhibitor.hosts.all %}
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Host</strong></div>
+                <div class="panel-body">
+                    <p>Host: <a href="{% url "view_person" host.pk %}">{{ host.get_full_name }}</a></p>
+                    <p>Superior: <a href="{% url "view_person" exhibitor.superiors.0.pk %}">{{ exhibitor.superiors.0.get_full_name }}</a></p>
+                    <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
+                    <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
+                    <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
+
+                </div>
+            </div>
+            {% endfor %}
+
                 <h3>Products</h3>
                 <table class="table">
                     <thead>
