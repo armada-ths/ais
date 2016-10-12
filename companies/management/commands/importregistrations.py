@@ -153,7 +153,6 @@ class Command(BaseCommand):
 
                         # Exhibitor orders
 
-                        """
                         try:
                             with urlopen(REGISTRATION_URL+row['logotype']) as response:
                                 if len(row['logotype']) != 0:
@@ -163,7 +162,6 @@ class Command(BaseCommand):
                                     info.ad_original.save(row['ad'], ContentFile(response.read()))
                         except HTTPError:
                             pass
-                        """
 
                         info.programs.add(*programs)
                         info.work_fields.add(*work_fields)
