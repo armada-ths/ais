@@ -32,7 +32,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	)
 
 	armada_transport_fields = ('transport_to_fair_type', 'number_of_packages_from_fair', 'number_of_pallets_from_fair',
-							   'number_of_packages_to_fair', 'number_of_pallets_to_fair', 'estimated_arrival')
+							   'transport_from_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair', 'estimated_arrival')
 	ArmadaTransportForm = modelform_factory(
 		Exhibitor,
 		fields=armada_transport_fields
