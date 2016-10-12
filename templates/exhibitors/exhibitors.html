@@ -27,14 +27,16 @@
                 <td>{{ exhibitor.location|default:"" }}</td>
                 <td>
 					{% for host in exhibitor.hosts.all %}
-						{{ host.get_full_name | default:"" }}
+						<a href="{% url 'view_person' host.pk %}">{{ host.get_full_name | default:"" }}</a>
 						{% if not forloop.last %}
 							<br>
 						{% endif %}
 					{% endfor %}
 				</td>
                 <td>
-                    {{ exhibitor.superiors.0.get_full_name }}
+                    {% for superior in exhibitor.superiors %}
+                    <a href="{% url 'view_person' superior.pk %}">{{ superior.get_full_name }}</a>
+                    {% endfor %}
                 </td>
             </tr>
         {% endfor %}
