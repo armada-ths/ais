@@ -92,12 +92,14 @@ class Command(BaseCommand):
                                 company=company,
                                 fair=fair,
                                 contact=contact,
-                                invoice_identification=row[
-                                    'invoice_identification'],
-                                invoice_address=row[
-                                    'invoice_address'],
-                                invoice_address_zip_code=row[
-                                    'invoice_postal_zip_code'],
+                                invoice_reference=row['reference_at_your_organisation'],
+                                invoice_reference_phone_number=row['references_phone_number'],
+                                invoice_organisation_name=row['name_of_organisation_on_invoice'],
+                                invoice_address=row['invoice_address'],
+                                invoice_address_po_box=row['invoice_address_po_box'],
+                                invoice_address_zip_code=row['invoice_postal_zip_code'],
+                                invoice_identification=row['invoice_identification'],
+                                invoice_additional_information=row['additional_information'],
                                 requests_for_stand_placement=row['requests_for_stand_placement'],
                                 heavy_duty_electric_equipment=row['heavy_duty_electric_equipment'],
                                 other_information_about_the_stand=row['other_information_about_the_stand'],
