@@ -24,7 +24,7 @@ class Company(models.Model):
     name = models.CharField(max_length=100)
     organisation_number = models.CharField(max_length=100)
     website = models.CharField(max_length=300)
-    phone_number = models.CharField(max_length=300)
+    phone_number = models.CharField(max_length=300, blank=True)
     contact = models.ForeignKey(Contact, null=True, blank=True)
 
     address_street = models.CharField(max_length=200, blank=True)

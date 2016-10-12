@@ -20,8 +20,6 @@ class Exhibitor(models.Model):
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
 
-
-
     statuses = [
         ('accepted', 'Accepted'),
         ('registered', 'Registered'),
