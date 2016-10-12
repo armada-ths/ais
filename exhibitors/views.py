@@ -16,7 +16,6 @@ def user_can_modify_exhibitor(user, exhibitor):
 
 
 def exhibitors(request, template_name='exhibitors/exhibitors.html'):
-	print(Exhibitor.objects.all()[0].superiors())
 	return render(request, template_name, {'exhibitors': Exhibitor.objects.all().order_by('company__name')})
 
 
