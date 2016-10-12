@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import permission_required
 from django.forms import TextInput
 from orders.models import Order, Product
 from exhibitors.models import Exhibitor
+from companies.models import Company
 
 
 def user_can_modify_exhibitor(user, exhibitor):
@@ -33,6 +34,13 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 
 	armada_transport_fields = ('transport_to_fair_type', 'number_of_packages_from_fair', 'number_of_pallets_from_fair',
 							   'transport_from_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair', 'estimated_arrival')
+
+
+	CompanyForm = modelform_factory(
+		Company,
+		fields='__all__'
+	)
+
 	ArmadaTransportForm = modelform_factory(
 		Exhibitor,
 		fields=armada_transport_fields
@@ -47,11 +55,13 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	exhibitor_form = ExhibitorForm(request.POST or None, instance=exhibitor)
 	invoice_form = InvoiceForm(request.POST or None, instance=exhibitor)
 	armada_transport_form = ArmadaTransportForm(request.POST or None, instance=exhibitor)
+	company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
 
-	if exhibitor_form.is_valid() and invoice_form.is_valid() and armada_transport_form.is_valid():
+	if exhibitor_form.is_valid() and invoice_form.is_valid() and armada_transport_form.is_valid() and company_form.is_valid():
 		exhibitor_form.save()
 		invoice_form.save()
 		armada_transport_form.save()
+		company_form.save()
 		return redirect('exhibitors')
 
 	users = [(recruitment_application.user, recruitment_application.delegated_role)  for recruitment_application in RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
@@ -64,6 +74,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		'exhibitor_form': exhibitor_form,
 		'invoice_form': invoice_form,
 		'armada_transport_form': armada_transport_form,
+		'company_form': company_form,
 	})
 
 def order(request, exhibitor_pk, order_pk=None, template_name='exhibitors/order_form.html'):

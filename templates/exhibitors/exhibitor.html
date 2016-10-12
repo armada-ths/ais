@@ -30,6 +30,10 @@
         <div class="col-md-12">
                 <form method="post">
                     {% csrf_token %}
+
+                    <h3>Company</h3>
+                    {{ company_form|crispy }}
+                    <h3>Exhibitor</h3>
                     {{ exhibitor_form|crispy }}
                     <h3>Invoice</h3>
                     {{ invoice_form|crispy }}
