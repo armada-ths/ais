@@ -1,9 +1,8 @@
 from django.db import models
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
-import os
+from recruitment.models import RecruitmentApplication
 
 
 class Location(models.Model):
@@ -21,11 +20,7 @@ class Exhibitor(models.Model):
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
 
-    invoice_identification = models.CharField(max_length=200, blank=True)
-    invoice_address = models.CharField(max_length=200, blank=True)
-    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
-    invoice_address_city = models.CharField(max_length=200, blank=True)
-    invoice_address_country = models.CharField(max_length=200, blank=True)
+
 
     statuses = [
         ('accepted', 'Accepted'),
@@ -39,9 +34,50 @@ class Exhibitor(models.Model):
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
     allergies = models.TextField(null=True, blank=True)
+    requests_for_stand_placement = models.CharField(max_length=200, blank=True)
+    heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
+    other_information_about_the_stand = models.CharField(max_length=500, blank=True)
+
+    # Invoice
+    invoice_reference = models.CharField(max_length=200, blank=True)
+    invoice_reference_phone_number = models.CharField(max_length=200, blank=True)
+    invoice_organisation_name = models.CharField(max_length=200, blank=True)
+    invoice_address = models.CharField(max_length=200, blank=True)
+    invoice_address_po_box = models.CharField(max_length=200, blank=True)
+    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
+    invoice_identification = models.CharField(max_length=200, blank=True)
+    invoice_additional_information = models.CharField(max_length=500, blank=True)
+
+    # Transport
+    transport_to_fair_types = [
+        ('external_transport', 'Yes, with an external delivery firm'),
+        ('arkad_transport', 'Yes, with transport from Arkad in Lund'),
+        ('self_transport', 'No, we will bring our goods ourselves'),
+    ]
+    transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
+    transport_from_fair_types = [
+        ('third_party_builders_transport', 'We use a third-party to build our stand who will transport our goods from the fair'),
+        ('armada_transport', 'We use Armada Transport'),
+        ('self_transport', 'We will arrange our own transportation immediately after the fair (note that there is limited access for larger transportation services as the fair closes and it may take some time before your equipment can be picked up)'),
+    ]
+    transport_from_fair_type = models.CharField(choices=transport_from_fair_types, null=True, blank=True, max_length=300)
+    number_of_packages_from_fair = models.IntegerField(default=0)
+    number_of_pallets_from_fair = models.IntegerField(default=0)
+    number_of_packages_to_fair = models.IntegerField(default=0)
+    number_of_pallets_to_fair = models.IntegerField(default=0)
+    estimated_arrival = models.DateTimeField(null=True, blank=True)
+
+    # Marketing
+    wants_information_about_events = models.BooleanField()
+    wants_information_about_targeted_marketing = models.BooleanField()
+    wants_information_about_osqledaren = models.BooleanField()
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
+
+    def superiors(self):
+        accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.hosts.all()]
+        return [application.superior_user for application in accepted_applications if application]
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)

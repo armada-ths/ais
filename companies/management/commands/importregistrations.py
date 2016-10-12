@@ -54,15 +54,31 @@ class Command(BaseCommand):
                         contact = Contact.objects.create(
                                 name=contact_name,
                                 email=row['email'],
+                                alternative_email=row['alternative_email_addresses'],
                                 cell_phone=row['cell_phone_number'],
                                 work_phone=row['phone_number'],
-                                active=True
+                                active=True,
+                                phone_switchboard=row['phone_switchboard'],
                                 )
                         contact.save()
+
+                        def tuple_value_matching_name(tuples, name):
+                            tuples = [tuple[0] for tuple in tuples if tuple[1] == name]
+                            if len(tuples) > 0:
+                                return tuples[0]
+                            return None
+
+                        def to_int_or_default(value, default_value):
+                            try:
+                                return int(value)
+                            except ValueError:
+                                return default_value
+
                         company = Company.objects.create(
                                 name=row['company_name'],
-                                organisation_number=row[
-                                    'organisation_identification_number'],
+                                organisation_number=row['organisation_identification_number'],
+                                organisation_type=tuple_value_matching_name(Company.organisation_types, row['type_of_organisation']),
+                                additional_address_information=row['additional_address_information'],
                                 website=row['webpage'],
                                 contact=contact,
                                 address_street=row['organisation_address'],
@@ -76,14 +92,32 @@ class Command(BaseCommand):
                                 company=company,
                                 fair=fair,
                                 contact=contact,
-                                invoice_identification=row[
-                                    'invoice_identification'],
-                                invoice_address=row[
-                                    'invoice_address'],
-                                invoice_address_zip_code=row[
-                                    'invoice_postal_zip_code'],
+                                invoice_reference=row['reference_at_your_organisation'],
+                                invoice_reference_phone_number=row['references_phone_number'],
+                                invoice_organisation_name=row['name_of_organisation_on_invoice'],
+                                invoice_address=row['invoice_address'],
+                                invoice_address_po_box=row['invoice_address_po_box'],
+                                invoice_address_zip_code=row['invoice_postal_zip_code'],
+                                invoice_identification=row['invoice_identification'],
+                                invoice_additional_information=row['additional_information'],
+                                requests_for_stand_placement=row['requests_for_stand_placement'],
+                                heavy_duty_electric_equipment=row['heavy_duty_electric_equipment'],
+                                other_information_about_the_stand=row['other_information_about_the_stand'],
+                                transport_to_fair_type=tuple_value_matching_name(Exhibitor.transport_to_fair_types, row['will_you_send_goods_to_ths_armadas_goods_reception_before_the_fair']),
+                                transport_from_fair_type='armada_transport' if row['we_would_like_to_use_armada_transport'] == 'Yes' else tuple_value_matching_name(Exhibitor.transport_from_fair_types, row['if_no_please_select_one_from_fair']),
+                                number_of_packages_from_fair=to_int_or_default(row['number_of_packages_from_fair'], 0),
+                                number_of_packages_to_fair=to_int_or_default(row['number_of_packages_to_fair'], 0),
+                                number_of_pallets_from_fair=to_int_or_default(row['number_of_pallets_from_fair'], 0),
+                                number_of_pallets_to_fair=to_int_or_default(row['number_of_pallets_to_fair'], 0),
+                                wants_information_about_events=row['would_you_like_more_information_about_our_events_before_the_fair'] == 'Yes',
+                                wants_information_about_targeted_marketing = row['would_you_like_more_information_about_targeted_marketing'] == 'Yes',
+                                wants_information_about_osqledaren=row['osqledaren'] == 'Yes, I want to be contacted regarding advertisements in Osqledaren and/or the Armada bonus number.',
                                 )
                         exhibitor.save()
+
+
+                        def parse_int(string):
+                            return int(string.replace('+', '').replace('.', '').replace(' ', ''))
 
                         # Catalog Information
                         programs = get_objects_by_name(
@@ -104,11 +138,9 @@ class Command(BaseCommand):
                                     'describe_what_your_organisation_does'
                                     '_in_three_words_or_less')].strip(),
                                 description=row['about_the_organisation'].strip(),
-                                employees_sweden=row[
-                                    'number_of_employees_in_sweden'],
-                                employees_world=row[
-                                    'number_of_employees_in_total'],
-                                countries=row['countries'],
+                                employees_sweden=parse_int(row['number_of_employees_in_sweden']),
+                                employees_world=parse_int(row['number_of_employees_in_total']),
+                                countries=parse_int(row['countries']),
                                 website_url=row['webpage'],
                                 facebook_url=row['facebook'],
                                 twitter_url=row['twitter'],
