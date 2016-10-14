@@ -31,8 +31,9 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		fields=invoice_fields
 	)
 
-	armada_transport_fields = ('transport_to_fair_type', 'number_of_packages_from_fair', 'number_of_pallets_from_fair',
-							   'transport_from_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair', 'estimated_arrival')
+	armada_transport_fields = ('transport_to_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair',
+							   'transport_from_fair_type', 'number_of_packages_from_fair', 'number_of_pallets_from_fair',
+							   'estimated_arrival')
 
 
 	CompanyForm = modelform_factory(
@@ -42,18 +43,23 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 
 	ArmadaTransportForm = modelform_factory(
 		Exhibitor,
-		fields=armada_transport_fields
+		fields=armada_transport_fields,
 	)
 
 	ExhibitorForm = modelform_factory(
 		Exhibitor,
 		exclude=('company', 'fair') + invoice_fields + armada_transport_fields if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact') + invoice_fields + armada_transport_fields,
 		widgets={'allergies': TextInput()}
+
 	)
 
+
 	exhibitor_form = ExhibitorForm(request.POST or None, instance=exhibitor)
+
 	invoice_form = InvoiceForm(request.POST or None, instance=exhibitor)
 	armada_transport_form = ArmadaTransportForm(request.POST or None, instance=exhibitor)
+	armada_transport_form.fields['estimated_arrival'].label = 'Estimaded arrival (format: 2016-12-24 13:37)'
+
 	company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
 
 	if exhibitor_form.is_valid() and invoice_form.is_valid() and armada_transport_form.is_valid() and company_form.is_valid():
