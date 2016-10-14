@@ -22,6 +22,7 @@ class Event(models.Model):
     registration_end = models.DateTimeField()
     registration_last_day_cancel = models.DateTimeField(null=True)
     public_registration = models.BooleanField(default=False)
+    attendence_approvement_required = models.BooleanField(default=True)
     allowed_groups = models.ManyToManyField(Group, blank=True)
     send_submission_mail = models.BooleanField(default=False)
     submission_mail_subject = models.TextField(blank=True)
