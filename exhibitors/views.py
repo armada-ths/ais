@@ -75,7 +75,11 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 
 	)
 
+
+
+
 	exhibitor_form = ExhibitorForm(request.POST or None, instance=exhibitor)
+	exhibitor_form.fields['estimated_arrival_of_representatives'].label = 'Estimated arrival of representatives (format: 2016-12-24 13:37)'
 	invoice_form = InvoiceForm(request.POST or None, instance=exhibitor)
 	transport_to_fair_form = TransportToFairForm(request.POST or None, instance=exhibitor)
 	transport_to_fair_form.fields['estimated_arrival'].label = 'Estimaded arrival (format: 2016-12-24 13:37)'
