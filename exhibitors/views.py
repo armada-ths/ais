@@ -34,11 +34,10 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 
 	transport_to_fair_fields = ('transport_to_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair', 'estimated_arrival')
 
+	transport_from_fair_fields = ('transport_from_fair_type', 'number_of_packages_from_fair', 'number_of_pallets_from_fair',)
 
-	transport_from_fair_fields = ('transport_from_fair_type', 'number_of_packages_from_fair', 'number_of_pallets_from_fair',
-								  'transport_from_fair_address', 'transport_from_fair_zip_code','transport_from_fair_recipient_name',
-								  'transport_from_fair_recipient_phone_number')
-
+	armada_transport_from_fair_fields = ('transport_from_fair_address', 'transport_from_fair_zip_code','transport_from_fair_recipient_name',
+										 'transport_from_fair_recipient_phone_number',)
 
 	CompanyForm = modelform_factory(
 		Company,
@@ -53,6 +52,11 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	TransportFromFairForm = modelform_factory(
 		Exhibitor,
 		fields=transport_from_fair_fields,
+	)
+
+	ArmadaTransportFromFairForm = modelform_factory(
+		Exhibitor,
+		fields=armada_transport_from_fair_fields,
 	)
 
 	ExhibitorForm = modelform_factory(
@@ -70,15 +74,17 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	transport_to_fair_form.fields['estimated_arrival'].label = 'Estimaded arrival (format: 2016-12-24 13:37)'
 
 	transport_from_fair_form = TransportFromFairForm(request.POST or None, instance=exhibitor)
+	armada_transport_from_fair_form = ArmadaTransportFromFairForm(request.POST or None, instance=exhibitor)
 
 	company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
 
-	if exhibitor_form.is_valid() and invoice_form.is_valid() and transport_to_fair_fields.is_valid() and transport_from_fair_form.is_valid() and company_form.is_valid():
+	if exhibitor_form.is_valid() and invoice_form.is_valid() and transport_to_fair_form.is_valid() and transport_from_fair_form.is_valid() and company_form.is_valid() and armada_transport_from_fair_form.is_valid():
 		exhibitor_form.save()
 		invoice_form.save()
 		transport_to_fair_form.save()
 		transport_from_fair_form.save()
 		company_form.save()
+		armada_transport_from_fair_form.save()
 		return redirect('exhibitors')
 
 	users = [(recruitment_application.user, recruitment_application.delegated_role)  for recruitment_application in RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
@@ -92,6 +98,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		'invoice_form': invoice_form,
 		'transport_to_fair_form': transport_to_fair_form,
 		'transport_from_fair_form': transport_from_fair_form,
+		'armada_transport_from_fair_form': armada_transport_from_fair_form,
 		'company_form': company_form,
 	})
 
