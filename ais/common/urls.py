@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
-    url(r'^companies/', include('companies.urls')),
+    #url(r'^companies/', include('companies.urls')),
     url(r'^events/', include('events.urls')),
     url(r'^locations/', include('locations.urls')),
     url(r'^news/', include('news.urls')),
