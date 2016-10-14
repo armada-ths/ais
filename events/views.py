@@ -27,12 +27,17 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
         request.POST or None, questions_answers=questions_answers)
     if form.is_valid() and registration_open(event):
         if not ea:
-            ea = EventAttendence.objects.create(user=request.user, event=event)
+            status = 'A'
+            if event.attendence_approvement_required:
+                status = 'S'
+            ea = EventAttendence.objects.create(
+                user=request.user, event=event, status=status)
             if event.send_submission_mail:
                 send_mail_on_submission(request.user, event)
         for (question, id, answer) in form.get_answers():
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
+        return redirect('event_list')
     return render(request, template_name, {"event": event, "form": form})
 
 
