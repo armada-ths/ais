@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from events.forms import AttendenceForm
 from events.models import EventQuestion, Event, EventAnswer, EventAttendence
-from events.templatetags.event_extras import user_attending_event
+from events.templatetags.event_extras import user_attending_event, \
+    registration_open
 from django.core.mail import send_mail
-from django.utils import timezone
 
 
 def send_mail_on_submission(user, event):
@@ -25,7 +25,7 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
         attendence=ea, question=question).first()) for question in questions]
     form = AttendenceForm(
         request.POST or None, questions_answers=questions_answers)
-    if form.is_valid():
+    if form.is_valid() and registration_open(event):
         if not ea:
             ea = EventAttendence.objects.create(user=request.user, event=event)
             if event.send_submission_mail:
@@ -33,7 +33,6 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
         for (question, id, answer) in form.get_answers():
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
-        return redirect('event_list')
     return render(request, template_name, {"event": event, "form": form})
 
 

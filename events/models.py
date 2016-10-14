@@ -17,14 +17,28 @@ class Event(models.Model):
     capacity = models.IntegerField(default=0, blank=True, null=True)
     description = models.TextField(blank=True)
     description_short = models.TextField(blank=True)
-    attendence_description = models.TextField(blank=True)
+    attendence_description = models.TextField(
+        blank=True,
+        help_text="If this is checked all users that attends an event needs to \
+        be accepted by an admin.")
+    attendence_approvement_required = models.BooleanField(
+        default=True,
+        help_text="If this is checked all users that attends the event needs to \
+        be accepted by an admin.")
     registration_start = models.DateTimeField()
     registration_end = models.DateTimeField()
-    registration_last_day_cancel = models.DateTimeField(null=True)
-    public_registration = models.BooleanField(default=False)
-    attendence_approvement_required = models.BooleanField(default=True)
+    registration_last_day_cancel = models.DateTimeField(
+        null=True,
+        help_text="Last day a user can cancel the attendence to the event")
+    public_registration = models.BooleanField(
+        default=False,
+        help_text="If users without an account should be able to sign up for \
+        this event.")
     allowed_groups = models.ManyToManyField(Group, blank=True)
-    send_submission_mail = models.BooleanField(default=False)
+    send_submission_mail = models.BooleanField(
+        default=False,
+        help_text="If users without an account should be able to sign up for \
+        this event.")
     submission_mail_subject = models.TextField(blank=True)
     submission_mail_body = models.TextField(blank=True)
     image_original = models.ImageField(
