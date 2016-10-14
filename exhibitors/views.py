@@ -39,6 +39,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	armada_transport_from_fair_fields = ('transport_from_fair_address', 'transport_from_fair_zip_code','transport_from_fair_recipient_name',
 										 'transport_from_fair_recipient_phone_number',)
 
+
 	CompanyForm = modelform_factory(
 		Company,
 		fields='__all__'
@@ -59,9 +60,11 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		fields=armada_transport_from_fair_fields,
 	)
 
+	exhibitor_excluded_fields = armada_transport_from_fair_fields + invoice_fields + transport_from_fair_fields + transport_to_fair_fields
+
 	ExhibitorForm = modelform_factory(
 		Exhibitor,
-		exclude=('company', 'fair') + invoice_fields + transport_from_fair_fields + transport_to_fair_fields if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact') + invoice_fields + transport_from_fair_fields + transport_to_fair_fields,
+		exclude=('company', 'fair') +  exhibitor_excluded_fields if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact') + exhibitor_excluded_fields,
 		widgets={'allergies': TextInput()}
 
 	)
@@ -75,6 +78,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 
 	transport_from_fair_form = TransportFromFairForm(request.POST or None, instance=exhibitor)
 	armada_transport_from_fair_form = ArmadaTransportFromFairForm(request.POST or None, instance=exhibitor)
+
 
 	company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
 
