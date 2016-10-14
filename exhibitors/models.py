@@ -36,6 +36,7 @@ class Exhibitor(models.Model):
     heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
     other_information_about_the_stand = models.CharField(max_length=500, blank=True)
 
+
     # Invoice
     invoice_reference = models.CharField(max_length=200, blank=True)
     invoice_reference_phone_number = models.CharField(max_length=200, blank=True)
