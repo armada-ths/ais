@@ -71,6 +71,7 @@
             {% endfor %}
 
                 <h3>Products</h3>
+                <div class="table-responsive">
                 <table class="table">
                     <thead>
                     <tr>
@@ -94,11 +95,13 @@
                     </tr>
                     </tfoot>
                 </table>
+                </div>
                 <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span
                         class="glyphicon glyphicon-plus"></span> New order</a>
 
 
                 <h3>Banquette attendants</h3>
+                <div class="table-responsive">
                 <table class="table">
                     <thead>
                     <tr>
@@ -125,6 +128,7 @@
                         </tr>
                     {% endfor %}
                 </table>
+                </div>
                 <a href="{% url 'banquette_attendant_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
 
             </div>
