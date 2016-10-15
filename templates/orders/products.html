@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load humanize %}
-{% block nav-exhibitors %}
-    <li role="presentation" class="active"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+{% block nav-products %}
+    <li role="presentation" class="active"><a href="{% url 'products' %}">Products</a></li>
 {% endblock %}
 {% block content %}
     <h1>Products ({{ products|length }})</h1>
