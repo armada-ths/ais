@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.forms import TextInput
 from orders.models import Order, Product
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, BanquetteAttendant
 from companies.models import Company
 
 
@@ -72,11 +72,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		Exhibitor,
 		exclude=('company', 'fair') + exhibitor_excluded_fields if request.user.has_perm('exhibitors.change_exhibitor') else ('company', 'fair', 'hosts', 'contact') + exhibitor_excluded_fields,
 		widgets={'allergies': TextInput()}
-
 	)
-
-
-
 
 	exhibitor_form = ExhibitorForm(request.POST or None, instance=exhibitor)
 	exhibitor_form.fields['estimated_arrival_of_representatives'].label = 'Estimated arrival of representatives (format: 2016-12-24 13:37)'
@@ -114,31 +110,46 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 		'stand_form': stand_form,
 	})
 
-def order(request, exhibitor_pk, order_pk=None, template_name='exhibitors/order_form.html'):
-	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
 
+# Related objects are BanquetteAttendant and Order, that is other models which has a foreign key to the exhibitor that we want to add / delete / edit
+def related_object_delete(request, model, exhibitor_pk, instance_pk):
+	instance = get_object_or_404(model, pk=instance_pk)
+	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
 	if not user_can_modify_exhibitor(request.user, exhibitor):
 		return HttpResponseForbidden()
+	instance.delete()
+	return redirect('exhibitor', exhibitor_pk)
 
-	OrderFactory = modelform_factory(
-		Order,
+
+def related_object_form(request, model, exhibitor_pk, instance_pk, template_name='exhibitors/order_form.html'):
+	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
+	if not user_can_modify_exhibitor(request.user, exhibitor):
+		return HttpResponseForbidden()
+	FormFactory = modelform_factory(
+		model,
 		exclude=('exhibitor',),
 	)
-	order = Order.objects.filter(pk=order_pk).first()
-	order_form = OrderFactory(request.POST or None, instance=order)
-
-	if order_form.is_valid():
-		order = order_form.save(commit=False)
-		order.exhibitor = exhibitor
-		order.save()
+	instance = model.objects.filter(pk=instance_pk).first()
+	form = FormFactory(request.POST or None, instance=instance)
+	if form.is_valid():
+		instance = form.save(commit=False)
+		instance.exhibitor = exhibitor
+		instance.save()
 		return redirect('exhibitor', exhibitor_pk)
-	return render(request, template_name, {'form': order_form, 'exhibitor': exhibitor, 'order': order})
+	return render(request, template_name, {'form': form, 'exhibitor': exhibitor, 'order': instance})
+
+
+def order(request, exhibitor_pk, order_pk=None):
+	return related_object_form(request, Order, exhibitor_pk, order_pk)
 
 
 def order_delete(request, exhibitor_pk, order_pk):
-	order = get_object_or_404(Order, pk=order_pk)
-	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
-	if not user_can_modify_exhibitor(request.user, exhibitor):
-		return HttpResponseForbidden()
-	order.delete()
-	return redirect('exhibitor', exhibitor_pk)
+	return related_object_delete(request, Order, exhibitor_pk, order_pk)
+
+
+def banquette_attendant(request, exhibitor_pk, banquette_attendant_pk=None):
+	return related_object_form(request, BanquetteAttendant, exhibitor_pk, banquette_attendant_pk)
+
+
+def banquette_attendant_delete(request, exhibitor_pk, banquette_attendant_pk):
+	return related_object_delete(request, BanquetteAttendant, exhibitor_pk, banquette_attendant_pk)
