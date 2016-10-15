@@ -1,20 +1,15 @@
 from django.db import models
-from lib.image import UploadToDirUUID, UploadToDir, \
-    format_png, format_jpg, should_generate
-from django.conf import settings
+from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
-import os
-
-
-MEDIA_ROOT = settings.MEDIA_ROOT
-
+from recruitment.models import RecruitmentApplication
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
 
 
 # A company (or organisation) participating in a fair
@@ -24,16 +19,95 @@ class Exhibitor(models.Model):
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
+    estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
 
-    invoice_identification = models.CharField(max_length=64, blank=True)
-    invoice_address = models.CharField(max_length=64, blank=True)
-    invoice_address_zip_code = models.CharField(max_length=8, blank=True)
-    invoice_address_city = models.CharField(max_length=32, blank=True)
-    invoice_address_country = models.CharField(max_length=32, blank=True)
+    statuses = [
+        ('accepted', 'Accepted'),
+        ('registered', 'Registered'),
+        ('complete_registration', 'Complete registration'),
+        ('contacted_by_host', 'Contacted by host'),
+        ('confirmed', 'Confirmed'),
+        ('checked_in', 'Checked in'),
+        ('checked_out', 'Checked out'),
+    ]
+
+    status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
+    allergies = models.TextField(null=True, blank=True)
+    requests_for_stand_placement = models.CharField(max_length=200, blank=True)
+    heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
+    other_information_about_the_stand = models.CharField(max_length=500, blank=True)
+
+
+    # Invoice
+    invoice_reference = models.CharField(max_length=200, blank=True)
+    invoice_reference_phone_number = models.CharField(max_length=200, blank=True)
+    invoice_organisation_name = models.CharField(max_length=200, blank=True)
+    invoice_address = models.CharField(max_length=200, blank=True)
+    invoice_address_po_box = models.CharField(max_length=200, blank=True)
+    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
+    invoice_identification = models.CharField(max_length=200, blank=True)
+    invoice_additional_information = models.CharField(max_length=500, blank=True)
+
+    # Transport to fair
+    transport_to_fair_types = [
+        ('external_transport', 'Yes, with an external delivery firm'),
+        ('arkad_transport', 'Yes, with transport from Arkad in Lund'),
+        ('self_transport', 'No, we will bring our goods ourselves'),
+    ]
+
+    transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
+    number_of_packages_to_fair = models.IntegerField(default=0)
+    number_of_pallets_to_fair = models.IntegerField(default=0)
+    estimated_arrival = models.DateTimeField(null=True, blank=True)
+
+    # Transport from fair
+    transport_from_fair_types = [
+        ('third_party_builders_transport', 'We use a third-party to build our stand who will transport our goods from the fair'),
+        ('armada_transport', 'We use Armada Transport'),
+        ('self_transport', 'We will arrange our own transportation immediately after the fair (note that there is limited access for larger transportation services as the fair closes and it may take some time before your equipment can be picked up)'),
+    ]
+
+    transport_from_fair_type = models.CharField(choices=transport_from_fair_types, null=True, blank=True, max_length=300)
+    number_of_packages_from_fair = models.IntegerField(default=0)
+    number_of_pallets_from_fair = models.IntegerField(default=0)
+
+    transport_from_fair_address = models.CharField(max_length=200, blank=True)
+    transport_from_fair_zip_code = models.CharField(max_length=100, blank=True)
+    transport_from_fair_recipient_name = models.CharField(max_length=200, blank=True)
+    transport_from_fair_recipient_phone_number = models.CharField(max_length=200, blank=True)
+
+
+    # Marketing
+    wants_information_about_events = models.BooleanField()
+    wants_information_about_targeted_marketing = models.BooleanField()
+    wants_information_about_osqledaren = models.BooleanField()
+
+    def total_cost(self):
+        return sum([order.price() for order in self.order_set.all()])
+
+    def superiors(self):
+        accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.hosts.all()]
+        return [application.superior_user for application in accepted_applications if application]
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)
 
+class BanquetteAttendant(models.Model):
+    exhibitor = models.ForeignKey(Exhibitor)
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
+    genders = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other')
+    ]
+    gender = models.CharField(choices=genders, max_length=10)
+    phone_number = models.CharField(max_length=200)
+    allergies = models.CharField(max_length=1000)
+    student_ticket = models.BooleanField(default=False)
+    wants_alcohol = models.BooleanField(default=True)
+    wants_lactose_free_food = models.BooleanField(default=False)
+    wants_gluten_free_food = models.BooleanField(default=False)
 
 # Work field that an exhibitor operates in
 class WorkField(models.Model):
@@ -72,19 +146,18 @@ class CatalogInfo(models.Model):
     exhibitor = models.OneToOneField(
             Exhibitor,
             on_delete=models.CASCADE,
-            primary_key=True,
             )
-    display_name = models.CharField(max_length=64)
+    display_name = models.CharField(max_length=200)
     slug = models.SlugField(db_index=False, blank=True)
-    short_description = models.CharField(max_length=64)
+    short_description = models.CharField(max_length=200)
     description = models.TextField()
     employees_sweden = models.IntegerField(default=0)
     employees_world = models.IntegerField(default=0)
     countries = models.IntegerField(default=0)
-    website_url = models.CharField(max_length=128, blank=True)
-    facebook_url = models.CharField(max_length=128, blank=True)
-    twitter_url = models.CharField(max_length=128, blank=True)
-    linkedin_url = models.CharField(max_length=128, blank=True)
+    website_url = models.CharField(max_length=300, blank=True)
+    facebook_url = models.CharField(max_length=300, blank=True)
+    twitter_url = models.CharField(max_length=300, blank=True)
+    linkedin_url = models.CharField(max_length=300, blank=True)
 
     # Image fields
     # Field with name ending with original serves as the original uploaded
@@ -121,18 +194,15 @@ class CatalogInfo(models.Model):
     # if the original has been changed
     def save(self, *args, **kwargs):
         if self.pk is None:
-            self.slug = slugify(self.display_name)
+            self.slug = slugify(self.display_name[:50])
         super(CatalogInfo, self).save(*args, **kwargs)
-        if should_generate(self.logo_original, self.logo):
-            if self.logo:
-                os.remove(os.path.join(MEDIA_ROOT, self.logo.name))
-                os.remove(os.path.join(MEDIA_ROOT, self.logo_small.name))
-            path = os.path.join(MEDIA_ROOT, self.logo_original.name)
-            self.logo_small = format_png(path, 200, 200)
-            self.logo = format_png(path, 400, 400)
-        if should_generate(self.ad_original, self.ad):
-            if self.ad:
-                os.remove(os.path.join(MEDIA_ROOT, self.ad.name))
-            path = os.path.join(MEDIA_ROOT, self.ad_original.name)
-            self.ad = format_jpg(path, 640, 480)
+        self.logo = update_image_field(
+            self.logo_original,
+            self.logo, 400, 400, 'png')
+        self.logo_small = update_image_field(
+            self.logo_original,
+            self.logo_small, 200, 200, 'png')
+        self.ad = update_image_field(
+            self.ad_original,
+            self.ad, 640, 480, 'jpg')
         super(CatalogInfo, self).save(*args, **kwargs)

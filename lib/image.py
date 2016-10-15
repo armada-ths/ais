@@ -4,6 +4,10 @@ from io import BytesIO
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.deconstruct import deconstructible
 import os
+from django.conf import settings
+
+
+MEDIA_ROOT = settings.MEDIA_ROOT
 
 
 # Hack for making pillow accept large images
@@ -13,6 +17,17 @@ ImageFile.SAFEBLOCK = 1024*10000
 
 def path():
     pass
+
+
+# Updates an imagefield that is linked to another image
+# Resizes the image and converts it to another format as specified
+def update_image_field(original, image, width, height, convert_to):
+    if should_generate(original, image):
+        if image:
+            os.remove(os.path.join(MEDIA_ROOT, image.name))
+        path = os.path.join(MEDIA_ROOT, original.name)
+        return format_image(path, width, height, convert_to)
+    return image
 
 
 # Check if a thumbnail should be generated or not
@@ -57,6 +72,14 @@ class UploadToDir(object):
 
     def __call__(self, instance, filename):
         return UploadToDir.path.format(self.directory, filename)
+
+
+# Wrapper of the image format functions
+def format_image(filename, width, height, img_type):
+    if img_type == 'png':
+        return format_png(filename, width, height)
+    if img_type == 'jpg':
+        return format_jpg(filename, width, height)
 
 
 # Converts the input image to a 256 colors png,

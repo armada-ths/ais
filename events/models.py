@@ -1,8 +1,11 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
-
+from django.conf import settings
+from lib.image import UploadToDirUUID, UploadToDir, update_image_field
+import os
 from fair.models import Fair
+
 
 # An 'Event' belongs to a specific 'Fair'
 class Event(models.Model):
@@ -14,23 +17,50 @@ class Event(models.Model):
     capacity = models.IntegerField(default=0, blank=True, null=True)
     description = models.TextField(blank=True)
     description_short = models.TextField(blank=True)
-    attendence_description = models.TextField(blank=True)
-    registration_open = models.DateTimeField()
-    registration_last_day = models.DateTimeField()
-    registration_last_day_cancel = models.DateTimeField(null=True)
-    public_registration = models.BooleanField(default=False)
+    attendence_description = models.TextField(
+        blank=True,
+        help_text="This is a text only shown in the attendence form, example \
+        'To be accepted to this event you need to pay the event fee of \
+        500 SEK'")
+    attendence_approvement_required = models.BooleanField(
+        default=True,
+        help_text="If this is checked all users that attends the event needs to \
+        be accepted by an admin.")
+    registration_start = models.DateTimeField()
+    registration_end = models.DateTimeField()
+    registration_last_day_cancel = models.DateTimeField(
+        null=True,
+        help_text="Last day a user can cancel the attendence to the event")
+    public_registration = models.BooleanField(
+        default=False,
+        help_text="If users without an account should be able to sign up for \
+        this event.")
     allowed_groups = models.ManyToManyField(Group, blank=True)
-    send_submission_mail = models.BooleanField(default=False) 
+    send_submission_mail = models.BooleanField(
+        default=False,
+        help_text="If checked an email will be sent when a user attends \
+        the event")
     submission_mail_subject = models.TextField(blank=True)
     submission_mail_body = models.TextField(blank=True)
+    image_original = models.ImageField(
+            upload_to=UploadToDirUUID('events', 'image_original'), blank=True)
+    image = models.ImageField(
+            upload_to=UploadToDir('events', 'image'), blank=True)
 
     def __str__(self):
         return '%s'%(self.name)
 
+    def save(self, *args, **kwargs):
+        super(Event, self).save(*args, **kwargs)
+        self.image = update_image_field(
+            self.image_original,
+            self.image, 640, 480, 'jpg')
+        super(Event, self).save(*args, **kwargs)
+
 # An EventQuestion belongs to a specific Event
 class EventQuestion(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    question_text = models.TextField(blank=False) 
+    question_text = models.TextField(blank=False)
     required = models.BooleanField(default=False)
 
     def __str__(self):
@@ -55,7 +85,7 @@ class EventAttendence(models.Model):
         else:
             user = "External user"
         return '%s attending %s'%(user, self.event.name)
-    
+
 
 # An EventAnswer is the answer to a specific EventQuestion for a specific User
 class EventAnswer(models.Model):
@@ -65,4 +95,3 @@ class EventAnswer(models.Model):
 
     def __str__(self):
         return '%s'%(self.question.question_text)
-
