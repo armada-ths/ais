@@ -16,6 +16,7 @@
         <div class="col-md-9">
             <h2>Recruitment Periods</h2>
             {% if recruitment_periods %}
+                <div class="table-responsive">
                 <table class="table">
                     <thead>
                     <tr>
@@ -47,6 +48,7 @@
                         </tr>
                     {% endfor %}
                 </table>
+                </div>
             {% else %}
                 <p>No recruitment periods</p>
             {% endif %}
