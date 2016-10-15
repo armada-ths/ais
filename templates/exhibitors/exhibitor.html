@@ -71,18 +71,21 @@
             {% endfor %}
 
                 <h3>Products</h3>
+                <div class="table-responsive">
                 <table class="table">
                     <thead>
                     <tr>
                         <th>Product</th>
                         <th>Amount</th>
-                        <th>Price</th>
+                        <th>Product price</th>
+                        <th>Total price</th>
                     </tr>
                     </thead>
                     {% for order in exhibitor.order_set.all %}
                         <tr>
                             <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
                             <td>{{ order.amount }}</td>
+                            <td>{{ order.product.price }}</td>
                             <td>{{ order.price }}</td>
                         </tr>
                     {% endfor %}
@@ -94,11 +97,13 @@
                     </tr>
                     </tfoot>
                 </table>
+                </div>
                 <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span
                         class="glyphicon glyphicon-plus"></span> New order</a>
 
 
                 <h3>Banquette attendants</h3>
+                <div class="table-responsive">
                 <table class="table">
                     <thead>
                     <tr>
@@ -125,6 +130,7 @@
                         </tr>
                     {% endfor %}
                 </table>
+                </div>
                 <a href="{% url 'banquette_attendant_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
 
             </div>

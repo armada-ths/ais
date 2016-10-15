@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
     <h1>Exhibitors ({{ exhibitors|length }})</h1>
-
+    <div class="table-responsive">
     <table class="table" id="exhibitor_table">
         <thead>
         <tr>
@@ -42,6 +42,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 {% endblock %}
 {% block scripts %}
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
