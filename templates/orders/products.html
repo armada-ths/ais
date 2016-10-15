@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block nav-exhibitors %}
+    <li role="presentation" class="active"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+{% endblock %}
+{% block content %}
+    <h1>Products ({{ products|length }})</h1>
+
+        <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Ordered quantity</th>
+                </tr>
+                {% for product in products %}
+                    <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.ordered_quantity }}</td>
+
+                    </tr>
+                {% endfor %}
+            </thead>
+
+        </table>
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+            $('#exhibitor_table').DataTable({
+                'paging': false
+            })
+        })
+    </script>
+{% endblock %}

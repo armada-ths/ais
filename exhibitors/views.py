@@ -11,12 +11,16 @@ from exhibitors.models import Exhibitor, BanquetteAttendant
 from companies.models import Company
 from django.urls import reverse
 
+from fair.models import Fair
+
 def user_can_modify_exhibitor(user, exhibitor):
 	return user.has_perm('exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
 
 
 def exhibitors(request, template_name='exhibitors/exhibitors.html'):
-	return render(request, template_name, {'exhibitors': Exhibitor.objects.all().order_by('company__name')})
+	return render(request, template_name, {
+		'exhibitors': Exhibitor.objects.all().order_by('company__name'),
+	})
 
 
 def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
