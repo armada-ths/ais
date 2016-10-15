@@ -96,6 +96,37 @@
                 </table>
                 <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span
                         class="glyphicon glyphicon-plus"></span> New order</a>
+
+
+                <h3>Banquette attendants</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Phone number</th>
+                        <th>Allergies</th>
+                        <th>Student ticket</th>
+                        <th>Wants alcohol</th>
+                        <th>Lactose free</th>
+                        <th>Gluten free</th>
+                    </tr>
+                    </thead>
+                    {% for attendant in exhibitor.banquetteattendant_set.all %}
+                        <tr>
+                        <td><a href="{% url 'banquette_attendant' exhibitor.pk attendant.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</td>
+                        <td>{{ attendant.get_gender_display }}</td>
+                        <td>{{ attendant.phone_number }}</td>
+                        <td>{{ attendant.allergies }}</td>
+                        <td>{% if attendant.student_ticket %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        <td>{% if attendant.wants_alcohol %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        <td>{% if attendant.wants_lactose_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        <td>{% if attendant.wants_gluten_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <a href="{% url 'banquette_attendant_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
+
             </div>
             <br>
 
