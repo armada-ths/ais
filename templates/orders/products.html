@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load humanize %}
 {% block nav-exhibitors %}
     <li role="presentation" class="active"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
 {% endblock %}
@@ -7,20 +8,33 @@
     <h1>Products ({{ products|length }})</h1>
 
         <div class="table-responsive">
-        <table class="table">
+        <table class="table" id="products_table">
             <thead>
                 <tr>
                     <th>Product</th>
+                    <th>Price (SEK)</th>
                     <th>Ordered quantity</th>
+                    <th>Revenue (SEK)</th>
                 </tr>
-                {% for product in products %}
+            </thead>
+                            {% for product in products %}
                     <tr>
                     <td>{{ product.name }}</td>
-                    <td>{{ product.ordered_quantity }}</td>
-
+                    <td>{{ product.price|intcomma }}</td>
+                    <td>{{ product.ordered_quantity|intcomma }}</td>
+                    <td>{{ product.revenue|intcomma }}</td>
                     </tr>
                 {% endfor %}
-            </thead>
+
+            <tfoot>
+            <tr>
+                <th>Total</th>
+                <th></th>
+                <th></th>
+                <th>{{ total_revenue|intcomma }}</th>
+
+            </tr>
+            </tfoot>
 
         </table>
     </div>
@@ -32,7 +46,7 @@
     <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
     <script>
         $(document).ready(function () {
-            $('#exhibitor_table').DataTable({
+            $('#products_table').DataTable({
                 'paging': false
             })
         })
