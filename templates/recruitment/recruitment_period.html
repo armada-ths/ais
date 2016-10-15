@@ -221,7 +221,8 @@
                             scales: {
                                 yAxes: [{
                                     ticks: {
-                                        beginAtZero: true
+                                        beginAtZero: true,
+                                        max: dataset.y_limit ? dataset.y_limit : undefined
                                     }
                                 }]
                             }
