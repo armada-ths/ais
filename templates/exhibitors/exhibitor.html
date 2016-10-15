@@ -77,13 +77,15 @@
                     <tr>
                         <th>Product</th>
                         <th>Amount</th>
-                        <th>Price</th>
+                        <th>Product price</th>
+                        <th>Total price</th>
                     </tr>
                     </thead>
                     {% for order in exhibitor.order_set.all %}
                         <tr>
                             <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
                             <td>{{ order.amount }}</td>
+                            <td>{{ order.product.price }}</td>
                             <td>{{ order.price }}</td>
                         </tr>
                     {% endfor %}
