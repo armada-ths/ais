@@ -18,8 +18,16 @@
 
                 <h3>Exhibitor</h3>
                 {{ exhibitor_form|crispy }}
-                <h3>Armada Transport</h3>
-                {{ armada_transport_form|crispy }}
+                <h3>Stand information</h3>
+                {{ stand_form|crispy }}
+                <h3>Transport to fair</h3>
+                {{ transport_to_fair_form|crispy }}
+                <h3>Transport from fair</h3>
+                {{ transport_from_fair_form|crispy }}
+
+                <p class="help-block">Only fill in the following fields if you use Armada Transport</p>
+                {{ armada_transport_from_fair_form|crispy }}
+
                 <h3>Company</h3>
                 {{ company_form|crispy }}
                 <h3>Invoice</h3>

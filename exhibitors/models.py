@@ -19,6 +19,7 @@ class Exhibitor(models.Model):
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
+    estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
 
     statuses = [
         ('accepted', 'Accepted'),
@@ -36,6 +37,7 @@ class Exhibitor(models.Model):
     heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
     other_information_about_the_stand = models.CharField(max_length=500, blank=True)
 
+
     # Invoice
     invoice_reference = models.CharField(max_length=200, blank=True)
     invoice_reference_phone_number = models.CharField(max_length=200, blank=True)
@@ -46,24 +48,34 @@ class Exhibitor(models.Model):
     invoice_identification = models.CharField(max_length=200, blank=True)
     invoice_additional_information = models.CharField(max_length=500, blank=True)
 
-    # Transport
+    # Transport to fair
     transport_to_fair_types = [
         ('external_transport', 'Yes, with an external delivery firm'),
         ('arkad_transport', 'Yes, with transport from Arkad in Lund'),
         ('self_transport', 'No, we will bring our goods ourselves'),
     ]
+
     transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
+    number_of_packages_to_fair = models.IntegerField(default=0)
+    number_of_pallets_to_fair = models.IntegerField(default=0)
+    estimated_arrival = models.DateTimeField(null=True, blank=True)
+
+    # Transport from fair
     transport_from_fair_types = [
         ('third_party_builders_transport', 'We use a third-party to build our stand who will transport our goods from the fair'),
         ('armada_transport', 'We use Armada Transport'),
         ('self_transport', 'We will arrange our own transportation immediately after the fair (note that there is limited access for larger transportation services as the fair closes and it may take some time before your equipment can be picked up)'),
     ]
+
     transport_from_fair_type = models.CharField(choices=transport_from_fair_types, null=True, blank=True, max_length=300)
     number_of_packages_from_fair = models.IntegerField(default=0)
     number_of_pallets_from_fair = models.IntegerField(default=0)
-    number_of_packages_to_fair = models.IntegerField(default=0)
-    number_of_pallets_to_fair = models.IntegerField(default=0)
-    estimated_arrival = models.DateTimeField(null=True, blank=True)
+
+    transport_from_fair_address = models.CharField(max_length=200, blank=True)
+    transport_from_fair_zip_code = models.CharField(max_length=100, blank=True)
+    transport_from_fair_recipient_name = models.CharField(max_length=200, blank=True)
+    transport_from_fair_recipient_phone_number = models.CharField(max_length=200, blank=True)
+
 
     # Marketing
     wants_information_about_events = models.BooleanField()
