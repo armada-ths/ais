@@ -46,7 +46,8 @@ class Command(BaseCommand):
                 raise CommandError('Fair not found')
             fair = Fair.objects.get(name=FAIR_YEAR)
             for row in reader:
-                if not Company.objects.filter(name=row['company_name']).exists():
+                company_name = row['company_name'].strip()
+                if not Company.objects.filter(name=company_name).exists():
                     with transaction.atomic():
                         self.stdout.write("importing company %s" % row['company_name'])
                         contact_name = '%s %s' % (
@@ -75,7 +76,7 @@ class Command(BaseCommand):
                                 return default_value
 
                         company = Company.objects.create(
-                                name=row['company_name'],
+                                name=company_name,
                                 organisation_number=row['organisation_identification_number'],
                                 organisation_type=tuple_value_matching_name(Company.organisation_types, row['type_of_organisation']),
                                 additional_address_information=row['additional_address_information'],
@@ -152,7 +153,6 @@ class Command(BaseCommand):
 
                         # Exhibitor orders
 
-                        """
                         try:
                             with urlopen(REGISTRATION_URL+row['logotype']) as response:
                                 if len(row['logotype']) != 0:
@@ -162,7 +162,6 @@ class Command(BaseCommand):
                                     info.ad_original.save(row['ad'], ContentFile(response.read()))
                         except HTTPError:
                             pass
-                        """
 
                         info.programs.add(*programs)
                         info.work_fields.add(*work_fields)
@@ -171,7 +170,7 @@ class Command(BaseCommand):
                         info.values.add(*values)
                         info.save()
 
-                company = Company.objects.get(name=row['company_name'])
+                company = Company.objects.get(name=company_name)
                 exhibitor = Exhibitor.objects.get(company=company, fair=fair)
 
 
