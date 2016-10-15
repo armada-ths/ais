@@ -4,12 +4,12 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from recruitment.models import RecruitmentApplication
 
-
 class Location(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
 
 
 # A company (or organisation) participating in a fair
@@ -92,6 +92,22 @@ class Exhibitor(models.Model):
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)
 
+class BanquetteAttendant(models.Model):
+    exhibitor = models.ForeignKey(Exhibitor)
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
+    genders = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other')
+    ]
+    gender = models.CharField(choices=genders, max_length=10)
+    phone_number = models.CharField(max_length=200)
+    allergies = models.CharField(max_length=1000)
+    student_ticket = models.BooleanField(default=False)
+    wants_alcohol = models.BooleanField(default=True)
+    wants_lactose_free_food = models.BooleanField(default=False)
+    wants_gluten_free_food = models.BooleanField(default=False)
 
 # Work field that an exhibitor operates in
 class WorkField(models.Model):
