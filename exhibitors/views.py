@@ -9,7 +9,7 @@ from django.forms import TextInput
 from orders.models import Order, Product
 from exhibitors.models import Exhibitor, BanquetteAttendant
 from companies.models import Company
-
+from django.urls import reverse
 
 def user_can_modify_exhibitor(user, exhibitor):
 	return user.has_perm('exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
@@ -111,45 +111,30 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
 	})
 
 
-# Related objects are BanquetteAttendant and Order, that is other models which has a foreign key to the exhibitor that we want to add / delete / edit
-def related_object_delete(request, model, exhibitor_pk, instance_pk):
-	instance = get_object_or_404(model, pk=instance_pk)
-	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
-	if not user_can_modify_exhibitor(request.user, exhibitor):
-		return HttpResponseForbidden()
-	instance.delete()
-	return redirect('exhibitor', exhibitor_pk)
+def related_object_form(model, model_name, delete_view_name):
+	def view(request, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):
+		exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
+		if not user_can_modify_exhibitor(request.user, exhibitor):
+			return HttpResponseForbidden()
+		instance = model.objects.filter(pk=instance_pk).first()
+		FormFactory = modelform_factory(model, exclude=('exhibitor',))
+		form = FormFactory(request.POST or None, instance=instance)
+		if form.is_valid():
+			instance = form.save(commit=False)
+			instance.exhibitor = exhibitor
+			instance.save()
+			return redirect('exhibitor', exhibitor_pk)
+		delete_url = reverse(delete_view_name, args=(exhibitor_pk, instance_pk)) if instance_pk != None else None
+		return render(request, template_name, {'form': form, 'exhibitor': exhibitor, 'instance': instance, 'model_name': model_name, 'delete_url': delete_url})
+	return view
 
 
-def related_object_form(request, model, exhibitor_pk, instance_pk, template_name='exhibitors/order_form.html'):
-	exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
-	if not user_can_modify_exhibitor(request.user, exhibitor):
-		return HttpResponseForbidden()
-	FormFactory = modelform_factory(
-		model,
-		exclude=('exhibitor',),
-	)
-	instance = model.objects.filter(pk=instance_pk).first()
-	form = FormFactory(request.POST or None, instance=instance)
-	if form.is_valid():
-		instance = form.save(commit=False)
-		instance.exhibitor = exhibitor
-		instance.save()
+def related_object_delete(model):
+	def view(request, exhibitor_pk, instance_pk):
+		instance = get_object_or_404(model, pk=instance_pk)
+		exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
+		if not user_can_modify_exhibitor(request.user, exhibitor):
+			return HttpResponseForbidden()
+		instance.delete()
 		return redirect('exhibitor', exhibitor_pk)
-	return render(request, template_name, {'form': form, 'exhibitor': exhibitor, 'order': instance})
-
-
-def order(request, exhibitor_pk, order_pk=None):
-	return related_object_form(request, Order, exhibitor_pk, order_pk)
-
-
-def order_delete(request, exhibitor_pk, order_pk):
-	return related_object_delete(request, Order, exhibitor_pk, order_pk)
-
-
-def banquette_attendant(request, exhibitor_pk, banquette_attendant_pk=None):
-	return related_object_form(request, BanquetteAttendant, exhibitor_pk, banquette_attendant_pk)
-
-
-def banquette_attendant_delete(request, exhibitor_pk, banquette_attendant_pk):
-	return related_object_delete(request, BanquetteAttendant, exhibitor_pk, banquette_attendant_pk)
+	return view
