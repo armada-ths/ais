@@ -19,6 +19,7 @@ class Exhibitor(models.Model):
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
+    estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
 
     statuses = [
         ('accepted', 'Accepted'),
@@ -35,6 +36,7 @@ class Exhibitor(models.Model):
     requests_for_stand_placement = models.CharField(max_length=200, blank=True)
     heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
     other_information_about_the_stand = models.CharField(max_length=500, blank=True)
+
 
     # Invoice
     invoice_reference = models.CharField(max_length=200, blank=True)
