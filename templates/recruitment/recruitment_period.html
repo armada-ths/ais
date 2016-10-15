@@ -37,36 +37,38 @@
     {% if interviews %}
         <h2>Your interviews ({{ interviews.count }})</h2>
         <p>Must be done before {{ recruitment_period.interview_end_date|date:"d M" }}</p>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Interview date</th>
-                <th>Interview Location</th>
-                <th>Interviewer</th>
-            </tr>
-            </thead>
-            {% for application in interviews %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
                 <tr>
-                    <td>
-                        {% if request.user == application.interviewer %}
-                            <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
-                                {% include 'recruitment/user_name.html' with user=application.user %}
-                            </a></td>
-                        {% else %}
-                            {% include 'recruitment/user_name.html' with user=application.user %}
-                        {% endif %}
-
-                    <td>{{ application.interview_date|date:"d M H:i" }}</td>
-                    <td>{{ application.interview_location }}</td>
-                    <td>
-                        {% if application.interviewer %}
-                            {{ application.interviewer.get_full_name }}
-                        {% endif %}
-                    </td>
+                    <th>Name</th>
+                    <th>Interview date</th>
+                    <th>Interview Location</th>
+                    <th>Interviewer</th>
                 </tr>
-            {% endfor %}
-        </table>
+                </thead>
+                {% for application in interviews %}
+                    <tr>
+                        <td>
+                            {% if request.user == application.interviewer %}
+                                <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                                    {% include 'recruitment/user_name.html' with user=application.user %}
+                                </a></td>
+                            {% else %}
+                                {% include 'recruitment/user_name.html' with user=application.user %}
+                            {% endif %}
+
+                        <td>{{ application.interview_date|date:"d M H:i" }}</td>
+                        <td>{{ application.interview_location }}</td>
+                        <td>
+                            {% if application.interviewer %}
+                                {{ application.interviewer.get_full_name }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
         <br>
     {% endif %}
 
