@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load event_extras %}
+
+{% block nav-events %}
+    <li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
+{% endblock %}
+
 {% block content %}
 <h2>Armada 2016 Events</h2>
 <table class="table table-striped">
