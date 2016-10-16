@@ -18,6 +18,9 @@ def user_can_modify_exhibitor(user, exhibitor):
 
 
 def exhibitors(request, template_name='exhibitors/exhibitors.html'):
+	if not Fair.objects.get(name='Armada 2016').is_member_of_fair(request.user):
+		return HttpResponseForbidden()
+
 	return render(request, template_name, {
 		'exhibitors': Exhibitor.objects.all().order_by('company__name'),
 	})

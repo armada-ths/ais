@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
+{% load fair_tags %}
 <html lang="en">
 <head>
     {% include "header.html" %}
@@ -27,14 +28,19 @@
                 <ul class="nav navbar-nav">
 
 
+
                         {% if perms.people.view_people %}
                             {% block nav-people %}
                                 <li role="presentation"><a href="{% url 'people' %}">People</a></li>
                             {% endblock %}
                         {% endif %}
 
-                    {% block nav-exhibitors %}
-                        <li role="presentation"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>{% endblock %}
+                    {% if request.user|is_armada_member %}
+                        {% block nav-exhibitors %}
+                        <li role="presentation"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+                        {% endblock %}
+                    {% endif %}
+
                     {% block nav-events %}
                         <li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
                     {% block nav-recruitment %}
