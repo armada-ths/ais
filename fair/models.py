@@ -9,7 +9,7 @@ class Fair(models.Model):
         if user.is_superuser:
             return True
         for recruitment_period in self.recruitmentperiod_set.all():
-            if recruitment_period.recruitmentapplication_set.filter(user=user).exists():
+            if recruitment_period.recruitmentapplication_set.filter(user=user, status='accepted').exists():
                 return True
         return False
 
