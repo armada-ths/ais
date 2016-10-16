@@ -10,6 +10,7 @@ from orders.models import Order, Product
 from exhibitors.models import Exhibitor, BanquetteAttendant
 from companies.models import Company
 from django.urls import reverse
+from fair.templatetags.fair_tags import is_armada_member
 
 from fair.models import Fair
 
@@ -18,6 +19,9 @@ def user_can_modify_exhibitor(user, exhibitor):
 
 
 def exhibitors(request, template_name='exhibitors/exhibitors.html'):
+	if not is_armada_member(request.user):
+		return HttpResponseForbidden()
+
 	return render(request, template_name, {
 		'exhibitors': Exhibitor.objects.all().order_by('company__name'),
 	})
