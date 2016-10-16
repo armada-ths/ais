@@ -48,8 +48,11 @@
                     {% block nav-news %}
                         <!--<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}-->
 
+
+                {% if request.user|is_armada_member %}
                     {% block nav-products %}
                         <li role="presentation"><a href="{% url 'products' %}">Products</a></li>{% endblock %}
+                {% endif %}
                 </ul>
                 <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}"
                                                                style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong>
