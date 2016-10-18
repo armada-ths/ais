@@ -36,12 +36,15 @@ def export_as_csv(modeladmin, request, queryset):
                 attendence.user.email,
             ]
         answers = []
-        # This requires an answer to all questions, atleast a null answer.
         for question in question_list:
-            answers.append(EventAnswer.objects
-                           .filter(question__id =  question)
-                           .filter(attendence__id = attendence.id)
-                           .first().answer)
+            event_answer = (EventAnswer.objects
+                 .filter(question__id =  question)
+                 .filter(attendence__id = attendence.id)
+                 .first())
+            if event_answer != None:
+                answers.append(event_answer.answer)
+            else:
+                answers.append(None)
         writer.writerow(user_information + answers)
     return response
 
