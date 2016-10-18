@@ -48,7 +48,7 @@ class Event(models.Model):
             upload_to=UploadToDir('events', 'image'), blank=True)
 
     def __str__(self):
-        return '%s'%(self.name)
+        return '%s: %s'%(self.fair, self.name)
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
