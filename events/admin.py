@@ -3,7 +3,6 @@ from django.contrib import messages
 from django.contrib import admin
 from .models import Event, EventAttendence, EventQuestion, EventAnswer
 from django.http import HttpResponse
-from django.core import serializers
 
 # Exports all the EventAnswers that belong to a single Event
 # (Could be expanded to include User information)
