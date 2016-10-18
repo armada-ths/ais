@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from companies.models import Company
+from exhibitors.models import Exhibitor
 from events.models import Event
 from news.models import NewsArticle
 from fair.models import Partner
@@ -14,14 +14,17 @@ def root(request):
 
 
 def exhibitors(request):
-    companies = Company.objects.all()
-    data = [serializers.company(company) for company in companies]
+    exhibitors = Exhibitor.objects.filter(
+            fair__name=CURRENT_FAIR
+            ).select_related('cataloginfo')
+    data = [serializers.exhibitor(request, exhibitor.cataloginfo)
+            for exhibitor in exhibitors]
     return JsonResponse(data, safe=False)
 
 
 def events(request):
     events = Event.objects.filter(public_registration=True)
-    data = [serializers.event(event) for event in events]
+    data = [serializers.event(request, event) for event in events]
     return JsonResponse(data, safe=False)
 
 
@@ -34,6 +37,6 @@ def news(request):
 def partners(request):
     partners = Partner.objects.filter(
             fair__name=CURRENT_FAIR
-            ).order_by('main_partner')
-    data = [serializers.partner(partner, request) for partner in partners]
+            ).order_by('-main_partner')
+    data = [serializers.partner(request, partner) for partner in partners]
     return JsonResponse(data, safe=False)
