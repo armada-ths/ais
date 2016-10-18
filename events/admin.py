@@ -69,7 +69,8 @@ class AnswerInline(admin.StackedInline):
 
 class EventAttendenceAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
-    search_fields = ['user__first_name', 'user__last_name', 'user__email']
+    search_fields = ['user__first_name', 'user__last_name', 'user__email', 
+        'event__name']
     list_filter = ('event',)
 
 admin.site.register(Event, EventAdmin)
