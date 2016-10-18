@@ -18,6 +18,7 @@ def export_as_csv(modeladmin, request, queryset):
     # We have already checked that it is a single event    
     event_id = queryset.first().id
     csv_headers = ['First name (user)', 'Last name (user)', 'Email (user)']
+    csv_headers.append('Status')
     question_list = []
     for question in EventQuestion.objects.filter(event__id = event_id):
         question_list.append(question.id)
@@ -35,6 +36,9 @@ def export_as_csv(modeladmin, request, queryset):
                 attendence.user.last_name,
                 attendence.user.email,
             ]
+ 
+        status = [attendence.status]
+
         answers = []
         for question in question_list:
             event_answer = (EventAnswer.objects
@@ -45,7 +49,7 @@ def export_as_csv(modeladmin, request, queryset):
                 answers.append(event_answer.answer)
             else:
                 answers.append(None)
-        writer.writerow(user_information + answers)
+        writer.writerow(user_information + status + answers)
     return response
 
 class QuestionInline(admin.StackedInline):
