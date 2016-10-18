@@ -16,15 +16,23 @@
   <br>
   <br>
   {% if request.user|user_attending_event:event %}
-    {% if request.user|user_accepted_event:event %}
-      <b>You are signed up for this event!</b>
+    {% if request.user|user_declined_event:event %}
+      <b>Your submission has been declined.</b>
+      <br>
+      <br>
+      <a class="btn btn-default" href="">Update info</a>
+      <a style="float: right" class="btn btn-default" href="">Unattend event</a>
     {% else %}
-      <b>Waiting for admin to accept your submission to this event.</b>
+      {% if request.user|user_accepted_event:event %}
+        <b>You are signed up for this event!</b>
+      {% else %}
+        <b>Waiting for admin to accept your submission to this event.</b>
+      {% endif %}
+      <br>
+      <br>
+      <input class="btn btn-primary" type="submit" value="Update info" />
+      <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
     {% endif %}
-    <br>
-    <br>
-    <input class="btn btn-primary" type="submit" value="Update info" />
-    <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
   {% else %}
       {% if event|registration_open %}
         Signup ends {{ event.registration_end }}

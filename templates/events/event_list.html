@@ -23,6 +23,8 @@
     {% if request.user|user_attending_event:event %}
       {% if request.user|user_accepted_event:event %}
         <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Signed up!</a>&nbsp&nbsp
+      {% elif request.user|user_declined_event:event %}
+        <a style="width: 100px"  class="btn btn-danger btn-xs" href="{% url 'event_attend_form' event.id %}">Declined!</a>&nbsp&nbsp
       {% else %}
         <a style="width: 100px"  class="btn btn-warning btn-xs" href="{% url 'event_attend_form' event.id %}">Pending...</a>&nbsp&nbsp
       {% endif %}
