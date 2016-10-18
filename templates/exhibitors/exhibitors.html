@@ -5,13 +5,14 @@
 {% endblock %}
 {% block content %}
     <h1>Exhibitors ({{ exhibitors|length }})</h1>
-
+    <div class="table-responsive">
     <table class="table" id="exhibitor_table">
         <thead>
         <tr>
             <th>Exhibitor</th>
             <th>Location</th>
             <th>Host</th>
+            <th>Superior</th>
         </tr>
         </thead>
         <tbody>
@@ -26,16 +27,22 @@
                 <td>{{ exhibitor.location|default:"" }}</td>
                 <td>
 					{% for host in exhibitor.hosts.all %}
-						{{ host.get_full_name | default:"" }}
+						<a href="{% url 'view_person' host.pk %}">{{ host.get_full_name | default:"" }}</a>
 						{% if not forloop.last %}
 							<br>
 						{% endif %}
 					{% endfor %}
 				</td>
+                <td>
+                    {% for superior in exhibitor.superiors %}
+                    <a href="{% url 'view_person' superior.pk %}">{{ superior.get_full_name }}</a>
+                    {% endfor %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    </div>
 {% endblock %}
 {% block scripts %}
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>

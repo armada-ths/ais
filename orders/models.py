@@ -13,6 +13,12 @@ class Product(models.Model):
     class Meta:
         ordering = ["name"]
 
+    def ordered_quantity(self):
+        return sum([order.amount for order in self.order_set.all()])
+
+    def revenue(self):
+        return self.ordered_quantity() * self.price
+
     def __str__(self):
         return "%s, %s" % (self.name, self.fair.name)
 

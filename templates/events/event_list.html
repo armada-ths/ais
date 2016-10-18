@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load event_extras %}
+
+{% block nav-events %}
+    <li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
+{% endblock %}
+
 {% block content %}
 <h2>Armada 2016 Events</h2>
 <table class="table table-striped">
@@ -7,7 +12,7 @@
 <th class="text-uppercase">name</th>
 <th></th>
 <th class="text-uppercase">date</th>
-<th></th>
+<th class="text-uppercase">signup</th>
 </tr>
 {% for event in events %}
 <tr>
@@ -15,12 +20,21 @@
 <td>{{ event.description_short }}</td>
 <td>{{ event.event_start }}</td>
 <td>
-  <!-- TODO change so user can see status of the attendence -->
-  {% if request.user|user_attending_event:event %}
-    <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Attending event!</a>&nbsp&nbsp
-  {% else %}
-    <a style="width: 100px" class="btn btn-primary btn-xs" href="{% url 'event_attend_form' event.id %}">Not Attending</a>&nbsp&nbsp
-  {% endif %}
+    {% if request.user|user_attending_event:event %}
+      {% if request.user|user_accepted_event:event %}
+        <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Signed up!</a>&nbsp&nbsp
+      {% else %}
+        <a style="width: 100px"  class="btn btn-warning btn-xs" href="{% url 'event_attend_form' event.id %}">Pending...</a>&nbsp&nbsp
+      {% endif %}
+    {% elif event|registration_open %}
+      <a style="width: 100px" class="btn btn-primary btn-xs" href="{% url 'event_attend_form' event.id %}">Open</a>&nbsp&nbsp
+    {% else %}
+      {% if event|registration_not_started %}
+        <a style="width: 100px" class="btn btn-default btn-xs" href="{% url 'event_attend_form' event.id %}">Not opened</a>&nbsp&nbsp
+      {% elif event|registration_closed %}
+        <a style="width: 100px" class="btn btn-default btn-xs" href="{% url 'event_attend_form' event.id %}">Closed</a>&nbsp&nbsp
+      {% endif %}
+    {% endif %}
 </td>
 </tr>
 {% endfor %}

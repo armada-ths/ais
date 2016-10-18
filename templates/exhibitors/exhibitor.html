@@ -7,70 +7,145 @@
         <li class="active">{{ exhibitor.company }}</li>
     </ol>
 
-    <h3>{{ exhibitor.company }}</h3>
+    <h2>{{ exhibitor.company }}</h2>
     <hr>
 
-        <div class="panel panel-default">
-      <div class="panel-heading">Contact</div>
-      <div class="panel-body">
-          <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
-        <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
-          <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
-          <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
-          <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
-
-
-
-
-
-      </div>
-    </div>
-
     <div class="row">
-        <div class="col-md-12">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ exhibitor_form|crispy }}
-                    <h3>Invoice</h3>
-                    {{ invoice_form|crispy }}
-                    <h3>Armada Transport</h3>
-                    {{ armada_transport_form|crispy }}
-                    <button class="btn btn-primary">Save</button>
-                </form>
+        <div class="col-md-6">
+            <form method="post">
+                {% csrf_token %}
+
+
+                <h3>Exhibitor</h3>
+                {{ exhibitor_form|crispy }}
+                <h3>Stand information</h3>
+                {{ stand_form|crispy }}
+                <h3>Transport to fair</h3>
+                {{ transport_to_fair_form|crispy }}
+                <h3>Transport from fair</h3>
+                {{ transport_from_fair_form|crispy }}
+
+                <p class="help-block">Only fill in the following fields if you use Armada Transport</p>
+                {{ armada_transport_from_fair_form|crispy }}
+
+                <h3>Company</h3>
+                {{ company_form|crispy }}
+                <h3>Invoice</h3>
+                {{ invoice_form|crispy }}
+
+                <button class="btn btn-primary">Save</button>
+            </form>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div>
+
+            <h3>Contact</h3>
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Contact</strong></div>
+                <div class="panel-body">
+                    <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
+                    <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
+                    <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
+                    <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
+                    <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
+
+                </div>
+            </div>
+
+            <h3>Hosts</h3>
+            {% for host in exhibitor.hosts.all %}
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Host</strong></div>
+                <div class="panel-body">
+                    <p>Host: <a href="{% url "view_person" host.pk %}">{{ host.get_full_name }}</a></p>
+                    <p>Superior: <a href="{% url "view_person" exhibitor.superiors.0.pk %}">{{ exhibitor.superiors.0.get_full_name }}</a></p>
+                    <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
+                    <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
+                    <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
+
+                </div>
+            </div>
+            {% endfor %}
+
+                <h3>Products</h3>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Amount</th>
+                        <th>Product price</th>
+                        <th>Total price</th>
+                    </tr>
+                    </thead>
+                    {% for order in exhibitor.order_set.all %}
+                        <tr>
+                            <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
+                            <td>{{ order.amount }}</td>
+                            <td>{{ order.product.price }}</td>
+                            <td>{{ order.price }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th></th>
+                        <th>{{ exhibitor.total_cost }}</th>
+                    </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span
+                        class="glyphicon glyphicon-plus"></span> New order</a>
+
+
+                <h3>Banquette attendants</h3>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Phone number</th>
+                        <th>Allergies</th>
+                        <th>Student ticket</th>
+                        <th>Wants alcohol</th>
+                        <th>Lactose free</th>
+                        <th>Gluten free</th>
+                    </tr>
+                    </thead>
+                    {% for attendant in exhibitor.banquetteattendant_set.all %}
+                        <tr>
+                        <td><a href="{% url 'banquette_attendant' exhibitor.pk attendant.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</td>
+                        <td>{{ attendant.get_gender_display }}</td>
+                        <td>{{ attendant.phone_number }}</td>
+                        <td>{{ attendant.allergies }}</td>
+                        <td>{% if attendant.student_ticket %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        <td>{% if attendant.wants_alcohol %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        <td>{% if attendant.wants_lactose_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        <td>{% if attendant.wants_gluten_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+                <a href="{% url 'banquette_attendant_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
+
+            </div>
+            <br>
+
+
+
+
+
 
         </div>
     </div>
 
-    <div class="row">
 
-    <div class="col-md-12">
-    <hr>
-    <h2>Products</h2>
-        <table class="table">
-    <thead>
-    <tr>
-        <th>Product</th>
-        <th>Amount</th>
-        <th>Price</th>
-    </tr>
-    </thead>
-        {% for order in exhibitor.order_set.all %}
-            <tr>
-            <td><a href="{% url 'order' exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
-            <td>{{ order.amount }}</td>
-            <td>{{ order.price }}</td>
-            </tr>
-        {% endfor %}
-        <tfoot>
-        <tr>
-            <th>Total</th>
-            <th></th>
-            <th>{{ exhibitor.total_cost }}</th>
-        </tr>
-        </tfoot>
-    </table>
-    <a href="{% url 'order_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New order</a>
-    </div>
-    </div>
+
+
 
 {% endblock %}
