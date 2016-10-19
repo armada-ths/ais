@@ -17,6 +17,7 @@ class Event(models.Model):
     capacity = models.IntegerField(default=0, blank=True, null=True)
     description = models.TextField(blank=True)
     description_short = models.TextField(blank=True)
+    location = models.CharField(max_length=75, blank=True)
     attendence_description = models.TextField(
         blank=True,
         help_text="This is a text only shown in the attendence form, example \
