@@ -40,6 +40,7 @@ def names(objects):
 
 
 def exhibitor(request, exhibitor):
+    tags = tags_mappings(exhibitor.tags.all())
     return OrderedDict([
         ('id', exhibitor.pk),
         ('name', exhibitor.display_name),
@@ -63,7 +64,7 @@ def exhibitor(request, exhibitor):
         ('job_types', names(exhibitor.job_types)),
         ('continents', names(exhibitor.continents)),
         ('values', names(exhibitor.values)),
-        *tags_mappings(exhibitor.tags.all()),
+        *tags,
     ])
 
 
