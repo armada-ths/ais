@@ -26,11 +26,15 @@
                             <td class="col-md-2">{{ event.event_start|date:"d M h:s" }}</td>
                             <td class="col-md-4">{{ event.description_short }}</td>
                             <td class="col-md-2">
-                                {% if request.user|user_attending_event:event %}
-                                    <a class="btn btn-success btn-xs" href="{% url "event_attend_form" event.id %}">Attending event</a>
-                                {% else %}
-                                    <a class="btn btn-danger btn-xs" href="{% url "event_attend_form" event.id %}">Sign up!</a>
+                            {% if event|registration_open %}
+                                <span class="label label-success">Open</span>
+                            {% else %}
+                                {% if event|registration_not_started %}
+                                    <span class="label label-default">Not opened yet</span>
+                                {% elif event|registration_closed %}
+                                    <span class="label label-default">Closed</span>
                                 {% endif %}
+                            {% endif %}
                             </td>
                         </tr>
                     {% empty %}
