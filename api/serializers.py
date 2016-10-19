@@ -27,6 +27,8 @@ def image_url_or_missing(request, image):
 
 
 def obj_name(obj):
+    if not obj:
+        return {}
     return OrderedDict([
         ('id', obj.pk),
         ('name', obj.name)
