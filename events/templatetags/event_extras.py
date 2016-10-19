@@ -17,6 +17,12 @@ def user_accepted_event(user, event):
     return ea.status == 'A'
 
 
+@register.filter(name='user_declined_event')
+def user_declined_event(user, event):
+    ea = EventAttendence.objects.filter(user=user.id, event=event.id)[0]
+    return ea.status == 'D'
+
+
 @register.filter(name='user_pending_event')
 def user_pending_event(user, event):
     ea = EventAttendence.objects.filter(user=user.id, event=event.id)[0]

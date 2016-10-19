@@ -50,7 +50,7 @@ class Event(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
-        return '%s'%(self.name)
+        return '%s: %s'%(self.fair, self.name)
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
