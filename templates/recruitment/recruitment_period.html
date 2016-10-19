@@ -37,6 +37,7 @@
     {% if interviews %}
         <h2>Your interviews ({{ interviews.count }})</h2>
         <p>Must be done before {{ recruitment_period.interview_end_date|date:"d M" }}</p>
+        <div class="table-responsive">
         <table class="table">
             <thead>
             <tr>
@@ -67,6 +68,7 @@
                 </tr>
             {% endfor %}
         </table>
+        </div>
         <br>
     {% endif %}
 
@@ -221,7 +223,8 @@
                             scales: {
                                 yAxes: [{
                                     ticks: {
-                                        beginAtZero: true
+                                        beginAtZero: true,
+                                        max: dataset.y_limit ? dataset.y_limit : undefined
                                     }
                                 }]
                             }

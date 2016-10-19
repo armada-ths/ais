@@ -39,8 +39,10 @@ INSTALLED_APPS = (
     'recruitment',
     'api',
     'news',
+    'orders',
     'crispy_forms',
     'exhibitors',
+    'django.contrib.humanize'
 )
 
 MIDDLEWARE_CLASSES = (

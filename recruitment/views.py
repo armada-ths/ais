@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, Programme, CustomFieldArgument
+    create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
@@ -10,7 +10,8 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from people.models import Profile
-from companies.models import Company, CompanyParticipationYear
+from companies.models import Company
+from exhibitors.models import Exhibitor
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.forms import modelform_factory
@@ -176,6 +177,7 @@ def interview_state_counts(request, pk):
         'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()] + [('total', sum(state_counts.values()))]) for interviewer,state_counts in interview_state_count_map.items()]
     })
 
+
 @permission_required('recruitment.view_recruitment_applications', raise_exception=True)
 def recruitment_period_graphs(request, pk):
     start = time.time()
@@ -190,6 +192,7 @@ def recruitment_period_graphs(request, pk):
             self.monocolor = monocolor
             self.charts = charts
             self.sort_key = sort_key
+            self.y_limit = None
 
             if values:
                 self.add_values(values)
@@ -215,7 +218,8 @@ def recruitment_period_graphs(request, pk):
                 'monocolor': self.monocolor,
                 'charts': self.charts,
                 'sorted_values': self.sorted_values(),
-                'sorted_value_counts': self.sorted_value_counts()
+                'sorted_value_counts': self.sorted_value_counts(),
+                'y_limit': self.y_limit,
             }
 
     date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
@@ -256,6 +260,36 @@ def recruitment_period_graphs(request, pk):
                     [arguments.get(pk=int(answer.answer)).value for answer in custom_field.customfieldanswer_set.all()]
                 )
                 custom_field_counts.append(custom_field_count)
+
+                # Also, for each argument we want to plot bar graphs so we can see the number of english or swedish applicants per date
+                argument_per_date_counts = []
+                y_limit = 0
+                for argument in arguments:
+                    date_dictionary = dict(
+                        [(date_filter(application.submission_date, "d M"), application.submission_date) for application in
+                         application_list])
+
+                    argument_per_date_count = ValueCounter(
+                        argument.value,
+                        True,
+                        ['bar'],
+                        [date_filter(application.submission_date, "d M") for application in application_list if CustomFieldAnswer.objects.filter(user=application.user, answer=str(argument.pk)).exists()],
+                        lambda x: date_dictionary[x]
+                    )
+
+                    for date in daterange(recruitment_period.start_date, min(timezone.now(), recruitment_period.end_date)):
+                        date_string = date_filter(date, "d M")
+                        if not date_string in argument_per_date_count.data:
+                            argument_per_date_count.data[date_string] = 0
+                            date_dictionary[date_string] = date
+
+                    y_limit = max(y_limit, max(argument_per_date_count.data.values()))
+                    argument_per_date_counts.append(argument_per_date_count)
+
+                for argument_per_date_count in argument_per_date_counts:
+                    argument_per_date_count.y_limit = y_limit
+                    custom_field_counts.append(argument_per_date_count)
+
         except (ValueError, ObjectDoesNotExist):
             print('Custom field error: %s' % custom_field.question)
 
@@ -281,6 +315,7 @@ def recruitment_period_graphs(request, pk):
     return JsonResponse({
         'graph_datasets': [value_counter.json() for value_counter in value_counters]
     })
+
 
 from django.http import HttpResponseRedirect
 import urllib
@@ -708,7 +743,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         return HttpResponseForbidden()
 
     exhibitors = [participation.company for participation in
-                  CompanyParticipationYear.objects.filter(fair=application.recruitment_period.fair)]
+                  Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
