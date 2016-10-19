@@ -7,3 +7,16 @@
   border-radius: 0 !important;
 }
 
+.navbar-brand img {
+  opacity: 0.6;
+}
+
+.navbar-brand:hover img {
+  opacity: 1;
+  animation: sailing 3s infinite;
+}
+
+@keyframes sailing {
+  25% {transform: rotate(20deg);}
+  75% {transform: rotate(-20deg);}
+}
