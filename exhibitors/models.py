@@ -186,6 +186,7 @@ class CatalogInfo(models.Model):
     job_types = models.ManyToManyField(JobType, blank=True)
     continents = models.ManyToManyField(Continent, blank=True)
     values = models.ManyToManyField(Value, blank=True)
+    tags = models.ManyToManyField('fair.Tag', blank=True)
 
     def __str__(self):
         return self.display_name
