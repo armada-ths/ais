@@ -64,8 +64,7 @@ def exhibitor(request, exhibitor):
         ('job_types', names(exhibitor.job_types)),
         ('continents', names(exhibitor.continents)),
         ('values', names(exhibitor.values)),
-        *tags,
-    ])
+    ] + tags)
 
 
 def event(request, event):
@@ -83,8 +82,7 @@ def event(request, event):
         ('registration_end', unix_time(event.registration_end)),
         ('registration_last_day_cancel',
             unix_time(event.registration_last_day_cancel)),
-        *tags,
-    ])
+    ] + tags)
 
 
 def newsarticle(newsarticle):
