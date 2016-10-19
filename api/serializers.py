@@ -73,6 +73,7 @@ def event(request, event):
         ('id', event.pk),
         ('name', event.name),
         ('image_url', image_url_or_missing(request, event.image)),
+        ('location', event.location),
         ('description_short', event.description_short),
         ('description', event.description),
         ('event_start', unix_time(event.event_start)),
