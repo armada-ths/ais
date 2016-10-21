@@ -30,7 +30,7 @@ def events(request):
 
 def news(request):
     news = NewsArticle.public_articles.all()
-    data = [serializers.newsarticle(article) for article in news]
+    data = [serializers.newsarticle(request, article) for article in news]
     return JsonResponse(data, safe=False)
 
 

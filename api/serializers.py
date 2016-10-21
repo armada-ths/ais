@@ -87,12 +87,13 @@ def event(request, event):
     ] + tags)
 
 
-def newsarticle(newsarticle):
+def newsarticle(request, newsarticle):
     return OrderedDict([
         ('id', newsarticle.pk),
         ('title', newsarticle.title),
         ('date_published', unix_time(newsarticle.publication_date)),
-        ('html_article_text', newsarticle.html_article_text)
+        ('html_article_text', newsarticle.html_article_text),
+		('image', image_url_or_missing(request, newsarticle.image)),
     ])
 
 
