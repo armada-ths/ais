@@ -24,7 +24,7 @@ class LoginRequiredMiddleware:
  'django.core.context_processors.auth'."
         # PLACEHOLDER until proper authenitaction is in place
         path = request.path_info
-        url_exceptions = ['/api/events/', '/api/exhibitors/', '/api/news/']
+        url_exceptions = ['/api/events/', '/api/exhibitors/', '/api/news/', '/api/partners/']
         if path in url_exceptions:
             return
         if not request.user.is_authenticated():
