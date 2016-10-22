@@ -42,3 +42,7 @@ def registration_not_started(event):
 @register.filter(name='registration_closed')
 def registration_closed(event):
     return after(event.registration_end)
+
+@register.filter(name='registration_required')
+def registration_required(event):
+    return event.registration_required
