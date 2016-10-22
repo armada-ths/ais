@@ -407,7 +407,7 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
     sort_ascending = request.GET.get('sort_ascending') == 'true'
 
     order_by_query = ('' if sort_ascending else '-') + sort_field
-    application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query).all().prefetch_related('roleapplication_set')
+    application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query, '-submission_date').all().prefetch_related('roleapplication_set')
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
