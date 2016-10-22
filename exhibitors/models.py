@@ -96,6 +96,8 @@ class BanquetteAttendant(models.Model):
     exhibitor = models.ForeignKey(Exhibitor)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
+    linkedin_url = models.CharField(max_length=200, blank=True)
+    job_title = models.CharField(max_length=200, blank=True)
     genders = [
         ('male', 'Male'),
         ('female', 'Female'),
@@ -108,6 +110,9 @@ class BanquetteAttendant(models.Model):
     wants_alcohol = models.BooleanField(default=True)
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["first_name", "last_name"]
 
     def __str__(self):
         return '%s %s - %s' % (self.first_name, self.last_name, self.exhibitor)

@@ -109,9 +109,12 @@
                             <div class="panel-heading"><strong>{{ attendant.first_name }} {{ attendant.last_name }}</strong>
                                 <a href="{% url 'banquette_attendant' exhibitor.pk attendant.pk %}" class="pull-right"> Edit</a></div>
                             <div class="panel-body">
+
+                        <p>Job title: <strong>{{ attendant.job_title }}</strong></p>
+                        <p>LinkedIn: <a href="{{ attendant.linkedin_url }}">{{ attendant.linkedin_url }}</a></p>
                         <p>Gender: <strong>{{ attendant.get_gender_display }}</strong></p>
                         <p>Phone number: <strong>{{ attendant.phone_number }}</strong></p>
-                        <p>Allergies: <strong>{{ attendant.allergies }}</strong></p>
+                        <p>Allergies: <strong>{{ attendant.allergies|default:'None' }}</strong></p>
 
 
                         {% if attendant.student_ticket %}
