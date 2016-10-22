@@ -4,7 +4,7 @@
 {% block content %}
 <h2>{{ event.name }}</h2>
 <br>
-{{ event.description }}
+{{ event.description|safe }}
 <br>
 <br>
 <form method="post">
@@ -12,7 +12,7 @@
   {{ form|crispy }}
   <br>
   <br>
-  {{ event.attendence_description }}
+  {{ event.attendence_description|safe }}
   <br>
   <br>
   {% if request.user|user_attending_event:event %}
