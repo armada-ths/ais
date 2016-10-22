@@ -13,6 +13,7 @@
             <th>Location</th>
             <th>Host</th>
             <th>Superior</th>
+            <th>Status</th>
         </tr>
         </thead>
         <tbody>
@@ -37,6 +38,9 @@
                     {% for superior in exhibitor.superiors %}
                     <a href="{% url 'view_person' superior.pk %}">{{ superior.get_full_name }}</a>
                     {% endfor %}
+                </td>
+                <td>
+                    {{ exhibitor.get_status_display|default:"" }}
                 </td>
             </tr>
         {% endfor %}
