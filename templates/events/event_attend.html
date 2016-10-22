@@ -34,24 +34,26 @@
       <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
     {% endif %}
   {% else %}
-      {% if event|registration_open %}
-        Signup ends {{ event.registration_end }}
-        <br>
-        <br>
-        <input class="btn btn-primary" type="submit" value="Sign up" />
-      {% else %}
-        {% if event|registration_not_started %}
-          Signup starts {{ event.registration_start }}
-          <br>
-          <br>
-          <input class="btn btn-default" type="submit" value="Not open" />
-        {% elif event|registration_closed %}
-          Signup closed {{ event.registration_end }}
-          <br>
-          <br>
-          <input class="btn btn-default" type="submit" value="Closed" />
-        {% endif %}
-      {% endif %}
+  	{% if event|registration_required %}
+		  {% if event|registration_open %}
+		    Signup ends {{ event.registration_end }}
+			  <br>
+			  <br>
+			  <input class="btn btn-primary" type="submit" value="Sign up" />
+		  {% else %}
+				{% if event|registration_not_started %}
+				  Signup starts {{ event.registration_start }}
+				  <br>
+				  <br>
+				  <input class="btn btn-default" type="submit" value="Not open" />
+				{% elif event|registration_closed %}
+				  Signup closed {{ event.registration_end }}
+				  <br>
+				  <br>
+				  <input class="btn btn-default" type="submit" value="Closed" />
+				{% endif %}
+			{% endif %}
+	  {% endif %}
   {% endif %}
 </form>
 {% endblock %}
