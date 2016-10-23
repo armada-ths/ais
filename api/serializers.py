@@ -14,7 +14,7 @@ def tags_mappings(items):
 
 
 def absolute_url(request, path):
-    protocol = 'http://' if request.is_secure else 'https://'
+    protocol = 'https://' if request.is_secure else 'http://'
     url = request.META['HTTP_HOST']
     return '{}{}{}'.format(protocol, url, path)
 
