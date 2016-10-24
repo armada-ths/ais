@@ -157,7 +157,7 @@ class CatalogInfo(models.Model):
             )
     display_name = models.CharField(max_length=200)
     slug = models.SlugField(db_index=False, blank=True)
-    short_description = models.CharField(max_length=200)
+    short_description = models.CharField(max_length=200, blank=True)
     description = models.TextField()
     employees_sweden = models.IntegerField(default=0)
     employees_world = models.IntegerField(default=0)
