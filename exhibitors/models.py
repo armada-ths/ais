@@ -97,6 +97,7 @@ class BanquetteAttendant(models.Model):
     exhibitor = models.ForeignKey(Exhibitor, null=True, blank=True) # Null for non-exhibitor representants
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
     linkedin_url = models.CharField(max_length=200, blank=True)
     job_title = models.CharField(max_length=200, blank=True)
     genders = [
@@ -105,12 +106,13 @@ class BanquetteAttendant(models.Model):
         ('other', 'Other')
     ]
     gender = models.CharField(choices=genders, max_length=10)
-    phone_number = models.CharField(max_length=200, blank=True)
+    phone_number = models.CharField(max_length=200)
     allergies = models.CharField(max_length=1000, blank=True)
     student_ticket = models.BooleanField(default=False)
     wants_alcohol = models.BooleanField(default=True)
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
+    wants_vegetarian_food = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["first_name", "last_name"]
