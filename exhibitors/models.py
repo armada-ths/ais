@@ -97,7 +97,7 @@ class BanquetteAttendant(models.Model):
     exhibitor = models.ForeignKey(Exhibitor, null=True, blank=True) # Null for non-exhibitor representants
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
-    email = models.CharField(max_length=200, blank=True)
+    email = models.CharField(max_length=200)
     linkedin_url = models.CharField(max_length=200, blank=True)
     job_title = models.CharField(max_length=200, blank=True)
     genders = [
