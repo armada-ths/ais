@@ -43,7 +43,7 @@ def banquette_signup(request, template_name='exhibitors/related_object_form.html
             return redirect('/')
         delete_url = reverse(banquette_signup_delete)
         return render(request, template_name,
-                      {'form': form, 'exhibitor': None, 'instance': instance, 'model_name': 'Banquette',
+                      {'form': form, 'exhibitor': None, 'instance': instance, 'model_name': 'Banquet',
                        'delete_url': delete_url})
 
     return render(request, 'login.html', {'next': next})
