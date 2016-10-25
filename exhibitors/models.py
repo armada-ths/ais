@@ -106,7 +106,7 @@ class BanquetteAttendant(models.Model):
         ('other', 'Other')
     ]
     gender = models.CharField(choices=genders, max_length=10)
-    phone_number = models.CharField(max_length=200, blank=True)
+    phone_number = models.CharField(max_length=200)
     allergies = models.CharField(max_length=1000, blank=True)
     student_ticket = models.BooleanField(default=False)
     wants_alcohol = models.BooleanField(default=True)

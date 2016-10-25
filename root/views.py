@@ -34,11 +34,14 @@ def index(request):
 def banquette_signup(request, template_name='exhibitors/related_object_form.html'):
     if request.user.is_authenticated():
         instance = BanquetteAttendant.objects.filter(user=request.user).first()
-        FormFactory = modelform_factory(BanquetteAttendant, exclude=('user', 'exhibitor',))
+        FormFactory = modelform_factory(BanquetteAttendant, exclude=('user', 'exhibitor','first_name', 'last_name', 'email'))
         form = FormFactory(request.POST or None, instance=instance)
         if form.is_valid():
             instance = form.save()
             instance.user = request.user
+            instance.first_name = request.user.first_name
+            instance.last_name = request.user.last_name
+            instance.email = request.user.email
             instance.save()
             return redirect('/')
         delete_url = reverse(banquette_signup_delete)
