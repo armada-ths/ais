@@ -93,7 +93,8 @@ class Exhibitor(models.Model):
         return '%s at %s' % (self.company.name, self.fair.name)
 
 class BanquetteAttendant(models.Model):
-    exhibitor = models.ForeignKey(Exhibitor)
+    user = models.ForeignKey(User, null=True, blank=True) # Null for exhibitor representants
+    exhibitor = models.ForeignKey(Exhibitor, null=True, blank=True) # Null for non-exhibitor representants
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     linkedin_url = models.CharField(max_length=200, blank=True)
