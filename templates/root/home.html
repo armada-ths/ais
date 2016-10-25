@@ -8,6 +8,13 @@
 <div class="row">
     <div class="col-md-12">
 
+        <h2>Banquette</h2>
+        {% if is_attending_banquette %}
+            <a class="btn btn-default" href="{% url 'banquette_signup' %}">View sign up</a>
+        {% else %}
+            <a class="btn btn-success" href="{% url 'banquette_signup' %}">Sign up</a>
+        {% endif %}
+
         <h2>Events</h2>
         <div class="table-responsive">
             <table class="table">
