@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from django.contrib.auth.models import Group
 from exhibitors.models import Exhibitor
 from events.models import Event
 from news.models import NewsArticle
@@ -39,4 +40,12 @@ def partners(request):
             fair__name=CURRENT_FAIR
             ).order_by('-main_partner')
     data = [serializers.partner(request, partner) for partner in partners]
+    return JsonResponse(data, safe=False)
+
+
+def organization(request):
+    groups = Group.objects \
+            .prefetch_related('user_set__profile') \
+            .order_by('name')
+    data = [serializers.organization_group(request, group) for group in groups]
     return JsonResponse(data, safe=False)
