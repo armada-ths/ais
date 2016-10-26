@@ -2,45 +2,45 @@
 {% load event_extras %}
 
 {% block nav-events %}
-    <li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
+  <li role="presentation" class="active"><a href="{% url 'event_list' %}">Events</a></li>
 {% endblock %}
 
 {% block content %}
 <h2>Armada 2016 Events</h2>
 <table class="table table-striped">
-<tr>
-<th class="text-uppercase">name</th>
-<th></th>
-<th class="text-uppercase">date</th>
-<th class="text-uppercase">signup</th>
-</tr>
-{% for event in events %}
-<tr>
-<td><a href="{% url 'event_attend_form' event.id %}">{{ event.name }}</a></td>
-<td>{{ event.description_short }}</td>
-<td>{{ event.event_start }}</td>
-<td>
-    {% if event.registration_required %}
-    {% if request.user|user_attending_event:event %}
-      {% if request.user|user_accepted_event:event %}
-        <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Signed up!</a>&nbsp&nbsp
-      {% elif request.user|user_declined_event:event %}
-        <a style="width: 100px"  class="btn btn-danger btn-xs" href="{% url 'event_attend_form' event.id %}">Declined!</a>&nbsp&nbsp
-      {% else %}
-        <a style="width: 100px"  class="btn btn-warning btn-xs" href="{% url 'event_attend_form' event.id %}">Pending...</a>&nbsp&nbsp
-      {% endif %}
-    {% elif event|registration_open %}
-      <a style="width: 100px" class="btn btn-primary btn-xs" href="{% url 'event_attend_form' event.id %}">Open</a>&nbsp&nbsp
-    {% else %}
-      {% if event|registration_not_started %}
-        <a style="width: 100px" class="btn btn-default btn-xs" href="{% url 'event_attend_form' event.id %}">Not opened</a>&nbsp&nbsp
-      {% elif event|registration_closed %}
-        <a style="width: 100px" class="btn btn-default btn-xs" href="{% url 'event_attend_form' event.id %}">Closed</a>&nbsp&nbsp
-      {% endif %}
-    {% endif %}
-    {% endif %}
-</td>
-</tr>
-{% endfor %}
+  <tr>
+    <th class="text-uppercase">name</th>
+    <th></th>
+    <th class="text-uppercase">date</th>
+    <th class="text-uppercase">signup</th>
+  </tr>
+  {% for event in events %}
+    <tr>
+      <td><a href="{% url 'event_attend_form' event.id %}">{{ event.name }}</a></td>
+      <td>{{ event.description_short }}</td>
+      <td>{{ event.event_start }}</td>
+      <td>
+        {% if event.registration_required %}
+          {% if request.user|user_attending_event:event %}
+            {% if request.user|user_accepted_event:event %}
+              <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Signed up!</a>&nbsp&nbsp
+            {% elif request.user|user_declined_event:event %}
+              <a style="width: 100px"  class="btn btn-danger btn-xs" href="{% url 'event_attend_form' event.id %}">Declined!</a>&nbsp&nbsp
+            {% else %}
+              <a style="width: 100px"  class="btn btn-warning btn-xs" href="{% url 'event_attend_form' event.id %}">Pending...</a>&nbsp&nbsp
+            {% endif %}
+          {% elif event|registration_open %}
+              <a style="width: 100px" class="btn btn-primary btn-xs" href="{% url 'event_attend_form' event.id %}">Open</a>&nbsp&nbsp
+          {% else %}
+            {% if event|registration_not_started %}
+              <a style="width: 100px" class="btn btn-default btn-xs" href="{% url 'event_attend_form' event.id %}">Not opened</a>&nbsp&nbsp
+            {% elif event|registration_closed %}
+              <a style="width: 100px" class="btn btn-default btn-xs" href="{% url 'event_attend_form' event.id %}">Closed</a>&nbsp&nbsp
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
 </table>
 {% endblock %}
