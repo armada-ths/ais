@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Group
 from django.conf import settings
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 import os
-from fair.models import Fair
+from fair.models import Fair, Tag
 
 
 # An 'Event' belongs to a specific 'Fair'
@@ -17,6 +17,7 @@ class Event(models.Model):
     capacity = models.IntegerField(default=0, blank=True, null=True)
     description = models.TextField(blank=True)
     description_short = models.TextField(blank=True)
+    location = models.CharField(max_length=75, blank=True)
     attendence_description = models.TextField(
         blank=True,
         help_text="This is a text only shown in the attendence form, example \
@@ -26,6 +27,7 @@ class Event(models.Model):
         default=True,
         help_text="If this is checked all users that attends the event needs to \
         be accepted by an admin.")
+    registration_required = models.BooleanField(default=True)
     registration_start = models.DateTimeField()
     registration_end = models.DateTimeField()
     registration_last_day_cancel = models.DateTimeField(
@@ -46,6 +48,7 @@ class Event(models.Model):
             upload_to=UploadToDirUUID('events', 'image_original'), blank=True)
     image = models.ImageField(
             upload_to=UploadToDir('events', 'image'), blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return '%s: %s'%(self.fair, self.name)

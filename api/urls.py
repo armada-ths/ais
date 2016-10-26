@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^exhibitors/', views.exhibitors),
     url(r'^events/', views.events),
     url(r'^news/', views.news),
+    url(r'^partners/', views.partners),
 ]

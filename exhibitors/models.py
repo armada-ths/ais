@@ -93,21 +93,32 @@ class Exhibitor(models.Model):
         return '%s at %s' % (self.company.name, self.fair.name)
 
 class BanquetteAttendant(models.Model):
-    exhibitor = models.ForeignKey(Exhibitor)
+    user = models.ForeignKey(User, null=True, blank=True) # Null for exhibitor representants
+    exhibitor = models.ForeignKey(Exhibitor, null=True, blank=True) # Null for non-exhibitor representants
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
+    linkedin_url = models.CharField(max_length=200, blank=True)
+    job_title = models.CharField(max_length=200, blank=True)
     genders = [
         ('male', 'Male'),
         ('female', 'Female'),
         ('other', 'Other')
     ]
     gender = models.CharField(choices=genders, max_length=10)
-    phone_number = models.CharField(max_length=200, blank=True)
+    phone_number = models.CharField(max_length=200)
     allergies = models.CharField(max_length=1000, blank=True)
     student_ticket = models.BooleanField(default=False)
     wants_alcohol = models.BooleanField(default=True)
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
+    wants_vegetarian_food = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["first_name", "last_name"]
+
+    def __str__(self):
+        return '%s %s - %s' % (self.first_name, self.last_name, self.exhibitor)
 
 # Work field that an exhibitor operates in
 class WorkField(models.Model):
@@ -149,7 +160,7 @@ class CatalogInfo(models.Model):
             )
     display_name = models.CharField(max_length=200)
     slug = models.SlugField(db_index=False, blank=True)
-    short_description = models.CharField(max_length=200)
+    short_description = models.CharField(max_length=200, blank=True)
     description = models.TextField()
     employees_sweden = models.IntegerField(default=0)
     employees_world = models.IntegerField(default=0)
@@ -186,6 +197,7 @@ class CatalogInfo(models.Model):
     job_types = models.ManyToManyField(JobType, blank=True)
     continents = models.ManyToManyField(Continent, blank=True)
     values = models.ManyToManyField(Value, blank=True)
+    tags = models.ManyToManyField('fair.Tag', blank=True)
 
     def __str__(self):
         return self.display_name

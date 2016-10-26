@@ -102,35 +102,43 @@
                         class="glyphicon glyphicon-plus"></span> New order</a>
 
 
-                <h3>Banquette attendants</h3>
-                <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Gender</th>
-                        <th>Phone number</th>
-                        <th>Allergies</th>
-                        <th>Student ticket</th>
-                        <th>Wants alcohol</th>
-                        <th>Lactose free</th>
-                        <th>Gluten free</th>
-                    </tr>
-                    </thead>
+                <h3>Banquet attendants</h3>
+
                     {% for attendant in exhibitor.banquetteattendant_set.all %}
-                        <tr>
-                        <td><a href="{% url 'banquette_attendant' exhibitor.pk attendant.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</td>
-                        <td>{{ attendant.get_gender_display }}</td>
-                        <td>{{ attendant.phone_number }}</td>
-                        <td>{{ attendant.allergies }}</td>
-                        <td>{% if attendant.student_ticket %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
-                        <td>{% if attendant.wants_alcohol %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
-                        <td>{% if attendant.wants_lactose_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
-                        <td>{% if attendant.wants_gluten_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
-                        </tr>
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><strong>{{ attendant.first_name }} {{ attendant.last_name }}</strong>
+                                <a href="{% url 'banquette_attendant' exhibitor.pk attendant.pk %}" class="pull-right"> Edit</a></div>
+                            <div class="panel-body">
+
+                        <p>Job title: <strong>{{ attendant.job_title }}</strong></p>
+                        <p>LinkedIn: <a href="{{ attendant.linkedin_url }}">{{ attendant.linkedin_url }}</a></p>
+                        <p>Gender: <strong>{{ attendant.get_gender_display }}</strong></p>
+                        <p>Phone number: <strong>{{ attendant.phone_number }}</strong></p>
+                        <p>Allergies: <strong>{{ attendant.allergies|default:'None' }}</strong></p>
+
+
+                        {% if attendant.student_ticket %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Student ticket</p>
+                        {% endif %}
+
+                        {% if attendant.wants_alcohol %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Wants alcohol</p>
+                        {% endif %}
+
+
+                        {% if attendant.wants_lactose_free_food %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Wants lactose free food</p>
+                        {% endif %}
+
+                        {% if attendant.wants_gluten_free_food %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Wants gluten free food</p>
+                        {% endif %}
+                            </div>
+                        </div>
+
                     {% endfor %}
-                </table>
-                </div>
+
+
                 <a href="{% url 'banquette_attendant_new' exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
 
             </div>
