@@ -3,7 +3,7 @@ import time
 
 
 def has_common_element(list1, list2):
-    return any(e in list2 for e in list1)
+    return True if set(list1) & set(list2) else False
 
 
 def before(time):

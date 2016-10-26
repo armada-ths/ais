@@ -7,10 +7,10 @@ register = template.Library()
 
 @register.filter(name='user_eligible_event')
 def user_eligible_event(user, event):
-    if event.public_registration:
-        return True
-    return has_common_element(
-        user.groups.all(), event.allowed_groups.all())
+    if event.allowed_groups.all():
+        return has_common_element(
+            user.groups.all(), event.allowed_groups.all())
+    return True
 
 
 @register.filter(name='user_attending_event')

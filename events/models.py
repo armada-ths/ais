@@ -37,7 +37,11 @@ class Event(models.Model):
         default=False,
         help_text="If users without an account should be able to sign up for \
         this event.")
-    allowed_groups = models.ManyToManyField(Group, blank=True)
+    allowed_groups = models.ManyToManyField(
+        Group, blank=True,
+        help_text="Choose which groups in armada should be able to see and \
+        attend this event. NOTE: No groups make the event accesible to all \
+        ais-users.")
     send_submission_mail = models.BooleanField(
         default=False,
         help_text="If checked an email will be sent when a user attends \
