@@ -19,7 +19,7 @@ def absolute_url(request, path):
     return '{}{}{}'.format(protocol, url, path)
 
 
-def image_url_or_missing(request, image):
+def image_url_or_missing(request, image, missing=MISSING_IMAGE):
     if image:
         return absolute_url(request, image.url)
     else:
@@ -76,7 +76,8 @@ def event(request, event):
         ('location', event.location),
         ('description_short', event.description_short),
         ('description', event.description),
-        ('signup_link', absolute_url(request, '/events/'+str(event.pk)+'/signup')),
+        ('signup_link',
+            absolute_url(request, '/events/'+str(event.pk)+'/signup')),
         ('event_start', unix_time(event.event_start)),
         ('event_end', unix_time(event.event_end)),
         ('registration_required', event.registration_required),
@@ -93,7 +94,7 @@ def newsarticle(request, newsarticle):
         ('title', newsarticle.title),
         ('date_published', unix_time(newsarticle.publication_date)),
         ('html_article_text', newsarticle.html_article_text),
-		('image', image_url_or_missing(request, newsarticle.image)),
+        ('image', image_url_or_missing(request, newsarticle.image)),
     ])
 
 
@@ -104,4 +105,24 @@ def partner(request, partner):
         ('logo_url', absolute_url(request, partner.logo.url)),
         ('link_url', partner.url),
         ('is_main_partner', partner.main_partner)
+    ])
+
+
+def person(request, person):
+    picture = ""
+    if person.profile.picture:
+        picture = absolute_url(request, person.profile.picture.url)
+    return OrderedDict([
+        ('id', person.pk),
+        ('name', person.get_full_name()),
+        ('picture', picture),
+    ])
+
+
+def organization_group(request, group):
+    people = [person(request, p) for p in group.user_set.all()]
+    return OrderedDict([
+        ('id', group.pk),
+        ('role', group.name),
+        ('people', people),
     ])
