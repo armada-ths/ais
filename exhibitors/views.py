@@ -132,7 +132,7 @@ def related_object_form(model, model_name, delete_view_name):
 			instance.exhibitor = exhibitor
 			instance.save()
 			return redirect('exhibitor', exhibitor_pk)
-		delete_url = reverse(delete_view_name, args=(exhibitor_pk, instance_pk)) if instance_pk != None else None
+		delete_url = reverse(delete_view_name, args=(exhibitor_pk, instance_pk)) if instance_pk != None and delete_view_name != None else None
 		return render(request, template_name, {'form': form, 'exhibitor': exhibitor, 'instance': instance, 'model_name': model_name, 'delete_url': delete_url})
 	return view
 
