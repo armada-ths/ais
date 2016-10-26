@@ -20,6 +20,7 @@
 <td>{{ event.description_short }}</td>
 <td>{{ event.event_start }}</td>
 <td>
+    {% if event.registration_required %}
     {% if request.user|user_attending_event:event %}
       {% if request.user|user_accepted_event:event %}
         <a style="width: 100px"  class="btn btn-success btn-xs" href="{% url 'event_attend_form' event.id %}">Signed up!</a>&nbsp&nbsp
@@ -36,6 +37,7 @@
       {% elif event|registration_closed %}
         <a style="width: 100px" class="btn btn-default btn-xs" href="{% url 'event_attend_form' event.id %}">Closed</a>&nbsp&nbsp
       {% endif %}
+    {% endif %}
     {% endif %}
 </td>
 </tr>
