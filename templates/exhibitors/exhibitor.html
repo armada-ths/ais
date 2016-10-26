@@ -44,7 +44,10 @@
 
             <h3>Contact</h3>
             <div class="panel panel-default">
-                <div class="panel-heading"><strong>Contact</strong></div>
+                <div class="panel-heading">
+                    <strong>Contact</strong>
+                    <a href="{% url 'contact' exhibitor.pk exhibitor.contact.pk %}" class="pull-right"> Edit</a>
+                </div>
                 <div class="panel-body">
                     <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
                     <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
