@@ -16,7 +16,7 @@ env\Scripts\activate.bat
 env\Scripts\activate.ps1
 ```
 
-Install django, get the code, create the database, run the server:
+Install dependencies, get the code, create the database, run the server:
 ```
 pip install -r requirements_local.txt
 git clone http://github.com/armada-ths/ais

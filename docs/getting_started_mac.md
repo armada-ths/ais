@@ -17,7 +17,7 @@ Activate it with: ?
 source env/bin/activate
 ```
 
-Install django, get the code, create the database, run the server:
+Install dependencies, get the code, create the database, run the server:
 ```
 pip3 install -r requirements_local.txt
 git clone http://github.com/armada-ths/ais
