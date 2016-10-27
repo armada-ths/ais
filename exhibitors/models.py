@@ -112,7 +112,7 @@ class BanquetteAttendant(models.Model):
     wants_alcohol = models.BooleanField(default=True)
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
-    wants_vegetarian_food = models.BooleanField(default=False)
+    wants_vegetarian_food = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["first_name", "last_name"]

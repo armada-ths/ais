@@ -3,6 +3,7 @@ from datetime import date
 from lib.image import UploadToDirUUID
 
 
+
 class Fair(models.Model):
     name = models.CharField(max_length=100, default="Armada %d"%(date.today().year))
     year = models.IntegerField(default=date.today().year)

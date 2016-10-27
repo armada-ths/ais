@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^events/', views.events),
     url(r'^news/', views.news),
     url(r'^partners/', views.partners),
+    url(r'^organization/', views.organization),
 ]

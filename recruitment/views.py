@@ -599,7 +599,8 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None,
     user = recruitment_application.user if recruitment_application else request.user
     profile = Profile.objects.filter(user=user).first()
     if not profile:
-        Profile.objects.create(user=user)
+        p = Profile(user=user)
+        p.save()
 
     now = timezone.now()
 
