@@ -13,16 +13,14 @@ Activate it with:
 source env/bin/activate
 ```
 
-Install django, get the code, create the database, run the server:
+Install dependencies, get the code, create the database, run the server:
 ```
-pip3 install django
+pip3 install -r requirements_local.txt
 git clone http://github.com/armada-ths/ais
 python3 ais/manage.py migrate --settings local_settings
 python3 ais/manage.py runserver --settings local_settings
 ```
-Now you are good to go, but if you are going to make changes to the database models some further steps need to be taken.
-
-To use the django admin facilites (localhost:8000/admin) you need to create a django admin user:
+To be able to log in to the local version of ais we create a superuser:
 ```
 python3 ais/manage.py createsuperuser --settings local_settings
 ```
@@ -38,6 +36,6 @@ In bash:
 ```
 export DJANGO_SETTINGS_MODULE=local_settings
 ```
-You can also put it in your bashrc to avoid having to type it each session.
+You can also put it in your .bashrc to avoid having to type it each session.
 
 Deactivating virtualenv is done with `deactivate`.

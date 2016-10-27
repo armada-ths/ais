@@ -18,14 +18,12 @@ env\Scripts\activate.ps1
 
 Install django, get the code, create the database, run the server:
 ```
-pip install django
+pip install -r requirements_local.txt
 git clone http://github.com/armada-ths/ais
 python ais\manage.py migrate --settings local_settings
 python ais\manage.py runserver --settings local_settings
 ```
-Now you are good to go, but if you are going to make changes to the database models some further steps need to be taken.
-
-To use the django admin facilites (localhost:8000/admin) you need to create a django admin user:
+To be able to log in to the local version of ais we create a superuser:
 ```
 python ais\manage.py createsuperuser --settings local_settings
 ```
@@ -43,3 +41,5 @@ In powershell:
 ```
 
 Or do it manually in System properties.
+
+Deactivating virtualenv is done with `deactivate`.
