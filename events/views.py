@@ -47,7 +47,7 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
 
 def event_list(request, template_name='events/event_list.html'):
     events = Event.objects.filter(
-        registration_end__gt=timezone.now()).order_by('event_start')
+        event_end__gt=timezone.now()).order_by('event_start')
     # Only show events that have a group in common with the user
     events = [e for e in events if user_eligible_event(request.user, e)]
     return render(request, template_name, {"events": events})
