@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import Http404
 from events.forms import AttendenceForm
 from events.models import EventQuestion, Event, EventAnswer, EventAttendence
 from events.templatetags.event_extras import user_attending_event, \
-    registration_open
+    registration_open, user_eligible_event
 from django.core.mail import send_mail
+from django.utils import timezone
 
 
 def send_mail_on_submission(user, event):
@@ -19,6 +21,8 @@ def send_mail_on_submission(user, event):
 
 def event_attend_form(request, pk, template_name='events/event_attend.html'):
     event = get_object_or_404(Event, pk=pk)
+    if not user_eligible_event(request.user, event):
+        raise Http404()
     questions = EventQuestion.objects.filter(event=pk).all()
     ea = EventAttendence.objects.filter(user=request.user, event=event).first()
     questions_answers = [(question, EventAnswer.objects.filter(
@@ -42,7 +46,10 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
 
 
 def event_list(request, template_name='events/event_list.html'):
-    events = Event.objects.all().order_by('event_start')
+    events = Event.objects.filter(
+        event_end__gt=timezone.now()).order_by('event_start')
+    # Only show events that have a group in common with the user
+    events = [e for e in events if user_eligible_event(request.user, e)]
     return render(request, template_name, {"events": events})
 
 

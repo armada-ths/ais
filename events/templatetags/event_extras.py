@@ -1,8 +1,16 @@
 from django import template
 from events.models import EventAttendence
-from lib.util import before, after
+from lib.util import before, after, has_common_element
 
 register = template.Library()
+
+
+@register.filter(name='user_eligible_event')
+def user_eligible_event(user, event):
+    if event.allowed_groups.all():
+        return has_common_element(
+            user.groups.all(), event.allowed_groups.all())
+    return True
 
 
 @register.filter(name='user_attending_event')
@@ -42,6 +50,7 @@ def registration_not_started(event):
 @register.filter(name='registration_closed')
 def registration_closed(event):
     return after(event.registration_end)
+
 
 @register.filter(name='registration_required')
 def registration_required(event):
