@@ -46,4 +46,4 @@ export DJANGO_SETTINGS_MODULE=local_settings
 
 You can also put it in your .bashrc or .zshrc to avoid having to type it each session.
 
-Deactivating virtualenv is done with `deactivate`.bash
+Deactivating virtualenv is done with `deactivate`.
