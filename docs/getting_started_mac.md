@@ -1,5 +1,4 @@
 ## Getting Started OSX
-### Installing python 3
 
 It is recommended that you install Python3 using `brew`. If you don't already have brew, go get it.
 
