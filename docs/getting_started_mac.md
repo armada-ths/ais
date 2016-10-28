@@ -1,46 +1,48 @@
 ## Getting Started OSX
-[Installing python 3](https://www.python.org/downloads/) ?
 
-`brew install python3` ?
+It is recommended that you install Python3 using `brew`. If you don't already have brew, go get it.
 
-`brew install python3-pip` ?
+`brew install python3`
 
 Navigate to a folder which you want to work in.
 
 (Optional) Set up the virtual environment:
-```
+
+```bash
 pip3 install virtualenv
-virtualenv -p python3 env
+virtualenv -p python3 venv
 ```
-Activate it with: ?
-```
-source env/bin/activate
+Activate it with:
+
+```bash
+source venv/bin/activate
 ```
 
-Install django, get the code, create the database, run the server:
-```
-pip3 install django
+Install dependencies, get the code, create the database, run the server:
+
+```bash
+pip3 install -r requirements_local.txt
 git clone http://github.com/armada-ths/ais
 python3 ais/manage.py migrate --settings local_settings
 python3 ais/manage.py runserver --settings local_settings
 ```
-Now you are good to go, but if you are going to make changes to the database models some further steps need to be taken.
-
-To use the django admin facilites (localhost:8000/admin) you need to create a django admin user:
-```
-python3 ais/manage.py createsuperuser --settings local_settings
+To be able to log in to the local version of ais we create a superuser:
+```bash
+python ais/manage.py createsuperuser --settings local_settings
 ```
 When a change to a model is made, the database need to be migrated to the new format. This is done with the following:
-```
-python3 ais/manage.py makemigrations --settings local_settings
-python3 ais/manage.py migrate --settings local_settings
+```bash
+python ais/manage.py makemigrations --settings local_settings
+python ais/manage.py migrate --settings local_settings
 ```
 
 TIP: To avoid having to type `--settings local_settings` all the time, the environement variable `DJANGO_SETTINGS_MODULE` can be set to local_settings which will tell django to use the "local_settings.py" as default.
 
-In terminal: ?
-```
+In terminal:
+```bash
 export DJANGO_SETTINGS_MODULE=local_settings
 ```
+
+You can also put it in your .bashrc or .zshrc to avoid having to type it each session.
 
 Deactivating virtualenv is done with `deactivate`.
