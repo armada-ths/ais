@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import  static
 urlpatterns = [
     url(r'^$', views.recruitment, name='recruitment'),
-    url(r'^import_members$', views.import_members, name='import_members'),
+    url(r'^assign_roles$', views.assign_roles, name='assign_roles'),
     url(r'^(?P<pk>\d+)$', views.recruitment_period, name='recruitment_period'),
     url(r'^(?P<pk>\d+)/interview_state_counts$', views.interview_state_counts, name='interview_state_counts'),
     url(r'^(?P<pk>\d+)/graphs$', views.recruitment_period_graphs, name='recruitment_period_graphs'),

@@ -63,12 +63,12 @@
 
 
             {% endif %}
-
-                        {% if request.user.is_superuser %}
-                    <p><a href="{% url "import_members" %}">
-                        <button class="btn btn-default">Import members of Armada 2016</button>
-                    </a></p>
-                {% endif %}
+            {% if perms.recruitment.administer_recruitment %}
+                <form action="{% url "assign_roles" %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-default">Assign roles</button>
+                </form>
+            {% endif %}
         </div>
 
         <div class="col-md-3">
