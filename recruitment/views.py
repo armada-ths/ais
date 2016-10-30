@@ -26,6 +26,21 @@ def import_members(request):
     create_project_group()
     return redirect('recruitment')
 
+def assign_roles(request):
+    if not request.user.has_perm('recruitment.administer_roles'):
+        return HttpResponseForbidden()
+
+    # Save all roles because that will guarantee that all roles have a group
+    for role in Role.objects.all():
+        role.save()
+
+    # There should be no accepted applications without a delegated role, if there is one then recruitment manager has messed up
+    # But we don't want this to crash if that's case so exclude all without a delegated role
+    for application in RecruitmentApplication.objects.filter(status='accepted').exclude(delegated_role=None):
+        application.delegated_role.add_user_to_groups(application.user)
+
+    return redirect('recruitment')
+
 
 class RecruitmentPeriodForm(ModelForm):
     class Meta:
