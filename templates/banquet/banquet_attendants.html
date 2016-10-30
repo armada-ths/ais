@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>Banquet attendants ({{ banquet_attendants|length }})</h1>
+    <div class="table-responsive">
+    <table class="table" id="exhibitor_table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Job Title</th>
+            <th>Alcohol</th>
+            <th>Lactose free</th>
+            <th>Gluten free</th>
+            <th>Vegetarian</th>
+            <th>Armada member</th>
+            <th>Exhibitor</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for attendant in banquet_attendants %}
+            <tr>
+                <td>
+                    {% if attendant.user %}
+                        <a href="{% url 'view_person' attendant.user.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</a>
+                    {% else %}
+                        {{ attendant.first_name }} {{ attendant.last_name }}
+                    {% endif %}
+                </td>
+
+                <td>{{ attendant.get_gender_display }}</td>
+                <td>{{ attendant.job_title }}</td>
+                <td>{% if attendant.wants_alcohol %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                <td>{% if attendant.wants_lactose_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                <td>{% if attendant.wants_gluten_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                <td>{% if attendant.wants_vegetarian_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                <td>
+                    {% for group in attendant.user.groups.all %}
+                        {% if group.name == 'Armada' %}
+                            <span class="glyphicon glyphicon-ok"></span>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if attendant.exhibitor and perms.exhibitors.change_exhibitor %}
+                        <a href="{% url 'exhibitor' attendant.exhibitor.pk %}">{{ attendant.exhibitor.company|default:'' }}</a>
+                    {% else %}
+                        {{ attendant.exhibitor.company|default:'' }}
+                    {% endif %}
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+
+        $(document).ready(function () {
+            $('#exhibitor_table').DataTable({
+                'paging': false,
+                'headerCallback': function (row, data, start, end, display) {
+                    var api = this.api()
+                    var intVal = function (i) { return (typeof i === 'string' && i.trim() === '') ? 0 : 1 }
+                    for (var column = 2; column < 9; column++) {
+                        total = api.column(column).data().reduce(function (a, b) { return a+ intVal(b) }, 0)
+                        header = $(api.column(column).header()).html().split('(')[0]
+                        $(api.column(column).header()).html(header + ' (' + total + ')' )
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}

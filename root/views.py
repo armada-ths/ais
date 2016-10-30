@@ -51,6 +51,15 @@ def banquette_signup(request, template_name='exhibitors/related_object_form.html
 
     return render(request, 'login.html', {'next': next})
 
+def banquet_attendants(request, template_name='banquet/banquet_attendants.html'):
+    if request.user.is_authenticated():
+        banquet_attendants = BanquetteAttendant.objects.all()
+        return render(request, template_name, {
+            'banquet_attendants': banquet_attendants,
+        })
+
+    return render(request, 'login.html', {'next': next})
+
 
 def banquette_signup_delete(request):
     if request.POST:
