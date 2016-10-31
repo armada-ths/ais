@@ -68,7 +68,7 @@ def main():
                 error_file.write("Error with "+attendee['Name']+"(id:"+attendee['Id']+")\n")
                 number_of_errors += 1
 
-    print("\nWe had %d errors, but %d attendee's where read in correctly, see errors.txt for more information.\n"%(number_of_errors, number_of_readins))
+    print("\nWe had %d errors, but %d attendees were read in correctly, see errors.txt for more information.\n"%(number_of_errors, number_of_readins))
     print("A total of %d text messages will be sent out. The price will be %.2f SEK" % (len(attendees), len(attendees)*0.50 ))
     print("Would you like to continue? (yes/no)") 
     error_file.close()
