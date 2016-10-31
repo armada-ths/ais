@@ -50,7 +50,7 @@ class Event(models.Model):
         default=False,
         help_text="If checked an email will be sent when a user attends \
         the event")
-    submission_mail_subject = models.TextField(blank=True)
+    submission_mail_subject = models.CharField(max_length=78, blank=True)
     submission_mail_body = models.TextField(blank=True)
     image_original = models.ImageField(
             upload_to=UploadToDirUUID('events', 'image_original'), blank=True)
