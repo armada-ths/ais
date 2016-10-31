@@ -1,6 +1,7 @@
 from django.utils import timezone
 import calendar
 
+
 def has_common_element(list1, list2):
     return True if set(list1) & set(list2) else False
 
@@ -16,4 +17,5 @@ def after(time):
 
 
 def unix_time(datetime):
-    return int(calendar.timegm(datetime.timetuple()))
+    # Return the time in milliseconds
+    return int(calendar.timegm(datetime.timetuple()) * 1000)
