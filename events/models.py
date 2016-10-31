@@ -14,7 +14,7 @@ class Event(models.Model):
     name = models.CharField(max_length=75)
     event_start = models.DateTimeField()
     event_end = models.DateTimeField()
-    capacity = models.IntegerField(default=0, blank=True, null=True)
+    capacity = models.PositiveSmallIntegerField(default=0, blank=True, null=True)
     description = models.TextField(blank=True)
     description_short = models.TextField(blank=True)
     location = models.CharField(max_length=75, blank=True)
