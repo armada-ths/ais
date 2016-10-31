@@ -69,7 +69,7 @@ class EventAdmin(admin.ModelAdmin):
         ('Registration Details', {
             'classes': ('collapse',),
             'fields': ('registration_required', 'registration_start', 'registration_end',
-                       'registration_last_day_cancel', 'public_registration', 'allowed_groups',)
+                       'registration_last_day_cancel', 'allowed_groups',)
         }),
         ('Email', {
             'classes': ('collapse',),
