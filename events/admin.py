@@ -64,12 +64,12 @@ class EventAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('fair', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
-                       'location', 'attendence_description', 'attendence_approvement_required',)
+                       'location', 'attendence_description', 'attendence_approvement_required', 'published',)
         }),
         ('Registration Details', {
             'classes': ('collapse',),
             'fields': ('registration_required', 'registration_start', 'registration_end',
-                       'registration_last_day_cancel', 'public_registration', 'allowed_groups',)
+                       'registration_last_day_cancel', 'allowed_groups',)
         }),
         ('Email', {
             'classes': ('collapse',),

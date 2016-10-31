@@ -37,6 +37,10 @@ class Event(models.Model):
         default=False,
         help_text="If users without an account should be able to sign up for \
         this event.")
+    published = models.BooleanField(
+        default=False,
+        help_text="If the event should be published in the apps and on the website."
+    )
     allowed_groups = models.ManyToManyField(
         Group, blank=True,
         help_text="Choose which groups in armada should be able to see and \
