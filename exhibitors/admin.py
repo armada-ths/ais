@@ -4,6 +4,7 @@ from .models import Exhibitor, WorkField, JobType, \
     Continent, Value, CatalogInfo, Location, BanquetteAttendant
 
 
+@admin.register(CatalogInfo)
 class CatalogInfoAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
@@ -31,6 +32,5 @@ admin.site.register(WorkField)
 admin.site.register(JobType)
 admin.site.register(Continent)
 admin.site.register(Value)
-admin.site.register(CatalogInfo, CatalogInfoAdmin)
 admin.site.register(Location)
 admin.site.register(BanquetteAttendant)
