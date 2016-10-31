@@ -25,6 +25,7 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
         raise Http404()
     questions = EventQuestion.objects.filter(event=pk).all()
     ea = EventAttendence.objects.filter(user=request.user, event=event).first()
+    number_of_registrations = EventAttendence.objects.filter(event=event).count()
     questions_answers = [(question, EventAnswer.objects.filter(
         attendence=ea, question=question).first()) for question in questions]
     form = AttendenceForm(
@@ -32,7 +33,7 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
     if form.is_valid() and registration_open(event):
         if not ea:
             status = 'A'
-            if event.attendence_approvement_required:
+            if event.attendence_approvement_required or (0 < event.capacity <= number_of_registrations):
                 status = 'S'
             ea = EventAttendence.objects.create(
                 user=request.user, event=event, status=status)
