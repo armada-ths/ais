@@ -58,7 +58,7 @@ class EventTestCase(TestCase):
         self.event = Event(
             fair=test_fair, name='test', event_start=now, event_end=now,
             registration_start=now, registration_end=now,
-            registration_last_day_cancel=now, public_registration=True)
+            registration_last_day_cancel=now, public_registration=True, published=True)
         self.event.save()
         self.hidden_event = Event(
             fair=test_fair, name='hidden event', event_start=now,
