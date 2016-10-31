@@ -64,7 +64,7 @@ class EventAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': ('fair', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
-                       'location', 'attendence_description', 'attendence_approvement_required',)
+                       'location', 'attendence_description', 'attendence_approvement_required', 'published',)
         }),
         ('Registration Details', {
             'classes': ('collapse',),
