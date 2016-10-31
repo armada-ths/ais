@@ -25,7 +25,7 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
         raise Http404()
     questions = EventQuestion.objects.filter(event=pk).all()
     ea = EventAttendence.objects.filter(user=request.user, event=event).first()
-    number_of_registrations = EventAttendence.objects.get(event=event).count()
+    number_of_registrations = EventAttendence.objects.filter(event=event).count()
     questions_answers = [(question, EventAnswer.objects.filter(
         attendence=ea, question=question).first()) for question in questions]
     form = AttendenceForm(
