@@ -83,6 +83,7 @@ class EventAdmin(admin.ModelAdmin):
             'fields': ('tags',)
         })
     )
+    list_filter = ('published', 'registration_required',)
     readonly_fields = ('image',)
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)

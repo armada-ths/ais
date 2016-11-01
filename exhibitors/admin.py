@@ -6,6 +6,8 @@ from .models import Exhibitor, WorkField, JobType, \
 
 @admin.register(CatalogInfo)
 class CatalogInfoAdmin(admin.ModelAdmin):
+    search_fields = ('display_name',)
+    ordering = ('display_name',)
     fieldsets = (
         (None, {
             'fields': ('exhibitor', 'display_name', 'slug', 'short_description',
@@ -26,8 +28,13 @@ class CatalogInfoAdmin(admin.ModelAdmin):
     readonly_fields = ('logo_small', 'logo', 'ad',)
 
 
-# Register your models here.
-admin.site.register(Exhibitor)
+@admin.register(Exhibitor)
+class ExhibitorAdmin(admin.ModelAdmin):
+    search_fields = ('company__name',)
+    ordering = ('company',)
+    list_filter = ('status',)
+
+
 admin.site.register(WorkField)
 admin.site.register(JobType)
 admin.site.register(Continent)
