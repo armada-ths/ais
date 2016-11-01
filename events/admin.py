@@ -63,7 +63,7 @@ class QuestionInline(admin.StackedInline):
 class EventAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('fair', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
+            'fields': ('fair', 'extra_field', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
                        'location', 'attendence_description', 'attendence_approvement_required', 'published',)
         }),
         ('Registration Details', {
@@ -84,7 +84,7 @@ class EventAdmin(admin.ModelAdmin):
         })
     )
     list_filter = ('published', 'registration_required',)
-    readonly_fields = ('image',)
+    readonly_fields = ('image', 'extra_field')
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)
     actions = [export_as_csv]

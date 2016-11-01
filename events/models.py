@@ -5,6 +5,7 @@ from django.conf import settings
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 import os
 from fair.models import Fair, Tag
+from recruitment.models import ExtraField
 
 
 # An 'Event' belongs to a specific 'Fair'
@@ -58,11 +59,14 @@ class Event(models.Model):
             upload_to=UploadToDir('events', 'image'), blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
 
+    extra_field = models.ForeignKey(ExtraField, blank=True, null=True)
+
     def __str__(self):
         return '%s: %s'%(self.fair, self.name)
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
+        self.extra_field = ExtraField.objects.create()
         self.image = update_image_field(
             self.image_original,
             self.image, 640, 480, 'jpg')
