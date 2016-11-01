@@ -7,6 +7,12 @@
 
 {% block content %}
 <h2>Armada Upcoming Events</h2>
+    {% if perms.events.change_event %}
+    <div>
+        <a href="{% url 'event_new' %}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New event</a>
+    </div>
+    {% endif %}
+    <br>
 <table class="table table-striped">
   <tr>
     <th class="text-uppercase">name</th>

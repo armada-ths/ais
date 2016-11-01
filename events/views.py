@@ -6,6 +6,9 @@ from events.templatetags.event_extras import user_attending_event, \
     registration_open, user_eligible_event
 from django.core.mail import send_mail
 from django.utils import timezone
+from django.forms import modelform_factory
+from django.contrib.auth.decorators import permission_required
+
 
 def send_mail_on_submission(user, event):
     if user.email != "":
@@ -47,7 +50,7 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
 
     return render(request, template_name, {
         "event": event, "form": form,
-        "extra_field_questions_with_answers": event.extra_field.questions_with_answers_for_user(ea.user if ea else None)
+        "extra_field_questions_with_answers": event.extra_field.questions_with_answers_for_user(ea.user if ea else None) if event.extra_field else None
     })
 
 
@@ -64,3 +67,19 @@ def event_unattend(request, pk):
     EventAttendence.objects.filter(
         event_id=pk, user_id=request.user.id).delete()
     return redirect('event_list')
+
+
+@permission_required('events.change_event', raise_exception=True)
+def event_edit(request, pk=None, template_name='events/event_form.html'):
+    event = Event.objects.filter(pk=pk).first()
+    EventForm = modelform_factory(Event, exclude=('extra_field', 'image'))
+    form = EventForm(request.POST or None, instance=event)
+    if form.is_valid():
+        event = form.save()
+        event.extra_field.handle_questions_from_request(request, 'extra_field')
+        return redirect('event_list')
+
+    return render(request, template_name, {
+        "event": event, "form": form,
+        'custom_fields': event.extra_field.customfield_set.all() if event and event.extra_field else None,
+    })
