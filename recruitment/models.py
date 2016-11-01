@@ -82,17 +82,21 @@ class ExtraField(models.Model):
                     file = request.FILES[key]
 
                     # Must think about what type of files that can be uploaded - html files lead to security vulnerabilites
-                    file_path = 'custom-field/%d_%s.%s' % (user.id, key, file.name.split('.')[-1])
-                    if default_storage.exists(file_path):
-                        default_storage.delete(file_path)
-                    default_storage.save(file_path, ContentFile(file.read()))
+                    extension = file.name.split('.')[-1]
 
-                    answer, created = CustomFieldAnswer.objects.get_or_create(
-                        custom_field=custom_field,
-                        user=user
-                    )
-                    answer.answer = file_path
-                    answer.save()
+                    allowed_extensions = ['pdf', 'png', 'jpg', 'jpeg']
+                    if extension in allowed_extensions:
+                        file_path = 'custom-field/%d_%s.%s' % (user.id, key, extension)
+                        if default_storage.exists(file_path):
+                            default_storage.delete(file_path)
+                        default_storage.save(file_path, ContentFile(file.read()))
+
+                        answer, created = CustomFieldAnswer.objects.get_or_create(
+                            custom_field=custom_field,
+                            user=user
+                        )
+                        answer.answer = file_path
+                        answer.save()
             else:
                 if key in request.POST:
                     answer, created = CustomFieldAnswer.objects.get_or_create(
