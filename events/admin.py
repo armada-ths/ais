@@ -63,7 +63,7 @@ class QuestionInline(admin.StackedInline):
 class EventAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('fair', 'extra_field',  'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
+            'fields': ('fair', 'extra_field', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
                        'location', 'attendence_description', 'attendence_approvement_required', 'published',)
         }),
         ('Registration Details', {
