@@ -17,7 +17,8 @@ class CatalogInfoAdmin(admin.ModelAdmin):
         }),
         ('Images', {
             'classes': ('collapse',),
-            'fields': ('logo_original', 'logo_small', 'logo', 'ad_original', 'ad',)
+            'fields': ('logo_original', 'logo_small', 'logo_small_preview', 'logo', 'logo_preview', 'ad_original', 'ad',
+                       'ad_preview',)
         }),
         ('Details', {
             'classes': ('collapse',),
@@ -25,7 +26,25 @@ class CatalogInfoAdmin(admin.ModelAdmin):
                        'job_types', 'continents', 'values', 'tags',)
         })
     )
-    readonly_fields = ('logo_small', 'logo', 'ad',)
+    readonly_fields = ('logo_small', 'logo', 'ad', 'logo_small_preview', 'logo_preview', 'ad_preview',)
+
+    def logo_small_preview(self, instance):
+        return '<img src="%s" />' % instance.logo_small.url
+
+    logo_small_preview.allow_tags = True
+    logo_small_preview.short_description = "Preview of small logo"
+
+    def logo_preview(self, instance):
+        return '<img src="%s" />' % instance.logo.url
+
+    logo_preview.allow_tags = True
+    logo_preview.short_description = "Preview of logo"
+
+    def ad_preview(self, instance):
+        return '<img src="%s" />' % instance.ad.url
+
+    ad_preview.allow_tags = True
+    ad_preview.short_description = "Preview of ad"
 
 
 @admin.register(Exhibitor)

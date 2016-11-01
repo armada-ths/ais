@@ -77,17 +77,22 @@ class EventAdmin(admin.ModelAdmin):
         }),
         ('Images', {
             'classes': ('collapse',),
-            'fields': ('image_original', 'image',)
+            'fields': ('image_original', 'image', 'event_image_preview',)
         }),
         (None, {
             'fields': ('tags',)
         })
     )
     list_filter = ('published', 'registration_required',)
-    readonly_fields = ('image', 'extra_field')
+    readonly_fields = ('image', 'event_image_preview', 'extra_field',)
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)
     actions = [export_as_csv]
+
+    def event_image_preview(self, instance):
+        return '<img src="%s" />' % instance.image.url
+    event_image_preview.allow_tags = True
+    event_image_preview.short_description = "Preview of image"
 
 
 class AnswerInline(admin.StackedInline):
