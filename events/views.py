@@ -7,7 +7,6 @@ from events.templatetags.event_extras import user_attending_event, \
 from django.core.mail import send_mail
 from django.utils import timezone
 
-
 def send_mail_on_submission(user, event):
     if user.email != "":
         send_mail(
@@ -42,8 +41,15 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
         for (question, id, answer) in form.get_answers():
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
+
+        event.extra_field.handle_answers_from_request(request, ea.user)
         return redirect('event_list')
-    return render(request, template_name, {"event": event, "form": form})
+
+    return render(request, template_name, {
+        "event": event, "form": form,
+        "extra_field_questions_with_answers": event.extra_field.questions_with_answers_for_user(ea.user if ea else None)
+    })
+
 
 
 def event_list(request, template_name='events/event_list.html'):

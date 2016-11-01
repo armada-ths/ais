@@ -83,10 +83,9 @@ class ExtraField(models.Model):
 
                     # Must think about what type of files that can be uploaded - html files lead to security vulnerabilites
                     file_path = 'custom-field/%d_%s.%s' % (user.id, key, file.name.split('.')[-1])
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
-                    path = default_storage.save(file_path, ContentFile(file.read()))
-                    os.path.join(settings.MEDIA_ROOT, path)
+                    if default_storage.exists(file_path):
+                        default_storage.delete(file_path)
+                    default_storage.save(file_path, ContentFile(file.read()))
 
                     answer, created = CustomFieldAnswer.objects.get_or_create(
                         custom_field=custom_field,
