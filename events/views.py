@@ -45,6 +45,9 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
 
+        if not event.extra_field:
+            # This creates an extra field
+            event.save()
         event.extra_field.handle_answers_from_request(request, ea.user)
         return redirect('event_list')
 
