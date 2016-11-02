@@ -6,6 +6,7 @@ from .models import Profile
 from django.utils import timezone
 from django import forms
 from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 
 from recruitment.views import set_image_key_from_request
 
@@ -22,7 +23,7 @@ def list_people(request):
 def view_person(request, pk):
     user = get_object_or_404(User, pk=pk)
 
-    if request.user == user or request.user.has_perm('people.view_people'):
+    if (request.user == user) or request.user.has_perm('people.view_people'):
         profile = Profile.objects.filter(user=user).first()
         if not profile:
             profile = Profile.objects.create(user=user)
@@ -33,8 +34,8 @@ def view_person(request, pk):
             'role': application.delegated_role if application else ""
         })
 
-    else: 
-        return HttpResponseForbidden()
+    else:
+        raise PermissionDenied
 
 class ProfileForm(ModelForm):
     class Meta:
