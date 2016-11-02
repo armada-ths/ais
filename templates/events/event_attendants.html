@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load event_extras %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h2>{{ event.name }}</h2>
+
+    <div class="table-responsive">
+<table class="table" id="attendants_table">
+<thead>
+<tr>
+    <th>User</th>
+    {% for question in questions %}
+    <th>{{ question }}</th>
+    {% endfor %}
+</tr>
+</thead>
+
+<tbody>
+{% for attendant in event.eventattendence_set.all %}
+<tr>
+    <td>{{ attendant.user.get_full_name }}</td>
+    {% for question in questions %}
+        <td>
+        {% for answer in event_question_answers %}
+            {% if answer.attendence == attendant and answer.question == question %}
+                {{ answer.answer }}
+            {% endif %}
+        {% endfor %}
+        </td>
+    {% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+
+        $(document).ready(function () {
+            $('#attendants_table').DataTable({
+                'paging': false,
+            })
+        })
+    </script>
+{% endblock %}

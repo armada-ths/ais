@@ -59,8 +59,5 @@
 
 
 </form>
-<br>
-    {% if perms.events.change_event %}
-    <a class="btn btn-default" href="{% url 'event_edit' event.pk %}">Edit</a>
-    {% endif %}
+
 {% endblock %}
