@@ -46,7 +46,7 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
 
-        if not event.extra_field:
+        if event.extra_field:
             # This creates an extra field
             event.save()
         event.extra_field.handle_answers_from_request(request, ea.user)
@@ -96,7 +96,7 @@ def event_attendants(request, pk, template_name='events/event_attendants.html'):
         "event": event,
         "questions": event.eventquestion_set.all(),
         "event_question_answers": EventAnswer.objects.filter(question__event=event),
-        "extra_field_questions": event.extra_field.customfield_set.all,
+        "extra_field_questions": event.extra_field.customfield_set.all if event.extra_field else None,
         "extra_field_question_answers": CustomFieldAnswer.objects.filter(custom_field__extra_field=event.extra_field),
 
     })
