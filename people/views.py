@@ -19,19 +19,22 @@ def list_people(request):
     users = User.objects.filter(is_superuser=False)
     return TemplateResponse(request, 'people_list.html', {'users': users})
 
-
 def view_person(request, pk):
     user = get_object_or_404(User, pk=pk)
-    profile = Profile.objects.filter(user=user).first()
-    if not profile:
-        profile = Profile.objects.create(user=user)
 
-    application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
-    return TemplateResponse(request, 'view_person.html', {
-        'person': profile,
-        'role': application.delegated_role if application else ""
-    })
+    if request.user == user or request.user.has_perm('people.view_people'):
+        profile = Profile.objects.filter(user=user).first()
+        if not profile:
+            profile = Profile.objects.create(user=user)
 
+        application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
+        return TemplateResponse(request, 'view_person.html', {
+            'person': profile,
+            'role': application.delegated_role if application else ""
+        })
+
+    else: 
+        return HttpResponseForbidden()
 
 class ProfileForm(ModelForm):
     class Meta:
