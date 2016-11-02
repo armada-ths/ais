@@ -12,10 +12,12 @@ from recruitment.views import set_image_key_from_request
 from django.forms import ModelForm
 from django.contrib.auth.decorators import permission_required
 
+
 @permission_required('people.view_people', raise_exception=True)
 def list_people(request):
     users = User.objects.filter(is_superuser=False)
     return TemplateResponse(request, 'people_list.html', {'users': users})
+
 
 def view_person(request, pk):
     user = get_object_or_404(User, pk=pk)
@@ -30,9 +32,9 @@ def view_person(request, pk):
             'person': profile,
             'role': application.delegated_role if application else ""
         })
-
     else:
         raise PermissionDenied
+
 
 class ProfileForm(ModelForm):
     class Meta:
@@ -49,7 +51,7 @@ class ProfileForm(ModelForm):
 
 def edit_person(request, pk):
     user = get_object_or_404(User, pk=pk)
-    if not request.user == user:    
+    if not request.user == user:
         raise PermissionDenied
 
     profile = Profile.objects.filter(user=user).first()
