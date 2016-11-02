@@ -5,7 +5,6 @@ from recruitment.models import RecruitmentApplication
 from .models import Profile
 from django.utils import timezone
 from django import forms
-from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
 from recruitment.views import set_image_key_from_request
@@ -50,8 +49,8 @@ class ProfileForm(ModelForm):
 
 def edit_person(request, pk):
     user = get_object_or_404(User, pk=pk)
-    if not request.user == user:
-        return HttpResponseForbidden()
+    if not request.user == user:    
+        raise PermissionDenied
 
     profile = Profile.objects.filter(user=user).first()
     if not profile:
