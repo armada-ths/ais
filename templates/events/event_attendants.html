@@ -38,7 +38,7 @@
         <td>
         {% for answer in extra_field_question_answers %}
             {% if answer.user == attendant.user and answer.custom_field == question %}
-                {{ answer.answer }}
+                {% include 'recruitment/custom_fields_value.html' with question=question answer=answer %}
             {% endif %}
         {% endfor %}
         </td>
