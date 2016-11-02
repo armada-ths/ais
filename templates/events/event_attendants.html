@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load event_extras %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h2>{{ event.name }}</h2>
+
+    <div class="table-responsive">
+<table class="table" id="attendants_table">
+<thead>
+<tr>
+    <th>User</th>
+    {% for question in questions %}
+    <th>{{ question }}</th>
+    {% endfor %}
+
+    {% for question in event.extra_field.customfield_set.all %}
+    <th>{{ question }}</th>
+    {% endfor %}
+</tr>
+</thead>
+
+<tbody>
+{% for attendant in event.eventattendence_set.all %}
+<tr>
+    <td><a href="{% url 'view_person' attendant.user.pk %}">{{ attendant.user.get_full_name }}</a></td>
+    {% for question in questions %}
+        <td>
+        {% for answer in event_question_answers %}
+            {% if answer.attendence == attendant and answer.question == question %}
+                {{ answer.answer }}
+            {% endif %}
+        {% endfor %}
+        </td>
+    {% endfor %}
+
+
+    {% for question in extra_field_questions %}
+        <td>
+        {% for answer in extra_field_question_answers %}
+            {% if answer.user == attendant.user and answer.custom_field == question %}
+                {% include 'recruitment/custom_fields_value.html' with question=question answer=answer %}
+            {% endif %}
+        {% endfor %}
+        </td>
+    {% endfor %}
+
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+
+        $(document).ready(function () {
+            $('#attendants_table').DataTable({
+                'paging': false,
+            })
+        })
+    </script>
+{% endblock %}

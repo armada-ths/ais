@@ -19,6 +19,10 @@
     <th></th>
     <th class="text-uppercase">date</th>
     <th class="text-uppercase">signup</th>
+      {% if perms.events.change_event %}
+      <th class="text-uppercase">Edit</th>
+      <th class="text-uppercase">Attendants</th>
+      {% endif %}
   </tr>
   {% for event in events %}
     <tr>
@@ -46,6 +50,10 @@
           {% endif %}
         {% endif %}
       </td>
+    {% if perms.events.change_event %}
+    <td><a href="{% url 'event_edit' event.pk %}"><span class="glyphicon glyphicon-pencil"></span></a></td>
+    <td><a href="{% url 'event_attendants' event.pk %}"><span class="glyphicon glyphicon-user"></span></a></td>
+    {% endif %}
     </tr>
   {% endfor %}
 </table>
