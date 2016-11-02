@@ -22,7 +22,7 @@
 <tbody>
 {% for attendant in event.eventattendence_set.all %}
 <tr>
-    <td>{{ attendant.user.get_full_name }}</td>
+    <td><a href="{% url 'view_person' attendant.user.pk %}">{{ attendant.user.get_full_name }}</a></td>
     {% for question in questions %}
         <td>
         {% for answer in event_question_answers %}
