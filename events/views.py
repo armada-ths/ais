@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
+from recruitment.models import CustomFieldAnswer
 
 
 def send_mail_on_submission(user, event):
@@ -94,5 +95,8 @@ def event_attendants(request, pk, template_name='events/event_attendants.html'):
     return render(request, template_name, {
         "event": event,
         "questions": event.eventquestion_set.all(),
-        "event_question_answers": EventAnswer.objects.filter(question__event=event)
+        "event_question_answers": EventAnswer.objects.filter(question__event=event),
+        "extra_field_questions": event.extra_field.customfield_set.all,
+        "extra_field_question_answers": CustomFieldAnswer.objects.filter(custom_field__extra_field=event.extra_field),
+
     })

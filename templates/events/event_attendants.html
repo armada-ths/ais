@@ -12,6 +12,10 @@
     {% for question in questions %}
     <th>{{ question }}</th>
     {% endfor %}
+
+    {% for question in event.extra_field.customfield_set.all %}
+    <th>{{ question }}</th>
+    {% endfor %}
 </tr>
 </thead>
 
@@ -28,6 +32,19 @@
         {% endfor %}
         </td>
     {% endfor %}
+
+
+    {% for question in extra_field_questions %}
+        <td>
+        {% for answer in extra_field_question_answers %}
+            {% if answer.user == attendant.user and answer.custom_field == question %}
+                {{ answer.answer }}
+            {% endif %}
+        {% endfor %}
+        </td>
+    {% endfor %}
+
+
 </tr>
 {% endfor %}
 </tbody>
