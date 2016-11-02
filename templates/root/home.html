@@ -9,13 +9,7 @@
     <div class="col-md-12">
 
         <h2>Banquet</h2>
-        {% if is_attending_banquette %}
-            <a class="btn btn-default" href="{% url 'banquette_signup' %}">View sign up</a>
-        {% else %}
-            <a class="btn btn-success" href="{% url 'banquette_signup' %}">Sign up</a>
-        {% endif %}
-
-            <a class="btn btn-default" href="{% url 'banquet_attendants' %}">View Attendants</a>
+        <a class="btn btn-default" href="{% url 'banquet_attendants' %}">View Attendants</a>
 
 
         <h2>Events</h2>
