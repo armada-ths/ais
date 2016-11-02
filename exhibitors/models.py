@@ -87,7 +87,7 @@ class Exhibitor(models.Model):
 
     def superiors(self):
         accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.hosts.all()]
-        return [application.superior_user for application in accepted_applications if application]
+        return [application.superior_user for application in accepted_applications if application.superior_user]
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)
