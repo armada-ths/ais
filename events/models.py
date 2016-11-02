@@ -66,7 +66,8 @@ class Event(models.Model):
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
-        self.extra_field = ExtraField.objects.create()
+        if not self.extra_field:
+            self.extra_field = ExtraField.objects.create()
         self.image = update_image_field(
             self.image_original,
             self.image, 640, 480, 'jpg')
