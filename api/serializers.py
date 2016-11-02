@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from lib.util import unix_time
 
 
 MISSING_IMAGE = '/static/missing.png'
@@ -78,13 +77,13 @@ def event(request, event):
         ('description', event.description),
         ('signup_link',
             absolute_url(request, '/events/'+str(event.pk)+'/signup')),
-        ('event_start', unix_time(event.event_start)),
-        ('event_end', unix_time(event.event_end)),
+        ('event_start', event.event_start.isoformat()),
+        ('event_end', event.event_end.isoformat()),
         ('registration_required', event.registration_required),
-        ('registration_start', unix_time(event.registration_start)),
-        ('registration_end', unix_time(event.registration_end)),
+        ('registration_start', event.registration_start.isoformat()),
+        ('registration_end', event.registration_end.isoformat()),
         ('registration_last_day_cancel',
-            unix_time(event.registration_last_day_cancel)),
+            event.registration_last_day_cancel.isoformat()),
     ] + tags)
 
 
@@ -92,7 +91,7 @@ def newsarticle(request, newsarticle):
     return OrderedDict([
         ('id', newsarticle.pk),
         ('title', newsarticle.title),
-        ('date_published', unix_time(newsarticle.publication_date)),
+        ('date_published', newsarticle.publication_date.isoformat()),
         ('html_article_text', newsarticle.html_article_text),
         ('image', image_url_or_missing(request, newsarticle.image)),
     ])
