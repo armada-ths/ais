@@ -6,21 +6,23 @@ from django.http import HttpResponse
 
 
 def mark_all_signups_accepted(modeladmin, request, queryset):
+    # for event in queryset:
+    #     mark_accepted(modeladmin, request,
+    #                   EventAttendence.objects.filter(event=event).all())
     pass
-
 
 def mark_all_signups_declined(modeladmin, request, queryset):
+    # for event in queryset:
+    #     mark_declined(modeladmin, request,
+    #                   EventAttendence.objects.filter(event=event).all())
     pass
 
-
 def mark_accepted(modeladmin, request, queryset):
-    for ea in queryset:
-        ea.status = 'A'
-        ea.save()
+    queryset.update(status='A')
 
 
 def mark_declined(modeladmin, request, queryset):
-    pass
+    queryset.update(status='D')
 
 
 # Exports all the EventAnswers that belong to a single Event
@@ -105,7 +107,8 @@ class EventAdmin(admin.ModelAdmin):
     readonly_fields = ('image', 'extra_field')
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)
-    actions = [export_as_csv, mark_all_signups_accepted]
+    actions = [export_as_csv, mark_all_signups_accepted,
+               mark_all_signups_declined]
 
 
 class AnswerInline(admin.StackedInline):
