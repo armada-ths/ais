@@ -17,7 +17,14 @@ def root(request):
 def exhibitors(request):
     exhibitors = Exhibitor.objects.filter(
             fair__name=CURRENT_FAIR
-            ).select_related('cataloginfo')
+            ).select_related('cataloginfo').prefetch_related(
+                'cataloginfo__programs',
+                'cataloginfo__main_work_field',
+                'cataloginfo__work_fields',
+                'cataloginfo__job_types',
+                'cataloginfo__continents',
+                'cataloginfo__values',
+            )
     data = [serializers.exhibitor(request, exhibitor.cataloginfo)
             for exhibitor in exhibitors]
     return JsonResponse(data, safe=False)
