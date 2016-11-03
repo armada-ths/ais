@@ -96,11 +96,11 @@ class EventAttendence(models.Model):
     status = models.CharField(max_length=3, choices=STATUS, default="S")
 
     def __str__(self):
-        if self.user != None:
+        if self.user is not None:
             user = self.user.get_full_name()
         else:
             user = "External user"
-        return '%s attending %s'%(user, self.event.name)
+        return '%s - %s - %s' % (self.event.name, user, self.get_status_display())
 
 
 # An EventAnswer is the answer to a specific EventQuestion for a specific User
