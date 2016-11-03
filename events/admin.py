@@ -77,14 +77,14 @@ class EventAdmin(admin.ModelAdmin):
         }),
         ('Images', {
             'classes': ('collapse',),
-            'fields': ('image_original', 'image', 'event_image_preview',)
+            'fields': ('image_original', 'event_image_preview',)
         }),
         (None, {
             'fields': ('tags',)
         })
     )
     list_filter = ('published', 'registration_required',)
-    readonly_fields = ('image', 'event_image_preview', 'extra_field',)
+    readonly_fields = ('event_image_preview', 'extra_field',)
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)
     actions = [export_as_csv]
