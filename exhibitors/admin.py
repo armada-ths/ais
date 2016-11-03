@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Exhibitor, WorkField, JobType, \
     Continent, Value, CatalogInfo, Location, BanquetteAttendant
+from lib.util import image_preview
 
 
 @admin.register(CatalogInfo)
@@ -27,13 +28,6 @@ class CatalogInfoAdmin(admin.ModelAdmin):
         })
     )
     readonly_fields = ('logo_small_preview', 'logo_preview', 'ad_preview',)
-
-    def image_preview(name):
-        def f(self, instance):
-            return '<img src="%s" />' % getattr(instance, name).url
-        f.allow_tags = True
-        f.short_description = "Preview of small logo"
-        return f
 
     logo_small_preview = image_preview('logo_small')
     logo_preview = image_preview('logo')
