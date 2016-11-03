@@ -10,14 +10,15 @@ class CatalogInfoAdmin(admin.ModelAdmin):
     ordering = ('display_name',)
     fieldsets = (
         (None, {
-            'fields': ('exhibitor', 'display_name', 'slug', 'short_description',
-                       'description', 'employees_sweden', 'employees_world',
-                       'countries', 'website_url', 'facebook_url',
-                       'twitter_url', 'linkedin_url',)
+            'fields': ('exhibitor', 'display_name', 'slug',
+                       'short_description', 'description', 'employees_sweden',
+                       'employees_world', 'countries', 'website_url',
+                       'facebook_url', 'twitter_url', 'linkedin_url',)
         }),
         ('Images', {
             'classes': ('collapse',),
-            'fields': ('logo_original', 'logo_small_preview', 'logo_preview', 'ad_original', 'ad_preview',)
+            'fields': ('logo_original', 'logo_small_preview', 'logo_preview',
+                       'ad_original', 'ad_preview',)
         }),
         ('Details', {
             'classes': ('collapse',),
@@ -27,23 +28,16 @@ class CatalogInfoAdmin(admin.ModelAdmin):
     )
     readonly_fields = ('logo_small_preview', 'logo_preview', 'ad_preview',)
 
-    def logo_small_preview(self, instance):
-        return '<img src="%s" />' % instance.logo_small.url
+    def image_preview(name):
+        def f(self, instance):
+            return '<img src="%s" />' % getattr(instance, name).url
+        f.allow_tags = True
+        f.short_description = "Preview of small logo"
+        return f
 
-    logo_small_preview.allow_tags = True
-    logo_small_preview.short_description = "Preview of small logo"
-
-    def logo_preview(self, instance):
-        return '<img src="%s" />' % instance.logo.url
-
-    logo_preview.allow_tags = True
-    logo_preview.short_description = "Preview of logo"
-
-    def ad_preview(self, instance):
-        return '<img src="%s" />' % instance.ad.url
-
-    ad_preview.allow_tags = True
-    ad_preview.short_description = "Preview of ad"
+    logo_small_preview = image_preview('logo_small')
+    logo_preview = image_preview('logo')
+    ad_preview = image_preview('ad')
 
 
 @admin.register(Exhibitor)
