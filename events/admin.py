@@ -14,7 +14,9 @@ def mark_all_signups_declined(modeladmin, request, queryset):
 
 
 def mark_accepted(modeladmin, request, queryset):
-    pass
+    for ea in queryset:
+        ea.status = 'A'
+        ea.save()
 
 
 def mark_declined(modeladmin, request, queryset):
