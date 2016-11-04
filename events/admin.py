@@ -17,6 +17,10 @@ def mark_submitted(modeladmin, request, queryset):
     queryset.update(status='S')
 
 
+def mark_canceled(modeladmin, request, queryset):
+    queryset.update(status='C')
+
+
 # Exports all the EventAnswers that belong to a single Event
 # (Could be expanded to include User information)
 def export_as_csv(modeladmin, request, queryset):
@@ -111,6 +115,7 @@ class EventAttendenceAdmin(admin.ModelAdmin):
     search_fields = ['user__first_name', 'user__last_name', 'user__email',
         'event__name']
     list_filter = ('event',)
-    actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted]
+    actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted,
+               mark_canceled]
 
 admin.site.register(EventAttendence, EventAttendenceAdmin)
