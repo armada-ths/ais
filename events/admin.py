@@ -5,24 +5,16 @@ from .models import Event, EventAttendence, EventQuestion, EventAnswer
 from django.http import HttpResponse
 
 
-def mark_all_signups_accepted(modeladmin, request, queryset):
-    # for event in queryset:
-    #     mark_accepted(modeladmin, request,
-    #                   EventAttendence.objects.filter(event=event).all())
-    pass
-
-def mark_all_signups_declined(modeladmin, request, queryset):
-    # for event in queryset:
-    #     mark_declined(modeladmin, request,
-    #                   EventAttendence.objects.filter(event=event).all())
-    pass
-
 def mark_accepted(modeladmin, request, queryset):
     queryset.update(status='A')
 
 
 def mark_declined(modeladmin, request, queryset):
     queryset.update(status='D')
+
+
+def mark_submitted(modeladmin, request, queryset):
+    queryset.update(status='S')
 
 
 # Exports all the EventAnswers that belong to a single Event
@@ -107,8 +99,7 @@ class EventAdmin(admin.ModelAdmin):
     readonly_fields = ('image', 'extra_field')
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)
-    actions = [export_as_csv, mark_all_signups_accepted,
-               mark_all_signups_declined]
+    actions = [export_as_csv]
 
 
 class AnswerInline(admin.StackedInline):
@@ -120,6 +111,6 @@ class EventAttendenceAdmin(admin.ModelAdmin):
     search_fields = ['user__first_name', 'user__last_name', 'user__email',
         'event__name']
     list_filter = ('event',)
-    actions = [export_as_csv, mark_accepted, mark_declined]
+    actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted]
 
 admin.site.register(EventAttendence, EventAttendenceAdmin)
