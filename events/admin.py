@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib import admin
 from .models import Event, EventAttendence, EventQuestion, EventAnswer
 from django.http import HttpResponse
-
+from lib.util import image_preview
 
 def mark_accepted(modeladmin, request, queryset):
     queryset.update(status='A')
@@ -93,17 +93,19 @@ class EventAdmin(admin.ModelAdmin):
         }),
         ('Images', {
             'classes': ('collapse',),
-            'fields': ('image_original', 'image',)
+            'fields': ('image_original', 'event_image_preview',)
         }),
         (None, {
             'fields': ('tags',)
         })
     )
     list_filter = ('published', 'registration_required',)
-    readonly_fields = ('image', 'extra_field')
+    readonly_fields = ('event_image_preview', 'extra_field',)
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)
     actions = [export_as_csv]
+
+    event_image_preview = image_preview('image')
 
 
 class AnswerInline(admin.StackedInline):
