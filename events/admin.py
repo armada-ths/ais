@@ -5,6 +5,22 @@ from .models import Event, EventAttendence, EventQuestion, EventAnswer
 from django.http import HttpResponse
 from lib.util import image_preview
 
+def mark_accepted(modeladmin, request, queryset):
+    queryset.update(status='A')
+
+
+def mark_declined(modeladmin, request, queryset):
+    queryset.update(status='D')
+
+
+def mark_submitted(modeladmin, request, queryset):
+    queryset.update(status='S')
+
+
+def mark_canceled(modeladmin, request, queryset):
+    queryset.update(status='C')
+
+
 # Exports all the EventAnswers that belong to a single Event
 # (Could be expanded to include User information)
 def export_as_csv(modeladmin, request, queryset):
@@ -101,5 +117,7 @@ class EventAttendenceAdmin(admin.ModelAdmin):
     search_fields = ['user__first_name', 'user__last_name', 'user__email',
         'event__name']
     list_filter = ('event',)
+    actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted,
+               mark_canceled]
 
 admin.site.register(EventAttendence, EventAttendenceAdmin)
