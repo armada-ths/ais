@@ -5,18 +5,34 @@ from .models import Event, EventAttendence, EventQuestion, EventAnswer
 from django.http import HttpResponse
 
 
+def mark_accepted(modeladmin, request, queryset):
+    queryset.update(status='A')
+
+
+def mark_declined(modeladmin, request, queryset):
+    queryset.update(status='D')
+
+
+def mark_submitted(modeladmin, request, queryset):
+    queryset.update(status='S')
+
+
+def mark_canceled(modeladmin, request, queryset):
+    queryset.update(status='C')
+
+
 # Exports all the EventAnswers that belong to a single Event
 # (Could be expanded to include User information)
 def export_as_csv(modeladmin, request, queryset):
     if len(queryset) != 1:
-        modeladmin.message_user(request, 
+        modeladmin.message_user(request,
             "Please select a single event to export", level=messages.ERROR)
         return
 
     response = HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename=event.csv'
 
-    # We have already checked that it is a single event    
+    # We have already checked that it is a single event
     event_id = queryset.first().id
     csv_headers = ['First name (user)', 'Last name (user)', 'Email (user)']
     csv_headers.append('Status')
@@ -37,7 +53,7 @@ def export_as_csv(modeladmin, request, queryset):
                 attendence.user.last_name,
                 attendence.user.email,
             ]
- 
+
         status = [attendence.status]
 
         answers = []
@@ -96,8 +112,10 @@ class AnswerInline(admin.StackedInline):
 
 class EventAttendenceAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
-    search_fields = ['user__first_name', 'user__last_name', 'user__email', 
+    search_fields = ['user__first_name', 'user__last_name', 'user__email',
         'event__name']
     list_filter = ('event',)
+    actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted,
+               mark_canceled]
 
 admin.site.register(EventAttendence, EventAttendenceAdmin)
