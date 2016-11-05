@@ -123,7 +123,7 @@ class EventAttendenceAdmin(admin.ModelAdmin):
         return obj.user.last_name
 
     search_fields = ['id', 'user__first_name', 'user__last_name',
-                     'event__name', 'status']
+                     'event__name']
     list_filter = ('status', 'event')
     actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted,
                mark_canceled]
