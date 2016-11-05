@@ -117,10 +117,14 @@ class EventAttendenceAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'event', 'status',)
 
     def first_name(self, obj):
-        return obj.user.first_name
+        if obj.user:
+            return obj.user.first_name
+        return "External"
 
     def last_name(self, obj):
-        return obj.user.last_name
+        if obj.user:
+            return obj.user.last_name
+        return "User"
 
     search_fields = ['id', 'user__first_name', 'user__last_name',
                      'event__name']
