@@ -13,10 +13,11 @@
 
 .navbar-brand:hover img {
   opacity: 1;
-  animation: sailing 3s infinite;
+  animation: sailing linear 0.9s infinite;
 }
 
 @keyframes sailing {
-  25% {transform: rotate(20deg);}
-  75% {transform: rotate(-20deg);}
+  25% {transform: rotate(20deg) translate(0, -2px);}
+  50% {transform: translate(0, -4px);}
+  75% {transform: rotate(-20deg) translate(0, -2px);}
 }
