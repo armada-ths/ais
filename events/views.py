@@ -92,11 +92,34 @@ def event_edit(request, pk=None, template_name='events/event_form.html'):
 @permission_required('events.change_event', raise_exception=True)
 def event_attendants(request, pk, template_name='events/event_attendants.html'):
     event = get_object_or_404(Event, pk=pk)
+
+    attendances_with_answers = []
+    questions = event.eventquestion_set.all()
+    extra_field_questions = event.extra_field.customfield_set.all() if event.extra_field else []
+
+    for attendance in event.eventattendence_set.all():
+        attendance_answers = []
+        for question in questions:
+            answer = EventAnswer.objects.filter(question=question, attendence=attendance).first()
+            attendance_answers.append(answer)
+
+        extra_field_answers = []
+        if event.extra_field:
+            for question in extra_field_questions:
+                answer = CustomFieldAnswer.objects.filter(user=attendance.user, custom_field=question).first()
+                extra_field_answers.append(answer)
+
+        attendances_with_answers.append({
+            'attendance': attendance,
+            'answers': attendance_answers,
+            'extra_field_answers': extra_field_answers
+        })
+
+
     return render(request, template_name, {
         "event": event,
-        "questions": event.eventquestion_set.all(),
-        "event_question_answers": EventAnswer.objects.filter(question__event=event),
-        "extra_field_questions": event.extra_field.customfield_set.all if event.extra_field else None,
-        "extra_field_question_answers": CustomFieldAnswer.objects.filter(custom_field__extra_field=event.extra_field),
+        "attendances_with_answers": attendances_with_answers,
+        "questions": questions,
+        "extra_field_questions": extra_field_questions,
 
     })
