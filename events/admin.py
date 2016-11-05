@@ -124,7 +124,7 @@ class EventAttendenceAdmin(admin.ModelAdmin):
 
     search_fields = ['id', 'user__first_name', 'user__last_name',
                      'event__name', 'status']
-    list_filter = ('event',)
+    list_filter = ('status', 'event')
     actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted,
                mark_canceled]
 
