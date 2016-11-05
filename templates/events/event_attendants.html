@@ -13,39 +13,36 @@
     <th>{{ question }}</th>
     {% endfor %}
 
-    {% for question in event.extra_field.customfield_set.all %}
+    {% for question in extra_field_questions %}
     <th>{{ question }}</th>
     {% endfor %}
 </tr>
 </thead>
 
 <tbody>
-{% for attendant in event.eventattendence_set.all %}
+
+{% for attendance in attendances_with_answers %}
 <tr>
-    <td><a href="{% url 'view_person' attendant.user.pk %}">{{ attendant.user.get_full_name }}</a></td>
-    {% for question in questions %}
-        <td>
-        {% for answer in event_question_answers %}
-            {% if answer.attendence == attendant and answer.question == question %}
-                {{ answer.answer }}
-            {% endif %}
-        {% endfor %}
-        </td>
+    {% if attendance.attendance.user %}
+        <td><a href="{% url 'view_person' attendance.attendance.user.pk %}">{{ attendance.attendance.user.get_full_name }}</a></td>
+    {% else %}
+        <td>External user</td>
+    {% endif %}
+
+    {% for answer in attendance.answers %}
+        <td>{{ answer.answer }}</td>
     {% endfor %}
 
 
-    {% for question in extra_field_questions %}
+    {% for answer in attendance.extra_field_answers %}
         <td>
-        {% for answer in extra_field_question_answers %}
-            {% if answer.user == attendant.user and answer.custom_field == question %}
-                {% include 'recruitment/custom_fields_value.html' with question=question answer=answer %}
-            {% endif %}
-        {% endfor %}
+        {% if answer %}
+            {% include 'recruitment/custom_fields_value.html' with question=answer.custom_field answer=answer %}
+        {% endif %}
         </td>
     {% endfor %}
-
-
 </tr>
+
 {% endfor %}
 </tbody>
 </table>
