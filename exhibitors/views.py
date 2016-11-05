@@ -23,7 +23,7 @@ def exhibitors(request, template_name='exhibitors/exhibitors.html'):
 		return HttpResponseForbidden()
 
 	return render(request, template_name, {
-		'exhibitors': Exhibitor.objects.all().order_by('company__name'),
+		'exhibitors': Exhibitor.objects.prefetch_related('hosts').all().order_by('company__name'),
 	})
 
 
