@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Exhibitor, WorkField, JobType, \
     Continent, Value, CatalogInfo, Location, BanquetteAttendant
+from lib.util import image_preview
 
 
 @admin.register(CatalogInfo)
@@ -10,14 +11,15 @@ class CatalogInfoAdmin(admin.ModelAdmin):
     ordering = ('display_name',)
     fieldsets = (
         (None, {
-            'fields': ('exhibitor', 'display_name', 'slug', 'short_description',
-                       'description', 'employees_sweden', 'employees_world',
-                       'countries', 'website_url', 'facebook_url',
-                       'twitter_url', 'linkedin_url',)
+            'fields': ('exhibitor', 'display_name', 'slug',
+                       'short_description', 'description', 'employees_sweden',
+                       'employees_world', 'countries', 'website_url',
+                       'facebook_url', 'twitter_url', 'linkedin_url',)
         }),
         ('Images', {
             'classes': ('collapse',),
-            'fields': ('logo_original', 'logo_small', 'logo', 'ad_original', 'ad',)
+            'fields': ('logo_original', 'logo_small_preview', 'logo_preview',
+                       'ad_original', 'ad_preview',)
         }),
         ('Details', {
             'classes': ('collapse',),
@@ -25,7 +27,11 @@ class CatalogInfoAdmin(admin.ModelAdmin):
                        'job_types', 'continents', 'values', 'tags',)
         })
     )
-    readonly_fields = ('logo_small', 'logo', 'ad',)
+    readonly_fields = ('logo_small_preview', 'logo_preview', 'ad_preview',)
+
+    logo_small_preview = image_preview('logo_small')
+    logo_preview = image_preview('logo')
+    ad_preview = image_preview('ad')
 
 
 @admin.register(Exhibitor)

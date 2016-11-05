@@ -5,13 +5,12 @@ from recruitment.models import RecruitmentApplication
 from .models import Profile
 from django.utils import timezone
 from django import forms
-from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 
 from recruitment.views import set_image_key_from_request
 
 from django.forms import ModelForm
 from django.contrib.auth.decorators import permission_required
-# Create your views here.
 
 
 @permission_required('people.view_people', raise_exception=True)
@@ -22,15 +21,19 @@ def list_people(request):
 
 def view_person(request, pk):
     user = get_object_or_404(User, pk=pk)
-    profile = Profile.objects.filter(user=user).first()
-    if not profile:
-        profile = Profile.objects.create(user=user)
 
-    application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
-    return TemplateResponse(request, 'view_person.html', {
-        'person': profile,
-        'role': application.delegated_role if application else ""
-    })
+    if (request.user == user) or request.user.has_perm('people.view_people'):
+        profile = Profile.objects.filter(user=user).first()
+        if not profile:
+            profile = Profile.objects.create(user=user)
+
+        application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
+        return TemplateResponse(request, 'view_person.html', {
+            'person': profile,
+            'role': application.delegated_role if application else ""
+        })
+    else:
+        raise PermissionDenied
 
 
 class ProfileForm(ModelForm):
@@ -49,7 +52,7 @@ class ProfileForm(ModelForm):
 def edit_person(request, pk):
     user = get_object_or_404(User, pk=pk)
     if not request.user == user:
-        return HttpResponseForbidden()
+        raise PermissionDenied
 
     profile = Profile.objects.filter(user=user).first()
     if not profile:

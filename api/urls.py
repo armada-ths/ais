@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^news/', views.news),
     url(r'^partners/', views.partners),
     url(r'^organization/', views.organization),
+    url(r'^status/$', views.status),
 ]

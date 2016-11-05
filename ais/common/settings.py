@@ -57,6 +57,8 @@ MIDDLEWARE_CLASSES = (
     'recruitment.middleware.LoginRequiredMiddleware'
 )
 
+USE_ETAGS = True
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )

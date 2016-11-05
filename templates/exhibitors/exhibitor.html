@@ -64,7 +64,9 @@
                 <div class="panel-heading"><strong>Host</strong></div>
                 <div class="panel-body">
                     <p>Host: <a href="{% url "view_person" host.pk %}">{{ host.get_full_name }}</a></p>
-                    <p>Superior: <a href="{% url "view_person" exhibitor.superiors.0.pk %}">{{ exhibitor.superiors.0.get_full_name }}</a></p>
+                    {% for superior in exhibitor.superiors %}
+                    <p>Superior: <a href="{% url "view_person" superior.pk %}">{{ superior.get_full_name }}</a></p>
+                    {% endfor %}
                     <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
                     <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
                     <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
