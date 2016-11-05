@@ -114,9 +114,16 @@ class AnswerInline(admin.StackedInline):
 
 class EventAttendenceAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
-    list_display = ('id', 'user', 'event', 'status',)
-    search_fields = ['user__first_name', 'user__last_name', 'user__email',
-        'event__name']
+    list_display = ('id', 'first_name', 'last_name', 'event', 'status',)
+
+    def first_name(self, obj):
+        return obj.user.first_name
+
+    def last_name(self, obj):
+        return obj.user.last_name
+
+    search_fields = ['id', 'user__first_name', 'user__last_name',
+                     'event__name', 'status']
     list_filter = ('event',)
     actions = [export_as_csv, mark_accepted, mark_declined, mark_submitted,
                mark_canceled]
