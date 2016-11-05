@@ -109,13 +109,10 @@ def partner(request, partner):
 
 
 def person(request, person):
-    picture = ""
-    if person.profile.picture:
-        picture = absolute_url(request, person.profile.picture.url)
     return OrderedDict([
         ('id', person.pk),
         ('name', person.get_full_name()),
-        ('picture', picture),
+        ('picture', image_url_or_missing(request, person.profile.picture)),
     ])
 
 
