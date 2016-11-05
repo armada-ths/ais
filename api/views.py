@@ -66,7 +66,7 @@ def organization(request):
 def status(request):
     hostname = platform.node()
     python_version = platform.python_version()
-    git_hash = subprocess.check_output('git rev-parse HEAD', shell=True).decode("utf-8").strip()
+    git_hash = subprocess.check_output('cd ~/git && git rev-parse HEAD', shell=True).decode("utf-8").strip()
     data = OrderedDict([
         ('status', "OK"),
         ('time', datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
