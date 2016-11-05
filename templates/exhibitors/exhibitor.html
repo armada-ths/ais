@@ -67,9 +67,6 @@
                     {% for superior in exhibitor.superiors %}
                     <p>Superior: <a href="{% url "view_person" superior.pk %}">{{ superior.get_full_name }}</a></p>
                     {% endfor %}
-                    <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
-                    <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
-                    <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
 
                 </div>
             </div>
