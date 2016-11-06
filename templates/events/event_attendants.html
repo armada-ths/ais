@@ -4,10 +4,20 @@
 {% block content %}
 <h2>{{ event.name }}</h2>
 
+<p>Capacity: {{ event.capacity }}</p>
+
     <div class="table-responsive">
+    <form method="POST">
+    {% csrf_token %}
+    <button class="btn btn-primary">Approve selected and reject others</button>
+    <button class="btn btn-default" type="button" id="select-capacity-button">Select all up to capacity</button>
+    <button class="btn btn-default" type="button" id="select-all-button">Select all</button>
+    <button class="btn btn-default" type="button" id="deselect-all-button">Deselect all</button>
+
 <table class="table" id="attendants_table">
 <thead>
 <tr>
+    <th></th>
     <th>User</th>
     {% for question in questions %}
     <th>{{ question }}</th>
@@ -16,6 +26,7 @@
     {% for question in extra_field_questions %}
     <th>{{ question }}</th>
     {% endfor %}
+    <th>State</th>
 </tr>
 </thead>
 
@@ -23,6 +34,7 @@
 
 {% for attendance in attendances_with_answers %}
 <tr>
+    <td><input class="selected" type="checkbox" name="selected" value="{{ attendance.attendance.pk }}" {% if attendance.attendance.status == 'A' %}checked{% endif %}></td>
     {% if attendance.attendance.user %}
         <td><a href="{% url 'view_person' attendance.attendance.user.pk %}">{{ attendance.attendance.user.get_full_name }}</a></td>
     {% else %}
@@ -41,11 +53,13 @@
         {% endif %}
         </td>
     {% endfor %}
+    <td>{{ attendance.attendance.get_status_display }}</td>
 </tr>
 
 {% endfor %}
 </tbody>
 </table>
+    </form>
     </div>
 {% endblock %}
 {% block scripts %}
@@ -58,6 +72,27 @@
             $('#attendants_table').DataTable({
                 'paging': false,
             })
+
+            $('#select-capacity-button').click(function() {
+                $('.selected').each(function(index, checkbox) {
+                    $(checkbox).prop('checked', index < {{ event.capacity }})
+                })
+
+            })
+
+            $('#select-all-button').click(function() {
+                $('.selected').each(function(index, checkbox) {
+                    $(checkbox).prop('checked', true)
+                })
+            })
+
+            $('#deselect-all-button').click(function() {
+                $('.selected').each(function(index, checkbox) {
+                    $(checkbox).prop('checked', false)
+                })
+            })
+
         })
     </script>
+
 {% endblock %}
