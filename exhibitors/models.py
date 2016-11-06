@@ -116,6 +116,7 @@ class BanquetteAttendant(models.Model):
 
     table_name = models.CharField(max_length=20, null=True, blank=True)
     seat_number = models.SmallIntegerField(null=True, blank=True)
+    ignore_from_placement = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["first_name", "last_name"]
