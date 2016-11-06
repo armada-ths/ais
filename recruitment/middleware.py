@@ -3,7 +3,6 @@ from django.conf import settings
 from django.utils.http import urlquote
 
 
-
 class LoginRequiredMiddleware:
     """
     Middleware that requires a user to be authenticated to view any page other
@@ -24,7 +23,8 @@ class LoginRequiredMiddleware:
  'django.core.context_processors.auth'."
         # PLACEHOLDER until proper authenitaction is in place
         path = request.path_info
-        url_exceptions = ['/api/events/', '/api/exhibitors/', '/api/news/', '/api/partners/', '/api/organization/', '/api/status/']
+        url_exceptions = ['/api/events/', '/api/exhibitors/', '/api/news/', '/api/partners/', '/api/organization/',
+                          '/api/banquet_placement/', '/api/status/']
         if path in url_exceptions:
             return
         if not request.user.is_authenticated():
