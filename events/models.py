@@ -53,6 +53,13 @@ class Event(models.Model):
         the event")
     submission_mail_subject = models.CharField(max_length=78, blank=True)
     submission_mail_body = models.TextField(blank=True)
+
+    confirmation_mail_subject = models.CharField(max_length=78, blank=True)
+    confirmation_mail_body = models.TextField(blank=True)
+
+    rejection_mail_subject = models.CharField(max_length=78, blank=True)
+    rejection_mail_body = models.TextField(blank=True)
+
     image_original = models.ImageField(
             upload_to=UploadToDirUUID('events', 'image_original'), blank=True)
     image = models.ImageField(
