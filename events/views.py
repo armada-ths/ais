@@ -96,8 +96,21 @@ def event_attendants(request, pk, template_name='events/event_attendants.html'):
     if request.POST:
         attendance_pks = [int(pk) for pk in request.POST.getlist('selected')]
         for attendance in event.eventattendence_set.all():
-            attendance.status = 'A' if attendance.pk in attendance_pks else 'D'
-            attendance.save()
+            new_status = 'A' if attendance.pk in attendance_pks else 'D'
+            if new_status != attendance.status:
+                attendance.status = new_status
+                attendance.save()
+
+                mail_subject = event.confirmation_mail_subject if new_status == 'A' else event.rejection_mail_subject
+                mail_body = event.confirmation_mail_body if new_status == 'A' else event.rejection_mail_body
+                if attendance.user and attendance.user.email and mail_subject and mail_body:
+                    send_mail(
+                        mail_subject,
+                        mail_body,
+                        'system@armada.nu',
+                        [attendance.user.email],
+                        fail_silently=False,
+                    )
 
     attendances_with_answers = []
     questions = event.eventquestion_set.all()
