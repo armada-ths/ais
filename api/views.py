@@ -11,6 +11,7 @@ from events.models import Event
 from exhibitors.models import Exhibitor
 from fair.models import Partner
 from news.models import NewsArticle
+from exhibitors.models import BanquetteAttendant
 
 CURRENT_FAIR = 'Armada 2016'
 
@@ -74,4 +75,14 @@ def status(request):
         ('commit', git_hash),
         ('python_version', python_version),
     ])
+    return JsonResponse(data, safe=False)
+
+def banquet_placement(request):
+    # Tables and seats are mocked with this index, remove when implemented
+    index = 0
+    banquet_attendees = BanquetteAttendant.objects.all()
+    data = []
+    for attendence in banquet_attendees:
+        data.append(serializers.banquet_placement(request, attendence, index))
+        index += 1
     return JsonResponse(data, safe=False)
