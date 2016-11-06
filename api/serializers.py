@@ -123,3 +123,13 @@ def organization_group(request, group):
         ('role', group.name),
         ('people', people),
     ])
+
+def banquet_placement(request, attendence, index):
+    return OrderedDict([
+        ('first_name', attendence.first_name),
+        ('last_name', attendence.last_name),
+        ('linkedin_url', attendence.linkedin_url),
+        # Table and seat are mocked, since fields are not available
+        ('table', str(int(index/8))),
+        ('seat', str(index%8)),
+    ])

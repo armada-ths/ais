@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^partners/', views.partners),
     url(r'^organization/', views.organization),
     url(r'^status/$', views.status),
+    url(r'^banquet_placement/$', views.banquet_placement),
 ]
