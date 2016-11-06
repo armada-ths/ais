@@ -93,6 +93,12 @@ def event_edit(request, pk=None, template_name='events/event_form.html'):
 def event_attendants(request, pk, template_name='events/event_attendants.html'):
     event = get_object_or_404(Event, pk=pk)
 
+    if request.POST:
+        attendance_pks = [int(pk) for pk in request.POST.getlist('selected')]
+        for attendance in event.eventattendence_set.all():
+            attendance.status = 'A' if attendance.pk in attendance_pks else 'D'
+            attendance.save()
+
     attendances_with_answers = []
     questions = event.eventquestion_set.all()
     extra_field_questions = event.extra_field.customfield_set.all() if event.extra_field else []
