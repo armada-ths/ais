@@ -34,7 +34,7 @@ def index(request):
 def banquette_signup(request, template_name='exhibitors/related_object_form.html'):
     if request.user.is_authenticated():
         instance = BanquetteAttendant.objects.filter(user=request.user).first()
-        FormFactory = modelform_factory(BanquetteAttendant, exclude=('user', 'exhibitor','first_name', 'last_name', 'email', 'student_ticket'))
+        FormFactory = modelform_factory(BanquetteAttendant, exclude=('user', 'exhibitor','first_name', 'last_name', 'email', 'student_ticket', 'table_name', 'seat_number'))
         form = FormFactory(request.POST or None, instance=instance)
         if form.is_valid():
             instance = form.save()
