@@ -133,4 +133,5 @@ def banquet_placement(request, attendence, index):
         # Table and seat are mocked, since fields are not available
         ('table', str(int(index/8))),
         ('seat', str(index%8)),
+        ('job_title', attendence.job_title)
     ])

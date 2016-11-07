@@ -64,32 +64,7 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
 
 @admin.register(BanquetteAttendant)
 class BanquetAdmin(admin.ModelAdmin):
-
-    fieldsets = (
-        (None, {
-            'fields': ('fair', 'extra_field', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
-                       'location', 'attendence_description', 'attendence_approvement_required', 'published',)
-        }),
-        ('Registration Details', {
-            'classes': ('collapse',),
-            'fields': ('registration_required', 'registration_start', 'registration_end',
-                       'registration_last_day_cancel', 'allowed_groups',)
-        }),
-        ('Email', {
-            'classes': ('collapse',),
-            'fields': ('send_submission_mail', 'submission_mail_subject', 'submission_mail_body',)
-        }),
-        ('Images', {
-            'classes': ('collapse',),
-            'fields': ('image_original', 'event_image_preview',)
-        }),
-        (None, {
-            'fields': ('tags',)
-        })
-    )
     actions = [export_banquet_attendants_as_csv]
-
-    event_image_preview = image_preview('image')
 
 
 admin.site.register(WorkField)
