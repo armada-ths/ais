@@ -126,6 +126,7 @@ def organization_group(request, group):
 
 def banquet_placement(request, attendence, index):
     return OrderedDict([
+        ('id', attendence.pk),
         ('first_name', attendence.first_name),
         ('last_name', attendence.last_name),
         ('linkedin_url', attendence.linkedin_url),
