@@ -33,6 +33,7 @@ def exhibitors(request):
     )
     data = [serializers.exhibitor(request, exhibitor.cataloginfo)
             for exhibitor in exhibitors]
+    data.sort(key=lambda x: x['name'].lower())
     return JsonResponse(data, safe=False)
 
 
