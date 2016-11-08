@@ -57,7 +57,7 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
     for exhibitor in queryset:
         csv_row = [
             exhibitor.company.name,
-            exhibitor.location.name,
+            exhibitor.location.name if exhibitor.location else '',
             exhibitor.transport_to_fair_type,
             exhibitor.number_of_packages_to_fair,
             exhibitor.number_of_pallets_to_fair,
