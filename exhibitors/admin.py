@@ -46,6 +46,7 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
         'transport_to_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair',
         'estimated_arrival', 'transport_from_fair_type', 'number_of_packages_from_fair',
         'number_of_pallets_from_fair',
+        'transport_from_fair_address', 'transport_from_fair_zip_code', 'transport_from_fair_recipient_name', 'transport_from_fair_recipient_phone_number',
         'heavy_duty_electric_equipment', 'other_information_about_the_stand',
     ]
 
@@ -65,6 +66,12 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
             exhibitor.transport_from_fair_type,
             exhibitor.number_of_packages_from_fair,
             exhibitor.number_of_pallets_from_fair,
+
+            exhibitor.transport_from_fair_address,
+            exhibitor.transport_from_fair_zip_code,
+            exhibitor.transport_from_fair_recipient_name,
+            exhibitor.transport_from_fair_recipient_phone_number,
+
             exhibitor.heavy_duty_electric_equipment,
             exhibitor.other_information_about_the_stand,
         ]
