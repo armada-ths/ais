@@ -12,6 +12,7 @@ from exhibitors.models import Exhibitor
 from fair.models import Partner
 from news.models import NewsArticle
 from exhibitors.models import BanquetteAttendant
+from fair.models import Fair
 
 CURRENT_FAIR = 'Armada 2016'
 
@@ -58,9 +59,16 @@ def partners(request):
 
 
 def organization(request):
-    groups = Group.objects \
+    all_groups = Group.objects \
         .prefetch_related('user_set__profile') \
         .order_by('name')
+
+    # We only want groups that belong to roles that have been recruited during the current fair
+    fair = Fair.objects.get(name=CURRENT_FAIR)
+    recruitment_period_roles = [period.recruitable_roles.all() for period in fair.recruitmentperiod_set.all()]
+    role_groups = [role.group for roles in recruitment_period_roles for role in roles]
+    groups = [group for group in all_groups if group in role_groups]
+
     data = [serializers.organization_group(request, group) for group in groups]
     return JsonResponse(data, safe=False)
 
