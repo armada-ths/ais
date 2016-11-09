@@ -19,6 +19,7 @@
 <tr>
     <th></th>
     <th>User</th>
+    <th>Submission date</th>
     {% for question in questions %}
     <th>{{ question }}</th>
     {% endfor %}
@@ -40,6 +41,7 @@
     {% else %}
         <td>External user</td>
     {% endif %}
+    <td>{{ attendance.attendance.submission_date|date:"d M H:i" }}</td>
 
     {% for answer in attendance.answers %}
         <td>{{ answer.answer }}</td>
@@ -71,6 +73,7 @@
         $(document).ready(function () {
             $('#attendants_table').DataTable({
                 'paging': false,
+                'sorting': false,
             })
 
             $('#select-capacity-button').click(function() {

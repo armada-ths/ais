@@ -6,6 +6,7 @@ from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 import os
 from fair.models import Fair, Tag
 from recruitment.models import ExtraField
+from django.utils import timezone
 
 
 # An 'Event' belongs to a specific 'Fair'
@@ -101,6 +102,7 @@ class EventAttendence(models.Model):
     user = models.ForeignKey(User, null=True, default=None, blank=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     status = models.CharField(max_length=3, choices=STATUS, default="S")
+    submission_date = models.DateTimeField(default=timezone.now, blank=True)
 
     def __str__(self):
         if self.user is not None:
