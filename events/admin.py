@@ -5,6 +5,7 @@ from .models import Event, EventAttendence, EventQuestion, EventAnswer
 from django.http import HttpResponse
 from lib.util import image_preview
 
+
 def mark_accepted(modeladmin, request, queryset):
     queryset.update(status='A')
 
@@ -26,7 +27,7 @@ def mark_canceled(modeladmin, request, queryset):
 def export_as_csv(modeladmin, request, queryset):
     if len(queryset) != 1:
         modeladmin.message_user(request,
-            "Please select a single event to export", level=messages.ERROR)
+                                "Please select a single event to export", level=messages.ERROR)
         return
 
     response = HttpResponse(content_type="text/csv")
@@ -37,13 +38,13 @@ def export_as_csv(modeladmin, request, queryset):
     csv_headers = ['First name (user)', 'Last name (user)', 'Email (user)']
     csv_headers.append('Status')
     question_list = []
-    for question in EventQuestion.objects.filter(event__id = event_id):
+    for question in EventQuestion.objects.filter(event__id=event_id):
         question_list.append(question.id)
         csv_headers.append(question.question_text)
 
     writer = csv.writer(response, quoting=csv.QUOTE_ALL)
     writer.writerow(csv_headers)
-    for attendence in EventAttendence.objects.filter(event__id = event_id):
+    for attendence in EventAttendence.objects.filter(event__id=event_id):
         user = attendence.user
         if user is None:
             user_information = [None, None, None]
@@ -59,9 +60,9 @@ def export_as_csv(modeladmin, request, queryset):
         answers = []
         for question in question_list:
             event_answer = (EventAnswer.objects
-                 .filter(question__id =  question)
-                 .filter(attendence__id = attendence.id)
-                 .first())
+                            .filter(question__id=question)
+                            .filter(attendence__id=attendence.id)
+                            .first())
             if event_answer is not None:
                 answers.append(event_answer.answer)
             else:
@@ -79,8 +80,9 @@ class QuestionInline(admin.StackedInline):
 class EventAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('fair', 'extra_field', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
-                       'location', 'attendence_description', 'attendence_approvement_required', 'published',)
+            'fields': (
+            'fair', 'extra_field', 'name', 'event_start', 'event_end', 'capacity', 'description', 'description_short',
+            'location', 'attendence_description', 'attendence_approvement_required', 'published',)
         }),
         ('Registration Details', {
             'classes': ('collapse',),
@@ -89,7 +91,9 @@ class EventAdmin(admin.ModelAdmin):
         }),
         ('Email', {
             'classes': ('collapse',),
-            'fields': ('send_submission_mail', 'submission_mail_subject', 'submission_mail_body',)
+            'fields': (
+            'send_submission_mail', 'submission_mail_subject', 'submission_mail_body', 'confirmation_mail_subject',
+            'confirmation_mail_body', 'rejection_mail_subject', 'rejection_mail_body')
         }),
         ('Images', {
             'classes': ('collapse',),
@@ -131,5 +135,6 @@ class EventAttendenceAdmin(admin.ModelAdmin):
     list_filter = ('status', 'event')
     actions = [mark_accepted, mark_declined, mark_submitted,
                mark_canceled]
+
 
 admin.site.register(EventAttendence, EventAttendenceAdmin)
