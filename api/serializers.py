@@ -73,6 +73,8 @@ def exhibitor(request, exhibitor):
 
 def event(request, event):
     tags = tags_mappings(event.tags.all())
+    signup_link = event.external_signup_url if event.external_signup_url else absolute_url(request, '/events/' + str(
+        event.pk) + '/signup')
     return OrderedDict([
                            ('id', event.pk),
                            ('name', event.name),
@@ -80,8 +82,7 @@ def event(request, event):
                            ('location', event.location),
                            ('description_short', event.description_short),
                            ('description', event.description),
-                           ('signup_link',
-                            absolute_url(request, '/events/' + str(event.pk) + '/signup')),
+                           ('signup_link', signup_link),
                            ('event_start', unix_time(event.event_start)),
                            ('event_end', unix_time(event.event_end)),
                            ('registration_required', event.registration_required),
