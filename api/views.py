@@ -86,6 +86,7 @@ def status(request):
     ])
     return JsonResponse(data, safe=False)
 
+
 def banquet_placement(request):
     # Tables and seats are mocked with this index, remove when implemented
     index = 0
