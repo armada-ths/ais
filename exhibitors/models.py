@@ -19,6 +19,7 @@ class Exhibitor(models.Model):
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
+    fair_location = models.OneToOneField('locations.Location', blank=True, null=True)
     estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
 
     statuses = [
