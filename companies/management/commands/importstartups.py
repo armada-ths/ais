@@ -127,7 +127,7 @@ class Command(BaseCommand):
                                 )
                         info.slug = slugify(info.display_name)
                         info.save()
-                        info.tags.add(Tag.objects.get_or_create(name='Startup')[0])
+                        info.tags.add(Tag.objects.get_or_create(name='Startup', description='Startup')[0])
 
                         # Exhibitor orders
                         try:
