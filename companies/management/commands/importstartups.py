@@ -48,7 +48,7 @@ class Command(BaseCommand):
             fair = Fair.objects.get(name=FAIR_YEAR)
             for row in reader:
                 company_name = row['company_name'].strip()
-                if not Company.objects.filter(name=company_name).exists() or True:
+                if not Company.objects.filter(name=company_name).exists():
                     with transaction.atomic():
                         self.stdout.write("importing company %s" % row['company_name'])
                         contact_name = '%s %s' % (
