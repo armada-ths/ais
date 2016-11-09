@@ -12,6 +12,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from ast import literal_eval
 import csv
+from fair.models import Tag
 
 
 REGISTRATION_URL = 'http://anmalan.armada.nu'
@@ -47,7 +48,7 @@ class Command(BaseCommand):
             fair = Fair.objects.get(name=FAIR_YEAR)
             for row in reader:
                 company_name = row['company_name'].strip()
-                if not Company.objects.filter(name=company_name).exists():
+                if not Company.objects.filter(name=company_name).exists() or True:
                     with transaction.atomic():
                         self.stdout.write("importing company %s" % row['company_name'])
                         contact_name = '%s %s' % (
@@ -90,6 +91,9 @@ class Command(BaseCommand):
                         exhibitor.save()
 
 
+
+
+
                         def parse_int(string):
                             return int(string or 0)
 
@@ -123,6 +127,7 @@ class Command(BaseCommand):
                                 )
                         info.slug = slugify(info.display_name)
                         info.save()
+                        info.tags.add(Tag.objects.get_or_create(name='Startup')[0])
 
                         # Exhibitor orders
                         try:
@@ -141,9 +146,6 @@ class Command(BaseCommand):
                         info.continents.add(*continents)
                         info.values.add(*values)
                         info.save()
-
-                        company = Company.objects.get(name=company_name)
-                        exhibitor = Exhibitor.objects.get(company=company, fair=fair)
 
 
                         number_of_electrical_outlets = int(row['number_of_electrical_outlets'] or '0')
