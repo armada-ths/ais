@@ -5,6 +5,7 @@ import subprocess
 
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
+from django.views.decorators.cache import cache_page
 
 import api.serializers as serializers
 from events.models import Event
@@ -21,6 +22,7 @@ def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
 
 
+@cache_page(60 * 5)
 def exhibitors(request):
     exhibitors = Exhibitor.objects.filter(
         fair__name=CURRENT_FAIR
@@ -38,18 +40,21 @@ def exhibitors(request):
     return JsonResponse(data, safe=False)
 
 
+@cache_page(60 * 5)
 def events(request):
     events = Event.objects.filter(published=True)
     data = [serializers.event(request, event) for event in events]
     return JsonResponse(data, safe=False)
 
 
+@cache_page(60 * 5)
 def news(request):
     news = NewsArticle.public_articles.all()
     data = [serializers.newsarticle(request, article) for article in news]
     return JsonResponse(data, safe=False)
 
 
+@cache_page(60 * 5)
 def partners(request):
     partners = Partner.objects.filter(
         fair__name=CURRENT_FAIR
@@ -58,6 +63,7 @@ def partners(request):
     return JsonResponse(data, safe=False)
 
 
+@cache_page(60 * 5)
 def organization(request):
     all_groups = Group.objects \
         .prefetch_related('user_set__profile') \
@@ -87,6 +93,7 @@ def status(request):
     return JsonResponse(data, safe=False)
 
 
+@cache_page(60 * 5)
 def banquet_placement(request):
     # Tables and seats are mocked with this index, remove when implemented
     index = 0
