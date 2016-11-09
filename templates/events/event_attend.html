@@ -40,10 +40,10 @@
                 Signup ends {{ event.registration_end }}
                 <br>
                 <br>
-                {% if not event.external_signup_url %}
-                    <input class="btn btn-primary" type="submit" value="Sign up"/>
-                {% else %}
+                {% if event.external_signup_url %}
                     <a class="btn btn-primary" href={{ event.external_signup_url }}>Go to registration</a>
+                {% else %}
+                    <input class="btn btn-primary" type="submit" value="Sign up"/>
                 {% endif %}
                 {% else %}
                     {% if event|registration_not_started %}
