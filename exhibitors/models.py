@@ -79,9 +79,9 @@ class Exhibitor(models.Model):
     transport_from_fair_recipient_phone_number = models.CharField(max_length=200, blank=True)
 
     # Marketing
-    wants_information_about_events = models.BooleanField()
-    wants_information_about_targeted_marketing = models.BooleanField()
-    wants_information_about_osqledaren = models.BooleanField()
+    wants_information_about_events = models.BooleanField(default=False)
+    wants_information_about_targeted_marketing = models.BooleanField(default=False)
+    wants_information_about_osqledaren = models.BooleanField(default=False)
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
