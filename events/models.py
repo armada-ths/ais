@@ -77,7 +77,7 @@ class Event(models.Model):
             self.extra_field = ExtraField.objects.create()
         self.image = update_image_field(
             self.image_original,
-            self.image, 640, 480, 'jpg')
+            self.image, 1000, 1000, 'jpg')
         super(Event, self).save(*args, **kwargs)
 
 # An EventQuestion belongs to a specific Event
