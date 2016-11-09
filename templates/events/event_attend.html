@@ -2,62 +2,66 @@
 {% load event_extras %}
 {% load crispy_forms_tags %}
 {% block content %}
-<h2>{{ event.name }}</h2>
-<br>
-{{ event.description|safe }}
-<br>
-<br>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {{ form|crispy }}
-    {% include 'recruitment/custom_fields.html' with questions_with_answers=extra_field_questions_with_answers %}
-  <br>
-  <br>
-  {{ event.attendence_description|safe }}
-  <br>
-  <br>
-  {% if request.user|user_attending_event:event %}
-    {% if request.user|user_declined_event:event %}
-      <b>Your submission has been declined.</b>
-      <br>
-      <br>
-      <a class="btn btn-default" href="">Update info</a>
-      <a style="float: right" class="btn btn-default" href="">Unattend event</a>
-    {% else %}
-      {% if request.user|user_accepted_event:event %}
-        <b>You are signed up for this event!</b>
-      {% else %}
-        <b>Waiting for admin to accept your submission to this event.</b>
-      {% endif %}
-      <br>
-      <br>
-      <input class="btn btn-primary" type="submit" value="Update info" />
-      <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
-    {% endif %}
-  {% else %}
-    {% if event|registration_required %}
-      {% if event|registration_open %}
-        Signup ends {{ event.registration_end }}
+    <h2>{{ event.name }}</h2>
+    <br>
+    {{ event.description|safe }}
+    <br>
+    <br>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        {% include 'recruitment/custom_fields.html' with questions_with_answers=extra_field_questions_with_answers %}
         <br>
         <br>
-        <input class="btn btn-primary" type="submit" value="Sign up" />
-      {% else %}
-        {% if event|registration_not_started %}
-          Signup starts {{ event.registration_start }}
-          <br>
-          <br>
-          <input class="btn btn-default" type="submit" value="Not open" />
-        {% elif event|registration_closed %}
-          Signup closed {{ event.registration_end }}
-          <br>
-          <br>
-          <input class="btn btn-default" type="submit" value="Closed" />
+        {{ event.attendence_description|safe }}
+        <br>
+        <br>
+        {% if request.user|user_attending_event:event %}
+        {% if request.user|user_declined_event:event %}
+            <b>Your submission has been declined.</b>
+            <br>
+            <br>
+            <a class="btn btn-default" href="">Update info</a>
+            <a style="float: right" class="btn btn-default" href="">Unattend event</a>
+        {% else %}
+            {% if request.user|user_accepted_event:event %}
+                <b>You are signed up for this event!</b>
+            {% else %}
+                <b>Waiting for admin to accept your submission to this event.</b>
+            {% endif %}
+            <br>
+            <br>
+            <input class="btn btn-primary" type="submit" value="Update info"/>
+            <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
         {% endif %}
-      {% endif %}
-    {% endif %}
-  {% endif %}
+        {% else %}
+        {% if event|registration_required %}
+            {% if event|registration_open %}
+                Signup ends {{ event.registration_end }}
+                <br>
+                <br>
+                {% if not event.external_signup_url %}
+                    <input class="btn btn-primary" type="submit" value="Sign up"/>
+                {% else %}
+                    <a class="btn btn-primary" href={{ event.external_signup_url }}>Go to registration</a>
+                {% endif %}
+                {% else %}
+                    {% if event|registration_not_started %}
+                        Signup starts {{ event.registration_start }}
+                        <br>
+                        <br>
+                        <input class="btn btn-default" type="submit" value="Not open"/>
+                    {% elif event|registration_closed %}
+                        Signup closed {{ event.registration_end }}
+                        <br>
+                        <br>
+                        <input class="btn btn-default" type="submit" value="Closed"/>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
 
 
-</form>
+    </form>
 
 {% endblock %}
