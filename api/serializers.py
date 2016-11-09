@@ -10,6 +10,7 @@ def tags_mappings(items):
     return [
         ('diversity', 'Diversity' in tags),
         ('sustainability', 'Sustainability' in tags),
+        ('startup', 'Startup' in tags),
     ]
 
 
