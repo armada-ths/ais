@@ -116,7 +116,7 @@ def event_attendants(request, pk, template_name='events/event_attendants.html'):
     questions = event.eventquestion_set.all()
     extra_field_questions = event.extra_field.customfield_set.all() if event.extra_field else []
 
-    for attendance in event.eventattendence_set.all():
+    for attendance in event.eventattendence_set.order_by('-submission_date').all():
         attendance_answers = []
         for question in questions:
             answer = EventAnswer.objects.filter(question=question, attendence=attendance).first()
