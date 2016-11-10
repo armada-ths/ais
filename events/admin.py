@@ -86,7 +86,7 @@ class EventAdmin(admin.ModelAdmin):
         }),
         ('Registration Details', {
             'classes': ('collapse',),
-            'fields': ('registration_required', 'registration_start', 'registration_end',
+            'fields': ('external_signup_url', 'registration_required', 'registration_start', 'registration_end',
                        'registration_last_day_cancel', 'allowed_groups',)
         }),
         ('Email', {

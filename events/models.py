@@ -29,6 +29,7 @@ class Event(models.Model):
         default=True,
         help_text="If this is checked all users that attends the event needs to \
         be accepted by an admin.")
+    external_signup_url = models.URLField(blank=True)
     registration_required = models.BooleanField(default=True)
     registration_start = models.DateTimeField()
     registration_end = models.DateTimeField()
