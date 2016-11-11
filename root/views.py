@@ -8,7 +8,6 @@ from people.models import Profile
 
 
 def index(request):
-
     next = request.GET.get('next')
     if next and next[-1] == '/':
         next = next[:-1]
@@ -17,8 +16,8 @@ def index(request):
         user_profile = Profile.objects.filter(user=request.user).first()
         if user_profile != None and user_profile.programme == None:
             return redirect("/people/%d/edit"%(request.user.pk))
-        data = {}
         
+        data = {}
         data["recruitment"] = {
             'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
             'roles': [{'parent_role': role,
