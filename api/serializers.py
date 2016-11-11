@@ -3,7 +3,7 @@ from lib.util import unix_time
 
 MISSING_IMAGE = '/static/missing.png'
 MISSING_MAP = '/static/nymble_2048.png'
-MISSING_PERSON = '/static/no-image.png'
+MISSING_PERSON = '/static/images/no-image.png'
 
 
 def tags_mappings(items):
