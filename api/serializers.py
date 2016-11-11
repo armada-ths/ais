@@ -3,6 +3,7 @@ from lib.util import unix_time
 
 MISSING_IMAGE = '/static/missing.png'
 MISSING_MAP = '/static/nymble_2048.png'
+MISSING_PERSON = '/static/no-image.png'
 
 
 def tags_mappings(items):
@@ -117,7 +118,7 @@ def person(request, person):
     return OrderedDict([
         ('id', person.pk),
         ('name', person.get_full_name()),
-        ('picture', image_url_or_missing(request, person.profile.picture)),
+        ('picture', image_url_or_missing(request, person.profile.picture, MISSING_PERSON)),
     ])
 
 
