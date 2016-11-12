@@ -47,6 +47,7 @@ class ProfileForm(ModelForm):
                 choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)]),
             "birth_date": forms.TextInput(attrs={'class': 'datepicker'}),
         }
+        labels= {'birth_date': 'Birth date (format: 2016-12-24)'}
 
 
 def edit_person(request, pk):
