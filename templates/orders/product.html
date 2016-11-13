@@ -5,33 +5,34 @@
     <li role="presentation" class="active"><a href="{% url 'products' %}">Products</a></li>
 {% endblock %}
 {% block content %}
-    <h1>Products ({{ products|length }})</h1>
+        <ol class="breadcrumb">
+        <li><a href="{% url 'products' %}">Products</a></li>
+        <li class="active">{{ product }}</li>
+    </ol>
+    <h1>{{ product }} ({{ product.price }} SEK)</h1>
 
         <div class="table-responsive">
         <table class="table" id="products_table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Price (SEK)</th>
+                    <th>Exhibitor</th>
                     <th>Ordered quantity</th>
-                    <th>Revenue (SEK)</th>
+                    <th>Price (SEK)</th>
                 </tr>
             </thead>
-            {% for product in products %}
+            {% for order in product.order_set.all %}
                     <tr>
-                    <td><a href="{% url 'product' product.pk %}">{{ product.name }}</a></td>
-                    <td>{{ product.price|intcomma }}</td>
-                    <td>{{ product.ordered_quantity|intcomma }}</td>
-                    <td>{{ product.revenue|intcomma }}</td>
+                    <td><a href="{% url 'exhibitor' order.exhibitor.pk %}">{{ order.exhibitor }}</a></td>
+                    <td>{{ order.amount }}</td>
+                    <td>{{ order.price|intcomma }}</td>
                     </tr>
                 {% endfor %}
 
             <tfoot>
             <tr>
                 <th>Total</th>
-                <th></th>
-                <th></th>
-                <th>{{ total_revenue|intcomma }}</th>
+                <th>{{ product.ordered_quantity|intcomma }}</th>
+                <th>{{ product.revenue|intcomma }}</th>
 
             </tr>
             </tfoot>
