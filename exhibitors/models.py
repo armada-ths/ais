@@ -102,7 +102,7 @@ class BanquetteAttendant(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
-    linkedin_url = models.CharField(max_length=200, blank=True)
+    linkedin_url = models.URLField(blank=True)
     job_title = models.CharField(max_length=200, blank=True)
     genders = [
         ('male', 'Male'),
