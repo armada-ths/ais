@@ -98,8 +98,17 @@ def banquet_placement(request):
     # Tables and seats are mocked with this index, remove when implemented
     index = 0
     banquet_attendees = BanquetteAttendant.objects.all()
+
+    from recruitment.models import RecruitmentApplication
+    recruitment_applications = RecruitmentApplication.objects.filter(status='accepted')
     data = []
     for attendence in banquet_attendees:
+        if attendence.user:
+            recruitment_application = recruitment_applications.filter(user=attendence.user).first()
+            if recruitment_application:
+                attendence.job_title = recruitment_application.delegated_role.name
+            if not attendence.linkedin_url:
+                attendence.linkedin_url = attendence.user.profile.linkedin_url
         data.append(serializers.banquet_placement(request, attendence, index))
         index += 1
     return JsonResponse(data, safe=False)
