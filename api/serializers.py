@@ -137,8 +137,7 @@ def banquet_placement(request, attendence, index):
         ('first_name', attendence.first_name),
         ('last_name', attendence.last_name),
         ('linkedin_url', attendence.linkedin_url),
-        # Table and seat are mocked, since fields are not available
-        ('table', str(int(index / 8))),
-        ('seat', str(index % 8)),
+        ('table', attendence.table_name),
+        ('seat', attendence.seat_number),
         ('job_title', attendence.job_title)
     ])
