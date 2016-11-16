@@ -106,9 +106,16 @@ def banquet_placement(request):
         if attendence.user:
             recruitment_application = recruitment_applications.filter(user=attendence.user).first()
             if recruitment_application:
-                attendence.job_title = recruitment_application.delegated_role.name
+                attendence.job_title = 'Armada: ' + recruitment_application.delegated_role.name
             if not attendence.linkedin_url:
                 attendence.linkedin_url = attendence.user.profile.linkedin_url
+        if attendence.exhibitor:
+            job_title = attendence.job_title
+            attendence.job_title = attendence.exhibitor.company.name
+            if job_title:
+                attendence.job_title += ': ' + job_title
+
+
         data.append(serializers.banquet_placement(request, attendence, index))
         index += 1
     return JsonResponse(data, safe=False)
