@@ -116,6 +116,7 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
 @admin.register(BanquetteAttendant)
 class BanquetAdmin(admin.ModelAdmin):
     actions = [export_banquet_attendants_as_csv]
+    search_fields = ('display_name',)
 
 
 admin.site.register(WorkField)
