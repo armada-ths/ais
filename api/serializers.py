@@ -136,7 +136,7 @@ def banquet_placement(request, attendence, index):
         ('id', attendence.pk),
         ('first_name', attendence.first_name),
         ('last_name', attendence.last_name),
-        ('linkedin_url', attendence.linkedin_url),
+        ('linkedin_url', attendence.linkedin_url or ""),
         ('table', attendence.table_name),
         ('seat', attendence.seat_number),
         ('job_title', attendence.job_title)
