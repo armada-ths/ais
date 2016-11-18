@@ -96,6 +96,10 @@ class Exhibitor(models.Model):
         return '%s at %s' % (self.company.name, self.fair.name)
 
 
+    class Meta:
+        permissions = (('view_exhibitors', 'View exhibitors'),)
+
+
 class BanquetteAttendant(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)  # Null for exhibitor representants
     exhibitor = models.ForeignKey(Exhibitor, null=True, blank=True)  # Null for non-exhibitor representants

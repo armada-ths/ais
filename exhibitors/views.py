@@ -1,18 +1,11 @@
 from django.forms import modelform_factory
 from django.http import HttpResponseForbidden
-
-from .models import Exhibitor
 from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import permission_required
 from django.forms import TextInput
-from orders.models import Order, Product
-from exhibitors.models import Exhibitor, BanquetteAttendant
+from exhibitors.models import Exhibitor
 from companies.models import Company
 from django.urls import reverse
-from fair.templatetags.fair_tags import is_armada_member
-
-from fair.models import Fair
 
 
 def user_can_modify_exhibitor(user, exhibitor):
@@ -21,7 +14,7 @@ def user_can_modify_exhibitor(user, exhibitor):
 
 
 def exhibitors(request, template_name='exhibitors/exhibitors.html'):
-    if not is_armada_member(request.user):
+    if not request.user.has_perm('exhibitors.view_exhibitors'):
         return HttpResponseForbidden()
 
     return render(request, template_name, {

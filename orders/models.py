@@ -11,7 +11,8 @@ class Product(models.Model):
     price = models.IntegerField()
 
     class Meta:
-        ordering = ["name"]
+        ordering = ['name']
+        permissions = (('view_products', 'View products'),)
 
     def ordered_quantity(self):
         return sum([order.amount for order in self.order_set.all()])
