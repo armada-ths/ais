@@ -38,6 +38,8 @@ def assign_roles(request):
     # But we don't want this to crash if that's case so exclude all without a delegated role
     for application in RecruitmentApplication.objects.filter(status='accepted').exclude(delegated_role=None):
         application.delegated_role.add_user_to_groups(application.user)
+    for application in RecruitmentApplication.objects.filter(status='rejected').exclude(delegated_role=None):
+        application.user.groups.clear()
 
     return redirect('recruitment')
 
