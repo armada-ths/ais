@@ -9,10 +9,11 @@ def products(request, template_name='orders/products.html'):
     if not request.user.has_perm('orders.view_products'):
         raise PermissionDenied
     products = Product.objects.filter(fair=Fair.objects.get(name='Armada 2016'))
-    return render(request, template_name, {
-        'products': products,
-        'total_revenue': sum([product.revenue() for product in products])
-    })
+    return render(request, template_name, {'product_categories': [
+        {'products': products, 'id': 'total_products', 'name': 'Total'},
+        {'products': products.exclude(coa_number=3511), 'id': 'fair_products', 'name': 'Fair'},
+        {'products': products.filter(coa_number=3511), 'id': 'banquet_products', 'name': 'Banquet'},
+    ]})
 
 
 # Create your views here.
