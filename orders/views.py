@@ -10,9 +10,9 @@ def products(request, template_name='orders/products.html'):
         raise PermissionDenied
     products = Product.objects.filter(fair=Fair.objects.get(name='Armada 2016'))
     return render(request, template_name, {'product_categories': [
-        {'products': Product.objects.all(), 'id': 'total_products', 'name': 'Total'},
-        {'products': Product.objects.exclude(coa_number=3511), 'id': 'fair_products', 'name': 'Fair'},
-        {'products': Product.objects.filter(coa_number=3511), 'id': 'banquet_products', 'name': 'Banquet'},
+        {'products': products, 'id': 'total_products', 'name': 'Total'},
+        {'products': products.exclude(coa_number=3511), 'id': 'fair_products', 'name': 'Fair'},
+        {'products': products.filter(coa_number=3511), 'id': 'banquet_products', 'name': 'Banquet'},
     ]})
 
 
