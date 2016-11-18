@@ -1,0 +1,67 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django import forms
+from django.contrib.auth.decorators import permission_required
+import datetime
+
+from .models import SalesPeriod, Campaign, Sale, SaleComment
+from companies.models import Contact
+
+# Create your views here.
+
+class SaleForm(forms.ModelForm):
+    class Meta:
+        model = Sale
+        fields = '__all__'
+
+class CampaignForm(forms.ModelForm):
+    class Meta:
+        model = Campaign
+        fields = '__all__'
+
+class SalesPeriodForm(forms.ModelForm):
+    class Meta:
+        model = SalesPeriod
+        fields = '__all__'
+
+        widgets = {
+            "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
+            "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
+        }
+
+class SaleCommentForm(forms.ModelForm):
+    class Meta:
+        model = SaleComment
+        fields = '__all__'
+
+def sales_list(request, template_name='sales/sales_list.html'):
+    return render(request, template_name, {'sales': Sale.objects.all().order_by('exhibitor__company__name')})
+
+def sale_create(request, template_name='sales/sale_form.html'):
+    form = SaleForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('sales')
+    return render(request, template_name, {'form':form})
+
+def sale_edit(request, pk, template_name='sales/sale_form.html'):
+    sale = get_object_or_404(Sale, pk=pk)
+    form = SaleForm(request.POST or None, instance=sale)
+    if form.is_valid():
+        form.save()
+        return redirect('sales')
+    return render(request, template_name, {'form':form})
+
+def sale_show(request, pk, template_name='sales/sale_show.html'):
+    sale = get_object_or_404(Sale, pk=pk)
+    user_name = sale.responsible.get_full_name()
+    comments = SaleComment.objects.filter(sale=sale).order_by('-created_date')
+    company_name = sale.exhibitor.company.name
+    company_contacts = Contact.objects.filter(belongs_to=sale.exhibitor.company)
+    return render(request, template_name, {'sale':sale, 'user_info':user_name, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts})
+
+def sale_delete(request, pk, template_name='sales/sale_delete.html'):
+    sale = get_object_or_404(Sale, pk=pk)
+    if request.method=='POST':
+        sale.delete()
+        return redirect('sales')
+    return render(request, template_name, {'sale':sale})

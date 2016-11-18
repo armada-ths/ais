@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block head-extra %}<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+  <script>
+  tinymce.init({ selector:'textarea',
+    setup: function (editor) {
+        editor.on('change', function () {
+            editor.save();
+        });
+    }
+  });</script>{% endblock %}
+
+{% block nav-news %}<li role="presentation" class="active"><a href="{% url 'sales' %}">Sales</a></li>{% endblock %}
+
+{% block content %}
+<div class="container">
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+</form>
+</div>
+
+{% endblock %}
