@@ -68,7 +68,7 @@
                             return 0
                         }
                     }
-                    for (var column = 1; column < 4; column++) {
+                    for (var column = 3; column < 4; column++) {
                         total = api.column(column).data().reduce(function (a, b) {
                             return intVal(a) + intVal(b)
                         }, 0)
