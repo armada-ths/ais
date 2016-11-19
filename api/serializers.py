@@ -61,9 +61,11 @@ def exhibitor(request, exhibitor):
                             image_url_or_missing(request, exhibitor.logo_small)),
                            ('ad_url', image_url_or_missing(request, exhibitor.ad)),
                            ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair, MISSING_MAP)),
+                           ('map_url', image_url_or_missing(request, exhibitor.location_at_fair, MISSING_MAP)),
                            ('room',
-                            str(exhibitor.exhibitor.fair_location.room) if exhibitor.exhibitor.fair_location else ''),
-                           ('location', str(exhibitor.location) if exhibitor.location else ''),
+                            str(
+                                exhibitor.exhibitor.fair_location.room) if exhibitor.exhibitor.fair_location.room else ''),
+                           ('location', str(exhibitor.exhibitor.location) if exhibitor.location.location else ''),
                            ('programs', names(exhibitor.programs)),
                            ('main_work_field', obj_name(exhibitor.main_work_field)),
                            ('work_fields', names(exhibitor.work_fields)),
