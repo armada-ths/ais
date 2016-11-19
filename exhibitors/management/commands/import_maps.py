@@ -10,7 +10,7 @@ from exhibitors.models import CatalogInfo
 class Command(BaseCommand):
     help = """
     Takes a folder of map images and updates the catalogue.
-    Specify the path to the folder in the form e.g. ../../path_to_images
+    Specify the path to the folder in the form e.g. ../../path_to_images/
     """
 
     def add_arguments(self, parser):
