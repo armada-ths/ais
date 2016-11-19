@@ -29,7 +29,7 @@ class Command(BaseCommand):
                 catalogue_info = CatalogInfo.objects.filter(slug=filename).first()
                 if not catalogue_info:
                     raise Exception("[ERROR] Catalog info does not exists for {}".format(filename))
-                file = File(open("{}{}".format(folder, image), "rb"))
-                catalogue_info.location_at_fair_original.save("{}-map.png".format(filename), file, save=True)
+                map_file = File(open("{}{}".format(folder, image), "rb"))
+                catalogue_info.location_at_fair_original.save("{}-map.png".format(filename), map_file, save=True)
                 self.stdout.write("[SUCCESS] Saved map for {}".format(filename))
         self.stdout.write("[INFO] Import finished.")
