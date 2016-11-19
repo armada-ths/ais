@@ -8,6 +8,7 @@ import csv
 from django.http import HttpResponse
 from orders.models import Order, Product
 
+
 @admin.register(CatalogInfo)
 class CatalogInfoAdmin(admin.ModelAdmin):
     search_fields = ('display_name',)
@@ -22,7 +23,8 @@ class CatalogInfoAdmin(admin.ModelAdmin):
         ('Images', {
             'classes': ('collapse',),
             'fields': ('logo_original', 'logo_small_preview', 'logo_preview',
-                       'ad_original', 'ad_preview',)
+                       'ad_original', 'ad_preview', 'location_at_fair_original', 'location_at_fair',
+                       'location_at_fair_preview',)
         }),
         ('Details', {
             'classes': ('collapse',),
@@ -30,11 +32,12 @@ class CatalogInfoAdmin(admin.ModelAdmin):
                        'job_types', 'continents', 'values', 'tags',)
         })
     )
-    readonly_fields = ('logo_small_preview', 'logo_preview', 'ad_preview',)
+    readonly_fields = ('logo_small_preview', 'logo_preview', 'ad_preview', 'location_at_fair_preview',)
 
     logo_small_preview = image_preview('logo_small')
     logo_preview = image_preview('logo')
     ad_preview = image_preview('ad')
+    location_at_fair_preview = image_preview('location_at_fair')
 
 
 def export_exhibitor_as_csv(modeladmin, request, queryset):
@@ -46,7 +49,8 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
         'transport_to_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair',
         'estimated_arrival', 'transport_from_fair_type', 'number_of_packages_from_fair',
         'number_of_pallets_from_fair',
-        'transport_from_fair_address', 'transport_from_fair_zip_code', 'transport_from_fair_recipient_name', 'transport_from_fair_recipient_phone_number',
+        'transport_from_fair_address', 'transport_from_fair_zip_code', 'transport_from_fair_recipient_name',
+        'transport_from_fair_recipient_phone_number',
         'heavy_duty_electric_equipment', 'other_information_about_the_stand',
     ]
 
@@ -82,7 +86,6 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
 
         writer.writerow(csv_row)
 
-
     return response
 
 
@@ -109,14 +112,16 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
     for attendant in queryset:
         writer.writerow([
             attendant.first_name, attendant.last_name, attendant.email, attendant.gender, attendant.phone_number,
-            attendant.allergies, attendant.wants_alcohol, attendant.wants_lactose_free_food, attendant.wants_gluten_free_food, attendant.wants_vegetarian_food
+            attendant.allergies, attendant.wants_alcohol, attendant.wants_lactose_free_food,
+            attendant.wants_gluten_free_food, attendant.wants_vegetarian_food
         ])
     return response
+
 
 @admin.register(BanquetteAttendant)
 class BanquetAdmin(admin.ModelAdmin):
     actions = [export_banquet_attendants_as_csv]
-    search_fields = ('first_name','last_name')
+    search_fields = ('first_name', 'last_name')
 
 
 admin.site.register(WorkField)
