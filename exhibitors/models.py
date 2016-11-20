@@ -242,5 +242,5 @@ class CatalogInfo(models.Model):
             self.ad, 640, 480, 'jpg')
         self.location_at_fair = update_image_field(
             self.location_at_fair_original,
-            self.location_at_fair, 408, 408, 'png')
+            self.location_at_fair, 1000, 1000, 'png')
         super(CatalogInfo, self).save(*args, **kwargs)
