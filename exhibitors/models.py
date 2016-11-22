@@ -84,6 +84,8 @@ class Exhibitor(models.Model):
     wants_information_about_targeted_marketing = models.BooleanField(default=False)
     wants_information_about_osqledaren = models.BooleanField(default=False)
 
+    manual_invoice = models.BooleanField(default=False)
+
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
 
