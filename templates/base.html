@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-{% load fair_tags %}
 <html lang="en">
 <head>
     {% include "header.html" %}
@@ -35,7 +34,7 @@
                             {% endblock %}
                         {% endif %}
 
-                    {% if request.user|is_armada_member %}
+                    {% if perms.exhibitors.view_exhibitors %}
                         {% block nav-exhibitors %}
                         <li role="presentation"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
                         {% endblock %}
@@ -49,7 +48,7 @@
                         <!--<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}-->
 
 
-                {% if request.user|is_armada_member %}
+                {% if perms.orders.view_products %}
                     {% block nav-products %}
                         <li role="presentation"><a href="{% url 'products' %}">Products</a></li>{% endblock %}
                 {% endif %}

@@ -46,10 +46,12 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <strong>Contact</strong>
+                    {% if exhibitor.contact %}
                     <a href="{% url 'contact' exhibitor.pk exhibitor.contact.pk %}" class="pull-right"> Edit</a>
+                    {% endif %}
                 </div>
                 <div class="panel-body">
-                    <p>Name: <strong>{{ exhibitor.contact }}</strong></p>
+                    <p>Name: <strong>{{ exhibitor.contact|default:'' }}</strong></p>
                     <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
                     <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
                     <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>

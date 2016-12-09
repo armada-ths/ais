@@ -5,10 +5,12 @@
     <li role="presentation" class="active"><a href="{% url 'products' %}">Products</a></li>
 {% endblock %}
 {% block content %}
-    <h1>Products ({{ products|length }})</h1>
 
+
+        {% for product_category in product_categories %}
+            <h1>{{ product_category.name }} ({{ product_category.products|length }})</h1>
         <div class="table-responsive">
-        <table class="table" id="products_table">
+        <table class="table" id="{{ product_category.id }}">
             <thead>
                 <tr>
                     <th>Product</th>
@@ -17,7 +19,7 @@
                     <th>Revenue (SEK)</th>
                 </tr>
             </thead>
-            {% for product in products %}
+            {% for product in product_category.products %}
                     <tr>
                     <td><a href="{% url 'product' product.pk %}">{{ product.name }}</a></td>
                     <td>{{ product.price|intcomma }}</td>
@@ -31,13 +33,17 @@
                 <th>Total</th>
                 <th></th>
                 <th></th>
-                <th>{{ total_revenue|intcomma }}</th>
+                <th></th>
 
             </tr>
             </tfoot>
 
         </table>
     </div>
+
+
+    {% endfor %}
+
 
 {% endblock %}
 {% block scripts %}
@@ -46,9 +52,34 @@
     <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
     <script>
         $(document).ready(function () {
-            $('#products_table').DataTable({
-                'paging': false
+            {% for product_category in product_categories %}
+            $('#{{ product_category.id }}'
+            ).DataTable({
+                'paging': false,
+                'footerCallback': function (row, data, start, end, display) {
+                    var api = this.api()
+                    var intVal = function (i) {
+                        // console.log('apa' + ' ' + i)
+                        if (typeof i === 'string') {
+                            return i.replace(/,/g, '') * 1
+                        } else if (typeof i === 'number') {
+                            return i
+                        } else {
+                            return 0
+                        }
+                    }
+                    for (var column = 3; column < 4; column++) {
+                        total = api.column(column).data().reduce(function (a, b) {
+                            return intVal(a) + intVal(b)
+                        }, 0)
+                        console.log(total)
+                        $(api.column(column).footer()).html(total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","))
+                    }
+                }
             })
+            {% endfor %}
+
+
         })
     </script>
 {% endblock %}

@@ -61,8 +61,9 @@ def exhibitor(request, exhibitor):
                             image_url_or_missing(request, exhibitor.logo_small)),
                            ('ad_url', image_url_or_missing(request, exhibitor.ad)),
                            ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair, MISSING_MAP)),
-                           ('room',
-                            str(exhibitor.exhibitor.fair_location.room) if exhibitor.exhibitor.fair_location else ''),
+                           ('map_url', image_url_or_missing(request, exhibitor.location_at_fair, MISSING_MAP)),
+                           ('location', str(exhibitor.exhibitor.location) if exhibitor.exhibitor.location else ''),
+                           ('room', str(exhibitor.exhibitor.location) if exhibitor.exhibitor.location else ''),
                            ('programs', names(exhibitor.programs)),
                            ('main_work_field', obj_name(exhibitor.main_work_field)),
                            ('work_fields', names(exhibitor.work_fields)),
@@ -137,7 +138,7 @@ def banquet_placement(request, attendence, index):
         ('first_name', attendence.first_name),
         ('last_name', attendence.last_name),
         ('linkedin_url', attendence.linkedin_url or ""),
-        ('table', attendence.table_name),
-        ('seat', attendence.seat_number),
+        ('table', attendence.table_name or ""),
+        ('seat', attendence.seat_number or ""),
         ('job_title', attendence.job_title)
     ])

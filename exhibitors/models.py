@@ -84,6 +84,8 @@ class Exhibitor(models.Model):
     wants_information_about_targeted_marketing = models.BooleanField(default=False)
     wants_information_about_osqledaren = models.BooleanField(default=False)
 
+    manual_invoice = models.BooleanField(default=False)
+
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
 
@@ -94,6 +96,10 @@ class Exhibitor(models.Model):
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)
+
+
+    class Meta:
+        permissions = (('view_exhibitors', 'View exhibitors'),)
 
 
 class BanquetteAttendant(models.Model):
@@ -238,5 +244,5 @@ class CatalogInfo(models.Model):
             self.ad, 640, 480, 'jpg')
         self.location_at_fair = update_image_field(
             self.location_at_fair_original,
-            self.location_at_fair, 408, 408, 'png')
+            self.location_at_fair, 1000, 1000, 'png')
         super(CatalogInfo, self).save(*args, **kwargs)
