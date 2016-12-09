@@ -9,19 +9,6 @@
 			<h1>{{company_name}} <small>{{sale.campaign}} </small></h1>
 		</div>
 		<div class="col-md-9">
-			 <form action="{% url 'sale_comment_create' sale.id sale.user %}"
-                  method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <textarea class="form-control" placeholder="Your comment..." name="comment"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add comment
-                </button>
-                    <button type="delete" class="btn btn-primary"><span class="glyphicon glyphicon-remove"></span> Delete comment
-                </button>
-            </form>
-
-
 			{% for comment in comments %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -48,9 +35,7 @@
 				    </ul>
 				</div>
 			</div>
-		</div>
-
-		<div class="col-md-3">
+            
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Contacts</h3>
@@ -59,16 +44,33 @@
 				{% for contact in company_contacts %}
 				    <ul class="list-unstyled">
 				    <li> <strong>{{ contact.name }}</strong></li>
-					<li> {{ contact.title }}</li>
-					<li> {{ contact.cell_phone }}</li>
-				    <li> {{ contact.work_phone }}</li>
-				    <li> {{ contact.email }}</li>
-				    <li>	</li>
+                    {% if contact.active %}
+                        <li> <i><a href="/companies/contact/{{ contact.id }}/toggle_active">
+                        (Deactivate)
+                                </a></i></li>
+                        <li> {{ contact.title }}</li>
+                        <li> {{ contact.cell_phone }}</li>
+                        <li> {{ contact.work_phone }}</li>
+                        <li> {{ contact.email }}</li>
+                        <li>	</li>
+                    {% else %}
+                    <a href="/companies/contact/{{ contact.id }}/toggle_active">
+                        Activate
+                    </a>
+                    {% endif %}
 				    </ul>
 				{% endfor %}
+                
+                <strong>Previous campaigns:</strong>
+				<ul class="list-unstyled">
+                {% for sale in previous_sales %}
+                    <li>{{ sale.campaign.name }}</li>
+                {% endfor %}
+                </ul>
 				</div>
 			</div>
 		</div>
+
     </div>
 
 	<div class="container">			

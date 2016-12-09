@@ -57,7 +57,9 @@ def sale_show(request, pk, template_name='sales/sale_show.html'):
     comments = SaleComment.objects.filter(sale=sale).order_by('-created_date')
     company_name = sale.exhibitor.company.name
     company_contacts = Contact.objects.filter(belongs_to=sale.exhibitor.company)
-    return render(request, template_name, {'sale':sale, 'user_info':user_name, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts})
+    previous_sales = Sale.objects.filter(exhibitor__company=sale.exhibitor.company)
+
+    return render(request, template_name, {'sale':sale, 'user_info':user_name, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts, 'previous_sales':previous_sales})
 
 def sale_delete(request, pk, template_name='sales/sale_delete.html'):
     sale = get_object_or_404(Sale, pk=pk)

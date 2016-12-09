@@ -60,3 +60,15 @@ def contact_create(request, pk, template_name='companies/contact_form.html'):
         form.save()
         return render(request, template_name, {'company':company})
     return render(request, template_name, {'form':form})
+
+def contact_state_toggle(request, contact_pk):
+    contact = get_object_or_404(Contact, pk=contact_pk)
+    if contact.active:
+        contact.active = False
+    else:
+        contact.active = True
+    contact.save()
+    # This should redirect to "EDIT CONTACT" with contact_pkj
+    return redirect('sales')
+
+
