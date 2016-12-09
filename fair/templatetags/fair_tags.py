@@ -5,4 +5,8 @@ register = template.Library()
 
 @register.filter(name='is_armada_member')
 def is_armada_member(user):
-	return Fair.objects.get(name='Armada 2016').is_member_of_fair(user)
+    # This should not be hard coded
+    fair = Fair.objects.latest('id')
+    if fair is not None:
+        return fair.is_member_of_fair(user)
+    return False
