@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^recruitment/', include('recruitment.urls')),
     url(r'^exhibitors/', include('exhibitors.urls')),
     url(r'^products/', include('orders.urls')),
+    url(r'^sales/', include('sales.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
