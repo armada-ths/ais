@@ -65,3 +65,32 @@ def sale_delete(request, pk, template_name='sales/sale_delete.html'):
         sale.delete()
         return redirect('sales')
     return render(request, template_name, {'sale':sale})
+
+def sale_comment_create(request, pk, template_name='sales/sale_show.html'):
+    sale = get_object_or_404(Sale, pk=pk)
+    comment = SaleComment()
+    comment.user = request.user
+    comment.sale = sale
+    comment.comment = request.POST['comment']
+    comment.save()
+    return render(request, template_name)
+
+def sale_comment_delete(request, pk, template_name='sales/sale_show.html'):
+    comment = get_object_or_404(SaleComment, pk=pk)
+    if request.method=='POST':
+        comment.delete()
+        return redirect('sales')
+    return render(request, template_name, {'sale':sale})
+
+
+
+
+
+
+
+
+
+
+
+
+
