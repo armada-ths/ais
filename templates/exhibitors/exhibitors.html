@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block nav-exhibitors %}
-    <li role="presentation" class="active"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+    <li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
 {% endblock %}
 {% block content %}
     <h1>Exhibitors ({{ exhibitors|length }})</h1>
@@ -21,14 +21,14 @@
             <tr>
 
                 {% if perms.exhibitors.change_exhibitor or request.user in exhibitor.hosts.all or request.user in exhibitor.superiors %}
-                <td><a href="{% url "exhibitor" exhibitor.pk %}">{{ exhibitor.company }}</a></td>
+                <td><a href="{% url "exhibitor" fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></td>
                 {% else %}
                     <td>{{ exhibitor.company }}</td>
                 {% endif %}
                 <td>{{ exhibitor.location|default:"" }}</td>
                 <td>
 					{% for host in exhibitor.hosts.all %}
-						<a href="{% url 'view_person' host.pk %}">{{ host.get_full_name | default:"" }}</a>
+						<a href="{% url 'view_person' fair.year  host.pk %}">{{ host.get_full_name | default:"" }}</a>
 						{% if not forloop.last %}
 							<br>
 						{% endif %}
@@ -36,7 +36,7 @@
 				</td>
                 <td>
                     {% for superior in exhibitor.superiors %}
-                    <a href="{% url 'view_person' superior.pk %}">{{ superior.get_full_name }}</a>
+                    <a href="{% url 'view_person' fair.year  superior.pk %}">{{ superior.get_full_name }}</a>
                     {% endfor %}
                 </td>
                 <td>
