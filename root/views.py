@@ -27,7 +27,7 @@ def index(request, year):
                           role in Role.objects.filter(parent_role=None)],
             },
             "events": Event.objects.filter(fair=fair).order_by("-event_start"),
-            "is_attending_banquette": BanquetteAttendant.objects.filter(user=request.user).exists(),
+            "is_attending_banquette": BanquetteAttendant.objects.filter(fair=fair, user=request.user).exists(),
             "fair": fair
         })
 
@@ -40,8 +40,8 @@ def index(request, year):
 def banquette_signup(request, year, template_name='exhibitors/related_object_form.html'):
     fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
-        instance = BanquetteAttendant.objects.filter(user=request.user).first()
-        FormFactory = modelform_factory(BanquetteAttendant, exclude=('user', 'exhibitor','first_name', 'last_name', 'email', 'student_ticket', 'table_name', 'seat_number', 'ignore_from_placement'))
+        instance = BanquetteAttendant.objects.filter(fair=fair, user=request.user).first()
+        FormFactory = modelform_factory(BanquetteAttendant, exclude=('user', 'exhibitor', 'first_name', 'last_name', 'email', 'student_ticket', 'table_name', 'seat_number', 'ignore_from_placement'))
         form = FormFactory(request.POST or None, instance=instance)
         if form.is_valid():
             instance = form.save()
@@ -61,7 +61,7 @@ def banquette_signup(request, year, template_name='exhibitors/related_object_for
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
     fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
-        banquet_attendants = BanquetteAttendant.objects.all()
+        banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
         return render(request, template_name, {
             'banquet_attendants': banquet_attendants,
             'fair': fair
@@ -73,6 +73,6 @@ def banquet_attendants(request, year, template_name='banquet/banquet_attendants.
 def banquette_signup_delete(request):
     fair = get_object_or_404(Fair, year=year)
     if request.POST:
-        instance = get_object_or_404(BanquetteAttendant, user=request.user)
+        instance = get_object_or_404(BanquetteAttendant, user=request.user, fair=fair)
         instance.delete()
     return redirect('/')

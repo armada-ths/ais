@@ -3,7 +3,7 @@ from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from recruitment.models import RecruitmentApplication
-
+from fair.models import Fair
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
@@ -103,6 +103,7 @@ class Exhibitor(models.Model):
 
 
 class BanquetteAttendant(models.Model):
+    fair = models.ForeignKey(Fair, default=1)
     user = models.ForeignKey(User, null=True, blank=True)  # Null for exhibitor representants
     exhibitor = models.ForeignKey(Exhibitor, null=True, blank=True)  # Null for non-exhibitor representants
     first_name = models.CharField(max_length=200)
