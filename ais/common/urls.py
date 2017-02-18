@@ -2,11 +2,13 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from ais.common import settings
 from django.conf.urls.static import static
-from django.views.generic import RedirectView
-
+from root.views import login_redirect
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url='fairs/2017/')),
+    url(r'^accounts/', include('accounts.urls')),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include('api.urls')),
+    url(r'^$', login_redirect),
     url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),
 ]
 

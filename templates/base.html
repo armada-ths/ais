@@ -52,7 +52,7 @@
                         <li role="presentation"><a href="{% url 'products' fair.year %}">Products</a></li>{% endblock %}
                 {% endif %}
                 </ul>
-                <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}"
+                <p class="navbar-text navbar-right"><strong><a href="{% url 'view_person' fair.year request.user.pk %}"
                                                                style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong>
                     (<a
                             href="/accounts/logout" class="navbar-link">Logout</a>)</p>

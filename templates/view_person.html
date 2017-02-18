@@ -3,7 +3,7 @@
 <div class="page-header">
     <h1>{% include 'recruitment/user_name.html' with user=person %} <small>{{ role }}</small></h1>
     {% if person.user == request.user %}
-        <a href="{% url "edit_person" person.pk %}">Edit</a>
+        <a href="{% url "edit_person" fair.year person.pk %}">Edit</a>
     {% endif %}
     </div>
 

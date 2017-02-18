@@ -7,17 +7,21 @@ from django.urls import reverse
 from people.models import Profile
 from fair.models import Fair
 
-def index(request, year):
-    fair = get_object_or_404(Fair, year=year)
+def login_redirect(request):
     next = request.GET.get('next')
     if next and next[-1] == '/':
         next = next[:-1]
 
     if request.user.is_authenticated():
-        user_profile = Profile.objects.filter(user=request.user).first()
-        if user_profile != None and user_profile.programme == None:
-            return redirect("/people/%d/edit"%(request.user.pk))
+        return redirect('home', 2017)
 
+    return render(request, 'login.html', {
+        'next': next,
+    })
+
+def index(request, year):
+    fair = get_object_or_404(Fair, year=year)
+    if request.user.is_authenticated():
         return render(request, "root/home.html", {
             "recruitment": {
                 'recruitment_periods': RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date'),
@@ -70,7 +74,7 @@ def banquet_attendants(request, year, template_name='banquet/banquet_attendants.
     return render(request, 'login.html', {'next': next, 'fair': fair})
 
 
-def banquette_signup_delete(request):
+def banquette_signup_delete(request, year):
     fair = get_object_or_404(Fair, year=year)
     if request.POST:
         instance = get_object_or_404(BanquetteAttendant, user=request.user, fair=fair)
