@@ -59,7 +59,7 @@ def sale_edit(request, pk=None, template_name='sales/sale_form.html'):
 def sale_show(request, pk, template_name='sales/sale_show.html'):
     sale = get_object_or_404(Sale, pk=pk)
     comments = SaleComment.objects.filter(sale=sale).order_by('-created_date')
-    company_name = sale.company.company.name
+    company_name = sale.company.name
     company_contacts = Contact.objects.filter(belongs_to=sale.company)
     previous_sales = Sale.objects.filter(company=sale.company)
     return render(request, template_name, {'sale': sale, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts, 'previous_sales':previous_sales})
