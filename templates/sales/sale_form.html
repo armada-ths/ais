@@ -13,12 +13,22 @@
 {% block nav-news %}<li role="presentation" class="active"><a href="{% url 'sales' %}">Sales</a></li>{% endblock %}
 
 {% block content %}
-<div class="container">
+
+        <ol class="breadcrumb">
+        <li><a href="{% url 'sales' %}">Sales</a></li>
+            {% if sale %}
+        <li class="active">{{ sale }}</li>
+                {% else %}
+                <li class="active">New</li>
+        {% endif %}
+    </ol>
+
+
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
     <input class="btn btn-primary" type="submit" value="Submit" />
 </form>
-</div>
+
 
 {% endblock %}

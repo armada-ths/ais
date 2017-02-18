@@ -48,7 +48,7 @@ class Sale(models.Model):
     status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
 
     def __str__(self):
-        return '%s at %s (%s)' % (self.exhibitor.company.name, self.campaign.name, self.campaign.sales_period.fair.year)
+        return '%s at %s (%s)' % (self.company.name, self.campaign.name, self.campaign.sales_period.fair.year)
 
 class SaleComment(models.Model):
     sale = models.ForeignKey(Sale)

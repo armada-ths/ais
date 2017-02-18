@@ -4,7 +4,12 @@
 
 {% block content %}
 
-	<div class="container">			
+    <ol class="breadcrumb">
+        <li><a href="{% url 'sales' %}">Sales</a></li>
+        <li class="active">{{ sale }}</li>
+    </ol>
+
+
 		<div class="page-header", class="col-md-12">
 			<h1>{{company_name}} <small>{{sale.campaign}} </small></h1>
 		</div>
@@ -70,12 +75,4 @@
 				</div>
 			</div>
 		</div>
-
-    </div>
-
-	<div class="container">			
-		<div>
-			<a href="{{ request.META.HTTP_REFERER }}" type="button" class="btn btn-default">Back</a>
-		</div>
-	</div>
 {% endblock %}

@@ -53,7 +53,7 @@ def sale_edit(request, pk=None, template_name='sales/sale_form.html'):
     if form.is_valid():
         form.save()
         return redirect('sales')
-    return render(request, template_name, {'form':form})
+    return render(request, template_name, {'form':form, 'sale': sale})
 
 
 def sale_show(request, pk, template_name='sales/sale_show.html'):
