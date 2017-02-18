@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% load humanize %}
 {% block nav-products %}
-    <li role="presentation" class="active"><a href="{% url 'products' %}">Products</a></li>
+    <li role="presentation" class="active"><a href="{% url 'products' fair.year %}">Products</a></li>
 {% endblock %}
 {% block content %}
 
@@ -21,7 +21,7 @@
             </thead>
             {% for product in product_category.products %}
                     <tr>
-                    <td><a href="{% url 'product' product.pk %}">{{ product.name }}</a></td>
+                    <td><a href="{% url 'product' fair.year product.pk %}">{{ product.name }}</a></td>
                     <td>{{ product.price|intcomma }}</td>
                     <td>{{ product.ordered_quantity|intcomma }}</td>
                     <td>{{ product.revenue|intcomma }}</td>
