@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% block head-extra %}<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
   <script>
   tinymce.init({ selector:'textarea',
@@ -15,8 +16,8 @@
 <div class="container">
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Submit" />
+    {{ form|crispy }}
+    <input class="btn btn-primary" type="submit" value="Submit" />
 </form>
 </div>
 

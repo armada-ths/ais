@@ -27,7 +27,11 @@
         <tr>
             <td><a href="{{sale.id}}">{{ sale.exhibitor.company.name }}</a></td>
             <td>{{ sale.campaign.name }}</td>
-            <td><a href="{% url "view_person" sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a></td>
+            <td>
+            {% if sale.responsible %}
+            <a href="{% url "view_person" sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
+            {% endif %}
+            </td>
             <td>{{ sale.status}}</td>
             <td>Yes</td>
 

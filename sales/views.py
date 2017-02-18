@@ -5,18 +5,20 @@ import datetime
 
 from .models import SalesPeriod, Campaign, Sale, SaleComment
 from companies.models import Contact
+from recruitment.models import RecruitmentApplication
 
-# Create your views here.
 
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
         fields = '__all__'
 
+
 class CampaignForm(forms.ModelForm):
     class Meta:
         model = Campaign
         fields = '__all__'
+
 
 class SalesPeriodForm(forms.ModelForm):
     class Meta:
@@ -28,38 +30,40 @@ class SalesPeriodForm(forms.ModelForm):
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
         }
 
+
 class SaleCommentForm(forms.ModelForm):
     class Meta:
         model = SaleComment
         fields = '__all__'
 
+
 def sales_list(request, template_name='sales/sales_list.html'):
     return render(request, template_name, {'sales': Sale.objects.all().order_by('exhibitor__company__name')})
 
-def sale_create(request, template_name='sales/sale_form.html'):
-    form = SaleForm(request.POST or None)
+
+def sale_edit(request, pk=None, template_name='sales/sale_form.html'):
+    sale = None
+    if pk != None:
+        sale = get_object_or_404(Sale, pk=pk)
+    form = SaleForm(request.POST or None, instance=sale)
+    users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
+     RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
+    form.fields['responsible'].choices = [('', '---------')] + [
+            (user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
     if form.is_valid():
         form.save()
         return redirect('sales')
     return render(request, template_name, {'form':form})
 
-def sale_edit(request, pk, template_name='sales/sale_form.html'):
-    sale = get_object_or_404(Sale, pk=pk)
-    form = SaleForm(request.POST or None, instance=sale)
-    if form.is_valid():
-        form.save()
-        return redirect('sales')
-    return render(request, template_name, {'form':form})
 
 def sale_show(request, pk, template_name='sales/sale_show.html'):
     sale = get_object_or_404(Sale, pk=pk)
-    user_name = sale.responsible.get_full_name()
     comments = SaleComment.objects.filter(sale=sale).order_by('-created_date')
     company_name = sale.exhibitor.company.name
     company_contacts = Contact.objects.filter(belongs_to=sale.exhibitor.company)
     previous_sales = Sale.objects.filter(exhibitor__company=sale.exhibitor.company)
+    return render(request, template_name, {'sale': sale, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts, 'previous_sales':previous_sales})
 
-    return render(request, template_name, {'sale':sale, 'user_info':user_name, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts, 'previous_sales':previous_sales})
 
 def sale_delete(request, pk, template_name='sales/sale_delete.html'):
     sale = get_object_or_404(Sale, pk=pk)
@@ -67,6 +71,7 @@ def sale_delete(request, pk, template_name='sales/sale_delete.html'):
         sale.delete()
         return redirect('sales')
     return render(request, template_name, {'sale':sale})
+
 
 def sale_comment_create(request, pk, template_name='sales/sale_show.html'):
     sale = get_object_or_404(Sale, pk=pk)
@@ -76,6 +81,7 @@ def sale_comment_create(request, pk, template_name='sales/sale_show.html'):
     comment.comment = request.POST['comment']
     comment.save()
     return render(request, template_name)
+
 
 def sale_comment_delete(request, pk, template_name='sales/sale_show.html'):
     comment = get_object_or_404(SaleComment, pk=pk)
