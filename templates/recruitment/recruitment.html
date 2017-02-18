@@ -86,7 +86,7 @@
             {% endfor %}
 
             {% if perms.recruitment.administer_roles %}
-                <a class="btn btn-primary" href="{% url "roles_new" 99 %}"><span class="glyphicon glyphicon-plus"></span>
+                <a class="btn btn-primary" href="{% url "roles_new" fair.year %}"><span class="glyphicon glyphicon-plus"></span>
                     New role</a>
 
             {% endif %}

@@ -32,7 +32,7 @@
             <br>
             <br>
             <input class="btn btn-primary" type="submit" value="Update info"/>
-            <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' event.id %}">Unattend event</a>
+            <a style="float: right" class="btn btn-danger" href="{% url 'event_unattend' fair.year event.id %}">Unattend event</a>
         {% endif %}
         {% else %}
         {% if event|registration_required %}

@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
 from recruitment.models import CustomFieldAnswer
+from fair.models import Fair
 
 
 def send_mail_on_submission(user, event):
@@ -22,7 +23,8 @@ def send_mail_on_submission(user, event):
         )
 
 
-def event_attend_form(request, pk, template_name='events/event_attend.html'):
+def event_attend_form(request, year, pk, template_name='events/event_attend.html'):
+    fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=pk)
     if not user_eligible_event(request.user, event):
         raise Http404()
@@ -33,6 +35,8 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
         attendence=ea, question=question).first()) for question in questions]
     form = AttendenceForm(
         request.POST or None, questions_answers=questions_answers)
+    print('Form is valid', form.is_valid())
+    print('registration_open(event)', registration_open(event))
     if form.is_valid() and registration_open(event):
         if not ea:
             status = 'A'
@@ -43,54 +47,61 @@ def event_attend_form(request, pk, template_name='events/event_attend.html'):
             if event.send_submission_mail:
                 send_mail_on_submission(request.user, event)
         for (question, id, answer) in form.get_answers():
+            print(question, id, answer)
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
-
+        print('WHAT')
         if not event.extra_field:
             # This creates an extra field
             event.save()
         event.extra_field.handle_answers_from_request(request, ea.user)
-        return redirect('event_list')
+        return redirect('event_list', fair.year)
 
     return render(request, template_name, {
         "event": event, "form": form,
-        "extra_field_questions_with_answers": event.extra_field.questions_with_answers_for_user(ea.user if ea else None) if event.extra_field else None
+        "extra_field_questions_with_answers": event.extra_field.questions_with_answers_for_user(ea.user if ea else None) if event.extra_field else None,
+        "fair": fair,
     })
 
 
 
-def event_list(request, template_name='events/event_list.html'):
+def event_list(request, year, template_name='events/event_list.html'):
+    fair = get_object_or_404(Fair, year=year)
     events = Event.objects.filter(
         event_end__gt=timezone.now()).order_by('event_start')
     # Only show events that have a group in common with the user
     events = [e for e in events if user_eligible_event(request.user, e)]
-    return render(request, template_name, {"events": events})
+    return render(request, template_name, {"events": events, "fair": fair})
 
 
-def event_unattend(request, pk):
+def event_unattend(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
     EventAttendence.objects.filter(
         event_id=pk, user_id=request.user.id).delete()
-    return redirect('event_list')
+    return redirect('event_list', fair.year)
 
 
 @permission_required('events.change_event', raise_exception=True)
-def event_edit(request, pk=None, template_name='events/event_form.html'):
+def event_edit(request, year, pk=None, template_name='events/event_form.html'):
+    fair = get_object_or_404(Fair, year=year)
     event = Event.objects.filter(pk=pk).first()
     EventForm = modelform_factory(Event, exclude=('extra_field', 'image'))
     form = EventForm(request.POST or None, instance=event)
     if form.is_valid():
         event = form.save()
         event.extra_field.handle_questions_from_request(request, 'extra_field')
-        return redirect('event_list')
+        return redirect('event_list', fair.year)
 
     return render(request, template_name, {
         "event": event, "form": form,
         'custom_fields': event.extra_field.customfield_set.all() if event and event.extra_field else None,
+        "fair": fair,
     })
 
 
 @permission_required('events.change_event', raise_exception=True)
-def event_attendants(request, pk, template_name='events/event_attendants.html'):
+def event_attendants(request, year, pk, template_name='events/event_attendants.html'):
+    fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=pk)
 
     if request.POST:
@@ -140,5 +151,5 @@ def event_attendants(request, pk, template_name='events/event_attendants.html'):
         "attendances_with_answers": attendances_with_answers,
         "questions": questions,
         "extra_field_questions": extra_field_questions,
-
+        "fair": fair,
     })
