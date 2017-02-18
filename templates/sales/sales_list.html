@@ -25,7 +25,7 @@
 	</tr>
 {% for sale in sales %}
         <tr>
-            <td><a href="{{sale.id}}">{{ sale.exhibitor.company.name }}</a></td>
+            <td><a href="{{sale.id}}">{{ sale.company.name }}</a></td>
             <td>{{ sale.campaign.name }}</td>
             <td>
             {% if sale.responsible %}

@@ -42,7 +42,7 @@ class Sale(models.Model):
     )
     
     campaign = models.ForeignKey(Campaign)
-    exhibitor = models.ForeignKey('exhibitors.Exhibitor')
+    company = models.ForeignKey('companies.Company')
     responsible = models.ForeignKey(User, null=True, default=None, blank=True)
 
     status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
