@@ -6,7 +6,7 @@ import datetime
 from .models import SalesPeriod, Campaign, Sale, SaleComment
 from companies.models import Contact
 from recruitment.models import RecruitmentApplication
-
+from companies.models import Company
 
 class SaleForm(forms.ModelForm):
     class Meta:
@@ -38,7 +38,7 @@ class SaleCommentForm(forms.ModelForm):
 
 
 def sales_list(request, template_name='sales/sales_list.html'):
-    return render(request, template_name, {'sales': Sale.objects.all().order_by('company__name')})
+    return render(request, template_name, {'sales': Sale.objects.all()})
 
 
 def sale_edit(request, pk=None, template_name='sales/sale_form.html'):
@@ -65,12 +65,13 @@ def sale_show(request, pk, template_name='sales/sale_show.html'):
     return render(request, template_name, {'sale': sale, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts, 'previous_sales':previous_sales})
 
 
-def sale_delete(request, pk, template_name='sales/sale_delete.html'):
+def sale_delete(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
-    if request.method=='POST':
-        sale.delete()
-        return redirect('sales')
-    return render(request, template_name, {'sale':sale})
+    sale.delete()
+    return redirect('sales')
+
+#@permission_required('recruitment.administer_recruitment', raise_exception=True)
+
 
 
 def sale_comment_create(request, pk, template_name='sales/sale_show.html'):
