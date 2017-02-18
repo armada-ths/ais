@@ -2,8 +2,11 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from ais.common import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
+
 
 urlpatterns = [
+    url(r'^$', RedirectView.as_view(url='fairs/2017/')),
     url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),
 ]
 
