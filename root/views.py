@@ -5,9 +5,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from exhibitors.models import BanquetteAttendant
 from django.urls import reverse
 from people.models import Profile
+from fair.models import Fair
 
-
-def index(request):
+def index(request, year):
+    fair = get_object_or_404(Fair, year=year)
     next = request.GET.get('next')
     if next and next[-1] == '/':
         next = next[:-1]
@@ -28,6 +29,7 @@ def index(request):
 
         data["events"] = Event.objects.all().order_by("event_start")
         data["is_attending_banquette"] = BanquetteAttendant.objects.filter(user=request.user).exists()
+        data["fair"] = fair
 
         return render(request, "root/home.html", data)
 

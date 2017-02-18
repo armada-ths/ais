@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/delete$', views.recruitment_period_delete, name='recruitment_period_delete'),
     url(r'^(?P<recruitment_period_pk>\d+)/application/new$', views.recruitment_application_new, name='recruitment_application_new'),
     url(r'^(?P<recruitment_period_pk>\d+)/application/(?P<pk>\d+)$', views.recruitment_application_new, name='recruitment_application_new'),
-    url(r'^(\d+)/application/(?P<pk>\d+)/interview$', views.recruitment_application_interview,
+    url(r'^(?P<recruitment_period_pk>\d+)/application/(?P<pk>\d+)/interview$', views.recruitment_application_interview,
         name='recruitment_application_interview'),
 
     url(r'^(\d+)/application/(?P<pk>\d+)/delete$', views.recruitment_application_delete, name='recruitment_application_delete'),

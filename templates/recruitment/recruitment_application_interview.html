@@ -5,9 +5,9 @@
 
 
     <ol class="breadcrumb">
-        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
         <li>
-            <a href="{% url 'recruitment_period' application.recruitment_period.id %}">{{ application.recruitment_period.name }}</a>
+            <a href="{% url 'recruitment_period' fair.year application.recruitment_period.id %}">{{ application.recruitment_period.name }}</a>
         </li>
         <li class="active">{% include 'recruitment/user_name.html' with user=application.user %}</li>
     </ol>
@@ -94,7 +94,7 @@
         {% endif %}
         {% if perms.recruitment.administer_recruitment_applications %}
             <a class="btn btn-danger"
-               href="{% url 'recruitment_application_delete' application.recruitment_period.id application.id %}"
+               href="{% url 'recruitment_application_delete' fair.year application.recruitment_period.id application.id %}"
                onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
         {% endif %}
     </form>
@@ -123,7 +123,7 @@
         </div>
 
         <div class="col-sm-6">
-            <form action="{% url 'recruitment_application_comment_new' application.recruitment_period.id application.id %}"
+            <form action="{% url 'recruitment_application_comment_new' fair.year application.recruitment_period.id application.id %}"
                   method="post">
                 {% csrf_token %}
                 <div class="form-group">

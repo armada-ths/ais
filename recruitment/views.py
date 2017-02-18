@@ -19,6 +19,8 @@ from django.contrib.auth.decorators import permission_required
 
 from django.core.exceptions import ObjectDoesNotExist
 
+from fair.models import Fair
+
 
 def import_members(request):
     if not request.user.is_superuser:
@@ -57,11 +59,23 @@ class RecruitmentPeriodForm(ModelForm):
         }
 
 
-def recruitment(request, template_name='recruitment/recruitment.html'):
+def recruitment(request, year, template_name='recruitment/recruitment.html'):
+    fair = get_object_or_404(Fair, year=year)
+
+
+    recruitment_periods = RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date')
+    roles = []
+    for period in recruitment_periods:
+        for role in period.recruitable_roles.all():
+            roles.append(role)
+
+
+
     return render(request, template_name, {
-        'recruitment_periods': RecruitmentPeriod.objects.all().order_by('-start_date'),
+        'recruitment_periods': RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date'),
+        'fair': fair,
         'roles': [{'parent_role': role,
-                   'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
+                   'child_roles': [child_role for child_role in roles if child_role.has_parent(role)]} for
                   role in Role.objects.filter(parent_role=None)],
     })
 
@@ -165,7 +179,7 @@ import time
 from django.http import JsonResponse
 
 @permission_required('recruitment.view_recruitment_applications', raise_exception=True)
-def interview_state_counts(request, pk):
+def interview_state_counts(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by(
         '-submission_date').all().prefetch_related('roleapplication_set')
@@ -196,7 +210,7 @@ def interview_state_counts(request, pk):
 
 
 @permission_required('recruitment.view_recruitment_applications', raise_exception=True)
-def recruitment_period_graphs(request, pk):
+def recruitment_period_graphs(request, year, pk):
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
@@ -413,10 +427,10 @@ def remember_last_query_params(url_name, query_params):
 
 
 @remember_last_query_params('recruitment', [field for field in RecruitmentApplicationSearchForm().fields])
-def recruitment_period(request, pk, template_name='recruitment/recruitment_period.html'):
+def recruitment_period(request, year, pk, template_name='recruitment/recruitment_period.html'):
+    fair = get_object_or_404(Fair, year=year)
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-
 
     sort_field = request.GET.get('sort_field')
     if not sort_field:
@@ -478,20 +492,21 @@ def recruitment_period(request, pk, template_name='recruitment/recruitment_perio
         'applications': applications,
         'now': timezone.now(),
         'search_form': search_form,
-        'search_fields': search_fields
+        'search_fields': search_fields,
+        'fair': fair,
     })
 
 
 @permission_required('recruitment.administer_recruitment', raise_exception=True)
-def recruitment_period_delete(request, pk):
+def recruitment_period_delete(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     recruitment_period.delete()
-    return redirect('recruitment')
+    return redirect('recruitment', year)
 
 
 @permission_required('recruitment.administer_recruitment', raise_exception=True)
-def recruitment_period_edit(request, pk=None, template_name='recruitment/recruitment_period_new.html'):
-
+def recruitment_period_edit(request, year, pk=None, template_name='recruitment/recruitment_period_new.html'):
+    fair = get_object_or_404(Fair, year=year)
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
 
@@ -508,7 +523,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
                 else:
                     recruitment_period.recruitable_roles.remove(role)
             recruitment_period.save()
-            return redirect('recruitment_period', pk=recruitment_period.id)
+            return redirect('recruitment_period', year=year, pk=recruitment_period.id)
 
     return render(request, template_name, {
         'form': form,
@@ -518,6 +533,7 @@ def recruitment_period_edit(request, pk=None, template_name='recruitment/recruit
         'recruitment_period': recruitment_period,
         'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
         'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
+        'fair': fair
     })
 
 
@@ -532,39 +548,43 @@ class RolesForm(ModelForm):
         }
 
 
-def roles_new(request, pk=None, template_name='recruitment/roles_form.html'):
+def roles_new(request, year, pk=None, template_name='recruitment/roles_form.html'):
+    fair = get_object_or_404(Fair, year=year)
     role = Role.objects.filter(pk=pk).first()
     roles_form = RolesForm(request.POST or None, instance=role)
 
     if request.user.has_perm('recruitment.administer_roles'):
         if roles_form.is_valid():
             roles_form.save()
-            return redirect('recruitment')
+            return redirect('recruitment', fair.year)
 
     users = [application.user for application in
              RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
     return render(request, template_name, {
         'role': role,
         'users': users,
-        'roles_form': roles_form
+        'roles_form': roles_form,
+        'fair': fair
     })
 
 
 @permission_required('recruitment.administer_roles', raise_exception=True)
-def roles_delete(request, pk):
+def roles_delete(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
     role = get_object_or_404(Role, pk=pk)
     role.delete()
-    return redirect('recruitment')
+    return redirect('recruitment', fair.year)
 
 
-def recruitment_application_comment_new(request, pk):
+def recruitment_application_comment_new(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     comment = RecruitmentApplicationComment()
     comment.user = request.user
     comment.recruitment_application = application
     comment.comment = request.POST['comment']
     comment.save()
-    return redirect('recruitment_application_interview', application.recruitment_period.pk, application.id)
+    return redirect('recruitment_application_interview', fair.year, application.recruitment_period.pk, application.id)
 
 
 class ProfileForm(ModelForm):
@@ -600,8 +620,9 @@ class RoleApplicationForm(forms.Form):
     role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.all(), required=False)
 
 
-def recruitment_application_new(request, recruitment_period_pk, pk=None,
+def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
                                 template_name='recruitment/recruitment_application_new.html'):
+    fair = get_object_or_404(Fair, year=year)
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
 
     if not pk:
@@ -609,7 +630,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None,
 
         # If the user already has an application for this period redirect to it
         if recruitment_application:
-            return redirect('recruitment_application_new', recruitment_period.pk, recruitment_application.pk)
+            return redirect('recruitment_application_new', fair.year, recruitment_period.pk, recruitment_application.pk)
 
     recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
 
@@ -624,13 +645,15 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None,
     if recruitment_period.start_date > now:
         return render(request, 'recruitment/recruitment_application_closed.html', {
             'recruitment_period': recruitment_period,
-            'message': 'Application has not opened'
+            'message': 'Application has not opened',
+            'fair': fair
         })
 
     if recruitment_period.end_date < now:
         return render(request, 'recruitment/recruitment_application_closed.html', {
             'recruitment_period': recruitment_period,
-            'message': 'Application closed'
+            'message': 'Application closed',
+            'fair': fair
         })
 
     profile_form = ProfileForm(request.POST or None, instance=profile)
@@ -673,7 +696,7 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None,
                     )
 
             profile_form.save()
-            return redirect('recruitment_period', recruitment_period.pk)
+            return redirect('recruitment_period', fair.year, recruitment_period.pk)
 
     return render(request, template_name, {
         'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(
@@ -682,7 +705,8 @@ def recruitment_application_new(request, recruitment_period_pk, pk=None,
         'profile_form': profile_form,
         'profile': profile,
         'role_form': role_form,
-        'new_application': pk == None
+        'new_application': pk == None,
+        'fair': fair,
     })
 
 
@@ -755,7 +779,8 @@ class InterviewPlanForm(ModelForm):
         }
 
 
-def recruitment_application_interview(request, pk, template_name='recruitment/recruitment_application_interview.html'):
+def recruitment_application_interview(request, year, recruitment_period_pk, pk, template_name='recruitment/recruitment_application_interview.html'):
+    fair = get_object_or_404(Fair, year=year)
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     if not request.user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != request.user:
         return HttpResponseForbidden()
@@ -786,7 +811,7 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
         RecruitmentApplication,
         fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
     )
-    if  request.user.has_perm('recruitment.administer_recruitment_applications'):
+    if request.user.has_perm('recruitment.administer_recruitment_applications'):
         role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
         role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
         role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
@@ -805,9 +830,9 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             if role_delegation_form:
                 if role_delegation_form.is_valid():
                     role_delegation_form.save()
-                    return redirect('recruitment_period', pk=application.recruitment_period.pk)
+                    return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
             else:
-                return redirect('recruitment_period', pk=application.recruitment_period.pk)
+                return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
 
     return render(request, template_name, {
         'application': application,
@@ -817,11 +842,13 @@ def recruitment_application_interview(request, pk, template_name='recruitment/re
             application.user),
         'interview_planning_form': interview_planning_form,
         'role_delegation_form': role_delegation_form,
+        'fair': fair,
     })
 
 
 @permission_required('recruitment.administer_recruitment_applications', raise_exception=True)
-def recruitment_application_delete(request, pk):
+def recruitment_application_delete(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
     recruitment_application.delete()
-    return redirect('recruitment_period', recruitment_application.recruitment_period.pk)
+    return redirect('recruitment_period', fair.year, recruitment_application.recruitment_period.pk)

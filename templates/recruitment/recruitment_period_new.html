@@ -5,14 +5,14 @@
 
     {% if recruitment_period %}
         <ol class="breadcrumb">
-            <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
-            <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+            <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+            <li><a href="{% url 'recruitment_period' fair.year recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
             <li class="active">Edit recruitment period</li>
         </ol>
 
     {% else %}
         <ol class="breadcrumb">
-            <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+            <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
             <li class="active">New recruitment period</li>
         </ol>
     {% endif %}
@@ -60,7 +60,7 @@
 
         <button type="submit" class="btn btn-primary">Save</button>
         {% if recruitment_period %}
-            <a class="btn btn-danger" href="{% url 'recruitment_period_delete' recruitment_period.id %}"
+            <a class="btn btn-danger" href="{% url 'recruitment_period_delete' fair.year recruitment_period.id %}"
                onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
         {% endif %}
     </form>

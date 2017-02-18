@@ -27,30 +27,29 @@
                 <ul class="nav navbar-nav">
 
 
-
                         {% if perms.people.view_people %}
                             {% block nav-people %}
-                                <li role="presentation"><a href="{% url 'people' %}">People</a></li>
+                                <li role="presentation"><a href="{% url 'people' fair.year %}">People</a></li>
                             {% endblock %}
                         {% endif %}
 
                     {% if perms.exhibitors.view_exhibitors %}
                         {% block nav-exhibitors %}
-                        <li role="presentation"><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
+                        <li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
                         {% endblock %}
                     {% endif %}
 
                     {% block nav-events %}
-                        <li role="presentation"><a href="{% url 'event_list' %}">Events</a></li>{% endblock %}
+                        <li role="presentation"><a href="{% url 'event_list' fair.year %}">Events</a></li>{% endblock %}
                     {% block nav-recruitment %}
-                        <li role="presentation"><a href="{% url 'recruitment' %}">Recruitment</a></li>{% endblock %}
+                        <li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>{% endblock %}
                     {% block nav-news %}
-                        <!--<li role="presentation"><a href="{% url 'news' %}">News</a></li>{% endblock %}-->
+                        <!--<li role="presentation"><a href="{% url 'news' fair.year %}">News</a></li>{% endblock %}-->
 
 
                 {% if perms.orders.view_products %}
                     {% block nav-products %}
-                        <li role="presentation"><a href="{% url 'products' %}">Products</a></li>{% endblock %}
+                        <li role="presentation"><a href="{% url 'products' fair.year %}">Products</a></li>{% endblock %}
                 {% endif %}
                 </ul>
                 <p class="navbar-text navbar-right"><strong><a href="/people/{{ request.user.pk }}"

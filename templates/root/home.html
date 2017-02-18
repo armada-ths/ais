@@ -9,7 +9,7 @@
     <div class="col-md-12">
 
         <h2>Banquet</h2>
-        <a class="btn btn-default" href="{% url 'banquet_attendants' %}">View Attendants</a>
+        <a class="btn btn-default" href="{% url 'banquet_attendants' fair.year %}">View Attendants</a>
 
 
         <h2>Events</h2>
@@ -26,7 +26,7 @@
                 <tbody>
                     {% for event in events %}
                         <tr>
-                            <td class="col-md-4"><a href="{% url "event_attend_form" event.id %}">{{ event.name }}</a></td>
+                            <td class="col-md-4"><a href="{% url "event_attend_form" fair.year event.id %}">{{ event.name }}</a></td>
                             <td class="col-md-2">{{ event.event_start|date:"d M h:s" }}</td>
                             <td class="col-md-4">{{ event.description_short }}</td>
                             <td class="col-md-2">
@@ -68,7 +68,7 @@
                 <tbody>
                 {% for period in recruitment.recruitment_periods %}
                     <tr>
-                        <td class="col-md-4"><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
+                        <td class="col-md-4"><a href="{% url 'recruitment_period' fair.year period.id %}">{{ period.name }}</a></td>
                         <td class="col-md-2">{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
                         {% if perms.recruitment.view_recruitment_applications %}
                             <td class="col-md-4">{{ period.recruitmentapplication_set.count }}</td>

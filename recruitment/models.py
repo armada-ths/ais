@@ -75,7 +75,9 @@ class ExtraField(models.Model):
 
     def handle_answers_from_request(self, request, user):
         extra_field = self
+        print('handle_answers_from_request')
         for custom_field in extra_field.customfield_set.all():
+            print(custom_field)
             key = custom_field.form_key
             if custom_field.field_type == 'file' or custom_field.field_type == 'image':
                 if key in request.FILES:
