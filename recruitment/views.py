@@ -57,6 +57,11 @@ class RecruitmentPeriodForm(ModelForm):
             "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
             "interview_end_date": forms.TextInput(attrs={'class': 'datepicker'}),
         }
+        labels = {
+            'start_date': 'Start date (Format: 2016-12-24 13:37)',
+            'end_date': 'End date (Format: 2016-12-24 13:37)',
+            'interview_end_date': 'Interview end date (Format: 2016-12-24 13:37)',
+        }
 
 
 def recruitment(request, year, template_name='recruitment/recruitment.html'):
