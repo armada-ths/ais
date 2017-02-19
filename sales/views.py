@@ -53,7 +53,7 @@ def sale_edit(request, pk=None, template_name='sales/sale_form.html'):
     if form.is_valid():
         form.save()
         return redirect('sales')
-    return render(request, template_name, {'form':form, 'sale': sale})
+    return render(request, template_name, {'form': form, 'sale': sale})
 
 
 def sale_show(request, pk, template_name='sales/sale_show.html'):
@@ -74,22 +74,20 @@ def sale_delete(request, pk):
 
 
 
-def sale_comment_create(request, pk, template_name='sales/sale_show.html'):
+def sale_comment_create(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
     comment = SaleComment()
     comment.user = request.user
     comment.sale = sale
     comment.comment = request.POST['comment']
     comment.save()
-    return render(request, template_name)
+    return redirect('sale_show', pk)
 
 
-def sale_comment_delete(request, pk, template_name='sales/sale_show.html'):
-    comment = get_object_or_404(SaleComment, pk=pk)
-    if request.method=='POST':
-        comment.delete()
-        return redirect('sales')
-    return render(request, template_name, {'sale':sale})
+def sale_comment_delete(request, sale_pk, comment_pk):
+    comment = get_object_or_404(SaleComment, pk=comment_pk)
+    comment.delete()
+    return redirect('sale_show', sale_pk)
 
 
 

@@ -13,17 +13,38 @@
 		<div class="page-header", class="col-md-12">
 			<h1>{{company_name}} <small>{{sale.campaign}} </small></h1>
 		</div>
+
+    <div class="row">
 		<div class="col-md-9">
+
+
+            <form action="{% url 'sale_comment_create' sale.pk %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea class="form-control" placeholder="Your comment..." name="comment"></textarea>
+                </div>
+                <p><button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add
+                    comment
+                </button></p>
+            </form>
+
+
+
 			{% for comment in comments %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
 				    <h5 class="panel-title">{{comment.created_date}} {{comment.user.first_name}} {{comment.user.last_name}}</h5>
 				</div>
 				<div class="panel-body">
-					<ul class="list-unstyled">
-				    <li> {{ comment.comment }}</li>
-				    </ul>
-				</div>
+                    {{ comment.comment }}"
+
+            <form action="{% url 'sale_comment_delete' sale.pk comment.pk %}" method="post" class="pull-right">
+                {% csrf_token %}
+                <p><button onclick="return confirm('Are you sure you wan\'t to delete?')" type="submit" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button></p>
+            </form>
+                </div>
 			</div>
 			{% endfor %}
 		</div>
@@ -75,4 +96,5 @@
 				</div>
 			</div>
 		</div>
+    </div>
 {% endblock %}

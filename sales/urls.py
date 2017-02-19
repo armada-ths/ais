@@ -8,6 +8,6 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/edit$', views.sale_edit, name='sale_edit'),
     url(r'^new$', views.sale_edit, name='sale_create'),
     url(r'^(?P<pk>\d+)/delete$', views.sale_delete, name='sale_delete'),
-    url(r'^new_comment$', views.sale_comment_create, name='sale_comment_create'),
-    url(r'^(?P<pk>\d+)/delete$', views.sale_comment_delete, name='sale_comment_delete'),
+    url(r'^(?P<pk>\d+)/comment/new$', views.sale_comment_create, name='sale_comment_create'),
+    url(r'^(?P<sale_pk>\d+)/comment/(?P<comment_pk>\d+)/delete$', views.sale_comment_delete, name='sale_comment_delete'),
 ]
