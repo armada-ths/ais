@@ -50,7 +50,7 @@ class RecruitmentPeriodForm(ModelForm):
     class Meta:
         model = RecruitmentPeriod
         fields = '__all__'
-        exclude = ('recruitable_roles', 'image', 'interview_questions', 'application_questions')
+        exclude = ('recruitable_roles', 'image', 'interview_questions', 'application_questions', 'fair')
 
         widgets = {
             "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
@@ -512,7 +512,9 @@ def recruitment_period_edit(request, year, pk=None, template_name='recruitment/r
 
     if request.POST:
         if form.is_valid():
-            recruitment_period = form.save()
+            recruitment_period = form.save(commit=False)
+            recruitment_period.fair = fair
+            recruitment_period.save()
             recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
             recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
             for role in Role.objects.all():
