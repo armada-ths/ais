@@ -3,7 +3,8 @@ from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplica
 from fair.models import Fair
 from django.utils import timezone
 from django.contrib.auth.models import User, Group, Permission
-
+from django.core.exceptions import PermissionDenied
+from django.urls.exceptions import NoReverseMatch
 
 from django.test import Client
 
@@ -13,7 +14,7 @@ class RecruitmentTestCase(TestCase):
 
 
     def setUp(self):
-        fair = Fair.objects.create(name="Armada 2016", year=timezone.now().year, pk=2)
+        fair = Fair.objects.create(name="Armada 2016", year=2016, pk=2)
 
         self.now = timezone.now()
         self.tomorrow = self.now + timezone.timedelta(days=1)
@@ -70,7 +71,6 @@ class RecruitmentTestCase(TestCase):
             role=self.career_fair_leader,
             order=1
         )
-
         self.pg_role.add_user_to_groups(self.purmonen_user)
 
 
@@ -119,47 +119,51 @@ class RecruitmentTestCase(TestCase):
 
         client = Client()
         response = client.post('/accounts/login/', {'username': 'bratteby', 'password': 'bratteby'})
-        response = client.get('/recruitment/')
+        response = client.get('/fairs/2016/recruitment/')
 
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/new')
-        self.assertEqual(response.status_code, 403)
+        try:
+            response = client.get('/fairs/2016/recruitment/new')
+        except (PermissionDenied, NoReverseMatch):
+            pass
 
-        response = client.get('/recruitment/%d' % self.recruitment_period.pk)
+        response = client.get('/fairs/2016/recruitment/%d' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/%d/application/1337' % self.recruitment_period.pk)
+        response = client.get('/fairs/2016/recruitment/%d/application/1337' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
-        self.assertEqual(response.status_code, 403)
+        try:
+            response = client.get('/fairs/2016/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
+        except (PermissionDenied, NoReverseMatch):
+            pass
 
-        response = client.get('/recruitment/roles/1')
+        response = client.get('/fairs/2016/recruitment/roles/1')
         self.assertEqual(response.status_code, 200)
 
     def test_site_for_armada_member(self):
         client = Client()
         response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
-        response = client.get('/recruitment/')
+        response = client.get('/fairs/2016/recruitment/')
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/new')
+        response = client.get('/fairs/2016/recruitment/new')
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/new')
+        response = client.get('/fairs/2016/recruitment/new')
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/%d' % self.recruitment_period.pk)
+        response = client.get('/fairs/2016/recruitment/%d' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/%d/application/1337' % self.recruitment_period.pk)
+        response = client.get('/fairs/2016/recruitment/%d/application/1337' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
+        response = client.get('/fairs/2016/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
-        response = client.get('/recruitment/roles/1')
+        response = client.get('/fairs/2016/recruitment/roles/1')
         self.assertEqual(response.status_code, 200)
 
     def test_create_application(self):
@@ -170,13 +174,13 @@ class RecruitmentTestCase(TestCase):
         self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 1)
 
         response = client.post('/accounts/login/', {'username': 'bratteby', 'password': 'bratteby'})
-        response = client.post('/recruitment/%d/application/new' % self.recruitment_period.pk, {
+        response = client.post('/fairs/2016/recruitment/%d/application/new' % self.recruitment_period.pk, {
             'username': 'purmonen', 'password': 'purmonen'
         })
         self.assertTrue('This field is required' in str(response.content))
 
         self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 1)
-        response = client.post('/recruitment/1/application/new', {
+        response = client.post('/fairs/2016/recruitment/1/application/new', {
             'role1': '3',
             'programme': '1',
             'registration_year': '2016',
@@ -191,7 +195,7 @@ class RecruitmentTestCase(TestCase):
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307028')
         self.assertEquals(RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 3)
 
-        response = client.post('/recruitment/1/application/%d' % recruitment_application.pk, {
+        response = client.post('/fairs/2016/recruitment/1/application/%d' % recruitment_application.pk, {
             'role1': '2',
             'programme': '1',
             'registration_year': '2016',
@@ -212,21 +216,27 @@ class RecruitmentTestCase(TestCase):
         response = client.post('/accounts/login/', {'username': 'bratteby', 'password': 'bratteby'})
 
         self.assertEquals(len(RecruitmentPeriod.objects.all()), 1)
-        response = client.post('/recruitment/new', {
-            'name': 'Host Recruitment',
-            'eligible_roles': '2',
-            'fair': '2',
-            'start_date': '2016-01-1',
-            'end_date': '2016-01-2',
-            'interview_end_date': '2016-01-3'
-        })
+        try:
+            response = client.post('/fairs/2016/recruitment/new', {
+                'name': 'Host Recruitment',
+                'eligible_roles': '2',
+                'fair': '2',
+                'start_date': '2016-01-1',
+                'end_date': '2016-01-2',
+                'interview_end_date': '2016-01-3'
+            })
+            self.assertTrue(False)
+        except (PermissionDenied, NoReverseMatch):
+            # This is expected
+            pass
+
         self.assertEquals(len(RecruitmentPeriod.objects.all()), 1)
-        self.assertEquals(response.status_code, 403)
+        #self.assertEquals(response.status_code, 403)
 
         response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
 
 
-        response = client.post('/recruitment/new', {
+        response = client.post('/fairs/2016/recruitment/new', {
             'name': 'Host Recruitment',
             'eligible_roles': '2',
             'fair': '2',
