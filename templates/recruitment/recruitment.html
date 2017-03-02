@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block nav-recruitment %}
-    <li role="presentation" class="active"><a href="{% url 'recruitment' %}">Recruitment</a></li>
+    <li role="presentation" class="active"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
 {% endblock %}
 {% block content %}
 
@@ -30,7 +30,7 @@
                     </thead>
                     {% for period in recruitment_periods %}
                         <tr>
-                            <td><a href="{% url 'recruitment_period' period.id %}">{{ period.name }}</a></td>
+                            <td><a href="{% url 'recruitment_period' fair.year period.id %}">{{ period.name }}</a></td>
                             <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
                             {% if perms.recruitment.view_recruitment_applications %}
                             <td>{{ period.recruitmentapplication_set.count }}</td>
@@ -53,7 +53,8 @@
                 <p>No recruitment periods</p>
             {% endif %}
             {% if perms.recruitment.administer_recruitment %}
-                <p><a href="{% url "recruitment_period_new" %}">
+                <p><a href="{% url "recruitment_period_new" fair.year %}">
+                    {{ period.year }}
                     <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
                         period
                     </button>
@@ -64,7 +65,7 @@
 
             {% endif %}
             {% if perms.recruitment.administer_recruitment %}
-                <form action="{% url "assign_roles" %}" method="POST">
+                <form action="{% url "assign_roles" fair.year %}" method="POST">
                     {% csrf_token %}
                     <button class="btn btn-default">Assign roles</button>
                 </form>
@@ -77,7 +78,7 @@
             {% for role in roles %}
                 <p><a href="{% url "roles_new" role.parent_role.pk %}"><strong>{{ role.parent_role }}</strong></a></p>
                 {% for child_role in role.child_roles %}
-                    <p style="margin-left: 12px"><a href="{% url "roles_new" child_role.pk %}">{{ child_role }}
+                    <p style="margin-left: 12px"><a href="{% url "roles_new" fair.year child_role.pk %}">{{ child_role }}
                         ({{ child_role.users|length }})</a></p>
                 {% endfor %}
                 {% empty %}
@@ -85,7 +86,7 @@
             {% endfor %}
 
             {% if perms.recruitment.administer_roles %}
-                <a class="btn btn-primary" href="{% url "roles_new" %}"><span class="glyphicon glyphicon-plus"></span>
+                <a class="btn btn-primary" href="{% url "roles_new" fair.year %}"><span class="glyphicon glyphicon-plus"></span>
                     New role</a>
 
             {% endif %}

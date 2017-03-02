@@ -6,26 +6,31 @@ from django.forms import TextInput
 from exhibitors.models import Exhibitor
 from companies.models import Company
 from django.urls import reverse
-
+from fair.models import Fair
 
 def user_can_modify_exhibitor(user, exhibitor):
     return user.has_perm(
         'exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
 
 
-def exhibitors(request, template_name='exhibitors/exhibitors.html'):
+def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     if not request.user.has_perm('exhibitors.view_exhibitors'):
         return HttpResponseForbidden()
 
+    fair = get_object_or_404(Fair, year=year)
     return render(request, template_name, {
-        'exhibitors': Exhibitor.objects.prefetch_related('hosts').all().order_by('company__name'),
+        'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
+        'fair': fair
     })
 
 
-def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
+def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     if not user_can_modify_exhibitor(request.user, exhibitor):
         return HttpResponseForbidden()
+
+    fair = get_object_or_404(Fair, year=year)
+
 
     invoice_fields = (
     'invoice_reference', 'invoice_reference_phone_number', 'invoice_organisation_name', 'invoice_address',
@@ -102,7 +107,7 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
         company_form.save()
         armada_transport_from_fair_form.save()
         stand_form.save()
-        return redirect('exhibitors')
+        return redirect('exhibitors', fair.year)
 
     users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
              RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
@@ -120,11 +125,12 @@ def exhibitor(request, pk, template_name='exhibitors/exhibitor.html'):
         'armada_transport_from_fair_form': armada_transport_from_fair_form,
         'company_form': company_form,
         'stand_form': stand_form,
+        'fair': fair
     })
 
 
 def related_object_form(model, model_name, delete_view_name):
-    def view(request, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):
+    def view(request, year, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):
             return HttpResponseForbidden()
@@ -147,7 +153,7 @@ def related_object_form(model, model_name, delete_view_name):
 
 
 def related_object_delete(model):
-    def view(request, exhibitor_pk, instance_pk):
+    def view(request, year, exhibitor_pk, instance_pk):
         instance = get_object_or_404(model, pk=instance_pk)
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):

@@ -4,8 +4,8 @@
 
 
     <ol class="breadcrumb">
-        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
-        <li><a href="{% url 'recruitment_period' recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+        <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment_period' fair.year recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
         <li class="active">Application</li>
     </ol>
 

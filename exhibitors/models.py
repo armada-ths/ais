@@ -3,7 +3,7 @@ from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from recruitment.models import RecruitmentApplication
-
+from fair.models import Fair
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
@@ -92,7 +92,7 @@ class Exhibitor(models.Model):
     def superiors(self):
         accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in
                                  self.hosts.all()]
-        return [application.superior_user for application in accepted_applications if application.superior_user]
+        return [application.superior_user for application in accepted_applications if application and application.superior_user]
 
     def __str__(self):
         return '%s at %s' % (self.company.name, self.fair.name)
@@ -103,6 +103,7 @@ class Exhibitor(models.Model):
 
 
 class BanquetteAttendant(models.Model):
+    fair = models.ForeignKey(Fair, default=1)
     user = models.ForeignKey(User, null=True, blank=True)  # Null for exhibitor representants
     exhibitor = models.ForeignKey(Exhibitor, null=True, blank=True)  # Null for non-exhibitor representants
     first_name = models.CharField(max_length=200)

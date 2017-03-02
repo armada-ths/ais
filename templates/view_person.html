@@ -3,15 +3,15 @@
 <div class="page-header">
     <h1>{% include 'recruitment/user_name.html' with user=person %} <small>{{ role }}</small></h1>
     {% if person.user == request.user %}
-        <a href="{% url "edit_person" person.pk %}">Edit</a>
+        <a href="{% url "edit_person" fair.year person.pk %}">Edit</a>
     {% endif %}
     </div>
 
 
     <div>
 
-                                {% if person.image %}
-                                <div><img src="/media/{{ person.image }}" style="max-width: 100%; max-height: 400px;"></div>
+                                {% if person.picture %}
+                                <div><img src="/media/{{ person.picture }}" style="max-width: 100%; max-height: 400px;"></div>
                             {% endif %}
     <br>
     </div>

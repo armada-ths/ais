@@ -3,7 +3,7 @@
 {% block content %}
 
     <ol class="breadcrumb">
-        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
         <li class="active">{{ recruitment_period.name }}</li>
     </ol>
 
@@ -15,17 +15,17 @@
 
             <div>
                 {% if application %}
-                    <a href="{% url 'recruitment_application_new' recruitment_period.id application.id %}">
+                    <a href="{% url 'recruitment_application_new' fair.year recruitment_period.id application.id %}">
                         <button class="btn btn-primary btn-lg">View application</button>
                     </a>
                 {% else %}
-                    <a href="{% url 'recruitment_application_new' recruitment_period.id %}">
+                    <a href="{% url 'recruitment_application_new' fair.year recruitment_period.id %}">
                         <button class="btn btn-primary btn-lg">Apply</button>
                     </a>
                 {% endif %}
 
                 {% if perms.recruitment.administer_recruitment %}
-                    <a href="{% url 'recruitment_period_edit' recruitment_period.id %}">
+                    <a href="{% url 'recruitment_period_edit' fair.year recruitment_period.id %}">
                         <button class="btn btn-default btn-lg">Edit</button>
                     </a>
                 {% endif %}
@@ -51,12 +51,13 @@
                 <tr>
                     <td>
                         {% if request.user == application.interviewer %}
-                            <a href="{% url 'recruitment_application_interview' recruitment_period.id application.id %}">
+                            <a href="{% url 'recruitment_application_interview' fair.year recruitment_period.id application.id %}">
                                 {% include 'recruitment/user_name.html' with user=application.user %}
-                            </a></td>
+                            </a>
                         {% else %}
                             {% include 'recruitment/user_name.html' with user=application.user %}
                         {% endif %}
+                </td>
 
                     <td>{{ application.interview_date|date:"d M H:i" }}</td>
                     <td>{{ application.interview_location }}</td>
@@ -197,7 +198,7 @@
 
 
         $.ajax({
-            url: '{% url 'recruitment_period_graphs' recruitment_period.pk %}'
+            url: '{% url 'recruitment_period_graphs' fair.year recruitment_period.pk %}'
         }).done(function (data) {
             data.graph_datasets.forEach(function (dataset) {
                 dataset.charts.forEach(function (chart) {
@@ -252,7 +253,7 @@
             $('#interview_table').DataTable({
                 'order': [[1, 'desc']],
                 'paging': false,
-                'ajax': '{% url 'interview_state_counts' recruitment_period.pk %}',
+                'ajax': '{% url 'interview_state_counts' fair.year recruitment_period.pk %}',
                 'columns': columns,
                 'headerCallback': function (row, data, start, end, display) {
                     var api = this.api()

@@ -3,7 +3,7 @@
 {% block content %}
 
     <ol class="breadcrumb">
-        <li><a href="{% url 'recruitment' %}">Recruitment</a></li>
+        <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
         <li class="active">{% if role %}{{ role }} {% else %} New Role {% endif %}</li>
     </ol>
 
@@ -20,7 +20,7 @@
                     {{ roles_form|crispy }}
                     <button class="btn btn-primary">Save</button>
                     {% if role != None %}
-                        <a class="btn btn-danger" href="{% url "roles_delete" role.pk %}"
+                        <a class="btn btn-danger" href="{% url "roles_delete" fair.year role.pk %}"
                            onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
                     {% endif %}
 
@@ -38,7 +38,7 @@
                 <ul class="list-unstyled">
                     {% for user in role.users %}
                         <li>
-                            <a href="{% url 'view_person' user.id %}">{% include 'recruitment/user_name.html' with user=user %}</a>
+                            <a href="{% url 'view_person' fair.year user.id %}">{% include 'recruitment/user_name.html' with user=user %}</a>
                         </li>
                     {% endfor %}
                 </ul>

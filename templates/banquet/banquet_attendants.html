@@ -23,7 +23,7 @@
             <tr>
                 <td>
                     {% if attendant.user %}
-                        <a href="{% url 'view_person' attendant.user.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</a>
+                        <a href="{% url 'view_person' fair.year attendant.user.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</a>
                     {% else %}
                         {{ attendant.first_name }} {{ attendant.last_name }}
                     {% endif %}
@@ -44,7 +44,7 @@
                 </td>
                 <td>
                     {% if attendant.exhibitor and perms.exhibitors.change_exhibitor %}
-                        <a href="{% url 'exhibitor' attendant.exhibitor.pk %}">{{ attendant.exhibitor.company|default:'' }}</a>
+                        <a href="{% url 'exhibitor' fair.year attendant.exhibitor.pk %}">{{ attendant.exhibitor.company|default:'' }}</a>
                     {% else %}
                         {{ attendant.exhibitor.company|default:'' }}
                     {% endif %}
