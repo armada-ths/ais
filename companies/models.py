@@ -1,8 +1,14 @@
 from django.db import models
+from django.conf import settings
 
 
 # A 'Contact' is a person working for a 'Company'
 class Contact(models.Model):
+    user = models.OneToOneField(
+            settings.AUTH_USER_MODEL,
+            null = True,
+            blank = True)
+    belongs_to = models.ForeignKey('Company', null=True, blank=True, related_name="belongs_to")
     name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
     alternative_email = models.CharField(max_length=200, null=True, blank=True)
@@ -25,7 +31,6 @@ class Company(models.Model):
     organisation_number = models.CharField(max_length=100)
     website = models.CharField(max_length=300)
     phone_number = models.CharField(max_length=300, blank=True)
-    contact = models.ForeignKey(Contact, null=True, blank=True)
 
     address_street = models.CharField(max_length=200, blank=True)
     address_zip_code = models.CharField(max_length=200, blank=True)

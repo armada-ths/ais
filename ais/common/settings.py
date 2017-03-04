@@ -42,7 +42,8 @@ INSTALLED_APPS = (
     'orders',
     'crispy_forms',
     'exhibitors',
-    'django.contrib.humanize'
+    'django.contrib.humanize',
+    'sales'
 )
 
 

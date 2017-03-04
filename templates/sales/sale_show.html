@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block nav-sales %}<li role="presentation" class="active"><a href="{% url 'sales' fair.year %}">Sales</a></li>{% endblock %}
+
+{% block content %}
+
+    <ol class="breadcrumb">
+        <li><a href="{% url 'sales' fair.year %}">Sales</a></li>
+        <li class="active">{{ sale }}</li>
+    </ol>
+
+
+		<div class="page-header", class="col-md-12">
+			<h1>{{company_name}} <small>{{sale.campaign}} </small></h1>
+		</div>
+
+    <div class="row">
+		<div class="col-md-9">
+
+
+            <form action="{% url 'sale_comment_create' fair.year sale.pk %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea class="form-control" placeholder="Your comment..." name="comment"></textarea>
+                </div>
+                <p><button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add
+                    comment
+                </button></p>
+            </form>
+
+
+
+			{% for comment in comments %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+				    <h5 class="panel-title">{{comment.created_date}} {{comment.user.first_name}} {{comment.user.last_name}}</h5>
+				</div>
+				<div class="panel-body">
+                    {{ comment.comment }}"
+
+            <form action="{% url 'sale_comment_delete' fair.year sale.pk comment.pk %}" method="post" class="pull-right">
+                {% csrf_token %}
+                <p><button onclick="return confirm('Are you sure you wan\'t to delete?')" type="submit" class="btn btn-link">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button></p>
+            </form>
+                </div>
+			</div>
+			{% endfor %}
+		</div>
+
+		<div class="col-md-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+				    <h3 class="panel-title">Properties</h3>
+				</div>
+				<div class="panel-body">
+					<ul class="list-unstyled">
+				    <li> Status: {{ sale.status }}</li>
+				    <li> Responsible: {{ user_info }}</li>
+				    </ul>
+				</div>
+			</div>
+            
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Contacts</h3>
+				</div>
+				<div class="panel-body">
+                <a href="/companies/{{sale.company.id}}/new/?next={{ request.path}}">
+                    New Contact
+                    </a>
+				{% for contact in company_contacts %}
+				    <ul class="list-unstyled">
+				    <li> <strong>{{ contact.name }}</strong></li>
+                    {% if contact.active %}
+                        <li> {{ contact.title }}</li>
+                        <li> {{ contact.cell_phone }}</li>
+                        <li> {{ contact.work_phone }}</li>
+                        <li> {{ contact.email }}</li>
+                        <li>	</li>
+                    <a href="/companies/contact/{{ contact.id }}/toggle_active/?next={{request.path}}">
+                        Deactivate account
+                    </a>
+                    {% else %}
+                    <a href="/companies/contact/{{ contact.id }}/toggle_active/?next={{request.path}}">
+                        Create account
+                    </a>
+                    {% endif %}
+				    </ul>
+				{% endfor %}
+                
+                <strong>Previous campaigns:</strong>
+				<ul class="list-unstyled">
+                {% for sale in previous_sales %}
+                    <li>{{ sale.campaign }}</li>
+                {% endfor %}
+                </ul>
+				</div>
+			</div>
+		</div>
+    </div>
+{% endblock %}

@@ -4,8 +4,8 @@
 
     {% if exhibitor %}
     <ol class="breadcrumb">
-        <li><a href="{% url 'exhibitors' %}">Exhibitors</a></li>
-        <li><a href="{% url 'exhibitor' exhibitor.company.pk %}">{{ exhibitor.company }}</a></li>
+        <li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+        <li><a href="{% url 'exhibitor' fair.year exhibitor.company.pk %}">{{ exhibitor.company }}</a></li>
         <li class="active">{{ model_name }}</li>
     </ol>
     {% endif %}

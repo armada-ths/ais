@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'^edit/(?P<pk>\d+)$', views.company_update, name='company_edit'),
     url(r'^delete/(?P<pk>\d+)$', views.company_delete, name='company_delete'),
     #CRUD Company contact person
-    url(r'^(?P<pk>\d+)/new$', views.contact_create, name='contact_new'),
+    url(r'^(?P<pk>\d+)/new/', views.contact_create, name='contact_new'),
+    url(r'^contact/(?P<contact_pk>\d+)/toggle_active/', views.contact_state_toggle, 
+        name='contact_state_toggle'),
 
 ]
