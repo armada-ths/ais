@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block head-extra %}<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+  <script>
+  tinymce.init({ selector:'textarea',
+    setup: function (editor) {
+        editor.on('change', function () {
+            editor.save();
+        });
+    }
+  });</script>{% endblock %}
+
+{% block nav-sales %}<li role="presentation" class="active"><a href="{% url 'sales' fair.year %}">Sales</a></li>{% endblock %}
+
+{% block content %}
+
+        <ol class="breadcrumb">
+        <li><a href="{% url 'sales' fair.year %}">Sales</a></li>
+            {% if sale %}
+        <li class="active">{{ sale }}</li>
+                {% else %}
+                <li class="active">New</li>
+        {% endif %}
+    </ol>
+
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input class="btn btn-primary" type="submit" value="Submit" />
+</form>
+
+
+{% endblock %}

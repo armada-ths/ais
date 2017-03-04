@@ -3,6 +3,7 @@ from django.db import models
 
 # A 'Contact' is a person working for a 'Company'
 class Contact(models.Model):
+    belongs_to = models.ForeignKey('Company', null=True, blank=True, related_name="belongs_to")
     name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
     alternative_email = models.CharField(max_length=200, null=True, blank=True)

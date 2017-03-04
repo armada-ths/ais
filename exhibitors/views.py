@@ -131,6 +131,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
 
 def related_object_form(model, model_name, delete_view_name):
     def view(request, year, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):
+        fair = get_object_or_404(Fair, year=year)
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):
             return HttpResponseForbidden()
@@ -142,23 +143,24 @@ def related_object_form(model, model_name, delete_view_name):
             instance = form.save(commit=False)
             instance.exhibitor = exhibitor
             instance.save()
-            return redirect('exhibitor', exhibitor_pk)
+            return redirect('exhibitor', fair.year,exhibitor_pk)
         delete_url = reverse(delete_view_name, args=(
-        exhibitor_pk, instance_pk)) if instance_pk != None and delete_view_name != None else None
+        fair.year,exhibitor_pk, instance_pk)) if instance_pk != None and delete_view_name != None else None
         return render(request, template_name,
                       {'form': form, 'exhibitor': exhibitor, 'instance': instance, 'model_name': model_name,
-                       'delete_url': delete_url})
+                       'delete_url': delete_url, 'fair':fair})
 
     return view
 
 
 def related_object_delete(model):
     def view(request, year, exhibitor_pk, instance_pk):
+        fair = get_object_or_404(Fair, year=year)
         instance = get_object_or_404(model, pk=instance_pk)
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):
             return HttpResponseForbidden()
         instance.delete()
-        return redirect('exhibitor', exhibitor_pk)
+        return redirect('exhibitor', fair.year, exhibitor_pk)
 
     return view
