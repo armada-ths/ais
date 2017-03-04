@@ -67,21 +67,24 @@
 					<h3 class="panel-title">Contacts</h3>
 				</div>
 				<div class="panel-body">
+                <a href="/companies/{{sale.company.id}}/new/?next={{ request.path}}">
+                    New Contact
+                    </a>
 				{% for contact in company_contacts %}
 				    <ul class="list-unstyled">
 				    <li> <strong>{{ contact.name }}</strong></li>
                     {% if contact.active %}
-                        <li> <i><a href="/companies/contact/{{ contact.id }}/toggle_active">
-                        (Deactivate)
-                                </a></i></li>
                         <li> {{ contact.title }}</li>
                         <li> {{ contact.cell_phone }}</li>
                         <li> {{ contact.work_phone }}</li>
                         <li> {{ contact.email }}</li>
                         <li>	</li>
+                    <a href="/companies/contact/{{ contact.id }}/toggle_active/?next={{request.path}}">
+                        Deactivate account
+                    </a>
                     {% else %}
-                    <a href="/companies/contact/{{ contact.id }}/toggle_active">
-                        Activate
+                    <a href="/companies/contact/{{ contact.id }}/toggle_active/?next={{request.path}}">
+                        Create account
                     </a>
                     {% endif %}
 				    </ul>
@@ -90,7 +93,7 @@
                 <strong>Previous campaigns:</strong>
 				<ul class="list-unstyled">
                 {% for sale in previous_sales %}
-                    <li>{{ sale.campaign.name }}</li>
+                    <li>{{ sale.campaign }}</li>
                 {% endfor %}
                 </ul>
 				</div>
