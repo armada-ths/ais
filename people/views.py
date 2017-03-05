@@ -25,9 +25,7 @@ def view_person(request, year, pk):
     user = get_object_or_404(User, pk=pk)
 
     if (request.user == user) or request.user.has_perm('people.view_people'):
-        profile = Profile.objects.filter(user=user).first()
-        if not profile:
-            profile = Profile.objects.create(user=user)
+        profile = Profile.objects.get_or_create(user=user)[0]
 
         application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
         return TemplateResponse(request, 'view_person.html', {
@@ -59,9 +57,7 @@ def edit_person(request, year, pk):
     if not request.user == user:
         raise PermissionDenied
 
-    profile = Profile.objects.filter(user=user).first()
-    if not profile:
-        profile = Profile.objects.create(user=user)
+    profile = Profile.objects.get_or_create(user=user)[0]
 
     form = ProfileForm(request.POST or None, instance=profile)
 
