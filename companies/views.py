@@ -39,11 +39,14 @@ def company_create(request, template_name='companies/company_form.html'):
 
 #update a company
 def company_update(request, pk, template_name='companies/company_form.html'):
+    redirect_to = request.GET.get('next','')
     fair = current_fair()
     company = get_object_or_404(Company, pk=pk)
     form = CompanyForm(request.POST or None, instance=company)
     if form.is_valid():
         form.save()
+        if redirect_to:
+            return redirect(redirect_to)
         return redirect('companies_list')
     return render(request, template_name, {'form':form, 'fair':fair})
 

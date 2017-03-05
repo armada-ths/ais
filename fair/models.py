@@ -7,6 +7,10 @@ from lib.image import UploadToDirUUID
 class Fair(models.Model):
     name = models.CharField(max_length=100, default="Armada %d"%(date.today().year))
     year = models.IntegerField(default=date.today().year)
+    description = models.TextField(max_length=500, default="Armada %d"%(date.today().year))
+
+    registration_start_date = models.DateTimeField(null=True)
+    registration_end_date = models.DateTimeField(null=True)
 
     def is_member_of_fair(self, user):
         if user.is_superuser:

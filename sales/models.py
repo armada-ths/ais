@@ -6,18 +6,9 @@ from exhibitors.models import Exhibitor
 import datetime
 import os
 
-class SalesPeriod(models.Model):
-    name = models.CharField(max_length=30)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    fair = models.ForeignKey('fair.Fair') 
-
-    def __str__(self):
-        return '%s' % (self.name)   
-
 class Campaign(models.Model):
     name = models.CharField(max_length=30)
-    sales_period = models.ForeignKey(SalesPeriod)
+    fair = models.ForeignKey('fair.Fair') 
 
     def __str__(self):
         return '%s' % (self.name)
@@ -48,7 +39,7 @@ class Sale(models.Model):
     status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
 
     def __str__(self):
-        return '%s at %s (%s)' % (self.company.name, self.campaign.name, self.campaign.sales_period.fair.year)
+        return '%s at %s (%s)' % (self.company.name, self.campaign.name, self.campaign.fair.year)
 
 class SaleComment(models.Model):
     sale = models.ForeignKey(Sale)

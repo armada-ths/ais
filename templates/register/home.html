@@ -1,0 +1,35 @@
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8">
+	{% include "header.html" %}
+	{% block head-extra %}{% endblock %}
+  </head>
+<body>
+
+<div class="container" style="max-width: 500px">
+    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
+
+<h1> Welcome {{contact.name}} from {{company.name}} </h1>
+<p> On this page you can edit your company info and register your company for a fair </p>
+
+<h2> {{company.name}}</h2>
+<h3> Organisation type </h3>
+<p> {{company.organisation_type}} </p>
+<h3> Organisation number </h3>
+<p> {{company.organisation_number}} </p>
+<h3> Address </h3>
+<p> {{company.address_street}} </p>
+<h3> Website </h3>
+<p> {{company.website}} </p>
+
+<a href="{% url 'anmalan:edit_company' company.id %}/?next={{request.path}}">Edit your company info</a> </br>
+<a href="{% url 'anmalan:fair' %}">Current Fair</a>
+
+</div>
+</body>
+</html>

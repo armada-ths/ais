@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.decorators import permission_required
 import datetime
 
-from .models import SalesPeriod, Campaign, Sale, SaleComment 
+from .models import Campaign, Sale, SaleComment 
 from fair.models import Fair
 from companies.models import Contact
 from recruitment.models import RecruitmentApplication
@@ -27,17 +27,6 @@ class ImportForm(forms.ModelForm):
         fields = ('campaign',)
 
 
-class SalesPeriodForm(forms.ModelForm):
-    class Meta:
-        model = SalesPeriod
-        fields = '__all__'
-
-        widgets = {
-            "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
-            "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
-        }
-
-
 class SaleCommentForm(forms.ModelForm):
     class Meta:
         model = SaleComment
@@ -46,8 +35,7 @@ class SaleCommentForm(forms.ModelForm):
 
 def sales_list(request, year, template_name='sales/sales_list.html'):
     fair = get_object_or_404(Fair, year=year)
-    sales_period = SalesPeriod.objects.filter(fair=fair)
-    campaigns = Campaign.objects.filter(sales_period = sales_period)
+    campaigns = Campaign.objects.filter(fair = fair)
     sales = Sale.objects.filter(campaign__in = campaigns).order_by('company__name')
     return render(request, template_name, {'sales': sales, 'fair': fair})
 
