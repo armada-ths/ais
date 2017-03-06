@@ -69,7 +69,6 @@ class Profile(models.Model):
         self.picture = update_image_field(
                 self.picture_original,
                 self.picture, 480, 640, 'jpg')
-        super(Profile, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'profile'
