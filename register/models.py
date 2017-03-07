@@ -39,6 +39,7 @@ class SignupLog(models.Model):
     contract = models.ForeignKey('SignupContract')
     timestamp = models.DateTimeField(auto_now_add=True)
     contact = models.ForeignKey('companies.Contact')
+    company = models.ForeignKey('companies.Company', null= True)
     
     def __str__(self):
         return self.contact.name + " at " + self.contact.belongs_to.name

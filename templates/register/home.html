@@ -17,18 +17,30 @@
 <h1> Welcome {{contact.name}} from {{company.name}} </h1>
 <p> On this page you can edit your company info and register your company for a fair </p>
 
-<h2> {{company.name}}</h2>
-<h3> Organisation type </h3>
-<p> {{company.organisation_type}} </p>
-<h3> Organisation number </h3>
-<p> {{company.organisation_number}} </p>
-<h3> Address </h3>
-<p> {{company.address_street}} </p>
-<h3> Website </h3>
-<p> {{company.website}} </p>
+{% if signed_up %}
+    <h2> You are signed up for {{ fair.name }} </h2> 
+    <p> If you have any questions, please email: armada@ths.kth.se </p>
+{% else %}
+    <h2> Sign up for {{fair.name}}!</h2>
 
-<a href="{% url 'anmalan:edit_company' company.id %}/?next={{request.path}}">Edit your company info</a> </br>
-<a href="{% url 'anmalan:fair' %}">Current Fair</a>
+    <a href={{contract_url}}>Read the contract here</a>
+    <form method="post">{% csrf_token %}
+        {{ form | crispy }}
+        <input type="submit" value="Sign Up!" />
+    </form>
+{% endif %}
+
+<h2> Your contact info </h2>
+<h3> Name </h3>
+<p> {{contact.name}} </p>
+<h3> Email </h3>
+<p> {{contact.email}} </p>
+<h3> Phone number </h3>
+<p> {{contact.phone_number}} </p>
+<h3> Organisation </h3>
+<p> {{company.name}} </p>
+<a href="{% url 'anmalan:edit_me' %}/?next={{request.path}}">Edit your contact info</a> </br>
+<a href="{% url 'anmalan:logout' %}">Log out</a> </br>
 
 </div>
 </body>
