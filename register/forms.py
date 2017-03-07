@@ -60,24 +60,6 @@ class CreateContactForm(ModelForm):
             self.add_error('email', msg)
             raise ValidationError("Account already exists")
 
-    def save(self, commit=True):
-        ## Check if contact already exists without login
-        ## and in that case only create a login for that contact 
-        ## and edit info
-        instance = super(CreateContactForm, self).save(commit=False)
-        contact = Contact.objects.filter(email=self.cleaned_data['email']).first() # only one will exist
-        print("form saving")
-        if contact != None:
-            #edit the contact
-            print("updating contact", contact, self.cleaned_data)
-            Contact.objects.filter(email=self.cleaned_data['email']).update(**self.cleaned_data)
-            return Contact.objects.get(email=self.cleaned_data['email'])
-        else:
-            if commit:
-                instance.save()
-            return instance
-        
-
 class UserForm(UserCreationForm):
     class Meta:
         model = User
