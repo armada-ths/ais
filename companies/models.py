@@ -10,10 +10,10 @@ class Contact(models.Model):
             blank = True)
     belongs_to = models.ForeignKey('Company', null=True, blank=True, related_name="belongs_to")
     name = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-    alternative_email = models.CharField(max_length=200, null=True, blank=True)
+    email = models.EmailField(max_length=200)
+    alternative_email = models.EmailField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)  # work title, such as CEO or HR.
-    cell_phone = models.CharField(max_length=200)
+    cell_phone = models.CharField(max_length=200, blank=True)
     work_phone = models.CharField(max_length=200)
     active = models.BooleanField(default=True)  # if the contact is active
     phone_switchboard = models.CharField(max_length=200, null=True, blank=True)
@@ -26,10 +26,11 @@ class Contact(models.Model):
 class Company(models.Model):
     class Meta:
         verbose_name_plural = 'Companies'
+        ordering = ['name']
 
     name = models.CharField(max_length=100)
     organisation_number = models.CharField(max_length=100)
-    website = models.CharField(max_length=300)
+    website = models.CharField(max_length=300, blank=True)
     phone_number = models.CharField(max_length=300, blank=True)
 
     address_street = models.CharField(max_length=200, blank=True)

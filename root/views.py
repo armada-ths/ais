@@ -6,6 +6,7 @@ from exhibitors.models import BanquetteAttendant
 from django.urls import reverse
 from people.models import Profile
 from fair.models import Fair
+from companies.models import Contact
 
 def login_redirect(request):
     next = request.GET.get('next')
@@ -13,6 +14,9 @@ def login_redirect(request):
         next = next[:-1]
 
     if request.user.is_authenticated():
+        contact  = Contact.objects.filter(user=request.user).first()
+        if not contact is None:
+            return redirect('anmalan:home')
         return redirect('home', 2017)
 
     return render(request, 'login.html', {

@@ -1,0 +1,29 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8">
+	{% include "header.html" %}
+	{% block head-extra %}{% endblock %}
+  </head>
+<body>
+
+<div class="container" style="max-width: 500px">
+    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
+
+<h1> This is {{fair.name}} </h1>
+<p> On this page you can sign up for this fair, and create your complete registration later </p>
+{% if registration_open %}
+    <h1> Registration is open! </h1>
+    <a href="{% url 'anmalan:prel_registration' fair.id %}">Register here</a>
+{% else %}
+    <h2> Unfortunately the registration is closed for this fair. Contact ... </h1>
+{% endif %}
+
+<a href="{% url 'anmalan:home' %}" >back</a> </br>
+
+</div>
+</body>
+</html>

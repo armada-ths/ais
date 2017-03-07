@@ -43,7 +43,8 @@ INSTALLED_APPS = (
     'crispy_forms',
     'exhibitors',
     'django.contrib.humanize',
-    'sales'
+    'sales',
+    'register'
 )
 
 

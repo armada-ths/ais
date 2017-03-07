@@ -79,13 +79,6 @@
                         <li> {{ contact.work_phone }}</li>
                         <li> {{ contact.email }}</li>
                         <li>	</li>
-                    <a href="/companies/contact/{{ contact.id }}/toggle_active/?next={{request.path}}">
-                        Deactivate account
-                    </a>
-                    {% else %}
-                    <a href="/companies/contact/{{ contact.id }}/toggle_active/?next={{request.path}}">
-                        Create account
-                    </a>
                     {% endif %}
 				    </ul>
 				{% endfor %}
@@ -93,7 +86,7 @@
                 <strong>Previous campaigns:</strong>
 				<ul class="list-unstyled">
                 {% for sale in previous_sales %}
-                    <li>{{ sale.campaign }}</li>
+                    <li>{{ sale }}</li>
                 {% endfor %}
                 </ul>
 				</div>
