@@ -2,6 +2,12 @@ from django.db import models
 from datetime import date
 from lib.image import UploadToDirUUID
 
+def current_fair():
+    try:
+        current = Fair.objects.get(current=True).id
+        return current
+    except Exception:
+        return None
 
 
 class Fair(models.Model):

@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 from exhibitors.models import Exhibitor
-from fair.models import Fair
+from fair.models import Fair, current_fair
 import datetime
 import os
 
@@ -33,7 +33,7 @@ class Sale(models.Model):
         ('Rejected', 'Rejected'),
     )
     
-    fair = models.ForeignKey(Fair, default=Fair.objects.get(current=True).id)
+    fair = models.ForeignKey(Fair, null=True, default=current_fair)
     campaign = models.ForeignKey(Campaign, blank=True, null=True)
     company = models.ForeignKey('companies.Company')
     responsible = models.ForeignKey(User, null=True, default=None, blank=True)
