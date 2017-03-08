@@ -1,20 +1,35 @@
 {% load staticfiles %}
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta charset="utf-8">
-	{% include "header.html" %}
-	{% block head-extra %}{% endblock %}
-  </head>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
+    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
+    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+</head>
+
 <body>
-
-
-<div class="container" style="max-width: 500px">
-    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
-    <a href="{% url 'anmalan:create_company_user' %}">Create new user</a>
-    <a href="{% url 'anmalan:login' %}">Log in with existing user</a>
+    <div class="container">
+        <div class="row image-holder">
+            <div class="col-md-12">
+                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p class="welcome-text">Car vinyl shanty town alcohol camera katana silent grenade <a href="#">inbjudan</a> courier military-grade neon modem cartel neural. Hotdog DIY nodality Legba advert woman beef noodles motion camera boy rifle table faded sensory. </p>
+            </div>
+        </div>
+        <div class="row spacer">
+            <div class="col-md-6">
+                <a href="{% url 'anmalan:create_company_user' %}" class="login-link"><h3>Create new user</h3></a>
+            </div>    
+            <div class="col-md-6">
+                <a href="{% url 'anmalan:login' %}" class="login-link"><h3>Log in with existing user</h3></a>
+            </div>
+        </div>
     </div>
 </body>
+
 </html>

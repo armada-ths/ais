@@ -1,27 +1,42 @@
-{% load crispy_forms_tags %}
-{% load staticfiles %}
-
+{% load crispy_forms_tags %} {% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta charset="utf-8">
-	{% include "header.html" %}
-	{% block head-extra %}{% endblock %}
-  </head>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
+    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
+    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+</head>
+
 <body>
-
-
-<div class="container" style="max-width: 500px">
-    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
-<h1> ANMÄLAN LOGIN </h1>
-<form method="post">
-    {% csrf_token %}
-
-    {{ form|crispy }}
-    <input type="hidden" name="next" value='/register/home' />
-    <button class="btn btn-success">Log in</button>
-</form>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Exhibitor - Log in </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Exhibitor - Log in </h1>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <form method="post">
+                {% csrf_token %} {{ form|crispy }}
+                <input type="hidden" name="next" value='/register/home' />
+                <button class="btn btn-success">Log in</button>
+                <a href="{% url 'anmalan:index' %}"><button type="button" class="btn btn-default">Back</button></a>
+            </form>
+          </div>
+        </div>
     </div>
 </body>
+
 </html>
