@@ -24,7 +24,7 @@
         {% if signed_up %}
         <div class="row">
             <div class="col-md-12">
-                <h2> You are signed up for {{ fair.name }} </h2>
+                <h2 class="armada-green"> You are signed up for {{ fair.name }} </h2>
                 <p> If you have any questions, please email: armada@ths.kth.se </p>
             </div>
         </div>
@@ -83,11 +83,10 @@
                     </div>
                 </div>
                 {% if not signed_up %}
+                <form method="post">
                 <div class="row">
                     <div class="col-md-12">
-                        <form method="post">
                             {% csrf_token %} {{ form | crispy }}
-                        </form>
                     </div>
                 </div>
                 <div class="row spacer">
@@ -95,6 +94,7 @@
                         <button type="submit" class="btn btn-success">Sign up!</button>
                     </div>
                 </div>
+                </form>
                 {% endif %}
 
             </div>

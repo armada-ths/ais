@@ -95,6 +95,11 @@ a, a:hover, a:active, a:visited {
 	text-decoration-color: #e73953;
 }
 
+.armada-green {
+	color: #00d790;
+	text-decoration-color: #00d790;
+}
+
 .spacer {
 	padding-top: 4em;
 }
