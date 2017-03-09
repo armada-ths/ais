@@ -106,6 +106,17 @@ a, a:hover, a:active, a:visited {
 .welcome-text {
 	text-align: center;
 }
+
+label[for="id_agreement_accepted"] {
+	margin-left: 0px;
+	position: absolute;
+}
+
+#id_agreement_accepted {
+	margin-left: -20px;
+	margin-top: -0.5em;
+}
+
 textarea:focus,
 input[type="text"]:focus,
 input[type="password"]:focus,
