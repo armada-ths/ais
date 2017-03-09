@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
 
@@ -13,43 +14,51 @@ from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
-        redirect('anmalan:home')
+        if Contact.objects.filter(user=request.user).first() is not None:
+            return redirect('anmalan:home')
+        else:
+            return HttpResponse("You cannot access these pages without a company account")
     return render(request, template_name)
 
 def home(request, template_name='register/home.html'):
-    ## Find what contact is signing in and the company
-    fair = Fair.objects.get(current = True)
-    registration_open = fair.registration_start_date <= timezone.now() and fair.registration_end_date > timezone.now()
-    contract = SignupContract.objects.get(fair=fair, current=True)
-    if registration_open:
-        form = RegistrationForm(request.POST or None)
-        contact = Contact.objects.get(user=request.user)
-        company = contact.belongs_to
-        if form.is_valid():
-            SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
-            if len(Sale.objects.filter(fair=fair, company=company))==0:
-                Sale.objects.create(company=company)
-            return redirect('anmalan:home')
-        signed_up = SignupLog.objects.filter(company = company, contact=contact).first() != None
-        return render(request, template_name, dict(registration_open = registration_open, 
-                                                   signed_up = signed_up, 
-                                                   contact = contact,
-                                                   company=company, 
-                                                   fair=fair,
-                                                   form=form,
-                                                   contract_url=contract.contract.url))
+    if request.user.is_authenticated():
+        if Contact.objects.filter(user=request.user).first() is None:
+            return HttpResponse("You cannot access these pages without a company account")
+        else:
+            ## Find what contact is signing in and the company
+            fair = Fair.objects.get(current = True)
+            registration_open = fair.registration_start_date <= timezone.now() and fair.registration_end_date > timezone.now()
+            contract = SignupContract.objects.get(fair=fair, current=True)
+            if registration_open:
+                form = RegistrationForm(request.POST or None)
+                contact = Contact.objects.get(user=request.user)
+                company = contact.belongs_to
+                if form.is_valid():
+                    SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
+                    if len(Sale.objects.filter(fair=fair, company=company))==0:
+                        Sale.objects.create(company=company)
+                    return redirect('anmalan:home')
+                signed_up = SignupLog.objects.filter(company = company, contact=contact).first() != None
+                return render(request, template_name, dict(registration_open = registration_open, 
+                                                           signed_up = signed_up, 
+                                                           contact = contact,
+                                                           company=company, 
+                                                           fair=fair,
+                                                           form=form,
+                                                           contract_url=contract.contract.url))
 
-   
-    else:
-        contact = Contact.objects.get(user=request.user)
-        company = contact.belongs_to
-        signed_up = SignupLog.objects.filter(company = company).first() != None
-            
-        return render(request, template_name, dict(registration_open = registration_open, 
-                                                   signed_up = signed_up, 
-                                                   contact = contact,
-                                                   company=company, 
-                                                   fair=fair))
+           
+            else:
+                contact = Contact.objects.get(user=request.user)
+                company = contact.belongs_to
+                signed_up = SignupLog.objects.filter(company = company).first() != None
+                    
+                return render(request, template_name, dict(registration_open = registration_open, 
+                                                           signed_up = signed_up, 
+                                                           contact = contact,
+                                                           company=company, 
+                                                           fair=fair))
+    return redirect('anmalan:index')
 
 
 
