@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^companies/', include('companies.urls')),
+    url(r'^register/', include('register.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^$', login_redirect),
     url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),

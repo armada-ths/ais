@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.decorators import permission_required
 import datetime
 
-from .models import SalesPeriod, Campaign, Sale, SaleComment 
+from .models import Campaign, Sale, SaleComment 
 from fair.models import Fair
 from companies.models import Contact
 from recruitment.models import RecruitmentApplication
@@ -14,6 +14,7 @@ class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
         fields = '__all__'
+        exclude = ('preliminary_registration',)
 
 
 class CampaignForm(forms.ModelForm):
@@ -24,18 +25,7 @@ class CampaignForm(forms.ModelForm):
 class ImportForm(forms.ModelForm):
     class Meta:
         model = Sale
-        fields = ('campaign',)
-
-
-class SalesPeriodForm(forms.ModelForm):
-    class Meta:
-        model = SalesPeriod
-        fields = '__all__'
-
-        widgets = {
-            "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
-            "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
-        }
+        fields = ('fair',)
 
 
 class SaleCommentForm(forms.ModelForm):
@@ -46,9 +36,7 @@ class SaleCommentForm(forms.ModelForm):
 
 def sales_list(request, year, template_name='sales/sales_list.html'):
     fair = get_object_or_404(Fair, year=year)
-    sales_period = SalesPeriod.objects.filter(fair=fair)
-    campaigns = Campaign.objects.filter(sales_period = sales_period)
-    sales = Sale.objects.filter(campaign__in = campaigns).order_by('company__name')
+    sales = Sale.objects.filter(fair=fair).order_by('company__name')
     return render(request, template_name, {'sales': sales, 'fair': fair})
 
 
@@ -71,10 +59,9 @@ def import_companies(request, year):
     fair = get_object_or_404(Fair, year=year)
     form = ImportForm(request.POST or None)
     if form.is_valid():
-        campaign = Campaign.objects.get(pk=request.POST['campaign'])
         for company in Company.objects.all():
             # Create a sale entity
-            sale = Sale(campaign=campaign, company=company)
+            sale = Sale(fair=fair, company=company)
             sale.save()
         return redirect('sales', fair.year)
     return render(request, 'sales/sale_form.html', {'form':form, 'fair':fair})

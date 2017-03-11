@@ -1,0 +1,119 @@
+{% load crispy_forms_tags %} {% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
+    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
+    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
+            </div>
+        </div>
+        <div class="row header-row">
+            <div class="col-md-12">
+                <h1>{{company.name}} registration</h1>
+            </div>
+        </div>
+        {% if signed_up %}
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="armada-green"> You are signed up for {{ fair.name }} </h2>
+                <p> If you have any questions, please email: armada@ths.kth.se </p>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row spacer">
+            <div class="col-md-6"> <!-- LEFT COL FORM -->
+
+
+                <div class="row fist-contact">
+                    <div class="col-md-12">
+                        <h3> Name </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p> {{contact.name}} </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3> Email </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p> {{contact.email}} </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3> Phone number </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p> {{contact.work_phone}} </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3> Organisation </h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p> {{company.name}} </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4><a href={{contract_url}}>Read the contract here</a></h4>
+                    </div>
+                </div>
+                {% if not signed_up %}
+                <form method="post">
+                <div class="row">
+                    <div class="col-md-12">
+                            {% csrf_token %} {{ form | crispy }}
+                    </div>
+                </div>
+                <div class="row spacer">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-success">Sign up!</button>
+                    </div>
+                </div>
+                </form>
+                {% endif %}
+
+            </div>
+        </div> 
+        <div class="row footer-menu spacer">
+            <div class="col-md-12">
+            <p>
+                <a href="{% url 'anmalan:edit_me' %}/?next={{request.path}}">Edit your contact info</a>
+            </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    <a href="{% url 'anmalan:logout' %}">Log out</a> </br>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
