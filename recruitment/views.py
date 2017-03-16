@@ -20,6 +20,7 @@ from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, 
 
 
 from django.forms import modelform_factory
+from django import forms
 from .forms import RoleApplicationForm, InterviewPlanForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, \
     RolesForm, ProfileForm
 
@@ -30,27 +31,28 @@ def import_members(request):
     create_project_group()
     return redirect('recruitment')
 
-def assign_roles(request):
+def assign_roles(request, year):
     if not request.user.has_perm('recruitment.administer_roles'):
         return HttpResponseForbidden()
 
     # Save all roles because that will guarantee that all roles have a group
     for role in Role.objects.all():
         role.save()
-
+    
+    # Remove permission groups from everyone that does not have a role this year
+    for application in RecruitmentApplication.objects.all().exclude(recruitment_period__fair__year=year, delegated_role=None):
+        application.user.groups.clear()
+        application.user.user_permissions.clear()
     # There should be no accepted applications without a delegated role, if there is one then recruitment manager has messed up
     # But we don't want this to crash if that's case so exclude all without a delegated role
-    for application in RecruitmentApplication.objects.filter(status='accepted').exclude(delegated_role=None):
+    for application in RecruitmentApplication.objects.filter(recruitment_period__fair__year=year, status='accepted').exclude(delegated_role=None):
         application.delegated_role.add_user_to_groups(application.user)
-    for application in RecruitmentApplication.objects.filter(status='rejected').exclude(delegated_role=None):
-        application.user.groups.clear()
 
-    return redirect('recruitment')
+    return redirect('recruitment', year)
 
 
 def recruitment(request, year, template_name='recruitment/recruitment.html'):
     fair = get_object_or_404(Fair, year=year)
-
 
     recruitment_periods = RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date')
     roles = []
