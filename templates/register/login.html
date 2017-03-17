@@ -22,6 +22,11 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-md-12">
+                <p><i> If this is your first time using our new 2017 registration page, please <a href="{% url 'anmalan:create_company_user' %}" class="login-link %}">create a new company user </a> as your first step.</i></p>
+            </div>
+        </div>
+        <div class="row">
           <div class="col-md-12">
             <form method="post">
                 {% csrf_token %} {{ form|crispy }}
