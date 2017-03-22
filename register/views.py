@@ -17,13 +17,13 @@ def index(request, template_name='register/index.html'):
         if Contact.objects.filter(user=request.user).first() is not None:
             return redirect('anmalan:home')
         else:
-            return HttpResponse("You cannot access these pages without a company account")
+            return redirect('anmalan:logout')
     return render(request, template_name)
 
 def home(request, template_name='register/home.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is None:
-            return HttpResponse("You cannot access these pages without a company account")
+            return redirect('anmalan:logout')
         else:
             ## Find what contact is signing in and the company
             fair = Fair.objects.get(current = True)
