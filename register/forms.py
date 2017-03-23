@@ -12,6 +12,10 @@ class LoginForm(AuthenticationForm):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['username'].label = "Email"
 
+    def clean(self):
+        self.cleaned_data['username'] = self.cleaned_data['username'].lower()
+        super(LoginForm, self).clean()
+
 class CompanyForm(ModelForm):
     class Meta:
         model = Company
@@ -60,6 +64,7 @@ class CreateContactForm(ModelForm):
         exclude = ('user', 'active',)
 
     def clean(self):
+        self.cleaned_data['email'] = self.cleaned_data['email'].lower()
         super(CreateContactForm, self).clean()
         email = self.cleaned_data.get("email")
         if User.objects.filter(username=email).first() != None:
