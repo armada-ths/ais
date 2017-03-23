@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms import ValidationError
 
+from sales.models import Sale
 from companies.models import Company, Contact
 
 class LoginForm(AuthenticationForm):
@@ -39,6 +40,12 @@ class ContactForm(ModelForm):
 class RegistrationForm(Form):
     agreement_accepted = BooleanField(required=True)
     agreement_accepted.label = "I have read the contract and agree to terms"
+
+class InterestForm(ModelForm):
+    class Meta:
+        model = Sale
+        fields = ('diversity_room','green_room', 'events')
+    
 
 class CreateContactForm(ModelForm):
 

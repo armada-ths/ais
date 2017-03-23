@@ -86,7 +86,8 @@
                 <form method="post">
                 <div class="row">
                     <div class="col-md-12">
-                            {% csrf_token %} {{ form | crispy }}
+                            {% csrf_token %} {{ form1| crispy }}
+                            {% csrf_token %} {{ form2| crispy }}
                     </div>
                 </div>
                 <div class="row spacer">
