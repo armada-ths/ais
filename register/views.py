@@ -10,33 +10,42 @@ from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is not None:
             return redirect('anmalan:home')
         else:
-            return HttpResponse("You cannot access these pages without a company account")
+            return redirect('anmalan:logout')
     return render(request, template_name)
 
 def home(request, template_name='register/home.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is None:
-            return HttpResponse("You cannot access these pages without a company account")
+            return redirect('anmalan:logout')
         else:
             ## Find what contact is signing in and the company
             fair = Fair.objects.get(current = True)
             registration_open = fair.registration_start_date <= timezone.now() and fair.registration_end_date > timezone.now()
             contract = SignupContract.objects.get(fair=fair, current=True)
             if registration_open:
-                form = RegistrationForm(request.POST or None)
+                form1 = RegistrationForm(request.POST or None, prefix='registration')
+                form2 = InterestForm(request.POST or None, prefix='interest')
                 contact = Contact.objects.get(user=request.user)
                 company = contact.belongs_to
-                if form.is_valid():
+                if form1.is_valid() and form2.is_valid():
                     SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
                     if len(Sale.objects.filter(fair=fair, company=company))==0:
-                        Sale.objects.create(company=company)
+                        sale = form2.save(commit=False)
+                        sale.company = company
+                        sale.save()
+                    for sale in Sale.objects.filter(fair=fair, company=company):
+                        sale.diversity_room = form2.cleaned_data['diversity_room']
+                        sale.green_room = form2.cleaned_data['green_room']
+                        sale.events = form2.cleaned_data['events']
+                        sale.save()
+                    
                     return redirect('anmalan:home')
                 signed_up = SignupLog.objects.filter(company = company, contact=contact).first() != None
                 return render(request, template_name, dict(registration_open = registration_open, 
@@ -44,7 +53,8 @@ def home(request, template_name='register/home.html'):
                                                            contact = contact,
                                                            company=company, 
                                                            fair=fair,
-                                                           form=form,
+                                                           form1=form1,
+                                                           form2=form2,
                                                            contract_url=contract.contract.url))
 
            

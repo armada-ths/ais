@@ -77,27 +77,43 @@
             </div>
 
             <div class="col-md-6">
+                {% if registration_open %}
                 <div class="row">
                     <div class="col-md-12">
                         <h4><a href={{contract_url}}>Read the contract here</a></h4>
                     </div>
                 </div>
-                {% if not signed_up %}
-                <form method="post">
                 <div class="row">
                     <div class="col-md-12">
-                            {% csrf_token %} {{ form | crispy }}
+                        <h5><a href="http://armada.nu/static/i17.pdf">Read the contract here</a></h5>
                     </div>
                 </div>
-                <div class="row spacer">
+                    {% if not signed_up %}
+                        <form method="post">
+                            {% csrf_token %} 
+                             <div class="col-md-12">
+                            {{form2 | crispy}}
+                            {{ form1 | crispy }}
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-success">Sign up!</button>
+                                </div>
+                            </div>
+                        </form>
+
+                   {% endif %}
+                {% else %}
+                <div class="row">
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-success">Sign up!</button>
+                        <h4>Registration for this year is not open yet</h4>
                     </div>
                 </div>
-                </form>
+
                 {% endif %}
 
             </div>
+            
         </div> 
         <div class="row footer-menu spacer">
             <div class="col-md-12">

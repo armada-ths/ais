@@ -1,15 +1,21 @@
 from django.forms import ModelForm, Form, BooleanField
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms import ValidationError
 
+from sales.models import Sale
 from companies.models import Company, Contact
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['username'].label = "Email"
+
+    def clean(self):
+        self.cleaned_data['username'] = self.cleaned_data['username'].lower()
+        super(LoginForm, self).clean()
 
 class CompanyForm(ModelForm):
     class Meta:
@@ -40,6 +46,20 @@ class RegistrationForm(Form):
     agreement_accepted = BooleanField(required=True)
     agreement_accepted.label = "I have read the contract and agree to terms"
 
+class InterestForm(ModelForm):
+    class Meta:
+        model = Sale
+        fields = ('diversity_room','green_room', 'events')
+        labels = {
+            "diversity_room": _("Interested in diversity room"),
+            "green_room": _("Interested in green room"),
+            "events": _("Interested in having events"),
+        }
+        #help_texts = {
+        #    "diversity_room": _("Tick this if you are interested in our diversity room concept"),
+        #}
+    
+
 class CreateContactForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -53,6 +73,7 @@ class CreateContactForm(ModelForm):
         exclude = ('user', 'active',)
 
     def clean(self):
+        self.cleaned_data['email'] = self.cleaned_data['email'].lower()
         super(CreateContactForm, self).clean()
         email = self.cleaned_data.get("email")
         if User.objects.filter(username=email).first() != None:

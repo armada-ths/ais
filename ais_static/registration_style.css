@@ -20,7 +20,8 @@ p {
 input {
 	font-family: "Lato";
 	font-size: 4em;
-	height: 100px;
+	max-height: 100px;
+    margin-top: 5px;
 }
 
 
@@ -32,6 +33,11 @@ h1 {
 h2, h3, h4 {
 	font-family: "Bebas Neue";
 	font-size: 3em;
+}
+
+h5 {
+	font-family: "Bebas Neue";
+	font-size: 2em;
 }
 
 label {
