@@ -83,22 +83,23 @@
                     </div>
                 </div>
                 {% if not signed_up %}
-                <form method="post">
-                <div class="row">
-                    <div class="col-md-12">
-                            {% csrf_token %} {{ form1| crispy }}
-                            {% csrf_token %} {{ form2| crispy }}
-                    </div>
-                </div>
-                <div class="row spacer">
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-success">Sign up!</button>
-                    </div>
-                </div>
-                </form>
-                {% endif %}
+                    <form method="post">
+                        {% csrf_token %} 
+                         <div class="col-md-12">
+                        {{form2 | crispy}}
+                                                {{ form1 | crispy }}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-success">Sign up!</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% endif %}
 
             </div>
+            
         </div> 
         <div class="row footer-menu spacer">
             <div class="col-md-12">

@@ -1,4 +1,5 @@
 from django.forms import ModelForm, Form, BooleanField
+from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
@@ -49,6 +50,14 @@ class InterestForm(ModelForm):
     class Meta:
         model = Sale
         fields = ('diversity_room','green_room', 'events')
+        labels = {
+            "diversity_room": _("Interested in diversity room"),
+            "green_room": _("Interested in green room"),
+            "events": _("Interested in green room"),
+        }
+        #help_texts = {
+        #    "diversity_room": _("Tick this if you are interested in our diversity room concept"),
+        #}
     
 
 class CreateContactForm(ModelForm):
