@@ -8,6 +8,7 @@
 <h1>Sales</h1>
 <!--{% if perms.sales.add_sale %}-->
 <p><a href="new" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New sale</a></p>
+<p><a href="{% url 'companies:new' %}?next={% url 'sales' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a></p>
 <!--{% endif %}--> 
 
 <h3>My sales</h3>
