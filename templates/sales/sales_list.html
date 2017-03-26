@@ -12,7 +12,9 @@
 <!--{% endif %}--> 
 
 <h3>My sales</h3>
-<table class="table table-striped">
+<div class="table-responsive">
+    <table class="table table-striped" id="my_sales">
+        <thead>
         <tr>
             <th>Company</th>
             <th>Campaign</th>
@@ -21,9 +23,9 @@
             <th>Follow Up</th>
             <th>Edit</th>
             <th>Delete</th>
-            
-	</tr>
-{% for sale in my_sales %}
+        </tr>
+        </thead>
+        {% for sale in my_sales %}
         <tr>
             {% if sale %}
             <td><a href="{{sale.id}}">{{ sale.company.name }}</a></td>
@@ -51,14 +53,16 @@
             </td>
 	    <!--{% endif %}-->
         </tr>
-{% endfor %}
-</table>
-
+        {% endfor %}
+    </table>
+</div>
 
 
 <h3>All sales</h3>
 
-<table class="table table-striped">
+<div class="table-responsive">
+    <table class="table table-striped", id="all_sales">
+        <thead>
         <tr>
             <th>Company</th>
             <th>Campaign</th>
@@ -67,9 +71,9 @@
             <th>Follow Up</th>
             <th>Edit</th>
             <th>Delete</th>
-            
-	</tr>
-{% for sale in sales %}
+        </tr>
+       </thead>
+        {% for sale in sales %}
         <tr>
             {% if sale %}
             <td><a href="{{sale.id}}">{{ sale.company.name }}</a></td>
@@ -97,6 +101,22 @@
             </td>
 	    <!--{% endif %}-->
         </tr>
-{% endfor %}
-</table>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+            $('#my_sales').DataTable({
+                'paging': false
+            }),
+            $('#all_sales').DataTable({
+                'paging': false
+            })
+        })
+    </script>
 {% endblock %}
