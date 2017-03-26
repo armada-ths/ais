@@ -59,6 +59,12 @@
 				    <li> Status: {{ sale.status }}</li>
 				    <li> Responsible: {{ user_info }}</li>
 				    </ul>
+                    <h5> Preliminary registrations </h5>
+                    <ul class="list-unstyled">
+                        {% for signup in signups %}
+                        <li> {{signup.contact}} : {{signup.timestamp}} </li>
+                        {% endfor %}
+                    </ul>
 				</div>
 			</div>
             

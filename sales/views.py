@@ -8,6 +8,7 @@ from fair.models import Fair
 from companies.models import Contact
 from recruitment.models import RecruitmentApplication
 from companies.models import Company
+from register.models import SignupLog
 
 
 class SaleForm(forms.ModelForm):
@@ -77,7 +78,14 @@ def sale_show(request, year,pk, template_name='sales/sale_show.html'):
     company_name = sale.company.name
     company_contacts = Contact.objects.filter(belongs_to=sale.company)
     previous_sales = Sale.objects.filter(company=sale.company)
-    return render(request, template_name, {'sale': sale, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts, 'previous_sales':previous_sales, 'fair':fair})
+    signups = SignupLog.objects.filter(company=sale.company, contract__fair=fair)
+    return render(request, template_name, {'sale': sale, 
+                                            'comments':comments, 
+                                            'company_name':company_name, 
+                                            'company_contacts':company_contacts, 
+                                            'previous_sales':previous_sales, 
+                                            'fair':fair,
+                                            'signups':signups})
 
 
 def sale_delete(request, year, pk, template_name='sales/sale_delete.html'):
