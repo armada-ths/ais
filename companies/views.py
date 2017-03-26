@@ -47,6 +47,7 @@ def company_create(request, template_name='companies/company_form.html'):
     return render(request, template_name, {'form':form, 'fair':fair})
 
 #update a company
+@permission_required('companies.company.can_change_company', raise_exception=False)
 def company_update(request, pk, template_name='companies/company_form.html'):
     redirect_to = request.GET.get('next','')
     fair = current_fair()
@@ -60,6 +61,7 @@ def company_update(request, pk, template_name='companies/company_form.html'):
     return render(request, template_name, {'form':form, 'fair':fair})
 
 #delete a company
+@permission_required('companies.company.can_delete_company', raise_exception=False)
 def company_delete(request, pk, template_name='companies/company_confirm_delete.html'):
     fair = current_fair()
     company = get_object_or_404(Company, pk=pk)
@@ -93,16 +95,15 @@ class UserForm(UserCreationForm):
         model = User
         fields = ['password1', 'password2']
 
-def contact_state_toggle(request, contact_pk, template_name='companies/user_form.html'):
+def contact_active_toggle(request, contact_pk, template_name='companies/user_form.html'):
     redirect_to = request.GET.get('next','')
     fair = current_fair()
     contact = get_object_or_404(Contact, pk=contact_pk)
     if contact.active:
         contact.active = False
-        
     else:
         if not contact.user:
-            form = UserForm(request.POST or None)   
+            form = UserForm(request.POST or None)
             print(form)
             if not form.is_valid():
                 return render(request, template_name, {'form':form, 'fair':fair})
@@ -114,5 +115,17 @@ def contact_state_toggle(request, contact_pk, template_name='companies/user_form
         contact.active = True
     contact.save()
     return redirect(redirect_to)
+
+def contact_confirm_toggle(request, contact_pk):
+    redirect_to = request.GET.get('next','')
+    fair = current_fair()
+    contact = get_object_or_404(Contact, pk=contact_pk)
+    if contact.confirmed:
+        contact.confirmed = False
+    else:
+        contact.confirmed = True
+    contact.save()
+    return redirect(redirect_to)
+
 
 
