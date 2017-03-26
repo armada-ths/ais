@@ -29,7 +29,7 @@ def view_person(request, year, pk):
         if not profile:
             profile = Profile.objects.create(user=user)
 
-        application = RecruitmentApplication.objects.filter(user=user, status='accepted').first()
+        application = RecruitmentApplication.objects.filter(user=user, status='accepted', recruitment_period__fair__current=True).last()
         return TemplateResponse(request, 'view_person.html', {
             'person': profile,
             'role': application.delegated_role if application else "",
