@@ -59,6 +59,12 @@
 				    <li> Status: {{ sale.status }}</li>
 				    <li> Responsible: {{ user_info }}</li>
 				    </ul>
+                    <h5> Preliminary registrations </h5>
+                    <ul class="list-unstyled">
+                        {% for signup in signups %}
+                        <li> {{signup.contact}} : {{signup.timestamp}} </li>
+                        {% endfor %}
+                    </ul>
 				</div>
 			</div>
             
@@ -79,6 +85,19 @@
                         <li> {{ contact.work_phone }}</li>
                         <li> {{ contact.email }}</li>
                         <li>	</li>
+                        <a href="{% url 'companies:contact_toggle_active' contact.id %}?next={{request.path}}">
+                        Deactivate account
+                        </a>
+                        </br>
+                        {% if not contact.confirmed %}
+                            <a href="{% url 'companies:contact_toggle_confirm' contact.id %}?next={{request.path}}">
+                            Confirm account
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'companies:contact_toggle_active' contact.id %}?next={{request.path}}">
+                            Activate account
+                        </a>
                     {% endif %}
 				    </ul>
 				{% endfor %}
