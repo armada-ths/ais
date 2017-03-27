@@ -16,6 +16,7 @@ class Contact(models.Model):
     cell_phone = models.CharField(max_length=200, blank=True)
     work_phone = models.CharField(max_length=200)
     active = models.BooleanField(default=True)  # if the contact is active
+    confirmed = models.BooleanField(default=False)  # (means Armada KAM have confirmed and they are allowed to change company info)
     phone_switchboard = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):

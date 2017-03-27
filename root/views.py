@@ -23,8 +23,10 @@ def login_redirect(request):
         'next': next,
     })
 
-def index(request, year):
-    fair = get_object_or_404(Fair, year=year)
+def index(request, year=None):
+    fair = Fair.objects.filter(current=True).first()
+    if fair is None:
+        fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
         return render(request, "root/home.html", {
             "recruitment": {

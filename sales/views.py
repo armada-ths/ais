@@ -8,6 +8,7 @@ from fair.models import Fair
 from companies.models import Contact
 from recruitment.models import RecruitmentApplication
 from companies.models import Company
+from register.models import SignupLog
 
 
 class SaleForm(forms.ModelForm):
@@ -37,7 +38,8 @@ class SaleCommentForm(forms.ModelForm):
 def sales_list(request, year, template_name='sales/sales_list.html'):
     fair = get_object_or_404(Fair, year=year)
     sales = Sale.objects.filter(fair=fair).order_by('company__name')
-    return render(request, template_name, {'sales': sales, 'fair': fair})
+    my_sales = filter(lambda sale: sale.responsible == request.user, sales)
+    return render(request, template_name, {'sales': sales, 'fair': fair, 'my_sales': my_sales})
 
 
 def sale_edit(request, year, pk=None, template_name='sales/sale_form.html'):
@@ -47,7 +49,8 @@ def sale_edit(request, year, pk=None, template_name='sales/sale_form.html'):
         sale = get_object_or_404(Sale, pk=pk)
     form = SaleForm(request.POST or None, instance=sale)
     users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
-     RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
+     RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=fair).order_by('user__first_name', 'user__last_name')]
+
     form.fields['responsible'].choices = [('', '---------')] + [
             (user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
     if form.is_valid():
@@ -75,7 +78,14 @@ def sale_show(request, year,pk, template_name='sales/sale_show.html'):
     company_name = sale.company.name
     company_contacts = Contact.objects.filter(belongs_to=sale.company)
     previous_sales = Sale.objects.filter(company=sale.company)
-    return render(request, template_name, {'sale': sale, 'comments':comments, 'company_name':company_name, 'company_contacts':company_contacts, 'previous_sales':previous_sales, 'fair':fair})
+    signups = SignupLog.objects.filter(company=sale.company, contract__fair=fair)
+    return render(request, template_name, {'sale': sale, 
+                                            'comments':comments, 
+                                            'company_name':company_name, 
+                                            'company_contacts':company_contacts, 
+                                            'previous_sales':previous_sales, 
+                                            'fair':fair,
+                                            'signups':signups})
 
 
 def sale_delete(request, year, pk, template_name='sales/sale_delete.html'):
