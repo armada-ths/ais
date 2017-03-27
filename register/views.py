@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
+from django.conf import settings
+import json
+import requests as r
 
 from companies.models import Company, Contact
 
@@ -34,7 +37,10 @@ def home(request, template_name='register/home.html'):
                 form2 = InterestForm(request.POST or None, prefix='interest')
                 contact = Contact.objects.get(user=request.user)
                 company = contact.belongs_to
+
                 if form1.is_valid() and form2.is_valid():
+                    print("FORMS 1 \n", form1.cleaned_data)
+                    print("FORMS 2 \n", form2.cleaned_data)
                     SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
                     if len(Sale.objects.filter(fair=fair, company=company))==0:
                         sale = form2.save(commit=False)
@@ -45,7 +51,10 @@ def home(request, template_name='register/home.html'):
                         sale.green_room = form2.cleaned_data['green_room']
                         sale.events = form2.cleaned_data['events']
                         sale.save()
-                    
+
+                    r.post(settings.SALES_HOOK_URL,
+                        data=json.dumps({'text': 'User {!s} just signed up {!s}!'.format(contact, company)}))
+
                     return redirect('anmalan:home')
                 signed_up = SignupLog.objects.filter(company = company, contact=contact).first() != None
                 return render(request, template_name, dict(registration_open = registration_open, 

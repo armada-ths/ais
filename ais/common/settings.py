@@ -94,6 +94,7 @@ MEDIA_ROOT = path.abspath(path.join(BASE_DIR, '..', 'media'))
 
 
 MEDIA_URL = '/media/'
+SALES_HOOK_URL = 'https://hooks.slack.com/services/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'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
