@@ -40,7 +40,7 @@ class ContactForm(ModelForm):
     class Meta:
         model = Contact
         fields = '__all__'
-        exclude = ('user','belongs_to','active', )
+        exclude = ('user','belongs_to','active','confirmed' )
 
 class RegistrationForm(Form):
     agreement_accepted = BooleanField(required=True)
