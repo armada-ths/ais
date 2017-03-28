@@ -9,7 +9,10 @@ from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
+import json
+import requests as r
 
 from fair.models import Fair
 from people.models import Profile
@@ -556,6 +559,10 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
                         role=role,
                         order=i - 1
                     )
+
+            if pk == None: #Slack webhook for signup notifications
+                r.post(settings.RECRUITMENT_HOOK_URL,
+                        data=json.dumps({'text': ' {!s} just applied for {!s}!'.format(user, role_form.cleaned_data["role1"])}))
 
             profile_form.save()
             return redirect('recruitment_period', fair.year, recruitment_period.pk)
