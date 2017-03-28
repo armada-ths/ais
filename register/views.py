@@ -39,8 +39,6 @@ def home(request, template_name='register/home.html'):
                 company = contact.belongs_to
 
                 if form1.is_valid() and form2.is_valid():
-                    print("FORMS 1 \n", form1.cleaned_data)
-                    print("FORMS 2 \n", form2.cleaned_data)
                     SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
                     if len(Sale.objects.filter(fair=fair, company=company))==0:
                         sale = form2.save(commit=False)
