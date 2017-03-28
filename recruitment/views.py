@@ -561,8 +561,9 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
                     )
 
             if pk == None: #Slack webhook for signup notifications
+
                 r.post(settings.RECRUITMENT_HOOK_URL,
-                        data=json.dumps({'text': ' {!s} just applied for {!s}!'.format(user, role_form.cleaned_data["role1"])}))
+                        data=json.dumps({'text': ' {!s} {!s} just applied for {!s}!'.format(user.first_name, user.last_name, role_form.cleaned_data["role1"])}))
 
             profile_form.save()
             return redirect('recruitment_period', fair.year, recruitment_period.pk)
