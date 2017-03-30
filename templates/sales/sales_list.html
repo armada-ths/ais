@@ -17,7 +17,7 @@
         <thead>
         <tr>
             <th>Company</th>
-            <th>Campaign</th>
+            <!--<th>Campaign</th>-->
             <th>Responsible</th>
             <th>Status</th>
             <th>Follow Up</th>
@@ -33,7 +33,7 @@
                 <td>{{ company.name }}</td>
             {% endif %}
 
-            <td>{{ sale.campaign.name }}</td>
+            <!--<td>{{ sale.campaign.name }}</td>-->
             <td>
             {% if sale.responsible %}
             <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
@@ -65,7 +65,7 @@
         <thead>
         <tr>
             <th>Company</th>
-            <th>Campaign</th>
+            <!--<th>Campaign</th>-->
             <th>Responsible</th>
             <th>Status</th>
             <th>Follow Up</th>
@@ -81,7 +81,7 @@
                 <td>{{ company.name }}</td>
             {% endif %}
 
-            <td>{{ sale.campaign.name }}</td>
+            <!--<td>{{ sale.campaign.name }}</td>-->
             <td>
             {% if sale.responsible %}
             <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
