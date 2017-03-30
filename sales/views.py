@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.decorators import permission_required
 import datetime
 
-from .models import Campaign, Sale, SaleComment 
+from .models import Sale, SaleComment 
 from fair.models import Fair
 from companies.models import Contact
 from recruitment.models import RecruitmentApplication
@@ -16,12 +16,6 @@ class SaleForm(forms.ModelForm):
         model = Sale
         fields = '__all__'
         exclude = ('preliminary_registration',)
-
-
-class CampaignForm(forms.ModelForm):
-    class Meta:
-        model = Campaign
-        fields = '__all__'
 
 class ImportForm(forms.ModelForm):
     class Meta:
