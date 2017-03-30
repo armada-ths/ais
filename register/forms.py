@@ -70,7 +70,7 @@ class CreateContactForm(ModelForm):
     class Meta:
         model = Contact
         fields = '__all__'
-        exclude = ('user', 'active',)
+        exclude = ('user', 'active','confirmed')
 
     def clean(self):
         self.cleaned_data['email'] = self.cleaned_data['email'].lower()
