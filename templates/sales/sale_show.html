@@ -11,7 +11,7 @@
 
 
 		<div class="page-header", class="col-md-12">
-			<h1>{{company_name}} <small>{{sale.campaign}} </small></h1>
+			<h1>{{company_name}} </h1>
 		</div>
 
     <div class="row">
@@ -51,30 +51,52 @@
 
 		<div class="col-md-3">
 			<div class="panel panel-default">
-				<div class="panel-heading">
-				    <h3 class="panel-title">Properties</h3>
-				</div>
-				<div class="panel-body">
-					<ul class="list-unstyled">
-				    <li> Status: {{ sale.status }}</li>
-				    <li> Responsible: {{ user_info }}</li>
-				    </ul>
-                    <h5> Preliminary registrations </h5>
+                <div class="panel-heading">
+                    <h3 class="panel-title">Actions</h3>
+                </div>
+                <div class="panel-body">
+                    <a href="{% url 'sale_edit' fair.year sale.id %}" class="btn btn-primary"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</a>
+                    <a href="{% url 'sale_delete' fair.year sale.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</a>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Properties</h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-unstyled">
+                    <li><strong>Status:</strong> {{ sale.status }}</li>
+                    <li><strong>Responsible:</strong> {{ user_info }}</li>
+                    </ul>
+                    <h5><strong>Preliminary registrations</strong></h5>
                     <ul class="list-unstyled">
                         {% for signup in signups %}
                         <li> {{signup.contact}} : {{signup.timestamp}} </li>
                         {% endfor %}
                     </ul>
-				</div>
-			</div>
+                    <h5><strong>Interested in</strong></h5>
+                    <ul>
+                        {% if sale.diversity_room %}
+                        <li>Diversity room</li>
+                        {% endif%}
+                        {% if sale.green_room %}
+                        <li>Green room</li>
+                        {% endif%}
+                        {% if sale.events %}
+                        <li>Events</li>
+                        {% endif%}
+                    </ul>
+                </div>
+            </div>
             
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Contacts</h3>
 				</div>
 				<div class="panel-body">
-                <a href="/companies/{{sale.company.id}}/new/?next={{ request.path}}">
-                    New Contact
+                <a href="/companies/{{sale.company.id}}/new/?next={{ request.path}}" class="btn btn-primary">
+                   <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New Contact
                     </a>
 				{% for contact in company_contacts %}
 				    <ul class="list-unstyled">
@@ -102,7 +124,7 @@
 				    </ul>
 				{% endfor %}
                 
-                <strong>Previous campaigns:</strong>
+                <h5><strong>Previous fairs:</strong></h5>
 				<ul class="list-unstyled">
                 {% for sale in previous_sales %}
                     <li>{{ sale }}</li>

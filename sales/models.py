@@ -7,12 +7,6 @@ from fair.models import Fair, current_fair
 import datetime
 import os
 
-class Campaign(models.Model):
-    name = models.CharField(max_length=30)
-    fair = models.ForeignKey('fair.Fair') 
-
-    def __str__(self):
-        return '%s' % (self.name)
 
 class Sale(models.Model):
 
@@ -34,7 +28,6 @@ class Sale(models.Model):
     )
     
     fair = models.ForeignKey(Fair, null=True, default=current_fair)
-    campaign = models.ForeignKey(Campaign, blank=True, null=True)
     company = models.ForeignKey('companies.Company')
     responsible = models.ForeignKey(User, null=True, default=None, blank=True)
 
