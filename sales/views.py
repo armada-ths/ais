@@ -33,7 +33,10 @@ def sales_list(request, year, template_name='sales/sales_list.html'):
     fair = get_object_or_404(Fair, year=year)
     sales = Sale.objects.filter(fair=fair).order_by('company__name')
     my_sales = filter(lambda sale: sale.responsible == request.user, sales)
-    return render(request, template_name, {'sales': sales, 'fair': fair, 'my_sales': my_sales})
+    signups = SignupLog.objects.filter(contract__fair=fair)
+    signedup = [signup.company.name for signup in signups]
+    print (signedup)
+    return render(request, template_name, {'sales': sales, 'fair': fair, 'my_sales': my_sales, 'signedup': signedup })
 
 
 def sale_edit(request, year, pk=None, template_name='sales/sale_form.html'):
