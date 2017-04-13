@@ -8,7 +8,7 @@ class Contact(models.Model):
             settings.AUTH_USER_MODEL,
             null = True,
             blank = True)
-    belongs_to = models.ForeignKey('Company', null=True, blank=True, related_name="belongs_to")
+    belongs_to = models.ForeignKey('Company', null=True, related_name="belongs_to")
     name = models.CharField(max_length=200)
     email = models.EmailField(max_length=200)
     alternative_email = models.EmailField(max_length=200, null=True, blank=True)
