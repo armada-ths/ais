@@ -35,7 +35,6 @@ def sales_list(request, year, template_name='sales/sales_list.html'):
     my_sales = filter(lambda sale: sale.responsible == request.user, sales)
     signups = SignupLog.objects.filter(contract__fair=fair)
     signedup = [signup.company.name for signup in signups]
-    print (signedup)
     return render(request, template_name, {'sales': sales, 'fair': fair, 'my_sales': my_sales, 'signedup': signedup })
 
 
