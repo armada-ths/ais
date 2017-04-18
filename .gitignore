@@ -14,4 +14,4 @@ run_server.sh
 .DS_Store
 ais_venv/
 nohup.out
-
+env/
