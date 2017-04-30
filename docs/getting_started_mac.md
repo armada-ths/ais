@@ -28,12 +28,12 @@ python3 ais/manage.py runserver --settings local_settings
 ```
 To be able to log in to the local version of ais we create a superuser:
 ```bash
-python ais/manage.py createsuperuser --settings local_settings
+python3 ais/manage.py createsuperuser --settings local_settings
 ```
 When a change to a model is made, the database need to be migrated to the new format. This is done with the following:
 ```bash
-python ais/manage.py makemigrations --settings local_settings
-python ais/manage.py migrate --settings local_settings
+python3 ais/manage.py makemigrations --settings local_settings
+python3 ais/manage.py migrate --settings local_settings
 ```
 
 TIP: To avoid having to type `--settings local_settings` all the time, the environement variable `DJANGO_SETTINGS_MODULE` can be set to local_settings which will tell django to use the "local_settings.py" as default.
