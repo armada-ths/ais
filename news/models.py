@@ -9,7 +9,8 @@ class NewsArticleManager(models.Manager):
 
 class NewsArticle(models.Model):
     title = models.CharField(max_length=150)
-    html_article_text = models.CharField(default="", max_length=5000)
+    ingress = models.TextField(default="", max_length=500)
+    html_article_text = models.TextField(default="", max_length=5000)
     publication_date = models.DateTimeField()
     image = models.ImageField(
         upload_to = UploadToDirUUID('news', 'image'),
