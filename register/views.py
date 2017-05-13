@@ -3,17 +3,18 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
 from django.conf import settings
+
 import json
 import requests as r
 
 from companies.models import Company, Contact
-
+from orders.models import Product, Order
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -56,25 +57,25 @@ def home(request, template_name='register/home.html'):
 
                     return redirect('anmalan:home')
                 signed_up = SignupLog.objects.filter(company = company, contact=contact).first() != None
-                return render(request, template_name, dict(registration_open = registration_open, 
-                                                           signed_up = signed_up, 
+                return render(request, template_name, dict(registration_open = registration_open,
+                                                           signed_up = signed_up,
                                                            contact = contact,
-                                                           company=company, 
+                                                           company=company,
                                                            fair=fair,
                                                            form1=form1,
                                                            form2=form2,
                                                            contract_url=contract.contract.url))
 
-           
+
             else:
                 contact = Contact.objects.get(user=request.user)
                 company = contact.belongs_to
                 signed_up = SignupLog.objects.filter(company = company).first() != None
-                    
-                return render(request, template_name, dict(registration_open = registration_open, 
-                                                           signed_up = signed_up, 
+
+                return render(request, template_name, dict(registration_open = registration_open,
+                                                           signed_up = signed_up,
                                                            contact = contact,
-                                                           company=company, 
+                                                           company=company,
                                                            fair=fair))
     return redirect('anmalan:index')
 
@@ -105,6 +106,7 @@ def create_company(request, template_name='register/company_form.html'):
         return redirect('/register/signup')
     return render(request, template_name, dict(form=form))
 
+
 def contact_update(request, template_name='register/contact_form.html'):
     contact = Contact.objects.get(user = request.user)
     form = ContactForm(request.POST or None, instance=contact)
@@ -125,4 +127,45 @@ def company_update(request, pk, template_name='register/company_form.html'):
         return redirect('anmalan:home')
     return render(request, template_name, {'form':form})
 
-   
+# A company's contact can request to have the company
+# become an exhibitor via the ExhibitorForm
+def create_exhibitor(request, template_name='register/exhibitor_form.html'):
+    currentFair = Fair.objects.get(current = True)
+    if request.user.is_authenticated():
+        contact = Contact.objects.get(user=request.user)
+        if contact is None:
+            return redirect('anmalan:logout')
+        else:
+            company = contact.belongs_to
+            # Redirect to home if company already is an exhibitor
+            if Exhibitor.objects.filter(company=company).exists():
+                return redirect('anmalan:home')
+            form = ExhibitorForm(request.POST or None)
+            if form.is_valid():
+                # get selected products
+                products = form.cleaned_data['product_selection']
+
+                # Save values from form
+                exhibitor = form.save(commit=False)
+
+                # Save values that a exhibitor should not choose
+                # by themselves
+                exhibitor.contact = contact
+                exhibitor.fair = currentFair
+                exhibitor.company = company
+                exhibitor.status = 'Complete registration'
+                exhibitor.save()
+
+                # Create orders from selected products
+                for product in products:
+                    # the productTuple has the id in the first index
+                    order = Order.objects.create(
+                        exhibitor=exhibitor,
+                        product=product,
+                        amount=1,
+                    )
+                    order.save()
+                # for loop end, redirect to home
+                return redirect('anmalan:home')
+    
+    return render(request, template_name, {'form': form})

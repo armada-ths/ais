@@ -90,7 +90,7 @@
                 </div>
                     {% if not signed_up %}
                         <form method="post">
-                            {% csrf_token %} 
+                            {% csrf_token %}
                              <div class="col-md-12">
                             {{form2 | crispy}}
                             {{ form1 | crispy }}
@@ -113,8 +113,8 @@
                 {% endif %}
 
             </div>
-            
-        </div> 
+
+        </div>
         <div class="row footer-menu spacer">
             <div class="col-md-12">
             <p>

@@ -1,11 +1,13 @@
-from django.forms import ModelForm, Form, BooleanField
+from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from django.forms import ValidationError
 
+from fair.models import Fair
+from orders.models import Product, Order
 from sales.models import Sale
+from exhibitors.models import Exhibitor
 from companies.models import Company, Contact
 
 class LoginForm(AuthenticationForm):
@@ -21,7 +23,7 @@ class CompanyForm(ModelForm):
     class Meta:
         model = Company
         fields = '__all__'
-    
+
     def clean(self):
         super(CompanyForm, self).clean()
         name = self.cleaned_data.get("name")
@@ -59,7 +61,7 @@ class InterestForm(ModelForm):
         #help_texts = {
         #    "diversity_room": _("Tick this if you are interested in our diversity room concept"),
         #}
-    
+
 
 class CreateContactForm(ModelForm):
 
@@ -88,3 +90,24 @@ class UserForm(UserCreationForm):
         fields = ('password1','password2',)
 
 
+class ExhibitorForm(ModelForm):
+    class ProductChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            return "%s (%s SEK)" % (product.name, product.price)
+
+    product_selection = ProductChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True)), required=False,widget=CheckboxSelectMultiple())
+
+    class Meta:
+        model = Exhibitor
+        fields = '__all__'
+        exclude = ('fair','contact','company', 'status', 'hosts', 'wants_information_about_osqledaren')
+
+    def clean(self):
+        super(ExhibitorForm, self).clean()
+        # use get instead of cleaned_data.get:
+        def get(fieldName):
+            return self.cleaned_data.get(fieldName)
+        # Make sure fields are not empty
+        if not get("location") and not get("fair_location") and not get("transport_to_fair_type") and not get("transport_from_fair_type"):
+            raise ValidationError("Remember to fill in required fields!")
+        return self.cleaned_data

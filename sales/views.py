@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth.decorators import permission_required
 import datetime
 
-from .models import Sale, SaleComment 
+from .models import Sale, SaleComment
 from fair.models import Fair
 from companies.models import Contact
 from recruitment.models import RecruitmentApplication
@@ -64,7 +64,7 @@ def import_companies(request, year):
             sale.save()
         return redirect('sales', fair.year)
     return render(request, 'sales/sale_form.html', {'form':form, 'fair':fair})
-    
+
 
 
 def sale_show(request, year,pk, template_name='sales/sale_show.html'):
@@ -75,11 +75,11 @@ def sale_show(request, year,pk, template_name='sales/sale_show.html'):
     company_contacts = Contact.objects.filter(belongs_to=sale.company)
     previous_sales = Sale.objects.filter(company=sale.company)
     signups = SignupLog.objects.filter(company=sale.company, contract__fair=fair)
-    return render(request, template_name, {'sale': sale, 
-                                            'comments':comments, 
-                                            'company_name':company_name, 
-                                            'company_contacts':company_contacts, 
-                                            'previous_sales':previous_sales, 
+    return render(request, template_name, {'sale': sale,
+                                            'comments':comments,
+                                            'company_name':company_name,
+                                            'company_contacts':company_contacts,
+                                            'previous_sales':previous_sales,
                                             'fair':fair,
                                             'signups':signups})
 
@@ -107,16 +107,3 @@ def sale_comment_delete(request, year, sale_pk, comment_pk):
     comment = get_object_or_404(SaleComment, pk=comment_pk)
     comment.delete()
     return redirect('sale_show', year, sale_pk)
-
-
-
-
-
-
-
-
-
-
-
-
-
