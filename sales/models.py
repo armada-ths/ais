@@ -16,7 +16,7 @@ class Sale(models.Model):
         ('Not interested', 'Not interested'),
         ('Contacted', 'Contacted'),
         ('Interested', 'Interested'),
-        ('Will register', 'Will register'), 
+        ('Will register', 'Will register'),
         ('Registered', 'Registered'),
         ('FA contacted', 'FA contacted'),
         ('FA on the go', 'FA on the go'),
@@ -26,7 +26,7 @@ class Sale(models.Model):
         ('Completed', 'Completed'),
         ('Rejected', 'Rejected'),
     )
-    
+
     fair = models.ForeignKey(Fair, null=True, default=current_fair)
     company = models.ForeignKey('companies.Company')
     responsible = models.ForeignKey(User, null=True, default=None, blank=True)
@@ -36,6 +36,9 @@ class Sale(models.Model):
     green_room = models.BooleanField(default=False)
     events = models.BooleanField(default=False)
     nova = models.BooleanField(default=False)
+
+    # True if company has signed up
+    registration_status = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s at %s ' % (self.company.name, self.fair)
@@ -66,10 +69,3 @@ class FollowUp(models.Model):
 
     def __str__(self):
         return '%s' % (self.follow_up_date)
-
-  
-
-
-
-
-
