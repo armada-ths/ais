@@ -86,6 +86,9 @@ class Exhibitor(models.Model):
 
     manual_invoice = models.BooleanField(default=False)
 
+    # Exhibitor status
+    accepted = models.BooleanField(default=False)
+
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
 
