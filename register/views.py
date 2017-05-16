@@ -153,7 +153,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 exhibitor.contact = contact
                 exhibitor.fair = currentFair
                 exhibitor.company = company
-                exhibitor.status = 'Complete registration'
+                #exhibitor.status = 'complete_registration'
                 exhibitor.save()
 
                 # Create orders from selected products
@@ -167,5 +167,5 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     order.save()
                 # for loop end, redirect to home
                 return redirect('anmalan:home')
-    
+
     return render(request, template_name, {'form': form})

@@ -104,10 +104,12 @@ class ExhibitorForm(ModelForm):
 
     def clean(self):
         super(ExhibitorForm, self).clean()
-        # use get instead of cleaned_data.get:
-        def get(fieldName):
-            return self.cleaned_data.get(fieldName)
+        # get inputed data from a form field:
+        #def get(fieldName):
+        #    return self.cleaned_data.get(fieldName)
         # Make sure fields are not empty
-        if not get("location") and not get("fair_location") and not get("transport_to_fair_type") and not get("transport_from_fair_type"):
-            raise ValidationError("Remember to fill in required fields!")
-        return self.cleaned_data
+        #for field in self.Meta.fields:
+        #    if not get(field):
+        #        raise ValidationError("Remember to fill in required fields!")
+        #
+        #return self.cleaned_data
