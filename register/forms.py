@@ -100,16 +100,7 @@ class ExhibitorForm(ModelForm):
     class Meta:
         model = Exhibitor
         fields = '__all__'
-        exclude = ('fair','contact','company', 'status', 'hosts', 'wants_information_about_osqledaren')
+        exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
 
     def clean(self):
         super(ExhibitorForm, self).clean()
-        # get inputed data from a form field:
-        #def get(fieldName):
-        #    return self.cleaned_data.get(fieldName)
-        # Make sure fields are not empty
-        #for field in self.Meta.fields:
-        #    if not get(field):
-        #        raise ValidationError("Remember to fill in required fields!")
-        #
-        #return self.cleaned_data
