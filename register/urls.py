@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^company/(?P<pk>\d+)/edit', views.company_update, name='edit_company'),
     url(r'^me/edit', views.contact_update, name='edit_me'),
+    url(r'^me/change-password', views.change_password, name='change_password'),
     url(r'^signup', views.signup, name='create_company_user'),
     url(r'^new_company', views.create_company, name='create_company'),
     url(

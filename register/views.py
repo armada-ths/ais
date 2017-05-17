@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.utils import timezone
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 import json
 import requests as r
@@ -13,7 +13,7 @@ from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, PasswordChangeForm
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -56,25 +56,25 @@ def home(request, template_name='register/home.html'):
 
                     return redirect('anmalan:home')
                 signed_up = SignupLog.objects.filter(company = company, contact=contact).first() != None
-                return render(request, template_name, dict(registration_open = registration_open, 
-                                                           signed_up = signed_up, 
+                return render(request, template_name, dict(registration_open = registration_open,
+                                                           signed_up = signed_up,
                                                            contact = contact,
-                                                           company=company, 
+                                                           company=company,
                                                            fair=fair,
                                                            form1=form1,
                                                            form2=form2,
                                                            contract_url=contract.contract.url))
 
-           
+
             else:
                 contact = Contact.objects.get(user=request.user)
                 company = contact.belongs_to
                 signed_up = SignupLog.objects.filter(company = company).first() != None
-                    
-                return render(request, template_name, dict(registration_open = registration_open, 
-                                                           signed_up = signed_up, 
+
+                return render(request, template_name, dict(registration_open = registration_open,
+                                                           signed_up = signed_up,
                                                            contact = contact,
-                                                           company=company, 
+                                                           company=company,
                                                            fair=fair))
     return redirect('anmalan:index')
 
@@ -125,4 +125,17 @@ def company_update(request, pk, template_name='register/company_form.html'):
         return redirect('anmalan:home')
     return render(request, template_name, {'form':form})
 
-   
+#change password
+def change_password(request, template_name='register/change_password.html'):
+    #contact = Contact.objects.get(user = request.user)
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('anmalan:home')
+        else:
+            return redirect('register/me/change-password')
+    else: # PasswordChangeForm doesnt work with or statement
+        form = PasswordChangeForm(user=request.user)
+    return render(request, template_name, {'form':form})
