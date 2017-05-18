@@ -127,7 +127,6 @@ def company_update(request, pk, template_name='register/company_form.html'):
 
 #change password
 def change_password(request, template_name='register/change_password.html'):
-    #contact = Contact.objects.get(user = request.user)
     if request.method == 'POST':
         form = PasswordChangeForm(data=request.POST, user=request.user)
         if form.is_valid():
@@ -135,7 +134,7 @@ def change_password(request, template_name='register/change_password.html'):
             update_session_auth_hash(request, form.user)
             return redirect('anmalan:home')
         else:
-            return redirect('register/me/change-password')
-    else: # PasswordChangeForm doesnt work with or statement
+            return redirect('/register/password/change')
+    else:
         form = PasswordChangeForm(user=request.user)
     return render(request, template_name, {'form':form})
