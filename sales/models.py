@@ -39,7 +39,7 @@ class Sale(models.Model):
     fair = models.ForeignKey(Fair, null=True, default=current_fair)
     company = models.ForeignKey('companies.Company')
     responsible = models.ForeignKey(User, null=True, default=None, blank=True)
-    sales = models.ForeignKey(BuisnessArea, null=True, blank=True)
+    buisness_area = models.ForeignKey(BuisnessArea, null=True, blank=True)
 
     status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
     diversity_room = models.BooleanField(default=False)
