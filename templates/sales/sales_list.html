@@ -20,7 +20,7 @@
         <tr>
             <th>Company</th>
             <th>Responsible</th>
-			<th>Buisness Area</th>            
+            <th>Business Area</th>            
 			<th>Status</th>
             <th>DR</th>
             <th>GR</th>
@@ -41,7 +41,7 @@
             <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
             {% endif %}
             </td>
-			<td>{{ sale.buisness_area}}</td>
+            <td>{{ sale.business_area}}</td>
             <td>{{ sale.status}}</td>
             <td>{% if sale.diversity_room %}
                     Yes
@@ -102,7 +102,7 @@
         <tr>
             <th>Company</th>
             <th>Responsible</th>
-	        <th>Buisness Area</th>    
+	        <th>Business Area</th>    
 			<th>Status</th>
             <th>DR</th>
             <th>GR</th>
@@ -124,7 +124,7 @@
             <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
             {% endif %}
             </td>
-			<td>{{ sale.buisness_area}}</td>
+            <td>{{ sale.business_area}}</td>
             <td>{{ sale.status}}</td>
 
             <td>{% if sale.diversity_room %}
