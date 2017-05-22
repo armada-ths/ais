@@ -38,7 +38,7 @@ class Sale(models.Model):
     nova = models.BooleanField(default=False)
 
     # True if company has signed up
-    registration_status = models.BooleanField(default=False)
+    registration_status = models.CharField(max_length=30, default='not_registered')
 
     def __str__(self):
         return '%s at %s ' % (self.company.name, self.fair)
