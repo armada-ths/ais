@@ -48,6 +48,7 @@ def home(request, template_name='register/home.html'):
                         sale.diversity_room = form2.cleaned_data['diversity_room']
                         sale.green_room = form2.cleaned_data['green_room']
                         sale.events = form2.cleaned_data['events']
+                        sale.nova = form2.cleaned_data['nova']
                         sale.save()
 
                     r.post(settings.SALES_HOOK_URL,

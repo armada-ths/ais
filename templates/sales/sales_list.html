@@ -20,12 +20,15 @@
         <tr>
             <th>Company</th>
             <th>Responsible</th>
-            <th>Business Area</th>            
-			<th>Status</th>
-            <th>DR</th>
+            <th>Business Area</th>
+            <th>Status</th>
+            <!-- Diversity room, GReen Room, Events, Nova -->
+            <th>DR</th> 
             <th>GR</th>
             <th>E</th>
+            <th>Nova</th>
             <th>Registered</th>
+
             <th>Actions</th>
         </tr>
         </thead>
@@ -60,6 +63,7 @@
                 {% else %}
                     No
                 {% endif%}
+                <!-- Hidden. This is used when searching in search field -->
                 <span style="display: none;">
                     {% if sale.diversity_room %}
                             Diversity room 
@@ -70,9 +74,19 @@
                             {% if sale.events %}
                             Events
                             {% endif%}
+                            {% if sale.nova %}
+                            Nova
+                            {% endif%}
                 </span>
             </td>
 
+            <td>
+                {% if sale.nova %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
             <td>
                 {% if sale.company.name in signedup %}
                     Preliminary
@@ -102,11 +116,12 @@
         <tr>
             <th>Company</th>
             <th>Responsible</th>
-	        <th>Business Area</th>    
-			<th>Status</th>
+	          <th>Business Area</th>    
+			      <th>Status</th>
             <th>DR</th>
             <th>GR</th>
             <th>E</th>
+            <th>Nova</th>
             <th>Registered</th>
             <th>Actions</th>
         </tr>
@@ -144,6 +159,7 @@
                 {% else %}
                     No
                 {% endif%}
+                <!-- Hidden. This is used when searching in search field -->
                 <span style="display: none;">
                     {% if sale.diversity_room %}
                             Diversity room 
@@ -154,9 +170,19 @@
                             {% if sale.events %}
                             Events
                             {% endif%}
+                            {% if sale.nova %}
+                            Nova
+                            {% endif%}
                 </span>
             </td>
 
+            <td>
+                {% if sale.nova %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
             <td>
                 {% if sale.company.name in signedup %}
                     Preliminary
