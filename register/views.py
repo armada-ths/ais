@@ -134,7 +134,7 @@ def change_password(request, template_name='register/change_password.html'):
             update_session_auth_hash(request, form.user)
             return redirect('anmalan:home')
         else:
-            return redirect('/register/password/change')
+            return redirect('anmalan:change_password')
     else:
         form = PasswordChangeForm(user=request.user)
     return render(request, template_name, {'form':form})
