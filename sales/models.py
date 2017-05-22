@@ -45,6 +45,7 @@ class Sale(models.Model):
     diversity_room = models.BooleanField(default=False)
     green_room = models.BooleanField(default=False)
     events = models.BooleanField(default=False)
+    nova = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s at %s ' % (self.company.name, self.fair)

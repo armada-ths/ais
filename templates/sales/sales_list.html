@@ -20,12 +20,15 @@
         <tr>
             <th>Company</th>
             <th>Responsible</th>
-			<th>Buisness Area</th>            
-			<th>Status</th>
+			      <th>Buisness Area</th>            
+			      <th>Status</th>
+            <!-- Diversity room, GReen Room, Events, Nova -->
             <th>DR</th>
             <th>GR</th>
             <th>E</th>
+            <th>Nova</th>
             <th>Registered</th>
+
             <th>Actions</th>
         </tr>
         </thead>
@@ -41,7 +44,7 @@
             <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
             {% endif %}
             </td>
-			<td>{{ sale.buisness_area}}</td>
+			      <td>{{ sale.buisness_area}}</td>
             <td>{{ sale.status}}</td>
             <td>{% if sale.diversity_room %}
                     Yes
@@ -60,6 +63,7 @@
                 {% else %}
                     No
                 {% endif%}
+                <!-- Hidden. This is used when searching in search field -->
                 <span style="display: none;">
                     {% if sale.diversity_room %}
                             Diversity room 
@@ -70,9 +74,19 @@
                             {% if sale.events %}
                             Events
                             {% endif%}
+                            {% if sale.nova %}
+                            Nova
+                            {% endif%}
                 </span>
             </td>
 
+            <td>
+                {% if sale.nova %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
             <td>
                 {% if sale.company.name in signedup %}
                     Preliminary
@@ -102,11 +116,12 @@
         <tr>
             <th>Company</th>
             <th>Responsible</th>
-	        <th>Buisness Area</th>    
-			<th>Status</th>
+	          <th>Buisness Area</th>    
+			      <th>Status</th>
             <th>DR</th>
             <th>GR</th>
             <th>E</th>
+            <th>Nova</th>
             <th>Registered</th>
             <th>Actions</th>
         </tr>
@@ -124,7 +139,7 @@
             <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
             {% endif %}
             </td>
-			<td>{{ sale.buisness_area}}</td>
+			      <td>{{ sale.buisness_area}}</td>
             <td>{{ sale.status}}</td>
 
             <td>{% if sale.diversity_room %}
@@ -144,6 +159,7 @@
                 {% else %}
                     No
                 {% endif%}
+                <!-- Hidden. This is used when searching in search field -->
                 <span style="display: none;">
                     {% if sale.diversity_room %}
                             Diversity room 
@@ -154,9 +170,19 @@
                             {% if sale.events %}
                             Events
                             {% endif%}
+                            {% if sale.nova %}
+                            Nova
+                            {% endif%}
                 </span>
             </td>
 
+            <td>
+                {% if sale.nova %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
             <td>
                 {% if sale.company.name in signedup %}
                     Preliminary
