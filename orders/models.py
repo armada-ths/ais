@@ -14,8 +14,15 @@ class Product(models.Model):
         ordering = ['name']
         permissions = (('view_products', 'View products'),)
 
+	#The orders that come from accepted exhibitors
+    def confirmed_quantity(self):
+        return sum([order.amount * order.is_confirmed() for order in self.order_set.all()])
+
     def ordered_quantity(self):
         return sum([order.amount for order in self.order_set.all()])
+
+    def confirmed_revenue(self):
+        return self.confirmed_quantity() * self.price
 
     def revenue(self):
         return self.ordered_quantity() * self.price
@@ -33,6 +40,9 @@ class Order(models.Model):
 
     class Meta:
         ordering = ["product"]
+
+    def is_confirmed(self):
+        return self.exhibitor.status == 'accepted'
 
     def price(self):
         return self.product.price * self.amount
