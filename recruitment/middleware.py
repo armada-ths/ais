@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.utils.http import urlquote
+from django.core.urlresolvers import reverse
 
 
 class LoginRequiredMiddleware:
@@ -24,8 +25,12 @@ class LoginRequiredMiddleware:
         # PLACEHOLDER until proper authenitaction is in place
         path = request.path_info
         url_exceptions = ['/api/events/', '/api/exhibitors/', '/api/news/', '/api/partners/', '/api/organization/',
-                          '/api/banquet_placement/', '/api/status/', '/register/', '/register/signup', '/register/new_company']
-        if path in url_exceptions:
+                          '/api/banquet_placement/', '/api/status/', '/register/', '/register/signup', '/register/new_company',
+                          '/register/password_reset/',
+                          '/register/password_reset/done/']
+        # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
+        url_token_exception = '/logout/reset/'
+        if path in url_exceptions or path.startswith(url_token_exception, 0, len(url_token_exception)):
             return
         if not request.user.is_authenticated():
             if path != '/' and not 'login' in path:

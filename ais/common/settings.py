@@ -1,6 +1,6 @@
 """
 This is the settings file containing settings common to both the
-development and production environments. 
+development and production environments.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.8/topics/settings/
@@ -24,13 +24,13 @@ DEFAULT_TO_EMAIL = 'system@armada.nu'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
+    'root',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'root',
     'events',
     'companies',
     'fair',
@@ -103,4 +103,3 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
-
