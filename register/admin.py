@@ -4,8 +4,6 @@ import csv
 from django.http import HttpResponse
 from .models import SignupContract, SignupLog
 
-
-
 def export_signup_as_csv(modeladmin, request, queryset):
     response = HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename=exhibitors.csv'
@@ -30,6 +28,7 @@ def export_signup_as_csv(modeladmin, request, queryset):
 
     return response
 
+# Overrides admin register to add custom actions
 @admin.register(SignupLog)
 class SignupLogAdmin(admin.ModelAdmin):
     search_fields = ('company__name',)
@@ -39,4 +38,3 @@ class SignupLogAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(SignupContract)
-#admin.site.register(SignupLog)
