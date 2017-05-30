@@ -1,7 +1,7 @@
 from django.forms import ModelForm, Form, BooleanField
 from django.utils.translation import gettext_lazy as _
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.forms import ValidationError
 
@@ -21,7 +21,7 @@ class CompanyForm(ModelForm):
     class Meta:
         model = Company
         fields = '__all__'
-    
+
     def clean(self):
         super(CompanyForm, self).clean()
         name = self.cleaned_data.get("name")
@@ -59,7 +59,7 @@ class InterestForm(ModelForm):
         #help_texts = {
         #    "diversity_room": _("Tick this if you are interested in our diversity room concept"),
         #}
-    
+
 
 class CreateContactForm(ModelForm):
 
@@ -86,5 +86,3 @@ class UserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('password1','password2',)
-
-
