@@ -43,9 +43,11 @@
                         <li role="presentation"><a href="{% url 'event_list' fair.year %}">Events</a></li>{% endblock %}
                     {% block nav-recruitment %}
                         <li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>{% endblock %}
-                    {% block nav-news %}
-                        <!--<li role="presentation"><a href="{% url 'news' fair.year %}">News</a></li>{% endblock %}-->
-                    {% if perms.sales %}
+                    {% if perms.news %}
+                        {% block nav-news %}
+                            <li role="presentation"><a href="{% url 'news' fair.year %}">News</a></li>{% endblock %}
+                        {% if perms.sales %}
+                    {% endif %}
                     {% block nav-sales %}
                         <li role="presentation"><a href="{% url 'sales' fair.year %}">Sales</a></li>{% endblock %}
                     {% endif %}
