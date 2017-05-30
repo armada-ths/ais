@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.contrib.auth.views import login, logout, password_reset, password_reset_done
+from django.contrib.auth.views import login, logout, password_reset, password_reset_done, password_reset_confirm
 from . import views
 from .forms import LoginForm
 
@@ -29,11 +29,18 @@ urlpatterns = [
         password_reset,
         name='password_reset',
         kwargs={'template_name': 'register/reset_password.html',
-                'post_reset_redirect': 'anmalan:password_reset_done'}
+                'post_reset_redirect': 'anmalan:password_reset_done',
+                'email_template_name': 'register/reset_password_email.html'}
     ),
     url(r'^password_reset/done/$',
         password_reset_done,
         name='password_reset_done',
         kwargs={'template_name': 'register/reset_password_done.html'}
+    ),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
+        password_reset_confirm,
+        name='password_reset_confirm',
+        kwargs={'template_name': 'register/reset_password_confirm.html',
+                'post_reset_redirect': 'anmalan:login'}
     ),
 ]
