@@ -20,13 +20,13 @@
                 </tr>
             </thead>
             {% for product in product_category.products %}
-                    <tr>
-                    <td><a href="{% url 'product' fair.year product.pk %}">{{ product.name }}</a></td>
-                    <td>{{ product.price|intcomma }}</td>
-                    <td>{{ product.ordered_quantity|intcomma }}</td>
-                    <td>{{ product.revenue|intcomma }}</td>
-                    </tr>
-                {% endfor %}
+                <tr>
+                <td><a href="{% url 'product' fair.year product.pk %}">{{ product.name }}</a></td>
+                <td>{{ product.price|intcomma }}</td>
+                <td>{{ product.confirmed_quantity|intcomma }}</td>
+                <td>{{ product.confirmed_revenue|intcomma }}</td>
+                </tr>
+            {% endfor %}
 
             <tfoot>
             <tr>

@@ -21,6 +21,7 @@
             <th>Company</th>
             <th>Responsible</th>
             <th>Status</th>
+            <th>Business Area</th>
             <!-- Diversity room, GReen Room, Events, Nova -->
             <th>DR</th> 
             <th>GR</th> 
@@ -44,6 +45,7 @@
             {% endif %}
             </td>
             <td>{{ sale.status}}</td>
+            <td>{{ sale.business_area}}</td>
             <td>{% if sale.diversity_room %}
                     Yes
                 {% else %}
@@ -115,6 +117,7 @@
             <th>Company</th>
             <th>Responsible</th>
             <th>Status</th>
+            <th>Business Area</th>
             <th>DR</th>
             <th>GR</th>
             <th>E</th>
@@ -137,7 +140,7 @@
             {% endif %}
             </td>
             <td>{{ sale.status}}</td>
-
+            <td>{{ sale.business_area}}</td>
             <td>{% if sale.diversity_room %}
                     Yes
                 {% else %}
