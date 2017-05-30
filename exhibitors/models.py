@@ -21,6 +21,8 @@ class Exhibitor(models.Model):
     location = models.ForeignKey(Location, null=True, blank=True)
     fair_location = models.OneToOneField('locations.Location', blank=True, null=True)
     estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
+    about_text = models.TextField(blank=True)
+    facts_text = models.TextField(blank=True)
 
     statuses = [
         ('accepted', 'Accepted'),
@@ -34,12 +36,34 @@ class Exhibitor(models.Model):
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
     allergies = models.TextField(null=True, blank=True)
-    requests_for_stand_placement = models.CharField(max_length=200, blank=True)
-    heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
+
+    stand_placement_requests = [
+        ('mixed', 'Mixed with a diverse group of companies'),
+        ('same_industry', 'In connection with companies in the same industry/field'),
+    ]
+
+    requests_for_stand_placement = models.CharField(choices=stand_placement_requests,max_length=200, blank=True, null=True)
     other_information_about_the_stand = models.CharField(max_length=500, blank=True)
+    logo = models.ImageField(
+        upload_to=UploadToDirUUID('exhibitors', 'logo_original'),
+        blank=True,
+    )
+
+    exhibition_area_requests = [
+        ('kth_library', 'KTH Library'),
+        ('kth_entre', 'KTH Entré'),
+        ('nymble', 'Nymble'),
+    ]
+    requests_for_exhibition_area = models.CharField(choices=exhibition_area_requests,max_length=200, blank=True, null=True)
+
+    # Electrical Equipment
+    heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
+    number_of_outlets_needed = models.IntegerField(default=0)
+    total_power = models.CharField(max_length=500, blank=True)
 
     # Invoice
     invoice_reference = models.CharField(max_length=200, blank=True)
+    invoice_purchase_order_number = models.CharField(max_length=200, blank=True)
     invoice_reference_phone_number = models.CharField(max_length=200, blank=True)
     invoice_organisation_name = models.CharField(max_length=200, blank=True)
     invoice_address = models.CharField(max_length=200, blank=True)
@@ -50,9 +74,10 @@ class Exhibitor(models.Model):
 
     # Transport to fair
     transport_to_fair_types = [
-        ('external_transport', 'Yes, with an external delivery firm'),
-        ('arkad_transport', 'Yes, with transport from Arkad in Lund'),
-        ('self_transport', 'No, we will bring our goods ourselves'),
+        ('external_transport', 'Arranged with external delivery firm'),
+        ('arkad_transport', 'Transport from Arkad in Lund'),
+        ('self_transport_small', 'We bring our (only small) goods ourselves'),
+        ('self_transport_large', 'We bring our (large) goods ourselves'),
     ]
 
     transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
@@ -66,7 +91,7 @@ class Exhibitor(models.Model):
          'We use a third-party to build our stand who will transport our goods from the fair'),
         ('armada_transport', 'We use Armada Transport'),
         ('self_transport',
-         'We will arrange our own transportation immediately after the fair (note that there is limited access for larger transportation services as the fair closes and it may take some time before your equipment can be picked up)'),
+         'We only have small goods with us and our representatives will bring it with them when they leave the fair'),
     ]
 
     transport_from_fair_type = models.CharField(choices=transport_from_fair_types, null=True, blank=True,
@@ -83,8 +108,8 @@ class Exhibitor(models.Model):
     wants_information_about_events = models.BooleanField(default=False)
     wants_information_about_targeted_marketing = models.BooleanField(default=False)
     wants_information_about_osqledaren = models.BooleanField(default=False)
-
     manual_invoice = models.BooleanField(default=False)
+    interested_in_armada_transport = models.BooleanField(default=False)
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])

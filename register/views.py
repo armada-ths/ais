@@ -8,7 +8,7 @@ import json
 import requests as r
 
 from companies.models import Company, Contact
-from orders.models import Product, Order
+from orders.models import Product, Order, ProductType
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
@@ -138,12 +138,17 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
         else:
             company = contact.belongs_to
             # Redirect to home if company already is an exhibitor
-            if Exhibitor.objects.filter(company=company).exists():
+            """if Exhibitor.objects.filter(company=company).exists():
                 return redirect('anmalan:home')
-            form = ExhibitorForm(request.POST or None)
+            """
+            # Get products which requires an amount
+            banquet_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Banquet"))
+            lunch_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="AdditionalLunch"))
+
+            form = ExhibitorForm(request.POST or None, banquet = banquet_products, lunch = lunch_products)
             if form.is_valid():
-                # get selected products
-                products = form.cleaned_data['product_selection']
+                # get selected products. IMPORTANT: NEEDS TO BE BEFORE FORM.SAVE(commit=False)
+                products = form.cleaned_data['product_selection_rooms']
 
                 # Save values from form
                 exhibitor = form.save(commit=False)
@@ -156,16 +161,21 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 #exhibitor.status = 'complete_registration'
                 exhibitor.save()
 
-                # Create orders from selected products
+                # Create orders from selected products from a ProductMultiChoiceField
                 for product in products:
-                    # the productTuple has the id in the first index
                     order = Order.objects.create(
                         exhibitor=exhibitor,
                         product=product,
                         amount=1,
                     )
                     order.save()
-                # for loop end, redirect to home
+
+                # create orders from products that can be chosen in numbers
+                #for (banquetProduct, amount) in form.banquet_products():
+                    #create_order(request, banquetProduct, amount)
+                #for (lunchProduct, amount) in form.lunch_products():
+                    #create_order(request, lunchProduct, amount)
+
                 return redirect('anmalan:home')
 
     return render(request, template_name, {'form': form})

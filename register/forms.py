@@ -1,11 +1,12 @@
-from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError
+from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField
 from django.utils.translation import gettext_lazy as _
+from django.utils.html import mark_safe
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
 from fair.models import Fair
-from orders.models import Product, Order
+from orders.models import Product, Order, ProductType
 from sales.models import Sale
 from exhibitors.models import Exhibitor
 from companies.models import Company, Contact
@@ -91,11 +92,30 @@ class UserForm(UserCreationForm):
 
 
 class ExhibitorForm(ModelForm):
-    class ProductChoiceField(ModelMultipleChoiceField):
-        def label_from_instance(self, product):
-            return "%s (%s SEK)" % (product.name, product.price)
+    def __init__(self, *args, **kwargs):
+        # products that can be chosen with an amount
+        banquet = kwargs.pop('banquet')
+        lunch = kwargs.pop('lunch')
 
-    product_selection = ProductChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True)), required=False,widget=CheckboxSelectMultiple())
+        super(ExhibitorForm, self).__init__(*args, **kwargs)
+
+        # create form fields for the banquet and lunch products
+        for i, banq in enumerate(banquet):
+            self.fields['banquet_%s' % banq.name] = IntegerField()
+        for i, lun in enumerate(lunch):
+            self.fields['lunch_%s' % lun.name] = IntegerField()
+
+    class ProductMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            return mark_safe('%s<br/>%s' % (product.name, product.description))
+
+    # Products in the forms different tabs
+    product_selection_rooms = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Rooms")), required=False,widget=CheckboxSelectMultiple())
+    product_selection_events = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Events")), required=False,widget=CheckboxSelectMultiple())
+    product_selection_nova = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova")), required=False,widget=CheckboxSelectMultiple())
+    product_selection_additional_stand_area = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area")), required=False,widget=CheckboxSelectMultiple())
+    product_selection_additional_stand_height = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height")), required=False,widget=CheckboxSelectMultiple())
+    product_selection_additional_lunch_tickets = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Lunch Tickets")), required=False,widget=CheckboxSelectMultiple())
 
     class Meta:
         model = Exhibitor
@@ -104,3 +124,14 @@ class ExhibitorForm(ModelForm):
 
     def clean(self):
         super(ExhibitorForm, self).clean()
+
+    # Returns a generator/iterator with all banquet product field names and the chosen amount
+    def banquet_products(self):
+        for name, amount in self.cleaned_data.items():
+            if name.startswith('banquet_'):
+                yield (self.fields[name].label[index("_")+1:], amount)
+    # Returns a generator/iterator with all lunch product field names and the chosen amount
+    def lunch_products(self):
+        for name, amount in self.cleaned_data.items():
+            if name.startswith('lunch_'):
+                yield (self.fields[name].label[index("_")+1:], amount)
