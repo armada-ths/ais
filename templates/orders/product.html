@@ -21,20 +21,18 @@
                 </tr>
             </thead>
             {% for order in product.order_set.all %}
-				{% if order.is_confirmed %}
                     <tr>
                     <td><a href="{% url 'exhibitor' fair.year order.exhibitor.pk %}">{{ order.exhibitor }}</a></td>
                     <td>{{ order.amount }}</td>
                     <td>{{ order.price|intcomma }}</td>
                     </tr>
-				{% endif %}
-            {% endfor %}
+                {% endfor %}
 
             <tfoot>
             <tr>
                 <th>Total</th>
-                <th>{{ product.confirmed_quantity|intcomma }}</th>
-                <th>{{ product.confirmed_revenue|intcomma }}</th>
+                <th>{{ product.ordered_quantity|intcomma }}</th>
+                <th>{{ product.revenue|intcomma }}</th>
 
             </tr>
             </tfoot>
