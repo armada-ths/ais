@@ -142,10 +142,12 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 return redirect('anmalan:home')
             """
             # Get products which requires an amount
+
             banquet_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Banquet"))
             lunch_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="AdditionalLunch"))
+            event_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Events"))
 
-            form = ExhibitorForm(request.POST or None, banquet = banquet_products, lunch = lunch_products)
+            form = ExhibitorForm(request.POST or None, banquet = banquet_products, lunch = lunch_products, events = event_products, company = company, contact = contact)
             if form.is_valid():
                 # get selected products. IMPORTANT: NEEDS TO BE BEFORE FORM.SAVE(commit=False)
                 products = form.cleaned_data['product_selection_rooms']
@@ -175,6 +177,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     #create_order(request, banquetProduct, amount)
                 #for (lunchProduct, amount) in form.lunch_products():
                     #create_order(request, lunchProduct, amount)
+                #for (eventProduct, amount) in form.event_products():
+                    #create_order(request, eventProduct, amount)
 
                 return redirect('anmalan:home')
 

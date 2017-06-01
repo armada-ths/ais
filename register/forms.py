@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField
+from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe
 
@@ -96,22 +96,69 @@ class ExhibitorForm(ModelForm):
         # products that can be chosen with an amount
         banquet = kwargs.pop('banquet')
         lunch = kwargs.pop('lunch')
+        events = kwargs.pop('events')
+
+        # company and contact for last tab
+        company = kwargs.pop('company')
+        contact = kwargs.pop('contact')
 
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
         # create form fields for the banquet and lunch products
-        for i, banq in enumerate(banquet):
-            self.fields['banquet_%s' % banq.name] = IntegerField()
-        for i, lun in enumerate(lunch):
-            self.fields['lunch_%s' % lun.name] = IntegerField()
+        self.dynamic_field_as_int_field(banquet, "banquet")
+        self.dynamic_field_as_int_field(lunch, "lunch")
+        self.dynamic_field_as_int_field(events, "event")
 
+        # Create fields for save and confirm tab
+        self.init_company_fields(company)
+        self.init_contact_fields(contact)
+
+    # Fields for company in save and confirm tab
+    def init_company_fields(self, company):
+        self.fields['name_of_organisation'] = CharField(initial=company.name)
+        self.fields['organisation_identification_number'] = CharField(initial=company.organisation_number)
+        organisation_types = [
+            ('company', 'Company'),
+            ('county_council', 'County/County council'),
+            ('government_agency', 'Government agency'),
+            ('non_profit_organisation', 'Non-profit organisation'),
+            ('union', 'Union'),
+        ]
+        self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type)
+        self.fields['address_street'] = CharField(initial=company.address_street)
+        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code)
+        self.fields['address_city'] = CharField(initial=company.address_city)
+        self.fields['address_country'] = CharField(initial=company.address_country)
+        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information)
+        self.fields['website'] = CharField(initial=company.website)
+
+
+
+    # Fields for contact in save and confirm tab
+    def init_contact_fields(self, contact):
+        self.fields['contact_name'] = CharField(initial=contact.name)
+        self.fields['work_phone'] = CharField(initial=contact.work_phone)
+        self.fields['cell_phone'] = CharField(initial=contact.cell_phone)
+        self.fields['phone_switchboard'] = CharField(initial=contact.phone_switchboard)
+        self.fields['alternative_email'] = CharField(initial=contact.alternative_email)
+
+    # Takes some objects and makes an integerfield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template
+    def dynamic_field_as_int_field(self, objects, prefix):
+        for i, object in enumerate(objects):
+            self.fields['%s_%s' % (prefix, object.name)] = IntegerField(initial=0)
+            self.fields['%s_%s' % (prefix, object.name)].label = object.name
+            self.fields['%s_%s' % (prefix, object.name)].help_text = prefix
+
+    # A modelmultiplechoicefield with a customized label for each instance
     class ProductMultiChoiceField(ModelMultipleChoiceField):
         def label_from_instance(self, product):
             return mark_safe('%s<br/>%s' % (product.name, product.description))
 
     # Products in the forms different tabs
     product_selection_rooms = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Rooms")), required=False,widget=CheckboxSelectMultiple())
-    product_selection_events = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Events")), required=False,widget=CheckboxSelectMultiple())
     product_selection_nova = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova")), required=False,widget=CheckboxSelectMultiple())
     product_selection_additional_stand_area = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area")), required=False,widget=CheckboxSelectMultiple())
     product_selection_additional_stand_height = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height")), required=False,widget=CheckboxSelectMultiple())
@@ -125,13 +172,18 @@ class ExhibitorForm(ModelForm):
     def clean(self):
         super(ExhibitorForm, self).clean()
 
-    # Returns a generator/iterator with all banquet product field names and the chosen amount
+    # Returns a generator/iterator with all banquet product fields
     def banquet_products(self):
         for name, amount in self.cleaned_data.items():
             if name.startswith('banquet_'):
                 yield (self.fields[name].label[index("_")+1:], amount)
-    # Returns a generator/iterator with all lunch product field names and the chosen amount
+    # Returns a generator/iterator with all lunch product fields
     def lunch_products(self):
         for name, amount in self.cleaned_data.items():
             if name.startswith('lunch_'):
+                yield (self.fields[name].label[index("_")+1:], amount)
+    # Returns a generator/iterator with all event product fields
+    def event_products(self):
+        for name, amount in self.cleaned_data.items():
+            if name.startswith('event_'):
                 yield (self.fields[name].label[index("_")+1:], amount)

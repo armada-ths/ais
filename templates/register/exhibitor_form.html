@@ -103,7 +103,11 @@
           </div>
           <div class="tab-pane fade" id="events">
             <h2>Events</h2>
-            {{ form.product_selection_events }}
+            {% for field in form %}
+              {% if 'event' in field.help_text %}
+                <li>{{ field.label }} <br /> {{ field }}</li>
+              {% endif %}
+            {% endfor %}
           </div>
           <div class="tab-pane fade" id="banquet">
             <h2>Banquet</h2>
@@ -119,7 +123,7 @@
               <div class="col-md-6">
                 <ul>
                   {% for field in form %}
-                    {% if 'Banquet ' in field.label %}
+                    {% if 'banquet' in field.help_text %}
                       <li>{{ field.label }} <br /> {{ field }}</li>
                     {% endif %}
                   {% endfor %}
@@ -177,7 +181,7 @@
                     <h5>ADDITIONAL LUNCH TICKETS</h5>
                     <p>Please note that 8 tickets (4 per day) is already included in the base kit</p>
                     {% for field in form %}
-                      {% if 'Lunch ' in field.label %}
+                      {% if 'lunch' in field.help_text %}
                         <li>{{ field.label }} <br /> {{ field }}</li>
                       {% endif %}
                     {% endfor %}
@@ -297,50 +301,39 @@
             <h3>Organisation</h3>
             <p>The information below is copied from your profile. Make sure that the information is correct for this year’s application.</p>
             <h4>* Name of organisation:</h5>
-            org field
+            {{ form.name_of_organisation }}
             <h5>*Organisation identification number:</h5>
-            org id num
-
+            {{ form.organisation_identification_number }}
             <h5>* Type of organisation:</h5>
-            Company
-            County/County council
-            Government agency
-            Non­profit organisation
-            Union
-
-            <h5>* Organisation address:</h5>
-            Street
-            Zipcode
-            City
-            Country
-            Additional address information
-
+            {{ form.type_of_organisation }}
+            <h5>* Organisation Street Address:</h5>
+            {{ form.address_street }}
             <h5>* Zip/Postal code:</h5>
-
+            {{ form.address_zip_code }}
             <h5>* City:</h5>
-
+            {{ form.address_city }}
             <h5>* Country:</h5>
-
+            {{ form.address_country }}
             <h5>Additional address information:</h5>
-
+            {{ form.additional_address_information }}
             <h5>Webpage:</h5>
+            {{ form.website }}
 
             <h3>Contact</h3>
             <p>Please enter contact information for the person we can contact if there are any questions/issues with your registration or your account.</p>
 
-            <h5>* First name:</h5>
-
-            <h5>* Last name:</h5>
-
+            <h5>* Name:</h5>
+            {{ form.contact_name }}
             <h5>* Phone number:</h5>
-
+            {{ form.work_phone }}
             <h5>Cell phone number:</h5>
-
+            {{ form.cell_phone }}
             <h5>Phone switchboard:</h5>
-
+            {{ form.phone_switchboard }}
             <h5>* E­mail:</h5>
-
+            {{ form.email }}
             <h5>Alternative e­mail address:</h5>
+            {{ form.alternative_email }}
 
             <h3>INVOICE INFORMATION</h3>
             <p>Please enter your invoice information for THS Armada 2017.</p>
