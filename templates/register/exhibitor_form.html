@@ -331,7 +331,7 @@
             <h5>Phone switchboard:</h5>
             {{ form.phone_switchboard }}
             <h5>* E­mail:</h5>
-            {{ form.email }}
+            {{ form.contact_email }}
             <h5>Alternative e­mail address:</h5>
             {{ form.alternative_email }}
 
@@ -375,7 +375,8 @@
         <!-- Form next, back and save btn, and errors -->
         <div>
           <a class="btn btn-primary btnBack">Back</a>
-          <input type="submit" value="Submit">
+          <input type="submit" name="submit" value="Submit">
+          <input type="submit" name="save" value="Save">
           <a class="btn btn-primary btnNext">Next</a>
           <div>{{ form.non_field_errors }}</div>
         </div>

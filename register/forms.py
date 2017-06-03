@@ -140,6 +140,7 @@ class ExhibitorForm(ModelForm):
         self.fields['work_phone'] = CharField(initial=contact.work_phone)
         self.fields['cell_phone'] = CharField(initial=contact.cell_phone)
         self.fields['phone_switchboard'] = CharField(initial=contact.phone_switchboard)
+        self.fields['contact_email'] = CharField(initial=contact.email)
         self.fields['alternative_email'] = CharField(initial=contact.alternative_email)
 
     # Takes some objects and makes an integerfield for each one.
@@ -162,15 +163,11 @@ class ExhibitorForm(ModelForm):
     product_selection_nova = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova")), required=False,widget=CheckboxSelectMultiple())
     product_selection_additional_stand_area = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area")), required=False,widget=CheckboxSelectMultiple())
     product_selection_additional_stand_height = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height")), required=False,widget=CheckboxSelectMultiple())
-    product_selection_additional_lunch_tickets = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Lunch Tickets")), required=False,widget=CheckboxSelectMultiple())
 
     class Meta:
         model = Exhibitor
         fields = '__all__'
         exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
-
-    def clean(self):
-        super(ExhibitorForm, self).clean()
 
     # Returns a generator/iterator with all banquet product fields
     def banquet_products(self):
@@ -187,3 +184,10 @@ class ExhibitorForm(ModelForm):
         for name, amount in self.cleaned_data.items():
             if name.startswith('event_'):
                 yield (self.fields[name].label[index("_")+1:], amount)
+
+    def clean(self):
+        super(ExhibitorForm, self).clean()
+        if 'submit' in self.data:
+            print("ö")
+        elif 'save' in self.data:
+            print('a')

@@ -133,52 +133,97 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
     currentFair = Fair.objects.get(current = True)
     if request.user.is_authenticated():
         contact = Contact.objects.get(user=request.user)
+        # make sure user is connected to a 'Contact'
         if contact is None:
             return redirect('anmalan:logout')
         else:
+            # make sure a 'Company' is connected to contact
             company = contact.belongs_to
-            # Redirect to home if company already is an exhibitor
-            """if Exhibitor.objects.filter(company=company).exists():
-                return redirect('anmalan:home')
-            """
-            # Get products which requires an amount
+            if company is None:
+                return redirect('anmalan:logout')
 
+            # Get products which requires an amount and put them into the Exhibitor form
             banquet_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Banquet"))
             lunch_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="AdditionalLunch"))
             event_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Events"))
 
             form = ExhibitorForm(request.POST or None, banquet = banquet_products, lunch = lunch_products, events = event_products, company = company, contact = contact)
-            if form.is_valid():
-                # get selected products. IMPORTANT: NEEDS TO BE BEFORE FORM.SAVE(commit=False)
-                products = form.cleaned_data['product_selection_rooms']
 
-                # Save values from form
+            if form.is_valid():
+                # get selected products. IMPORTANT: NEEDS TO BE BEFORE form.save(commit=False)
+                product_selection_rooms = form.cleaned_data['product_selection_rooms']
+                product_selection_nova = form.cleaned_data['product_selection_nova']
+                product_selection_additional_stand_area = form.cleaned_data['product_selection_additional_stand_area']
+                product_selection_additional_stand_height = form.cleaned_data['product_selection_additional_stand_height']
+
+                # Save exhibitor model values from form into exhibitor variable
                 exhibitor = form.save(commit=False)
 
-                # Save values that a exhibitor should not choose
-                # by themselves
-                exhibitor.contact = contact
+                # Update Company fields
+                updatedCompany = Company.objects.get(pk=company.pk)
+                updatedCompany.organisation_type = form.cleaned_data['type_of_organisation']
+                updatedCompany.address_street = form.cleaned_data['address_street']
+                updatedCompany.address_zip_code = form.cleaned_data['address_zip_code']
+                updatedCompany.address_city = form.cleaned_data['address_city']
+                updatedCompany.address_country = form.cleaned_data['address_country']
+                updatedCompany.additional_address_information = form.cleaned_data['additional_address_information']
+                updatedCompany.website = form.cleaned_data['website']
+                updatedCompany.save()
+                exhibitor.company = updatedCompany
+
+                # Update Contact fields
+
+                updatedContact = Contact.objects.get(pk=contact.pk)
+                updatedContact.name = form.cleaned_data['contact_name']
+                updatedContact.work_phone = form.cleaned_data['work_phone']
+                updatedContact.cell_phone = form.cleaned_data['cell_phone']
+                updatedContact.phone_switchboard = form.cleaned_data['phone_switchboard']
+                updatedContact.email = form.cleaned_data['contact_email']
+                updatedContact.alternative_email = form.cleaned_data['alternative_email']
+                updatedContact.save()
+                exhibitor.contact = updatedContact
+
+                # other exhibitor fields that you do not choose in the form
                 exhibitor.fair = currentFair
-                exhibitor.company = company
-                #exhibitor.status = 'complete_registration'
-                exhibitor.save()
 
-                # Create orders from selected products from a ProductMultiChoiceField
-                for product in products:
-                    order = Order.objects.create(
-                        exhibitor=exhibitor,
-                        product=product,
-                        amount=1,
-                    )
-                    order.save()
+                # Create or update exhibitor
+                try:
+                    exhibitor.pk = Exhibitor.objects.get(company=exhibitor.company).pk
+                    exhibitor.save()
+                except Exhibitor.DoesNotExist:
+                    exhibitor.save()
 
-                # create orders from products that can be chosen in numbers
-                #for (banquetProduct, amount) in form.banquet_products():
-                    #create_order(request, banquetProduct, amount)
-                #for (lunchProduct, amount) in form.lunch_products():
-                    #create_order(request, lunchProduct, amount)
-                #for (eventProduct, amount) in form.event_products():
-                    #create_order(request, eventProduct, amount)
+                # create or update orders to the current exhibitor from products
+                def create_or_update_order(product, amount):
+                        try:
+                            order = Order.objects.get(exhibitor=exhibitor)
+                            order.amount = amount
+                            order.save()
+                        except Order.DoesNotExist:
+                            Order.objects.create(
+                                exhibitor=exhibitor,
+                                product=product,
+                                amount=amount,
+                            )
+                # Remove existing orders that is not checked anymore or has the amount 0
+
+                # Create or update orders from the checkbox products (ProductMultiChoiceField)
+                """for product in product_selection_rooms:
+                    create_or_update_order(product, 1)
+                for product in product_selection_nova:
+                    create_or_update_order(product, 1)
+                for product in product_selection_additional_stand_area:
+                    create_or_update_order(product, 1)
+                for product in product_selection_additional_stand_height:
+                    create_or_update_order(product, 1)"""
+
+                # Create or update orders from products that can be chosen in numbers
+                """for (banquetProduct, amount) in form.banquet_products():
+                    create_or_update_order(banquetProduct, amount, exhibitor)
+                for (lunchProduct, amount) in form.lunch_products():
+                    create_or_update_order(lunchProduct, amount, exhibitor)
+                for (eventProduct, amount) in form.event_products():
+                    create_or_update_order(eventProduct, amount, exhibitor)"""
 
                 return redirect('anmalan:home')
 
