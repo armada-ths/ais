@@ -105,9 +105,9 @@ class ExhibitorForm(ModelForm):
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
         # create form fields for the banquet and lunch products
-        self.dynamic_field_as_int_field(banquet, "banquet")
-        self.dynamic_field_as_int_field(lunch, "lunch")
-        self.dynamic_field_as_int_field(events, "event")
+        self.dynamic_field_as_int_field(banquet, "banquet_")
+        self.dynamic_field_as_int_field(lunch, "lunch_")
+        self.dynamic_field_as_int_field(events, "event_")
 
         # Create fields for save and confirm tab
         self.init_company_fields(company)
@@ -143,15 +143,21 @@ class ExhibitorForm(ModelForm):
         self.fields['contact_email'] = CharField(initial=contact.email)
         self.fields['alternative_email'] = CharField(initial=contact.alternative_email)
 
-    # Takes some objects and makes an integerfield for each one.
+    class ProductIntegerField(IntegerField):
+        def __init__(self, object, *args, **kwargs):
+            IntegerField.__init__(self,*args, **kwargs)
+            self.object = object
+
+
+    # Takes some objects and makes a productintegerfield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
     # The field label will the object's name and the help_text its prefix
     # to help you find it in the template
     def dynamic_field_as_int_field(self, objects, prefix):
         for i, object in enumerate(objects):
-            self.fields['%s_%s' % (prefix, object.name)] = IntegerField(initial=0)
-            self.fields['%s_%s' % (prefix, object.name)].label = object.name
-            self.fields['%s_%s' % (prefix, object.name)].help_text = prefix
+            self.fields['%s%s' % (prefix, object.name)] = self.ProductIntegerField(object, initial=0, min_value=0)
+            self.fields['%s%s' % (prefix, object.name)].label = object.name
+            self.fields['%s%s' % (prefix, object.name)].help_text = prefix
 
     # A modelmultiplechoicefield with a customized label for each instance
     class ProductMultiChoiceField(ModelMultipleChoiceField):
@@ -169,21 +175,13 @@ class ExhibitorForm(ModelForm):
         fields = '__all__'
         exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
 
-    # Returns a generator/iterator with all banquet product fields
-    def banquet_products(self):
+    # Returns a generator/iterator with all product fields where you choose an amount.
+    # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.
+    # Make sure they are the same as the ones in the form's constructor!
+    def amount_products(self, prefix):
         for name, amount in self.cleaned_data.items():
-            if name.startswith('banquet_'):
-                yield (self.fields[name].label[index("_")+1:], amount)
-    # Returns a generator/iterator with all lunch product fields
-    def lunch_products(self):
-        for name, amount in self.cleaned_data.items():
-            if name.startswith('lunch_'):
-                yield (self.fields[name].label[index("_")+1:], amount)
-    # Returns a generator/iterator with all event product fields
-    def event_products(self):
-        for name, amount in self.cleaned_data.items():
-            if name.startswith('event_'):
-                yield (self.fields[name].label[index("_")+1:], amount)
+            if name.startswith(prefix) and amount > 0:
+                yield(self.fields[name].object, amount)
 
     def clean(self):
         super(ExhibitorForm, self).clean()

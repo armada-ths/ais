@@ -172,7 +172,6 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 exhibitor.company = updatedCompany
 
                 # Update Contact fields
-
                 updatedContact = Contact.objects.get(pk=contact.pk)
                 updatedContact.name = form.cleaned_data['contact_name']
                 updatedContact.work_phone = form.cleaned_data['work_phone']
@@ -195,12 +194,13 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # create or update orders to the current exhibitor from products
                 def create_or_update_order(product, amount):
+                        order = None
                         try:
-                            order = Order.objects.get(exhibitor=exhibitor)
+                            order = Order.objects.get(product=product,exhibitor=exhibitor)
                             order.amount = amount
                             order.save()
                         except Order.DoesNotExist:
-                            Order.objects.create(
+                            order = Order.objects.create(
                                 exhibitor=exhibitor,
                                 product=product,
                                 amount=amount,
@@ -208,22 +208,24 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 # Remove existing orders that is not checked anymore or has the amount 0
 
                 # Create or update orders from the checkbox products (ProductMultiChoiceField)
-                """for product in product_selection_rooms:
+                for product in product_selection_rooms:
                     create_or_update_order(product, 1)
                 for product in product_selection_nova:
                     create_or_update_order(product, 1)
                 for product in product_selection_additional_stand_area:
                     create_or_update_order(product, 1)
                 for product in product_selection_additional_stand_height:
-                    create_or_update_order(product, 1)"""
+                    create_or_update_order(product, 1)
+
+
 
                 # Create or update orders from products that can be chosen in numbers
-                """for (banquetProduct, amount) in form.banquet_products():
-                    create_or_update_order(banquetProduct, amount, exhibitor)
-                for (lunchProduct, amount) in form.lunch_products():
-                    create_or_update_order(lunchProduct, amount, exhibitor)
-                for (eventProduct, amount) in form.event_products():
-                    create_or_update_order(eventProduct, amount, exhibitor)"""
+                for (banquetProduct, amount) in form.amount_products('banquet_'):
+                    create_or_update_order(banquetProduct, amount)
+                for (lunchProduct, amount) in form.amount_products('lunch_'):
+                    create_or_update_order(lunchProduct, amount)
+                for (eventProduct, amount) in form.amount_products('event_'):
+                    create_or_update_order(eventProduct, amount)
 
                 return redirect('anmalan:home')
 
