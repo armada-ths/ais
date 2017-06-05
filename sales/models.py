@@ -8,6 +8,15 @@ import datetime
 import os
 
 
+#An 'Area of Business' model to be used in Sales
+class BusinessArea(models.Model):
+	
+	name = models.CharField(max_length=200)
+	
+	def __str__(self):
+		return '%s' % (self.name)
+
+
 class Sale(models.Model):
 
     STATUS = (
@@ -30,6 +39,7 @@ class Sale(models.Model):
     fair = models.ForeignKey(Fair, null=True, default=current_fair)
     company = models.ForeignKey('companies.Company')
     responsible = models.ForeignKey(User, null=True, default=None, blank=True)
+    business_area = models.ForeignKey(BusinessArea, null=True, blank=True)
 
     status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
     diversity_room = models.BooleanField(default=False)
