@@ -27,8 +27,8 @@
             <th>E</th>
             <th>Nova</th>
             <th>Registered</th>
-
             <th>Actions</th>
+            <th>Contact by</th>
         </tr>
         </thead>
         {% for sale in my_sales %}
@@ -100,6 +100,11 @@
                 <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
             </td>
         <!--{% endif %}-->
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
@@ -121,6 +126,7 @@
             <th>Nova</th>
             <th>Registered</th>
             <th>Actions</th>
+            <th>Contact by</th>
         </tr>
        </thead>
         {% for sale in sales %}
@@ -194,6 +200,11 @@
                 <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
             </td>
 	    <!--{% endif %}-->
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>

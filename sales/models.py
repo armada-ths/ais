@@ -37,6 +37,8 @@ class Sale(models.Model):
     events = models.BooleanField(default=False)
     nova = models.BooleanField(default=False)
 
+    contact_by_date = models.DateField(blank = True, null=True)
+
     def __str__(self):
         return '%s at %s ' % (self.company.name, self.fair)
 
