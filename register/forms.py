@@ -132,7 +132,10 @@ class ExhibitorForm(ModelForm):
         self.fields['additional_address_information'] = CharField(initial=company.additional_address_information)
         self.fields['website'] = CharField(initial=company.website)
 
-
+    class Meta:
+        model = Exhibitor
+        fields = '__all__'
+        exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
 
     # Fields for contact in save and confirm tab
     def init_contact_fields(self, contact):
@@ -169,11 +172,6 @@ class ExhibitorForm(ModelForm):
     product_selection_nova = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova")), required=False,widget=CheckboxSelectMultiple())
     product_selection_additional_stand_area = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area")), required=False,widget=CheckboxSelectMultiple())
     product_selection_additional_stand_height = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height")), required=False,widget=CheckboxSelectMultiple())
-
-    class Meta:
-        model = Exhibitor
-        fields = '__all__'
-        exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
 
     # Returns a generator/iterator with all product fields where you choose an amount.
     # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.

@@ -147,7 +147,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             lunch_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="AdditionalLunch"))
             event_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Events"))
 
-            form = ExhibitorForm(request.POST or None, banquet = banquet_products, lunch = lunch_products, events = event_products, company = company, contact = contact)
+            form = ExhibitorForm(request.POST or None, instance = Exhibitor.objects.get(company=company), banquet = banquet_products, lunch = lunch_products, events = event_products, company = company, contact = contact)
 
             if form.is_valid():
                 # get selected products. IMPORTANT: NEEDS TO BE BEFORE form.save(commit=False)
