@@ -180,10 +180,12 @@ class ExhibitorForm(ModelForm):
         for name, amount in self.cleaned_data.items():
             if name.startswith(prefix) and amount > 0:
                 yield(self.fields[name].object, amount)
+    
+    def save_or_submit(self):
+        if 'submit' in self.data:
+            return 'submit'
+        elif 'save' in self.data:
+            return 'save'
 
     def clean(self):
         super(ExhibitorForm, self).clean()
-        if 'submit' in self.data:
-            print("ö")
-        elif 'save' in self.data:
-            print('a')

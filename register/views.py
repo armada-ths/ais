@@ -227,6 +227,11 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 for (eventProduct, amount) in form.amount_products('event_'):
                     create_or_update_order(eventProduct, amount)
 
-                return redirect('anmalan:home')
+                # Everything is done!
+                # Do nothing if form is saved, otherwise redirect and send email
+                save_or_submit = form.save_or_submit()
+                if 'submit' in save_or_submit:
+                    # PUT EMAIL STUFF HERE
+                    return redirect('anmalan:home')
 
     return render(request, template_name, {'form': form})
