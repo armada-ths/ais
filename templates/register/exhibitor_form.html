@@ -111,7 +111,8 @@
                   <div>
                     <div class="cr-event-left cr-event-description">
                       <p>Aspernatur voluptas et ea suscipit reprehenderit. Voluptas quam fugiat reiciendis nostrum. Dolor nobis numquam aut voluptatem nam aspernatur vel dignissimos.
-Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. Dolorem voluptates voluptas ab accusamus provident.</p> 
+Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. Dolorem voluptates voluptas ab accusamus provident.
+</p> 
                     </div>
                     <div class="cr-event-right cr-event-input">
                       {{ field }}
@@ -173,70 +174,89 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
             </div>
           </div>
           <div class="tab-pane fade" id="additional-services">
-            <h2>Additional Services</h2>
-            <div class="row">
+            <!--<h2>Additional Services</h2>-->
+            <div class="row cr-additional-services">
               <div class="col-md-7">
                 <div class="row">
                   <div class="col-md-6">
-                    <h5>ADDITIONAL STAND AREA</h5>
+                    <div class="cr-additional-container">
+                    <h3>ADDITIONAL STAND <span class="h-red">AREA</span></h3>
                     <p>Six square meters of stand area is included in the base kit. You can choose to add additional area, please note that we cannot guarantee that we will be able to fulfill your request.</p>
                     <p>For the base kit area (2x3 meters) we recommend you to have a maximum of five people in the stand to represent your organisation.</p>
                     <p>2x3 meters (included)</p>
                     {{ form.product_selection_additional_stand_area }}
+                    </div>
                   </div>
                   <div class="col-md-6">
-                    <h5>ADDITIONAL STAND HEIGHT</h5>
-                    <p>Height 0 - 2,30 included</p>
-                    {{ form.product_selection_additional_stand_height }}
+                    <div class="cr-additional-container">
+                      <h3>ADDITIONAL LUNCH TICKETS</h3>
+                      <p>Please note that 8 tickets (4 per day) is already included in the base kit</p>
+                      {% for field in form %}
+                        {% if 'lunch' in field.help_text %}
+                          <div>{{ field.label }} <br /> {{ field }}</div>
+                        {% endif %}
+                      {% endfor %}
+                      {{form.allergies.label}} <br />
+                      {{ form.allergies }}
+                    </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-6">
-                    <h5>ADDITIONAL LUNCH TICKETS</h5>
-                    <p>Please note that 8 tickets (4 per day) is already included in the base kit</p>
-                    {% for field in form %}
-                      {% if 'lunch' in field.help_text %}
-                        <li>{{ field.label }} <br /> {{ field }}</li>
-                      {% endif %}
-                    {% endfor %}
-                    {{form.allergies.label}} <br />
-                    {{ form.allergies }}
+                    <div class="cr-additional-container">
+                      <h3>ADDITIONAL STAND <span class="h-red">HEIGHT</span></h3>
+                      <p>Height 0 - 2,30 included</p>
+                      {{ form.product_selection_additional_stand_height }}
+                    </div>
                   </div>
                   <div class="col-md-6">
-                    <h5>Checkboxes</h5>
-                    {{ form.wants_information_about_events.label }} <br /> {{ form.wants_information_about_events }} <br />
-                    {{ form.wants_information_about_targeted_marketing.label }} <br /> {{ form.wants_information_about_targeted_marketing }} <br />
-                    {{ form.manual_invoice.label }} <br /> {{ form.manual_invoice }}
+                    <div class="cr-additional-container">
+                      <h3>OTHER</h3>
+                      <h4>SEND ME ... </h4>
+                      <div class="cr-additional-checkboxes">
+                        {{ form.wants_information_about_events }}
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_events">{{ form.wants_information_about_events.label }}</label>  
+
+                        {{ form.wants_information_about_targeted_marketing }}
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_targeted_marketing">{{ form.wants_information_about_targeted_marketing.label }}</label> 
+
+                        {{ form.manual_invoice }}
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_manual_invoice">{{ form.manual_invoice.label }}</label> 
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="col-md-5">
-                <h5>ELECTRIC OUTLETS (Included)</h5>
-                <p>
-                  Estimate your need of total continuous power requirement during the fair. <br />
-                  If possible, please read actual power consumption on all the equipment you will use and sum it up.
-                </p>
-                <p>Typical power requirements of commonly used devices:</p>
-                <ul>
-                  <li><i>Mobile phone/Tablet charger  ~ 12W</i></li>
-                  <li><i>Laptop charger ~ 80W</i></li>
-                  <li><i>PC (for demoing VR or similar demanding applications) ~ 500-1200W</i></li>
-                  <li><i>TV-Screen ~ 100W</i></li>
-                  <li><i>Stand spotlight (Halogen) ~ 200W</i></li>
-                  <li><i>Stand spotlight (LED) ~ 20W</i></li>
-                </ul>
-                <br />
-                {{form.total_power.label}}
-                <br />
-                {{form.total_power}}
-                <br />
-                {{form.number_of_outlets_needed.label}}
-                <br />
-                {{form.number_of_outlets_needed}}
-                <br />
-                {{ form.heavy_duty_electric_equipment.label }}
-                <br />
-                {{ form.heavy_duty_electric_equipment }}
+                <div class="cr-additional-container">
+                  <h3>ELECTRIC OUTLETS (Included)</h3>
+                  <p>
+                    Estimate your need of total continuous power requirement during the fair. If possible, please read actual power consumption on all the equipment you will use and sum it up.
+                  </p>
+                  <h4>Typical power requirements of commonly used devices:</h4>
+                  <ul>
+                    <li>Mobile phone/Tablet charger  ~ 12W</li>
+                    <li>Laptop charger ~ 80W</li>
+                    <li>PC (for demoing VR or similar demanding applications) ~ 500-1200W</li>
+                    <li>TV-Screen ~ 100W</li>
+                    <li>Stand spotlight (Halogen) ~ 200W</li>
+                    <li>Stand spotlight (LED) ~ 20W</li>
+                  </ul>
+                  <ul class="cr-additional-electrical">
+                    <li>
+                      <label class="pretty-label">{{form.total_power.label}}:</label>
+                      {{form.total_power}}
+                    </li>
+                    <li>
+                      <label class="pretty-label">{{form.number_of_outlets_needed.label}}:</label>
+                      {{form.number_of_outlets_needed}}
+                    </li>
+                    <li>
+                      <label class="pretty-label">{{ form.heavy_duty_electric_equipment.label }}:</label>
+                      {{ form.heavy_duty_electric_equipment }}
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

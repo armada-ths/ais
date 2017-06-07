@@ -113,7 +113,7 @@ li.nav {
 
 
 /*
-*	TAB: EVENTS;
+*	TAB: EVENTS; *********************************
 */
 .cr-event-container {
 	background: #353535;
@@ -153,3 +153,69 @@ li.nav {
     border-radius: 3px;
 }
 
+/*
+*	ADDITIONAL SERVICES *********************************
+*/
+.cr-additional-services .col-md-6,
+.cr-additional-services .col-md-7,
+.cr-additional-services .col-md-5 {
+
+}
+.cr-additional-container {
+	background: #353535;
+    border-radius: 5px;
+    padding: 15px;
+}
+.cr-additional-container h3 {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 2em;
+	color: #00d791;
+	text-transform: uppercase;
+	margin-top: 0;
+}
+h3 span.h-red { color :#ea2c49; }
+.cr-additional-container h4 {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 1.5em;
+}
+.cr-additional-container label { font-weight: normal; }
+.cr-additional-container .pretty-label {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 18px;
+    font-weight: normal;
+}
+.btn-armada-checkbox, 
+.btn-armada-checkbox:hover {
+	border: 2px solid #00d791;
+	background: transparent;
+	color: #fff;
+}
+.btn-armada-checkbox {
+	margin: 5px;
+}
+.cr-additional-checkboxes input[type=checkbox]:checked + .btn-armada-checkbox {
+	background: #00d791;
+	color: #353535;
+}
+.cr-additional-checkboxes input[type=checkbox] { display: none; }
+
+.cr-additional-electrical {
+	list-style: none;
+	padding: 15px;
+	border: 2px solid #00d791;
+	border-radius: 5px;
+}
+.cr-additional-electrical li {
+	margin-top: 5px;
+}
+.cr-additional-electrical input {
+	border-radius: 5px;
+	color: #000;
+	margin-left: 10px;
+	border: none;
+    padding: 2px 5px;
+}
+
+ul#id_product_selection_additional_stand_height {
+	list-style: none;
+}
