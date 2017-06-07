@@ -8,16 +8,17 @@
       <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
 
       <!-- Styling -->
-      <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
       <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
       <link href="{% static 'bootstrap/css/bootstrap-theme.css' %}" rel="stylesheet">
+      <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
+      <link href="{% static 'test.css' %}" rel="stylesheet" media="screen">
   </head>
 
   <body>
-    <div class="container">
+    <div class="container cr-container">
 
       <!-- Tabs -->
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs cr-nav-common cr-nav-top">
         <li class="nav active"><a href="#start" data-toggle="tab">Start</a></li>
         <li class="nav"><a href="#base-kit" data-toggle="tab">Base Kit</a></li>
         <li class="nav"><a href="#rooms" data-toggle="tab">Rooms</a></li>
@@ -35,7 +36,7 @@
       <form method="post">{% csrf_token %}
 
         <!-- TAB CONTENT -->
-        <div class="tab-content">
+        <div class="tab-content cr-tab-content">
           <div class="tab-pane fade in active" id="start">
             <h2>Welcome to the complete registration!</h2>
             <p>The complete registration for THS Armada 2017 is open between <span class="text-danger">1st of July 00:01 and 4th of September 23:59</span></p>
@@ -373,11 +374,11 @@
         <hr>
 
         <!-- Form next, back and save btn, and errors -->
-        <div class="form-footer">
-          <a class="btn btn-primary btnBack">Back</a>
-          <button type="submit" name="submit" class="btn btn-default">Submit</button>
-          <button type="submit" name="save" class="btn btn-default">Save</button>
-          <a class="btn btn-primary btnNext">Next</a>
+        <div class="form-footer cr-nav-common cr-nav-bottom">
+          <a class="btn btn-armada btn-armada-green btnBack">Back</a>
+          <button type="submit" name="submit" class="btn btn-armada btn-armada-gray">Submit</button>
+          <button type="submit" name="save" class="btn btn-armada btn-armada-gray">Save</button>
+          <a class="btn btn-armada btn-armada-green btnNext">Next</a>
           <div>{{ form.non_field_errors }}</div>
         </div>
       </form>

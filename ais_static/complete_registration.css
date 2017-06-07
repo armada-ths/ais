@@ -1,0 +1,115 @@
+body {
+	height: 100%;
+	position: relative;
+}
+
+/*
+ * GENERAL PAGE STYLE
+*/
+body {
+	background: #2D2D2D;
+	color: white;
+}
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("./fonts/BebasNeue-Regular.otf");
+}
+
+@font-face {
+  font-family: "Lato";
+  src: url("./fonts/Lato-Regular.ttf");
+}
+
+/*
+* GENERAL BUTTON STYLE
+*/
+.btn-armada {
+	font-size: 21px;
+	border: none;
+	background-image: none;
+	padding: 6px 22px;
+}
+.btn-armada-green {
+	background: #00d791;
+	color: #fff;
+}
+.btn-armada-green:hover, .btn-armada-green:focus {
+	background: #00b276;
+	color: #fff;
+}
+.btn-armada-gray:hover, .btn-armada-gray:focus {
+	background: #bbb;
+	color: #fff;
+}
+
+
+/*
+ *	GENERAL NAVIGAITON STYLE
+ */
+.cr-nav-common {
+ 	position: fixed;
+ 	left: 0;
+	background: #252525;
+	width: 100%;
+	z-index: 10;
+	text-align: center;
+	text-transform: uppercase;
+	font-family: 'Bebas Neue', sans-serif;
+	font-size: 21px;
+	padding: 10px;
+ }
+/*
+ *	TOP BAR NAVIGAITON
+ */
+.cr-nav-top {
+	top: 0;
+}
+/* removing background color and border on tabs */
+.nav-tabs.cr-nav-top { border: none; }
+.nav-tabs.cr-nav-top > li > a,
+.nav-tabs.cr-nav-top > li > a:hover,
+.nav-tabs.cr-nav-top > li.active > a,
+.nav-tabs.cr-nav-top > li.active > a:hover,
+.nav-tabs.cr-nav-top > li.active > a:focus {
+	background: transparent;
+	border: none;
+}
+/* making list items in top bar centered */
+li.nav {
+	float: none;
+	display: inline-block;
+}
+.nav-tabs.cr-nav-top > li > a {
+    color: #898989;
+}
+.nav-tabs.cr-nav-top > li.active > a { color: #157d59; }
+
+
+/*
+*	BOTTOM BAR NAVIGATION (SAVE/NEXT BUTTONs)
+*/
+
+.cr-nav-bottom {
+	bottom: 0;
+	padding: 20px;
+}
+
+.cr-nav-bottom .btnBack {
+	float: left;
+}
+.cr-nav-bottom .btnNext {
+	float: right;
+}
+
+
+/*
+*	GENERAL TAB CONTENT
+*/
+.cr-tab-content {
+	margin-top: 90px;
+}
+
+
+
+
+
