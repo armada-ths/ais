@@ -103,10 +103,23 @@
             {{ form.product_selection_rooms }}
           </div>
           <div class="tab-pane fade" id="events">
-            <h2>Events</h2>
+            <!--<h2>Events</h2>-->
             {% for field in form %}
               {% if 'event' in field.help_text %}
-                <li>{{ field.label }} <br /> {{ field }}</li>
+                <div class="cr-event-container">
+                  <h3>{{ field.label }}</h3>
+                  <div>
+                    <div class="cr-event-left cr-event-description">
+                      <p>Aspernatur voluptas et ea suscipit reprehenderit. Voluptas quam fugiat reiciendis nostrum. Dolor nobis numquam aut voluptatem nam aspernatur vel dignissimos.
+Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. Dolorem voluptates voluptas ab accusamus provident.</p> 
+                    </div>
+                    <div class="cr-event-right cr-event-input">
+                      {{ field }}
+                    </div>
+                  </div>
+                  
+                  
+                </div>
               {% endif %}
             {% endfor %}
           </div>
@@ -370,8 +383,6 @@
         </div>
         <!-- TAB CONTENT END -->
 
-        <!-- temporary horizontal line -->
-        <hr>
 
         <!-- Form next, back and save btn, and errors -->
         <div class="form-footer cr-nav-common cr-nav-bottom">

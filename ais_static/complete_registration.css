@@ -1,6 +1,7 @@
 body {
 	height: 100%;
 	position: relative;
+	font-family: 'Lato', Arial, sans-serif;
 }
 
 /*
@@ -107,9 +108,48 @@ li.nav {
 */
 .cr-tab-content {
 	margin-top: 90px;
+	margin-bottom: 110px;
 }
 
 
-
-
+/*
+*	TAB: EVENTS;
+*/
+.cr-event-container {
+	background: #353535;
+    width: 70%;
+    margin: 20px auto;
+    padding: 20px 30px;
+    border-radius: 5px;
+}
+.cr-event-container h3 {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 3em;
+	color: #ea2c49;
+	text-transform: uppercase;
+	margin-top: 0;
+    margin-left: -30px;
+    padding-left: 30px;
+	display: inline-block;
+    border-bottom: 2px solid #ea2c49;
+}
+.cr-event-left, 
+.cr-event-right {
+	display: inline-block;
+}
+.cr-event-left {
+	width: 60%;
+}
+.cr-event-right {
+	text-align: right;
+    width: 39%;
+    vertical-align: bottom;
+}
+.cr-event-right input {
+	color: #000;
+	width: 49px;
+    padding: 3px 5px;
+    border: none;
+    border-radius: 3px;
+}
 
