@@ -11,6 +11,8 @@ from sales.models import Sale
 from exhibitors.models import Exhibitor
 from companies.models import Company, Contact
 
+from enum import Enum
+
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
@@ -205,7 +207,18 @@ class ExhibitorForm(ModelForm):
     # The field name will be named by the fieldname argument.
     # A products will be checked if they exist in an order for the current exhibitor
     def products_as_multi_field(self, products, fieldname, orders):
+        # An order will have the amount 1 if checked, otherwise 0. Only for readability purposes!
+        class Status(Enum):
+            CHECKED = 1
+            UNCHECKED = 0
+        # List of all checked products
+        checkedProductsList = [None]
+        for order in orders:
+            checkedProductsList.append(order.product)
+        # create field and make sure all products that is inside the dictionary is initially checked
         self.fields[fieldname] = self.ProductMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
+        self.fields[fieldname].initial = [p for p in checkedProductsList]
+
 
     # Returns a generator/iterator with all product fields where you choose an amount.
     # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.
