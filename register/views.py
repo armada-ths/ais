@@ -14,11 +14,8 @@ from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
-<<<<<<< HEAD
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm
-=======
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, PasswordChangeForm
->>>>>>> 0e9090c6c1a9639f2f0f776c90076e5d0d8d6557
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, PasswordChangeForm
+
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
