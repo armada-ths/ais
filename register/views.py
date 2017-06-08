@@ -158,13 +158,13 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             stand_height_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Additional Stand Height"))
 
             # Check which products that already is in an order
-            current_banquet_orders = Order.objects.filter(exhibitor=exhibitor, product=banquet_products)
-            current_lunch_orders = Order.objects.filter(exhibitor=exhibitor, product=lunch_products)
-            current_event_orders = Order.objects.filter(exhibitor=exhibitor, product=event_products)
-            current_room_orders = Order.objects.filter(exhibitor=exhibitor, product=room_products)
-            current_nova_orders = Order.objects.filter(exhibitor=exhibitor, product=nova_products)
-            current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_area_products)
-            current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_height_products)
+            current_banquet_orders = Order.objects.filter(exhibitor=exhibitor, product__in=banquet_products)
+            current_lunch_orders = Order.objects.filter(exhibitor=exhibitor, product__in=lunch_products)
+            current_event_orders = Order.objects.filter(exhibitor=exhibitor, product__in=event_products)
+            current_room_orders = Order.objects.filter(exhibitor=exhibitor, product__in=room_products)
+            current_nova_orders = Order.objects.filter(exhibitor=exhibitor, product__in=nova_products)
+            current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_area_products)
+            current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_height_products)
 
             # Pass along all relevant information to form
             form = ExhibitorForm(
