@@ -54,8 +54,12 @@ h1,h2,h3,h4 {
 	background: #bbb;
 	color: #fff;
 }
-
-
+/*
+*	CONTAINER
+*/
+.cr-container {
+	max-width: 1200px;
+}
 /*
  *	GENERAL NAVIGAITON STYLE
  */
