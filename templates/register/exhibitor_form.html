@@ -15,7 +15,7 @@
   </head>
 
   <body>
-    <div class="container cr-container">
+    <div class="container-fluid cr-container">
 
       <!-- Tabs -->
       <ul class="nav nav-tabs cr-nav-common cr-nav-top">
@@ -176,32 +176,17 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
           <div class="tab-pane fade" id="additional-services">
             <!--<h2>Additional Services</h2>-->
             <div class="row cr-additional-services">
-              <div class="col-md-7">
+              <div class="col-md-8">
                 <div class="row">
                   <div class="col-md-6">
                     <div class="cr-additional-container">
                     <h3>ADDITIONAL STAND <span class="h-red">AREA</span></h3>
                     <p>Six square meters of stand area is included in the base kit. You can choose to add additional area, please note that we cannot guarantee that we will be able to fulfill your request.</p>
                     <p>For the base kit area (2x3 meters) we recommend you to have a maximum of five people in the stand to represent your organisation.</p>
-                    <p>2x3 meters (included)</p>
+                    <!--<p>2x3 meters (included)</p>-->
                     {{ form.product_selection_additional_stand_area }}
                     </div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="cr-additional-container">
-                      <h3>ADDITIONAL LUNCH TICKETS</h3>
-                      <p>Please note that 8 tickets (4 per day) is already included in the base kit</p>
-                      {% for field in form %}
-                        {% if 'lunch' in field.help_text %}
-                          <div>{{ field.label }} <br /> {{ field }}</div>
-                        {% endif %}
-                      {% endfor %}
-                      {{form.allergies.label}} <br />
-                      {{ form.allergies }}
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
                   <div class="col-md-6">
                     <div class="cr-additional-container">
                       <h3>ADDITIONAL STAND <span class="h-red">HEIGHT</span></h3>
@@ -209,26 +194,44 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                       {{ form.product_selection_additional_stand_height }}
                     </div>
                   </div>
+                </div>
+                <div class="row">
                   <div class="col-md-6">
                     <div class="cr-additional-container">
-                      <h3>OTHER</h3>
-                      <h4>SEND ME ... </h4>
+                      <h3>ADDITIONAL LUNCH TICKETS</h3>
+                      <p>Please note that 8 tickets (4 per day) is already included in the base kit</p>
+                      <ul class="cr-additional-lunch">
+                      {% for field in form %}
+                        {% if 'lunch' in field.help_text %}
+                          <li>
+                            <label class="pretty-label">{{ field.label }} </label> {{ field }}
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                      </ul>
+                      <label class="pretty-label">{{ form.allergies.label }} </label>
+                      {{ form.allergies }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="cr-additional-container">
+                      <h3>Contact me about ...</h3>
                       <div class="cr-additional-checkboxes">
                         {{ form.wants_information_about_events }}
-                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_events">{{ form.wants_information_about_events.label }}</label>  
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_events"><span>Info about events</span></label>  
 
                         {{ form.wants_information_about_targeted_marketing }}
-                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_targeted_marketing">{{ form.wants_information_about_targeted_marketing.label }}</label> 
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_targeted_marketing"><span>Info about targeted marketing</span></label> 
 
                         {{ form.manual_invoice }}
-                        <label class="pretty-label btn btn-armada-checkbox" for="id_manual_invoice">{{ form.manual_invoice.label }}</label> 
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_manual_invoice"><span>{{ form.manual_invoice.label }}</span></label> 
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="col-md-5">
-                <div class="cr-additional-container">
+              <div class="col-md-4">
+                <div class="cr-additional-container cr-additional-container-electrical">
                   <h3>ELECTRIC OUTLETS (Included)</h3>
                   <p>
                     Estimate your need of total continuous power requirement during the fair. If possible, please read actual power consumption on all the equipment you will use and sum it up.
@@ -252,7 +255,7 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                       {{form.number_of_outlets_needed}}
                     </li>
                     <li>
-                      <label class="pretty-label">{{ form.heavy_duty_electric_equipment.label }}:</label>
+                      <label class="pretty-label">Heavy duty equipment:</label>
                       {{ form.heavy_duty_electric_equipment }}
                     </li>
                   </ul>

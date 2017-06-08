@@ -20,6 +20,18 @@ body {
   font-family: "Lato";
   src: url("./fonts/Lato-Regular.ttf");
 }
+input, select, textarea { 
+	color: black; 
+	background: white;
+	border: none;
+	padding: 3px 5px;
+    border-radius: 5px;
+}
+
+h1,h2,h3,h4 {
+	font-family: 'Bebas Neue', sans-serif; 
+	text-transform: uppercase;
+}
 
 /*
 * GENERAL BUTTON STYLE
@@ -113,7 +125,7 @@ li.nav {
 
 
 /*
-*	TAB: EVENTS;
+*	TAB: EVENTS; *********************************
 */
 .cr-event-container {
 	background: #353535;
@@ -153,3 +165,123 @@ li.nav {
     border-radius: 3px;
 }
 
+/*
+*	TAB: ADDITIONAL SERVICES *********************************
+*/
+.cr-additional-services .col-md-6,
+.cr-additional-services .col-md-7,
+.cr-additional-services .col-md-5 {
+
+}
+.cr-additional-container {
+	background: #353535;
+    border-radius: 5px;
+    padding: 15px;
+    min-height: 270px;
+    margin-bottom: 24px;
+}
+.cr-additional-container h3 {
+	font-size: 2em;
+	color: #00d791;
+	margin-top: 0;
+}
+h3 span.h-red { color :#ea2c49; }
+.cr-additional-container h4 {
+	font-size: 1.5em;
+}
+.cr-additional-container input {
+	margin-left: 10px;
+	margin-top: -4px;
+}
+.cr-additional-container label { 
+	font-weight: normal; 
+}
+.cr-additional-container .pretty-label {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 18px;
+    font-weight: normal;
+}
+/* hides possible product description */
+.cr-additional-container .product-description {
+	display: none;
+}
+/* styling for a checkbox, or in practice on/off button */
+.btn-armada-checkbox, 
+.btn-armada-checkbox:hover {
+	border: 2px solid #00d791;
+	background: transparent;
+	color: #fff;
+}
+.btn-armada-checkbox {
+	margin: 5px;
+}
+input[type=checkbox]:checked + .btn-armada-checkbox {
+	background: #00d791;
+	color: #353535;
+}
+.cr-additional-container input[type=checkbox] { display: none; }
+
+/* additoinal stand area drop down */
+.cr-additional-container select {
+	background: #353535;
+    color: #fff;
+    border: 2px solid #00d791;
+    width: 50%;
+    margin: 5px auto 5px -25%;
+    position: relative;
+    left: 50%;
+    border-radius: 5px;
+    padding: 5px 8px;
+    outline: none;
+}
+/* additional stand area HEIGHT */
+ul#id_product_selection_additional_stand_height {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+}
+ul#id_product_selection_additional_stand_height li {
+	display: inline-block;
+	width: 46%;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+ul#id_product_selection_additional_stand_height label,
+ul#id_product_selection_additional_stand_height label span {
+	width: 100%;
+}
+/* Additoinal lunch tickets*/
+.cr-additional-lunch {
+	list-style: none;
+}
+.cr-additional-lunch select {
+	left: 0;
+    margin-left: 10px;
+    width: 65px;
+}
+/* contact me about box */
+.cr-additional-checkboxes label { 
+	width: 46%;
+	min-height: 65px;
+    line-height: 65px;
+}
+.cr-additional-checkboxes label span {
+	display: inline-block;
+	white-space: normal;
+	line-height: 110%;
+	vertical-align: middle;
+}
+/* electrical outlets box */
+.cr-additional-container-electrical {
+	min-height: 562px;
+}
+.cr-additional-electrical {
+	list-style: none;
+	padding: 15px;
+	border: 2px solid #00d791;
+	border-radius: 5px;
+}
+.cr-additional-electrical li {
+	margin-top: 5px;
+}

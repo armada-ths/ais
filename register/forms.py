@@ -1,6 +1,6 @@
-from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
+from django.forms import Select, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import mark_safe
+from django.utils.html import mark_safe, format_html
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
@@ -106,8 +106,9 @@ class ExhibitorForm(ModelForm):
 
         # create form fields for the banquet and lunch products
         self.dynamic_field_as_int_field(banquet, "banquet_")
-        self.dynamic_field_as_int_field(lunch, "lunch_")
+        self.dynamic_field_as_choice_field(lunch, "lunch_")
         self.dynamic_field_as_int_field(events, "event_")
+        #self.fields['lunch_tickets'] = ChoiceField(choices=[(x, x) for x in range(0, 11)])
 
         # Create fields for save and confirm tab
         self.init_company_fields(company)
@@ -162,15 +163,29 @@ class ExhibitorForm(ModelForm):
             self.fields['%s%s' % (prefix, object.name)].label = object.name
             self.fields['%s%s' % (prefix, object.name)].help_text = prefix
 
+    # Takes some objects and makes a productintegerfield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template
+    def dynamic_field_as_choice_field(self, objects, prefix):
+        for i, object in enumerate(objects):
+            self.fields['%s%s' % (prefix, object.name)] = ChoiceField(choices=[(x, x) for x in range(0, 11)])
+            self.fields['%s%s' % (prefix, object.name)].label = object.name
+            self.fields['%s%s' % (prefix, object.name)].help_text = prefix
+
     # A modelmultiplechoicefield with a customized label for each instance
     class ProductMultiChoiceField(ModelMultipleChoiceField):
         def label_from_instance(self, product):
-            return mark_safe('%s<br/>%s' % (product.name, product.description))
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                    )
 
     # Products in the forms different tabs
     product_selection_rooms = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Rooms")), required=False,widget=CheckboxSelectMultiple())
     product_selection_nova = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova")), required=False,widget=CheckboxSelectMultiple())
-    product_selection_additional_stand_area = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area")), required=False,widget=CheckboxSelectMultiple())
+    product_selection_additional_stand_area = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area")), required=False,widget=Select())
     product_selection_additional_stand_height = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height")), required=False,widget=CheckboxSelectMultiple())
 
     # Returns a generator/iterator with all product fields where you choose an amount.
