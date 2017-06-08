@@ -2,7 +2,7 @@ from django.forms import Select, ModelForm, Form, BooleanField, ModelMultipleCho
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 
 from fair.models import Fair
@@ -89,7 +89,6 @@ class UserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('password1','password2',)
-
 
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):

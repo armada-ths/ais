@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.utils import timezone
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 
 import json
@@ -14,7 +14,11 @@ from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
+<<<<<<< HEAD
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm
+=======
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, PasswordChangeForm
+>>>>>>> 0e9090c6c1a9639f2f0f776c90076e5d0d8d6557
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -307,3 +311,17 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     return redirect('anmalan:home')
 
     return render(request, template_name, {'form': form})
+
+#change password
+def change_password(request, template_name='register/change_password.html'):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('anmalan:home')
+        else:
+            return redirect('anmalan:change_password')
+    else:
+        form = PasswordChangeForm(user=request.user)
+    return render(request, template_name, {'form':form})
