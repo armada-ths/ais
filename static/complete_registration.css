@@ -215,12 +215,13 @@ h3 span.h-red { color :#ea2c49; }
 .btn-armada-checkbox {
 	margin: 5px;
 }
-input[type=checkbox]:checked + .btn-armada-checkbox {
+input[type=checkbox]:checked + .btn-armada-checkbox,
+input[type=radio]:checked + .btn-armada-checkbox {
 	background: #00d791;
 	color: #353535;
 }
-.cr-additional-container input[type=checkbox] { display: none; }
-
+.cr-additional-container input[type=checkbox],
+.cr-additional-container input[type=radio] { display: none; }
 /* additoinal stand area drop down */
 .cr-additional-container select {
 	background: #353535;

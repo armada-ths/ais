@@ -1,4 +1,4 @@
-from django.forms import Select, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
+from django.forms import Select, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, RadioSelect, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
 
@@ -118,15 +118,15 @@ class ExhibitorForm(ModelForm):
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
         # create multiselect fields for rooms, nova and additional stand and height area.
-        self.products_as_multi_field(rooms, 'product_selection_rooms')
-        self.products_as_multi_field(nova, 'product_selection_nova')
-        self.products_as_multi_field(stand_area, 'product_selection_additional_stand_area')
-        self.products_as_multi_field(stand_height, 'product_selection_additional_stand_height')
+        self.products_as_multi_field(rooms, 'product_selection_rooms', CheckboxSelectMultiple())
+        self.products_as_multi_field(nova, 'product_selection_nova', CheckboxSelectMultiple())
+        self.products_as_multi_field(stand_height, 'product_selection_additional_stand_height', RadioSelect())
+        self.products_as_multi_field(stand_area, 'product_selection_additional_stand_area', Select())
 
         # create form fields for the banquet, lunch and event products
         self.products_as_int_field(banquet, "banquet_")
-        self.products_as_int_field(lunch, "lunch_")
         self.products_as_int_field(events, "event_")
+        self.products_as_number_choice_field(lunch, "lunch_", 11)
 
         # Create fields for save and confirm tab
         self.init_company_fields(company)
@@ -174,6 +174,14 @@ class ExhibitorForm(ModelForm):
             self.description = object.description
             self.object = object
 
+    # A modelmultiplechoicefield with a customized label for each instance
+    class ProductMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                    )
 
     # Takes some objects and makes a productintegerfield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
@@ -185,31 +193,28 @@ class ExhibitorForm(ModelForm):
         for i, object in enumerate(objects):
             self.fields['%s%s' % (prefix, object.name)] = self.ProductIntegerField(object, prefix, initial=0, min_value=0)
 
-    # Takes some objects and makes a productintegerfield for each one.
+    # Takes some objects and makes a choicefield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
     # The field label will the object's name and the help_text its prefix
     # to help you find it in the template
-    def dynamic_field_as_choice_field(self, objects, prefix):
+    def products_as_number_choice_field(self, objects, prefix, num):
         for i, object in enumerate(objects):
             self.fields['%s%s' % (prefix, object.name)] = ChoiceField(choices=[(x, x) for x in range(0, 11)])
             self.fields['%s%s' % (prefix, object.name)].label = object.name
             self.fields['%s%s' % (prefix, object.name)].help_text = prefix
 
-    # A modelmultiplechoicefield with a customized label for each instance
-    class ProductMultiChoiceField(ModelMultipleChoiceField):
-        def label_from_instance(self, product):
-            #return mark_safe('%s<br/>%s' % (product.name, product.description))
-            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
-                        mark_safe(product.name),
-                        mark_safe(product.description),
-                    )
+    # Takes some objects and makes a choicefield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template
+
 
 
     # Takes some objects and puts them in a ProductMultiChoiceField.
     # The field name will be named by the fieldname argument.
     # A products will be checked if they exist in an order for the current exhibitor
-    def products_as_multi_field(self, objects, fieldname):
-        self.fields[fieldname] = self.ProductMultiChoiceField(queryset=objects, required=False, widget=CheckboxSelectMultiple())
+    def products_as_multi_field(self, objects, fieldname, widget):
+        self.fields[fieldname] = self.ProductMultiChoiceField(queryset=objects, required=False, widget=widget)
 
     # Returns a generator/iterator with all product fields where you choose an amount.
     # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.
