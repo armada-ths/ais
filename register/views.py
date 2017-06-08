@@ -142,12 +142,51 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             if company is None:
                 return redirect('anmalan:logout')
 
-            # Get products which requires an amount and put them into the Exhibitor form
-            banquet_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Banquet"))
-            lunch_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="AdditionalLunch"))
-            event_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Events"))
+            exhibitor = None
+            try:
+                exhibitor = Exhibitor.objects.get(company=company)
+            except Exhibitor.DoesNotExist:
+                pass
 
-            form = ExhibitorForm(request.POST or None, instance = Exhibitor.objects.get(company=company), banquet = banquet_products, lunch = lunch_products, events = event_products, company = company, contact = contact)
+            # Get products which requires an amount and put them into the Exhibitor form
+            banquet_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Banquet"))
+            lunch_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="AdditionalLunch"))
+            event_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Events"))
+            room_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Rooms"))
+            nova_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Nova"))
+            stand_area_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Additional Stand Area"))
+            stand_height_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Additional Stand Height"))
+
+            # Check which products that already is in an order
+            current_banquet_orders = Order.objects.filter(exhibitor=exhibitor, product=banquet_products)
+            current_lunch_orders = Order.objects.filter(exhibitor=exhibitor, product=lunch_products)
+            current_event_orders = Order.objects.filter(exhibitor=exhibitor, product=event_products)
+            current_room_orders = Order.objects.filter(exhibitor=exhibitor, product=room_products)
+            current_nova_orders = Order.objects.filter(exhibitor=exhibitor, product=nova_products)
+            current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_area_products)
+            current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_height_products)
+
+            # Pass along all relevant information to form
+            form = ExhibitorForm(
+                request.POST or None,
+                instance = exhibitor,
+                banquet = banquet_products,
+                lunch = lunch_products,
+                events = event_products,
+                rooms = room_products,
+                nova = nova_products,
+                stand_area = stand_area_products,
+                stand_height = stand_height_products,
+                banquet_orders = current_banquet_orders,
+                lunch_orders = current_lunch_orders,
+                event_orders = current_event_orders,
+                room_orders = current_room_orders,
+                nova_orders = current_nova_orders,
+                stand_area_orders = current_stand_area_orders,
+                stand_height_orders = current_stand_height_orders,
+                company = company,
+                contact = contact
+            )
 
             if form.is_valid():
                 # get selected products. IMPORTANT: NEEDS TO BE BEFORE form.save(commit=False)
@@ -205,27 +244,60 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                                 product=product,
                                 amount=amount,
                             )
-                # Remove existing orders that is not checked anymore or has the amount 0
+                # delete an order via a product and the current exhibitor
+                def delete_order_if_exists(product):
+                    try:
+                        Order.objects.get(product=product, exhibitor=exhibitor).delete()
+                    except Order.DoesNotExist:
+                        return
 
-                # Create or update orders from the checkbox products (ProductMultiChoiceField)
-                for product in product_selection_rooms:
-                    create_or_update_order(product, 1)
-                for product in product_selection_nova:
-                    create_or_update_order(product, 1)
-                for product in product_selection_additional_stand_area:
-                    create_or_update_order(product, 1)
-                for product in product_selection_additional_stand_height:
-                    create_or_update_order(product, 1)
+                # Create or update orders from the checkbox products (ProductMultiChoiceField).
+                # If they are not checked in but exist as an order in db, then delete.
+                room_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Rooms"))
+                nova_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova"))
+                stand_area_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area"))
+                stand_height_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height"))
 
+                for product in room_products:
+                    if product in product_selection_rooms:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
+                for product in nova_products:
+                    if product in product_selection_nova:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
+                for product in stand_area_products:
+                    if product in product_selection_additional_stand_area:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
+                for product in stand_height_products:
+                    if product in product_selection_additional_stand_height:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
 
-
-                # Create or update orders from products that can be chosen in numbers
+                # Create or update orders from products that can be chosen in numbers.
+                # If they have an amount equal to zero then delete the order.
                 for (banquetProduct, amount) in form.amount_products('banquet_'):
-                    create_or_update_order(banquetProduct, amount)
+                    if amount > 0:
+                        create_or_update_order(banquetProduct, amount)
+                    else:
+                        delete_order_if_exists(banquetProduct)
+
                 for (lunchProduct, amount) in form.amount_products('lunch_'):
-                    create_or_update_order(lunchProduct, amount)
+                    if amount > 0:
+                        create_or_update_order(lunchProduct, amount)
+                    else:
+                        delete_order_if_exists(lunchProduct)
+
                 for (eventProduct, amount) in form.amount_products('event_'):
-                    create_or_update_order(eventProduct, amount)
+                    if amount > 0:
+                        create_or_update_order(eventProduct, amount)
+                    else:
+                        delete_order_if_exists(eventProduct)
 
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email
