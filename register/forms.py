@@ -97,6 +97,19 @@ class ExhibitorForm(ModelForm):
         banquet = kwargs.pop('banquet')
         lunch = kwargs.pop('lunch')
         events = kwargs.pop('events')
+        rooms = kwargs.pop('rooms')
+        nova = kwargs.pop('nova')
+        stand_area = kwargs.pop('stand_area')
+        stand_height = kwargs.pop('stand_height')
+
+        # current exhibitor's orders
+        banquet_orders = kwargs.pop('banquet_orders')
+        lunch_orders = kwargs.pop('lunch_orders')
+        event_orders = kwargs.pop('event_orders')
+        room_orders = kwargs.pop('room_orders')
+        nova_orders = kwargs.pop('nova_orders')
+        stand_area_orders = kwargs.pop('stand_area_orders')
+        stand_height_orders = kwargs.pop('stand_height_orders')
 
         # company and contact for last tab
         company = kwargs.pop('company')
@@ -104,11 +117,16 @@ class ExhibitorForm(ModelForm):
 
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
-        # create form fields for the banquet and lunch products
-        self.dynamic_field_as_int_field(banquet, "banquet_")
-        self.dynamic_field_as_choice_field(lunch, "lunch_")
-        self.dynamic_field_as_int_field(events, "event_")
-        #self.fields['lunch_tickets'] = ChoiceField(choices=[(x, x) for x in range(0, 11)])
+        # create multiselect fields for rooms, nova and additional stand and height area.
+        self.products_as_multi_field(rooms, 'product_selection_rooms')
+        self.products_as_multi_field(nova, 'product_selection_nova')
+        self.products_as_multi_field(stand_area, 'product_selection_additional_stand_area')
+        self.products_as_multi_field(stand_height, 'product_selection_additional_stand_height')
+
+        # create form fields for the banquet, lunch and event products
+        self.products_as_int_field(banquet, "banquet_")
+        self.products_as_int_field(lunch, "lunch_")
+        self.products_as_int_field(events, "event_")
 
         # Create fields for save and confirm tab
         self.init_company_fields(company)
@@ -147,21 +165,25 @@ class ExhibitorForm(ModelForm):
         self.fields['contact_email'] = CharField(initial=contact.email)
         self.fields['alternative_email'] = CharField(initial=contact.alternative_email)
 
+    # An IntegerField with a relation to a product object
     class ProductIntegerField(IntegerField):
-        def __init__(self, object, *args, **kwargs):
-            IntegerField.__init__(self,*args, **kwargs)
+        def __init__(self, object, prefix, *args, **kwargs):
+            IntegerField.__init__(self, *args, **kwargs)
+            self.label = object.name
+            self.help_text = prefix
+            self.description = object.description
             self.object = object
 
 
     # Takes some objects and makes a productintegerfield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
     # The field label will the object's name and the help_text its prefix
-    # to help you find it in the template
-    def dynamic_field_as_int_field(self, objects, prefix):
+    # to help you find it in the template.
+    # The initial amount will be set if an order related to the product exists.
+    # Otherwise it will be 0.
+    def products_as_int_field(self, objects, prefix):
         for i, object in enumerate(objects):
-            self.fields['%s%s' % (prefix, object.name)] = self.ProductIntegerField(object, initial=0, min_value=0)
-            self.fields['%s%s' % (prefix, object.name)].label = object.name
-            self.fields['%s%s' % (prefix, object.name)].help_text = prefix
+            self.fields['%s%s' % (prefix, object.name)] = self.ProductIntegerField(object, prefix, initial=0, min_value=0)
 
     # Takes some objects and makes a productintegerfield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
@@ -182,20 +204,21 @@ class ExhibitorForm(ModelForm):
                         mark_safe(product.description),
                     )
 
-    # Products in the forms different tabs
-    product_selection_rooms = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Rooms")), required=False,widget=CheckboxSelectMultiple())
-    product_selection_nova = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova")), required=False,widget=CheckboxSelectMultiple())
-    product_selection_additional_stand_area = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area")), required=False,widget=Select())
-    product_selection_additional_stand_height = ProductMultiChoiceField(queryset=Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height")), required=False,widget=CheckboxSelectMultiple())
+
+    # Takes some objects and puts them in a ProductMultiChoiceField.
+    # The field name will be named by the fieldname argument.
+    # A products will be checked if they exist in an order for the current exhibitor
+    def products_as_multi_field(self, objects, fieldname):
+        self.fields[fieldname] = self.ProductMultiChoiceField(queryset=objects, required=False, widget=CheckboxSelectMultiple())
 
     # Returns a generator/iterator with all product fields where you choose an amount.
     # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.
     # Make sure they are the same as the ones in the form's constructor!
     def amount_products(self, prefix):
         for name, amount in self.cleaned_data.items():
-            if name.startswith(prefix) and amount > 0:
+            if name.startswith(prefix):
                 yield(self.fields[name].object, amount)
-    
+
     def save_or_submit(self):
         if 'submit' in self.data:
             return 'submit'
