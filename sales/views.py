@@ -16,7 +16,10 @@ class SaleForm(forms.ModelForm):
         model = Sale
         fields = '__all__'
         labels = {
-            "contact_by_date": "Contact by date"
+            'contact_by_date': 'Contact by date'
+        }
+        widgets = {
+            'contact_by_date': forms.DateInput(attrs = {'placeholder' : 'YYYY-MM-DD'})
         }
         exclude = ('preliminary_registration',)
 

@@ -32,12 +32,11 @@ class Sale(models.Model):
     responsible = models.ForeignKey(User, null=True, default=None, blank=True)
 
     status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
+    contact_by_date = models.DateField(blank = True, null=True)
     diversity_room = models.BooleanField(default=False)
     green_room = models.BooleanField(default=False)
     events = models.BooleanField(default=False)
     nova = models.BooleanField(default=False)
-
-    contact_by_date = models.DateField(blank = True, null=True)
 
     def __str__(self):
         return '%s at %s ' % (self.company.name, self.fair)

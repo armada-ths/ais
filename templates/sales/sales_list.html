@@ -21,6 +21,7 @@
             <th>Company</th>
             <th>Responsible</th>
             <th>Status</th>
+            <th>Contact by</th>
             <!-- Diversity room, GReen Room, Events, Nova -->
             <th>DR</th> 
             <th>GR</th> 
@@ -28,7 +29,6 @@
             <th>Nova</th>
             <th>Registered</th>
             <th>Actions</th>
-            <th>Contact by</th>
         </tr>
         </thead>
         {% for sale in my_sales %}
@@ -44,6 +44,11 @@
             {% endif %}
             </td>
             <td>{{ sale.status}}</td>
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
             <td>{% if sale.diversity_room %}
                     Yes
                 {% else %}
@@ -100,11 +105,6 @@
                 <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
             </td>
         <!--{% endif %}-->
-            <td>
-                {% if sale.contact_by_date %}
-                    {{ sale.contact_by_date }}
-                {% endif %}
-            </td>
         </tr>
         {% endfor %}
     </table>
@@ -120,13 +120,13 @@
             <th>Company</th>
             <th>Responsible</th>
             <th>Status</th>
+            <th>Contact by</th>
             <th>DR</th>
             <th>GR</th>
             <th>E</th>
             <th>Nova</th>
             <th>Registered</th>
             <th>Actions</th>
-            <th>Contact by</th>
         </tr>
        </thead>
         {% for sale in sales %}
@@ -143,7 +143,11 @@
             {% endif %}
             </td>
             <td>{{ sale.status}}</td>
-
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
             <td>{% if sale.diversity_room %}
                     Yes
                 {% else %}
@@ -200,11 +204,6 @@
                 <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
             </td>
 	    <!--{% endif %}-->
-            <td>
-                {% if sale.contact_by_date %}
-                    {{ sale.contact_by_date }}
-                {% endif %}
-            </td>
         </tr>
         {% endfor %}
     </table>
