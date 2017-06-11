@@ -21,13 +21,13 @@
             <th>Company</th>
             <th>Responsible</th>
             <th>Status</th>
+            <th>Contact by</th>
             <!-- Diversity room, GReen Room, Events, Nova -->
             <th>DR</th> 
             <th>GR</th> 
             <th>E</th>
             <th>Nova</th>
             <th>Registered</th>
-
             <th>Actions</th>
         </tr>
         </thead>
@@ -44,6 +44,11 @@
             {% endif %}
             </td>
             <td>{{ sale.status}}</td>
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
             <td>{% if sale.diversity_room %}
                     Yes
                 {% else %}
@@ -115,6 +120,7 @@
             <th>Company</th>
             <th>Responsible</th>
             <th>Status</th>
+            <th>Contact by</th>
             <th>DR</th>
             <th>GR</th>
             <th>E</th>
@@ -137,7 +143,11 @@
             {% endif %}
             </td>
             <td>{{ sale.status}}</td>
-
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
             <td>{% if sale.diversity_room %}
                     Yes
                 {% else %}
