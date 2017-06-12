@@ -1,3 +1,6 @@
+// If a bootstrap popover is speciefied
+$('.has-popover').popover({'trigger':'hover'});
+
 // Hide extra fields from start
 $('#externalTransportChosen').hide();
 $('#armadaTransportChosen').hide();

@@ -32,6 +32,11 @@ h1,h2,h3,h4 {
 	font-family: 'Bebas Neue', sans-serif; 
 	text-transform: uppercase;
 }
+h3 {
+	font-size: 2em;
+	color: #00d791;
+	margin-top: 0;
+}
 
 /*
 * GENERAL BUTTON STYLE
@@ -55,10 +60,36 @@ h1,h2,h3,h4 {
 	color: #fff;
 }
 /*
+*	DORP DOWN STYLE
+*/
+.cr-container select {
+	background: #353535;
+    color: #fff;
+    border: 2px solid #00d791;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 8px;
+    outline: none;
+}
+/*
 *	CONTAINER
 */
 .cr-container {
-	max-width: 1200px;
+	max-width: 1400px;
+}
+.popover { color: black;}
+.has-popover.hover-mark {
+	border-bottom: 1px dotted white;
+	cursor: pointer;
+}
+span.h-red { color :#ea2c49; }
+.has-popover.hover-mark.h-red {
+	border-bottom-color: #ea2c49;
+}
+.pretty-label {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 18px;
+    font-weight: normal;
 }
 /*
  *	GENERAL NAVIGAITON STYLE
@@ -189,7 +220,6 @@ li.nav {
 	color: #00d791;
 	margin-top: 0;
 }
-h3 span.h-red { color :#ea2c49; }
 .cr-additional-container h4 {
 	font-size: 1.5em;
 }
@@ -200,11 +230,7 @@ h3 span.h-red { color :#ea2c49; }
 .cr-additional-container label { 
 	font-weight: normal; 
 }
-.cr-additional-container .pretty-label {
-	font-family: 'Bebas Neue', sans-serif; 
-	font-size: 18px;
-    font-weight: normal;
-}
+
 /* hides possible product description */
 .cr-additional-container .product-description {
 	display: none;
@@ -228,16 +254,10 @@ input[type=radio]:checked + .btn-armada-checkbox {
 .cr-additional-container input[type=radio] { display: none; }
 /* additoinal stand area drop down */
 .cr-additional-container select {
-	background: #353535;
-    color: #fff;
-    border: 2px solid #00d791;
     width: 50%;
     margin: 5px auto 5px -25%;
     position: relative;
     left: 50%;
-    border-radius: 5px;
-    padding: 5px 8px;
-    outline: none;
 }
 /* additional stand area HEIGHT */
 ul#id_product_selection_additional_stand_height {
@@ -290,3 +310,42 @@ ul#id_product_selection_additional_stand_height label span {
 .cr-additional-electrical li {
 	margin-top: 5px;
 }
+
+
+/*
+*	TAB: LOGISTICS *********************************
+*/
+.cr-logistics-container {
+	background: #353535;
+    border-radius: 5px;
+    padding: 15px;
+    min-height: 270px;
+    margin-bottom: 24px;
+}
+.cr-logistics-container ul {
+	list-style: none;
+}
+
+#id_requests_for_exhibition_area > li:nth-child(1) > label, 
+#id_requests_for_stand_placement > li:nth-child(1) > label {
+	display: none;
+}
+.cr-transport-input {
+	border-top: 2px solid #00d791;
+	padding-top: 15px;
+	margin-top: 15px;
+}
+.cr-transport-input li {
+	padding: 8px 0;
+}
+.cr-transport-input input{
+	float: right;
+	margin-top: -2px;
+	width: 90px;
+}
+.cr-logistics-container select {
+	width: 150px;
+    float: right;
+    margin-top: -7px;
+}
+

@@ -154,6 +154,10 @@ class ExhibitorForm(ModelForm):
         model = Exhibitor
         fields = '__all__'
         exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
+        widgets = {
+            'requests_for_exhibition_area': CheckboxSelectMultiple,
+            'requests_for_stand_placement': CheckboxSelectMultiple,
+        }
 
     # Fields for contact in save and confirm tab
     def init_contact_fields(self, contact):
