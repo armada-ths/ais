@@ -1,4 +1,4 @@
-from django.forms import Select, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, RadioSelect, ValidationError, IntegerField, CharField, ChoiceField
+from django.forms import TextInput, Select, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, RadioSelect, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
 
@@ -143,12 +143,13 @@ class ExhibitorForm(ModelForm):
             ('union', 'Union'),
         ]
         self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type)
-        self.fields['address_street'] = CharField(initial=company.address_street)
-        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code)
-        self.fields['address_city'] = CharField(initial=company.address_city)
-        self.fields['address_country'] = CharField(initial=company.address_country)
-        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information)
+        self.fields['address_street'] = CharField(initial=company.address_street, widget=TextInput(attrs={'placeholder': 'Street'}))
+        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code, widget=TextInput(attrs={'placeholder': 'Zip code'}))
+        self.fields['address_city'] = CharField(initial=company.address_city, widget=TextInput(attrs={'placeholder': 'City'}))
+        self.fields['address_country'] = CharField(initial=company.address_country, widget=TextInput(attrs={'placeholder': 'Country'}))
+        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, widget=TextInput(attrs={'placeholder': 'Additional address info'}))
         self.fields['website'] = CharField(initial=company.website)
+
 
     class Meta:
         model = Exhibitor
@@ -157,6 +158,10 @@ class ExhibitorForm(ModelForm):
         widgets = {
             'requests_for_exhibition_area': CheckboxSelectMultiple,
             'requests_for_stand_placement': CheckboxSelectMultiple,
+            'invoice_address': TextInput(attrs={'placeholder': 'Address'}),
+            'invoice_address_po_box': TextInput(attrs={'placeholder': 'Address/PO-box'}),
+            'invoice_address_zip_code': TextInput(attrs={'placeholder': 'Zip code'}),
+            'transport_from_fair_address': TextInput(attrs={'placeholder': 'Address'}),
         }
 
     # Fields for contact in save and confirm tab

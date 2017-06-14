@@ -23,6 +23,36 @@ $('#transportToFairType').children().change(function() {
   }
 });
 
+// Edit button in Confirm and Save tab
+// probably needs to be hardcoded
+//$('.toggleEdit').click(function() {
+//  $(this).parent().next().next(".form-to-edit").toggleClass('no-editable-form editable-form');
+//});
+$('#editOrganisationTrigger').click(function() {
+  $('#organistaionEditable').toggleClass('hidden visible');
+  $('#organisationNoEditable').toggleClass('visible hidden');
+});
+$('#editContactTrigger').click(function() {
+  $('#contactEditable').toggleClass('hidden visible');
+  $('#contactNoEditable').toggleClass('visible hidden');
+});
+
+$('#editInvoiceToggle').click(function() {
+  $('#invoiceEditable').toggleClass('hidden visible');
+  $('#invoiceNoEditable').toggleClass('visible hidden');
+});
+$('#editArmadaTransportTrigger').click(function() {
+  $('#armadaTransportEditable').toggleClass('hidden visible');
+  $('#armadaTransportNoEditable').toggleClass('visible hidden');
+});
+
+$('.no-editable-form').find('input').prop( "disabled", true );
+$('.no-editable-form').find('select').prop( "disabled", true );
+$('.no-editable-form').find('input').attr('disabled', 'disabled');
+$('.no-editable-form').find('select').attr('disabled', 'disabled');
+$('.editable-form').find('input').prop( "disabled", false );
+$('.editable-form').find('select').prop( "disabled", false );
+
 
 // Back and Next button logic
 $('.btnNext').click(function(){

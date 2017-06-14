@@ -37,6 +37,9 @@ h3 {
 	color: #00d791;
 	margin-top: 0;
 }
+.hidden {
+	display: none;
+}
 
 /*
 * GENERAL BUTTON STYLE
@@ -60,7 +63,7 @@ h3 {
 	color: #fff;
 }
 /*
-*	DORP DOWN STYLE
+*	DROP DOWN STYLE
 */
 .cr-container select {
 	background: #353535;
@@ -347,5 +350,96 @@ ul#id_product_selection_additional_stand_height label span {
 	width: 150px;
     float: right;
     margin-top: -7px;
+}
+
+/*
+*	TAB: CONFIRM AND SAVE *********************************
+*/
+.cr-container-confirm {
+	max-width: 65%;
+	margin: auto;
+	background: #353535;
+	padding: 30px;
+}
+.cr-container-confirm h3 {
+	margin-top: 50px;
+}
+.toggleEdit { color: #ea2c49; }
+
+/* a form that's not editable */
+.no-editable-form h5 {
+	display: inline-block;
+}
+.no-editable-form li {
+	border-bottom: 1px solid #fff;
+	width: 60%;
+	padding-top: 5px;
+	padding-bottom: 0px;
+}
+.no-editable-form input,
+.no-editable-form .input-field,
+.no-editable-form select {
+	background: none;
+	border: none;
+	color: #fff;
+	float: right;
+}
+.no-editable-form input::placeholder {
+	color: #fff;
+}
+.no-editable-form .input-field {
+	margin-top: 2px;
+}
+.no-editable-form .input-field input {
+	float: none;
+}
+.no-editable-form li.address {
+	border: none;
+	padding-bottom: 15px;
+}
+.no-editable-form li.address .input-field {
+	border: 2px solid #00d791;
+	border-radius: 5px;
+	text-align: left;
+	width: 50%;
+    float: none;
+    margin-left: -50%;
+    margin-top: -32px;
+    position: relative;
+    left: 100%;
+}
+/* a form that is editable */
+.editable-form h5 {
+	display: inline-block;
+	width: 32%;
+	vertical-align: top;
+}
+.editable-form .input-field {
+	width: 65%;
+	display: inline-block;
+}
+.editable-form .input-field input {
+	width: 100%;
+	margin-top: -3px;
+}
+.editable-form .input-field {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.editable-form select {
+	padding-left: 0;
+	margin-left: 0;
+}
+.editable-form .input-field-address input {
+	width: 76%;
+	margin-top: -3px;
+	margin-bottom: 9px;
+}
+.editable-form #id_address_street {
+	width: 100%;
+}
+.editable-form #id_address_city,
+.editable-form #id_address_zip_code {
+	width: 38%;
 }
 
