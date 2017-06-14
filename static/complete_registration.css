@@ -1,4 +1,4 @@
-body {
+body, html {
 	height: 100%;
 	position: relative;
 	font-family: 'Lato', Arial, sans-serif;
@@ -161,6 +161,53 @@ li.nav {
 	margin-bottom: 110px;
 }
 
+
+/*
+*	TAB: ROOMS; *********************************
+*/
+
+.cr-rooms ul {
+	list-style: none;
+}
+.cr-rooms li {
+	display: inline-block;
+	width: 49%;
+	position: relative;
+}
+.cr-rooms h3 {
+	font-size: 3.5em;
+	text-align: center;
+}
+.cr-rooms h3,
+.cr-rooms p {
+	width: 75%;
+	margin-left: auto;
+	margin-right: auto;
+}
+.cr-rooms p.confirm-title {
+	font-family: 'Bebas Neue', sans-serif;
+	font-size: 1.7em;
+	border-bottom: 2px solid #00d791;
+	margin-top: 50px;
+	cursor: pointer;
+}
+.cr-rooms input {
+	position: absolute;
+	right: 12.5%;
+	bottom: 25px;
+	cursor: pointer;
+}
+.cr-rooms .divider {
+	width: 3px;
+	height: 100%;
+	background: #fff;
+	position: absolute;
+	left: 50%;
+	top: 0;
+	transform:rotate(6deg);
+	-moz-transform:rotate(6deg);
+	-webkit-transform:rotate(6deg);
+}
 
 /*
 *	TAB: EVENTS; *********************************

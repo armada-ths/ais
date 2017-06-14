@@ -117,7 +117,7 @@ class ExhibitorForm(ModelForm):
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
         # create multiselect fields for rooms, nova and additional stand and height area.
-        self.products_as_multi_field(rooms, 'product_selection_rooms', CheckboxSelectMultiple())
+        self.products_as_multi_field_rooms(rooms, 'product_selection_rooms', CheckboxSelectMultiple())
         self.products_as_multi_field(nova, 'product_selection_nova', CheckboxSelectMultiple())
         self.products_as_multi_field(stand_height, 'product_selection_additional_stand_height', RadioSelect())
         self.products_as_multi_field(stand_area, 'product_selection_additional_stand_area', Select())
@@ -191,6 +191,16 @@ class ExhibitorForm(ModelForm):
                         mark_safe(product.description),
                     )
 
+    # A modelmultiplechoicefield with a customized label for each instance
+    class RoomMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<h3 class='product-label'>{}</h3> <p class='product-description'>{}</p> <p class='confirm-title'>{}</p>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                        mark_safe("We want to apply for this area"),
+                    )
+
     # Takes some objects and makes a productintegerfield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
     # The field label will the object's name and the help_text its prefix
@@ -223,6 +233,14 @@ class ExhibitorForm(ModelForm):
     # A products will be checked if they exist in an order for the current exhibitor
     def products_as_multi_field(self, objects, fieldname, widget):
         self.fields[fieldname] = self.ProductMultiChoiceField(queryset=objects, required=False, widget=widget)
+
+    # Takes some objects and puts them in a RoomMultiChoiceField.
+    # The field name will be named by the fieldname argument.
+    # A products will be checked if they exist in an order for the current exhibitor
+    def products_as_multi_field_rooms(self, objects, fieldname, widget):
+        self.fields[fieldname] = self.RoomMultiChoiceField(queryset=objects, required=False, widget=widget)
+
+
 
     # Returns a generator/iterator with all product fields where you choose an amount.
     # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.

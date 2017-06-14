@@ -24,10 +24,6 @@ $('#transportToFairType').children().change(function() {
 });
 
 // Edit button in Confirm and Save tab
-// probably needs to be hardcoded
-//$('.toggleEdit').click(function() {
-//  $(this).parent().next().next(".form-to-edit").toggleClass('no-editable-form editable-form');
-//});
 $('#editOrganisationTrigger').click(function() {
   $('#organistaionEditable').toggleClass('hidden visible');
   $('#organisationNoEditable').toggleClass('visible hidden');
