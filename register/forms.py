@@ -150,8 +150,8 @@ class ExhibitorForm(ModelForm):
         self.fields['address_zip_code'] = CharField(initial=company.address_zip_code)
         self.fields['address_city'] = CharField(initial=company.address_city)
         self.fields['address_country'] = CharField(initial=company.address_country)
-        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information)
-        self.fields['website'] = CharField(initial=company.website)
+        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False)
+        self.fields['website'] = CharField(initial=company.website, required=False)
 
     class Meta:
         model = Exhibitor
@@ -162,10 +162,10 @@ class ExhibitorForm(ModelForm):
     def init_contact_fields(self, contact):
         self.fields['contact_name'] = CharField(initial=contact.name)
         self.fields['work_phone'] = CharField(initial=contact.work_phone)
-        self.fields['cell_phone'] = CharField(initial=contact.cell_phone)
-        self.fields['phone_switchboard'] = CharField(initial=contact.phone_switchboard)
+        self.fields['cell_phone'] = CharField(initial=contact.cell_phone, required=False)
+        self.fields['phone_switchboard'] = CharField(initial=contact.phone_switchboard, required=False)
         self.fields['contact_email'] = CharField(initial=contact.email)
-        self.fields['alternative_email'] = CharField(initial=contact.alternative_email)
+        self.fields['alternative_email'] = CharField(initial=contact.alternative_email, required=False)
 
     # An IntegerField with a relation to a product object
     class ProductIntegerField(IntegerField):
