@@ -200,6 +200,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # Update Company fields
                 updatedCompany = Company.objects.get(pk=company.pk)
+                updatedCompany.organisation_number = form.cleaned_data['organisation_identification_number']
                 updatedCompany.organisation_type = form.cleaned_data['type_of_organisation']
                 updatedCompany.address_street = form.cleaned_data['address_street']
                 updatedCompany.address_zip_code = form.cleaned_data['address_zip_code']
