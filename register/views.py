@@ -3,17 +3,19 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
+
 import json
 import requests as r
 
 from companies.models import Company, Contact
-
+from orders.models import Product, Order, ProductType
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, PasswordChangeForm
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, PasswordChangeForm
+
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -105,6 +107,7 @@ def create_company(request, template_name='register/company_form.html'):
         return redirect('/register/signup')
     return render(request, template_name, dict(form=form))
 
+
 def contact_update(request, template_name='register/contact_form.html'):
     contact = Contact.objects.get(user = request.user)
     form = ContactForm(request.POST or None, instance=contact)
@@ -124,6 +127,187 @@ def company_update(request, pk, template_name='register/company_form.html'):
             return redirect(redirect_to)
         return redirect('anmalan:home')
     return render(request, template_name, {'form':form})
+
+# A company's contact can request to have the company
+# become an exhibitor via the ExhibitorForm
+def create_exhibitor(request, template_name='register/exhibitor_form.html'):
+    currentFair = Fair.objects.get(current = True)
+    if request.user.is_authenticated():
+        contact = Contact.objects.get(user=request.user)
+        # make sure user is connected to a 'Contact'
+        if contact is None:
+            return redirect('anmalan:logout')
+        else:
+            # make sure a 'Company' is connected to contact
+            company = contact.belongs_to
+            if company is None:
+                return redirect('anmalan:logout')
+
+            exhibitor = None
+            try:
+                exhibitor = Exhibitor.objects.get(company=company)
+            except Exhibitor.DoesNotExist:
+                pass
+
+            # Get products which requires an amount and put them into the Exhibitor form
+            banquet_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Banquet"))
+            lunch_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="AdditionalLunch"))
+            event_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Events"))
+            room_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Rooms"))
+            nova_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Nova"))
+            stand_area_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Additional Stand Area"))
+            stand_height_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Additional Stand Height"))
+
+            # Check which products that already is in an order
+            current_banquet_orders = Order.objects.filter(exhibitor=exhibitor, product=banquet_products)
+            current_lunch_orders = Order.objects.filter(exhibitor=exhibitor, product=lunch_products)
+            current_event_orders = Order.objects.filter(exhibitor=exhibitor, product=event_products)
+            current_room_orders = Order.objects.filter(exhibitor=exhibitor, product=room_products)
+            current_nova_orders = Order.objects.filter(exhibitor=exhibitor, product=nova_products)
+            current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_area_products)
+            current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_height_products)
+
+            # Pass along all relevant information to form
+            form = ExhibitorForm(
+                request.POST or None,
+                instance = exhibitor,
+                banquet = banquet_products,
+                lunch = lunch_products,
+                events = event_products,
+                rooms = room_products,
+                nova = nova_products,
+                stand_area = stand_area_products,
+                stand_height = stand_height_products,
+                banquet_orders = current_banquet_orders,
+                lunch_orders = current_lunch_orders,
+                event_orders = current_event_orders,
+                room_orders = current_room_orders,
+                nova_orders = current_nova_orders,
+                stand_area_orders = current_stand_area_orders,
+                stand_height_orders = current_stand_height_orders,
+                company = company,
+                contact = contact
+            )
+
+            if form.is_valid():
+                # get selected products. IMPORTANT: NEEDS TO BE BEFORE form.save(commit=False)
+                product_selection_rooms = form.cleaned_data['product_selection_rooms']
+                product_selection_nova = form.cleaned_data['product_selection_nova']
+                product_selection_additional_stand_area = form.cleaned_data['product_selection_additional_stand_area']
+                product_selection_additional_stand_height = form.cleaned_data['product_selection_additional_stand_height']
+
+                # Save exhibitor model values from form into exhibitor variable
+                exhibitor = form.save(commit=False)
+
+                # Update Company fields
+                updatedCompany = Company.objects.get(pk=company.pk)
+                updatedCompany.organisation_type = form.cleaned_data['type_of_organisation']
+                updatedCompany.address_street = form.cleaned_data['address_street']
+                updatedCompany.address_zip_code = form.cleaned_data['address_zip_code']
+                updatedCompany.address_city = form.cleaned_data['address_city']
+                updatedCompany.address_country = form.cleaned_data['address_country']
+                updatedCompany.additional_address_information = form.cleaned_data['additional_address_information']
+                updatedCompany.website = form.cleaned_data['website']
+                updatedCompany.save()
+                exhibitor.company = updatedCompany
+
+                # Update Contact fields
+                updatedContact = Contact.objects.get(pk=contact.pk)
+                updatedContact.name = form.cleaned_data['contact_name']
+                updatedContact.work_phone = form.cleaned_data['work_phone']
+                updatedContact.cell_phone = form.cleaned_data['cell_phone']
+                updatedContact.phone_switchboard = form.cleaned_data['phone_switchboard']
+                updatedContact.email = form.cleaned_data['contact_email']
+                updatedContact.alternative_email = form.cleaned_data['alternative_email']
+                updatedContact.save()
+                exhibitor.contact = updatedContact
+
+                # other exhibitor fields that you do not choose in the form
+                exhibitor.fair = currentFair
+
+                # Create or update exhibitor
+                try:
+                    exhibitor.pk = Exhibitor.objects.get(company=exhibitor.company).pk
+                    exhibitor.save()
+                except Exhibitor.DoesNotExist:
+                    exhibitor.save()
+
+                # create or update orders to the current exhibitor from products
+                def create_or_update_order(product, amount):
+                        order = None
+                        try:
+                            order = Order.objects.get(product=product,exhibitor=exhibitor)
+                            order.amount = amount
+                            order.save()
+                        except Order.DoesNotExist:
+                            order = Order.objects.create(
+                                exhibitor=exhibitor,
+                                product=product,
+                                amount=amount,
+                            )
+                # delete an order via a product and the current exhibitor
+                def delete_order_if_exists(product):
+                    try:
+                        Order.objects.get(product=product, exhibitor=exhibitor).delete()
+                    except Order.DoesNotExist:
+                        return
+
+                # Create or update orders from the checkbox products (ProductMultiChoiceField).
+                # If they are not checked in but exist as an order in db, then delete.
+                room_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Rooms"))
+                nova_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Nova"))
+                stand_area_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area"))
+                stand_height_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height"))
+
+                for product in room_products:
+                    if product in product_selection_rooms:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
+                for product in nova_products:
+                    if product in product_selection_nova:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
+                for product in stand_area_products:
+                    if product in product_selection_additional_stand_area:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
+                for product in stand_height_products:
+                    if product in product_selection_additional_stand_height:
+                        create_or_update_order(product, 1)
+                    else:
+                        delete_order_if_exists(product)
+
+                # Create or update orders from products that can be chosen in numbers.
+                # If they have an amount equal to zero then delete the order.
+                for (banquetProduct, amount) in form.amount_products('banquet_'):
+                    if amount > 0:
+                        create_or_update_order(banquetProduct, amount)
+                    else:
+                        delete_order_if_exists(banquetProduct)
+
+                for (lunchProduct, amount) in form.amount_products('lunch_'):
+                    if amount > 0:
+                        create_or_update_order(lunchProduct, amount)
+                    else:
+                        delete_order_if_exists(lunchProduct)
+
+                for (eventProduct, amount) in form.amount_products('event_'):
+                    if amount > 0:
+                        create_or_update_order(eventProduct, amount)
+                    else:
+                        delete_order_if_exists(eventProduct)
+
+                # Everything is done!
+                # Do nothing if form is saved, otherwise redirect and send email
+                save_or_submit = form.save_or_submit()
+                if 'submit' in save_or_submit:
+                    # PUT EMAIL STUFF HERE
+                    return redirect('anmalan:home')
+
+    return render(request, template_name, {'form': form})
 
 #change password
 def change_password(request, template_name='register/change_password.html'):

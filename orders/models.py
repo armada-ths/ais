@@ -1,14 +1,28 @@
 from django.db import models
 
+# A 'ProductType' is a type that seperates a different kidns of products
+class ProductType(models.Model):
+    name = models.CharField(max_length=64, null=True, blank=True)
+    description = models.CharField(max_length=64, null=True, blank=True)
 
-# A 'Product' is a purchasable item that belongs to a 'Fair'
+    # The views is information around how these type of products
+    # should be shown in forms
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return "%s" % self.name
+
+# A 'Product' is a purchasable item that belongs to a 'Fair' and has a 'ProductType'
 class Product(models.Model):
     fair = models.ForeignKey('fair.Fair')
     name = models.CharField(max_length=64)
-    description = models.CharField(max_length=256, blank=True)
+    description = models.TextField(blank=True)
     # Chart of accounts number (sv. kontonummer), used for accounting
     coa_number = models.PositiveSmallIntegerField()
     price = models.IntegerField()
+    product_type = models.ForeignKey(ProductType, null=True, blank=True)
 
     class Meta:
         ordering = ['name']

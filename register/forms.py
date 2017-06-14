@@ -1,11 +1,14 @@
-from django.forms import ModelForm, Form, BooleanField
+from django.forms import TextInput, Select, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, RadioSelect, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
+from django.utils.html import mark_safe, format_html
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
-from django.forms import ValidationError
 
+from fair.models import Fair
+from orders.models import Product, Order, ProductType
 from sales.models import Sale
+from exhibitors.models import Exhibitor
 from companies.models import Company, Contact
 
 class LoginForm(AuthenticationForm):
@@ -86,3 +89,172 @@ class UserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('password1','password2',)
+
+class ExhibitorForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        # products that can be chosen with an amount
+        banquet = kwargs.pop('banquet')
+        lunch = kwargs.pop('lunch')
+        events = kwargs.pop('events')
+        rooms = kwargs.pop('rooms')
+        nova = kwargs.pop('nova')
+        stand_area = kwargs.pop('stand_area')
+        stand_height = kwargs.pop('stand_height')
+
+        # current exhibitor's orders
+        banquet_orders = kwargs.pop('banquet_orders')
+        lunch_orders = kwargs.pop('lunch_orders')
+        event_orders = kwargs.pop('event_orders')
+        room_orders = kwargs.pop('room_orders')
+        nova_orders = kwargs.pop('nova_orders')
+        stand_area_orders = kwargs.pop('stand_area_orders')
+        stand_height_orders = kwargs.pop('stand_height_orders')
+
+        # company and contact for last tab
+        company = kwargs.pop('company')
+        contact = kwargs.pop('contact')
+
+        super(ExhibitorForm, self).__init__(*args, **kwargs)
+
+        # create multiselect fields for rooms, nova and additional stand and height area.
+        self.products_as_multi_field_rooms(rooms, 'product_selection_rooms', CheckboxSelectMultiple())
+        self.products_as_multi_field(nova, 'product_selection_nova', CheckboxSelectMultiple())
+        self.products_as_multi_field(stand_height, 'product_selection_additional_stand_height', RadioSelect())
+        self.products_as_multi_field(stand_area, 'product_selection_additional_stand_area', Select())
+
+        # create form fields for the banquet, lunch and event products
+        self.products_as_int_field(banquet, "banquet_")
+        self.products_as_int_field(events, "event_")
+        self.products_as_number_choice_field(lunch, "lunch_", 11)
+
+        # Create fields for save and confirm tab
+        self.init_company_fields(company)
+        self.init_contact_fields(contact)
+
+    # Fields for company in save and confirm tab
+    def init_company_fields(self, company):
+        self.fields['name_of_organisation'] = CharField(initial=company.name)
+        self.fields['organisation_identification_number'] = CharField(initial=company.organisation_number)
+        organisation_types = [
+            ('company', 'Company'),
+            ('county_council', 'County/County council'),
+            ('government_agency', 'Government agency'),
+            ('non_profit_organisation', 'Non-profit organisation'),
+            ('union', 'Union'),
+        ]
+        self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type)
+        self.fields['address_street'] = CharField(initial=company.address_street, widget=TextInput(attrs={'placeholder': 'Street'}))
+        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code, widget=TextInput(attrs={'placeholder': 'Zip code'}))
+        self.fields['address_city'] = CharField(initial=company.address_city, widget=TextInput(attrs={'placeholder': 'City'}))
+        self.fields['address_country'] = CharField(initial=company.address_country, widget=TextInput(attrs={'placeholder': 'Country'}))
+        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, widget=TextInput(attrs={'placeholder': 'Additional address info'}))
+        self.fields['website'] = CharField(initial=company.website)
+
+
+    class Meta:
+        model = Exhibitor
+        fields = '__all__'
+        exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
+        widgets = {
+            'requests_for_exhibition_area': CheckboxSelectMultiple,
+            'requests_for_stand_placement': CheckboxSelectMultiple,
+            'invoice_address': TextInput(attrs={'placeholder': 'Address'}),
+            'invoice_address_po_box': TextInput(attrs={'placeholder': 'Address/PO-box'}),
+            'invoice_address_zip_code': TextInput(attrs={'placeholder': 'Zip code'}),
+            'transport_from_fair_address': TextInput(attrs={'placeholder': 'Address'}),
+        }
+
+    # Fields for contact in save and confirm tab
+    def init_contact_fields(self, contact):
+        self.fields['contact_name'] = CharField(initial=contact.name)
+        self.fields['work_phone'] = CharField(initial=contact.work_phone)
+        self.fields['cell_phone'] = CharField(initial=contact.cell_phone)
+        self.fields['phone_switchboard'] = CharField(initial=contact.phone_switchboard)
+        self.fields['contact_email'] = CharField(initial=contact.email)
+        self.fields['alternative_email'] = CharField(initial=contact.alternative_email)
+
+    # An IntegerField with a relation to a product object
+    class ProductIntegerField(IntegerField):
+        def __init__(self, object, prefix, *args, **kwargs):
+            IntegerField.__init__(self, *args, **kwargs)
+            self.label = object.name
+            self.help_text = prefix
+            self.description = object.description
+            self.object = object
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class ProductMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                    )
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class RoomMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<h3 class='product-label'>{}</h3> <p class='product-description'>{}</p> <p class='confirm-title'>{}</p>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                        mark_safe("We want to apply for this area"),
+                    )
+
+    # Takes some objects and makes a productintegerfield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template.
+    # The initial amount will be set if an order related to the product exists.
+    # Otherwise it will be 0.
+    def products_as_int_field(self, objects, prefix):
+        for i, object in enumerate(objects):
+            self.fields['%s%s' % (prefix, object.name)] = self.ProductIntegerField(object, prefix, initial=0, min_value=0)
+
+    # Takes some objects and makes a choicefield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template
+    def products_as_number_choice_field(self, objects, prefix, num):
+        for i, object in enumerate(objects):
+            self.fields['%s%s' % (prefix, object.name)] = ChoiceField(choices=[(x, x) for x in range(0, 11)])
+            self.fields['%s%s' % (prefix, object.name)].label = object.name
+            self.fields['%s%s' % (prefix, object.name)].help_text = prefix
+
+    # Takes some objects and makes a choicefield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template
+
+
+
+    # Takes some objects and puts them in a ProductMultiChoiceField.
+    # The field name will be named by the fieldname argument.
+    # A products will be checked if they exist in an order for the current exhibitor
+    def products_as_multi_field(self, objects, fieldname, widget):
+        self.fields[fieldname] = self.ProductMultiChoiceField(queryset=objects, required=False, widget=widget)
+
+    # Takes some objects and puts them in a RoomMultiChoiceField.
+    # The field name will be named by the fieldname argument.
+    # A products will be checked if they exist in an order for the current exhibitor
+    def products_as_multi_field_rooms(self, objects, fieldname, widget):
+        self.fields[fieldname] = self.RoomMultiChoiceField(queryset=objects, required=False, widget=widget)
+
+
+
+    # Returns a generator/iterator with all product fields where you choose an amount.
+    # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.
+    # Make sure they are the same as the ones in the form's constructor!
+    def amount_products(self, prefix):
+        for name, amount in self.cleaned_data.items():
+            if name.startswith(prefix):
+                yield(self.fields[name].object, amount)
+
+    def save_or_submit(self):
+        if 'submit' in self.data:
+            return 'submit'
+        elif 'save' in self.data:
+            return 'save'
+
+    def clean(self):
+        super(ExhibitorForm, self).clean()
