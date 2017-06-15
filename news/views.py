@@ -28,8 +28,9 @@ def news_article_list(request, year, template_name='news/article_list.html'):
 @permission_required('news.add_newsarticle')
 def news_article_create(request, year, template_name='news/article_form.html'):
     fair = get_object_or_404(Fair, year=year)
-    form = NewsArticleForm(request.POST or None)
+    form = NewsArticleForm(request.POST or None, request.FILES or None)
     if form.is_valid():
+        print(form.cleaned_data)
         form.save()
         return redirect('news', year)
     return render(request, template_name, {'form':form, 'fair': fair})

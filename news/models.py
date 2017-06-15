@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 
 # Manager for getting only the articles that should be displayed
 class NewsArticleManager(models.Manager):
@@ -14,7 +13,7 @@ class NewsArticle(models.Model):
     html_article_text = models.TextField(default="", max_length=5000)
     publication_date = models.DateTimeField()
     image = models.ImageField(
-        upload_to = UploadToDirUUID('news', 'image'),
+        upload_to = 'news/image/',
         blank = True,
     )
 
