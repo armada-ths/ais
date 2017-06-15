@@ -1,0 +1,504 @@
+body, html {
+	height: 100%;
+	position: relative;
+	font-family: 'Lato', Arial, sans-serif;
+}
+
+/*
+ * GENERAL PAGE STYLE
+*/
+body {
+	background: #2D2D2D;
+	color: white;
+}
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("./fonts/BebasNeue-Regular.otf");
+}
+
+@font-face {
+  font-family: "Lato";
+  src: url("./fonts/Lato-Regular.ttf");
+}
+input, select, textarea { 
+	color: black; 
+	background: white;
+	border: none;
+	padding: 3px 5px;
+    border-radius: 5px;
+}
+
+h1,h2,h3,h4 {
+	font-family: 'Bebas Neue', sans-serif; 
+	text-transform: uppercase;
+}
+h3 {
+	font-size: 2em;
+	color: #00d791;
+	margin-top: 0;
+}
+.hidden {
+	display: none;
+}
+
+/*
+* GENERAL BUTTON STYLE
+*/
+.btn-armada {
+	font-size: 21px;
+	border: none;
+	background-image: none;
+	padding: 6px 22px;
+}
+.btn-armada-green {
+	background: #00d791;
+	color: #fff;
+}
+.btn-armada-green:hover, .btn-armada-green:focus {
+	background: #00b276;
+	color: #fff;
+}
+.btn-armada-gray:hover, .btn-armada-gray:focus {
+	background: #bbb;
+	color: #fff;
+}
+/*
+*	DROP DOWN STYLE
+*/
+.cr-container select {
+	background: #353535;
+    color: #fff;
+    border: 2px solid #00d791;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 8px;
+    outline: none;
+}
+/*
+*	CONTAINER
+*/
+.cr-container {
+	max-width: 1400px;
+}
+.popover { color: black;}
+.has-popover.hover-mark {
+	border-bottom: 1px dotted white;
+	cursor: pointer;
+}
+span.h-red { color :#ea2c49; }
+.has-popover.hover-mark.h-red {
+	border-bottom-color: #ea2c49;
+}
+.pretty-label {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 18px;
+    font-weight: normal;
+}
+/*
+ *	GENERAL NAVIGAITON STYLE
+ */
+.cr-nav-common {
+ 	position: fixed;
+ 	left: 0;
+	background: #252525;
+	width: 100%;
+	z-index: 10;
+	text-align: center;
+	text-transform: uppercase;
+	font-family: 'Bebas Neue', sans-serif;
+	font-size: 21px;
+	padding: 10px;
+ }
+/*
+ *	TOP BAR NAVIGAITON
+ */
+.cr-nav-top {
+	top: 0;
+}
+/* removing background color and border on tabs */
+.nav-tabs.cr-nav-top { border: none; }
+.nav-tabs.cr-nav-top > li > a,
+.nav-tabs.cr-nav-top > li > a:hover,
+.nav-tabs.cr-nav-top > li.active > a,
+.nav-tabs.cr-nav-top > li.active > a:hover,
+.nav-tabs.cr-nav-top > li.active > a:focus {
+	background: transparent;
+	border: none;
+}
+/* making list items in top bar centered */
+li.nav {
+	float: none;
+	display: inline-block;
+}
+.nav-tabs.cr-nav-top > li > a {
+    color: #898989;
+}
+.nav-tabs.cr-nav-top > li.active > a { color: #157d59; }
+
+
+/*
+*	BOTTOM BAR NAVIGATION (SAVE/NEXT BUTTONs)
+*/
+
+.cr-nav-bottom {
+	bottom: 0;
+	padding: 20px;
+}
+
+.cr-nav-bottom .btnBack {
+	float: left;
+}
+.cr-nav-bottom .btnNext {
+	float: right;
+}
+
+
+/*
+*	GENERAL TAB CONTENT
+*/
+.cr-tab-content {
+	margin-top: 90px;
+	margin-bottom: 110px;
+}
+
+
+/*
+*	TAB: ROOMS; *********************************
+*/
+
+.cr-rooms ul {
+	list-style: none;
+}
+.cr-rooms li {
+	display: inline-block;
+	width: 49%;
+	position: relative;
+}
+.cr-rooms h3 {
+	font-size: 3.5em;
+	text-align: center;
+}
+.cr-rooms h3,
+.cr-rooms p {
+	width: 75%;
+	margin-left: auto;
+	margin-right: auto;
+}
+.cr-rooms p.confirm-title {
+	font-family: 'Bebas Neue', sans-serif;
+	font-size: 1.7em;
+	border-bottom: 2px solid #00d791;
+	margin-top: 50px;
+	cursor: pointer;
+}
+.cr-rooms input {
+	position: absolute;
+	right: 12.5%;
+	bottom: 25px;
+	cursor: pointer;
+}
+.cr-rooms .divider {
+	width: 3px;
+	height: 100%;
+	background: #fff;
+	position: absolute;
+	left: 50%;
+	top: 0;
+	transform:rotate(6deg);
+	-moz-transform:rotate(6deg);
+	-webkit-transform:rotate(6deg);
+}
+
+/*
+*	TAB: EVENTS; *********************************
+*/
+.cr-event-container {
+	background: #353535;
+    width: 70%;
+    margin: 20px auto;
+    padding: 20px 30px;
+    border-radius: 5px;
+}
+.cr-event-container h3 {
+	font-family: 'Bebas Neue', sans-serif; 
+	font-size: 3em;
+	color: #ea2c49;
+	text-transform: uppercase;
+	margin-top: 0;
+    margin-left: -30px;
+    padding-left: 30px;
+	display: inline-block;
+    border-bottom: 2px solid #ea2c49;
+}
+.cr-event-left, 
+.cr-event-right {
+	display: inline-block;
+}
+.cr-event-left {
+	width: 60%;
+}
+.cr-event-right {
+	text-align: right;
+    width: 39%;
+    vertical-align: bottom;
+}
+.cr-event-right input {
+	color: #000;
+	width: 49px;
+    padding: 3px 5px;
+    border: none;
+    border-radius: 3px;
+}
+
+/*
+*	TAB: ADDITIONAL SERVICES *********************************
+*/
+.cr-additional-services .col-md-6,
+.cr-additional-services .col-md-7,
+.cr-additional-services .col-md-5 {
+
+}
+.cr-additional-container {
+	background: #353535;
+    border-radius: 5px;
+    padding: 15px;
+    min-height: 270px;
+    margin-bottom: 24px;
+}
+.cr-additional-container h3 {
+	font-size: 2em;
+	color: #00d791;
+	margin-top: 0;
+}
+.cr-additional-container h4 {
+	font-size: 1.5em;
+}
+.cr-additional-container input {
+	margin-left: 10px;
+	margin-top: -4px;
+}
+.cr-additional-container label { 
+	font-weight: normal; 
+}
+
+/* hides possible product description */
+.cr-additional-container .product-description {
+	display: none;
+}
+/* styling for a checkbox, or in practice on/off button */
+.btn-armada-checkbox, 
+.btn-armada-checkbox:hover {
+	border: 2px solid #00d791;
+	background: transparent;
+	color: #fff;
+}
+.btn-armada-checkbox {
+	margin: 5px;
+}
+input[type=checkbox]:checked + .btn-armada-checkbox,
+input[type=radio]:checked + .btn-armada-checkbox {
+	background: #00d791;
+	color: #353535;
+}
+.cr-additional-container input[type=checkbox],
+.cr-additional-container input[type=radio] { }
+/* additoinal stand area drop down */
+.cr-additional-container select {
+    width: 50%;
+    margin: 5px auto 5px -25%;
+    position: relative;
+    left: 50%;
+}
+/* additional stand area HEIGHT */
+ul#id_product_selection_additional_stand_height,
+ul.additional_stand_height {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+}
+ul#id_product_selection_additional_stand_height li,
+ul.additional_stand_height li {
+	display: inline-block;
+	width: 46%;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+ul#id_product_selection_additional_stand_height label,
+ul#id_product_selection_additional_stand_height label span,
+ul.additional_stand_height label,
+ul.additional_stand_height label span {
+	width: 100%;
+}
+/* Additoinal lunch tickets*/
+.cr-additional-lunch {
+	list-style: none;
+}
+.cr-additional-lunch select {
+	left: 0;
+    margin-left: 10px;
+    width: 65px;
+}
+/* contact me about box */
+.cr-additional-checkboxes label { 
+	width: 46%;
+	min-height: 65px;
+    line-height: 65px;
+}
+.cr-additional-checkboxes label span {
+	display: inline-block;
+	white-space: normal;
+	line-height: 110%;
+	vertical-align: middle;
+}
+/* electrical outlets box */
+.cr-additional-container-electrical {
+	min-height: 562px;
+}
+.cr-additional-electrical {
+	list-style: none;
+	padding: 15px;
+	border: 2px solid #00d791;
+	border-radius: 5px;
+}
+.cr-additional-electrical li {
+	margin-top: 5px;
+}
+
+
+/*
+*	TAB: LOGISTICS *********************************
+*/
+.cr-logistics-container {
+	background: #353535;
+    border-radius: 5px;
+    padding: 15px;
+    min-height: 270px;
+    margin-bottom: 24px;
+}
+.cr-logistics-container ul {
+	list-style: none;
+}
+
+#id_requests_for_exhibition_area > li:nth-child(1) > label, 
+#id_requests_for_stand_placement > li:nth-child(1) > label {
+	display: none;
+}
+.cr-transport-input {
+	border-top: 2px solid #00d791;
+	padding-top: 15px;
+	margin-top: 15px;
+}
+.cr-transport-input li {
+	padding: 8px 0;
+}
+.cr-transport-input input{
+	float: right;
+	margin-top: -2px;
+	width: 90px;
+}
+.cr-logistics-container select {
+	width: 150px;
+    float: right;
+    margin-top: -7px;
+}
+.cr-logistics-additional {
+	text-align: center;
+    padding: 15px;
+}
+.cr-logistics-additional select {
+	float: none;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/*
+*	TAB: CONFIRM AND SAVE *********************************
+*/
+.cr-container-confirm {
+	max-width: 65%;
+	margin: auto;
+	background: #353535;
+	padding: 30px;
+}
+.cr-container-confirm h3 {
+	margin-top: 50px;
+}
+.toggleEdit { color: #ea2c49; }
+
+/* a form that's not editable */
+.no-editable-form h5 {
+	display: inline-block;
+}
+.no-editable-form li {
+	border-bottom: 1px solid #fff;
+	width: 60%;
+	padding-top: 5px;
+	padding-bottom: 0px;
+}
+.no-editable-form input,
+.no-editable-form .input-field,
+.no-editable-form select {
+	background: none;
+	border: none;
+	color: #fff;
+	float: right;
+}
+.no-editable-form input::placeholder {
+	color: #fff;
+}
+.no-editable-form .input-field {
+	margin-top: 2px;
+}
+.no-editable-form .input-field input {
+	float: none;
+}
+.no-editable-form li.address {
+	border: none;
+	padding-bottom: 15px;
+}
+.no-editable-form li.address .input-field {
+	border: 2px solid #00d791;
+	border-radius: 5px;
+	text-align: left;
+	width: 50%;
+    float: none;
+    margin-left: -50%;
+    margin-top: -32px;
+    position: relative;
+    left: 100%;
+}
+/* a form that is editable */
+.editable-form h5 {
+	display: inline-block;
+	width: 32%;
+	vertical-align: top;
+}
+.editable-form .input-field {
+	width: 65%;
+	display: inline-block;
+}
+.editable-form .input-field input {
+	width: 100%;
+	margin-top: -3px;
+}
+.editable-form .input-field {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.editable-form select {
+	padding-left: 0;
+	margin-left: 0;
+}
+.editable-form .input-field-address input {
+	width: 76%;
+	margin-top: -3px;
+	margin-bottom: 9px;
+}
+.editable-form #id_address_street {
+	width: 100%;
+}
+.editable-form #id_address_city,
+.editable-form #id_address_zip_code {
+	width: 38%;
+}

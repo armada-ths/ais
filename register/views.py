@@ -270,12 +270,12 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     else:
                         delete_order_if_exists(product)
                 for product in stand_area_products:
-                    if product in product_selection_additional_stand_area:
+                    if product.name in product_selection_additional_stand_area:
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_height_products:
-                    if product in product_selection_additional_stand_height:
+                    if product.name in product_selection_additional_stand_height:
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)

@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
+from django.forms import Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe
 
@@ -122,8 +122,8 @@ class ExhibitorForm(ModelForm):
         # create multiselect fields for rooms, nova and additional stand and height area.
         self.products_as_multi_field(rooms, 'product_selection_rooms', room_orders)
         self.products_as_multi_field(nova, 'product_selection_nova', nova_orders)
-        self.products_as_multi_field(stand_area, 'product_selection_additional_stand_area', stand_area_orders)
-        self.products_as_multi_field(stand_height, 'product_selection_additional_stand_height', stand_height_orders)
+        self.products_as_select_field(stand_area, 'product_selection_additional_stand_area', stand_area_orders, "Select")
+        self.products_as_select_field(stand_height, 'product_selection_additional_stand_height', stand_height_orders, "RadioSelect")
 
         # create form fields for the banquet, lunch and event products
         self.products_as_int_field(banquet, "banquet_", banquet_orders)
@@ -218,6 +218,45 @@ class ExhibitorForm(ModelForm):
         # create field and make sure all products that is inside the dictionary is initially checked
         self.fields[fieldname] = self.ProductMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
         self.fields[fieldname].initial = [p for p in checkedProductsList]
+
+
+    # Takes some objects and puts them in a ProductMultiChoiceField.
+    # The field name will be named by the fieldname argument.
+    # A products will be checked if they exist in an order for the current exhibitor
+    def products_as_select_field(self, products, fieldname, orders, widget):
+        # An order will have the amount 1 if checked, otherwise 0. Only for readability purposes!
+        class Status(Enum):
+            CHECKED = 1
+            UNCHECKED = 0
+        # List of all checked products
+        checkedProductsList = [None]
+        for order in orders:
+            checkedProductsList.append(order.product)
+        # create field and make sure all products that is inside the dictionary is initially checked
+        listProducts = []
+        for product in products:
+            option = str(product.name)
+            #option = option.replace(" ", "")
+            #option = option.replace(",", "_")
+            label = product.name
+            tup = (option, label)
+            listProducts.append(tup)
+            #listProducts.append(product.name)
+        if widget == "RadioSelect":
+            self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=RadioSelect())
+        elif widget == "Select":
+            self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=Select())
+        self.initial[fieldname] = orders[0].product.name
+        #self.fields[fieldname].initial = [p for p in checkedProductsList]
+
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class ProductSelectChoiceField(ChoiceField):
+        def label_from_instance(self, product):
+            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                    )
 
 
     # Returns a generator/iterator with all product fields where you choose an amount.
