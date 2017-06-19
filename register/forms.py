@@ -1,6 +1,6 @@
 from django.forms import Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import mark_safe
+from django.utils.html import mark_safe, format_html
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
@@ -199,6 +199,16 @@ class ExhibitorForm(ModelForm):
             self.fields['%s%s' % (prefix, product.name)] = self.ProductIntegerField(product, prefix, initial=amount, min_value=0)
 
     # A modelmultiplechoicefield with a customized label for each instance
+    class RoomMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<h3 class='product-label'>{}</h3> <p class='product-description'>{}</p> <p class='confirm-title'>{}</p>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                        mark_safe("We want to apply for this area"),
+                    )
+
+    # A modelmultiplechoicefield with a customized label for each instance
     class ProductMultiChoiceField(ModelMultipleChoiceField):
         def label_from_instance(self, product):
             return mark_safe('%s<br/>%s' % (product.name, product.description))
@@ -216,7 +226,10 @@ class ExhibitorForm(ModelForm):
         for order in orders:
             checkedProductsList.append(order.product)
         # create field and make sure all products that is inside the dictionary is initially checked
-        self.fields[fieldname] = self.ProductMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
+        if fieldname == 'product_selection_rooms':
+            self.fields[fieldname] = self.RoomMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
+        else:
+            self.fields[fieldname] = self.ProductMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
         self.fields[fieldname].initial = [p for p in checkedProductsList]
 
 
