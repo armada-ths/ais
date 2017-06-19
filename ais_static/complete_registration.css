@@ -32,8 +32,17 @@ h1,h2,h3,h4 {
 	font-family: 'Bebas Neue', sans-serif; 
 	text-transform: uppercase;
 }
+h1 {
+	font-size: 3.5em;
+	color: #00d791;
+}
 h3 {
 	font-size: 2em;
+	color: #00d791;
+	margin-top: 0;
+}
+h4 {
+	font-size: 1.5em;
 	color: #00d791;
 	margin-top: 0;
 }
@@ -63,7 +72,7 @@ h3 {
 	color: #fff;
 }
 /*
-*	DROP DOWN STYLE
+*	DROP DOWN STYLE / INPUT STYLE
 */
 .cr-container select {
 	background: #353535;
@@ -74,6 +83,19 @@ h3 {
     padding: 5px 8px;
     outline: none;
 }
+ul.cr-banquet-tickets input,
+.cr-event-container .cr-event-right input,
+.cr-additional-container .cr-additional-lunch input {
+	background: #353535;
+    color: #fff;
+    border: 2px solid #00d791;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 8px;
+    outline: none;
+    width: 60px;
+}
+
 /*
 *	CONTAINER
 */
@@ -86,6 +108,8 @@ h3 {
 	cursor: pointer;
 }
 span.h-red { color :#ea2c49; }
+span.h-white { color :#fff; }
+span.h-green { color :#00d791; }
 .has-popover.hover-mark.h-red {
 	border-bottom-color: #ea2c49;
 }
@@ -249,7 +273,22 @@ li.nav {
     border: none;
     border-radius: 3px;
 }
-
+/*
+*	TAB: BANQUET; *********************************
+*/
+ul.cr-banquet-tickets {
+	margin-top: 30px;
+}
+ul.cr-banquet-tickets h3 {
+	font-size: 1.4em;
+}
+ul.cr-banquet-tickets li {
+	padding: 10px;
+	margin: 5px 0;
+}
+ul.cr-banquet-tickets li:nth-child(odd) {
+	background: #353535;
+}
 /*
 *	TAB: ADDITIONAL SERVICES *********************************
 */
