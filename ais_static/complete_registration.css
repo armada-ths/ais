@@ -46,6 +46,9 @@ h4 {
 	color: #00d791;
 	margin-top: 0;
 }
+a, a:visited, a:hover {
+	color: #00d791;
+}
 .hidden {
 	display: none;
 }
@@ -102,6 +105,9 @@ ul.cr-banquet-tickets input,
 .cr-container {
 	max-width: 1400px;
 }
+.cr-contanier p {
+	text-align: justify;
+}
 .popover { color: black;}
 .has-popover.hover-mark {
 	border-bottom: 1px dotted white;
@@ -118,6 +124,15 @@ span.h-green { color :#00d791; }
 	font-size: 18px;
     font-weight: normal;
 }
+.divider {
+	width: 3px;
+	height: 100%;
+	background: #fff;
+	position: absolute;
+	left: 50%;
+	top: 0;
+}
+
 /*
  *	GENERAL NAVIGAITON STYLE
  */
@@ -184,7 +199,30 @@ li.nav {
 	margin-top: 90px;
 	margin-bottom: 110px;
 }
+/*
+*	TAB: BASKE KIT; *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-basekit .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-basekit .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
 
+.cr-container-basekit {
+	background: #353535;
+	padding: 15px;
+	height: 100%;
+}
+.cr-container-basekit ul li {
+	margin-top: 5px;
+}
 
 /*
 *	TAB: ROOMS; *********************************
@@ -276,6 +314,21 @@ li.nav {
 /*
 *	TAB: BANQUET; *********************************
 */
+/* flexbox fix to make column equal height */
+.cr-banquet .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-banquet .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+.cr-banquet-purchase {
+	border-left: 2px solid #00d791;
+}
 ul.cr-banquet-tickets {
 	margin-top: 30px;
 }
@@ -289,6 +342,55 @@ ul.cr-banquet-tickets li {
 ul.cr-banquet-tickets li:nth-child(odd) {
 	background: #353535;
 }
+
+/*
+*	TAB: NOVA *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-nova .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-nova .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+.cr-container-nova {
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+}
+ul.nova-info ul {
+    border: 2px solid #ea2c49;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 10px;
+    padding-left: 30px;
+}
+ul.nova-info ul li {
+	margin-bottom: 10px;
+}
+.cr-container-nova ul#id_product_selection_nova { 
+	list-style: none;
+}
+.cr-container-nova h4.confirm-title {
+	border-bottom: 2px solid #00d791;
+	margin-top: 50px;
+	cursor: pointer;
+	position: absolute;
+	bottom: 10px;
+	left: 40px;
+	width: 100%;
+}
+.cr-container-nova #id_product_selection_nova_0 {
+	position: absolute;
+	bottom: 26px;
+	right: 10px;
+}
+
 /*
 *	TAB: EXHIBITOR PROFILE *********************************
 */
@@ -574,3 +676,26 @@ ul.additional_stand_height label span {
 .editable-form #id_address_zip_code {
 	width: 38%;
 }
+
+
+@media all and (max-width: 1137px) {
+  .cr-tab-content {
+  	margin-top: 135px;
+  }
+}
+/* exhibitor profile */
+@media all and (max-width: 992px) {
+  .cr-profile .divider {
+  	display: none;
+  }
+  .cr-profile h2 {
+  	margin-top: 30px;
+  }
+  .cr-profile p { 
+  	text-align: center;
+  }
+  .cr-profile input {
+  	margin-left: auto;
+  	margin-right: auto;
+  }
+} 

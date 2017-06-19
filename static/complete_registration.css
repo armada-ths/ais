@@ -32,10 +32,22 @@ h1,h2,h3,h4 {
 	font-family: 'Bebas Neue', sans-serif; 
 	text-transform: uppercase;
 }
+h1 {
+	font-size: 3.5em;
+	color: #00d791;
+}
 h3 {
 	font-size: 2em;
 	color: #00d791;
 	margin-top: 0;
+}
+h4 {
+	font-size: 1.5em;
+	color: #00d791;
+	margin-top: 0;
+}
+a, a:visited, a:hover {
+	color: #00d791;
 }
 .hidden {
 	display: none;
@@ -63,7 +75,7 @@ h3 {
 	color: #fff;
 }
 /*
-*	DROP DOWN STYLE
+*	DROP DOWN STYLE / INPUT STYLE
 */
 .cr-container select {
 	background: #353535;
@@ -74,11 +86,27 @@ h3 {
     padding: 5px 8px;
     outline: none;
 }
+ul.cr-banquet-tickets input,
+.cr-event-container .cr-event-right input,
+.cr-additional-container .cr-additional-lunch input {
+	background: #353535;
+    color: #fff;
+    border: 2px solid #00d791;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 8px;
+    outline: none;
+    width: 60px;
+}
+
 /*
 *	CONTAINER
 */
 .cr-container {
 	max-width: 1400px;
+}
+.cr-contanier p {
+	text-align: justify;
 }
 .popover { color: black;}
 .has-popover.hover-mark {
@@ -86,6 +114,8 @@ h3 {
 	cursor: pointer;
 }
 span.h-red { color :#ea2c49; }
+span.h-white { color :#fff; }
+span.h-green { color :#00d791; }
 .has-popover.hover-mark.h-red {
 	border-bottom-color: #ea2c49;
 }
@@ -94,6 +124,15 @@ span.h-red { color :#ea2c49; }
 	font-size: 18px;
     font-weight: normal;
 }
+.divider {
+	width: 3px;
+	height: 100%;
+	background: #fff;
+	position: absolute;
+	left: 50%;
+	top: 0;
+}
+
 /*
  *	GENERAL NAVIGAITON STYLE
  */
@@ -160,7 +199,30 @@ li.nav {
 	margin-top: 90px;
 	margin-bottom: 110px;
 }
+/*
+*	TAB: BASKE KIT; *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-basekit .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-basekit .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
 
+.cr-container-basekit {
+	background: #353535;
+	padding: 15px;
+	height: 100%;
+}
+.cr-container-basekit ul li {
+	margin-top: 5px;
+}
 
 /*
 *	TAB: ROOMS; *********************************
@@ -248,6 +310,118 @@ li.nav {
     padding: 3px 5px;
     border: none;
     border-radius: 3px;
+}
+/*
+*	TAB: BANQUET; *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-banquet .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-banquet .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+.cr-banquet-purchase {
+	border-left: 2px solid #00d791;
+}
+ul.cr-banquet-tickets {
+	margin-top: 30px;
+}
+ul.cr-banquet-tickets h3 {
+	font-size: 1.4em;
+}
+ul.cr-banquet-tickets li {
+	padding: 10px;
+	margin: 5px 0;
+}
+ul.cr-banquet-tickets li:nth-child(odd) {
+	background: #353535;
+}
+
+/*
+*	TAB: NOVA *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-nova .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-nova .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+.cr-container-nova {
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+}
+ul.nova-info ul {
+    border: 2px solid #ea2c49;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 10px;
+    padding-left: 30px;
+}
+ul.nova-info ul li {
+	margin-bottom: 10px;
+}
+.cr-container-nova ul#id_product_selection_nova { 
+	list-style: none;
+}
+.cr-container-nova h4.confirm-title {
+	border-bottom: 2px solid #00d791;
+	margin-top: 50px;
+	cursor: pointer;
+	position: absolute;
+	bottom: 10px;
+	left: 40px;
+	width: 100%;
+}
+.cr-container-nova #id_product_selection_nova_0 {
+	position: absolute;
+	bottom: 26px;
+	right: 10px;
+}
+
+/*
+*	TAB: EXHIBITOR PROFILE *********************************
+*/
+.cr-container-profile {
+	text-align: center;
+	width: 90%;
+}
+.cr-container-profile h2 {
+	font-size: 4em;
+	color: #00d791;
+}
+.cr-container-profile p {
+	text-align: left;
+}
+.cr-container-profile input {
+	background: #353535;
+	color: #fff;
+	padding: 30px;
+}
+.cr-profile .divider.left {
+	left: 31%;
+	transform:rotate(12deg);
+	-moz-transform:rotate(12deg);
+	-webkit-transform:rotate(12deg);
+
+}
+.cr-profile .divider.right {
+	left: 67%;
+	transform:rotate(-12deg);
+	-moz-transform:rotate(-12deg);
+	-webkit-transform:rotate(-12deg);
 }
 
 /*
@@ -502,3 +676,26 @@ ul.additional_stand_height label span {
 .editable-form #id_address_zip_code {
 	width: 38%;
 }
+
+
+@media all and (max-width: 1137px) {
+  .cr-tab-content {
+  	margin-top: 135px;
+  }
+}
+/* exhibitor profile */
+@media all and (max-width: 992px) {
+  .cr-profile .divider {
+  	display: none;
+  }
+  .cr-profile h2 {
+  	margin-top: 30px;
+  }
+  .cr-profile p { 
+  	text-align: center;
+  }
+  .cr-profile input {
+  	margin-left: auto;
+  	margin-right: auto;
+  }
+} 

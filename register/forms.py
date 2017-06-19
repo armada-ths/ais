@@ -201,11 +201,19 @@ class ExhibitorForm(ModelForm):
     # A modelmultiplechoicefield with a customized label for each instance
     class RoomMultiChoiceField(ModelMultipleChoiceField):
         def label_from_instance(self, product):
-            #return mark_safe('%s<br/>%s' % (product.name, product.description))
             return format_html("<h3 class='product-label'>{}</h3> <p class='product-description'>{}</p> <p class='confirm-title'>{}</p>",
                         mark_safe(product.name),
                         mark_safe(product.description),
                         mark_safe("We want to apply for this area"),
+                    )
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class NovaMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            return format_html("<h3 class='product-label'>{}</h3> <h4 class='product-description'><span class='h-white'>{}</span></h4> <h4 class='confirm-title'>{}</h4>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                        mark_safe("We want this"),
                     )
 
     # A modelmultiplechoicefield with a customized label for each instance
@@ -228,6 +236,8 @@ class ExhibitorForm(ModelForm):
         # create field and make sure all products that is inside the dictionary is initially checked
         if fieldname == 'product_selection_rooms':
             self.fields[fieldname] = self.RoomMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
+        elif fieldname == 'product_selection_nova':
+            self.fields[fieldname] = self.NovaMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
         else:
             self.fields[fieldname] = self.ProductMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
         self.fields[fieldname].initial = [p for p in checkedProductsList]
