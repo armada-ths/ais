@@ -176,20 +176,30 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
           <div class="tab-pane fade" id="nova">
             {{ form.product_selection_nova }}
           </div>
-          <div class="tab-pane fade" id="exhibitor-profile">
+          <div class="tab-pane fade cr-profile" id="exhibitor-profile">
+            <span class="divider left"></span>
+            <span class="divider right"></span>
             <div class="row">
               <div class="col-md-4">
-                <h2>Logo</h2>
-                {{ form.logo }}
+                <div class="cr-container-profile">
+                  <h2>Upload logo</h2>
+                  <p>Upload your logo so we can display it in our apps.</p>
+                  {{ form.logo }}
+                </div>
               </div>
               <div class="col-md-4">
-                <h2>Profile</h2>
-                <p>Text About the Exhibitor</p>
-                {{ form.about_text }}
+                <div class="cr-container-profile">
+                  <h2>Text about organisation</h2>
+                  <p>Write a selling text about your company, this is what a student will be able to read in our apps.</p>
+                  {{ form.about_text }}
+                </div>
               </div>
               <div class="col-md-4">
-                <h2>Exhibitor Facts (optional)</h2>
-                {{ form.facts_text }}
+                <div class="cr-container-profile">
+                  <h2>Organisation Facts</h2>
+                  <p>List some quick/fun facts about your organisation.</p>
+                  {{ form.facts_text }}
+                </div>
               </div>
             </div>
           </div>

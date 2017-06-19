@@ -290,6 +290,39 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 	background: #353535;
 }
 /*
+*	TAB: EXHIBITOR PROFILE *********************************
+*/
+.cr-container-profile {
+	text-align: center;
+	width: 90%;
+}
+.cr-container-profile h2 {
+	font-size: 4em;
+	color: #00d791;
+}
+.cr-container-profile p {
+	text-align: left;
+}
+.cr-container-profile input {
+	background: #353535;
+	color: #fff;
+	padding: 30px;
+}
+.cr-profile .divider.left {
+	left: 31%;
+	transform:rotate(12deg);
+	-moz-transform:rotate(12deg);
+	-webkit-transform:rotate(12deg);
+
+}
+.cr-profile .divider.right {
+	left: 67%;
+	transform:rotate(-12deg);
+	-moz-transform:rotate(-12deg);
+	-webkit-transform:rotate(-12deg);
+}
+
+/*
 *	TAB: ADDITIONAL SERVICES *********************************
 */
 .cr-additional-services .col-md-6,
