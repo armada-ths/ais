@@ -2,7 +2,7 @@ from django.forms import TextInput, Select, RadioSelect, ModelForm, Form, Boolea
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 
 from fair.models import Fair
@@ -92,7 +92,6 @@ class UserForm(UserCreationForm):
         model = User
         fields = ('password1','password2',)
 
-
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
         # products that can be chosen with an amount
@@ -153,6 +152,7 @@ class ExhibitorForm(ModelForm):
         self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False)
         self.fields['website'] = CharField(initial=company.website, required=False)
 
+
     class Meta:
         model = Exhibitor
         fields = '__all__'
@@ -182,6 +182,15 @@ class ExhibitorForm(ModelForm):
             self.help_text = prefix
             self.description = object.description
             self.object = object
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class ProductMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                    )
 
     # Takes some objects and makes a productintegerfield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
@@ -223,10 +232,16 @@ class ExhibitorForm(ModelForm):
                         mark_safe("We want this"),
                     )
 
-    # A modelmultiplechoicefield with a customized label for each instance
-    class ProductMultiChoiceField(ModelMultipleChoiceField):
-        def label_from_instance(self, product):
-            return mark_safe('%s<br/>%s' % (product.name, product.description))
+    # Takes some objects and makes a choicefield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template
+    def products_as_number_choice_field(self, objects, prefix, num):
+        for i, object in enumerate(objects):
+            self.fields['%s%s' % (prefix, object.name)] = ChoiceField(choices=[(x, x) for x in range(0, 11)])
+            self.fields['%s%s' % (prefix, object.name)].label = object.name
+            self.fields['%s%s' % (prefix, object.name)].help_text = prefix
+
 
     # Takes some objects and puts them in a ProductMultiChoiceField.
     # The field name will be named by the fieldname argument.
