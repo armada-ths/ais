@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login
 from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import get_template
+from django.contrib.sites.shortcuts import get_current_site
 
 import json
 import requests as r
@@ -304,7 +307,17 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 # Do nothing if form is saved, otherwise redirect and send email
                 save_or_submit = form.save_or_submit()
                 if 'submit' in save_or_submit:
-                    # PUT EMAIL STUFF HERE
+                    site_name = get_current_site(request).domain
+                    send_mail(
+                        'Complete Registration Confirmation on ' + site_name,
+                        get_template('register/complete_confirm_email.html').render(({
+                                'username': contact.email,
+                                'site_name': site_name
+                            })
+                        ),
+                        settings.DEFAULT_FROM_EMAIL,
+                        [contact.email],
+                        fail_silently=False)
                     return redirect('anmalan:home')
 
     return render(request, template_name, {'form': form})
