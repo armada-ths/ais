@@ -227,10 +227,20 @@ li.nav {
 .cr-container-basekit ul li {
 	margin-top: 5px;
 }
+.cr-sustainability {
+	position: relative;
+    top: 25%;
+}
+.cr-margin-top {
+	margin-top: 20px;
+}
 
 /*
 *	TAB: ROOMS; *********************************
 */
+.cr-rooms {
+	position: relative;
+}
 .cr-rooms, 
 .cr-rooms label {
 	font-weight: normal;
@@ -246,6 +256,7 @@ li.nav {
 .cr-rooms h3 {
 	font-size: 3.5em;
 	text-align: center;
+	padding-bottom: 120px;
 }
 .cr-rooms h3,
 .cr-rooms p {
@@ -257,8 +268,13 @@ li.nav {
 	font-family: 'Bebas Neue', sans-serif;
 	font-size: 1.7em;
 	border-bottom: 2px solid #00d791;
-	margin-top: 50px;
+	margin-top: 40px;
 	cursor: pointer;
+}
+.cr-rooms li:nth-child(2) h3,
+.cr-rooms li:nth-child(2) p.product-description {
+	position: relative;
+	top: -20px;
 }
 .cr-rooms input {
 	position: absolute;
@@ -266,7 +282,25 @@ li.nav {
 	bottom: 25px;
 	cursor: pointer;
 }
-.cr-rooms .divider {
+.cr-rooms p.product-description {
+}
+.cr-rooms img {
+	/*width: 250px;*/
+	height: 100px;
+	position: absolute;
+	top: 60px;
+}
+.cr-rooms img.logo-diversity {
+	/*width: 200px;*/
+	left: 25%;
+	margin-left: -33px;
+}
+.cr-rooms img.logo-sustainability {
+	/*width: 100px;*/
+	right: 25%;
+	margin-right: -30px;
+}
+.divider.rooms {
 	width: 3px;
 	height: 100%;
 	background: #fff;
@@ -622,7 +656,10 @@ ul.additional_stand_height label span {
 .cr-container-confirm h3 {
 	margin-top: 50px;
 }
-.toggleEdit { color: #ea2c49; }
+.toggleEdit { 
+	color: #ea2c49; 
+	cursor: pointer;
+}
 
 /* a form that's not editable */
 .no-editable-form h5 {

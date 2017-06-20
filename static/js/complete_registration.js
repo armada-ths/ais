@@ -22,6 +22,17 @@ $('#transportToFairType').children().change(function() {
     $('#externalTransportChosen').hide();
   }
 });
+// if armada transport is chosen on load
+$(document).ready(function(){
+  console.log("hej");
+  var selected = $('#id_transport_from_fair_type').val();
+  //console.log(selected.val());
+  if(selected == 'armada_transport') {
+    $('#armadaTransportChosen').show();
+  } else {
+    $('#armadaTransportChosen').hide();
+  }
+});
 
 // Edit button in Confirm and Save tab
 $('#editOrganisationTrigger').click(function() {
