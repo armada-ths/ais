@@ -513,6 +513,7 @@ ul.additional_stand_height label span {
     margin-left: 10px;
     width: 65px;
 }
+.cr-additional-container textarea {}
 /* contact me about box */
 .cr-additional-checkboxes label { 
 	width: 46%;
@@ -524,6 +525,9 @@ ul.additional_stand_height label span {
 	white-space: normal;
 	line-height: 110%;
 	vertical-align: middle;
+}
+.cr-additional-checkboxes input {
+	display: none;
 }
 /* electrical outlets box */
 .cr-additional-container-electrical {
@@ -552,6 +556,9 @@ ul.additional_stand_height label span {
 }
 .cr-logistics-container ul {
 	list-style: none;
+}
+.cr-logistics-container-transport {
+	min-height: auto;
 }
 
 #id_requests_for_exhibition_area > li:nth-child(1) > label, 

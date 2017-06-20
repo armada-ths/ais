@@ -123,7 +123,7 @@ class ExhibitorForm(ModelForm):
         self.products_as_multi_field(rooms, 'product_selection_rooms', room_orders)
         self.products_as_multi_field(nova, 'product_selection_nova', nova_orders)
         self.products_as_select_field(stand_area, 'product_selection_additional_stand_area', stand_area_orders, "Select")
-        self.products_as_select_field(stand_height, 'product_selection_additional_stand_height', stand_height_orders, "RadioSelect")
+        self.products_as_select_field(stand_height, 'product_selection_additional_stand_height', stand_height_orders, "Select")
 
         # create form fields for the banquet, lunch and event products
         self.products_as_int_field(banquet, "banquet_", banquet_orders)
