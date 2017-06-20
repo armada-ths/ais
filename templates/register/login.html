@@ -5,37 +5,35 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
-    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'login-home.css' %}" rel="stylesheet" media="screen">
     <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
 </head>
 
 <body>
-    <div class="container">
+    <div class="container">   
+    	<div class="headline">
+    		<svg viewBox="305 16 320 150" width="555px" height=100px" version="1.1">
+				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
+			</svg>
+            <h2>Final registration for ths armada 2017 </h2>
+        </div>
+        <!--Company registration closed, uncomment to allow and change link 
         <div class="row">
             <div class="col-md-12">
-                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
+                <p><i> If this is your first time using our new 2017 registration page, please <a href="{% url 'anmalan:index' %}" class="login-link %}"><strike>create a new company user</strike> </a> as your first step.</i></p>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Exhibitor - Log in </h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <p><i> If this is your first time using our new 2017 registration page, please <a href="{% url 'anmalan:create_company_user' %}" class="login-link %}">create a new company user </a> as your first step.</i></p>
-            </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <form method="post">
-                {% csrf_token %} {{ form|crispy }}
-                <input type="hidden" name="next" value='/register/home' />
-                <button class="btn btn-success">Log in</button>
-                <a href="{% url 'anmalan:index' %}"><button type="button" class="btn btn-default">Back</button></a>
-            </form>
-          </div>
-        </div>
+        </div>-->
+    	<div class="form-container	">
+	       <form method="post">
+	            {% csrf_token %} {{ form|crispy }}
+	            <input type="hidden" name="next" value='/register/home'/>
+	            <button class="btn-signin btn-green">Sign in</button>
+	        </form>
+        	<a href="{% url 'anmalan:password_reset' %}" class="forgot-password">Forgot password</a>
+        	<svg viewBox="50 90 200 200" width="100px" height=180px" version="1.1">
+				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
+			</svg>
+    	</div>	
     </div>
 </body>
 
