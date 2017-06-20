@@ -34,7 +34,7 @@
               <div class="mail">
                 <p class="mail-name">Axel Ingo</p>
                 <p class="mail-role">Project Manager</p>
-                <a class = "mail-ref" href="mailto:armada@ths.kth.se">armada@ths.kth.se</a><br/> 
+                <a class = "mail-ref" href="mailto:armada@ths.kth.se">armada@ths.kth.se</a><br/>
                 +46 70 790 98 44
               </div>
               <div class="mail">
@@ -66,12 +66,11 @@
             </div>
         </div>
     </div>
-      <svg class="armada-ship-green" viewBox="50 90 200 200" width="100px" height=180px" version="1.1">
+      <svg class="armada-ship-green" viewBox="50 90 200 200" width="100px" height="180px" version="1.1">
           <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
       </svg>
-      <button class="btn-start btn-green">Start</button>
+      <button class="btn-start btn-green" onclick="window.location.href='{% url 'anmalan:create_exhibitor' %}'">Start</button>
       <p class="important press-start">Press <span class = "text-highlight"> start </span>to continue</p>
 </body>
 
 </html>
-  
