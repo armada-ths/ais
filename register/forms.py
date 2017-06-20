@@ -1,4 +1,4 @@
-from django.forms import Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
+from django.forms import TextInput, Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
 
@@ -157,6 +157,13 @@ class ExhibitorForm(ModelForm):
         model = Exhibitor
         fields = '__all__'
         exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
+        widgets = {
+            'invoice_address': TextInput(attrs={'placeholder': 'Address'}),
+            'invoice_address_po_box': TextInput(attrs={'placeholder': 'Address/PO-box'}),
+            'invoice_address_zip_code': TextInput(attrs={'placeholder': 'Zip code'}),
+            'transport_from_fair_address': TextInput(attrs={'placeholder': 'Address'}),
+            'allergies': TextInput(),
+        }
 
     # Fields for contact in save and confirm tab
     def init_contact_fields(self, contact):
@@ -269,7 +276,12 @@ class ExhibitorForm(ModelForm):
             self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=RadioSelect())
         elif widget == "Select":
             self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=Select())
-        self.initial[fieldname] = orders[0].product.name
+        try:
+            # Fix for radio buttons and select to show ordered product
+            # Try/except because if there is no order, there will be indexError
+            self.initial[fieldname] = orders[0].product.name
+        except IndexError:
+            pass
         #self.fields[fieldname].initial = [p for p in checkedProductsList]
 
 

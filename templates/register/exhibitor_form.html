@@ -71,7 +71,7 @@
           <div class="tab-pane fade cr-basekit" id="base-kit">
             <div class="row">
               <div class="col-md-12">
-                <h1 class="text-center">BASE KIT (39 500, mandatory)</h1>
+                <h1 class="text-center">BASE KIT, 39 500</h1>
               </div>
             </div>
             <div class="row">
@@ -102,6 +102,11 @@
                     compensation is done in collaboration with Tricorona.
                   </p>
                 </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="text-center"><span class="h-red">Mandatory</span></h4>
               </div>
             </div>
           </div>
@@ -176,17 +181,27 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
           </div>
           <div class="tab-pane fade" id="sture">
             <div class="row">
-              <div class="col-md-4 col-md-offset-2">
-                <h3>FURNITURE FROM STURE</h3>
-                <p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
-                <p>Aligned with THS Armada’s focus on environmental sustainability, we are very proud to collaborate with Sture that has received a gold rating from Svensk miljöbas due to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
-                <p>In a separate e­mail, you will receive Sture’s furniture catalogue put together exclusively for the Armada fair including three complete fair solutions. To facilitate the ordering process, just click the link to Sture’s dedicated e­mail address below and state your requests. For more information, visit Sture’s homepage: www.sture.se</p>
-                <h4>For contact and ordering:</h4> 
-                <a href="mailto:gitte.friberg@sture.se">gitte.friberg@sture.se</a>
+              <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-12">
+                  <h3>FURNITURE FROM STURE</h3>
+                </div>
+                </div>
               </div>
-              <div class="col-md-4">
-                <!-- sture logo -->
-                <img src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
+            <div class="row">
+              <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-4">
+                  <p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
+                  <p>Aligned with THS Armada’s focus on environmental sustainability, we are very proud to collaborate with Sture that has received a gold rating from Svensk miljöbas due to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
+                </div>
+                <div class="col-md-4">
+                  <p>In a separate e­mail, you will receive Sture’s furniture catalogue put together exclusively for the Armada fair including three complete fair solutions. To facilitate the ordering process, just click the link to Sture’s dedicated e­mail address below and state your requests. For more information, visit Sture’s homepage: www.sture.se</p>
+                  <h4>For contact and ordering:</h4> 
+                  <a href="mailto:gitte.friberg@sture.se">gitte.friberg@sture.se</a>
+                </div>
+                <div class="col-md-4">
+                  <!-- sture logo -->
+                  <img src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
+                </div>
               </div>
             </div>
           </div>
@@ -297,9 +312,11 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                           </li>
                         {% endif %}
                       {% endfor %}
+                        <li class="cr-allergies">
+                          <label class="pretty-label">{{ form.allergies.label }} </label>
+                          {{ form.allergies }}
+                        </li>
                       </ul>
-                      <label class="pretty-label">{{ form.allergies.label }} </label>
-                      {{ form.allergies }}
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -357,11 +374,11 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
               <div class="col-md-4"> <!-- additional info -->
                 <div class="cr-logistics-container">
                   <h3>ADDITIONAL INFORMATION</h3>
-                  <h4>Requests for stand placement</h4>
+                  <h4><span class="h-white">Requests for stand placement</span></h4>
                   <div class="cr-logistics-additional">
                     {{ form.requests_for_stand_placement }}
                   </div>
-                  <h4>Request for exhibition area</h4>
+                  <h4><span class="h-white">Request for exhibition area</span></h4>
                   <div class="cr-logistics-additional">
                     {{ form.requests_for_exhibition_area }}
                   </div>
@@ -412,12 +429,12 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                 <div class="col-md-12"> <!-- armada transport -->
                   <div class="cr-logistics-container cr-logistics-container-transport">
                     <div class="row">
-                      <div class="col-md-12">
+                      <div class="col-md-6">
                         <h3>ARMADA TRANSPORT (Included)</h3>
                       </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-12">
+                      <div class="col-md-6">
                         <p>Pack up your exhibition material and leave it as the fair ends, THS Armada Transport service will transport it according to your preference. THS Armada Transport is a part of our sustainability work.</p>
                       </div>
                     </div>

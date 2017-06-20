@@ -1,7 +1,7 @@
 body, html {
 	height: 100%;
 	position: relative;
-	font-family: 'Lato', Arial, sans-serif;
+	font-family: 'Lato Light', Arial, sans-serif;
 }
 
 /*
@@ -17,8 +17,12 @@ body {
 }
 
 @font-face {
-  font-family: "Lato";
+  font-family: "Lato Regular";
   src: url("./fonts/Lato-Regular.ttf");
+}
+@font-face {
+  font-family: "Lato Light";
+  src: url("./fonts/Lato-Light.ttf");
 }
 input, select, textarea { 
 	color: black; 
@@ -227,7 +231,10 @@ li.nav {
 /*
 *	TAB: ROOMS; *********************************
 */
-
+.cr-rooms, 
+.cr-rooms label {
+	font-weight: normal;
+}
 .cr-rooms ul {
 	list-style: none;
 }
@@ -371,7 +378,7 @@ ul.nova-info ul {
     padding-left: 30px;
 }
 ul.nova-info ul li {
-	margin-bottom: 10px;
+	
 }
 .cr-container-nova ul#id_product_selection_nova { 
 	list-style: none;
@@ -513,6 +520,12 @@ ul.additional_stand_height label span {
     margin-left: 10px;
     width: 65px;
 }
+.cr-additional-lunch .cr-allergies input {
+	background: #fff;
+	border: none;
+	color: #000;
+	width: 150px;
+}
 .cr-additional-container textarea {}
 /* contact me about box */
 .cr-additional-checkboxes label { 
@@ -560,6 +573,9 @@ ul.additional_stand_height label span {
 .cr-logistics-container-transport {
 	min-height: auto;
 }
+.cr-logistics-container h4 .h-white {
+	border-bottom: 1px solid #fff;
+}
 
 #id_requests_for_exhibition_area > li:nth-child(1) > label, 
 #id_requests_for_stand_placement > li:nth-child(1) > label {
@@ -591,6 +607,7 @@ ul.additional_stand_height label span {
 	float: none;
 	margin-left: auto;
 	margin-right: auto;
+	width: 80%;
 }
 
 /*
