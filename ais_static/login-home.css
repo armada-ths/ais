@@ -188,6 +188,7 @@ form {
 * RESET PASSWORD
 */
 
-.reset-text {
+.center {
+	margin: 0 auto;
 	text-align: center;
 }
