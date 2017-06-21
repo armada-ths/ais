@@ -1,7 +1,7 @@
 body, html {
 	height: 100%;
 	position: relative;
-	font-family: 'Lato', Arial, sans-serif;
+	font-family: 'Lato Light', Arial, sans-serif;
 }
 
 /*
@@ -17,8 +17,12 @@ body {
 }
 
 @font-face {
-  font-family: "Lato";
+  font-family: "Lato Regular";
   src: url("./fonts/Lato-Regular.ttf");
+}
+@font-face {
+  font-family: "Lato Light";
+  src: url("./fonts/Lato-Light.ttf");
 }
 input, select, textarea { 
 	color: black; 
@@ -32,10 +36,22 @@ h1,h2,h3,h4 {
 	font-family: 'Bebas Neue', sans-serif; 
 	text-transform: uppercase;
 }
+h1 {
+	font-size: 3.5em;
+	color: #00d791;
+}
 h3 {
 	font-size: 2em;
 	color: #00d791;
 	margin-top: 0;
+}
+h4 {
+	font-size: 1.5em;
+	color: #00d791;
+	margin-top: 0;
+}
+a, a:visited, a:hover {
+	color: #00d791;
 }
 .hidden {
 	display: none;
@@ -63,7 +79,7 @@ h3 {
 	color: #fff;
 }
 /*
-*	DROP DOWN STYLE
+*	DROP DOWN STYLE / INPUT STYLE
 */
 .cr-container select {
 	background: #353535;
@@ -74,11 +90,27 @@ h3 {
     padding: 5px 8px;
     outline: none;
 }
+ul.cr-banquet-tickets input,
+.cr-event-container .cr-event-right input,
+.cr-additional-container .cr-additional-lunch input {
+	background: #353535;
+    color: #fff;
+    border: 2px solid #00d791;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 8px;
+    outline: none;
+    width: 60px;
+}
+
 /*
 *	CONTAINER
 */
 .cr-container {
 	max-width: 1400px;
+}
+.cr-contanier p {
+	text-align: justify;
 }
 .popover { color: black;}
 .has-popover.hover-mark {
@@ -86,6 +118,8 @@ h3 {
 	cursor: pointer;
 }
 span.h-red { color :#ea2c49; }
+span.h-white { color :#fff; }
+span.h-green { color :#00d791; }
 .has-popover.hover-mark.h-red {
 	border-bottom-color: #ea2c49;
 }
@@ -94,6 +128,15 @@ span.h-red { color :#ea2c49; }
 	font-size: 18px;
     font-weight: normal;
 }
+.divider {
+	width: 3px;
+	height: 100%;
+	background: #fff;
+	position: absolute;
+	left: 50%;
+	top: 0;
+}
+
 /*
  *	GENERAL NAVIGAITON STYLE
  */
@@ -160,12 +203,48 @@ li.nav {
 	margin-top: 90px;
 	margin-bottom: 110px;
 }
+/*
+*	TAB: BASKE KIT; *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-basekit .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-basekit .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
 
+.cr-container-basekit {
+	background: #353535;
+	padding: 15px;
+	height: 100%;
+}
+.cr-container-basekit ul li {
+	margin-top: 5px;
+}
+.cr-sustainability {
+	position: relative;
+    top: 25%;
+}
+.cr-margin-top {
+	margin-top: 20px;
+}
 
 /*
 *	TAB: ROOMS; *********************************
 */
-
+.cr-rooms {
+	position: relative;
+}
+.cr-rooms, 
+.cr-rooms label {
+	font-weight: normal;
+}
 .cr-rooms ul {
 	list-style: none;
 }
@@ -177,6 +256,7 @@ li.nav {
 .cr-rooms h3 {
 	font-size: 3.5em;
 	text-align: center;
+	padding-bottom: 120px;
 }
 .cr-rooms h3,
 .cr-rooms p {
@@ -188,8 +268,13 @@ li.nav {
 	font-family: 'Bebas Neue', sans-serif;
 	font-size: 1.7em;
 	border-bottom: 2px solid #00d791;
-	margin-top: 50px;
+	margin-top: 40px;
 	cursor: pointer;
+}
+.cr-rooms li:nth-child(2) h3,
+.cr-rooms li:nth-child(2) p.product-description {
+	position: relative;
+	top: -20px;
 }
 .cr-rooms input {
 	position: absolute;
@@ -197,7 +282,25 @@ li.nav {
 	bottom: 25px;
 	cursor: pointer;
 }
-.cr-rooms .divider {
+.cr-rooms p.product-description {
+}
+.cr-rooms img {
+	/*width: 250px;*/
+	height: 100px;
+	position: absolute;
+	top: 60px;
+}
+.cr-rooms img.logo-diversity {
+	/*width: 200px;*/
+	left: 25%;
+	margin-left: -33px;
+}
+.cr-rooms img.logo-sustainability {
+	/*width: 100px;*/
+	right: 25%;
+	margin-right: -30px;
+}
+.divider.rooms {
 	width: 3px;
 	height: 100%;
 	background: #fff;
@@ -248,6 +351,118 @@ li.nav {
     padding: 3px 5px;
     border: none;
     border-radius: 3px;
+}
+/*
+*	TAB: BANQUET; *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-banquet .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-banquet .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+.cr-banquet-purchase {
+	border-left: 2px solid #00d791;
+}
+ul.cr-banquet-tickets {
+	margin-top: 30px;
+}
+ul.cr-banquet-tickets h3 {
+	font-size: 1.4em;
+}
+ul.cr-banquet-tickets li {
+	padding: 10px;
+	margin: 5px 0;
+}
+ul.cr-banquet-tickets li:nth-child(odd) {
+	background: #353535;
+}
+
+/*
+*	TAB: NOVA *********************************
+*/
+/* flexbox fix to make column equal height */
+.cr-nova .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.cr-nova .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+.cr-container-nova {
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+}
+ul.nova-info ul {
+    border: 2px solid #ea2c49;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 10px;
+    padding-left: 30px;
+}
+ul.nova-info ul li {
+	
+}
+.cr-container-nova ul#id_product_selection_nova { 
+	list-style: none;
+}
+.cr-container-nova h4.confirm-title {
+	border-bottom: 2px solid #00d791;
+	margin-top: 50px;
+	cursor: pointer;
+	position: absolute;
+	bottom: 10px;
+	left: 40px;
+	width: 100%;
+}
+.cr-container-nova #id_product_selection_nova_0 {
+	position: absolute;
+	bottom: 26px;
+	right: 10px;
+}
+
+/*
+*	TAB: EXHIBITOR PROFILE *********************************
+*/
+.cr-container-profile {
+	text-align: center;
+	width: 90%;
+}
+.cr-container-profile h2 {
+	font-size: 4em;
+	color: #00d791;
+}
+.cr-container-profile p {
+	text-align: left;
+}
+.cr-container-profile input {
+	background: #353535;
+	color: #fff;
+	padding: 30px;
+}
+.cr-profile .divider.left {
+	left: 31%;
+	transform:rotate(12deg);
+	-moz-transform:rotate(12deg);
+	-webkit-transform:rotate(12deg);
+
+}
+.cr-profile .divider.right {
+	left: 67%;
+	transform:rotate(-12deg);
+	-moz-transform:rotate(-12deg);
+	-webkit-transform:rotate(-12deg);
 }
 
 /*
@@ -301,7 +516,7 @@ input[type=radio]:checked + .btn-armada-checkbox {
 	color: #353535;
 }
 .cr-additional-container input[type=checkbox],
-.cr-additional-container input[type=radio] { display: none; }
+.cr-additional-container input[type=radio] { }
 /* additoinal stand area drop down */
 .cr-additional-container select {
     width: 50%;
@@ -310,20 +525,24 @@ input[type=radio]:checked + .btn-armada-checkbox {
     left: 50%;
 }
 /* additional stand area HEIGHT */
-ul#id_product_selection_additional_stand_height {
+ul#id_product_selection_additional_stand_height,
+ul.additional_stand_height {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 	text-align: center;
 }
-ul#id_product_selection_additional_stand_height li {
+ul#id_product_selection_additional_stand_height li,
+ul.additional_stand_height li {
 	display: inline-block;
 	width: 46%;
 	margin-left: 5px;
 	margin-right: 5px;
 }
 ul#id_product_selection_additional_stand_height label,
-ul#id_product_selection_additional_stand_height label span {
+ul#id_product_selection_additional_stand_height label span,
+ul.additional_stand_height label,
+ul.additional_stand_height label span {
 	width: 100%;
 }
 /* Additoinal lunch tickets*/
@@ -335,6 +554,13 @@ ul#id_product_selection_additional_stand_height label span {
     margin-left: 10px;
     width: 65px;
 }
+.cr-additional-lunch .cr-allergies input {
+	background: #fff;
+	border: none;
+	color: #000;
+	width: 150px;
+}
+.cr-additional-container textarea {}
 /* contact me about box */
 .cr-additional-checkboxes label { 
 	width: 46%;
@@ -346,6 +572,9 @@ ul#id_product_selection_additional_stand_height label span {
 	white-space: normal;
 	line-height: 110%;
 	vertical-align: middle;
+}
+.cr-additional-checkboxes input {
+	display: none;
 }
 /* electrical outlets box */
 .cr-additional-container-electrical {
@@ -375,6 +604,12 @@ ul#id_product_selection_additional_stand_height label span {
 .cr-logistics-container ul {
 	list-style: none;
 }
+.cr-logistics-container-transport {
+	min-height: auto;
+}
+.cr-logistics-container h4 .h-white {
+	border-bottom: 1px solid #fff;
+}
 
 #id_requests_for_exhibition_area > li:nth-child(1) > label, 
 #id_requests_for_stand_placement > li:nth-child(1) > label {
@@ -398,6 +633,16 @@ ul#id_product_selection_additional_stand_height label span {
     float: right;
     margin-top: -7px;
 }
+.cr-logistics-additional {
+	text-align: center;
+    padding: 15px;
+}
+.cr-logistics-additional select {
+	float: none;
+	margin-left: auto;
+	margin-right: auto;
+	width: 80%;
+}
 
 /*
 *	TAB: CONFIRM AND SAVE *********************************
@@ -411,7 +656,10 @@ ul#id_product_selection_additional_stand_height label span {
 .cr-container-confirm h3 {
 	margin-top: 50px;
 }
-.toggleEdit { color: #ea2c49; }
+.toggleEdit { 
+	color: #ea2c49; 
+	cursor: pointer;
+}
 
 /* a form that's not editable */
 .no-editable-form h5 {
@@ -490,3 +738,25 @@ ul#id_product_selection_additional_stand_height label span {
 	width: 38%;
 }
 
+
+@media all and (max-width: 1137px) {
+  .cr-tab-content {
+  	margin-top: 135px;
+  }
+}
+/* exhibitor profile */
+@media all and (max-width: 992px) {
+  .cr-profile .divider {
+  	display: none;
+  }
+  .cr-profile h2 {
+  	margin-top: 30px;
+  }
+  .cr-profile p { 
+  	text-align: center;
+  }
+  .cr-profile input {
+  	margin-left: auto;
+  	margin-right: auto;
+  }
+} 

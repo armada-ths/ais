@@ -22,6 +22,43 @@ $('#transportToFairType').children().change(function() {
     $('#externalTransportChosen').hide();
   }
 });
+// if armada transport is chosen on load
+$(document).ready(function(){
+  console.log("hej");
+  var selected = $('#id_transport_from_fair_type').val();
+  //console.log(selected.val());
+  if(selected == 'armada_transport') {
+    $('#armadaTransportChosen').show();
+  } else {
+    $('#armadaTransportChosen').hide();
+  }
+});
+
+// Edit button in Confirm and Save tab
+$('#editOrganisationTrigger').click(function() {
+  $('#organistaionEditable').toggleClass('hidden visible');
+  $('#organisationNoEditable').toggleClass('visible hidden');
+});
+$('#editContactTrigger').click(function() {
+  $('#contactEditable').toggleClass('hidden visible');
+  $('#contactNoEditable').toggleClass('visible hidden');
+});
+
+$('#editInvoiceToggle').click(function() {
+  $('#invoiceEditable').toggleClass('hidden visible');
+  $('#invoiceNoEditable').toggleClass('visible hidden');
+});
+$('#editArmadaTransportTrigger').click(function() {
+  $('#armadaTransportEditable').toggleClass('hidden visible');
+  $('#armadaTransportNoEditable').toggleClass('visible hidden');
+});
+
+$('.no-editable-form').find('input').prop( "disabled", true );
+$('.no-editable-form').find('select').prop( "disabled", true );
+$('.no-editable-form').find('input').attr('disabled', 'disabled');
+$('.no-editable-form').find('select').attr('disabled', 'disabled');
+$('.editable-form').find('input').prop( "disabled", false );
+$('.editable-form').find('select').prop( "disabled", false );
 
 // Edit button in Confirm and Save tab
 $('#editOrganisationTrigger').click(function() {
