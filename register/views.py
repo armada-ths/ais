@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import get_template
+from django.contrib.sites.shortcuts import get_current_site
 
 import json
 import requests as r
@@ -159,13 +162,13 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             stand_height_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Additional Stand Height"))
 
             # Check which products that already is in an order
-            current_banquet_orders = Order.objects.filter(exhibitor=exhibitor, product=banquet_products)
-            current_lunch_orders = Order.objects.filter(exhibitor=exhibitor, product=lunch_products)
-            current_event_orders = Order.objects.filter(exhibitor=exhibitor, product=event_products)
-            current_room_orders = Order.objects.filter(exhibitor=exhibitor, product=room_products)
-            current_nova_orders = Order.objects.filter(exhibitor=exhibitor, product=nova_products)
-            current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_area_products)
-            current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product=stand_height_products)
+            current_banquet_orders = Order.objects.filter(exhibitor=exhibitor, product__in=banquet_products)
+            current_lunch_orders = Order.objects.filter(exhibitor=exhibitor, product__in=lunch_products)
+            current_event_orders = Order.objects.filter(exhibitor=exhibitor, product__in=event_products)
+            current_room_orders = Order.objects.filter(exhibitor=exhibitor, product__in=room_products)
+            current_nova_orders = Order.objects.filter(exhibitor=exhibitor, product__in=nova_products)
+            current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_area_products)
+            current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_height_products)
 
             # Pass along all relevant information to form
             form = ExhibitorForm(
@@ -201,6 +204,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # Update Company fields
                 updatedCompany = Company.objects.get(pk=company.pk)
+                updatedCompany.organisation_number = form.cleaned_data['organisation_identification_number']
                 updatedCompany.organisation_type = form.cleaned_data['type_of_organisation']
                 updatedCompany.address_street = form.cleaned_data['address_street']
                 updatedCompany.address_zip_code = form.cleaned_data['address_zip_code']
@@ -270,12 +274,12 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     else:
                         delete_order_if_exists(product)
                 for product in stand_area_products:
-                    if product in product_selection_additional_stand_area:
+                    if product.name in product_selection_additional_stand_area:
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_height_products:
-                    if product in product_selection_additional_stand_height:
+                    if product.name in product_selection_additional_stand_height:
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
@@ -304,7 +308,17 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 # Do nothing if form is saved, otherwise redirect and send email
                 save_or_submit = form.save_or_submit()
                 if 'submit' in save_or_submit:
-                    # PUT EMAIL STUFF HERE
+                    site_name = get_current_site(request).domain
+                    send_mail(
+                        'Complete Registration Confirmation on ' + site_name,
+                        get_template('register/complete_confirm_email.html').render(({
+                                'username': contact.email,
+                                'site_name': site_name
+                            })
+                        ),
+                        settings.DEFAULT_FROM_EMAIL,
+                        [contact.email],
+                        fail_silently=False)
                     return redirect('anmalan:home')
 
     return render(request, template_name, {'form': form})

@@ -68,40 +68,57 @@
               <a href="mailto:fredrik.magnusson@armada.nu">fredrik.magnusson@armada.nu</a>, +46 70 268 63 29
             </p>
           </div>
-          <div class="tab-pane fade" id="base-kit">
-            <h2>BASE KIT (39 500, mandatory)</h2>
+          <div class="tab-pane fade cr-basekit" id="base-kit">
+            <div class="row">
+              <div class="col-md-12">
+                <h1 class="text-center">BASE KIT, 39 500</h1>
+              </div>
+            </div>
             <div class="row">
               <div class="col-md-6">
-                <h5>Included:</h5>
-                <ul>
-                  <li>Stand area of 2 x 3 meters (Height < 2,31 meters)</li>
-                  <li>Access to a Career Fair Host to help you build your stand and attract students</li>
-                  <li>Full exhibitor information on website and iOS/Android applications</li>
-                  <li>2 tickets to the Armada Banquet</li>
-                  <li>8 Lunch tickets for the career fair days (4 per day)</li>
-                  <li>Access to information desks, wardrobe and exhibitor lounges</li>
-                  <li>Electricity and wifi provided at exhibitor stand</li>
-                  <li>Logistics services for your equipment from delivery to the end of the career fair</li>
-                  <li>Armada Transport, helps you transport your equipment from the fair</li>
-                  <li>Climate compensation - in collaboration with Tricorona</li>
-                </ul>
+                <div class="cr-container-basekit">
+                  <h3>Included:</h3>
+                  <ul>
+                    <li>Stand area of 2 x 3 meters (Height < 2,31 meters)</li>
+                    <li>Access to a Career Fair Host to help you build your stand and attract students</li>
+                    <li>Full exhibitor information on website and iOS/Android applications</li>
+                    <li>2 tickets to the Armada Banquet</li>
+                    <li>8 Lunch tickets for the career fair days (4 per day)</li>
+                    <li>Access to information desks, wardrobe and exhibitor lounges</li>
+                    <li>Electricity and wifi provided at exhibitor stand</li>
+                    <li>Logistics services for your equipment from delivery to the end of the career fair</li>
+                    <li>Armada Transport, helps you transport your equipment from the fair</li>
+                    <li>Climate compensation - in collaboration with Tricorona</li>
+                  </ul>
+                </div>
               </div>
               <div class="col-md-6">
-                <h5>Sustainability</h5>
-                <p>
-                  THS Armada has been climate neutral since 2015. Climate compensation for your
-                  organization’s CO2-emission associated with the THS Armada fair 2017 as well as the
-                  organisation’s emissions during the year is included in the Base Kit. This year all climate
-                  compensation is done in collaboration with Tricorona.
-                </p>
+                <div class="cr-container-basekit">
+                  <div class="col-md-8 col-md-offset-2 cr-sustainability">
+                  <h3 class="text-center">Sustainability</h3>
+                  <p>
+                    THS Armada has been climate neutral since 2015. Climate compensation for your
+                    organization’s CO2-emission associated with the THS Armada fair 2017 as well as the
+                    organisation’s emissions during the year is included in the Base Kit. This year all climate
+                    compensation is done in collaboration with Tricorona.
+                  </p>
+                </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="text-center cr-margin-top"><span class="h-red">Mandatory</span></h4>
               </div>
             </div>
           </div>
           <div class="tab-pane fade" id="rooms">
             <div class="cr-rooms">
               {{ form.product_selection_rooms }}
-              <span class="divider"></span>
+              <img src="{% static 'images/diversity_green.png' %}" alt="Diversity Logo" class="logo-diversity"/>
+              <img src="{% static 'images/sustainability_green.png' %}" alt="Sustainability Logo" class="logo-sustainability"/>
             </div>
+            <span class="divider rooms"></span>
           </div>
           <div class="tab-pane fade" id="events">
             <!--<h2>Events</h2>-->
@@ -125,22 +142,41 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
               {% endif %}
             {% endfor %}
           </div>
-          <div class="tab-pane fade" id="banquet">
-            <h2>Banquet</h2>
+          <div class="tab-pane fade cr-banquet" id="banquet">
             <div class="row">
-              <div class="col-md-6">
-                <h5>Welcome to the Grand Banquet of THS Armada!</h5>
-                <p>When:          Evening of Tuesday the 21nd of November</p>
-                <p>Where:         Annexet, Globen</p>
-                <p>Dress Code:    Dark suit</p>
-                <p>This is one of the biggest university banquets in Sweden where you and your organization will have the wonderful opportunity to network with many ambitious students in a casual atmosphere. The evening will start off with a refreshing drink and continue with a three course menu and spectacular entertainment.</p>
-                <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. This information will be gathered before October 27th.</p>
+              <div class="col-md-9">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h1>The Banquet</h1>
+                    <h5>Welcome to the Grand Banquet of THS Armada!</h5>
+                    <h3><span class="h-white">Dark suit</span> <span class="h-green">November 21st</span> <span class="h-red">Annexet, Globen</span></h3>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p>This is one of the biggest university banquets in Sweden where you and your organization will have the wonderful opportunity to network with many ambitious students in a casual atmosphere. The evening will start off with a refreshing drink and continue with a three course menu and spectacular entertainment.</p>
+                    <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. This information will be gathered before October 27th.</p>
+                    <h4>Tables</h4>
+                    <p>New for this year is that you also have the opportunity to purchase entire tables to the banquet. These tables will have 8 seats, a favorable placement and be branded with your company logo.  You will have the unique chance to handpick top students of your choosing to this table, which will give you a great chance to deepen your connection with interesting top students that you have met at events, at the fair or to get to know new students that have shown great interest in your company. </p>
+                  </div>
+                  <div class="col-md-6">
+                    <h4>Banquet ticket - Company representative</h4>
+                    <p>This year we have chosen to include 2 banquet tickets in the base kit for each participating company. Of course you also have the opportunity to purchase additional tickets if you’re so inclined. </p>
+                    <h4>Banquet ticket - student</h4>
+                    <p>Did you meet any interesting students during the first day of the fair? Let these students know more about your organisation and get to know them personally in a different setting by inviting them to the banquet. A ticket to the banquet can also be used as a very appreciated prize for students in a possible contest at your stand.</p>
+                  </div>
+                </div>
               </div>
-              <div class="col-md-6">
-                <ul>
+              <div class="col-md-3 cr-banquet-purchase">
+                <h3>Purchase</h3>
+                <p>Specify the number of tickets you wish to purchase:</p>
+                <ul class="list-unstyled cr-banquet-tickets">
                   {% for field in form %}
                     {% if 'banquet' in field.help_text %}
-                      <li>{{ field.label }} <br /> {{ field }}</li>
+                      <li>
+                        <h4>{{ field.label }}</h4> 
+                        {{ field }}
+                      </li>
                     {% endif %}
                   {% endfor %}
                 </ul>
@@ -148,29 +184,85 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
             </div>
           </div>
           <div class="tab-pane fade" id="sture">
-            <h2>FURNITURE FROM STURE</h2>
-            <p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
-            <p>Aligned with THS Armada’s focus on environmental sustainability, we are very proud to collaborate with Sture that has received a gold rating from Svensk miljöbas due to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
-            <p>In a separate e­mail, you will receive Sture’s furniture catalogue put together exclusively for the Armada fair including three complete fair solutions. To facilitate the ordering process, just click the link to Sture’s dedicated e­mail address below and state your requests. For more information, visit Sture’s homepage: www.sture.se</p>
-            <p>For contact and ordering: <a href="mailto:gitte.friberg@sture.se">gitte.friberg@sture.se</a></p>
+            <div class="row">
+              <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-12">
+                  <h3>FURNITURE FROM STURE</h3>
+                </div>
+                </div>
+              </div>
+            <div class="row">
+              <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-4">
+                  <p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
+                  <p>Aligned with THS Armada’s focus on environmental sustainability, we are very proud to collaborate with Sture that has received a gold rating from Svensk miljöbas due to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
+                </div>
+                <div class="col-md-4">
+                  <p>In a separate e­mail, you will receive Sture’s furniture catalogue put together exclusively for the Armada fair including three complete fair solutions. To facilitate the ordering process, just click the link to Sture’s dedicated e­mail address below and state your requests. For more information, visit Sture’s homepage: www.sture.se</p>
+                  <h4>For contact and ordering:</h4> 
+                  <a href="mailto:gitte.friberg@sture.se">gitte.friberg@sture.se</a>
+                </div>
+                <div class="col-md-4">
+                  <!-- sture logo -->
+                  <img src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="tab-pane fade" id="nova">
-            {{ form.product_selection_nova }}
+          <div class="tab-pane fade cr-nova" id="nova">
+            <div class="row">
+              <div class="col-md-4 col-md-offset-2">
+                <div class="cr-container-nova">
+                  {{ form.product_selection_nova }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="cr-container-nova">
+                  <ul class="list-unstyled nova-info">
+                    <li>
+                      <h4>START UP MEETING – <small><span class="h-green">1 H</span></small></h4>
+                      <ul>
+                        <li>Start-up meeting with the main responsible at your company together with an experienced Talent Manager from Nova.</li>
+                        <li>During this one hour session, we will guide you in how to plan and prepare for  and the maximize value of your THS Armada participation and other career fairs.</li>
+                      </ul>
+                    </li>
+                    <li>
+                      <h4>CAREER SURVEY AND EVENT TOOL PRESENTATION – <small><span class="h-green">1-2 H</span></small></h4>
+                      <ul>
+                        <li>Presentation of Universum career survey where you will get to know what previous year THS Armada students were looking for when choosing an employer. </li>
+                        <li>We will go through different tips and event tools you can use to truly build your talent pool during the day.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+
+              </div>
+            </div>
           </div>
-          <div class="tab-pane fade" id="exhibitor-profile">
+          <div class="tab-pane fade cr-profile" id="exhibitor-profile">
+            <span class="divider left"></span>
+            <span class="divider right"></span>
             <div class="row">
               <div class="col-md-4">
-                <h2>Logo</h2>
-                {{ form.logo }}
+                <div class="cr-container-profile">
+                  <h2>Upload logo</h2>
+                  <p>Upload your logo so we can display it in our apps.</p>
+                  {{ form.logo }}
+                </div>
               </div>
               <div class="col-md-4">
-                <h2>Profile</h2>
-                <p>Text About the Exhibitor</p>
-                {{ form.about_text }}
+                <div class="cr-container-profile">
+                  <h2>Text about organisation</h2>
+                  <p>Write a selling text about your company, this is what a student will be able to read in our apps.</p>
+                  {{ form.about_text }}
+                </div>
               </div>
               <div class="col-md-4">
-                <h2>Exhibitor Facts (optional)</h2>
-                {{ form.facts_text }}
+                <div class="cr-container-profile">
+                  <h2>Organisation Facts</h2>
+                  <p>List some quick/fun facts about your organisation.</p>
+                  {{ form.facts_text }}
+                </div>
               </div>
             </div>
           </div>
@@ -193,6 +285,21 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                       <h3>ADDITIONAL STAND <span class="h-red">HEIGHT</span></h3>
                       <p>Height 0 - 2,30 included</p>
                       {{ form.product_selection_additional_stand_height }}
+                      <!--<ul class="list-unstyled additional_stand_height">
+                      {% for choice in form.product_selection_additional_stand_height.field.choices %}
+                        <li>
+                          <label for="id_{{choice.0}}">
+                            <input type="radio" name="product_selection_additional_stand_height" id="id_{{choice.0}}" value="{{choice.0}}"
+                              {% ifequal form.my_choice_field.data choice.0 %} 
+                                 checked="checked"
+                              {% endifequal %}/>
+                            <span class='btn btn-armada-checkbox product-label'>
+                              {{choice.1}}
+                            </span>
+                          </label>
+                        </li>
+                      {% endfor %}
+                      </ul>-->
                     </div>
                   </div>
                 </div>
@@ -209,9 +316,11 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                           </li>
                         {% endif %}
                       {% endfor %}
+                        <li class="cr-allergies">
+                          <label class="pretty-label">{{ form.allergies.label }} </label>
+                          {{ form.allergies }}
+                        </li>
                       </ul>
-                      <label class="pretty-label">{{ form.allergies.label }} </label>
-                      {{ form.allergies }}
                     </div>
                   </div>
                   <div class="col-md-6">
@@ -269,68 +378,68 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
               <div class="col-md-4"> <!-- additional info -->
                 <div class="cr-logistics-container">
                   <h3>ADDITIONAL INFORMATION</h3>
-                  <h4>Requests for stand placement</h4>
-                  {{ form.requests_for_stand_placement }}
-                  <h4>Request for exhibition area</h4>
-                  {{ form.requests_for_exhibition_area }}
+                  <h4><span class="h-white">Requests for stand placement</span></h4>
+                  <div class="cr-logistics-additional">
+                    {{ form.requests_for_stand_placement }}
+                  </div>
+                  <h4><span class="h-white">Request for exhibition area</span></h4>
+                  <div class="cr-logistics-additional">
+                    {{ form.requests_for_exhibition_area }}
+                  </div>
                 </div>
               </div>
-              <div class="col-md-8">
-                <div class="row">
-                  <div class="col-md-6"> <!-- transport to fair -->
-                    <div class="cr-logistics-container">
-                      <h3>Transport <span class="h-red">to</span> fair</h3>
-                          <span>Transport type to fair:</span>
-                          <span id="transportToFairType">{{ form.transport_to_fair_type }}</span>
-                          <div id="externalTransportChosen">
-                            <h5></h5>
-                            <p>{{ form.interested_in_armada_transport }} <label for="id_interested_in_armada_transport" class="pretty-label">Interested in Armada Transport to the fair?</label><!--Yes, if the option to send goods to the fair using a service similar to Armada transport is created, we would like to use it.--></p>
-                            <p><span class="has-popover hover-mark more-info h-red" data-content="Goods will be pickuped by one truck organised by Armada, from different companies and delivered together to the fair. Reducing the amount of truck driving around town and helping the environment while at the same time making a smoother logistics flow for everyone. More information will be sent to all interested companies later on if this service is created.", data-placement='left', data-container="body">What is this?</span></p>
+              <div class="col-md-4"> <!-- transport to fair -->
+                <div class="cr-logistics-container">
+                  <h3>Transport <span class="h-red">to</span> fair</h3>
+                      <span>Transport type to fair:</span>
+                      <span id="transportToFairType">{{ form.transport_to_fair_type }}</span>
+                      <div id="externalTransportChosen">
+                        <h5></h5>
+                        <p>{{ form.interested_in_armada_transport }} <label for="id_interested_in_armada_transport" class="pretty-label">Interested in Armada Transport to the fair?</label><!--Yes, if the option to send goods to the fair using a service similar to Armada transport is created, we would like to use it.--></p>
+                        <p><span class="has-popover hover-mark more-info h-red" data-content="Goods will be pickuped by one truck organised by Armada, from different companies and delivered together to the fair. Reducing the amount of truck driving around town and helping the environment while at the same time making a smoother logistics flow for everyone. More information will be sent to all interested companies later on if this service is created.", data-placement='left', data-container="body">What is this?</span></p>
 
-                          </div>
-                          <ul class="list-unstyled cr-transport-input"> 
-                            <li>Number of packages:
-                              {{ form.number_of_packages_to_fair }}
-                            </li>
-                            <li>Number of pallets:
-                              {{ form.number_of_pallets_to_fair }}
-                            </li>
-                          </ul>
-                    </div>
-                  </div>
-                  <div class="col-md-6"> <!-- transport from fair -->
-                    <div class="cr-logistics-container">
-                      <h3>Transport <span class="h-red">from</span> fair</h3>
-                          <span>Transport type from fair:</span>
-                          <span id="transportFromFairType">{{ form.transport_from_fair_type }}</span>
-                          
-                          
-                          <ul class="list-unstyled cr-transport-input"> 
-                            <li>Number of packages:
-                              {{ form.number_of_packages_from_fair }}
-                            </li>
-                            <li>Number of pallets:
-                              {{ form.number_of_pallets_from_fair }}
-                            </li>
-                          </ul>
- 
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-12"> <!-- armada transport -->
-                    <div class="cr-logistics-container">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <h3>ARMADA TRANSPORT (Included)</h3>
-                        </div>
                       </div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <p>Pack up your exhibition material and leave it as the fair ends, THS Armada Transport service will transport it according to your preference. THS Armada Transport is a part of our sustainability work. -link to document with more information about how it works and responsibilities.</p>
-                        </div>
-                        <div class="col-md-6">
-                        </div>
+                      <ul class="list-unstyled cr-transport-input"> 
+                        <li>Number of packages:
+                          {{ form.number_of_packages_to_fair }}
+                        </li>
+                        <li>Number of pallets:
+                          {{ form.number_of_pallets_to_fair }}
+                        </li>
+                      </ul>
+                </div>
+              </div>
+              <div class="col-md-4"> <!-- transport from fair -->
+                <div class="cr-logistics-container">
+                  <h3>Transport <span class="h-red">from</span> fair</h3>
+                      <span>Transport type from fair:</span>
+                      <span id="transportFromFairType">{{ form.transport_from_fair_type }}</span>
+                      
+                      
+                      <ul class="list-unstyled cr-transport-input"> 
+                        <li>Number of packages:
+                          {{ form.number_of_packages_from_fair }}
+                        </li>
+                        <li>Number of pallets:
+                          {{ form.number_of_pallets_from_fair }}
+                        </li>
+                      </ul>
+
+                </div>
+              </div>
+            </div>
+
+              <div class="row">
+                <div class="col-md-12"> <!-- armada transport -->
+                  <div class="cr-logistics-container cr-logistics-container-transport">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h3>ARMADA TRANSPORT (Included)</h3>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p>Pack up your exhibition material and leave it as the fair ends, THS Armada Transport service will transport it according to your preference. THS Armada Transport is a part of our sustainability work.</p>
                       </div>
                     </div>
                   </div>
@@ -340,7 +449,6 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
             
 
     
-          </div>
           <div class="tab-pane fade" id="confirm-and-save">
             <div class="cr-container-confirm">
               <h2>Review your info</h2>
