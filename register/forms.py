@@ -1,6 +1,7 @@
 from django.forms import TextInput, Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
+from django import forms
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
@@ -16,7 +17,10 @@ from enum import Enum
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields['username'].label = "Email"
+        self.fields['username'].label = ""
+        self.fields['password'].label = ""
+        self.fields['username'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Company name'})
+        self.fields['password'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Password', 'type' : 'password'})
 
     def clean(self):
         self.cleaned_data['username'] = self.cleaned_data['username'].lower()
