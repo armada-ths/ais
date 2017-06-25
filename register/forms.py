@@ -1,8 +1,9 @@
 from django.forms import TextInput, Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
+from django import forms
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 
 from fair.models import Fair
@@ -22,6 +23,22 @@ class LoginForm(AuthenticationForm):
         self.cleaned_data['username'] = self.cleaned_data['username'].lower()
         super(LoginForm, self).clean()
 
+
+class ResetPasswordForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super(ResetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['email'].label = ""
+        self.fields['email'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Email'})
+
+class SetNewPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(SetNewPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['new_password1'].label = ""
+        self.fields['new_password2'].label = ""
+        self.fields['new_password1'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password', 'type' : 'password'})
+        self.fields['new_password2'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password Confirmation', 'type' : 'password'})
+
+
 class CompanyForm(ModelForm):
     class Meta:
         model = Company
@@ -37,7 +54,6 @@ class CompanyForm(ModelForm):
 
 
 class ContactForm(ModelForm):
-
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
         self.fields['name'].label = "Full name"
@@ -47,9 +63,11 @@ class ContactForm(ModelForm):
         fields = '__all__'
         exclude = ('user','belongs_to','active','confirmed' )
 
+
 class RegistrationForm(Form):
     agreement_accepted = BooleanField(required=True)
     agreement_accepted.label = "I have read the contract and agree to terms"
+
 
 class InterestForm(ModelForm):
     class Meta:
