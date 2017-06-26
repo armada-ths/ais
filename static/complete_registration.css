@@ -222,6 +222,11 @@ a.forgot-password:hover {
 	background: #00d791;
 	color: #fff;
 }
+
+.btn-armada-red {
+	background: #ea2c49;
+	color: #fff;
+}
 .btn-armada-green:hover, .btn-armada-green:focus {
 	background: #00b276;
 	color: #fff;
