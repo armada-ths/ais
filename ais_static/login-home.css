@@ -1,5 +1,16 @@
 
 /*
+* CSS for following templates:
+*  			register/home.html
+*			register/login.html
+*			register/reset_password.html
+*			register/reset_password_confirm.html
+*			register/reset_password_done.html
+*			register/change_password.html
+*/	
+
+
+/*
 * 	GENERAL
 */
 
@@ -54,6 +65,10 @@ h1 {
 	border-radius: 5px;
 }
 
+form {	
+    padding: 25px;
+}
+
 
 /*
 * LOGIN SPECIFIC
@@ -62,16 +77,13 @@ h1 {
 .headline {
 	margin: 0 auto;
     width: 555px;
+    text-align: center;
 }
 
 .form-container {
 	margin: 0 auto;
     text-align: center;
     width: 300px;
-}
-
-form {	
-    padding: 25px;
 }
 
 .input {
@@ -169,4 +181,14 @@ form {
 	display: inline-block;
 	bottom: 30px;
 	right: 30px;
+}
+
+
+/*
+* RESET PASSWORD
+*/
+
+.center {
+	margin: 0 auto;
+	text-align: center;
 }
