@@ -38,6 +38,16 @@ class SetNewPasswordForm(SetPasswordForm):
         self.fields['new_password1'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password', 'type' : 'password'})
         self.fields['new_password2'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password Confirmation', 'type' : 'password'})
 
+class ChangePasswordForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+        self.fields['old_password'].label = ""
+        self.fields['new_password1'].label = ""
+        self.fields['new_password2'].label = ""
+        self.fields['old_password'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Old Password', 'type' : 'password'})
+        self.fields['new_password1'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password', 'type' : 'password'})
+        self.fields['new_password2'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password Confirmation', 'type' : 'password'})
+
 
 class CompanyForm(ModelForm):
     class Meta:

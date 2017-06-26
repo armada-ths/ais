@@ -17,7 +17,7 @@ from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, PasswordChangeForm
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 
 def index(request, template_name='register/index.html'):
@@ -326,7 +326,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 #change password
 def change_password(request, template_name='register/change_password.html'):
     if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST, user=request.user)
+        form = ChangePasswordForm(data=request.POST, user=request.user)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
@@ -334,5 +334,5 @@ def change_password(request, template_name='register/change_password.html'):
         else:
             return redirect('anmalan:change_password')
     else:
-        form = PasswordChangeForm(user=request.user)
+        form = ChangePasswordForm(user=request.user)
     return render(request, template_name, {'form':form})
