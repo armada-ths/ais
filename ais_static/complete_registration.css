@@ -59,7 +59,8 @@ a, a:visited, a:hover {
 
 /*
 *	
-*/.input, .forgot-password, .btn-green, .box-danger, .important, .mail-name, .mail-role {
+*/
+.input, .forgot-password, .btn-green, .box-danger, .important, .mail-name, .mail-role {
 	font-family: 'Bebas Neue', sans-serif; 
 	text-transform: uppercase;	
 }
@@ -77,13 +78,12 @@ h1.text-highlight {
 }
 
 .btn-green:hover, .btn-green:focus {
-	display: block;
-	color: #333;
+	color: #fff;
 	background: #00b276;
 	border: none 
 }
 
-.btn-green {
+.btn-green, a.btn-green {
 	background-color: #00d791;
 	color: #fff;
 	border: none;
@@ -125,7 +125,7 @@ form {
 	width: 100%;
 }
 
-.forgot-password {
+a.forgot-password {
 	display: block;
 	text-align: center;
 	font-size: 21px;
@@ -135,7 +135,7 @@ form {
 	text-decoration: underline;
 }
 
-.forgot-password:hover {
+a.forgot-password:hover {
 	color: #b7b7b7;
 }
 
