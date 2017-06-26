@@ -23,7 +23,7 @@ from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is not None:
-            return redirect('anmalan:create_exhibitor')
+            return redirect('anmalan:home')
         else:
             return redirect('anmalan:logout')
     return render(request, template_name)
