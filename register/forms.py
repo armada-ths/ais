@@ -248,7 +248,7 @@ class ExhibitorForm(ModelForm):
     # A modelmultiplechoicefield with a customized label for each instance
     class RoomMultiChoiceField(ModelMultipleChoiceField):
         def label_from_instance(self, product):
-            return format_html("<h3 class='product-label'>{}</h3> <p class='product-description'>{}</p> <p class='confirm-title'>{}</p>",
+            return format_html("<h3 class='product-label'>{}</h3> <p class='product-description'>{}</p> <p class='confirm-title'>{}</p> <h4 class='room-price'>10 000 SEK</h4>",
                         mark_safe(product.name),
                         mark_safe(product.description),
                         mark_safe("We want to apply for this area"),
