@@ -58,6 +58,158 @@ a, a:visited, a:hover {
 }
 
 /*
+*	
+*/
+.input, .forgot-password, .btn-green, .box-danger, .important, .mail-name, .mail-role {
+	font-family: 'Bebas Neue', sans-serif; 
+	text-transform: uppercase;	
+}
+
+h2 {
+	font-size: 42px;
+	margin-top: 2px;
+	margin-bottom: 30px;
+}
+
+h1.text-highlight {
+	text-align: center;
+	color: #00b276;
+	font-size: 90px;
+}
+
+.btn-green:hover, .btn-green:focus {
+	color: #fff;
+	background: #00b276;
+	border: none 
+}
+
+.btn-green, a.btn-green {
+	background-color: #00d791;
+	color: #fff;
+	border: none;
+	font-size: 21px;
+	padding: 6px 22px;
+	border-radius: 5px;
+}
+
+
+/*
+* LOGIN SPECIFIC
+*/
+
+.headline {
+	margin: 0 auto;
+    width: 555px;
+}
+
+.form-container {
+	margin: 0 auto;
+    text-align: center;
+    width: 300px;
+}
+
+form {	
+    padding: 25px;
+}
+
+.input {
+	height: 37px;
+	font-size: 21px;
+	border-radius: 5px;
+	margin-bottom: 20px;
+	padding-bottom: 2px;
+}
+
+.btn-signin {
+	height: 60px;
+	width: 100%;
+}
+
+a.forgot-password {
+	display: block;
+	text-align: center;
+	font-size: 21px;
+	color: #fff;
+	width: 300px;
+    padding: 25px;
+	text-decoration: underline;
+}
+
+a.forgot-password:hover {
+	color: #b7b7b7;
+}
+
+
+/*
+*	HOME SPECIFIC
+*/
+
+.important {
+	text-align: center;
+	font-size: 21px;
+}
+
+.box-danger {
+	text-align: center;
+	font-size: 21px;
+	width: 30%;
+	padding: 20px;
+	margin: 20px auto;
+	border: solid;
+	border-color: #ea2c49;
+	border-radius: 5px;
+}
+
+.text-danger {
+	color: #ea2c49;
+}
+
+.mail-container {
+	margin: 10px auto;
+  	position: relative;
+  	text-align: center;
+}
+
+.mail {
+	display: inline-block;
+	text-align: left;
+	margin: 10px;
+	color: #00b276;
+	padding: 10px;
+}
+
+.mail-ref {
+	color: #00b276;
+}
+
+.mail-name {
+	font-size: 21px;
+	margin: 0px;
+}
+
+.mail-role {
+	font-size: 15px;
+	margin: 0px;
+}
+
+.armada-ship-green {
+	position: absolute;
+	display: inline-block;
+	float: left;
+	bottom: 0px;
+	left: 10px;
+}
+
+.btn-start {
+	float: right;
+	width: 100px;
+	position: absolute;
+	display: inline-block;
+	bottom: 30px;
+	right: 30px;
+}
+
+/*
 * GENERAL BUTTON STYLE
 */
 .btn-armada {
@@ -68,6 +220,11 @@ a, a:visited, a:hover {
 }
 .btn-armada-green {
 	background: #00d791;
+	color: #fff;
+}
+
+.btn-armada-red {
+	background: #ea2c49;
 	color: #fff;
 }
 .btn-armada-green:hover, .btn-armada-green:focus {
@@ -231,8 +388,8 @@ li.nav {
 	position: relative;
     top: 25%;
 }
-.cr-margin-top {
-	margin-top: 20px;
+.cr-basekit-mandatory {
+	margin-bottom: 20px;
 }
 
 /*
@@ -279,8 +436,12 @@ li.nav {
 .cr-rooms input {
 	position: absolute;
 	right: 12.5%;
-	bottom: 25px;
+	bottom: 59px;
 	cursor: pointer;
+}
+.cr-rooms .room-price {
+	text-align: right;
+    margin-right: 12.5%;
 }
 .cr-rooms p.product-description {
 }
@@ -416,6 +577,7 @@ ul.nova-info ul li {
 }
 .cr-container-nova ul#id_product_selection_nova { 
 	list-style: none;
+	padding-left: 0;
 }
 .cr-container-nova h4.confirm-title {
 	border-bottom: 2px solid #00d791;
@@ -423,7 +585,7 @@ ul.nova-info ul li {
 	cursor: pointer;
 	position: absolute;
 	bottom: 10px;
-	left: 40px;
+	left: 0px;
 	width: 100%;
 }
 .cr-container-nova #id_product_selection_nova_0 {
@@ -548,6 +710,7 @@ ul.additional_stand_height label span {
 /* Additoinal lunch tickets*/
 .cr-additional-lunch {
 	list-style: none;
+	padding-left: 25px;
 }
 .cr-additional-lunch select {
 	left: 0;

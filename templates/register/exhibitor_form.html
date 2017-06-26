@@ -28,7 +28,7 @@
         <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
         <li class="nav"><a href="#additional-services" data-toggle="tab">Additional Services</a></li>
         <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
-        <li class="nav"><a href="#confirm-and-save" data-toggle="tab">Confirm &amp; Save</a></li>
+        <li class="nav" id="confirm-li"><a href="#confirm-and-save" data-toggle="tab">Confirm &amp; Save</a></li>
       </ul>
 
       <!-- EXHIBITOR FORM -->
@@ -37,41 +37,67 @@
         <!-- TAB CONTENT -->
         <div class="tab-content cr-tab-content">
           <div class="tab-pane fade in active" id="start">
-            <h2>Welcome to the complete registration!</h2>
-            <p>The complete registration for THS Armada 2017 is open between <span class="text-danger">1st of July 00:01 and 4th of September 23:59</span></p>
-            <p>Make sure the form is completed and sent in before the last date of registration. It is possible to start with the form, save it by clicking "Save" in the right bottom corner, and then continue later. The questions in the form are divided into 9 pages and you can fill out the information in any order you like. Questions marked with (*) are mandatory. Some information in this form may be copied from your profile. Please check this information so that it is updated for THS Armada 2017. Your registration is completed when you click on the button "Submit" in the right bottom corner. When you have submitted the application you will receive a confirmation e­mail as soon as the application has been approved.</p>
-            <p>Please note that the complete registration is binding and you will be liable for all additional services chosen, provided that Armada is be able to supply your organisation with your choices.</p>
-            <p>If you have any questions, please contact:</p>
-            <p>
-              Axel Ingo <br/>
-              Project Manager <br/>
-              <a href="mailto:armada@ths.kth.se">armada@ths.kth.se</a>, +46  70 790 98 44
-            </p>
-            <p>
-              Peter Finnman <br/>
-              Key Account Manager <br/>
-              <a href="mailto:peter.finnman@armada.nu">peter.finnman@armada.nu</a>, +46 72 042 22 89
-            </p>
-            <p>
-              Dana El Malla <br/>
-              Key Account Manager <br/>
-              <a href="mailto:dana.elmalla@armada.nu">dana.elmalla@armada.nu</a>, +46 73-659 59 57
-            </p>
-            <p>
-              Petter Cedell <br/>
-              Key Account Manager <br/>
-              <a href="mailto:petter.cedell@armada.nu">petter.cedell@armada.nu</a>, +46 XXXX
-            </p>
-            <p>
-              Fredrik Magnusson <br/>
-              Head of Business Relations and Events <br/>
-              <a href="mailto:fredrik.magnusson@armada.nu">fredrik.magnusson@armada.nu</a>, +46 70 268 63 29
-            </p>
-          </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="text-highlight"> Welcome! </h1>
+                </div>
+            </div>
+            <div class="row header-row">
+                <div class="col-md-12">
+                    <p class="box-danger">The complete registration for THS Armada 2017 is open between <span class="text-danger">1st of July 00:01 and 4th of September 23:59</span></p>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2">
+                <p>Make sure the form is completed and sent in before the last date of registration. It is possible to start with the form, save it by clicking "Save" in the right bottom corner, and then continue later. The questions in the form are divided into 9 pages and you can fill out the information in any order you like. Questions marked with (*) are mandatory.</p>
+                <p>Some information in this form may be copied from your profile. Please check this information so that it is updated for THS Armada 2017. Your registration is completed when you click on the button "Submit" in the right bottom corner. When you have submitted the application you will receive a confirmation e­mail as soon as the application has been approved.</p>
+                <p class ="text-danger"> Please note that the complete registration is binding and you will be liable for all additional services chosen, provided that Armada is be able to supply your organisation with your choices.</p>
+                <p class="important">If you have any questions,<br/>
+                 please contact:</p>
+               </div>
+            </div>
+            <div class="row spacer">
+                <div class="col-md-12 mail-container">
+                  <div class="mail">
+                    <p class="mail-name">Axel Ingo</p>
+                    <p class="mail-role">Project Manager</p>
+                    <a class = "mail-ref" href="mailto:armada@ths.kth.se">armada@ths.kth.se</a><br/>
+                    +46 70 790 98 44
+                  </div>
+                  <div class="mail">
+                    <p class="mail-name">Peter Finnman</p>
+                    <p class="mail-role">Key Account Manager</p>
+                    <a class ="mail-ref"href="mailto:peter.finnman@armada.nu">peter.finnman@armada.nu</a><br/>
+                    +46 72 042 22 89
+                  </div>
+                  <div class="mail">
+                    <p class="mail-name">Dana El Malla</p>
+                    <p class="mail-role">Key Account Manager</p>
+                    <a class ="mail-ref" href="mailto:dana.elmalla@armada.nu">dana.elmalla@armada.nu</a><br/>
+                    +46 73-659 59 57
+                  </div>
+                </div>
+                <div class="col-md-12 mail-container">
+                  <div class="mail">
+                    <p class="mail-name">Petter Cedell</p>
+                    <p class="mail-role">Key Account Manager</p>
+                    <a class ="mail-ref" href="mailto:petter.cedell@armada.nu">petter.cedell@armada.nu</a><br/>
+                    +46 70-570 48 87
+                  </div>
+                  <div class="mail">
+                    <p class="mail-name">Fredrik Magnusson</p>
+                    <p class="mail-role">Head of Business Relations and Events</p>
+                    <a class ="mail-ref" href="mailto:fredrik.magnusson@armada.nu">fredrik.magnusson@armada.nu</a><br/>
+                    +46 70 268 63 29
+                  </div>
+                </div>
+            </div>
+          </div> <!-- end start tab -->
           <div class="tab-pane fade cr-basekit" id="base-kit">
             <div class="row">
               <div class="col-md-12">
-                <h1 class="text-center">BASE KIT, 39 500</h1>
+                <h1 class="text-center">BASE KIT, 39 500 SEK</h1>
+                <h4 class="text-center cr-basekit-mandatory"><span class="h-red">Mandatory</span></h4>
               </div>
             </div>
             <div class="row">
@@ -106,11 +132,6 @@
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <h4 class="text-center cr-margin-top"><span class="h-red">Mandatory</span></h4>
-              </div>
-            </div>
           </div>
           <div class="tab-pane fade" id="rooms">
             <div class="cr-rooms">
@@ -128,9 +149,43 @@
                   <h3>{{ field.label }}</h3>
                   <div>
                     <div class="cr-event-left cr-event-description">
-                      <p>Aspernatur voluptas et ea suscipit reprehenderit. Voluptas quam fugiat reiciendis nostrum. Dolor nobis numquam aut voluptatem nam aspernatur vel dignissimos.
-Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. Dolorem voluptates voluptas ab accusamus provident.
-</p> 
+                      <!-- hard coding description and price -->
+                      {% if 'Armada run' in field.label or 'Armada Run' in field.label %}
+                        <p>
+                          The Armada Run will be back this fall as a kick-off for THS Armada 2017. The fifth edition of the run will take place at KTH, campus Valhallavägen. Challenge the students and take the opportunity to show that your organization encourage a healthy lifestyle. Before and after the event, we will offer snacks and the opportunity to meet students and mingle in an informal atmosphere. 
+                        </p> 
+                        <h4>500 SEK/representative</h4>
+                      {% endif %}
+                      {% if 'LUNCH / BREAKFAST LECTURE' in field.label or 'Lunch / breakfast lecture' in field.label %}
+                        <p>
+                          Lunch or breakfast for your representatives and the students are included in the price. The lecture halls have room for 100 to 200 students depending on the lecture hall.
+                        </p> 
+                        <h4>29 000 SEK for 100 pers +5k per additional 50 per</h4>
+                      {% endif %}
+                      {% if 'INDIVIDUAL MEETINGS' in field.label or 'Individual meetings' in field.label or 'Individual Meetings' in field.label %}
+                        <p>
+                          Meet the students that have shown a special interest for your organization, through an individual meeting.  During the days of the fair we offer students to meet participating companies individually for 20-minute-long dialogues depending on your preferences.
+                        </p> 
+                        <h4>10 000 SEK/day</h4>
+                      {% endif %}
+                      {% if 'THE INTERNSHIP PITCH' in field.label or 'The Internship pitch' in field.label or 'Internship pitch' in field.label %}
+                        <p>
+                          Can you present your organization's Internships within 3 minutes? To really kick-off the THS Armada fair we arrange for short presentations, as in “elevator pitch”. There will be no food served during the event.
+                        </p> 
+                        <h4>2 000 SEK/day</h4>
+                      {% endif %}
+                      {% if 'INNOVATION NIGHT' in field.label or 'Innovation night' in field.label or 'Innovation Night' in field.label %}
+                        <p>
+                          Innovation night is an opportunity for your company to show how you work with innovation and how employees get the opportunity to work with development and new solutions. It is also a chance for you to show the students that you do not have to work at a start-up to work with innovation.
+                        </p> 
+                        <h4>15 000 SEK</h4>
+                      {% endif %}
+                      {% if 'CUSTOM EVENTS' in field.label or 'Custom events' in field.label or 'Custom Events' in field.label %}
+                        <p>
+                          Custom events are designed in collaboration with your organization and THS Armada to create events tailored to your needs and wishes. Our vision is to develop events specifically after your desire where we match your organization to top talents from KTH. A custom event could for example be case solving of cases you encounter daily, for selected talents. We look forward to creating intriguing events with you, the possibilities are endless! Some examples; Case solving at the your office. Breakfast seminar. Code night / hackathon. A debate. Lunch with an engineer. Thesis proposal. Be a “....” engineer for a day.
+                        </p> 
+                        <!--<h4>2 000 SEK/day</h4>-->
+                      {% endif %}
                     </div>
                     <div class="cr-event-right cr-event-input">
                       {{ field }}
@@ -156,13 +211,18 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                   <div class="col-md-6">
                     <p>This is one of the biggest university banquets in Sweden where you and your organization will have the wonderful opportunity to network with many ambitious students in a casual atmosphere. The evening will start off with a refreshing drink and continue with a three course menu and spectacular entertainment.</p>
                     <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. This information will be gathered before October 27th.</p>
-                    <h4>Tables</h4>
-                    <p>New for this year is that you also have the opportunity to purchase entire tables to the banquet. These tables will have 8 seats, a favorable placement and be branded with your company logo.  You will have the unique chance to handpick top students of your choosing to this table, which will give you a great chance to deepen your connection with interesting top students that you have met at events, at the fair or to get to know new students that have shown great interest in your company. </p>
+                    <h4>Tables <span class="h-red">9,900 / 12,900 SEK</span></h4>
+                    <p>New for this year is that you also have the opportunity to purchase entire tables to the banquet. These tables will have 8 seats, a favorable placement and be branded with your organization logo.  You will have the unique chance to handpick top students of your choosing to this table, which will give you a great chance to deepen your connection with interesting top students that you have met at events, at the fair or to get to know new students that have shown great interest in your organization. </p>
+                    <p>Prices:</p>
+                    <ul>
+                      <li>Including two tickets from the base kit: 9,900 SEK</li>
+                      <li>Excluding two tickets from the base kit: 12,900 SEK</li>
+                    </ul>
                   </div>
                   <div class="col-md-6">
-                    <h4>Banquet ticket - Company representative</h4>
-                    <p>This year we have chosen to include 2 banquet tickets in the base kit for each participating company. Of course you also have the opportunity to purchase additional tickets if you’re so inclined. </p>
-                    <h4>Banquet ticket - student</h4>
+                    <h4>Banquet ticket - Exhibitor representative <span class="h-red">1,190 SEK</span></h4>
+                    <p>This year we have chosen to include 2 banquet tickets in the base kit for each participating exhibitor. Of course you also have the opportunity to purchase additional tickets if you're so inclined. </p>
+                    <h4>Banquet ticket - student <span class="h-red">1,190 SEK</span></h4>
                     <p>Did you meet any interesting students during the first day of the fair? Let these students know more about your organisation and get to know them personally in a different setting by inviting them to the banquet. A ticket to the banquet can also be used as a very appreciated prize for students in a possible contest at your stand.</p>
                   </div>
                 </div>
@@ -214,6 +274,7 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
               <div class="col-md-4 col-md-offset-2">
                 <div class="cr-container-nova">
                   {{ form.product_selection_nova }}
+                  <h4><span class="h-red">Price: 10 000 SEK (Valued at 30 000 SEK)</h4>
                 </div>
               </div>
               <div class="col-md-4">
@@ -283,7 +344,7 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                   <div class="col-md-6">
                     <div class="cr-additional-container">
                       <h3>ADDITIONAL STAND <span class="h-red">HEIGHT</span></h3>
-                      <p>Height 0 - 2,30 included</p>
+                      <p>The stand height of 0 - 2,30 meters is included in the base kit. You can choose to add additional height, please note that we cannot guarantee that we will be able to fulfill your request.</p>
                       {{ form.product_selection_additional_stand_height }}
                       <!--<ul class="list-unstyled additional_stand_height">
                       {% for choice in form.product_selection_additional_stand_height.field.choices %}
@@ -307,7 +368,7 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
                   <div class="col-md-6">
                     <div class="cr-additional-container">
                       <h3>ADDITIONAL LUNCH TICKETS</h3>
-                      <p>Please note that 8 tickets (4 per day) is already included in the base kit</p>
+                      <p>Please note that 8 tickets (4 per day) is already included in the base kit. Price for additional lunch tickets is <span class="h-red">125 SEK / ticket.</span> </p>
                       <ul class="cr-additional-lunch">
                       {% for field in form %}
                         {% if 'lunch' in field.help_text %}
@@ -721,9 +782,14 @@ Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. 
         <!-- Form next, back and save btn, and errors -->
         <div class="form-footer cr-nav-common cr-nav-bottom">
           <a class="btn btn-armada btn-armada-green btnBack">Back</a>
-          <button type="submit" name="submit" class="btn btn-armada btn-armada-gray">Submit</button>
-          <button type="submit" name="save" class="btn btn-armada btn-armada-gray">Save</button>
-          <a class="btn btn-armada btn-armada-green btnNext">Next</a>
+          <span class="has-popover" data-content="You only need to save before closing your browser window", data-placement='top', data-container="body">
+            <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
+          </span>
+
+          <span class="has-popover" data-content="Submit your application to Armada 2017", data-placement='top', data-container="body">
+          <button type="submit" name="submit" class="btn btn-armada" id="submit-button">Submit</button>
+          </span>
+          <a class="btn btn-armada btn-armada-green btnNext" id="next-button">Next</a>
           <div>{{ form.non_field_errors }}</div>
         </div>
       </form>

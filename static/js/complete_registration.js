@@ -24,9 +24,8 @@ $('#transportToFairType').children().change(function() {
 });
 // if armada transport is chosen on load
 $(document).ready(function(){
-  console.log("hej");
+  $("#submit-button").hide();
   var selected = $('#id_transport_from_fair_type').val();
-  //console.log(selected.val());
   if(selected == 'armada_transport') {
     $('#armadaTransportChosen').show();
   } else {
@@ -60,38 +59,40 @@ $('.no-editable-form').find('select').attr('disabled', 'disabled');
 $('.editable-form').find('input').prop( "disabled", false );
 $('.editable-form').find('select').prop( "disabled", false );
 
-// Edit button in Confirm and Save tab
-$('#editOrganisationTrigger').click(function() {
-  $('#organistaionEditable').toggleClass('hidden visible');
-  $('#organisationNoEditable').toggleClass('visible hidden');
-});
-$('#editContactTrigger').click(function() {
-  $('#contactEditable').toggleClass('hidden visible');
-  $('#contactNoEditable').toggleClass('visible hidden');
-});
-
-$('#editInvoiceToggle').click(function() {
-  $('#invoiceEditable').toggleClass('hidden visible');
-  $('#invoiceNoEditable').toggleClass('visible hidden');
-});
-$('#editArmadaTransportTrigger').click(function() {
-  $('#armadaTransportEditable').toggleClass('hidden visible');
-  $('#armadaTransportNoEditable').toggleClass('visible hidden');
-});
-
-$('.no-editable-form').find('input').prop( "disabled", true );
-$('.no-editable-form').find('select').prop( "disabled", true );
-$('.no-editable-form').find('input').attr('disabled', 'disabled');
-$('.no-editable-form').find('select').attr('disabled', 'disabled');
-$('.editable-form').find('input').prop( "disabled", false );
-$('.editable-form').find('select').prop( "disabled", false );
-
-
 // Back and Next button logic
 $('.btnNext').click(function(){
   $('.nav-tabs > .active').next('li').find('a').trigger('click');
+  // Check if on confirm and save
+  checkIfOnConformAndSave();
 });
 
 $('.btnBack').click(function(){
   $('.nav-tabs > .active').prev('li').find('a').trigger('click');
+  checkIfOnConformAndSave();
 });
+
+$("li").click(function(){
+  if (this.id == "confirm-li") {
+    setConfirmAndSave(true);
+  } else {
+    setConfirmAndSave(false);
+  }; 
+})
+
+var checkIfOnConformAndSave = function () {
+  if ($("#confirm-li").hasClass("active")) {
+    setConfirmAndSave(true);
+  } else {
+    setConfirmAndSave(false);
+  }; 
+}
+
+var setConfirmAndSave = function(bool) {
+  if (bool) {
+    $("#next-button").hide();
+    $("#submit-button").show().addClass("btn-armada-green");
+  } else {
+    $("#next-button").show();
+    $("#submit-button").hide();
+  }
+}
