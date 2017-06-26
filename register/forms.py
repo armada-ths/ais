@@ -17,7 +17,10 @@ from enum import Enum
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields['username'].label = "Email"
+        self.fields['username'].label = ""
+        self.fields['password'].label = ""
+        self.fields['username'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Company name'})
+        self.fields['password'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Password', 'type' : 'password'})
 
     def clean(self):
         self.cleaned_data['username'] = self.cleaned_data['username'].lower()

@@ -88,7 +88,8 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         widgets={'allergies': TextInput()}
     )
 
-    exhibitor_form = ExhibitorForm(request.POST or None, instance=exhibitor)
+    # Because ExhibitorForm has a logo in it, we pass request.FILES to it
+    exhibitor_form = ExhibitorForm(request.POST or None, request.FILES or None, instance=exhibitor)
     exhibitor_form.fields[
         'estimated_arrival_of_representatives'].label = 'Estimated arrival of representatives (format: 2016-12-24 13:37)'
     invoice_form = InvoiceForm(request.POST or None, instance=exhibitor)
@@ -104,7 +105,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         invoice_form.save()
         transport_to_fair_form.save()
         transport_from_fair_form.save()
-        company_form.save()
+        company_form.save()	
         armada_transport_from_fair_form.save()
         stand_form.save()
         return redirect('exhibitors', fair.year)
