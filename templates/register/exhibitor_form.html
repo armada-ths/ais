@@ -128,9 +128,43 @@
                   <h3>{{ field.label }}</h3>
                   <div>
                     <div class="cr-event-left cr-event-description">
-                      <p>Aspernatur voluptas et ea suscipit reprehenderit. Voluptas quam fugiat reiciendis nostrum. Dolor nobis numquam aut voluptatem nam aspernatur vel dignissimos.
-Magnam voluptatum aliquid aut et et tenetur. Cupiditate laudantium quisquam ut. Dolorem voluptates voluptas ab accusamus provident.
-</p> 
+                      <!-- hard coding description and price -->
+                      {% if 'Armada run' in field.label or 'Armada Run' in field.label %}
+                        <p>
+                          The Armada Run will be back this fall as a kick-off for THS Armada 2017. The fifth edition of the run will take place at KTH, campus Valhallavägen. Challenge the students and take the opportunity to show that your organization encourage a healthy lifestyle. Before and after the event, we will offer snacks and the opportunity to meet students and mingle in an informal atmosphere. 
+                        </p> 
+                        <h4>500 SEK/representative</h4>
+                      {% endif %}
+                      {% if 'LUNCH / BREAKFAST LECTURE' in field.label or 'Lunch / breakfast lecture' in field.label %}
+                        <p>
+                          Lunch or breakfast for your representatives and the students are included in the price. The lecture halls have room for 100 to 200 students depending on the lecture hall.
+                        </p> 
+                        <h4>29 000 SEK for 100 pers +5k per additional 50 per</h4>
+                      {% endif %}
+                      {% if 'INDIVIDUAL MEETINGS' in field.label or 'Individual meetings' in field.label or 'Individual Meetings' in field.label %}
+                        <p>
+                          Meet the students that have shown a special interest for your organization, through an individual meeting.  During the days of the fair we offer students to meet participating companies individually for 20-minute-long dialogues depending on your preferences.
+                        </p> 
+                        <h4>10 000 SEK/day</h4>
+                      {% endif %}
+                      {% if 'THE INTERNSHIP PITCH' in field.label or 'The Internship pitch' in field.label or 'Internship pitch' in field.label %}
+                        <p>
+                          Can you present your organization's Internships within 3 minutes? To really kick-off the THS Armada fair we arrange for short presentations, as in “elevator pitch”. There will be no food served during the event.
+                        </p> 
+                        <h4>2 000 SEK/day</h4>
+                      {% endif %}
+                      {% if 'INNOVATION NIGHT' in field.label or 'Innovation night' in field.label or 'Innovation Night' in field.label %}
+                        <p>
+                          Innovation night is an opportunity for your company to show how you work with innovation and how employees get the opportunity to work with development and new solutions. It is also a chance for you to show the students that you do not have to work at a start-up to work with innovation.
+                        </p> 
+                        <h4>15 000 SEK</h4>
+                      {% endif %}
+                      {% if 'CUSTOM EVENTS' in field.label or 'Custom events' in field.label or 'Custom Events' in field.label %}
+                        <p>
+                          Custom events are designed in collaboration with your organization and THS Armada to create events tailored to your needs and wishes. Our vision is to develop events specifically after your desire where we match your organization to top talents from KTH. A custom event could for example be case solving of cases you encounter daily, for selected talents. We look forward to creating intriguing events with you, the possibilities are endless! Some examples; Case solving at the your office. Breakfast seminar. Code night / hackathon. A debate. Lunch with an engineer. Thesis proposal. Be a “....” engineer for a day.
+                        </p> 
+                        <!--<h4>2 000 SEK/day</h4>-->
+                      {% endif %}
                     </div>
                     <div class="cr-event-right cr-event-input">
                       {{ field }}

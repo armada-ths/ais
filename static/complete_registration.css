@@ -279,8 +279,12 @@ li.nav {
 .cr-rooms input {
 	position: absolute;
 	right: 12.5%;
-	bottom: 25px;
+	bottom: 59px;
 	cursor: pointer;
+}
+.cr-rooms .room-price {
+	text-align: right;
+    margin-right: 12.5%;
 }
 .cr-rooms p.product-description {
 }
