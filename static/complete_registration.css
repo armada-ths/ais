@@ -416,6 +416,7 @@ ul.nova-info ul li {
 }
 .cr-container-nova ul#id_product_selection_nova { 
 	list-style: none;
+	padding-left: 0;
 }
 .cr-container-nova h4.confirm-title {
 	border-bottom: 2px solid #00d791;
@@ -423,7 +424,7 @@ ul.nova-info ul li {
 	cursor: pointer;
 	position: absolute;
 	bottom: 10px;
-	left: 40px;
+	left: 0px;
 	width: 100%;
 }
 .cr-container-nova #id_product_selection_nova_0 {
@@ -548,6 +549,7 @@ ul.additional_stand_height label span {
 /* Additoinal lunch tickets*/
 .cr-additional-lunch {
 	list-style: none;
+	padding-left: 25px;
 }
 .cr-additional-lunch select {
 	left: 0;
