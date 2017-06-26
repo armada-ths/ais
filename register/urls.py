@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth.views import login, logout, password_reset, password_reset_done, password_reset_confirm
 from . import views
-from .forms import LoginForm
+from .forms import LoginForm, ResetPasswordForm, SetNewPasswordForm
 
 app_name = 'anmalan'
 urlpatterns = [
@@ -34,6 +34,7 @@ urlpatterns = [
         password_reset,
         name='password_reset',
         kwargs={'template_name': 'register/reset_password.html',
+                'password_reset_form': ResetPasswordForm,
                 'post_reset_redirect': 'anmalan:password_reset_done',
                 'email_template_name': 'register/reset_password_email.html'}
     ),
@@ -46,6 +47,7 @@ urlpatterns = [
         password_reset_confirm,
         name='password_reset_confirm',
         kwargs={'template_name': 'register/reset_password_confirm.html',
+                'set_password_form': SetNewPasswordForm, 
                 'post_reset_redirect': 'anmalan:login'}
     ),
 ]
