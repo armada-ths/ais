@@ -388,8 +388,8 @@ li.nav {
 	position: relative;
     top: 25%;
 }
-.cr-margin-top {
-	margin-top: 20px;
+.cr-basekit-mandatory {
+	margin-bottom: 20px;
 }
 
 /*
