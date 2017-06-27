@@ -40,6 +40,9 @@ h1 {
 	font-size: 3.5em;
 	color: #00d791;
 }
+h1.big {
+	font-size: 6em;
+}
 h3 {
 	font-size: 2em;
 	color: #00d791;
@@ -55,6 +58,9 @@ a, a:visited, a:hover {
 }
 .hidden {
 	display: none;
+}
+.big-margin-top {
+	margin-top: 100px;
 }
 
 /*
