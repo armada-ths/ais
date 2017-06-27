@@ -829,8 +829,6 @@ ul.additional_stand_height label span {
 *	TAB: CONFIRM AND SAVE *********************************
 */
 .cr-container-confirm {
-	max-width: 65%;
-	margin: auto;
 	background: #353535;
 	padding: 30px;
 }
@@ -848,7 +846,7 @@ ul.additional_stand_height label span {
 }
 .no-editable-form li {
 	border-bottom: 1px solid #fff;
-	width: 60%;
+	width: 85%;
 	padding-top: 5px;
 	padding-bottom: 0px;
 }
@@ -868,6 +866,7 @@ ul.additional_stand_height label span {
 }
 .no-editable-form .input-field input {
 	float: none;
+	display: block;
 }
 .no-editable-form li.address {
 	border: none;

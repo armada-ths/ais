@@ -19,7 +19,7 @@ class LoginForm(AuthenticationForm):
         super(LoginForm, self).__init__(*args, **kwargs)
         self.fields['username'].label = ""
         self.fields['password'].label = ""
-        self.fields['username'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Username'})
+        self.fields['username'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Email'})
         self.fields['password'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Password', 'type' : 'password'})
 
     def clean(self):
