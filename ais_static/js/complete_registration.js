@@ -33,6 +33,7 @@ $(document).ready(function(){
   }
 });
 
+
 // Edit button in Confirm and Save tab
 $('#editOrganisationTrigger').click(function() {
   $('#organistaionEditable').toggleClass('hidden visible');
@@ -63,31 +64,31 @@ $('.editable-form').find('select').prop( "disabled", false );
 $('.btnNext').click(function(){
   $('.nav-tabs > .active').next('li').find('a').trigger('click');
   // Check if on confirm and save
-  checkIfOnConformAndSave();
+  checkIfOnConformAndSubmit();
 });
 
 $('.btnBack').click(function(){
   $('.nav-tabs > .active').prev('li').find('a').trigger('click');
-  checkIfOnConformAndSave();
+  checkIfOnConformAndSubmit();
 });
 
 $("li").click(function(){
   if (this.id == "confirm-li") {
-    setConfirmAndSave(true);
+    setConfirmAndSubmit(true);
   } else {
-    setConfirmAndSave(false);
+    setConfirmAndSubmit(false);
   }; 
 })
 
-var checkIfOnConformAndSave = function () {
+var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
-    setConfirmAndSave(true);
+    setConfirmAndSubmit(true);
   } else {
-    setConfirmAndSave(false);
+    setConfirmAndSubmit(false);
   }; 
 }
 
-var setConfirmAndSave = function(bool) {
+var setConfirmAndSubmit = function(bool) {
   if (bool) {
     $("#next-button").hide();
     $("#submit-button").show().addClass("btn-armada-green");
