@@ -358,6 +358,10 @@ li.nav {
 	float: right;
 }
 
+.cr-nav-bottom .invisible {
+	visibility: none;
+	opacity: 0;
+}
 
 /*
 *	GENERAL TAB CONTENT

@@ -25,7 +25,7 @@ $('#transportToFairType').children().change(function() {
 // if armada transport is chosen on load
 $(document).ready(function(){
   $("#submit-button").hide();
-  $("#back-button").hide();
+  setBackButton(true);
   var selected = $('#id_transport_from_fair_type').val();
   if(selected == 'armada_transport') {
     $('#armadaTransportChosen').show();
@@ -81,7 +81,12 @@ $("li").click(function(){
     setConfirmAndSubmit(true);
   } else {
     setConfirmAndSubmit(false);
-  }; 
+  }
+  if (this.id == "start-li") {
+    setBackButton(true);
+  } else {
+    setBackButton(false);
+  }
 })
 
 var checkIfOnConformAndSubmit = function () {
@@ -113,8 +118,8 @@ var checkIfOnStart = function () {
 // hides back button if bool = true
 var setBackButton = function(bool) {
   if (bool) {
-    $("#back-button").hide();
+    $("#back-button").addClass('invisible');
   } else {
-    $("#back-button").show();
+    $("#back-button").removeClass('invisible');
   }
 }
