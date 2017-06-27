@@ -358,6 +358,10 @@ li.nav {
 	float: right;
 }
 
+.cr-nav-bottom .invisible {
+	visibility: none;
+	opacity: 0;
+}
 
 /*
 *	GENERAL TAB CONTENT
@@ -561,7 +565,7 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 /*
 *	TAB: NOVA *********************************
 */
-/* flexbox fix to make column equal height */
+/* flexbox fix to make column equal height 
 .cr-nova .row {
   display: -webkit-box;
   display: -webkit-flex;
@@ -572,11 +576,21 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 .cr-nova .row > [class*='col-'] {
   display: flex;
   flex-direction: column;
-}
+}*/
 .cr-container-nova {
 	height: 100%;
 	overflow: visible;
 	position: relative;
+}
+/* column that wraps double column */
+.cr-nova > div > div {
+	position: relative;
+}
+.cr-container-nova-left {
+	padding-bottom: 40px;
+}
+.cr-nova-col {
+	position: static;
 }
 ul.nova-info ul {
     border: 2px solid #ea2c49;
@@ -598,13 +612,13 @@ ul.nova-info ul li {
 	border-bottom: 2px solid #00d791;
 	cursor: pointer;
 	position: absolute;
-	bottom: -40px;
+	bottom: 0px;
 	left: 0px;
 	width: 100%;
 }
 .cr-container-nova #id_product_selection_nova_0 {
 	position: absolute;
-	bottom: -20px;
+	bottom: 20px;
 	right: 10px;
 }
 
