@@ -28,7 +28,9 @@
         <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
         <li class="nav"><a href="#additional-services" data-toggle="tab">Additional Services</a></li>
         <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
-        <li class="nav" id="confirm-li"><a href="#confirm-and-save" data-toggle="tab">Confirm &amp; Save</a></li>
+        <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
+        <li class="nav"> | </li>
+        <li class="nav"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
       </ul>
 
       <!-- EXHIBITOR FORM -->
@@ -204,11 +206,11 @@
                   <div class="col-md-6">
                     <h1>The Banquet</h1>
                     <h5>Welcome to the Grand Banquet of THS Armada!</h5>
-                    <h3><span class="h-white">Dark suit</span> <span class="h-green">November 21st</span> <span class="h-red">Annexet, Globen</span></h3>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-6">
+                    <h3><span class="h-green">November 21st</span> <span class="h-red">Annexet, Globen </span><span class="h-white">Dark suit</span> </h3>
                     <p>This is one of the biggest university banquets in Sweden where you and your organization will have the wonderful opportunity to network with many ambitious students in a casual atmosphere. The evening will start off with a refreshing drink and continue with a three course menu and spectacular entertainment.</p>
                     <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. This information will be gathered before October 27th.</p>
                     <h4>Tables <span class="h-red">9,900 / 12,900 SEK</span></h4>
@@ -274,6 +276,14 @@
               <div class="col-md-4 col-md-offset-2">
                 <div class="cr-container-nova">
                   {{ form.product_selection_nova }}
+                  <p><b>Thanks</b> to our partnership with the talent network Nova and their deep knowledge within custom events for top talents, you can now get an exponentially greater value from you participation!</p>
+                  <p>From the evaluations of previous years, it can be highlighted that:</p>
+                  <ul>
+                    <li>Many students are not pleased with the company’s choices of representatives.</li>
+                    <li>Many student feel they don’t receive the information they want about potential employers.</li>
+                    <li>Many companies feel that it is hard to create a value after participating at the career fair.</li>
+                  </ul>
+                  <p>Nova has done research in collaboration with THS Armada on its specific audience and created a toolkit for solving these problems. We can offer an exclusive service, consulting you in how to get the most from participating in THS Armada.</p>
                   <h4><span class="h-red">Price: 10 000 SEK (Valued at 30 000 SEK)</h4>
                 </div>
               </div>
@@ -510,7 +520,7 @@
             
 
     
-          <div class="tab-pane fade" id="confirm-and-save">
+          <div class="tab-pane fade" id="confirm-and-submit">
             <div class="cr-container-confirm">
               <h2>Review your info</h2>
               <h3>Organisation <small id="editOrganisationTrigger" class="toggleEdit h-red">Edit</small></h3>
@@ -791,6 +801,28 @@
           </span>
           <a class="btn btn-armada btn-armada-green btnNext" id="next-button">Next</a>
           <div>{{ form.non_field_errors }}</div>
+        </div>
+
+        <!-- modal to be shown on sucessful submission -->
+        <div class="modal fade submission-success-modal" tabindex="-1" role="dialog" aria-labelledby="submissionSuccess">
+          <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+              <div class="row">
+                <div class="col-md-12">
+                <h1 class="modal-title">Submission successful!</h1>
+                </div>
+              </div>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-12">
+                <p class="modal-text">Thank you for completing your registration to Armada 2017! If you need to change any information in your registration you can do so by visiting this page again until the deadline.</p>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
         </div>
       </form>
       <!-- EXHIBITOR FORM END -->
