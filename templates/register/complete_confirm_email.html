@@ -1,6 +1,13 @@
 {% load i18n %}{% autoescape off %}
 {% blocktrans %}This is a confirmation of your submit to complete registration for user {{ username }} at {{ site_name }}.{% endblocktrans %}
 
+{% blocktrans %}
+Your ordered products:
+{% endblocktrans %}
+	{% for product in ordered_products %}{{ product.name }} {{ product.price }}
+	{% endfor %}
+{% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
+
 {% trans "Thanks for your money!" %}
 {% blocktrans %}The {{ site_name }} team{% endblocktrans %}
 	{% endautoescape %}
