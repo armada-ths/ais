@@ -1,0 +1,14 @@
+{% block content %}
+
+    <div class="survey">
+        <form enctype="multipart/*" action="/" method="post">
+
+        {% for question in questions %}
+            <p>{{ question.question }}</p><ul>{{ question.form.as_ul }}</ul>
+        {% endfor %}
+
+    <div><input type="submit" value="submit" /></div>
+</form>
+</div>
+
+{% endblock %}
