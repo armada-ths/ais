@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^exhibitors/', include('exhibitors.urls')),
     url(r'^products/', include('orders.urls')),
     url(r'^sales/', include('sales.urls')),
+    url(r'^matching/', include('matching.urls')),
 ]
