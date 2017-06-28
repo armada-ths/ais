@@ -13,6 +13,7 @@ urlpatterns = [
         kwargs={'template_name': 'register/index.html'}),
     url(r'^company/(?P<pk>\d+)/edit', views.company_update, name='edit_company'),
     url(r'^me/edit', views.contact_update, name='edit_me'),
+    url(r'^thankyou/$', views.cr_done, name='cr_done'),
     #url(r'^complete',views.create_exhibitor, name='create_exhibitor'),
     # url(r'^signup', views.signup, name='create_company_user'),
     # url(r'^new_company', views.create_company, name='create_company'),

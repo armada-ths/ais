@@ -18,7 +18,7 @@
 
       <!-- Tabs -->
       <ul class="nav nav-tabs cr-nav-common cr-nav-top">
-        <li class="nav active"><a href="#start" data-toggle="tab">Start</a></li>
+        <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
         <li class="nav"><a href="#base-kit" data-toggle="tab">Base Kit</a></li>
         <li class="nav"><a href="#rooms" data-toggle="tab">Rooms</a></li>
         <li class="nav"><a href="#events" data-toggle="tab">Events</a></li>
@@ -158,7 +158,7 @@
                         </p> 
                         <h4>500 SEK/representative</h4>
                       {% endif %}
-                      {% if 'LUNCH / BREAKFAST LECTURE' in field.label or 'Lunch / breakfast lecture' in field.label %}
+                      {% if 'LUNCH / BREAKFAST LECTURE' in field.label or 'Lunch / breakfast lecture' in field.label or 'Lunch / Breakfast lecture' in field.label or 'Lunch / Breakfast Lecture' in field.label %}
                         <p>
                           Lunch or breakfast for your representatives and the students are included in the price. The lecture halls have room for 100 to 200 students depending on the lecture hall.
                         </p> 
@@ -170,7 +170,7 @@
                         </p> 
                         <h4>10 000 SEK/day</h4>
                       {% endif %}
-                      {% if 'THE INTERNSHIP PITCH' in field.label or 'The Internship pitch' in field.label or 'Internship pitch' in field.label %}
+                      {% if 'THE INTERNSHIP PITCH' in field.label or 'The Internship pitch' in field.label or 'Internship pitch' in field.label or 'The Internship Pitch' in field.label or 'Internship Pitch' in field.label %}
                         <p>
                           Can you present your organization's Internships within 3 minutes? To really kick-off the THS Armada fair we arrange for short presentations, as in “elevator pitch”. There will be no food served during the event.
                         </p> 
@@ -273,40 +273,42 @@
           </div>
           <div class="tab-pane fade cr-nova" id="nova">
             <div class="row">
-              <div class="col-md-4 col-md-offset-2">
-                <div class="cr-container-nova">
-                  {{ form.product_selection_nova }}
-                  <p><b>Thanks</b> to our partnership with the talent network Nova and their deep knowledge within custom events for top talents, you can now get an exponentially greater value from you participation!</p>
-                  <p>From the evaluations of previous years, it can be highlighted that:</p>
-                  <ul>
-                    <li>Many students are not pleased with the company’s choices of representatives.</li>
-                    <li>Many student feel they don’t receive the information they want about potential employers.</li>
-                    <li>Many companies feel that it is hard to create a value after participating at the career fair.</li>
-                  </ul>
-                  <p>Nova has done research in collaboration with THS Armada on its specific audience and created a toolkit for solving these problems. We can offer an exclusive service, consulting you in how to get the most from participating in THS Armada.</p>
-                  <h4><span class="h-red">Price: 10 000 SEK (Valued at 30 000 SEK)</h4>
+              <div class="col-md-8 col-md-offset-2">
+                <div class="col-md-6 cr-nova-col">
+                  <div class="cr-container-nova cr-container-nova-left">
+                    {{ form.product_selection_nova }}
+                    <p><b>Thanks</b> to our partnership with the talent network Nova and their deep knowledge within custom events for top talents, you can now get an exponentially greater value from you participation!</p>
+                    <p>From the evaluations of previous years, it can be highlighted that:</p>
+                    <ul>
+                      <li>Many students are not pleased with the company’s choices of representatives.</li>
+                      <li>Many student feel they don’t receive the information they want about potential employers.</li>
+                      <li>Many companies feel that it is hard to create a value after participating at the career fair.</li>
+                    </ul>
+                    <p>Nova has done research in collaboration with THS Armada on its specific audience and created a toolkit for solving these problems. We can offer an exclusive service, consulting you in how to get the most from participating in THS Armada.</p>
+                    <h4><span class="h-red">Price: 10 000 SEK (Valued at 30 000 SEK)</h4>
+                  </div>
                 </div>
-              </div>
-              <div class="col-md-4">
-                <div class="cr-container-nova">
-                  <ul class="list-unstyled nova-info">
-                    <li>
-                      <h4>START UP MEETING – <small><span class="h-green">1 H</span></small></h4>
-                      <ul>
-                        <li>Start-up meeting with the main responsible at your company together with an experienced Talent Manager from Nova.</li>
-                        <li>During this one hour session, we will guide you in how to plan and prepare for  and the maximize value of your THS Armada participation and other career fairs.</li>
-                      </ul>
-                    </li>
-                    <li>
-                      <h4>CAREER SURVEY AND EVENT TOOL PRESENTATION – <small><span class="h-green">1-2 H</span></small></h4>
-                      <ul>
-                        <li>Presentation of Universum career survey where you will get to know what previous year THS Armada students were looking for when choosing an employer. </li>
-                        <li>We will go through different tips and event tools you can use to truly build your talent pool during the day.</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
+                <div class="col-md-6 cr-nova-col">
+                  <div class="cr-container-nova">
+                    <ul class="list-unstyled nova-info">
+                      <li>
+                        <h4>START UP MEETING – <small><span class="h-green">1 H</span></small></h4>
+                        <ul>
+                          <li>Start-up meeting with the main responsible at your company together with an experienced Talent Manager from Nova.</li>
+                          <li>During this one hour session, we will guide you in how to plan and prepare for  and the maximize value of your THS Armada participation and other career fairs.</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <h4>CAREER SURVEY AND EVENT TOOL PRESENTATION – <small><span class="h-green">1-2 H</span></small></h4>
+                        <ul>
+                          <li>Presentation of Universum career survey where you will get to know what previous year THS Armada students were looking for when choosing an employer. </li>
+                          <li>We will go through different tips and event tools you can use to truly build your talent pool during the day.</li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
 
+                </div>
               </div>
             </div>
           </div>
@@ -521,267 +523,269 @@
 
     
           <div class="tab-pane fade" id="confirm-and-submit">
-            <div class="cr-container-confirm">
-              <h2>Review your info</h2>
-              <h3>Organisation <small id="editOrganisationTrigger" class="toggleEdit h-red">Edit</small></h3>
-              <p>The information below is copied from your profile. Make sure that the information is correct for this year’s application.</p>
-              <ul class="list-unstyled form-to-edit editable-form hidden" id="organistaionEditable">
-                <li>
-                  <h5><span class="aterix h-red">*</span> Name of organisation:</h5>
-                  <div class="input-field">{{ form.name_of_organisation }}</div>
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Organisation identification number:</h5>
-                  <div class="input-field">{{ form.organisation_identification_number }}
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Type of organisation:</h5>
-                  <div class="input-field">{{ form.type_of_organisation }}
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Organisation Street Address:</h5>
-                  <div class="input-field input-field-address">
-                    {{ form.address_street }}
-                    {{ form.address_city }}
-                    {{ form.address_zip_code }}
-                    {{ form.address_country }}
-                    {{ form.additional_address_information }}
-                  </div>
-                </li>
-                <li>
-                  <h5>Webpage:</h5>
-                  <div class="input-field">
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2 cr-container-confirm">
+                <h2>Review your info</h2>
+                <h3>Organisation <small id="editOrganisationTrigger" class="toggleEdit h-red">Edit</small></h3>
+                <p>The information below is copied from your profile. Make sure that the information is correct for this year’s application.</p>
+                <ul class="list-unstyled form-to-edit editable-form hidden" id="organistaionEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Name of organisation:</h5>
+                    <div class="input-field">{{ form.name_of_organisation }}</div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Organisation identification number:</h5>
+                    <div class="input-field">{{ form.organisation_identification_number }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Type of organisation:</h5>
+                    <div class="input-field">{{ form.type_of_organisation }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Organisation Street Address:</h5>
+                    <div class="input-field input-field-address">
+                      {{ form.address_street }}
+                      {{ form.address_city }}
+                      {{ form.address_zip_code }}
+                      {{ form.address_country }}
+                      {{ form.additional_address_information }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5>Webpage:</h5>
+                    <div class="input-field">
+                      {{ form.website }}
+                    </div>
+                  </li>
+                </ul>
+                <ul class="list-unstyled form-to-edit no-editable-form visible" id="organisationNoEditable">
+                  <li class="address">
+                    <h5>Address:</h5>
+                    <div class="input-field">
+                      {{ form.address_street }}
+                      {{ form.address_city }}
+                      {{ form.address_zip_code }}
+                      {{ form.address_country }}
+                      {{ form.additional_address_information }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5>Organisation name:</h5>
+                    <div class="input-field">{{ form.name_of_organisation }}</div>
+                  </li>
+                  <li>
+                    <h5>Organisation identification number:</h5>
+                    <div class="input-field">{{ form.organisation_identification_number }}
+                  </li>
+                  <!--<li>
+                    <h5>Type of organisation:</h5>
+                    <div class="input-field">{{ form.type_of_organisation }}
+                  </li>-->
+                  <li>
+                    <h5>Webpage:</h5>
                     {{ form.website }}
-                  </div>
-                </li>
-              </ul>
-              <ul class="list-unstyled form-to-edit no-editable-form visible" id="organisationNoEditable">
-                <li class="address">
-                  <h5>Address:</h5>
-                  <div class="input-field">
-                    {{ form.address_street }}
-                    {{ form.address_city }}
-                    {{ form.address_zip_code }}
-                    {{ form.address_country }}
-                    {{ form.additional_address_information }}
-                  </div>
-                </li>
-                <li>
-                  <h5>Organisation name:</h5>
-                  <div class="input-field">{{ form.name_of_organisation }}</div>
-                </li>
-                <li>
-                  <h5>Organisation identification number:</h5>
-                  <div class="input-field">{{ form.organisation_identification_number }}
-                </li>
-                <!--<li>
-                  <h5>Type of organisation:</h5>
-                  <div class="input-field">{{ form.type_of_organisation }}
-                </li>-->
-                <li>
-                  <h5>Webpage:</h5>
-                  {{ form.website }}
-                </li>
-              </ul>
+                  </li>
+                </ul>
 
-              <h3>Contact <small id="editContactTrigger" class="toggleEdit">Edit</small></h3>
-              <p>Please enter contact i formation for the person we can contact if there are any questions/issues with your registration or your account.</p>
-              <ul class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
-                <li>
-                  <h5><span class="aterix h-red">*</span> Name:</h5>
-                  <div class="input-field">
+                <h3>Contact <small id="editContactTrigger" class="toggleEdit">Edit</small></h3>
+                <p>Please enter contact i formation for the person we can contact if there are any questions/issues with your registration or your account.</p>
+                <ul class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Name:</h5>
+                    <div class="input-field">
+                      {{ form.contact_name }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
+                    <div class="input-field">
+                      {{ form.work_phone }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5>Cell phone number:</h5>
+                    <div class="input-field">
+                      {{ form.cell_phone }}
+                    </div>
+                  </li>
+                  <!--<li>
+                    <h5>Phone switchboard:</h5>
+                    <div class="input-field">
+                    {{ form.phone_switchboard }}
+                    </div>
+                  </li>-->
+                  <li>
+                    <h5><span class="aterix h-red">*</span> E­mail:</h5>
+                    <div class="input-field">
+                      {{ form.contact_email }}
+                    </div>
+                  </li>
+                  <!--<li>
+                    <h5>Alternative e­mail address:</h5>
+                    <div class="input-field">
+                      {{ form.alternative_email }}
+                    </div>
+                  </li>-->
+                </ul>
+                <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
+                  <li>
+                    <h5>Name:</h5>
                     {{ form.contact_name }}
-                  </div>
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Phone number:</h5>
-                  <div class="input-field">
+                  </li>
+                  <li>
+                    <h5>Phone number:</h5>
                     {{ form.work_phone }}
-                  </div>
-                </li>
-                <li>
-                  <h5>Cell phone number:</h5>
-                  <div class="input-field">
+                  </li>
+                  <li>
+                    <h5>Cell phone number:</h5>
                     {{ form.cell_phone }}
-                  </div>
-                </li>
-                <!--<li>
-                  <h5>Phone switchboard:</h5>
-                  <div class="input-field">
-                  {{ form.phone_switchboard }}
-                  </div>
-                </li>-->
-                <li>
-                  <h5><span class="aterix h-red">*</span> E­mail:</h5>
-                  <div class="input-field">
+                  </li>
+                  <!--<li>
+                    <h5>Phone switchboard:</h5>
+                    {{ form.phone_switchboard }}
+                  </li>-->
+                  <li>
+                    <h5>E­mail:</h5>
                     {{ form.contact_email }}
-                  </div>
-                </li>
-                <!--<li>
-                  <h5>Alternative e­mail address:</h5>
-                  <div class="input-field">
+                  </li>
+                  <!--<li>
+                    <h5>Alternative e­mail address:</h5>
                     {{ form.alternative_email }}
-                  </div>
-                </li>-->
-              </ul>
-              <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
-                <li>
-                  <h5>Name:</h5>
-                  {{ form.contact_name }}
-                </li>
-                <li>
-                  <h5>Phone number:</h5>
-                  {{ form.work_phone }}
-                </li>
-                <li>
-                  <h5>Cell phone number:</h5>
-                  {{ form.cell_phone }}
-                </li>
-                <!--<li>
-                  <h5>Phone switchboard:</h5>
-                  {{ form.phone_switchboard }}
-                </li>-->
-                <li>
-                  <h5>E­mail:</h5>
-                  {{ form.contact_email }}
-                </li>
-                <!--<li>
-                  <h5>Alternative e­mail address:</h5>
-                  {{ form.alternative_email }}
-                </li>-->
-              </ul>
+                  </li>-->
+                </ul>
 
-              <h3>INVOICE INFORMATION <small id="editInvoiceToggle" class="toggleEdit">Edit</small></h3>
-              <p>Please enter your invoice information for THS Armada 2017.</p>
-              <ul class="list-unstyled form-to-edit editable-form hidden" id="invoiceEditable">
-                <li>
-                  <h5><span class="aterix h-red">*</span> Invoice reference</h5>
-                  <div class="input-field">
+                <h3>INVOICE INFORMATION <small id="editInvoiceToggle" class="toggleEdit">Edit</small></h3>
+                <p>Please enter your invoice information for THS Armada 2017.</p>
+                <ul class="list-unstyled form-to-edit editable-form hidden" id="invoiceEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice reference</h5>
+                    <div class="input-field">
+                      {{ form.invoice_reference }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Reference phone number</h5>
+                    <div class="input-field">
+                      {{ form.invoice_reference_phone_number }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice reference number/PO-number:</h5>
+                     <div class="input-field">
+                      {{ form.invoice_purchase_order_number}}
+                    </div>
+                    <p><span class="h-red">Please enter a reference number/PO-number for your invoice.</span></p>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice organization name</h5>
+                    <div class="input-field">
+                      {{ form.invoice_organisation_name }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice address</h5>
+                    <div class="input-field input-field-address">
+                      {{ form.invoice_address }}
+                      {{ form.invoice_address_zip_code }}
+                    </div>
+                    <p><span class="h-red">Be sure to enter the invoice address, not the address to the office.</span></p>
+                  </li>
+                  <li>
+                    <h5>Invoice additional information</h5>
+                    <div class="input-field">
+                      {{ form.invoice_additional_information }}
+                    </div>
+                  </li>
+                </ul>
+                <ul class="list-unstyled form-to-edit no-editable-form visible" id="invoiceNoEditable">
+                  <li class="address">
+                    <h5>Invoice address:</h5>
+                    <div class="input-field">
+                      {{ form.invoice_address }}
+                      {{ form.invoice_address_zip_code }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5>Invoice reference:</h5>
                     {{ form.invoice_reference }}
-                  </div>
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Reference phone number</h5>
-                  <div class="input-field">
-                    {{ form.invoice_reference_phone_number }}
-                  </div>
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Invoice reference number/PO-number:</h5>
-                   <div class="input-field">
-                    {{ form.invoice_purchase_order_number}}
-                  </div>
-                  <p><span class="h-red">Please enter a reference number/PO-number for your invoice.</span></p>
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Invoice organization name</h5>
-                  <div class="input-field">
-                    {{ form.invoice_organisation_name }}
-                  </div>
-                </li>
-                <li>
-                  <h5><span class="aterix h-red">*</span> Invoice address</h5>
-                  <div class="input-field input-field-address">
-                    {{ form.invoice_address }}
-                    {{ form.invoice_address_zip_code }}
-                  </div>
-                  <p><span class="h-red">Be sure to enter the invoice address, not the address to the office.</span></p>
-                </li>
-                <li>
-                  <h5>Invoice additional information</h5>
-                  <div class="input-field">
-                    {{ form.invoice_additional_information }}
-                  </div>
-                </li>
-              </ul>
-              <ul class="list-unstyled form-to-edit no-editable-form visible" id="invoiceNoEditable">
-                <li class="address">
-                  <h5>Invoice address:</h5>
-                  <div class="input-field">
-                    {{ form.invoice_address }}
-                    {{ form.invoice_address_zip_code }}
-                  </div>
-                </li>
-                <li>
-                  <h5>Invoice reference:</h5>
-                  {{ form.invoice_reference }}
-                </li>
-                <li>
-                  <h5>Reference phone number:</h5>
-                    {{ form.invoice_reference_phone_number }}
-                </li>
-                <li>
-                  <h5>Invoice reference number/PO-number:</h5>
-                    {{ form.invoice_purchase_order_number}}
-                </li>
-                <li>
-                  <h5>Invoice organization name:</h5>
-                    {{ form.invoice_organisation_name }}
-                </li>
-                <li>
-                  <h5>Invoice additional information:</h5>
-                    {{ form.invoice_additional_information }}
-                </li>
-              </ul>
+                  </li>
+                  <li>
+                    <h5>Reference phone number:</h5>
+                      {{ form.invoice_reference_phone_number }}
+                  </li>
+                  <li>
+                    <h5>Invoice reference number/PO-number:</h5>
+                      {{ form.invoice_purchase_order_number}}
+                  </li>
+                  <li>
+                    <h5>Invoice organization name:</h5>
+                      {{ form.invoice_organisation_name }}
+                  </li>
+                  <li>
+                    <h5>Invoice additional information:</h5>
+                      {{ form.invoice_additional_information }}
+                  </li>
+                </ul>
 
-              <div id="armadaTransportChosen">
-                <h3>Armada Transport <small id="editArmadaTransportTrigger" class="toggleEdit">Edit</small></h3>
-                <ul class="list-unstyled form-to-edit editable-form hidden" id="armadaTransportEditable">
-                  <li class="address">
-                    <h5><span class="aterix h-red">*</span> Delivery address (including zip code)</h5>
-                    <div class="input-field">
-                      {{ form.transport_from_fair_address }}
-                    </div>
-                  </li>
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Recipient's name:</h5>
-                    <div class="input-field">
-                      {{ form.transport_from_fair_recipient_name }}
-                    </div>
-                  </li>
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Recipient's phone number:</h5>
-                    <div class="input-field">
-                      {{ form.transport_from_fair_recipient_phone_number }}
-                    </div>
-                  </li>
-                  <li>
-                    <h5>Number of packages:</h5>
-                    <div class="input-field">
-                      {{ form.number_of_packages_from_fair }}
-                    </div>
-                  </li>
-                  <li>
-                    <h5>Number of pallets:</h5>
-                    <div class="input-field">
-                      {{ form.number_of_pallets_from_fair }}
-                    </div>
-                  </li>
-                </ul>
-                <ul class="list-unstyled form-to-edit no-editable-form visible" id="armadaTransportNoEditable">
-                  <li class="address">
-                    <h5>Delivery address (including zip code)</h5>
-                    <div class="input-field">
-                      {{ form.transport_from_fair_address }}
-                    </div>
-                  </li>
-                  <li>
-                    <h5>Recipient's name:</h5>
-                      {{ form.transport_from_fair_recipient_name }}
-                  </li>
-                  <li>
-                    <h5>Recipient's phone number:</h5>
-                      {{ form.transport_from_fair_recipient_phone_number }}
-                  </li>
-                  <li>
-                    <h5>Number of packages:</h5>
-                      {{ form.number_of_packages_from_fair }}
-                  </li>
-                  <li>
-                    <h5>Number of pallets:</h5>
-                      {{ form.number_of_pallets_from_fair }}
-                  </li>
-                </ul>
+                <div id="armadaTransportChosen">
+                  <h3>Armada Transport <small id="editArmadaTransportTrigger" class="toggleEdit">Edit</small></h3>
+                  <ul class="list-unstyled form-to-edit editable-form hidden" id="armadaTransportEditable">
+                    <li class="address">
+                      <h5><span class="aterix h-red">*</span> Delivery address (including zip code)</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_address }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5><span class="aterix h-red">*</span> Recipient's name:</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_recipient_name }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5><span class="aterix h-red">*</span> Recipient's phone number:</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_recipient_phone_number }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5>Number of packages:</h5>
+                      <div class="input-field">
+                        {{ form.number_of_packages_from_fair }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5>Number of pallets:</h5>
+                      <div class="input-field">
+                        {{ form.number_of_pallets_from_fair }}
+                      </div>
+                    </li>
+                  </ul>
+                  <ul class="list-unstyled form-to-edit no-editable-form visible" id="armadaTransportNoEditable">
+                    <li class="address">
+                      <h5>Delivery address (including zip code)</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_address }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5>Recipient's name:</h5>
+                        {{ form.transport_from_fair_recipient_name }}
+                    </li>
+                    <li>
+                      <h5>Recipient's phone number:</h5>
+                        {{ form.transport_from_fair_recipient_phone_number }}
+                    </li>
+                    <li>
+                      <h5>Number of packages:</h5>
+                        {{ form.number_of_packages_from_fair }}
+                    </li>
+                    <li>
+                      <h5>Number of pallets:</h5>
+                        {{ form.number_of_pallets_from_fair }}
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -791,7 +795,7 @@
 
         <!-- Form next, back and save btn, and errors -->
         <div class="form-footer cr-nav-common cr-nav-bottom">
-          <a class="btn btn-armada btn-armada-green btnBack">Back</a>
+          <a class="btn btn-armada btn-armada-green btnBack" id="back-button">Back</a>
           <span class="has-popover" data-content="You only need to save before closing your browser window", data-placement='top', data-container="body">
             <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
           </span>

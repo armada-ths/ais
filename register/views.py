@@ -85,6 +85,7 @@ def home(request, template_name='register/home.html'):
 
 
 
+
 def signup(request, template_name='register/create_user.html'):
     contact_form = CreateContactForm(request.POST or None, prefix='contact')
     user_form = UserForm(request.POST or None, prefix='user')
@@ -319,9 +320,13 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         settings.DEFAULT_FROM_EMAIL,
                         [contact.email],
                         fail_silently=False)
-                    return redirect('anmalan:home')
+                    return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form})
+
+# thank you screen after submission of complete registration
+def cr_done(request, template_name='register/finished_registration.html'):
+    return render(request, template_name)
 
 #change password
 def change_password(request, template_name='register/change_password.html'):
