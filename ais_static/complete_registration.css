@@ -40,6 +40,9 @@ h1 {
 	font-size: 3.5em;
 	color: #00d791;
 }
+h1.big {
+	font-size: 6em;
+}
 h3 {
 	font-size: 2em;
 	color: #00d791;
@@ -55,6 +58,9 @@ a, a:visited, a:hover {
 }
 .hidden {
 	display: none;
+}
+.big-margin-top {
+	margin-top: 100px;
 }
 
 /*
@@ -352,6 +358,10 @@ li.nav {
 	float: right;
 }
 
+.cr-nav-bottom .invisible {
+	visibility: none;
+	opacity: 0;
+}
 
 /*
 *	GENERAL TAB CONTENT
@@ -544,11 +554,18 @@ ul.cr-banquet-tickets li {
 ul.cr-banquet-tickets li:nth-child(odd) {
 	background: #353535;
 }
+/*
+*	TAB: STURE; *********************************
+*/
+
+#sture p {
+	text-align: justify;
+}
 
 /*
 *	TAB: NOVA *********************************
 */
-/* flexbox fix to make column equal height */
+/* flexbox fix to make column equal height 
 .cr-nova .row {
   display: -webkit-box;
   display: -webkit-flex;
@@ -559,11 +576,21 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 .cr-nova .row > [class*='col-'] {
   display: flex;
   flex-direction: column;
-}
+}*/
 .cr-container-nova {
 	height: 100%;
-	overflow: hidden;
+	overflow: visible;
 	position: relative;
+}
+/* column that wraps double column */
+.cr-nova > div > div {
+	position: relative;
+}
+.cr-container-nova-left {
+	padding-bottom: 40px;
+}
+.cr-nova-col {
+	position: static;
 }
 ul.nova-info ul {
     border: 2px solid #ea2c49;
@@ -578,20 +605,25 @@ ul.nova-info ul li {
 .cr-container-nova ul#id_product_selection_nova { 
 	list-style: none;
 	padding-left: 0;
+	margin-bottom: 0px;
+	overflow: visible;
 }
 .cr-container-nova h4.confirm-title {
 	border-bottom: 2px solid #00d791;
-	margin-top: 50px;
 	cursor: pointer;
 	position: absolute;
-	bottom: 10px;
+	bottom: 0px;
 	left: 0px;
 	width: 100%;
 }
 .cr-container-nova #id_product_selection_nova_0 {
 	position: absolute;
-	bottom: 26px;
+	bottom: 20px;
 	right: 10px;
+}
+
+.cr-container-nova p {
+	text-align: justify;
 }
 
 /*
@@ -811,8 +843,6 @@ ul.additional_stand_height label span {
 *	TAB: CONFIRM AND SAVE *********************************
 */
 .cr-container-confirm {
-	max-width: 65%;
-	margin: auto;
 	background: #353535;
 	padding: 30px;
 }
@@ -830,7 +860,7 @@ ul.additional_stand_height label span {
 }
 .no-editable-form li {
 	border-bottom: 1px solid #fff;
-	width: 60%;
+	width: 85%;
 	padding-top: 5px;
 	padding-bottom: 0px;
 }
@@ -850,6 +880,7 @@ ul.additional_stand_height label span {
 }
 .no-editable-form .input-field input {
 	float: none;
+	display: block;
 }
 .no-editable-form li.address {
 	border: none;
@@ -901,7 +932,6 @@ ul.additional_stand_height label span {
 	width: 38%;
 }
 
-
 @media all and (max-width: 1137px) {
   .cr-tab-content {
   	margin-top: 135px;
@@ -923,3 +953,7 @@ ul.additional_stand_height label span {
   	margin-right: auto;
   }
 } 
+
+.modal-content {
+	background-color: #2D2D2D;
+}

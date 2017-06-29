@@ -25,6 +25,7 @@ $('#transportToFairType').children().change(function() {
 // if armada transport is chosen on load
 $(document).ready(function(){
   $("#submit-button").hide();
+  setBackButton(true);
   var selected = $('#id_transport_from_fair_type').val();
   if(selected == 'armada_transport') {
     $('#armadaTransportChosen').show();
@@ -32,6 +33,7 @@ $(document).ready(function(){
     $('#armadaTransportChosen').hide();
   }
 });
+
 
 // Edit button in Confirm and Save tab
 $('#editOrganisationTrigger').click(function() {
@@ -63,36 +65,61 @@ $('.editable-form').find('select').prop( "disabled", false );
 $('.btnNext').click(function(){
   $('.nav-tabs > .active').next('li').find('a').trigger('click');
   // Check if on confirm and save
-  checkIfOnConformAndSave();
+  checkIfOnConformAndSubmit();
+  // Check if on start
+  checkIfOnStart();
 });
 
 $('.btnBack').click(function(){
   $('.nav-tabs > .active').prev('li').find('a').trigger('click');
-  checkIfOnConformAndSave();
+  checkIfOnConformAndSubmit();
+  checkIfOnStart();
 });
 
 $("li").click(function(){
   if (this.id == "confirm-li") {
-    setConfirmAndSave(true);
+    setConfirmAndSubmit(true);
   } else {
-    setConfirmAndSave(false);
-  }; 
+    setConfirmAndSubmit(false);
+  }
+  if (this.id == "start-li") {
+    setBackButton(true);
+  } else {
+    setBackButton(false);
+  }
 })
 
-var checkIfOnConformAndSave = function () {
+var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
-    setConfirmAndSave(true);
+    setConfirmAndSubmit(true);
   } else {
-    setConfirmAndSave(false);
+    setConfirmAndSubmit(false);
   }; 
 }
 
-var setConfirmAndSave = function(bool) {
+var setConfirmAndSubmit = function(bool) {
   if (bool) {
     $("#next-button").hide();
     $("#submit-button").show().addClass("btn-armada-green");
   } else {
     $("#next-button").show();
     $("#submit-button").hide();
+  }
+}
+
+var checkIfOnStart = function () {
+  if ($("#start-li").hasClass("active")) {
+    setBackButton(true);
+  } else {
+    setBackButton(false);
+  };
+}
+
+// hides back button if bool = true
+var setBackButton = function(bool) {
+  if (bool) {
+    $("#back-button").addClass('invisible');
+  } else {
+    $("#back-button").removeClass('invisible');
   }
 }
