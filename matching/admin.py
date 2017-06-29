@@ -2,10 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
+from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns, Category
 
 class QuestionInline(admin.TabularInline):
     model = Question
+    ordering = ('name',)
 
 class SurveyAdmin(admin.ModelAdmin):
     inlines = [QuestionInline,]
@@ -31,6 +32,7 @@ class ResponseAdmin(admin.ModelAdmin):
     inlines = [TextAnsInline, ChoiceAnsInline, IntegerAnsInline, BooleanAnsInline]
     readonly_fields = ('survey', 'exhibitor')
 
+admin.site.register(Category)
 admin.site.register(Question)
 admin.site.register(Survey, SurveyAdmin)
 admin.site.register(Response, ResponseAdmin)

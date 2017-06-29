@@ -2,13 +2,20 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
+# category of survey, could for example be exhibitor-matching or student-matching
+class Category(models.Model):
+    name = models.CharField(max_length=256, blank=True, null=True)
+    def __str__(self):
+        return '%s'%self.name
+
 # Matching survey
 class Survey(models.Model):
     fair = models.ForeignKey('fair.Fair', default=1)
+    category = models.ForeignKey(Category, blank=True, null=True)
     name = models.CharField(max_length=256)
     description = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s"%self.name
 
     def questions(self):
@@ -16,6 +23,16 @@ class Survey(models.Model):
             return Question.objects.filter(survey=self.pk)
         else:
             return None
+    class Meta:
+        ordering = ['name']
+
+CHOICES = (
+    (1, 'Definitely Not'),
+    (2, 'Probably Not'),
+    (3, 'Maybe'),
+    (4, 'Probably'),
+    (5,'Definitely')
+)
 
 class Question(models.Model):
     TEXT = 'text'
@@ -29,27 +46,26 @@ class Question(models.Model):
         (INT, 'integer'),
         (BOOL, 'boolean'),
     )
+    name = models.CharField(max_length=256, blank=True, null=True)
     text = models.TextField()
     survey = models.ForeignKey(Survey, blank=True, null=True)
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES)
 
-    def __unicode__(self):
-        return '%s'%self.text
+    def get_choices(self):
+        return CHOICES
 
-CHOICES = (
-    (1, 'Definitely Not'),
-    (2, 'Probably Not'),
-    (3, 'Maybe'),
-    (4, 'Probably'),
-    (5,'Definitely')
-)
+    def __str__(self):
+        return '%s'%self.name
+
+    class Meta:
+        ordering = ['name']
 
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
     question = models.ForeignKey(Question)
-    survey = models.ForeignKey(Survey)
+    survey = models.ForeignKey(Survey, blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s'%self.exhibitor
 
 class Answer(models.Model):

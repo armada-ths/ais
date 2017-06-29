@@ -2,10 +2,12 @@
 
     <div class="survey">
         <form enctype="multipart/*" action="/" method="post">
-
-        {% for question in questions %}
-            <p>{{ question.question }}</p><ul>{{ question.form.as_ul }}</ul>
-        {% endfor %}
+        <div class="container">
+            {% for field in response_form %}
+                <div class="field-wrapper">
+                    {{field}}
+                </div>
+        </div>
 
     <div><input type="submit" value="submit" /></div>
 </form>
