@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 
 # Could be two different survey types for students: one short and one long
 class Survey(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=256)
     description = models.TextField()
 
     def __str__(self):
@@ -18,7 +18,7 @@ class Survey(models.Model):
 
 # should be a category for exhibitors and one for students
 class Category(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=256)
     survey = models.ForeignKey(Survey)
 
     def __str__(self):
@@ -38,11 +38,11 @@ class Question(models.Model):
         (INT, 'integer'),
         (BOOL, 'boolean'),
     )
-    fair = models.ForeignKey('fair.Fair')
+    #fair = models.ForeignKey('fair.Fair')
     text = models.TextField()
     category = models.ForeignKey(Category, blank=True, null=True)
     survey = models.ForeignKey(Survey)
-    question_type = models.CharField(max_length=200, choices=QUESTION_TYPES)
+    question_type = models.CharField(max_length=256, choices=QUESTION_TYPES)
     #SAVE FUNCTION here or in exhibitor?
 
     def get_choices(self):
@@ -53,7 +53,7 @@ class Question(models.Model):
 
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
-    question = models.ForeignKey('Question')
+    question = models.ForeignKey(Question)
     survey = models.ForeignKey(Survey)
 
     def __str__(self):
@@ -64,16 +64,21 @@ class Answer(models.Model):
     response = models.ForeignKey(Response)
 
 class TextAns(Answer):
-    answer = models.CharField(null=True, blank=True, max_length=50)
+    ans = models.CharField(null=True, blank=True, max_length=50)
     def __str__(self):
         return '%s: %s'%(self.question, self.answer)
 
 class ChoiceAns(Answer):
-    answer = models.IntegerField(choices=CHOICES, null=True, blank=True)
+    ans = models.IntegerField(choices=CHOICES, null=True, blank=True)
+    def __str__(self):
+        return '%s: %s'%(self.question, self.answer)
+
+class IntegerAns(Answer):
+    ans = models.IntegerField(null=True, blank=True)
     def __str__(self):
         return '%s: %s'%(self.question, self.answer)
 
 class BooleanAns(Answer):
-    answer = models.BooleanField(choices=((True,'yes'),(False,'no')))
+    ans = models.BooleanField(choices=((True,'yes'),(False,'no')))
     def __str__(self):
         return '%s: %s'%(self.question, self.answer)
