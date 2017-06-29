@@ -640,10 +640,14 @@ ul.nova-info ul li {
 .cr-container-profile p {
 	text-align: left;
 }
-.cr-container-profile input {
+.cr-container-profile input#id_logo {
 	background: #353535;
 	color: #fff;
+	width: 100%;
 	padding: 30px;
+}
+.cr-profile .divider {
+	display: none;
 }
 .cr-profile .divider.left {
 	left: 31%;
@@ -657,6 +661,9 @@ ul.nova-info ul li {
 	transform:rotate(-12deg);
 	-moz-transform:rotate(-12deg);
 	-webkit-transform:rotate(-12deg);
+}
+#id_facts_text {
+	height: 70px;
 }
 
 /*

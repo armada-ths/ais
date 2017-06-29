@@ -321,6 +321,7 @@
                   <h2>Upload logo</h2>
                   <p>Upload your logo so we can display it in our apps.</p>
                   {{ form.logo }}
+                  
                 </div>
               </div>
               <div class="col-md-4">
@@ -335,6 +336,21 @@
                   <h2>Organisation Facts</h2>
                   <p>List some quick/fun facts about your organisation.</p>
                   {{ form.facts_text }}
+
+                  <div>
+                    <p>Goal of participation</p>
+                    {{ form.goals_of_participation }}
+
+                    <ul class="list-unstyled">
+                      <li>{{ form.offers_trainee_program }} <label class="pretty-label" for="id_offers_trainee_program"><span>Offers trainee program</span></label></li>
+                      <li>{{ form.offers_master_thesis }} <label class="pretty-label" for="id_offers_master_thesis"><span>Offers master thesis</span></label></li>
+                      <li>{{ form.offers_bachelor_thesis }} <label class="pretty-label" for="id_offers_bachelor_thesis"><span>Offers bachelor thesis</span></label></li>
+                      <li>{{ form.offers_summer_jobs }} <label class="pretty-label" for="id_offers_summer_jobs"><span>Offers summer jobs</span> </label></li>
+                      <li>{{ form.offers_part_time_jobs }} <label class="pretty-label" for="id_offers_part_time_jobs"><span>Offers part time jobs</span></label></li>
+                      <li>{{ form.offers_international_opportunities }} <label class="pretty-label" for="id_offers_international_opportunities"><span>Offers international opportunities</span></label></li>
+                    </ul>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -403,7 +419,7 @@
                         {{ form.wants_information_about_events }}
                         <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_events"><span>Info about events</span></label>  
 
-                        {{ form.wants_information_about_targeted_marketing }}
+                        {{ form.wants_information_about_targeted_marketing }} 
                         <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_targeted_marketing"><span>Info about targeted marketing</span></label> 
 
                         {{ form.manual_invoice }}
