@@ -16,15 +16,17 @@ class ResponseForm(ModelForm):
         self.exhibitor = exhibitor
 
         #should be moved to a init_question fields foo
-        for q in survey.questions():
-            if q.question_type == Question.TEXT:
-                self.fields['question_%d'%q.pk] = forms.CharField(label=q.text)
-            elif q.question_type == Question.SELECT:
-                self.fields['question_%d'%q.pk] = forms.ChoiceField(label=q.text, choices = q.get_choices())
-            elif q.question_type == Question.INT:
-                self.fields['question_%d'%q.pk] = forms.IntegerField(label=q.text)
-            elif q.question_type == Question.BOOL:
-                self.fields['question_%d'&q.pk] = forms.BooleanField(label=q.text, choices=((True,'yes'),(False,'no')))
+        #for q in survey.questions():
+        for i, surv in enumerate(survey):
+            for i, q in enumerate(surv.questions):
+                if q.question_type == Question.TEXT:
+                    self.fields['question_%d'%q.pk] = forms.CharField(label=q.text)
+                elif q.question_type == Question.SELECT:
+                    self.fields['question_%d'%q.pk] = forms.ChoiceField(label=q.text, choices = q.get_choices())
+                elif q.question_type == Question.INT:
+                    self.fields['question_%d'%q.pk] = forms.IntegerField(label=q.text)
+                elif q.question_type == Question.BOOL:
+                    self.fields['question_%d'&q.pk] = forms.BooleanField(label=q.text, choices=((True,'yes'),(False,'no')))
         #should init with already answered and saved questions
         #maybe add all as required?
     class Meta:

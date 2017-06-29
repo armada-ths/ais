@@ -8,9 +8,6 @@ class QuestionInline(admin.TabularInline):
     model = Question
     ordering = ('name',)
 
-class SurveyAdmin(admin.ModelAdmin):
-    inlines = [QuestionInline,]
-
 class AnswerInline(admin.StackedInline):
     fields = ('question', 'ans')
     readonly_fields = ('question',)
@@ -34,7 +31,7 @@ class ResponseAdmin(admin.ModelAdmin):
 
 admin.site.register(Category)
 admin.site.register(Question)
-admin.site.register(Survey, SurveyAdmin)
+admin.site.register(Survey)
 admin.site.register(Response, ResponseAdmin)
 #admin.site.register(ChoiceAns)
 #admin.site.register(TextAns)

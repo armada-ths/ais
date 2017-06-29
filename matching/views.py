@@ -34,6 +34,7 @@ def index(request, template_name = 'matching/exhibitor_questions.html'):
     survey = Survey.objects.filter(fair = currentFair, category = Category.objects.filter(name='exhibitor-matching'))
     form = ResponseForm(request.POST or None,
             survey=survey,
+            #questions = survey.questions,
             exhibitor=exhibitor)
     if form.is_valid():
         response = form.save()
