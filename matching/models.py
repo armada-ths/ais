@@ -2,12 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
-# Could be two different survey types for students: one short and one long
+# Matching survey
 class Survey(models.Model):
     name = models.CharField(max_length=256)
     description = models.TextField()
 
-    def __str__(self):
+    def __unicode__(self):
         return "%s"%self.name
 
     def questions(self):
@@ -16,15 +16,13 @@ class Survey(models.Model):
         else:
             return None
 
-# should be a category for exhibitors and one for students
+# one category for students and one for exhibitors
 class Category(models.Model):
     name = models.CharField(max_length=256)
     survey = models.ForeignKey(Survey)
 
-    def __str__(self):
-        return "%s"%self.name
-
-CHOICES = ((1, 'Definitely Not'), (2, 'Probably Not'), (3, 'Maybe'), (4, 'Probably'), (5,'Definitely'))
+    def __unicode__(self):
+        return '%s'%self.name
 
 class Question(models.Model):
     TEXT = 'text'
@@ -38,26 +36,30 @@ class Question(models.Model):
         (INT, 'integer'),
         (BOOL, 'boolean'),
     )
-    #fair = models.ForeignKey('fair.Fair')
+    fair = models.ForeignKey('fair.Fair')
     text = models.TextField()
-    category = models.ForeignKey(Category, blank=True, null=True)
-    survey = models.ForeignKey(Survey)
+    category = models.ForeignKey(Category, blank=True, null=True,)
+    survey = models.ForeignKey(Survey, blank=True, null=True)
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES)
-    #SAVE FUNCTION here or in exhibitor?
 
-    def get_choices(self):
-        return self.CHOICES
+    def __unicode__(self):
+        return '%s'%self.text
 
-    def __str__(self):
-        return '%s'%self.question
+CHOICES = (
+    (1, 'Definitely Not'),
+    (2, 'Probably Not'),
+    (3, 'Maybe'),
+    (4, 'Probably'),
+    (5,'Definitely')
+)
 
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
     question = models.ForeignKey(Question)
     survey = models.ForeignKey(Survey)
 
-    def __str__(self):
-        return "response: %s"%self.exhibitor
+    def __unicode__(self):
+        return '%s'%self.exhibitor
 
 class Answer(models.Model):
     question = models.ForeignKey(Question)
@@ -65,20 +67,14 @@ class Answer(models.Model):
 
 class TextAns(Answer):
     ans = models.CharField(null=True, blank=True, max_length=50)
-    def __str__(self):
-        return '%s: %s'%(self.question, self.answer)
 
 class ChoiceAns(Answer):
     ans = models.IntegerField(choices=CHOICES, null=True, blank=True)
-    def __str__(self):
-        return '%s: %s'%(self.question, self.answer)
 
 class IntegerAns(Answer):
     ans = models.IntegerField(null=True, blank=True)
-    def __str__(self):
-        return '%s: %s'%(self.question, self.answer)
+    #def __unicode__(self):
+    #    return '%s: %s'%(self.question, self.ans)
 
 class BooleanAns(Answer):
     ans = models.BooleanField(choices=((True,'yes'),(False,'no')))
-    def __str__(self):
-        return '%s: %s'%(self.question, self.answer)
