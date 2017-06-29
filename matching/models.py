@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 
 # Matching survey
 class Survey(models.Model):
+    fair = models.ForeignKey('fair.Fair', default=1)
     name = models.CharField(max_length=256)
     description = models.TextField()
 
@@ -15,14 +16,6 @@ class Survey(models.Model):
             return Question.objects.filter(survey=self.pk)
         else:
             return None
-
-# one category for students and one for exhibitors
-class Category(models.Model):
-    name = models.CharField(max_length=256)
-    survey = models.ForeignKey(Survey)
-
-    def __unicode__(self):
-        return '%s'%self.name
 
 class Question(models.Model):
     TEXT = 'text'
@@ -36,9 +29,7 @@ class Question(models.Model):
         (INT, 'integer'),
         (BOOL, 'boolean'),
     )
-    fair = models.ForeignKey('fair.Fair')
     text = models.TextField()
-    category = models.ForeignKey(Category, blank=True, null=True,)
     survey = models.ForeignKey(Survey, blank=True, null=True)
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES)
 
