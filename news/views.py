@@ -38,7 +38,6 @@ class NewsArticleForm(forms.ModelForm):
         newsArticle = super(NewsArticleForm, self).save(*args, **kwargs)
 
         image_field = self.cleaned_data.get('image_3x')
-        print(type(image_field))
         if type(image_field) == InMemoryUploadedFile or type(image_field) == TemporaryUploadedFile: # A new image has been uploaded in this field
             image = Image.open(image_field)
             w, h = image.size
