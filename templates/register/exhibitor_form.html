@@ -210,22 +210,20 @@
                 </div>
                 <div class="row">
                   <div class="col-md-6">
-                    <h3><span class="h-green">November 21st</span> <span class="h-red">Annexet, Globen </span><span class="h-white">Dark suit</span> </h3>
+                    <h3><span class="h-green">November 21st</span> <span class="h-red">Annexet, Globen </span></h3>
                     <p>This is one of the biggest university banquets in Sweden where you and your organization will have the wonderful opportunity to network with many ambitious students in a casual atmosphere. The evening will start off with a refreshing drink and continue with a three course menu and spectacular entertainment.</p>
-                    <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. This information will be gathered before October 27th.</p>
-                    <h4>Tables <span class="h-red">9,900 / 12,900 SEK</span></h4>
-                    <p>New for this year is that you also have the opportunity to purchase entire tables to the banquet. These tables will have 8 seats, a favorable placement and be branded with your organization logo.  You will have the unique chance to handpick top students of your choosing to this table, which will give you a great chance to deepen your connection with interesting top students that you have met at events, at the fair or to get to know new students that have shown great interest in your organization. </p>
-                    <p>Prices:</p>
-                    <ul>
-                      <li>Including two tickets from the base kit: 9,900 SEK</li>
-                      <li>Excluding two tickets from the base kit: 12,900 SEK</li>
-                    </ul>
+                    <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. </p>
+                    <h4>Banquet Tables <span class="h-red">9,900 / 12,900 SEK</span></h4>
+                    <p>New for this year is that you have the opportunity to purchase entire tables to the banquet. These tables will have 8 seats, a favorable placement and be branded with your organization logo. You will have the unique chance to handpick top students of your choosing to this table, which will give you a great chance to deepen your connection with interesting students that you have met at events, at the fair or get to know new students that have shown great interest in your organization. </p>
                   </div>
                   <div class="col-md-6">
                     <h4>Banquet ticket - Exhibitor representative <span class="h-red">1,190 SEK</span></h4>
                     <p>This year we have chosen to include 2 banquet tickets in the base kit for each participating exhibitor. Of course you also have the opportunity to purchase additional tickets if you're so inclined. </p>
                     <h4>Banquet ticket - student <span class="h-red">1,190 SEK</span></h4>
                     <p>Did you meet any interesting students during an event or the first day of the fair? Let these students know more about your organisation and get to know them personally in a different setting by inviting them to the banquet. A ticket to the banquet can also be used as a very appreciated prize for students in a possible contest at your stand.</p>
+                    <h4>Drink Coupons <span class="h-red">85 SEK/Each</span></h4>
+                    <p>Used to purchase something to drink in the bar and is a good addition to the banquet tickets.</p>
+
                   </div>
                 </div>
               </div>
@@ -524,12 +522,15 @@
                   <div class="cr-logistics-container cr-logistics-container-transport">
                     <div class="row">
                       <div class="col-md-6">
-                        <h3>ARMADA TRANSPORT (Included)</h3>
+                        <h3>ARMADA TRANSPORT <span class="h-red">Included</span></h3>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-md-6">
                         <p>Pack up your exhibition material and leave it as the fair ends, THS Armada Transport service will transport it according to your preference. THS Armada Transport is a part of our sustainability work.</p>
+                      </div>
+                      <div class="col-md-6 text-center">
+                        <a target="_blank" href="{% static 'pdf/ArmadaTransportTerms.pdf' %}"><h4>Armada Transport Information and Terms</h4></a>
                       </div>
                     </div>
                   </div>
@@ -765,18 +766,6 @@
                         {{ form.transport_from_fair_recipient_phone_number }}
                       </div>
                     </li>
-                    <li>
-                      <h5>Number of packages:</h5>
-                      <div class="input-field">
-                        {{ form.number_of_packages_from_fair }}
-                      </div>
-                    </li>
-                    <li>
-                      <h5>Number of pallets:</h5>
-                      <div class="input-field">
-                        {{ form.number_of_pallets_from_fair }}
-                      </div>
-                    </li>
                   </ul>
                   <ul class="list-unstyled form-to-edit no-editable-form visible" id="armadaTransportNoEditable">
                     <li class="address">
@@ -792,14 +781,6 @@
                     <li>
                       <h5>Recipient's phone number:</h5>
                         {{ form.transport_from_fair_recipient_phone_number }}
-                    </li>
-                    <li>
-                      <h5>Number of packages:</h5>
-                        {{ form.number_of_packages_from_fair }}
-                    </li>
-                    <li>
-                      <h5>Number of pallets:</h5>
-                        {{ form.number_of_pallets_from_fair }}
                     </li>
                   </ul>
                 </div>
