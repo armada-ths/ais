@@ -20,7 +20,7 @@
       <ul class="nav nav-tabs cr-nav-common cr-nav-top">
         <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
         <li class="nav"><a href="#base-kit" data-toggle="tab">Base Kit</a></li>
-        <li class="nav"><a href="#rooms" data-toggle="tab">Rooms</a></li>
+        <li class="nav"><a href="#rooms" data-toggle="tab">Focus Rooms</a></li>
         <li class="nav"><a href="#events" data-toggle="tab">Events</a></li>
         <li class="nav"><a href="#banquet" data-toggle="tab">Banquet</a></li>
         <li class="nav"><a href="#sture" data-toggle="tab">Sture</a></li>
@@ -481,12 +481,13 @@
                   <h3>Transport <span class="h-red">to</span> fair</h3>
                       <span>Transport type to fair:</span>
                       <span id="transportToFairType">{{ form.transport_to_fair_type }}</span>
-                      <div id="externalTransportChosen">
+                      <!--<div id="externalTransportChosen">-->
                         <h5></h5>
-                        <p>{{ form.interested_in_armada_transport }} <label for="id_interested_in_armada_transport" class="pretty-label">Interested in Armada Transport to the fair?</label><!--Yes, if the option to send goods to the fair using a service similar to Armada transport is created, we would like to use it.--></p>
-                        <p><span class="has-popover hover-mark more-info h-red" data-content="Goods will be pickuped by one truck organised by Armada, from different companies and delivered together to the fair. Reducing the amount of truck driving around town and helping the environment while at the same time making a smoother logistics flow for everyone. More information will be sent to all interested companies later on if this service is created.", data-placement='left', data-container="body">What is this?</span></p>
+                        <p>{{ form.interested_in_armada_transport }} <label for="id_interested_in_armada_transport" class="pretty-label">Interested in Armada Transport pickup service in Stockholm?</label><!--Yes, if the option to send goods to the fair using a service similar to Armada transport is created, we would like to use it.-->
+                        <span class="has-popover hover-mark more-info h-red" data-content="Goods will be pickuped by one truck organised by Armada, from different companies and delivered together to the fair. Reducing the amount of truck driving around town and helping the environment while at the same time making a smoother logistics flow for everyone. More information will be sent to all interested companies later on.", data-placement='left', data-container="body">What is this?</span>
+                      </p>
 
-                      </div>
+                      <!--</div>-->
                       <ul class="list-unstyled cr-transport-input"> 
                         <li>Number of packages:
                           {{ form.number_of_packages_to_fair }}
