@@ -28,7 +28,7 @@ class ResponseForm(ModelForm):
             elif q.question_type == Question.INT:
                 self.fields['question_%d'%q.pk] = forms.IntegerField(label=q.text)
             elif q.question_type == Question.BOOL:
-                self.fields['question_%d'&q.pk] = forms.BooleanField(required=False, label=q.text)
+                self.fields['question_%d'%q.pk] = forms.BooleanField(required=False, label=q.text)
         #should init with already answered and saved questions
         #maybe add all as required?
     class Meta:
