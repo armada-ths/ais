@@ -1,8 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.utils import timezone
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import get_template
+from django.contrib.sites.shortcuts import get_current_site
 
 import json
 import requests as r
@@ -14,7 +17,8 @@ from fair.models import Fair
 from sales.models import Sale
 from .models import SignupContract, SignupLog
 
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
+
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -78,6 +82,7 @@ def home(request, template_name='register/home.html'):
                                                            company=company,
                                                            fair=fair))
     return redirect('anmalan:index')
+
 
 
 
@@ -271,12 +276,12 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     else:
                         delete_order_if_exists(product)
                 for product in stand_area_products:
-                    if product in product_selection_additional_stand_area:
+                    if product.name in product_selection_additional_stand_area:
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_height_products:
-                    if product in product_selection_additional_stand_height:
+                    if product.name in product_selection_additional_stand_height:
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
@@ -305,7 +310,35 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 # Do nothing if form is saved, otherwise redirect and send email
                 save_or_submit = form.save_or_submit()
                 if 'submit' in save_or_submit:
-                    # PUT EMAIL STUFF HERE
-                    return redirect('anmalan:home')
+                    site_name = get_current_site(request).domain
+                    send_mail(
+                        'Complete Registration Confirmation on ' + site_name,
+                        get_template('register/complete_confirm_email.html').render(({
+                                'username': contact.email,
+                                'site_name': site_name
+                            })
+                        ),
+                        settings.DEFAULT_FROM_EMAIL,
+                        [contact.email],
+                        fail_silently=False)
+                    return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form})
+
+# thank you screen after submission of complete registration
+def cr_done(request, template_name='register/finished_registration.html'):
+    return render(request, template_name)
+
+#change password
+def change_password(request, template_name='register/change_password.html'):
+    if request.method == 'POST':
+        form = ChangePasswordForm(data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            return redirect('anmalan:home')
+        else:
+            return redirect('anmalan:change_password')
+    else:
+        form = ChangePasswordForm(user=request.user)
+    return render(request, template_name, {'form':form})

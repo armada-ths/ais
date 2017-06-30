@@ -1,8 +1,9 @@
-from django.forms import ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
+from django.forms import TextInput, Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import mark_safe
+from django.utils.html import mark_safe, format_html
+from django import forms
 
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 
 from fair.models import Fair
@@ -16,11 +17,40 @@ from enum import Enum
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields['username'].label = "Email"
+        self.fields['username'].label = ""
+        self.fields['password'].label = ""
+        self.fields['username'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Email'})
+        self.fields['password'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Password', 'type' : 'password'})
 
     def clean(self):
         self.cleaned_data['username'] = self.cleaned_data['username'].lower()
         super(LoginForm, self).clean()
+
+
+class ResetPasswordForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super(ResetPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['email'].label = ""
+        self.fields['email'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Email'})
+
+class SetNewPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(SetNewPasswordForm, self).__init__(*args, **kwargs)
+        self.fields['new_password1'].label = ""
+        self.fields['new_password2'].label = ""
+        self.fields['new_password1'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password', 'type' : 'password'})
+        self.fields['new_password2'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password Confirmation', 'type' : 'password'})
+
+class ChangePasswordForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+        self.fields['old_password'].label = ""
+        self.fields['new_password1'].label = ""
+        self.fields['new_password2'].label = ""
+        self.fields['old_password'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'Old Password', 'type' : 'password'})
+        self.fields['new_password1'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password', 'type' : 'password'})
+        self.fields['new_password2'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password Confirmation', 'type' : 'password'})
+
 
 class CompanyForm(ModelForm):
     class Meta:
@@ -37,7 +67,6 @@ class CompanyForm(ModelForm):
 
 
 class ContactForm(ModelForm):
-
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
         self.fields['name'].label = "Full name"
@@ -47,9 +76,11 @@ class ContactForm(ModelForm):
         fields = '__all__'
         exclude = ('user','belongs_to','active','confirmed' )
 
+
 class RegistrationForm(Form):
     agreement_accepted = BooleanField(required=True)
     agreement_accepted.label = "I have read the contract and agree to terms"
+
 
 class InterestForm(ModelForm):
     class Meta:
@@ -92,7 +123,6 @@ class UserForm(UserCreationForm):
         model = User
         fields = ('password1','password2',)
 
-
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
         # products that can be chosen with an amount
@@ -122,8 +152,8 @@ class ExhibitorForm(ModelForm):
         # create multiselect fields for rooms, nova and additional stand and height area.
         self.products_as_multi_field(rooms, 'product_selection_rooms', room_orders)
         self.products_as_multi_field(nova, 'product_selection_nova', nova_orders)
-        self.products_as_multi_field(stand_area, 'product_selection_additional_stand_area', stand_area_orders)
-        self.products_as_multi_field(stand_height, 'product_selection_additional_stand_height', stand_height_orders)
+        self.products_as_select_field(stand_area, 'product_selection_additional_stand_area', stand_area_orders, "Select")
+        self.products_as_select_field(stand_height, 'product_selection_additional_stand_height', stand_height_orders, "Select")
 
         # create form fields for the banquet, lunch and event products
         self.products_as_int_field(banquet, "banquet_", banquet_orders)
@@ -153,10 +183,18 @@ class ExhibitorForm(ModelForm):
         self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False)
         self.fields['website'] = CharField(initial=company.website, required=False)
 
+
     class Meta:
         model = Exhibitor
         fields = '__all__'
         exclude = ('fair','contact','company', 'status', 'hosts', 'location', 'fair_location', 'wants_information_about_osqledaren')
+        widgets = {
+            'invoice_address': TextInput(attrs={'placeholder': 'Address'}),
+            'invoice_address_po_box': TextInput(attrs={'placeholder': 'Address/PO-box'}),
+            'invoice_address_zip_code': TextInput(attrs={'placeholder': 'Zip code'}),
+            'transport_from_fair_address': TextInput(attrs={'placeholder': 'Address'}),
+            'allergies': TextInput(),
+        }
 
     # Fields for contact in save and confirm tab
     def init_contact_fields(self, contact):
@@ -175,6 +213,15 @@ class ExhibitorForm(ModelForm):
             self.help_text = prefix
             self.description = object.description
             self.object = object
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class ProductMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            #return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                    )
 
     # Takes some objects and makes a productintegerfield for each one.
     # The field name will be the object's name with the 'prefix_' as a prefix
@@ -199,9 +246,33 @@ class ExhibitorForm(ModelForm):
             self.fields['%s%s' % (prefix, product.name)] = self.ProductIntegerField(product, prefix, initial=amount, min_value=0)
 
     # A modelmultiplechoicefield with a customized label for each instance
-    class ProductMultiChoiceField(ModelMultipleChoiceField):
+    class RoomMultiChoiceField(ModelMultipleChoiceField):
         def label_from_instance(self, product):
-            return mark_safe('%s<br/>%s' % (product.name, product.description))
+            return format_html("<h3 class='product-label'>{}</h3> <p class='product-description'>{}</p> <p class='confirm-title'>{}</p> <h4 class='room-price'>10 000 SEK</h4>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                        mark_safe("We want to apply for this area"),
+                    )
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class NovaMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, product):
+            return format_html("<h3 class='product-label'>{}</h3> <h4 class='product-description'><span class='h-white'>{}</span></h4> <h4 class='confirm-title'>{}</h4>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                        mark_safe("We want this"),
+                    )
+
+    # Takes some objects and makes a choicefield for each one.
+    # The field name will be the object's name with the 'prefix_' as a prefix
+    # The field label will the object's name and the help_text its prefix
+    # to help you find it in the template
+    def products_as_number_choice_field(self, objects, prefix, num):
+        for i, object in enumerate(objects):
+            self.fields['%s%s' % (prefix, object.name)] = ChoiceField(choices=[(x, x) for x in range(0, 11)])
+            self.fields['%s%s' % (prefix, object.name)].label = object.name
+            self.fields['%s%s' % (prefix, object.name)].help_text = prefix
+
 
     # Takes some objects and puts them in a ProductMultiChoiceField.
     # The field name will be named by the fieldname argument.
@@ -216,8 +287,57 @@ class ExhibitorForm(ModelForm):
         for order in orders:
             checkedProductsList.append(order.product)
         # create field and make sure all products that is inside the dictionary is initially checked
-        self.fields[fieldname] = self.ProductMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
+        if fieldname == 'product_selection_rooms':
+            self.fields[fieldname] = self.RoomMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
+        elif fieldname == 'product_selection_nova':
+            self.fields[fieldname] = self.NovaMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
+        else:
+            self.fields[fieldname] = self.ProductMultiChoiceField(queryset=products, required=False, widget=CheckboxSelectMultiple())
         self.fields[fieldname].initial = [p for p in checkedProductsList]
+
+
+    # Takes some objects and puts them in a ProductMultiChoiceField.
+    # The field name will be named by the fieldname argument.
+    # A products will be checked if they exist in an order for the current exhibitor
+    def products_as_select_field(self, products, fieldname, orders, widget):
+        # An order will have the amount 1 if checked, otherwise 0. Only for readability purposes!
+        class Status(Enum):
+            CHECKED = 1
+            UNCHECKED = 0
+        # List of all checked products
+        checkedProductsList = [None]
+        for order in orders:
+            checkedProductsList.append(order.product)
+        # create field and make sure all products that is inside the dictionary is initially checked
+        listProducts = []
+        for product in products:
+            option = str(product.name)
+            #option = option.replace(" ", "")
+            #option = option.replace(",", "_")
+            label = product.name
+            tup = (option, label)
+            listProducts.append(tup)
+            #listProducts.append(product.name)
+        if widget == "RadioSelect":
+            self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=RadioSelect())
+        elif widget == "Select":
+            self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=Select())
+        try:
+            # Fix for radio buttons and select to show ordered product
+            # Try/except because if there is no order, there will be indexError
+            self.initial[fieldname] = orders[0].product.name
+        except IndexError:
+            pass
+        #self.fields[fieldname].initial = [p for p in checkedProductsList]
+
+
+    # A modelmultiplechoicefield with a customized label for each instance
+    class ProductSelectChoiceField(ChoiceField):
+        def label_from_instance(self, product):
+            return format_html("<span class='btn btn-armada-checkbox product-label'>{}</span> <span class='product-description'>{}</span>",
+                        mark_safe(product.name),
+                        mark_safe(product.description),
+                    )
 
 
     # Returns a generator/iterator with all product fields where you choose an amount.

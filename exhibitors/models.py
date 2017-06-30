@@ -35,7 +35,7 @@ class Exhibitor(models.Model):
     ]
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
-    allergies = models.TextField(null=True, blank=True)
+    allergies = models.CharField(null=True, blank=True, max_length=500)
 
     stand_placement_requests = [
         ('mixed', 'Mixed with a diverse group of companies'),

@@ -75,25 +75,35 @@ class ContactForm(ModelForm):
     class Meta:
         model = Contact
         fields = '__all__'
-        exclude = ('user',)
-
-#crate a company contact
-def contact_create(request, pk, template_name='companies/contact_form.html'):
-    redirect_to = request.GET.get('next','')
-    fair = current_fair()
-    form = ContactForm(request.POST or None)
-    company = get_object_or_404(Company, pk=pk)
-    if form.is_valid():
-        form.save()
-        if redirect_to:
-            return redirect(redirect_to)
-        return render(request, template_name, {'company':company, 'fair':fair})
-    return render(request, template_name, {'form':form, 'fair':fair})
+        exclude = ('user', )
 
 class UserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['password1', 'password2']
+
+#crate a company contact
+def contact_create(request, pk, template_name='companies/contact_form.html'):
+    redirect_to = request.GET.get('next','')
+    fair = current_fair()
+    contact_form = ContactForm(request.POST or None, prefix='contact')
+    user_form = UserForm(request.POST or None, prefix='user')
+    company = get_object_or_404(Company, pk=pk)
+
+    if contact_form.is_valid() and user_form.is_valid():
+        user = user_form.save(commit=False)
+        contact = contact_form.save(commit=False)
+        user.username = contact.email
+        user.email = contact.email
+        user.save()
+        contact.user = user
+        contact.save()
+
+        if redirect_to:
+            return redirect(redirect_to)
+        return render(request, template_name, {'company':company, 'fair':fair})
+    return render(request, template_name, {'contact_form':contact_form, 'user_form':user_form, 'fair':fair})
+
 
 def contact_active_toggle(request, contact_pk, template_name='companies/user_form.html'):
     redirect_to = request.GET.get('next','')

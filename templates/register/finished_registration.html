@@ -12,17 +12,16 @@
 <body>
     <div class="container">   
         <div class="row">
-            <div class="headline">
-                <svg viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
-                    <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
-                </svg>
-                <h2>Final registration for ths armada 2017 </h2>
+            <div class="text-center headline">
+                <h1 class="big big-margin-top">Thank you</h1>
+                <h2>For your registration for ths armada 2017. We will contact you about your application. </h2>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="text-center form-container">
-                    <a href="{% url 'anmalan:login' %}" class="btn-signin btn-green">Sign in</a>
+                    <a href="{% url 'anmalan:home' %}" class="btn-signin btn-green">Back</a>
+                    <a href="{% url 'anmalan:logout' %}" class="btn-signin btn-green">Log out</a>
                     <div>
                         <svg viewBox="50 50 200 200" width="100px" height="100px" version="1.1">
                             <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
