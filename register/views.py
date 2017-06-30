@@ -178,6 +178,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
+                request.FILES or None,
                 instance = exhibitor,
                 banquet = banquet_products,
                 lunch = lunch_products,
