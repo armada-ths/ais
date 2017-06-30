@@ -20,6 +20,7 @@ from .models import SignupContract, SignupLog
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 
+
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is not None:
@@ -304,6 +305,36 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         create_or_update_order(eventProduct, amount)
                     else:
                         delete_order_if_exists(eventProduct)
+
+
+
+
+
+
+
+
+
+
+
+                # Add the Base Kit (mandatory)
+                #Check if already added -> then don't add, else add.
+                base_kit_products = Product.objects.filter(fair=currentFair, name="Base Kit")
+                current_base_kit_orders = Order.objects.filter(exhibitor=exhibitor, product__in=base_kit_products)
+
+                if not current_base_kit_orders:
+                    create_or_update_order(base_kit_products.first(), 1)
+
+
+
+
+
+
+
+
+
+
+
+
 
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email
