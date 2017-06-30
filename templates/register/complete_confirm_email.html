@@ -4,7 +4,9 @@
 {% blocktrans %}
 Your ordered products:
 {% endblocktrans %}
-	{% for product in ordered_products %}{{ product.name }} {{ product.price }}
+	{% trans "Base kit" %} : {{ base_price }}
+	{% for product in bool_products %}{{ product.name }} : {{ product.price }}
+	{% endfor %}{% for item in num_products %}{{ item.name }} x {{ item.amount }} : {{ item.price }}
 	{% endfor %}
 {% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
 

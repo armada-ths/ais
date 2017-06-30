@@ -7,6 +7,8 @@ from django.core.mail import send_mail
 from django.template.loader import get_template
 from django.contrib.sites.shortcuts import get_current_site
 
+from collections import namedtuple
+
 import json
 import requests as r
 
@@ -19,6 +21,7 @@ from .models import SignupContract, SignupLog
 
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
+BASE_PRICE = 39500
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -264,56 +267,68 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 stand_area_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area"))
                 stand_height_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height"))
 
-                # All ordered products
-                all_ordered_products = []
-                total_price = 0
+                # Boolean (checkmark) products
+                bool_products = []
+				# Numerical (amount) products
+                num_products = []
+				# TODO fetch prices from elsewhere
+                total_price = BASE_PRICE
+
 
                 for product in room_products:
                     if product in product_selection_rooms:
-                        all_ordered_products.append(product)
+                        bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in nova_products:
                     if product in product_selection_nova:
-                        all_ordered_products.append(product)
+                        bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_area_products:
                     if product.name in product_selection_additional_stand_area:
-                        all_ordered_products.append(product)
+                        bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_height_products:
                     if product.name in product_selection_additional_stand_height:
-                        all_ordered_products.append(product)
+                        bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
+
+                NumProduct = namedtuple('NumProduct', ['name', 'amount', 'price'])
 
                 # Create or update orders from products that can be chosen in numbers.
                 # If they have an amount equal to zero then delete the order.
                 for (banquetProduct, amount) in form.amount_products('banquet_'):
                     if amount > 0:
                         create_or_update_order(banquetProduct, amount)
+                        num_products.append(NumProduct(banquetProduct.name, amount, amount * banquetProduct.price))
+                        total_price += amount * banquetProduct.price
                     else:
                         delete_order_if_exists(banquetProduct)
 
                 for (lunchProduct, amount) in form.amount_products('lunch_'):
                     if amount > 0:
                         create_or_update_order(lunchProduct, amount)
+                        num_products.append(NumProduct(lunchProduct.name, amount, amount * lunchProduct.price))
+                        total_price += amount * lunchProduct.price
                     else:
                         delete_order_if_exists(lunchProduct)
 
                 for (eventProduct, amount) in form.amount_products('event_'):
                     if amount > 0:
                         create_or_update_order(eventProduct, amount)
+                        num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
+                        total_price += amount * eventProduct.price
                     else:
                         delete_order_if_exists(eventProduct)
 
@@ -327,7 +342,9 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         get_template('register/complete_confirm_email.html').render(({
                                 'username': contact.email,
                                 'site_name': site_name,
-                                'ordered_products': all_ordered_products,
+                                'bool_products': bool_products,
+								'num_products': num_products,
+								'base_price': BASE_PRICE,
                                 'total_price': total_price
                             })
                         ),
