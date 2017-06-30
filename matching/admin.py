@@ -2,15 +2,14 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns, Category
+from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 
-class QuestionInline(admin.TabularInline):
-    model = Question
-    ordering = ('name',)
+class QuestionInline(admin.ModelAdmin):
+    list_display=('text', 'question_type')
 
 class AnswerInline(admin.StackedInline):
     fields = ('question', 'ans')
-    readonly_fields = ('question',)
+    #readonly_fields = ('question',)
 
 class TextAnsInline(AnswerInline):
     model = TextAns
@@ -25,12 +24,11 @@ class BooleanAnsInline(AnswerInline):
     model = BooleanAns
 
 class ResponseAdmin(admin.ModelAdmin):
-    list_display = ('exhibitor',)
+    list_display = ('exhibitor', 'question')
     inlines = [TextAnsInline, ChoiceAnsInline, IntegerAnsInline, BooleanAnsInline]
-    readonly_fields = ('survey', 'exhibitor')
+    #readonly_fields = ('survey', 'exhibitor')
 
-admin.site.register(Category)
-admin.site.register(Question)
+admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
 admin.site.register(Response, ResponseAdmin)
 #admin.site.register(ChoiceAns)

@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.core import urlresolvers
 from django.contrib import messages
 
-from .models import Question, Survey, Category
+from .models import Question, Survey
 from .forms import ResponseForm
 
 from exhibitors.models import Exhibitor
@@ -31,8 +31,8 @@ def index(request, template_name = 'matching/exhibitor_questions.html'):
             except Exhibitor.DoesNotExist:
                 pass
 
-    survey = Survey.objects.filter(fair = currentFair, category = Category.objects.filter(name='exhibitor-matching'))
-    survey_questions = Question.objects.filter(category = Category.objects.filter(name='exhibitor-matching'))
+    survey = Survey.objects.get(fair = currentFair, name='exhibitor-matching')
+    survey_questions = Question.objects.filter(survey = survey)
     form = ResponseForm(request.POST or None,
             survey=survey,
             questions =survey_questions,
