@@ -103,8 +103,8 @@ $('#id_accept_terms').click(function() {
 var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
     console.log("hl");
-    checkTermsCheckbox();
     setConfirmAndSubmit(true);
+    checkTermsCheckbox();
   } else {
     setConfirmAndSubmit(false);
   }; 
