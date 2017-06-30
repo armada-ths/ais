@@ -1,16 +1,20 @@
 from django.conf.urls import url
 from django.contrib.auth.views import login, logout, password_reset, password_reset_done, password_reset_confirm
 from . import views
-from .forms import LoginForm
+from .forms import LoginForm, ResetPasswordForm, SetNewPasswordForm
 
 app_name = 'anmalan'
 urlpatterns = [
-    url(r'^home$', views.home, name='home'),
+    # Updated home url to show complete registration form
+    #url(r'^home$', views.home, name='home'),
+    url(r'^home$', views.create_exhibitor, name='home'),
     # Initial registration closed, to allow: rm kwargs and uncomment signup and create_company, also uncomment in templates/register/login.html
     url(r'^$', views.index, name='index',
-        kwargs={'template_name': 'register/index-post-register-deadline.html'}),
+        kwargs={'template_name': 'register/index.html'}),
     url(r'^company/(?P<pk>\d+)/edit', views.company_update, name='edit_company'),
     url(r'^me/edit', views.contact_update, name='edit_me'),
+    url(r'^thankyou/$', views.cr_done, name='cr_done'),
+    #url(r'^complete',views.create_exhibitor, name='create_exhibitor'),
     # url(r'^signup', views.signup, name='create_company_user'),
     # url(r'^new_company', views.create_company, name='create_company'),
     url(
@@ -31,6 +35,7 @@ urlpatterns = [
         password_reset,
         name='password_reset',
         kwargs={'template_name': 'register/reset_password.html',
+                'password_reset_form': ResetPasswordForm,
                 'post_reset_redirect': 'anmalan:password_reset_done',
                 'email_template_name': 'register/reset_password_email.html'}
     ),
@@ -43,6 +48,7 @@ urlpatterns = [
         password_reset_confirm,
         name='password_reset_confirm',
         kwargs={'template_name': 'register/reset_password_confirm.html',
+                'set_password_form': SetNewPasswordForm, 
                 'post_reset_redirect': 'anmalan:login'}
     ),
 ]
