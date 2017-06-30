@@ -76,10 +76,11 @@ $('.btnBack').click(function(){
   checkIfOnStart();
 });
 
-$("li").click(function(){
+$("li.nav").click(function(){
   if (this.id == "confirm-li") {
     setConfirmAndSubmit(true);
     calcProducts();
+    checkTermsCheckbox();
   } else {
     setConfirmAndSubmit(false);
   }
@@ -89,9 +90,20 @@ $("li").click(function(){
     setBackButton(false);
   }
 })
+$('#id_accept_terms').click(function() {
+  console.log(this);
+  console.log("chlic", this.checked);
+  if (this.checked) {
+    setSubmitButton(true);
+  } else {
+    setSubmitButton(false);
+  }
+});
 
 var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
+    console.log("hl");
+    checkTermsCheckbox();
     setConfirmAndSubmit(true);
   } else {
     setConfirmAndSubmit(false);
@@ -116,6 +128,24 @@ var checkIfOnStart = function () {
   };
 }
 
+var checkTermsCheckbox = function() {
+  var checkbox = $('#id_accept_terms');
+  console.log(checkbox);
+  if (checkbox[0].checked == true) {
+    console.log("yes, checked");
+    setSubmitButton(true);
+  } else {
+    setSubmitButton(false);
+  }
+}
+
+var setSubmitButton = function(bool) {
+  if (bool) {
+    $("#submit-button").show().addClass("btn-armada-green");
+  } else {
+    $("#submit-button").hide();
+  }
+}
 // hides back button if bool = true
 var setBackButton = function(bool) {
   if (bool) {
@@ -322,36 +352,39 @@ var calcProducts = function() {
     var productId = productIds[i];
     var prod = $(productId);
     var amount = 0;
-    if (productDict[productId].type == 'checkbox') {
-      amount = checkProductCheckbox(prod);
-    } else if (productDict[productId].type == 'number') {
-      amount = checkProductNumber(prod);
-    } else if (productDict[productId].type == 'select') {
-      order = checkProductSelect(prod, productDict);
-      productId = order.id;
-      amount = order.amount;
-    }
-
-    // if amount > 0, it has been ordered
-    try {
-      if (productDict[productId].type == 'select' && amount>0) {
-        orderedProductsDict[productId] = order;
-        orderedProducts.push(productId);
-      } else if (amount>0) {
-        orderedProducts.push(productId);
-        order = {
-          'id': productId,
-          'amount': amount,
-          'price': productDict[productId].price,
-          'title': productDict[productId].title,
-          'totalPrice': productDict[productId].price*amount
-        }
-        orderedProductsDict[productId] = order;
-      }
+    if (prod != undefined) {
       
-    } 
-    catch(err) {
-      console.log(err.message);
+      if (productDict[productId].type == 'checkbox') {
+        amount = checkProductCheckbox(prod);
+      } else if (productDict[productId].type == 'number') {
+        amount = checkProductNumber(prod);
+      } else if (productDict[productId].type == 'select') {
+        order = checkProductSelect(prod, productDict);
+        productId = order.id;
+        amount = order.amount;
+      }
+
+      // if amount > 0, it has been ordered
+      try {
+        if (productDict[productId].type == 'select' && amount>0) {
+          orderedProductsDict[productId] = order;
+          orderedProducts.push(productId);
+        } else if (amount>0) {
+          orderedProducts.push(productId);
+          order = {
+            'id': productId,
+            'amount': amount,
+            'price': productDict[productId].price,
+            'title': productDict[productId].title,
+            'totalPrice': productDict[productId].price*amount
+          }
+          orderedProductsDict[productId] = order;
+        }
+        
+      } 
+      catch(err) {
+        console.log(err.message);
+      }
     }
   } // end for 
   addOrdersToUI(orderedProducts, orderedProductsDict);

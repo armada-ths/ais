@@ -23,6 +23,7 @@ class Exhibitor(models.Model):
     estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
     about_text = models.TextField(blank=True)
     facts_text = models.TextField(blank=True)
+    accept_terms = models.BooleanField(default=False)
 
     statuses = [
         ('accepted', 'Accepted'),
