@@ -15,9 +15,12 @@ from orders.models import Product, Order, ProductType
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
+from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 from .models import SignupContract, SignupLog
 
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
+
+
 
 
 def index(request, template_name='register/index.html'):
@@ -171,6 +174,12 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_area_products)
             current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_height_products)
 
+            # get survey and corresponding matching questions
+            matching_survey = Survey.objects.get(fair=currentFair, name='exhibitor-matching')
+            matching_questions = Question.objects.filter(survey=matching_survey)
+            # check which questions are already answered
+            #current_matching_question = Question.objects.filter(question=Response.objects.filter(exhibitor=exhibitor, survey=matching_survey))
+
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
@@ -190,7 +199,9 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 stand_area_orders = current_stand_area_orders,
                 stand_height_orders = current_stand_height_orders,
                 company = company,
-                contact = contact
+                contact = contact,
+                matching_survey = matching_survey,
+                matching_questions = matching_questions
             )
 
             if form.is_valid():

@@ -527,7 +527,20 @@
                 <h1>Students matching</h1>
                 <h2></h2>
                 <div class="col-md-12">
-                  <!-- put matching form here! -->
+                  <div class="survey_matching">
+                      <div class="container">
+                          {% for field in form %}
+                            {% if 'question' in field.help_text %}
+                            <div class="field-wrapper">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-wrapper">
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                          {% endfor %}
+                      </div>
+                  </div>
                 </div>
               </div>
             </div>
