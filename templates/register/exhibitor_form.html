@@ -28,7 +28,7 @@
         <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
         <li class="nav"><a href="#additional-services" data-toggle="tab">Additional Services</a></li>
         <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
-        <li class="nav"><a href="#matching" data-toggle="tab">Students</a></li>
+        <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
         <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
         <li class="nav"> | </li>
         <li class="nav"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
@@ -524,10 +524,10 @@
           <div class="tab-pane fade" id="matching">
             <div class="row">
               <div class="col-md-8 col-md-offset-2">
-                <h1>Students matching</h1>
-                <h2></h2>
                 <div class="col-md-12">
-                  <div class="survey_matching">
+                  <h1>Student Maching</h1>
+                  <p>THS Armada uses matching algorithms in our applications to match you to the students you want to meet. Therefor, it is of greatest importance that you fill in the following fields as good as possible. If they are left blank or are not representative of you business and your needs, we cannot guarantee that the right target group of students will find your stand.</p>
+                  <div class="cr-matching-form">
                       <div class="container">
                           {% for field in form %}
                             {% if 'question' in field.help_text %}
