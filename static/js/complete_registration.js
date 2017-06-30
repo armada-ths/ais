@@ -66,7 +66,6 @@ $('.btnNext').click(function(){
   $('.nav-tabs > .active').next('li').find('a').trigger('click');
   // Check if on confirm and save
   checkIfOnConformAndSubmit();
-  checkTermsCheckbox();
   // Check if on start
   checkIfOnStart();
 });
@@ -74,7 +73,6 @@ $('.btnNext').click(function(){
 $('.btnBack').click(function(){
   $('.nav-tabs > .active').prev('li').find('a').trigger('click');
   checkIfOnConformAndSubmit();
-  checkTermsCheckbox();
   checkIfOnStart();
 });
 
@@ -105,6 +103,7 @@ $('#id_accept_terms').click(function() {
 var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
     console.log("hl");
+    checkTermsCheckbox();
     setConfirmAndSubmit(true);
   } else {
     setConfirmAndSubmit(false);
@@ -353,36 +352,39 @@ var calcProducts = function() {
     var productId = productIds[i];
     var prod = $(productId);
     var amount = 0;
-    if (productDict[productId].type == 'checkbox') {
-      amount = checkProductCheckbox(prod);
-    } else if (productDict[productId].type == 'number') {
-      amount = checkProductNumber(prod);
-    } else if (productDict[productId].type == 'select') {
-      order = checkProductSelect(prod, productDict);
-      productId = order.id;
-      amount = order.amount;
-    }
-
-    // if amount > 0, it has been ordered
-    try {
-      if (productDict[productId].type == 'select' && amount>0) {
-        orderedProductsDict[productId] = order;
-        orderedProducts.push(productId);
-      } else if (amount>0) {
-        orderedProducts.push(productId);
-        order = {
-          'id': productId,
-          'amount': amount,
-          'price': productDict[productId].price,
-          'title': productDict[productId].title,
-          'totalPrice': productDict[productId].price*amount
-        }
-        orderedProductsDict[productId] = order;
-      }
+    if (prod != undefined) {
       
-    } 
-    catch(err) {
-      console.log(err.message);
+      if (productDict[productId].type == 'checkbox') {
+        amount = checkProductCheckbox(prod);
+      } else if (productDict[productId].type == 'number') {
+        amount = checkProductNumber(prod);
+      } else if (productDict[productId].type == 'select') {
+        order = checkProductSelect(prod, productDict);
+        productId = order.id;
+        amount = order.amount;
+      }
+
+      // if amount > 0, it has been ordered
+      try {
+        if (productDict[productId].type == 'select' && amount>0) {
+          orderedProductsDict[productId] = order;
+          orderedProducts.push(productId);
+        } else if (amount>0) {
+          orderedProducts.push(productId);
+          order = {
+            'id': productId,
+            'amount': amount,
+            'price': productDict[productId].price,
+            'title': productDict[productId].title,
+            'totalPrice': productDict[productId].price*amount
+          }
+          orderedProductsDict[productId] = order;
+        }
+        
+      } 
+      catch(err) {
+        console.log(err.message);
+      }
     }
   } // end for 
   addOrdersToUI(orderedProducts, orderedProductsDict);
