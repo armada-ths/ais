@@ -4,9 +4,10 @@
 {% blocktrans %}
 Your ordered products:
 {% endblocktrans %}
-	{% trans "Base kit" %} : {{ base_price }}
-	{% for product in bool_products %}{{ product.name }} : {{ product.price }}
-	{% endfor %}{% for item in num_products %}{{ item.name }} x {{ item.amount }} : {{ item.price }}
+	{% trans "Base kit"|ljust:name_len %}{{ ""|ljust:amount_len }}    : {{ base_price }}
+	{% for product in bool_products %}{{ product.name|ljust:name_len }}{{ ""|ljust:amount_len }}    : {{ product.price }}
+	{% endfor %}
+	{% for item in num_products %}{{ item.amount|ljust:amount_len }} x {{ item.name|ljust:name_len }} : {{ item.price }}
 	{% endfor %}
 {% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
 

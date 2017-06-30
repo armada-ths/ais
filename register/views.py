@@ -8,6 +8,7 @@ from django.template.loader import get_template
 from django.contrib.sites.shortcuts import get_current_site
 
 from collections import namedtuple
+import math
 
 import json
 import requests as r
@@ -269,8 +270,6 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # Boolean (checkmark) products
                 bool_products = []
-				# Numerical (amount) products
-                num_products = []
 				# TODO fetch prices from elsewhere
                 total_price = BASE_PRICE
 
@@ -304,6 +303,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     else:
                         delete_order_if_exists(product)
 
+				# Numerical (amount) products
+                num_products = []
                 NumProduct = namedtuple('NumProduct', ['name', 'amount', 'price'])
 
                 # Create or update orders from products that can be chosen in numbers.
@@ -330,7 +331,17 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
                         total_price += amount * eventProduct.price
                     else:
-                        delete_order_if_exists(eventProduct)
+                        delete_order_if_exists(eventProduct)				
+
+				# Longest name length for padding purposes
+                def getNameLen(item):
+                    return len(item.name)
+                def getAmount(item):
+                    return item.amount
+
+                max_name_len = len(max(bool_products, key=getNameLen).name)
+                max_name_len = max(len(max(num_products, key=getNameLen).name), max_name_len)
+                max_amount = math.ceil(max(num_products, key=getAmount).amount / 10)
 
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email
@@ -344,6 +355,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                                 'site_name': site_name,
                                 'bool_products': bool_products,
 								'num_products': num_products,
+                                'amount_len':max_amount,
+                                'name_len': max_name_len,
 								'base_price': BASE_PRICE,
                                 'total_price': total_price
                             })
