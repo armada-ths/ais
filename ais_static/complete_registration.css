@@ -630,15 +630,19 @@ ul.nova-info ul li {
 *	TAB: EXHIBITOR PROFILE *********************************
 */
 .cr-container-profile {
-	text-align: center;
+	text-align: left;
 	width: 90%;
 }
 .cr-container-profile h2 {
+	text-align: center;
 	font-size: 4em;
 	color: #00d791;
 }
-.cr-container-profile p {
-	text-align: left;
+.cr-container-profile h4 {
+	margin-top: 15px;
+}
+.cr-container-profile label {
+	cursor: pointer;
 }
 .cr-container-profile input#id_logo {
 	background: #353535;
