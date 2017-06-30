@@ -307,33 +307,14 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         delete_order_if_exists(eventProduct)
 
 
-
-
-
-
-
-
-
-
-
-                # Add the Base Kit (mandatory)
-                #Check if already added -> then don't add, else add.
-                base_kit_products = Product.objects.filter(fair=currentFair, name="Base Kit")
+                # Add the Base Kit (mandatory) and Banquet ticket - Base Kit (2 are included)
+                # If already added, don't add to db, else add.
+                base_kit_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Base Kit"))
                 current_base_kit_orders = Order.objects.filter(exhibitor=exhibitor, product__in=base_kit_products)
 
                 if not current_base_kit_orders:
-                    create_or_update_order(base_kit_products.first(), 1)
-
-
-
-
-
-
-
-
-
-
-
+                    create_or_update_order(base_kit_products.filter(name="Base Kit").first(), 1)
+                    create_or_update_order(base_kit_products.filter(name="Banquet Ticket - Base Kit").first(), 2)
 
 
                 # Everything is done!
