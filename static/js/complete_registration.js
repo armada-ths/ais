@@ -322,18 +322,18 @@ var calcProducts = function() {
     var productId = productIds[i];
     var prod = $(productId);
     var amount = 0;
-    if (prod != undefined) {
-      if (productDict[productId].type == 'checkbox') {
-        amount = checkProductCheckbox(prod);
-      } else if (productDict[productId].type == 'number') {
-        amount = checkProductNumber(prod);
-      } else if (productDict[productId].type == 'select') {
-        order = checkProductSelect(prod, productDict);
-        productId = order.id;
-        amount = order.amount;
-      }
+    if (productDict[productId].type == 'checkbox') {
+      amount = checkProductCheckbox(prod);
+    } else if (productDict[productId].type == 'number') {
+      amount = checkProductNumber(prod);
+    } else if (productDict[productId].type == 'select') {
+      order = checkProductSelect(prod, productDict);
+      productId = order.id;
+      amount = order.amount;
+    }
 
-      // if amount > 0, it has been ordered
+    // if amount > 0, it has been ordered
+    try {
       if (productDict[productId].type == 'select' && amount>0) {
         orderedProductsDict[productId] = order;
         orderedProducts.push(productId);
@@ -348,6 +348,10 @@ var calcProducts = function() {
         }
         orderedProductsDict[productId] = order;
       }
+      
+    } 
+    catch(err) {
+      console.log(err.message);
     }
   } // end for 
   addOrdersToUI(orderedProducts, orderedProductsDict);
