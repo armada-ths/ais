@@ -24,6 +24,7 @@ class Question(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True)
     text = models.TextField()
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES)
+    category = models.ManyToManyField(Category)
 
     def get_choices(self):
         return CHOICES
@@ -72,14 +73,14 @@ class Answer(models.Model):
 
 class TextAns(Answer):
     ans = models.CharField(null=True, blank=True, max_length=50)
+    #def __str__(self):
+    #    return '%s: %s'%(self.question, self.ans)
 
 class ChoiceAns(Answer):
     ans = models.IntegerField(choices=CHOICES, null=True, blank=True)
 
 class IntegerAns(Answer):
     ans = models.IntegerField(null=True, blank=True)
-    #def __unicode__(self):
-    #    return '%s: %s'%(self.question, self.ans)
 
 class BooleanAns(Answer):
-    ans = models.BooleanField(choices=((True,'yes'),(False,'no')))
+    ans = models.BooleanField()

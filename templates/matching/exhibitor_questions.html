@@ -1,4 +1,4 @@
-{% block content %}
+{% block body %}
 
     <div class="survey">
         <form enctype="multipart/*" action="/" method="post">
@@ -7,6 +7,7 @@
                 <div class="field-wrapper">
                     {{field}}
                 </div>
+            {% endfor %}
         </div>
 
     <div><input type="submit" value="submit" /></div>
