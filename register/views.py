@@ -312,9 +312,14 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 base_kit_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Base Kit"))
                 current_base_kit_orders = Order.objects.filter(exhibitor=exhibitor, product__in=base_kit_products)
 
-                if not current_base_kit_orders:
-                    create_or_update_order(base_kit_products.filter(name="Base Kit").first(), 1)
-                    create_or_update_order(base_kit_products.filter(name="Banquet Ticket - Base Kit").first(), 2)
+                for product in base_kit_products:
+                    if product.name == "Banquet Ticket - Base Kit":  # 2 Banquet tickets are included
+                        amount = 2
+                    else:
+                        amount = 1
+
+                    if not product in current_base_kit_orders:
+                        create_or_update_order(product, amount)
 
 
                 # Everything is done!
@@ -331,7 +336,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         ),
                         settings.DEFAULT_FROM_EMAIL,
                         [contact.email],
-                        fail_silently=False)
+                        fail_silently=False)    
                     return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form})
