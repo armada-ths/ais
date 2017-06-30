@@ -381,7 +381,7 @@
                     <div class="cr-additional-container">
                       <h3>ADDITIONAL LUNCH TICKETS</h3>
                       <p>Please note that 8 tickets (4 per day) is already included in the base kit. Price for additional lunch tickets is <span class="h-red">125 SEK / ticket.</span> </p>
-                      <ul class="cr-additional-lunch">
+                      <ul class="cr-additional-lunch" id="additionalLunchTickets">
                       {% for field in form %}
                         {% if 'lunch' in field.help_text %}
                           <li>
@@ -785,6 +785,11 @@
                         {{ form.number_of_pallets_from_fair }}
                     </li>
                   </ul>
+                </div> <!-- end armada transport -->
+
+                <h3>Order confirmation</h3>
+                <p>Please make sure that your order is correct. If you need to change anything, you can go back in the form and change. </p>
+                <div id="orderConfirmation">
                 </div>
               </div>
             </div>

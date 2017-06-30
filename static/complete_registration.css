@@ -931,6 +931,23 @@ ul.additional_stand_height label span {
 .editable-form #id_address_zip_code {
 	width: 38%;
 }
+/*
+confirm orders
+*/
+#orderConfirmation > ul li {
+	margin-bottom: 5px;
+	padding: 5px 0;
+	border-bottom: 1px solid white;
+	width: 85%;
+}
+#orderConfirmation div {
+	display: inline-block;
+}
+#orderConfirmation .price-tag {
+	float: right;
+}
+
+/* */
 
 @media all and (max-width: 1137px) {
   .cr-tab-content {

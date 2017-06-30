@@ -243,7 +243,12 @@ class ExhibitorForm(ModelForm):
                 amount = orderedProductsAmountDict[product.__hash__]
             except KeyError:
                 pass
-            self.fields['%s%s' % (prefix, product.name)] = self.ProductIntegerField(product, prefix, initial=amount, min_value=0)
+            product_name_underscores = product.name.replace(" ", "_")
+            product_name_underscores = product_name_underscores.replace("/", "")
+            product_name_underscores = product_name_underscores.replace("-", "")
+            product_name_underscores = product_name_underscores.replace(",", "")
+            product_name_underscores = product_name_underscores.lower()
+            self.fields['%s%s' % (prefix, product_name_underscores)] = self.ProductIntegerField(product, prefix, initial=amount, min_value=0)
 
     # A modelmultiplechoicefield with a customized label for each instance
     class RoomMultiChoiceField(ModelMultipleChoiceField):
@@ -312,8 +317,8 @@ class ExhibitorForm(ModelForm):
         listProducts = []
         for product in products:
             option = str(product.name)
-            #option = option.replace(" ", "")
-            #option = option.replace(",", "_")
+            option = option.replace(" ", "")
+            option = option.replace(",", "_")
             label = product.name
             tup = (option, label)
             listProducts.append(tup)
