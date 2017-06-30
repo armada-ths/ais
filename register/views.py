@@ -24,6 +24,7 @@ from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm
 
 BASE_PRICE = 39500
 
+
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is not None:
@@ -344,6 +345,22 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 max_name_len = max(len(max(num_products, key=getNameLen).name), max_name_len)
                 max_amount = math.ceil(max(num_products, key=getAmount).amount / 10)
 
+
+                # Add the Base Kit (mandatory) and Banquet ticket - Base Kit (2 are included)
+                # If already added, don't add to db, else add.
+                base_kit_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Base Kit"))
+                current_base_kit_orders = Order.objects.filter(exhibitor=exhibitor, product__in=base_kit_products)
+
+                for product in base_kit_products:
+                    if product.name == "Banquet Ticket - Base Kit":  # 2 Banquet tickets are included
+                        amount = 2
+                    else:
+                        amount = 1
+
+                    if not product in current_base_kit_orders:
+                        create_or_update_order(product, amount)
+
+
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email
                 save_or_submit = form.save_or_submit()
@@ -364,7 +381,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         ),
                         settings.DEFAULT_FROM_EMAIL,
                         [contact.email],
-                        fail_silently=False)
+                        fail_silently=False)    
                     return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form})
