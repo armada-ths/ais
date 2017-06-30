@@ -364,10 +364,17 @@ var checkProductNumber = function(product) {
 }
 // grabs value from this type of product
 var checkProductCheckbox = function(product) {
-  if (product[0].checked) {
-    return 1;
-  } else {
-    return 0;
+  try {
+
+    if (product[0].checked) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+  catch(err) {
+      console.log(err.message);
+      return 0;
   }
 }
 var checkProductSelect = function(product, productDict) {
