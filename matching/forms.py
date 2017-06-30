@@ -34,6 +34,7 @@ class ResponseForm(ModelForm):
     class Meta:
         model = Response
         fields = '__all__'
+        exclude = ('exhibitor','survey','question')
 
     def save(self, commit=True):
         response = super(ResponseForm, self).save(commit=False)

@@ -5,6 +5,10 @@
         <div class="container">
             {% for field in response_form %}
                 <div class="field-wrapper">
+                    {{field.label}}
+                </div>
+
+                <div class="field-wrapper">
                     {{field}}
                 </div>
             {% endfor %}

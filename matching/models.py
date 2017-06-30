@@ -57,7 +57,6 @@ CHOICES = (
     (5,'Definitely')
 )
 
-
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
     question = models.ForeignKey(Question)
