@@ -76,7 +76,7 @@ $('.btnBack').click(function(){
   checkIfOnStart();
 });
 
-$("li.nav").click(function(){
+$("li").click(function(){
   if (this.id == "confirm-li") {
     setConfirmAndSubmit(true);
     calcProducts();
@@ -322,30 +322,32 @@ var calcProducts = function() {
     var productId = productIds[i];
     var prod = $(productId);
     var amount = 0;
-    if (productDict[productId].type == 'checkbox') {
-      amount = checkProductCheckbox(prod);
-    } else if (productDict[productId].type == 'number') {
-      amount = checkProductNumber(prod);
-    } else if (productDict[productId].type == 'select') {
-      order = checkProductSelect(prod, productDict);
-      productId = order.id;
-      amount = order.amount;
-    }
-
-    // if amount > 0, it has been ordered
-    if (productDict[productId].type == 'select' && amount>0) {
-      orderedProductsDict[productId] = order;
-      orderedProducts.push(productId);
-    } else if (amount>0) {
-      orderedProducts.push(productId);
-      order = {
-        'id': productId,
-        'amount': amount,
-        'price': productDict[productId].price,
-        'title': productDict[productId].title,
-        'totalPrice': productDict[productId].price*amount
+    if (prod != undefined) {
+      if (productDict[productId].type == 'checkbox') {
+        amount = checkProductCheckbox(prod);
+      } else if (productDict[productId].type == 'number') {
+        amount = checkProductNumber(prod);
+      } else if (productDict[productId].type == 'select') {
+        order = checkProductSelect(prod, productDict);
+        productId = order.id;
+        amount = order.amount;
       }
-      orderedProductsDict[productId] = order;
+
+      // if amount > 0, it has been ordered
+      if (productDict[productId].type == 'select' && amount>0) {
+        orderedProductsDict[productId] = order;
+        orderedProducts.push(productId);
+      } else if (amount>0) {
+        orderedProducts.push(productId);
+        order = {
+          'id': productId,
+          'amount': amount,
+          'price': productDict[productId].price,
+          'title': productDict[productId].title,
+          'totalPrice': productDict[productId].price*amount
+        }
+        orderedProductsDict[productId] = order;
+      }
     }
   } // end for 
   addOrdersToUI(orderedProducts, orderedProductsDict);
@@ -371,7 +373,7 @@ var checkProductCheckbox = function(product) {
     } else {
       return 0;
     }
-  }
+  } 
   catch(err) {
       console.log(err.message);
       return 0;
