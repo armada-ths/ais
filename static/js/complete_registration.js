@@ -76,7 +76,7 @@ $('.btnBack').click(function(){
   checkIfOnStart();
 });
 
-$("li").click(function(){
+$("li.nav").click(function(){
   if (this.id == "confirm-li") {
     setConfirmAndSubmit(true);
     calcProducts();
