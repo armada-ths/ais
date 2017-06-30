@@ -66,6 +66,7 @@ $('.btnNext').click(function(){
   $('.nav-tabs > .active').next('li').find('a').trigger('click');
   // Check if on confirm and save
   checkIfOnConformAndSubmit();
+  checkTermsCheckbox();
   // Check if on start
   checkIfOnStart();
 });
@@ -73,13 +74,15 @@ $('.btnNext').click(function(){
 $('.btnBack').click(function(){
   $('.nav-tabs > .active').prev('li').find('a').trigger('click');
   checkIfOnConformAndSubmit();
+  checkTermsCheckbox();
   checkIfOnStart();
 });
 
-$("li").click(function(){
+$("li.nav").click(function(){
   if (this.id == "confirm-li") {
     setConfirmAndSubmit(true);
     calcProducts();
+    checkTermsCheckbox();
   } else {
     setConfirmAndSubmit(false);
   }
@@ -89,9 +92,19 @@ $("li").click(function(){
     setBackButton(false);
   }
 })
+$('#id_accept_terms').click(function() {
+  console.log(this);
+  console.log("chlic", this.checked);
+  if (this.checked) {
+    setSubmitButton(true);
+  } else {
+    setSubmitButton(false);
+  }
+});
 
 var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
+    console.log("hl");
     setConfirmAndSubmit(true);
   } else {
     setConfirmAndSubmit(false);
@@ -116,6 +129,24 @@ var checkIfOnStart = function () {
   };
 }
 
+var checkTermsCheckbox = function() {
+  var checkbox = $('#id_accept_terms');
+  console.log(checkbox);
+  if (checkbox[0].checked == true) {
+    console.log("yes, checked");
+    setSubmitButton(true);
+  } else {
+    setSubmitButton(false);
+  }
+}
+
+var setSubmitButton = function(bool) {
+  if (bool) {
+    $("#submit-button").show().addClass("btn-armada-green");
+  } else {
+    $("#submit-button").hide();
+  }
+}
 // hides back button if bool = true
 var setBackButton = function(bool) {
   if (bool) {
