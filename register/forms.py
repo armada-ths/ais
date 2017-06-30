@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from fair.models import Fair
 from orders.models import Product, Order, ProductType
 from sales.models import Sale
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, CatalogInfo
 from companies.models import Company, Contact
 
 from enum import Enum
@@ -122,6 +122,13 @@ class UserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('password1','password2',)
+
+class ExhibitorCatalogInfoForm(ModelForm):
+    class Meta:
+        model = CatalogInfo 
+        fields = '__all__'
+        exclude = ('exhibitor', 'programs', 'main_work_field', 'work_fields', 'continents', 'tags')
+        widgets = {}   
 
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):

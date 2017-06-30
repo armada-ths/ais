@@ -1,6 +1,19 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}This is a confirmation of your submit to complete registration for user {{ username }} at {{ site_name }}.{% endblocktrans %}
+{% blocktrans %}THS Armada 2017 Registration complete
 
-{% trans "Thanks for your money!" %}
+Thank you for completing your registration to THS Armada 2017! If you need to change anything in your application or add any product you can do so by visiting http://register.armada.nu until the 4th of September. There you can also find contact information if you have any questions regarding your application.
+{% endblocktrans %}
+
+{% blocktrans %}
+Your ordered products:
+{% endblocktrans %}
+	{% trans "Base kit"|ljust:name_len %}{{ ""|ljust:amount_len }}    : {{ base_price }}
+	{% for product in bool_products %}{{ product.name|ljust:name_len }}{{ ""|ljust:amount_len }}    : {{ product.price }}
+	{% endfor %}
+	{% for item in num_products %}{{ item.amount|ljust:amount_len }} x {{ item.name|ljust:name_len }} : {{ item.price }}
+	{% endfor %}
+{% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
+
+
 {% blocktrans %}The {{ site_name }} team{% endblocktrans %}
 	{% endautoescape %}
