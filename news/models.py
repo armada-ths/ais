@@ -16,10 +16,6 @@ class NewsArticle(models.Model):
     ingress = models.TextField(default="", max_length=500)
     html_article_text = models.TextField(default="", max_length=5000)
     publication_date = models.DateTimeField()
-    image = models.ImageField(
-        upload_to = UploadToDirUUID('news', 'image'),
-        blank = True,
-    )
     image_3x_wide = models.ImageField(
         upload_to = UploadToDirUUID('news', 'image'),
         verbose_name = 'Wide image (16:9) ratio',

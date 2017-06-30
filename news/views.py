@@ -37,9 +37,6 @@ class NewsArticleForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         newsArticle = super(NewsArticleForm, self).save(*args, **kwargs)
 
-        #back compatibility with field image
-        newsArticle.image = newsArticle.image_3x_wide if newsArticle.image_3x_wide is not None else newsArticle.image_3x
-
         image_field = self.cleaned_data.get('image_3x')
         print(type(image_field))
         if type(image_field) == InMemoryUploadedFile or type(image_field) == TemporaryUploadedFile: # A new image has been uploaded in this field
