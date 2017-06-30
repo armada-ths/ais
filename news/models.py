@@ -16,7 +16,7 @@ class NewsArticle(models.Model):
     ingress = models.TextField(default="", max_length=500)
     html_article_text = models.TextField(default="", max_length=5000)
     publication_date = models.DateTimeField()
-    image_3x_wide = models.ImageField(
+    image = models.ImageField(
         upload_to = UploadToDirUUID('news', 'image'),
         blank = True,
     )

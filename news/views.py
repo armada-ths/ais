@@ -7,12 +7,24 @@ from PIL import Image
 from lib.image import UploadToDirUUID
 import os
 from django.db.models.fields.files import ImageFieldFile
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 
 
 from news.models import NewsArticle
 from fair.models import Fair
 # Create your views here.
+
+def resize_image(image, image_field, width, height):
+    image = image.resize((width, height), Image.ANTIALIAS)
+    filename = str(image_field)
+    image_file = open(os.path.join('/tmp',filename), 'wb')
+    image.save(image_file, 'JPEG', quality=120)
+    image_file.close()
+
+    image_data = open(os.path.join('/tmp',filename), 'rb')
+    image_file = File(image_data)
+    return image_file
+
 
 class NewsArticleForm(forms.ModelForm):
     publication_date = forms.DateTimeField(initial=datetime.datetime.now)
@@ -20,49 +32,34 @@ class NewsArticleForm(forms.ModelForm):
     class Meta:
         model = NewsArticle
         fields = '__all__'
-        exclude = ('image_2x', 'image_2x_wide')
+        exclude = ('image_2x', 'image_2x_wide', 'image')
 
     def save(self, *args, **kwargs):
         newsArticle = super(NewsArticleForm, self).save(*args, **kwargs)
+
+        #back compatibility with field image
+        newsArticle.image = newsArticle.image_3x_wide if newsArticle.image_3x_wide is not None else newsArticle.image_3x
+
         image_field = self.cleaned_data.get('image_3x')
-        if type(image_field) == InMemoryUploadedFile:
+        print(type(image_field))
+        if type(image_field) == InMemoryUploadedFile or type(image_field) == TemporaryUploadedFile: # A new image has been uploaded in this field
             image = Image.open(image_field)
             w, h = image.size
             if w > 400: #This number should be reviewed. What should the width of small image be?
-                w, h = 200, 150
-                image = image.resize((w, h), Image.ANTIALIAS)
-
-                filename = str(image_field)
-                image_file = open(os.path.join('/tmp',filename), 'wb')
-                image.save(image_file, 'JPEG', quality=120)
-                image_file.close()
-
-                image_data = open(os.path.join('/tmp',filename), 'rb')
-                image_file = File(image_data)
-
-                newsArticle.image_2x.save(filename + '_2x_' + '.jpg', image_file)
+                image_file = resize_image(image, image_field, 200, 150)
+                newsArticle.image_2x.save(str(image_field) + '_2x_.jpg', image_file)
             else:
                 newsArticle.image_2x = newsArticle.image_3x
                 newsArticle.save()
 
 
         image_field = self.cleaned_data.get('image_3x_wide')
-        if type(image_field) == InMemoryUploadedFile:
+        if type(image_field) == InMemoryUploadedFile or type(image_field) == TemporaryUploadedFile: # A new image has been uploaded in this field
             image = Image.open(image_field)
             w, h = image.size
             if w > 400: #This number should be reviewed. What should the width of small image be?
-                w, h = 266, 150
-                image = image.resize((w, h), Image.ANTIALIAS)
-
-                filename = str(image_field)
-                image_file = open(os.path.join('/tmp',filename), 'wb')
-                image.save(image_file, 'JPEG', quality=120)
-                image_file.close()
-
-                image_data = open(os.path.join('/tmp',filename), 'rb')
-                image_file = File(image_data)
-
-                newsArticle.image_2x_wide.save(filename + '_2x_wide' + '.jpg', image_file)
+                image_file = resize_image(image, image_field, 266, 150)
+                newsArticle.image_2x_wide.save(str(image_field) + '_2x_wide.jpg', image_file)
             else:
                 newsArticle.image_2x_wide = newsArticle.image_3x_wide
                 newsArticle.save()
