@@ -178,7 +178,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             matching_survey = Survey.objects.get(fair=currentFair, name='exhibitor-matching')
             matching_questions = Question.objects.filter(survey=matching_survey)
             # check which questions are already answered
-            #current_matching_question = Question.objects.filter(question=Response.objects.filter(exhibitor=exhibitor, survey=matching_survey))
+            current_matching_responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
 
             # Pass along all relevant information to form
             form = ExhibitorForm(
@@ -201,7 +201,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 company = company,
                 contact = contact,
                 matching_survey = matching_survey,
-                matching_questions = matching_questions
+                matching_questions = matching_questions,
+                matching_responses = current_matching_responses
             )
 
             if form.is_valid():
@@ -315,6 +316,24 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         create_or_update_order(eventProduct, amount)
                     else:
                         delete_order_if_exists(eventProduct)
+
+                # create or update responses on matching questions
+                def create_or_update_response(question):
+                    response = None
+                    try:
+                        respons = Response.objects.get(exhibitor=exhibitor, survey=matching_survey)
+                    except Response.DoesNotExist:
+                        respons = Response.onjects.create(exhibitor=exhibitor, survey=matching_survey, question=question)
+
+                #delete response via question and current exhibitor
+                def delete_response_if_exists(question):
+                    try:
+                        Response.objects.get(exhibitor=exhibitor, survey=matching_survey, question=question).delete()
+                    except Response.DoesNotExist:
+                        return
+
+                responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
+
 
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email

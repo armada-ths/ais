@@ -9,7 +9,6 @@ class QuestionInline(admin.ModelAdmin):
 
 class AnswerInline(admin.StackedInline):
     fields = ('question', 'ans')
-    #readonly_fields = ('question',)
 
 class TextAnsInline(AnswerInline):
     model = TextAns
@@ -26,12 +25,7 @@ class BooleanAnsInline(AnswerInline):
 class ResponseAdmin(admin.ModelAdmin):
     list_display = ('exhibitor', 'question')
     inlines = [TextAnsInline, ChoiceAnsInline, IntegerAnsInline, BooleanAnsInline]
-    #readonly_fields = ('survey', 'exhibitor')
 
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
 admin.site.register(Response, ResponseAdmin)
-#admin.site.register(ChoiceAns)
-#admin.site.register(TextAns)
-#admin.site.register(BooleanAns)
-#admin.site.register(Question)

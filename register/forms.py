@@ -151,6 +151,7 @@ class ExhibitorForm(ModelForm):
         # matching survey and questions
         matching_survey = kwargs.pop('matching_survey')
         matching_questions = kwargs.pop('matching_questions')
+        matching_responses = kwargs.pop('matching_responses')
 
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
@@ -166,7 +167,7 @@ class ExhibitorForm(ModelForm):
         self.products_as_int_field(events, "event_", event_orders)
 
         # create form fields for matching questions
-        self.init_matching_fields(matching_questions, "question_")
+        self.init_matching_fields(matching_questions, matching_responses, "question_")
 
         # Create fields for save and confirm tab
         self.init_company_fields(company)
@@ -213,17 +214,24 @@ class ExhibitorForm(ModelForm):
         self.fields['contact_email'] = CharField(initial=contact.email)
         self.fields['alternative_email'] = CharField(initial=contact.alternative_email, required=False)
 
-    def init_matching_fields(self, matching_questions, prefix):
+    def init_matching_fields(self, matching_questions, responses, prefix):
         for i,q in enumerate(matching_questions):
+
             if q.question_type == Question.TEXT:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.CharField(label=q.text)
             elif q.question_type == Question.SELECT:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.ChoiceField(label=q.text, choices = q.get_choices())
             elif q.question_type == Question.INT:
-                self.fields['%s%d'%(prefix,q.pk)] = forms.IntegerField(label=q.text)
+                for r in responses:
+                    print(r.exhibitor)
+                    if r.question == q.pk:
+                        self.fields['%s%d'%(prefix,q.pk)] = forms.IntegerField(initial = 10, label=q.text)
+                else:
+                    self.fields['%s%d'%(prefix,q.pk)] = forms.IntegerField(label=q.text)
             elif q.question_type == Question.BOOL:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
             self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
+
 
     # An IntegerField with a relation to a product object
     class ProductIntegerField(IntegerField):
