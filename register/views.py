@@ -377,6 +377,9 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 # Do nothing if form is saved, otherwise redirect and send email
                 save_or_submit = form.save_or_submit()
                 if 'submit' in save_or_submit:
+                    r.post(settings.SALES_HOOK_URL,
+                        data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)})) 
+
                     site_name = get_current_site(request).domain
                     send_mail(
                         'Complete Registration Confirmation on ' + site_name,
