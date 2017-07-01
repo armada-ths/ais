@@ -222,16 +222,28 @@ class ExhibitorForm(ModelForm):
             elif q.question_type == Question.SELECT:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.ChoiceField(label=q.text, choices = q.get_choices())
             elif q.question_type == Question.INT:
-                for r in responses:
-                    print(r.exhibitor)
-                    if r.question == q.pk:
-                        self.fields['%s%d'%(prefix,q.pk)] = forms.IntegerField(initial = 10, label=q.text)
+                answer = self.get_answers_by_response(responses, q)
+                if answer:
+                    self.fields['%s%d'%(prefix,q.pk)] = self.QuestionIntegerField(q, initial=answer.ans)
                 else:
                     self.fields['%s%d'%(prefix,q.pk)] = forms.IntegerField(label=q.text)
             elif q.question_type == Question.BOOL:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
             self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
 
+    def get_answers_by_response(self, responses, q):
+        for response in responses:
+            if q.question_type == Question.INT:
+                try:
+                    return IntegerAns.objects.get(question = q.pk, response=response.pk)
+                except TextAns.DoesNotExist:
+                    pass
+        return None
+
+    class QuestionIntegerField(IntegerField):
+        def __init__(self, object, *args, **kwargs):
+            IntegerField.__init__(self, *args, **kwargs)
+            self.label=object.text
 
     # An IntegerField with a relation to a product object
     class ProductIntegerField(IntegerField):

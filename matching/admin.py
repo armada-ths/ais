@@ -29,3 +29,7 @@ class ResponseAdmin(admin.ModelAdmin):
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
 admin.site.register(Response, ResponseAdmin)
+admin.site.register(TextAns)
+admin.site.register(ChoiceAns)
+admin.site.register(IntegerAns)
+admin.site.register(BooleanAns)
