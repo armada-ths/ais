@@ -630,20 +630,28 @@ ul.nova-info ul li {
 *	TAB: EXHIBITOR PROFILE *********************************
 */
 .cr-container-profile {
-	text-align: center;
+	text-align: left;
 	width: 90%;
 }
 .cr-container-profile h2 {
+	text-align: center;
 	font-size: 4em;
 	color: #00d791;
 }
-.cr-container-profile p {
-	text-align: left;
+.cr-container-profile h4 {
+	margin-top: 15px;
 }
-.cr-container-profile input {
+.cr-container-profile label {
+	cursor: pointer;
+}
+.cr-container-profile input#id_logo {
 	background: #353535;
 	color: #fff;
+	width: 100%;
 	padding: 30px;
+}
+.cr-profile .divider {
+	display: none;
 }
 .cr-profile .divider.left {
 	left: 31%;
@@ -657,6 +665,9 @@ ul.nova-info ul li {
 	transform:rotate(-12deg);
 	-moz-transform:rotate(-12deg);
 	-webkit-transform:rotate(-12deg);
+}
+#id_facts_text {
+	height: 70px;
 }
 
 /*
@@ -931,6 +942,23 @@ ul.additional_stand_height label span {
 .editable-form #id_address_zip_code {
 	width: 38%;
 }
+/*
+confirm orders
+*/
+#orderConfirmation > ul li {
+	margin-bottom: 5px;
+	padding: 5px 0;
+	border-bottom: 1px solid white;
+	width: 85%;
+}
+#orderConfirmation div {
+	display: inline-block;
+}
+#orderConfirmation .price-tag {
+	float: right;
+}
+
+/* */
 
 @media all and (max-width: 1137px) {
   .cr-tab-content {

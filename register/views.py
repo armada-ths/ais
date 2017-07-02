@@ -7,6 +7,9 @@ from django.core.mail import send_mail
 from django.template.loader import get_template
 from django.contrib.sites.shortcuts import get_current_site
 
+from collections import namedtuple
+import math
+
 import json
 import requests as r
 
@@ -19,6 +22,8 @@ from matching.models import Survey, Question, Response, TextAns, ChoiceAns, Inte
 from .models import SignupContract, SignupLog
 
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
+
+BASE_PRICE = 39500
 
 
 
@@ -183,6 +188,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
+                request.FILES or None,
                 instance = exhibitor,
                 banquet = banquet_products,
                 lunch = lunch_products,
@@ -276,46 +282,96 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 stand_area_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Area"))
                 stand_height_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Additional Stand Height"))
 
+                # Boolean (checkmark) products
+                bool_products = []
+				# TODO fetch prices from elsewhere
+                total_price = BASE_PRICE
+
+
                 for product in room_products:
                     if product in product_selection_rooms:
+                        bool_products.append(product)
+                        total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in nova_products:
                     if product in product_selection_nova:
+                        bool_products.append(product)
+                        total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_area_products:
                     if product.name in product_selection_additional_stand_area:
+                        bool_products.append(product)
+                        total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_height_products:
                     if product.name in product_selection_additional_stand_height:
+                        bool_products.append(product)
+                        total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
+
+				# Numerical (amount) products
+                num_products = []
+                NumProduct = namedtuple('NumProduct', ['name', 'amount', 'price'])
 
                 # Create or update orders from products that can be chosen in numbers.
                 # If they have an amount equal to zero then delete the order.
                 for (banquetProduct, amount) in form.amount_products('banquet_'):
                     if amount > 0:
                         create_or_update_order(banquetProduct, amount)
+                        num_products.append(NumProduct(banquetProduct.name, amount, amount * banquetProduct.price))
+                        total_price += amount * banquetProduct.price
                     else:
                         delete_order_if_exists(banquetProduct)
 
                 for (lunchProduct, amount) in form.amount_products('lunch_'):
                     if amount > 0:
                         create_or_update_order(lunchProduct, amount)
+                        num_products.append(NumProduct(lunchProduct.name, amount, amount * lunchProduct.price))
+                        total_price += amount * lunchProduct.price
                     else:
                         delete_order_if_exists(lunchProduct)
 
                 for (eventProduct, amount) in form.amount_products('event_'):
                     if amount > 0:
                         create_or_update_order(eventProduct, amount)
+                        num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
+                        total_price += amount * eventProduct.price
                     else:
-                        delete_order_if_exists(eventProduct)
+                        delete_order_if_exists(eventProduct)				
+
+				# Longest name length for padding purposes
+                def getNameLen(item):
+                    return len(item.name)
+                def getAmount(item):
+                    return item.amount
+
+                max_name_len = len(max(bool_products, key=getNameLen).name)
+                max_name_len = max(len(max(num_products, key=getNameLen).name), max_name_len)
+                max_amount = math.ceil(max(num_products, key=getAmount).amount / 10)
+
+
+                # Add the Base Kit (mandatory) and Banquet ticket - Base Kit (2 are included)
+                # If already added, don't add to db, else add.
+                base_kit_products = Product.objects.filter(fair=currentFair, product_type=ProductType.objects.filter(name="Base Kit"))
+                current_base_kit_orders = Order.objects.filter(exhibitor=exhibitor, product__in=base_kit_products)
+
+                for product in base_kit_products:
+                    if product.name == "Banquet Ticket - Base Kit":  # 2 Banquet tickets are included
+                        amount = 2
+                    else:
+                        amount = 1
+
+                    if not product in current_base_kit_orders:
+                        create_or_update_order(product, amount)
+
 
                 def create_or_update_answer(response, question, ans):
                     answer = None
@@ -387,12 +443,18 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         'Complete Registration Confirmation on ' + site_name,
                         get_template('register/complete_confirm_email.html').render(({
                                 'username': contact.email,
-                                'site_name': site_name
+                                'site_name': site_name,
+                                'bool_products': bool_products,
+								'num_products': num_products,
+                                'amount_len':max_amount,
+                                'name_len': max_name_len,
+								'base_price': BASE_PRICE,
+                                'total_price': total_price
                             })
                         ),
                         settings.DEFAULT_FROM_EMAIL,
                         [contact.email],
-                        fail_silently=False)
+                        fail_silently=False)    
                     return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form})

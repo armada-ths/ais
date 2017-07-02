@@ -10,7 +10,7 @@ from fair.models import Fair
 from orders.models import Product, Order, ProductType
 from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 from sales.models import Sale
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, CatalogInfo
 from companies.models import Company, Contact
 
 from enum import Enum
@@ -123,6 +123,13 @@ class UserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('password1','password2',)
+
+class ExhibitorCatalogInfoForm(ModelForm):
+    class Meta:
+        model = CatalogInfo 
+        fields = '__all__'
+        exclude = ('exhibitor', 'programs', 'main_work_field', 'work_fields', 'continents', 'tags')
+        widgets = {}   
 
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -320,7 +327,12 @@ class ExhibitorForm(ModelForm):
                 amount = orderedProductsAmountDict[product.__hash__]
             except KeyError:
                 pass
-            self.fields['%s%s' % (prefix, product.name)] = self.ProductIntegerField(product, prefix, initial=amount, min_value=0)
+            product_name_underscores = product.name.replace(" ", "_")
+            product_name_underscores = product_name_underscores.replace("/", "")
+            product_name_underscores = product_name_underscores.replace("-", "")
+            product_name_underscores = product_name_underscores.replace(",", "")
+            product_name_underscores = product_name_underscores.lower()
+            self.fields['%s%s' % (prefix, product_name_underscores)] = self.ProductIntegerField(product, prefix, initial=amount, min_value=0)
 
     # A modelmultiplechoicefield with a customized label for each instance
     class RoomMultiChoiceField(ModelMultipleChoiceField):
@@ -389,8 +401,8 @@ class ExhibitorForm(ModelForm):
         listProducts = []
         for product in products:
             option = str(product.name)
-            #option = option.replace(" ", "")
-            #option = option.replace(",", "_")
+            option = option.replace(" ", "")
+            option = option.replace(",", "_")
             label = product.name
             tup = (option, label)
             listProducts.append(tup)
