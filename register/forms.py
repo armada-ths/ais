@@ -218,7 +218,7 @@ class ExhibitorForm(ModelForm):
     def init_matching_fields(self, matching_questions, responses, prefix):
         for q in matching_questions:
             answer = self.get_answers_by_response(responses, q)
-            if answer:
+            if answer is not None:
                 initial = answer.ans
             else:
                 initial = None
@@ -236,28 +236,28 @@ class ExhibitorForm(ModelForm):
                 self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
             self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
 
-    # get answer to question for corresponding question and current exhibitor if exitsts, this method is not efficient if there would be a large set of question, consider changing in the future
+    # get answer to question for corresponding question and current exhibitor if exitsts, this method is not efficient if there would be a large set of question, consider changing in
     def get_answers_by_response(self, responses, q):
         for response in responses:
             if q.question_type == Question.TEXT:
                 try:
-                    return TextAns.objects.get(question = q.pk, response=response.pk)
+                    return TextAns.objects.get(question = q, response=response)
                 except TextAns.DoesNotExist:
                     pass
 
             elif q.question_type == Question.INT:
                 try:
-                    return IntegerAns.objects.get(question = q.pk, response=response.pk)
+                    return IntegerAns.objects.get(question = q, response=response)
                 except IntegerAns.DoesNotExist:
                     pass
             elif q.question_type == Question.SELECT:
                 try:
-                    return ChoiceAns.objects.get(question = q.pk, response=response.pk)
+                    return ChoiceAns.objects.get(question = q, response=response)
                 except ChoiceAns.DoesNotExist:
                     pass
             elif q.question_type == Question.BOOL:
                 try:
-                    return BooleanAns.objects.get(question = q.pk, response=response.pk)
+                    return BooleanAns.objects.get(question = q, response=response)
                 except BooleanAns.DoesNotExist:
                     pass
         return None

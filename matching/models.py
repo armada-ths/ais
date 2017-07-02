@@ -15,6 +15,7 @@ class Survey(models.Model):
         ordering = ['name']
 
 CHOICES = (
+    (None, '-------'),
     (1, 'Definitely Not'),
     (2, 'Probably Not'),
     (3, 'Maybe'),
@@ -37,7 +38,7 @@ class Question(models.Model):
     name = models.CharField(max_length=64, blank=True, null=True)
     text = models.TextField()
     help_text = models.TextField(blank=True, null=True)
-    question_type = models.CharField(max_length=256, choices=QUESTION_TYPES)
+    question_type = models.CharField(max_length=256, choices=QUESTION_TYPES, blank=True, null=True)
     survey = models.ManyToManyField(Survey)
 
     def get_choices(self):
