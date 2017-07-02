@@ -50,7 +50,7 @@ class Question(models.Model):
 
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
-    question = models.ForeignKey(Question)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     survey = models.ForeignKey(Survey, blank=True, null=True)
 
     def __str__(self):
@@ -58,7 +58,7 @@ class Response(models.Model):
 
 class Answer(models.Model):
     question = models.ForeignKey(Question)
-    response = models.ForeignKey(Response)
+    response = models.ForeignKey(Response, on_delete=models.CASCADE)
 
 class TextAns(Answer):
     ans = models.CharField(null=True, blank=True, max_length=50)

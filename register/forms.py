@@ -236,7 +236,7 @@ class ExhibitorForm(ModelForm):
                 self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
             self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
 
-    # get answer to question for corresponding question and current exhibitor if exitsts
+    # get answer to question for corresponding question and current exhibitor if exitsts, this method is not efficient if there would be a large set of question, consider changing in the future
     def get_answers_by_response(self, responses, q):
         for response in responses:
             if q.question_type == Question.TEXT:

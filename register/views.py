@@ -317,22 +317,65 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     else:
                         delete_order_if_exists(eventProduct)
 
+                def create_or_update_answer(response, question, ans):
+                    answer = None
+                    if question.question_type == Question.TEXT:
+                        try:
+                            answer = TextAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except TextAns.DoesNotExist:
+                            answer = TextAns.objects.create(question=question, response = response)
+                    elif question.question_type == Question.INT:
+                        try:
+                            answer = IntegerAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except IntegerAns.DoesNotExist:
+                            answer = IntegerAns.objects.create(question=question, response = response)
+                    elif question.question_type == Question.SELECT:
+                        try:
+                            answer = ChoiceAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except ChoiceAns.DoesNotExist:
+                            answer = ChoiceAns.objects.create(question=question, response = response)
+                    elif question.question_type == Question.BOOL:
+                        try:
+                            answer = BooleanAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except BooleanAns.DoesNotExist:
+                            answer = BooleanAns.objects.create(question=question, response = response)
+
+
                 # create or update responses on matching questions
-                def create_or_update_response(question, answer):
+                def create_or_update_response(question, ans):
                     response = None
                     try:
-                        respons = Response.objects.get(exhibitor=exhibitor, survey=matching_survey)
+                        response = Response.objects.get(exhibitor=exhibitor, question=question, survey=matching_survey)
+                        response.save()
                     except Response.DoesNotExist:
-                        respons = Response.onjects.create(exhibitor=exhibitor, survey=matching_survey, question=question)
+                        response = Response.objects.create(exhibitor=exhibitor, survey=matching_survey, question=question)
+                    create_or_update_answer(response, question, ans)
+
 
                 #delete response via question and current exhibitor
-                def delete_response_if_exists(question, answer):
+                def delete_response_if_exists(question, ans):
                     try:
                         Response.objects.get(exhibitor=exhibitor, survey=matching_survey, question=question).delete()
                     except Response.DoesNotExist:
                         return
 
-                responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
+                # get answers from form
+                prefix='question_' #note this is hard coded in forms as well
+                for q in matching_questions:
+                    ans = form.cleaned_data['%s%d'%(prefix,q.pk)]
+                    if ans:
+                        create_or_update_response(q, ans)
+                        print(form.cleaned_data['%s%d'%(prefix,q.pk)])
+                    else:
+                        delete_response_if_exists(q, ans)
 
 
                 # Everything is done!
