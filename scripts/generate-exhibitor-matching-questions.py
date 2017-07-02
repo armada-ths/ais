@@ -7,7 +7,7 @@ from exhibitors import models
 from matching.models import Question, Survey, Response, Answer, TextAns, ChoiceAns, IntegerAns, BooleanAns
 from fair.models import Fair
 
-#PUT QUESTIONS AND QUESTIONS TYPES HERE IN THE SEPARATE LISTS, deleta any questions priod to running this script from <url>/matching/questions, if questions are added later make sure you dont add the same question agan!
+#PUT QUESTIONS AND QUESTIONS TYPES HERE IN THE SEPARATE LISTS, deleta any questions priod to running this script from <url>admin//matching/questions, if questions are added later make sure you dont add the same question agan!
 qTexts = ['How many employees do you have?',
         'How many offices does your organization have in Sweden?',
         'Please list towns in Sweden where you have offices relevant to KTH students',
