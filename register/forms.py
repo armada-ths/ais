@@ -214,35 +214,72 @@ class ExhibitorForm(ModelForm):
         self.fields['contact_email'] = CharField(initial=contact.email)
         self.fields['alternative_email'] = CharField(initial=contact.alternative_email, required=False)
 
+    # fields for matching question in tab student matching
     def init_matching_fields(self, matching_questions, responses, prefix):
-        for i,q in enumerate(matching_questions):
+        for q in matching_questions:
+            answer = self.get_answers_by_response(responses, q)
+            if answer:
+                initial = answer.ans
+            else:
+                initial = None
 
             if q.question_type == Question.TEXT:
-                self.fields['%s%d'%(prefix,q.pk)] = forms.CharField(label=q.text)
+                self.fields['%s%d'%(prefix,q.pk)] = self.QuestionCharField(q, initial=initial, required=False)
+
             elif q.question_type == Question.SELECT:
-                self.fields['%s%d'%(prefix,q.pk)] = forms.ChoiceField(label=q.text, choices = q.get_choices())
+                self.fields['%s%d'%(prefix,q.pk)] = self.QuestionChoiceField(q, initial=initial, choices=q.get_choices(), required=False)
+
             elif q.question_type == Question.INT:
-                answer = self.get_answers_by_response(responses, q)
-                if answer:
-                    self.fields['%s%d'%(prefix,q.pk)] = self.QuestionIntegerField(q, initial=answer.ans)
-                else:
-                    self.fields['%s%d'%(prefix,q.pk)] = forms.IntegerField(label=q.text)
+                self.fields['%s%d'%(prefix,q.pk)] = self.QuestionIntegerField(q, initial=initial, required=False, min_value=0)
+
             elif q.question_type == Question.BOOL:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
             self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
 
+    # get answer to question for corresponding question and current exhibitor if exitsts
     def get_answers_by_response(self, responses, q):
         for response in responses:
-            if q.question_type == Question.INT:
+            if q.question_type == Question.TEXT:
+                try:
+                    return TextAns.objects.get(question = q.pk, response=response.pk)
+                except TextAns.DoesNotExist:
+                    pass
+
+            elif q.question_type == Question.INT:
                 try:
                     return IntegerAns.objects.get(question = q.pk, response=response.pk)
-                except TextAns.DoesNotExist:
+                except IntegerAns.DoesNotExist:
+                    pass
+            elif q.question_type == Question.SELECT:
+                try:
+                    return ChoiceAns.objects.get(question = q.pk, response=response.pk)
+                except ChoiceAns.DoesNotExist:
+                    pass
+            elif q.question_type == Question.BOOL:
+                try:
+                    return BooleanAns.objects.get(question = q.pk, response=response.pk)
+                except BooleanAns.DoesNotExist:
                     pass
         return None
 
     class QuestionIntegerField(IntegerField):
         def __init__(self, object, *args, **kwargs):
             IntegerField.__init__(self, *args, **kwargs)
+            self.label=object.text
+
+    class QuestionCharField(CharField):
+        def __init__(self, object, *args, **kwargs):
+            CharField.__init__(self, *args, **kwargs)
+            self.label = '%s %s'%(object.text, object.help_text)
+
+    class QuestionChoiceField(ChoiceField):
+        def __init__(self, object, *args, **kwargs):
+            ChoiceField.__init__(self, *args, **kwargs)
+            self.label=object.text
+
+    class QuestionBooleanField(BooleanField):
+        def __init__(self, object, *args, **kwargs):
+            ChoiceField.__init__(self, *args, **kwargs)
             self.label=object.text
 
     # An IntegerField with a relation to a product object

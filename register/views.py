@@ -318,7 +318,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         delete_order_if_exists(eventProduct)
 
                 # create or update responses on matching questions
-                def create_or_update_response(question):
+                def create_or_update_response(question, answer):
                     response = None
                     try:
                         respons = Response.objects.get(exhibitor=exhibitor, survey=matching_survey)
@@ -326,7 +326,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         respons = Response.onjects.create(exhibitor=exhibitor, survey=matching_survey, question=question)
 
                 #delete response via question and current exhibitor
-                def delete_response_if_exists(question):
+                def delete_response_if_exists(question, answer):
                     try:
                         Response.objects.get(exhibitor=exhibitor, survey=matching_survey, question=question).delete()
                     except Response.DoesNotExist:

@@ -36,6 +36,7 @@ class Question(models.Model):
     )
     name = models.CharField(max_length=64, blank=True, null=True)
     text = models.TextField()
+    help_text = models.TextField(blank=True, null=True)
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES)
     survey = models.ManyToManyField(Survey)
 
@@ -44,9 +45,8 @@ class Question(models.Model):
 
     def __str__(self):
         return '%s'%self.name
-
-    class Meta:
-        ordering = ['name']
+    #class Meta:
+    #    ordering = ['name']
 
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)

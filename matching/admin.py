@@ -23,6 +23,7 @@ class BooleanAnsInline(AnswerInline):
     model = BooleanAns
 
 class ResponseAdmin(admin.ModelAdmin):
+    #note: one response only have one question and one answer that has the correct type! so be careful when you add in admin (maybe remove the ans inline)
     list_display = ('exhibitor', 'question')
     inlines = [TextAnsInline, ChoiceAnsInline, IntegerAnsInline, BooleanAnsInline]
 
