@@ -318,7 +318,9 @@
                 <div class="cr-container-profile">
                   <h2>Upload logo</h2>
                   <p>Upload your logo so we can display it in our apps.</p>
-                  {{ form.logo }}
+                  <div id="fileUpload">
+                    {{ form.logo }}
+                  </div>
                   
                 </div>
               </div>
@@ -791,9 +793,9 @@
                 <div id="orderConfirmation">
                 </div>
 
-                <div class="text-center">
+                <div class="text-center cr-contract">
                   <h4>
-                    {{ form.accept_terms }} I have read the contract and agree to <a href={{contract_url}}>Armada Terms and Conditions</a> 
+                    {{ form.accept_terms }} I have read the <a href={{contract_url}}>contract</a> and agree to Armada Terms and Conditions 
                   </h4>
                 </div>
               </div>
