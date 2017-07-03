@@ -1,5 +1,6 @@
-# Run the script of adam first (or make sure there is a fair with current set as True), then Run:
-# python manage.py shell < generate-exhibitor-matching.py
+# Run the script of adam first (or make sure there is a fair with current set as True), then from the root of the repo run:
+# python manage.py shell < ./scripts/generate-exhibitor-matching.py --settings local_settings
+# Note: python version should be 3.x.x
 
 import sys
 from django.contrib.auth.models import User
