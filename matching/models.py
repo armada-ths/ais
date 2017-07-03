@@ -73,4 +73,4 @@ class IntegerAns(Answer):
     ans = models.IntegerField(null=True, blank=True)
 
 class BooleanAns(Answer):
-    ans = models.BooleanField(choices=((True,'yes'), (False,'no')))
+    ans = models.NullBooleanField(choices=((True,'yes'), (False,'no')), null=True, blank=True)

@@ -126,10 +126,10 @@ class UserForm(UserCreationForm):
 
 class ExhibitorCatalogInfoForm(ModelForm):
     class Meta:
-        model = CatalogInfo 
+        model = CatalogInfo
         fields = '__all__'
         exclude = ('exhibitor', 'programs', 'main_work_field', 'work_fields', 'continents', 'tags')
-        widgets = {}   
+        widgets = {}
 
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):

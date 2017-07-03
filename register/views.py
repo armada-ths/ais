@@ -184,7 +184,6 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             matching_questions = Question.objects.filter(survey=matching_survey)
             # check which questions are already answered
             current_matching_responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
-
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
@@ -208,7 +207,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 contact = contact,
                 matching_survey = matching_survey,
                 matching_questions = matching_questions,
-                matching_responses = current_matching_responses
+                matching_responses = current_matching_responses,
             )
 
             if form.is_valid():
@@ -345,7 +344,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
                         total_price += amount * eventProduct.price
                     else:
-                        delete_order_if_exists(eventProduct)				
+                        delete_order_if_exists(eventProduct)
 
 				# Longest name length for padding purposes
                 def getNameLen(item):
@@ -381,28 +380,28 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                             answer.ans = ans
                             answer.save()
                         except TextAns.DoesNotExist:
-                            answer = TextAns.objects.create(question=question, response = response)
+                            answer = TextAns.objects.create(question=question, response = response, ans=ans)
                     elif question.question_type == Question.INT:
                         try:
                             answer = IntegerAns.objects.get(question=question, response=response)
                             answer.ans = ans
                             answer.save()
                         except IntegerAns.DoesNotExist:
-                            answer = IntegerAns.objects.create(question=question, response = response)
+                            answer = IntegerAns.objects.create(question=question, response = response, ans=ans)
                     elif question.question_type == Question.SELECT:
                         try:
                             answer = ChoiceAns.objects.get(question=question, response=response)
                             answer.ans = ans
                             answer.save()
                         except ChoiceAns.DoesNotExist:
-                            answer = ChoiceAns.objects.create(question=question, response = response)
+                            answer = ChoiceAns.objects.create(question=question, response = response, ans=ans)
                     elif question.question_type == Question.BOOL:
                         try:
                             answer = BooleanAns.objects.get(question=question, response=response)
                             answer.ans = ans
                             answer.save()
                         except BooleanAns.DoesNotExist:
-                            answer = BooleanAns.objects.create(question=question, response = response)
+                            answer = BooleanAns.objects.create(question=question, response = response, ans=ans)
 
 
                 # create or update responses on matching questions
@@ -410,7 +409,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     response = None
                     try:
                         response = Response.objects.get(exhibitor=exhibitor, question=question, survey=matching_survey)
-                        response.save()
+                        #response.save()
                     except Response.DoesNotExist:
                         response = Response.objects.create(exhibitor=exhibitor, survey=matching_survey, question=question)
                     create_or_update_answer(response, question, ans)
@@ -429,7 +428,6 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     ans = form.cleaned_data['%s%d'%(prefix,q.pk)]
                     if ans:
                         create_or_update_response(q, ans)
-                        print(form.cleaned_data['%s%d'%(prefix,q.pk)])
                     else:
                         delete_response_if_exists(q, ans)
 
@@ -454,7 +452,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         ),
                         settings.DEFAULT_FROM_EMAIL,
                         [contact.email],
-                        fail_silently=False)    
+                        fail_silently=False)
                     return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form})
