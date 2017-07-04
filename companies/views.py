@@ -93,7 +93,8 @@ def contact_create(request, pk, template_name='companies/contact_form.html'):
     if contact_form.is_valid() and user_form.is_valid():
         user = user_form.save(commit=False)
         contact = contact_form.save(commit=False)
-        user.username = contact.email
+
+        user.username = contact.email.lower() #The username is converted to lowecase when used in the login-form
         user.email = contact.email
         user.save()
         contact.user = user
