@@ -26,6 +26,7 @@ $('#transportToFairType').children().change(function() {
 $(document).ready(function(){
   $("#submit-button").hide();
   setBackButton(true);
+  showImage();
   var selected = $('#id_transport_from_fair_type').val();
   if(selected == 'armada_transport') {
     $('#armadaTransportChosen').show();
@@ -34,6 +35,17 @@ $(document).ready(function(){
   }
 });
 
+// Exhibitor profile
+var showImage = function() {
+  var a = $("#fileUpload > a");
+  if ( a != undefined ) {
+    a.hide();
+    var img = document.createElement( "img" );
+    img.src = a[0].href;
+    $('#logo-clear_id').before(img);
+  }
+    
+}
 
 // Edit button in Confirm and Save tab
 $('#editOrganisationTrigger').click(function() {
@@ -91,8 +103,6 @@ $("li.nav").click(function(){
   }
 })
 $('#id_accept_terms').click(function() {
-  console.log(this);
-  console.log("chlic", this.checked);
   if (this.checked) {
     setSubmitButton(true);
   } else {
@@ -102,7 +112,6 @@ $('#id_accept_terms').click(function() {
 
 var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
-    console.log("hl");
     setConfirmAndSubmit(true);
     checkTermsCheckbox();
   } else {
@@ -130,9 +139,7 @@ var checkIfOnStart = function () {
 
 var checkTermsCheckbox = function() {
   var checkbox = $('#id_accept_terms');
-  console.log(checkbox);
   if (checkbox[0].checked == true) {
-    console.log("yes, checked");
     setSubmitButton(true);
   } else {
     setSubmitButton(false);

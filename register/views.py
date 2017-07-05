@@ -141,6 +141,7 @@ def company_update(request, pk, template_name='register/company_form.html'):
 # become an exhibitor via the ExhibitorForm
 def create_exhibitor(request, template_name='register/exhibitor_form.html'):
     currentFair = Fair.objects.get(current = True)
+    contract = SignupContract.objects.get(fair=currentFair, current=True)
     if request.user.is_authenticated():
         contact = Contact.objects.get(user=request.user)
         # make sure user is connected to a 'Contact'
@@ -361,10 +362,24 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         create_or_update_order(product, amount)
 
 
+                # Contract agreement
+                def create_signup():
+                    signup = None
+                    try:
+                        signup = SignupLog.objects.get(contact=contact, contract=contract, company = contact.belongs_to)
+                    except SignupLog.DoesNotExist:
+                        signup = SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to, type = 'complete')
+
+                if form.accepting_terms():
+                    create_signup()
+
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email
                 save_or_submit = form.save_or_submit()
                 if 'submit' in save_or_submit:
+                    r.post(settings.SALES_HOOK_URL,
+                        data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)})) 
+
                     site_name = get_current_site(request).domain
                     send_mail(
                         'Complete Registration Confirmation on ' + site_name,
@@ -384,7 +399,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         fail_silently=False)    
                     return redirect('anmalan:cr_done')
 
-    return render(request, template_name, {'form': form})
+    return render(request, template_name, {'form': form, 'contract_url': contract.contract.url})
 
 # thank you screen after submission of complete registration
 def cr_done(request, template_name='register/finished_registration.html'):
