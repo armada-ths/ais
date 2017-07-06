@@ -40,6 +40,12 @@ class SignupLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     contact = models.ForeignKey('companies.Contact')
     company = models.ForeignKey('companies.Company', null= True)
+    types = [
+        ('initial', 'Initial'),
+        ('complete', 'Complete'),
+    ]
+
+    type = models.CharField(choices=types, null=True, blank=True, max_length=30)
     
     def __str__(self):
         return self.contact.name + " at " + self.contact.belongs_to.name

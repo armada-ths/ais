@@ -51,9 +51,9 @@
             </div>
             <div class="row">
               <div class="col-md-8 col-md-offset-2">
-                <p>Make sure the form is completed and sent in before the last date of registration. It is possible to start with the form, save it by clicking "Save" in the bottom menu, and then continue later. The questions in the form are divided into 9 pages and you can fill out the information in any order you like. Questions marked with (*) are mandatory.</p>
+                <p>Make sure the form is completed and sent in before the last date of registration. It is possible to start with the form, save it by clicking "Save" in the bottom menu, and then continue later. The questions in the form are divided into 9 pages and you can fill out the information in any order you like. Questions marked with (<span class="aterix h-red">*</span>) are mandatory.</p>
                 <p>Some information in this form may be copied from your profile. Please check this information so that it is updated for THS Armada 2017. Your registration is completed when you click on the button "Submit" in the right bottom corner. When you have submitted the application you will receive a confirmation e­mail as soon as the application has been approved.</p>
-                <p class ="text-danger"> Please note that the complete registration is binding and you will be liable for all additional services chosen, provided that Armada is be able to supply your organisation with your choices.</p>
+                <p class ="text-danger"> Please note that the complete registration is binding and you will be liable for all additional services chosen, provided that Armada is able to supply your organisation with your choices.</p>
                 <p class="important">If you have any questions,<br/>
                  please contact:</p>
                </div>
@@ -318,7 +318,9 @@
                 <div class="cr-container-profile">
                   <h2>Upload logo</h2>
                   <p>Upload your logo so we can display it in our apps.</p>
-                  {{ form.logo }}
+                  <div id="fileUpload">
+                    {{ form.logo }}
+                  </div>
                   
                 </div>
               </div>
@@ -561,7 +563,7 @@
                     <div class="input-field">{{ form.type_of_organisation }}
                   </li>
                   <li>
-                    <h5><span class="aterix h-red">*</span> Organisation Street Address:</h5>
+                    <h5><span class="aterix h-red">*</span> Address:</h5>
                     <div class="input-field input-field-address">
                       {{ form.address_street }}
                       {{ form.address_city }}
@@ -579,7 +581,7 @@
                 </ul>
                 <ul class="list-unstyled form-to-edit no-editable-form visible" id="organisationNoEditable">
                   <li class="address">
-                    <h5>Address:</h5>
+                    <h5><span class="aterix h-red">*</span> Address:</h5>
                     <div class="input-field">
                       {{ form.address_street }}
                       {{ form.address_city }}
@@ -589,11 +591,11 @@
                     </div>
                   </li>
                   <li>
-                    <h5>Organisation name:</h5>
+                    <h5><span class="aterix h-red">*</span> Organisation name:</h5>
                     <div class="input-field">{{ form.name_of_organisation }}</div>
                   </li>
                   <li>
-                    <h5>Organisation identification number:</h5>
+                    <h5><span class="aterix h-red">*</span> Organisation identification number:</h5>
                     <div class="input-field">{{ form.organisation_identification_number }}
                   </li>
                   <!--<li>
@@ -648,11 +650,11 @@
                 </ul>
                 <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
                   <li>
-                    <h5>Name:</h5>
+                    <h5><span class="aterix h-red">*</span> Name:</h5>
                     {{ form.contact_name }}
                   </li>
                   <li>
-                    <h5>Phone number:</h5>
+                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
                     {{ form.work_phone }}
                   </li>
                   <li>
@@ -664,7 +666,7 @@
                     {{ form.phone_switchboard }}
                   </li>-->
                   <li>
-                    <h5>E­mail:</h5>
+                    <h5><span class="aterix h-red">*</span> E­mail:</h5>
                     {{ form.contact_email }}
                   </li>
                   <!--<li>
@@ -718,26 +720,26 @@
                 </ul>
                 <ul class="list-unstyled form-to-edit no-editable-form visible" id="invoiceNoEditable">
                   <li class="address">
-                    <h5>Invoice address:</h5>
+                    <h5><span class="aterix h-red">*</span> Invoice address:</h5>
                     <div class="input-field">
                       {{ form.invoice_address }}
                       {{ form.invoice_address_zip_code }}
                     </div>
                   </li>
                   <li>
-                    <h5>Invoice reference:</h5>
+                    <h5><span class="aterix h-red">*</span> Invoice reference:</h5>
                     {{ form.invoice_reference }}
                   </li>
                   <li>
-                    <h5>Reference phone number:</h5>
+                    <h5><span class="aterix h-red">*</span> Reference phone number:</h5>
                       {{ form.invoice_reference_phone_number }}
                   </li>
                   <li>
-                    <h5>Invoice reference number/PO-number:</h5>
+                    <h5><span class="aterix h-red">*</span> Invoice reference number/PO-number:</h5>
                       {{ form.invoice_purchase_order_number}}
                   </li>
                   <li>
-                    <h5>Invoice organization name:</h5>
+                    <h5><span class="aterix h-red">*</span> Invoice organization name:</h5>
                       {{ form.invoice_organisation_name }}
                   </li>
                   <li>
@@ -770,17 +772,17 @@
                   </ul>
                   <ul class="list-unstyled form-to-edit no-editable-form visible" id="armadaTransportNoEditable">
                     <li class="address">
-                      <h5>Delivery address (including zip code)</h5>
+                      <h5><span class="aterix h-red">*</span> Delivery address (including zip code)</h5>
                       <div class="input-field">
                         {{ form.transport_from_fair_address }}
                       </div>
                     </li>
                     <li>
-                      <h5>Recipient's name:</h5>
+                      <h5><span class="aterix h-red">*</span> Recipient's name:</h5>
                         {{ form.transport_from_fair_recipient_name }}
                     </li>
                     <li>
-                      <h5>Recipient's phone number:</h5>
+                      <h5><span class="aterix h-red">*</span> Recipient's phone number:</h5>
                         {{ form.transport_from_fair_recipient_phone_number }}
                     </li>
                   </ul>
@@ -791,11 +793,10 @@
                 <div id="orderConfirmation">
                 </div>
 
-                <div class="text-center">
+                <div class="text-center cr-contract">
                   <h4>
-                    {{ form.accept_terms }} I accept Armada Terms and Conditions
+                    {{ form.accept_terms }} I have read the <a href={{contract_url}}>contract</a> and agree to Armada Terms and Conditions 
                   </h4>
-                  <p><span class="h-red">Full terms and conditions will be available shortly.</span></p>
                 </div>
               </div>
             </div>
