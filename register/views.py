@@ -18,11 +18,14 @@ from orders.models import Product, Order, ProductType
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
+from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 from .models import SignupContract, SignupLog
 
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 BASE_PRICE = 39500
+
+
 
 
 def index(request, template_name='register/index.html'):
@@ -177,6 +180,11 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             current_stand_area_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_area_products)
             current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_height_products)
 
+            # get survey and corresponding matching questions
+            matching_survey = Survey.objects.get(fair=currentFair, name='exhibitor-matching')
+            matching_questions = Question.objects.filter(survey=matching_survey)
+            # check which questions are already answered
+            current_matching_responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
@@ -197,7 +205,10 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 stand_area_orders = current_stand_area_orders,
                 stand_height_orders = current_stand_height_orders,
                 company = company,
-                contact = contact
+                contact = contact,
+                matching_survey = matching_survey,
+                matching_questions = matching_questions,
+                matching_responses = current_matching_responses,
             )
 
             if form.is_valid():
@@ -334,7 +345,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
                         total_price += amount * eventProduct.price
                     else:
-                        delete_order_if_exists(eventProduct)				
+                        delete_order_if_exists(eventProduct)
 
 				# Longest name length for padding purposes
                 def getNameLen(item):
@@ -361,6 +372,65 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     if not product in current_base_kit_orders:
                         create_or_update_order(product, amount)
 
+                def create_or_update_answer(response, question, ans):
+                    answer = None
+                    if question.question_type == Question.TEXT:
+                        try:
+                            answer = TextAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except TextAns.DoesNotExist:
+                            answer = TextAns.objects.create(question=question, response = response, ans=ans)
+                    elif question.question_type == Question.INT:
+                        try:
+                            answer = IntegerAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except IntegerAns.DoesNotExist:
+                            answer = IntegerAns.objects.create(question=question, response = response, ans=ans)
+                    elif question.question_type == Question.SELECT:
+                        try:
+                            answer = ChoiceAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except ChoiceAns.DoesNotExist:
+                            answer = ChoiceAns.objects.create(question=question, response = response, ans=ans)
+                    elif question.question_type == Question.BOOL:
+                        try:
+                            answer = BooleanAns.objects.get(question=question, response=response)
+                            answer.ans = ans
+                            answer.save()
+                        except BooleanAns.DoesNotExist:
+                            answer = BooleanAns.objects.create(question=question, response = response, ans=ans)
+
+
+                # create or update responses on matching questions
+                def create_or_update_response(question, ans):
+                    response = None
+                    try:
+                        response = Response.objects.get(exhibitor=exhibitor, question=question, survey=matching_survey)
+                        #response.save()
+                    except Response.DoesNotExist:
+                        response = Response.objects.create(exhibitor=exhibitor, survey=matching_survey, question=question)
+                    create_or_update_answer(response, question, ans)
+
+
+                #delete response via question and current exhibitor
+                def delete_response_if_exists(question, ans):
+                    try:
+                        Response.objects.get(exhibitor=exhibitor, survey=matching_survey, question=question).delete()
+                    except Response.DoesNotExist:
+                        return
+
+                # get answers from form
+                prefix='question_' #note this is hard coded in forms as well
+                for q in matching_questions:
+                    ans = form.cleaned_data['%s%d'%(prefix,q.pk)]
+                    if ans:
+                        create_or_update_response(q, ans)
+                    else:
+                        delete_response_if_exists(q, ans)
+
 
                 # Contract agreement
                 def create_signup():
@@ -373,12 +443,13 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 if form.accepting_terms():
                     create_signup()
 
+
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email
                 save_or_submit = form.save_or_submit()
                 if 'submit' in save_or_submit:
                     r.post(settings.SALES_HOOK_URL,
-                        data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)})) 
+                        data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)}))
 
                     site_name = get_current_site(request).domain
                     send_mail(
@@ -396,7 +467,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         ),
                         settings.DEFAULT_FROM_EMAIL,
                         [contact.email],
-                        fail_silently=False)    
+                        fail_silently=False)
                     return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form, 'contract_url': contract.contract.url})

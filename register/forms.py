@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 
 from fair.models import Fair
 from orders.models import Product, Order, ProductType
+from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 from sales.models import Sale
 from exhibitors.models import Exhibitor, CatalogInfo
 from companies.models import Company, Contact
@@ -125,10 +126,10 @@ class UserForm(UserCreationForm):
 
 class ExhibitorCatalogInfoForm(ModelForm):
     class Meta:
-        model = CatalogInfo 
+        model = CatalogInfo
         fields = '__all__'
         exclude = ('exhibitor', 'programs', 'main_work_field', 'work_fields', 'continents', 'tags')
-        widgets = {}   
+        widgets = {}
 
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -154,6 +155,11 @@ class ExhibitorForm(ModelForm):
         company = kwargs.pop('company')
         contact = kwargs.pop('contact')
 
+        # matching survey and questions
+        matching_survey = kwargs.pop('matching_survey')
+        matching_questions = kwargs.pop('matching_questions')
+        matching_responses = kwargs.pop('matching_responses')
+
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
         # create multiselect fields for rooms, nova and additional stand and height area.
@@ -166,6 +172,9 @@ class ExhibitorForm(ModelForm):
         self.products_as_int_field(banquet, "banquet_", banquet_orders)
         self.products_as_int_field(lunch, "lunch_", lunch_orders)
         self.products_as_int_field(events, "event_", event_orders)
+
+        # create form fields for matching questions
+        self.init_matching_fields(matching_questions, matching_responses, "question_")
 
         # Create fields for save and confirm tab
         self.init_company_fields(company)
@@ -211,6 +220,74 @@ class ExhibitorForm(ModelForm):
         self.fields['phone_switchboard'] = CharField(initial=contact.phone_switchboard, required=False)
         self.fields['contact_email'] = CharField(initial=contact.email)
         self.fields['alternative_email'] = CharField(initial=contact.alternative_email, required=False)
+
+    # fields for matching question in tab student matching
+    def init_matching_fields(self, matching_questions, responses, prefix):
+        for q in matching_questions:
+            answer = self.get_answers_by_response(responses, q)
+            if answer is not None:
+                initial = answer.ans
+            else:
+                initial = None
+
+            if q.question_type == Question.TEXT:
+                self.fields['%s%d'%(prefix,q.pk)] = self.QuestionCharField(q, initial=initial, required=False)
+
+            elif q.question_type == Question.SELECT:
+                self.fields['%s%d'%(prefix,q.pk)] = self.QuestionChoiceField(q, initial=initial, choices=q.get_choices(), required=False)
+
+            elif q.question_type == Question.INT:
+                self.fields['%s%d'%(prefix,q.pk)] = self.QuestionIntegerField(q, initial=initial, required=False, min_value=0)
+
+            elif q.question_type == Question.BOOL:
+                self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
+            self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
+
+    # get answer to question for corresponding question and current exhibitor if exitsts, this method is not efficient if there would be a large set of question, consider changing in
+    def get_answers_by_response(self, responses, q):
+        for response in responses:
+            if q.question_type == Question.TEXT:
+                try:
+                    return TextAns.objects.get(question = q, response=response)
+                except TextAns.DoesNotExist:
+                    pass
+
+            elif q.question_type == Question.INT:
+                try:
+                    return IntegerAns.objects.get(question = q, response=response)
+                except IntegerAns.DoesNotExist:
+                    pass
+            elif q.question_type == Question.SELECT:
+                try:
+                    return ChoiceAns.objects.get(question = q, response=response)
+                except ChoiceAns.DoesNotExist:
+                    pass
+            elif q.question_type == Question.BOOL:
+                try:
+                    return BooleanAns.objects.get(question = q, response=response)
+                except BooleanAns.DoesNotExist:
+                    pass
+        return None
+
+    class QuestionIntegerField(IntegerField):
+        def __init__(self, object, *args, **kwargs):
+            IntegerField.__init__(self, *args, **kwargs)
+            self.label=object.text
+
+    class QuestionCharField(CharField):
+        def __init__(self, object, *args, **kwargs):
+            CharField.__init__(self, *args, **kwargs)
+            self.label = '%s %s'%(object.text, object.help_text)
+
+    class QuestionChoiceField(ChoiceField):
+        def __init__(self, object, *args, **kwargs):
+            ChoiceField.__init__(self, *args, **kwargs)
+            self.label=object.text
+
+    class QuestionBooleanField(BooleanField):
+        def __init__(self, object, *args, **kwargs):
+            ChoiceField.__init__(self, *args, **kwargs)
+            self.label=object.text
 
     # An IntegerField with a relation to a product object
     class ProductIntegerField(IntegerField):

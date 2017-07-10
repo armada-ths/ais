@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^$', login_redirect),
     url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),
+    #url(r'^matching/', include('matching.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
