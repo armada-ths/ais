@@ -650,6 +650,11 @@ ul.nova-info ul li {
 	width: 100%;
 	padding: 30px;
 }
+.cr-container-profile img {
+	max-width: 100%;
+	width: 100%;
+	margin: 15px 0;
+}
 .cr-profile .divider {
 	display: none;
 }
@@ -956,6 +961,15 @@ confirm orders
 }
 #orderConfirmation .price-tag {
 	float: right;
+}
+
+.cr-contract {
+	margin-top: 30px;
+	font-size: 16px;
+}
+.cr-contract a,
+.cr-contract a:visited {
+	color: #ea2c49;
 }
 
 /* */

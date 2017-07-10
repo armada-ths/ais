@@ -437,6 +437,9 @@ class ExhibitorForm(ModelForm):
             if name.startswith(prefix):
                 yield(self.fields[name].object, amount)
 
+    def accepting_terms(self):
+        return self.fields['accept_terms']
+
     def save_or_submit(self):
         if 'submit' in self.data:
             return 'submit'
