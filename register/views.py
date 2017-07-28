@@ -353,18 +353,16 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 def getAmount(item):
                     return item.amount
                 
+                max_name_len_bool = 0
+                max_name_len_num = 0
+                max_amount = 0
 
                 if bool_products:
                     max_name_len_bool = len(max(bool_products, key=getNameLen).name)
-                else:
-                    max_name_len_bool = 0
 
                 if num_products:
                     max_name_len_num = len(max(num_products, key=getNameLen).name)
-                    max_amount = math.ceil(max(num_products, key=getAmount).amount / 10)
-                else:
-                    max_name_len_num = 0
-                    max_amount = 0
+                    max_amount = math.ceil(max(num_products, key=getAmount).amount / 10)                    
                 
                 max_name_len = max(max_name_len_bool, max_name_len_num)
 
