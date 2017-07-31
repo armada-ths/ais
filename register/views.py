@@ -181,7 +181,10 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             current_stand_height_orders = Order.objects.filter(exhibitor=exhibitor, product__in=stand_height_products)
 
             # get survey and corresponding matching questions
-            matching_survey = Survey.objects.get(fair=currentFair, name='exhibitor-matching')
+            try:
+                matching_survey = Survey.objects.get(fair=currentFair, name='exhibitor-matching')
+            except Survey.DoesNotExist:
+                matching_survey = None
             matching_questions = Question.objects.filter(survey=matching_survey)
             # check which questions are already answered
             current_matching_responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)

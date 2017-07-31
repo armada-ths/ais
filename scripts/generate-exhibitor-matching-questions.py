@@ -67,7 +67,7 @@ if len(qTexts) != len(qTypes):
     print('Wrong input of questins')
     sys.exit()
 
-u = User.objects.get()
+#u = User.objects.get()
 try:
     current_fair = Fair.objects.get(current=True)
 except Fair.CurrentDoesNotExist:
