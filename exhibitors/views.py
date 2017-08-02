@@ -19,7 +19,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 
     fair = get_object_or_404(Fair, year=year)
     return render(request, template_name, {
-        'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
+        'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair, accepted=True).order_by('company__name'),
         'fair': fair
     })
 
