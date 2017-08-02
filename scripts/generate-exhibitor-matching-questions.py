@@ -70,25 +70,23 @@ if len(qTexts) != len(qTypes):
 #u = User.objects.get()
 try:
     current_fair = Fair.objects.get(current=True)
-except Fair.CurrentDoesNotExist:
+except Fair.DoesNotExist:
     sys.exit()
 
 survey_name = 'exhibitor-matching'
 try:
     survey_matching = Survey.objects.get(fair=current_fair, name=survey_name)
-except:
-    survey_matching = Survey(fair=current_fair, name=survey_name, description='Survey for exhibitor matching')
-    survey_matching.save()
+except Survey.DoesNotExist:
+    survey_matching = Survey.objects.create(fair=current_fair, name=survey_name, description='Survey for exhibitor matching')
 
 
 for i, input in enumerate(qTexts):
     try:
         Question.objects.get(text=qTexts[i])
-    except:
-        q = Question(question_type=qTypes[i],text=qTexts[i], name=qTexts[i][0:int(len(qTexts[i])/3)])
+    except Question.DoesNotExist:
+        q = Question.objects.create(question_type=qTypes[i],text=qTexts[i], name=qTexts[i][0:int(len(qTexts[i])/3)])
         if q.question_type == Question.TEXT:
             q.help_text = comma_help
-
-        q.save() #need to have an pk before manytomany relation with survey is est
+        #q.save() #need to have an pk before manytomany relation with survey is est
         q.survey.add(survey_matching)
         q.save()
