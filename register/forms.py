@@ -394,7 +394,7 @@ class ExhibitorForm(ModelForm):
             CHECKED = 1
             UNCHECKED = 0
         # List of all checked products
-        checkedProductsList = [None]
+        checkedProductsList = []
         for order in orders:
             checkedProductsList.append(order.product)
         # create field and make sure all products that is inside the dictionary is initially checked
@@ -411,12 +411,21 @@ class ExhibitorForm(ModelForm):
             self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=RadioSelect())
         elif widget == "Select":
             self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=Select())
-        try:
-            # Fix for radio buttons and select to show ordered product
-            # Try/except because if there is no order, there will be indexError
-            self.initial[fieldname] = orders[0].product.name
-        except IndexError:
-            pass
+        # add preselected product if exists in database (needed for the js)
+        bFlag = False
+        for listP in listProducts:
+            for checkedP in checkedProductsList:
+                if listP[1] == checkedP.name:
+                    self.fields[fieldname].initial = listP[0]
+                    bFlag = True
+        if bFlag == False:
+            try:
+                # Fix for radio buttons and select to show ordered product
+                # Try/except because if there is no order, there will be indexError
+                self.initial[fieldname] = orders[0].product.name
+            except IndexError:
+                pass
+
         #self.fields[fieldname].initial = [p for p in checkedProductsList]
 
 
