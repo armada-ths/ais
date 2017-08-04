@@ -306,14 +306,22 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     else:
                         delete_order_if_exists(product)
                 for product in stand_area_products:
-                    if product.name in product_selection_additional_stand_area:
+                    # this is a fix due to replace in products_as_select_field foo in register/forms.py, which is needed for the js that generates a product list in the confirm and submit tab
+                    option = str(product.name)
+                    option = option.replace(" ", "")
+                    option = option.replace(",", "_")
+                    if option in product_selection_additional_stand_area:
                         bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_height_products:
-                    if product.name in product_selection_additional_stand_height:
+                    # this is a fix due to replace in products_as_select_field foo in register/forms.py, which is needed for the js that generates a product list in the confirm and submit tab
+                    option = str(product.name)
+                    option = option.replace(" ", "")
+                    option = option.replace(",", "_")
+                    if option in product_selection_additional_stand_height:
                         bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
@@ -355,7 +363,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     return len(item.name)
                 def getAmount(item):
                     return item.amount
-                
+
                 max_name_len_bool = 0
                 max_name_len_num = 0
                 max_amount = 0
@@ -365,8 +373,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 if num_products:
                     max_name_len_num = len(max(num_products, key=getNameLen).name)
-                    max_amount = math.ceil(max(num_products, key=getAmount).amount / 10)                    
-                
+                    max_amount = math.ceil(max(num_products, key=getAmount).amount / 10)
+
                 max_name_len = max(max_name_len_bool, max_name_len_num)
 
 
