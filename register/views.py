@@ -158,7 +158,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
             exhibitor = None
             try:
-                exhibitor = Exhibitor.objects.get(company=company)
+                exhibitor = Exhibitor.objects.get(company=company, fair=currentFair)
             except Exhibitor.DoesNotExist:
                 pass
 
@@ -253,7 +253,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # Create or update exhibitor
                 try:
-                    exhibitor.pk = Exhibitor.objects.get(company=exhibitor.company).pk
+                    exhibitor.pk = Exhibitor.objects.get(company=exhibitor.company, fair=currentFair).pk
                     exhibitor.save()
                 except Exhibitor.DoesNotExist:
                     exhibitor.save()
