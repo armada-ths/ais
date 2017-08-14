@@ -17,7 +17,7 @@ for o in faulty_orders:
 	if existing_exhibitor.exists():
 		last_year_exhibitor = list(existing_exhibitor)[0]
 	else: 
-		last_year_exhibitor = Exhibitor(fair = Fair.objects.get(year = 2016), company = company, about = "This exhibitor is incomplete due to a bug in 2017. The orders are complete.")
+		last_year_exhibitor = Exhibitor(fair = Fair.objects.get(year = 2016), company = company, about_text = "This exhibitor is incomplete due to a bug in 2017. The orders are complete.")
 		last_year_exhibitor.save()
 	o.exhibitor = last_year_exhibitor
 	o.save()
