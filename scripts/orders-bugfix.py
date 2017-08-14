@@ -12,7 +12,7 @@ faulty_orders = Order.objects.filter(exhibitor__in = current_exhibitor, product_
 
 for o in faulty_orders:
 	company = o.exhibitor.company 
-	existing_exhibitor = Exhibitor.objects.filter(fair = Fair.objects.get(current = False), company = company)
+	existing_exhibitor = Exhibitor.objects.filter(fair = Fair.objects.get(year = 2016), company = company)
 	
 	if existing_exhibitor.exists():
 		last_year_exhibitor = list(existing_exhibitor)[0]
