@@ -19,18 +19,12 @@
         </div>
 
     	<div class="form-container	">
-	       <!--
-           <form method="post">
+	       <form method="post">
 	            {% csrf_token %} {{ form|crispy }}
 	            <input type="hidden" name="next" value='/register/home'/>
 	            <button class="btn-signin btn-green">Sign in</button>
 	        </form>
         	<a href="{% url 'anmalan:password_reset' %}" class="forgot-password">Forgot password</a>
-                -->
-            <!-- error message below, should be commented away when login is allowed -->
-            <h3>We are currently doing some system maintenance. Please come back later!</h3> 
-            <!-- end of error message -->
-            
         	<svg viewBox="50 90 200 200" width="100px" height="180px" version="1.1">
 				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
 			</svg>
