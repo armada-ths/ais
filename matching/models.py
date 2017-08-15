@@ -62,7 +62,7 @@ class Answer(models.Model):
     response = models.ForeignKey(Response, on_delete=models.CASCADE)
 
 class TextAns(Answer):
-    ans = models.CharField(null=True, blank=True, max_length=50)
+    ans = models.CharField(null=True, blank=True, max_length=4096)
     #def __str__(self):
     #    return '%s: %s'%(self.question, self.ans)
 
