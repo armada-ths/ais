@@ -21,3 +21,5 @@ for o in faulty_orders:
 		last_year_exhibitor.save()
 	o.exhibitor = last_year_exhibitor
 	o.save()
+
+	
