@@ -192,11 +192,11 @@ class ExhibitorForm(ModelForm):
             ('union', 'Union'),
         ]
         self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type, required=False)
-        self.fields['address_street'] = CharField(initial=company.address_street, required=False)
-        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code, required=False)
-        self.fields['address_city'] = CharField(initial=company.address_city, required=False)
-        self.fields['address_country'] = CharField(initial=company.address_country, required=False)
-        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False)
+        self.fields['address_street'] = CharField(initial=company.address_street, required=False, widget=forms.TextInput(attrs={'placeholder': 'Street'}))
+        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code, required=False, widget=forms.TextInput(attrs={'placeholder': 'Zip code'}))
+        self.fields['address_city'] = CharField(initial=company.address_city, required=False, widget=forms.TextInput(attrs={'placeholder': 'City'}))
+        self.fields['address_country'] = CharField(initial=company.address_country, required=False, widget=forms.TextInput(attrs={'placeholder': 'Country'}))
+        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False, widget=forms.TextInput(attrs={'placeholder': 'Addition address info'}))
         self.fields['website'] = CharField(initial=company.website, required=False)
 
 
