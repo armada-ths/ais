@@ -66,7 +66,11 @@ a, a:visited, a:hover {
 /*
 *	
 */
-.input, .forgot-password, .btn-green, .box-danger, .important, .mail-name, .mail-role {
+.reset-password-title {
+	font-size: 24px;
+	margin-top: 20px;
+}
+.forgot-password, .btn-green, .box-danger, .important, .mail-name, .mail-role {
 	font-family: 'Bebas Neue', sans-serif; 
 	text-transform: uppercase;	
 }
@@ -130,7 +134,13 @@ form {
 	height: 60px;
 	width: 100%;
 }
-
+.form-container,
+.login-form input,
+.reset-password-form input {
+	font-size: 16px;
+	font-family: 'Lato Light';
+	text-transform: none;
+}
 a.forgot-password {
 	display: block;
 	text-align: center;
