@@ -191,11 +191,11 @@ class ExhibitorForm(ModelForm):
             ('non_profit_organisation', 'Non-profit organisation'),
             ('union', 'Union'),
         ]
-        self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type)
-        self.fields['address_street'] = CharField(initial=company.address_street)
-        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code)
-        self.fields['address_city'] = CharField(initial=company.address_city)
-        self.fields['address_country'] = CharField(initial=company.address_country)
+        self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type, required=False)
+        self.fields['address_street'] = CharField(initial=company.address_street, required=False)
+        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code, required=False)
+        self.fields['address_city'] = CharField(initial=company.address_city, required=False)
+        self.fields['address_country'] = CharField(initial=company.address_country, required=False)
         self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False)
         self.fields['website'] = CharField(initial=company.website, required=False)
 
