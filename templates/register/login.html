@@ -18,7 +18,7 @@
             <h2>Final registration for ths armada 2017 </h2>
         </div>
 
-    	<div class="form-container	">
+    	<div class="form-container login-form">
 	       <form method="post">
 	            {% csrf_token %} {{ form|crispy }}
 	            <input type="hidden" name="next" value='/register/home'/>
