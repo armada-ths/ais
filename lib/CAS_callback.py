@@ -27,6 +27,8 @@ def callback(tree):
                 logging.error("Profile creation failed")
                 if person:
                     person.delete()
+                logging.error("Redirecting to temporary google form at https://goo.gl/forms/kD9mCF3YccFN7XwV2")
+                return(HttpResponseRedirect("https://goo.gl/forms/kD9mCF3YccFN7XwV2"))
         except:
             logging.error("User creation failed")
             user.delete()
