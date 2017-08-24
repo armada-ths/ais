@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from people.models import Profile
 from lib.KTH_Catalog import lookup_user
 import logging
+from django.http import HttpResponseRedirect
 
 def callback(tree):
     kth_id = tree[0][0].text
@@ -29,4 +30,5 @@ def callback(tree):
         except:
             logging.error("User creation failed")
             user.delete()
-            
+            logging.error("Redirecting to temporary google form at https://goo.gl/forms/kD9mCF3YccFN7XwV2")
+            return(HttpResponseRedirect("https://goo.gl/forms/kD9mCF3YccFN7XwV2"))
