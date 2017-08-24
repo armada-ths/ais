@@ -8,12 +8,20 @@
     <meta charset="utf-8">
 	{% include "header.html" %}
 	{% block head-extra %}{% endblock %}
+  <!-- Styling -->
+      <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+      <link href="{% static 'bootstrap/css/bootstrap-theme.css' %}" rel="stylesheet">
+      <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
   </head>
 <body>
 
 
-<div class="container" style="max-width: 500px">
-    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
+<div class="text-center container" style="max-width: 555px">
+    <svg class="text-center" viewBox="155 16 480 150" width="555px" height="250px" version="1.1">
+        <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
+      </svg>
+      <h4>We are currently experiencing some technical issues with the login functionality. If you cannot log in please use <u><a target="_blank" href="https://goo.gl/forms/kD9mCF3YccFN7XwV2">this link</a></u>.
+      </h4>
 
 <form method="post">
     {% csrf_token %}
