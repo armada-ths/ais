@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from people.models import Profile
 from lib.KTH_Catalog import lookup_user
-import loggin
+import logging
 
 def callback(tree):
     kth_id = tree[0][0].text
