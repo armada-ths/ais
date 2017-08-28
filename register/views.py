@@ -492,9 +492,9 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         [contact.email],
                         fail_silently=False)
 
-                        # set exhibitor status to CR - submitted
-                        exhibitor.status = 'complete_registration_submit'
-                        exhibitor.save()
+                    # set exhibitor status to CR - submitted
+                    exhibitor.status = 'complete_registration_submit'
+                    exhibitor.save()
 
                     return redirect('anmalan:cr_done')
 
