@@ -461,8 +461,9 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         signup = SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to, type = 'complete')
 
                 # set exhibitor status to in progres if not already submitted
-                if exhibitor.status != 'complete_registration_submit' or exhibitor.status != 'complete_registration':
+                if exhibitor.status != 'complete_registration_submit' and exhibitor.status != 'complete_registration':
                     exhibitor.status = 'complete_registration_start'
+                    exhibitor.save()
 
                 if form.accepting_terms():
                     create_signup()
@@ -493,8 +494,9 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         fail_silently=False)
 
                     # set exhibitor status to CR - submitted
-                    exhibitor.status = 'complete_registration_submit'
-                    exhibitor.save()
+                    if exhibitor.status != 'complete_registration':
+                        exhibitor.status = 'complete_registration_submit'
+                        exhibitor.save()
 
                     return redirect('anmalan:cr_done')
 
