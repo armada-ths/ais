@@ -20,7 +20,6 @@ from fair.models import Fair
 from sales.models import Sale
 from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 from .models import SignupContract, SignupLog
-
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 BASE_PRICE = 39500
@@ -461,9 +460,13 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     except SignupLog.DoesNotExist:
                         signup = SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to, type = 'complete')
 
+                # set exhibitor status to in progres if not already submitted
+                if exhibitor.status != 'complete_registration_submit' and exhibitor.status != 'complete_registration':
+                    exhibitor.status = 'complete_registration_start'
+                    exhibitor.save()
+
                 if form.accepting_terms():
                     create_signup()
-
 
                 # Everything is done!
                 # Do nothing if form is saved, otherwise redirect and send email
@@ -489,6 +492,12 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         settings.DEFAULT_FROM_EMAIL,
                         [contact.email],
                         fail_silently=False)
+
+                    # set exhibitor status to CR - submitted
+                    if exhibitor.status != 'complete_registration':
+                        exhibitor.status = 'complete_registration_submit'
+                        exhibitor.save()
+
                     return redirect('anmalan:cr_done')
 
     return render(request, template_name, {'form': form, 'contract_url': contract.contract.url})
