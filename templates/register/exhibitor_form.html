@@ -1,0 +1,883 @@
+{% load crispy_forms_tags %} {% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+      <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
+
+      <!-- Styling -->
+      <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+      <link href="{% static 'bootstrap/css/bootstrap-theme.css' %}" rel="stylesheet">
+      <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
+  </head>
+
+  <body>
+    <div class="container-fluid cr-container">
+
+      <!-- Tabs -->
+      <ul class="nav nav-tabs cr-nav-common cr-nav-top">
+        <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
+        <li class="nav"><a href="#base-kit" data-toggle="tab">Base Kit</a></li>
+        <li class="nav"><a href="#rooms" data-toggle="tab">Rooms</a></li>
+        <li class="nav"><a href="#events" data-toggle="tab">Events</a></li>
+        <li class="nav"><a href="#banquet" data-toggle="tab">Banquet</a></li>
+        <li class="nav"><a href="#sture" data-toggle="tab">Sture</a></li>
+        <li class="nav"><a href="#nova" data-toggle="tab">Nova</a></li>
+        <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
+        <li class="nav"><a href="#additional-services" data-toggle="tab">Additional Services</a></li>
+        <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
+        <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
+        <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
+        <li class="nav"> | </li>
+        <li class="nav"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
+      </ul>
+
+      <!-- EXHIBITOR FORM -->
+      <form method="post" enctype="multipart/form-data">{% csrf_token %}
+
+        <!-- TAB CONTENT -->
+        <div class="tab-content cr-tab-content">
+          <div class="tab-pane fade in active" id="start">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="text-highlight"> Welcome! </h1>
+                </div>
+            </div>
+            <div class="row header-row">
+                <div class="col-md-12">
+                    <p class="box-danger">The complete registration for THS Armada 2017 is open between <span class="text-danger">1st of July 00:01 and 4th of September 23:59</span></p>
+                </div>
+            </div>
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2">
+                <p>Make sure the form is completed and sent in before the last date of registration. It is possible to start with the form, save it by clicking "Save" in the bottom menu, and then continue later. The questions in the form are divided into 9 pages and you can fill out the information in any order you like. Questions marked with (<span class="aterix h-red">*</span>) are mandatory.</p>
+                <p>Some information in this form may be copied from your profile. Please check this information so that it is updated for THS Armada 2017. Your registration is completed when you click on the button "Submit" in the right bottom corner. When you have submitted the application you will receive a confirmation e­mail as soon as the application has been approved.</p>
+                <p class ="text-danger"> Please note that the complete registration is binding and you will be liable for all additional services chosen, provided that Armada is able to supply your organisation with your choices.</p>
+                <p class="important">If you have any questions,<br/>
+                 please contact:</p>
+               </div>
+            </div>
+            <div class="row spacer">
+                <div class="col-md-12 mail-container">
+                  <div class="mail">
+                    <p class="mail-name">Axel Ingo</p>
+                    <p class="mail-role">Project Manager</p>
+                    <a class = "mail-ref" href="mailto:armada@ths.kth.se">armada@ths.kth.se</a><br/>
+                    +46 70 790 98 44
+                  </div>
+                  <div class="mail">
+                    <p class="mail-name">Peter Finnman</p>
+                    <p class="mail-role">Key Account Manager</p>
+                    <a class ="mail-ref"href="mailto:peter.finnman@armada.nu">peter.finnman@armada.nu</a><br/>
+                    +46 72 042 22 89
+                  </div>
+                  <div class="mail">
+                    <p class="mail-name">Dana El Malla</p>
+                    <p class="mail-role">Key Account Manager</p>
+                    <a class ="mail-ref" href="mailto:dana.elmalla@armada.nu">dana.elmalla@armada.nu</a><br/>
+                    +46 73-659 59 57
+                  </div>
+                </div>
+                <div class="col-md-12 mail-container">
+                  <div class="mail">
+                    <p class="mail-name">Petter Cedell</p>
+                    <p class="mail-role">Key Account Manager</p>
+                    <a class ="mail-ref" href="mailto:petter.cedell@armada.nu">petter.cedell@armada.nu</a><br/>
+                    +46 70-570 48 87
+                  </div>
+                  <div class="mail">
+                    <p class="mail-name">Fredrik Magnusson</p>
+                    <p class="mail-role">Head of Business Relations and Events</p>
+                    <a class ="mail-ref" href="mailto:fredrik.magnusson@armada.nu">fredrik.magnusson@armada.nu</a><br/>
+                    +46 70 268 63 29
+                  </div>
+                </div>
+            </div>
+          </div> <!-- end start tab -->
+          <div class="tab-pane fade cr-basekit" id="base-kit">
+            <div class="row">
+              <div class="col-md-12">
+                <h1 class="text-center">BASE KIT, 39 500 SEK</h1>
+                <h4 class="text-center cr-basekit-mandatory"><span class="h-red">Mandatory</span></h4>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="cr-container-basekit">
+                  <h3>Included:</h3>
+                  <ul>
+                    <li>Stand area of 2 x 3 meters (Height < 2,31 meters)</li>
+                    <li>Access to a Career Fair Host to help you build your stand and attract students</li>
+                    <li>Full exhibitor information on website and iOS/Android applications</li>
+                    <li>2 tickets to the Armada Banquet</li>
+                    <li>8 Lunch tickets for the career fair days (4 per day)</li>
+                    <li>Access to information desks, wardrobe and exhibitor lounges</li>
+                    <li>Electricity and wifi provided at exhibitor stand</li>
+                    <li>Logistics services for your equipment from delivery to the end of the career fair</li>
+                    <li>Armada Transport, helps you transport your equipment from the fair</li>
+                    <li>Climate compensation - in collaboration with Tricorona</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="cr-container-basekit">
+                  <div class="col-md-8 col-md-offset-2 cr-sustainability">
+                  <h3 class="text-center">Sustainability</h3>
+                  <p>
+                    THS Armada has been climate neutral since 2015. Climate compensation for your
+                    organization’s CO2-emission associated with the THS Armada fair 2017 as well as the
+                    organisation’s emissions during the year is included in the Base Kit. This year all climate
+                    compensation is done in collaboration with Tricorona.
+                  </p>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="rooms">
+            <div class="cr-rooms">
+              {{ form.product_selection_rooms }}
+              <img src="{% static 'images/diversity_green.png' %}" alt="Diversity Logo" class="logo-diversity"/>
+              <img src="{% static 'images/sustainability_green.png' %}" alt="Sustainability Logo" class="logo-sustainability"/>
+            </div>
+            <span class="divider rooms"></span>
+          </div>
+          <div class="tab-pane fade" id="events">
+            <!--<h2>Events</h2>-->
+            {% for field in form %}
+              {% if 'event' in field.help_text %}
+                <div class="cr-event-container">
+                  <h3>{{ field.label }}</h3>
+                  <div>
+                    <div class="cr-event-left cr-event-description">
+                      <!-- hard coding description and price -->
+                      {% if 'Armada run' in field.label or 'Armada Run' in field.label %}
+                        <p>
+                          The Armada Run will be back this fall as a kick-off for THS Armada 2017. The fifth edition of the run will take place at KTH, campus Valhallavägen. Challenge the students and take the opportunity to show that your organization encourage a healthy lifestyle. Before and after the event, we will offer snacks and the opportunity to meet students and mingle in an informal atmosphere.
+                        </p>
+                        <h4>500 SEK/representative</h4>
+                      {% endif %}
+                      {% if 'LUNCH / BREAKFAST LECTURE' in field.label or 'Lunch / breakfast lecture' in field.label or 'Lunch / Breakfast lecture' in field.label or 'Lunch / Breakfast Lecture' in field.label %}
+                        <p>
+                          Lunch or breakfast for your representatives and the students are included in the price. The lecture halls have room for 100 to 200 students depending on the lecture hall.
+                        </p>
+                        <h4>29 000 SEK for 100 pers +5k per additional 50 per</h4>
+                      {% endif %}
+                      {% if 'INDIVIDUAL MEETINGS' in field.label or 'Individual meetings' in field.label or 'Individual Meetings' in field.label %}
+                        <p>
+                          Meet the students that have shown a special interest for your organization, through an individual meeting.  During the days of the fair we offer students to meet participating companies individually for 20-minute-long dialogues depending on your preferences.
+                        </p>
+                        <h4>10 000 SEK/day</h4>
+                      {% endif %}
+                      {% if 'THE INTERNSHIP PITCH' in field.label or 'The Internship pitch' in field.label or 'Internship pitch' in field.label or 'The Internship Pitch' in field.label or 'Internship Pitch' in field.label %}
+                        <p>
+                          Can you present your organization's Internships within 3 minutes? To really kick-off the THS Armada fair we arrange for short presentations, as in “elevator pitch”. There will be no food served during the event.
+                        </p>
+                        <h4>2 000 SEK/day</h4>
+                      {% endif %}
+                      {% if 'INNOVATION NIGHT' in field.label or 'Innovation night' in field.label or 'Innovation Night' in field.label %}
+                        <p>
+                          Innovation night is an opportunity for your company to show how you work with innovation and how employees get the opportunity to work with development and new solutions. It is also a chance for you to show the students that you do not have to work at a start-up to work with innovation.
+                        </p>
+                        <h4>15 000 SEK</h4>
+                      {% endif %}
+                      {% if 'CUSTOM EVENTS' in field.label or 'Custom events' in field.label or 'Custom Events' in field.label %}
+                        <p>
+                          Custom events are designed in collaboration with your organization and THS Armada to create events tailored to your needs and wishes. Our vision is to develop events specifically after your desire where we match your organization to top talents from KTH. A custom event could for example be case solving of cases you encounter daily, for selected talents. We look forward to creating intriguing events with you, the possibilities are endless! Some examples; Case solving at the your office. Breakfast seminar. Code night / hackathon. A debate. Lunch with an engineer. Thesis proposal. Be a “....” engineer for a day.
+                        </p>
+                        <!--<h4>2 000 SEK/day</h4>-->
+                      {% endif %}
+                    </div>
+                    <div class="cr-event-right cr-event-input">
+                      {{ field }}
+                    </div>
+                  </div>
+
+
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class="tab-pane fade cr-banquet" id="banquet">
+            <div class="row">
+              <div class="col-md-9">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h1>The Banquet</h1>
+                    <h5>Welcome to the Grand Banquet of THS Armada!</h5>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <h3><span class="h-green">November 21st</span> <span class="h-red">Annexet, Globen </span><span class="h-white">Dark suit</span> </h3>
+                    <p>This is one of the biggest university banquets in Sweden where you and your organization will have the wonderful opportunity to network with many ambitious students in a casual atmosphere. The evening will start off with a refreshing drink and continue with a three course menu and spectacular entertainment.</p>
+                    <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. This information will be gathered before October 27th.</p>
+                    <h4>Tables <span class="h-red">9,900 / 12,900 SEK</span></h4>
+                    <p>New for this year is that you also have the opportunity to purchase entire tables to the banquet. These tables will have 8 seats, a favorable placement and be branded with your organization logo.  You will have the unique chance to handpick top students of your choosing to this table, which will give you a great chance to deepen your connection with interesting top students that you have met at events, at the fair or to get to know new students that have shown great interest in your organization. </p>
+                    <p>Prices:</p>
+                    <ul>
+                      <li>Including two tickets from the base kit: 9,900 SEK</li>
+                      <li>Excluding two tickets from the base kit: 12,900 SEK</li>
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <h4>Banquet ticket - Exhibitor representative <span class="h-red">1,190 SEK</span></h4>
+                    <p>This year we have chosen to include 2 banquet tickets in the base kit for each participating exhibitor. Of course you also have the opportunity to purchase additional tickets if you're so inclined. </p>
+                    <h4>Banquet ticket - student <span class="h-red">1,190 SEK</span></h4>
+                    <p>Did you meet any interesting students during the first day of the fair? Let these students know more about your organisation and get to know them personally in a different setting by inviting them to the banquet. A ticket to the banquet can also be used as a very appreciated prize for students in a possible contest at your stand.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 cr-banquet-purchase">
+                <h3>Purchase</h3>
+                <p>Specify the number of tickets you wish to purchase:</p>
+                <ul class="list-unstyled cr-banquet-tickets">
+                  {% for field in form %}
+                    {% if 'banquet' in field.help_text %}
+                      <li>
+                        <h4>{{ field.label }}</h4>
+                        {{ field }}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="sture">
+            <div class="row">
+              <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-12">
+                  <h3>FURNITURE FROM STURE</h3>
+                </div>
+                </div>
+              </div>
+            <div class="row">
+              <div class="col-md-10 col-md-offset-1">
+                <div class="col-md-4">
+                  <p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
+                  <p>Aligned with THS Armada’s focus on environmental sustainability, we are very proud to collaborate with Sture that has received a gold rating from Svensk miljöbas due to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
+                </div>
+                <div class="col-md-4">
+                  <p>In a separate email, you will receive three complete fair solutions put together exclusively from Sture’s furniture catalogue. To facilitate the ordering process, just click the link to Sture’s dedicated email address below and state your request. For more information visit <a href="http://www.sture.se/">Sture’s homepage</a></p>
+                  <h4>For contact and ordering:</h4>
+                  <a href="mailto:gitte.friberg@sture.se">gitte.friberg@sture.se</a>
+                </div>
+                <div class="col-md-4">
+                  <!-- sture logo -->
+                  <img src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade cr-nova" id="nova">
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2">
+                <div class="col-md-6 cr-nova-col">
+                  <div class="cr-container-nova cr-container-nova-left">
+                    {{ form.product_selection_nova }}
+                    <p><b>Thanks</b> to our partnership with the talent network Nova and their deep knowledge within custom events for top talents, you can now get an exponentially greater value from you participation!</p>
+                    <p>From the evaluations of previous years, it can be highlighted that:</p>
+                    <ul>
+                      <li>Many students are not pleased with the company’s choices of representatives.</li>
+                      <li>Many student feel they don’t receive the information they want about potential employers.</li>
+                      <li>Many companies feel that it is hard to create a value after participating at the career fair.</li>
+                    </ul>
+                    <p>Nova has done research in collaboration with THS Armada on its specific audience and created a toolkit for solving these problems. We can offer an exclusive service, consulting you in how to get the most from participating in THS Armada.</p>
+                    <h4><span class="h-red">Price: 10 000 SEK (Valued at 30 000 SEK)</h4>
+                  </div>
+                </div>
+                <div class="col-md-6 cr-nova-col">
+                  <div class="cr-container-nova">
+                    <ul class="list-unstyled nova-info">
+                      <li>
+                        <h4>START UP MEETING – <small><span class="h-green">1 H</span></small></h4>
+                        <ul>
+                          <li>Start-up meeting with the main responsible at your company together with an experienced Talent Manager from Nova.</li>
+                          <li>During this one hour session, we will guide you in how to plan and prepare for  and the maximize value of your THS Armada participation and other career fairs.</li>
+                        </ul>
+                      </li>
+                      <li>
+                        <h4>CAREER SURVEY AND EVENT TOOL PRESENTATION – <small><span class="h-green">1-2 H</span></small></h4>
+                        <ul>
+                          <li>Presentation of Universum career survey where you will get to know what previous year THS Armada students were looking for when choosing an employer. </li>
+                          <li>We will go through different tips and event tools you can use to truly build your talent pool during the day.</li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade cr-profile" id="exhibitor-profile">
+            <span class="divider left"></span>
+            <span class="divider right"></span>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="cr-container-profile">
+                  <h2>Upload logo</h2>
+                  <p>Upload your logo so we can display it in our apps.</p>
+                  <div id="fileUpload">
+                    {{ form.logo }}
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="cr-container-profile">
+                  <h2>Text about organisation</h2>
+                  <p>Write a selling text about your company, this is what a student will be able to read in our apps.</p>
+                  {{ form.about_text }}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="cr-container-profile">
+                  <h2>Organisation Facts</h2>
+                  <p>List some quick/fun facts about your organisation.</p>
+                  {{ form.facts_text }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="additional-services">
+            <!--<h2>Additional Services</h2>-->
+            <div class="row cr-additional-services">
+              <div class="col-md-8">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="cr-additional-container">
+                    <h3>ADDITIONAL STAND <span class="h-red">AREA</span></h3>
+                    <p>Six square meters of stand area is included in the base kit. You can choose to add additional area, please note that we cannot guarantee that we will be able to fulfill your request.</p>
+                    <p>For the base kit area (2x3 meters) we recommend you to have a maximum of five people in the stand to represent your organisation.</p>
+                    <!--<p>2x3 meters (included)</p>-->
+                    {{ form.product_selection_additional_stand_area }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="cr-additional-container">
+                      <h3>ADDITIONAL STAND <span class="h-red">HEIGHT</span></h3>
+                      <p>The stand height of 0 - 2,30 meters is included in the base kit. You can choose to add additional height, please note that we cannot guarantee that we will be able to fulfill your request.</p>
+                      {{ form.product_selection_additional_stand_height }}
+                      <!--<ul class="list-unstyled additional_stand_height">
+                      {% for choice in form.product_selection_additional_stand_height.field.choices %}
+                        <li>
+                          <label for="id_{{choice.0}}">
+                            <input type="radio" name="product_selection_additional_stand_height" id="id_{{choice.0}}" value="{{choice.0}}"
+                              {% ifequal form.my_choice_field.data choice.0 %}
+                                 checked="checked"
+                              {% endifequal %}/>
+                            <span class='btn btn-armada-checkbox product-label'>
+                              {{choice.1}}
+                            </span>
+                          </label>
+                        </li>
+                      {% endfor %}
+                      </ul>-->
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="cr-additional-container">
+                      <h3>ADDITIONAL LUNCH TICKETS</h3>
+                      <p>Please note that 8 tickets (4 per day) is already included in the base kit. Price for additional lunch tickets is <span class="h-red">125 SEK / ticket.</span> </p>
+                      <ul class="cr-additional-lunch">
+                      {% for field in form %}
+                        {% if 'lunch' in field.help_text %}
+                          <li>
+                            <label class="pretty-label">{{ field.label }} </label> {{ field }}
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                        <li class="cr-allergies">
+                          <label class="pretty-label">{{ form.allergies.label }} </label>
+                          {{ form.allergies }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="cr-additional-container">
+                      <h3>Contact me about ...</h3>
+                      <div class="cr-additional-checkboxes">
+                        {{ form.wants_information_about_events }}
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_events"><span>Info about events</span></label>
+
+                        {{ form.wants_information_about_targeted_marketing }}
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_targeted_marketing"><span>Info about targeted marketing</span></label>
+
+                        {{ form.manual_invoice }}
+                        <label class="pretty-label btn btn-armada-checkbox" for="id_manual_invoice"><span>{{ form.manual_invoice.label }}</span></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="cr-additional-container cr-additional-container-electrical">
+                  <h3>ELECTRIC OUTLETS (Included)</h3>
+                  <p>
+                    Estimate your need of total continuous power requirement during the fair. If possible, please read actual power consumption on all the equipment you will use and sum it up.
+                  </p>
+                  <h4>Typical power requirements of commonly used devices:</h4>
+                  <ul>
+                    <li>Mobile phone/Tablet charger  ~ 12W</li>
+                    <li>Laptop charger ~ 80W</li>
+                    <li>PC (for demoing VR or similar demanding applications) ~ 500-1200W</li>
+                    <li>TV-Screen ~ 100W</li>
+                    <li>Stand spotlight (Halogen) ~ 200W</li>
+                    <li>Stand spotlight (LED) ~ 20W</li>
+                  </ul>
+                  <ul class="cr-additional-electrical">
+                    <li>
+                      <label class="pretty-label">{{form.total_power.label}}:</label>
+                      {{form.total_power}}
+                    </li>
+                    <li>
+                      <label class="pretty-label">{{form.number_of_outlets_needed.label}}:</label>
+                      {{form.number_of_outlets_needed}}
+                    </li>
+                    <li>
+                      <label class="pretty-label">Heavy duty equipment:</label>
+                      {{ form.heavy_duty_electric_equipment }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="logistics">
+            <div class="row cr-logistics">
+              <div class="col-md-4"> <!-- additional info -->
+                <div class="cr-logistics-container">
+                  <h3>ADDITIONAL INFORMATION</h3>
+                  <h4><span class="h-white">Requests for stand placement</span></h4>
+                  <div class="cr-logistics-additional">
+                    {{ form.requests_for_stand_placement }}
+                  </div>
+                  <h4><span class="h-white">Request for exhibition area</span></h4>
+                  <div class="cr-logistics-additional">
+                    {{ form.requests_for_exhibition_area }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4"> <!-- transport to fair -->
+                <div class="cr-logistics-container">
+                  <h3>Transport <span class="h-red">to</span> fair</h3>
+                      <span>Transport type to fair:</span>
+                      <span id="transportToFairType">{{ form.transport_to_fair_type }}</span>
+                      <div id="externalTransportChosen">
+                        <h5></h5>
+                        <p>{{ form.interested_in_armada_transport }} <label for="id_interested_in_armada_transport" class="pretty-label">Interested in Armada Transport to the fair?</label><!--Yes, if the option to send goods to the fair using a service similar to Armada transport is created, we would like to use it.--></p>
+                        <p><span class="has-popover hover-mark more-info h-red" data-content="Goods will be pickuped by one truck organised by Armada, from different companies and delivered together to the fair. Reducing the amount of truck driving around town and helping the environment while at the same time making a smoother logistics flow for everyone. More information will be sent to all interested companies later on if this service is created.", data-placement='left', data-container="body">What is this?</span></p>
+
+                      </div>
+                      <ul class="list-unstyled cr-transport-input">
+                        <li>Number of packages:
+                          {{ form.number_of_packages_to_fair }}
+                        </li>
+                        <li>Number of pallets:
+                          {{ form.number_of_pallets_to_fair }}
+                        </li>
+                      </ul>
+                </div>
+              </div>
+              <div class="col-md-4"> <!-- transport from fair -->
+                <div class="cr-logistics-container">
+                  <h3>Transport <span class="h-red">from</span> fair</h3>
+                      <span>Transport type from fair:</span>
+                      <span id="transportFromFairType">{{ form.transport_from_fair_type }}</span>
+
+
+                      <ul class="list-unstyled cr-transport-input">
+                        <li>Number of packages:
+                          {{ form.number_of_packages_from_fair }}
+                        </li>
+                        <li>Number of pallets:
+                          {{ form.number_of_pallets_from_fair }}
+                        </li>
+                      </ul>
+
+                </div>
+              </div>
+            </div>
+
+              <div class="row">
+                <div class="col-md-12"> <!-- armada transport -->
+                  <div class="cr-logistics-container cr-logistics-container-transport">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h3>ARMADA TRANSPORT (Included)</h3>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p>Pack up your exhibition material and leave it as the fair ends, THS Armada Transport service will transport it according to your preference. THS Armada Transport is a part of our sustainability work.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <div class="tab-pane fade" id="matching">
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2">
+                <div class="col-md-12">
+                  <h1>Student Matching</h1>
+                  <p>THS Armada uses matching algorithms in our applications to match you to the students you want to meet. Therefor, it is of greatest importance that you fill in the following fields as good as possible. If the fields are left blank or are not representative of your business and your needs, we cannot guarantee that the right target group of students will find your stand.</p>
+                  <p>We do understand that some of the questions can be tough to answer and depends on situations, but try to do you best for all of them.</p>
+                  <div class="cr-matching-form">
+                      <div class="container">
+                          {% for field in form %}
+                            {% if 'question' in field.help_text %}
+                            <br />
+                            <div class="cr-matching-form">
+                                {{ field.label }}
+                            </div>
+                            <div class="cr-matching-form">
+                                {{ field }}
+                            </div>
+                            {% endif %}
+                          {% endfor %}
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="confirm-and-submit">
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2 cr-container-confirm">
+                <h2>Review your info</h2>
+                <h3>Organisation <small id="editOrganisationTrigger" class="toggleEdit h-red">Edit</small></h3>
+                <p>The information below is copied from your profile. Make sure that the information is correct for this year’s application.</p>
+                <ul class="list-unstyled form-to-edit editable-form hidden" id="organistaionEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Name of organisation:</h5>
+                    <div class="input-field">{{ form.name_of_organisation }}</div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Organisation identification number:</h5>
+                    <div class="input-field">{{ form.organisation_identification_number }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Type of organisation:</h5>
+                    <div class="input-field">{{ form.type_of_organisation }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Address:</h5>
+                    <div class="input-field input-field-address">
+                      {{ form.address_street }}
+                      {{ form.address_city }}
+                      {{ form.address_zip_code }}
+                      {{ form.address_country }}
+                      {{ form.additional_address_information }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5>Webpage:</h5>
+                    <div class="input-field">
+                      {{ form.website }}
+                    </div>
+                  </li>
+                </ul>
+                <ul class="list-unstyled form-to-edit no-editable-form visible" id="organisationNoEditable">
+                  <li class="address">
+                    <h5><span class="aterix h-red">*</span> Address:</h5>
+                    <div class="input-field">
+                      {{ form.address_street }}
+                      {{ form.address_city }}
+                      {{ form.address_zip_code }}
+                      {{ form.address_country }}
+                      {{ form.additional_address_information }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Organisation name:</h5>
+                    <div class="input-field">{{ form.name_of_organisation }}</div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Organisation identification number:</h5>
+                    <div class="input-field">{{ form.organisation_identification_number }}
+                  </li>
+                  <!--<li>
+                    <h5>Type of organisation:</h5>
+                    <div class="input-field">{{ form.type_of_organisation }}
+                  </li>-->
+                  <li>
+                    <h5>Webpage:</h5>
+                    {{ form.website }}
+                  </li>
+                </ul>
+
+                <h3>Contact <small id="editContactTrigger" class="toggleEdit">Edit</small></h3>
+                <p>Please enter contact i formation for the person we can contact if there are any questions/issues with your registration or your account.</p>
+                <ul class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Name:</h5>
+                    <div class="input-field">
+                      {{ form.contact_name }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
+                    <div class="input-field">
+                      {{ form.work_phone }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5>Cell phone number:</h5>
+                    <div class="input-field">
+                      {{ form.cell_phone }}
+                    </div>
+                  </li>
+                  <!--<li>
+                    <h5>Phone switchboard:</h5>
+                    <div class="input-field">
+                    {{ form.phone_switchboard }}
+                    </div>
+                  </li>-->
+                  <li>
+                    <h5><span class="aterix h-red">*</span> E­mail:</h5>
+                    <div class="input-field">
+                      {{ form.contact_email }}
+                    </div>
+                  </li>
+                  <!--<li>
+                    <h5>Alternative e­mail address:</h5>
+                    <div class="input-field">
+                      {{ form.alternative_email }}
+                    </div>
+                  </li>-->
+                </ul>
+                <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Name:</h5>
+                    {{ form.contact_name }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
+                    {{ form.work_phone }}
+                  </li>
+                  <li>
+                    <h5>Cell phone number:</h5>
+                    {{ form.cell_phone }}
+                  </li>
+                  <!--<li>
+                    <h5>Phone switchboard:</h5>
+                    {{ form.phone_switchboard }}
+                  </li>-->
+                  <li>
+                    <h5><span class="aterix h-red">*</span> E­mail:</h5>
+                    {{ form.contact_email }}
+                  </li>
+                  <!--<li>
+                    <h5>Alternative e­mail address:</h5>
+                    {{ form.alternative_email }}
+                  </li>-->
+                </ul>
+
+                <h3>INVOICE INFORMATION <small id="editInvoiceToggle" class="toggleEdit">Edit</small></h3>
+                <p>Please enter your invoice information for THS Armada 2017.</p>
+                <ul class="list-unstyled form-to-edit editable-form hidden" id="invoiceEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice reference</h5>
+                    <div class="input-field">
+                      {{ form.invoice_reference }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Reference phone number</h5>
+                    <div class="input-field">
+                      {{ form.invoice_reference_phone_number }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice reference number/PO-number:</h5>
+                     <div class="input-field">
+                      {{ form.invoice_purchase_order_number}}
+                    </div>
+                    <p><span class="h-red">Please enter a reference number/PO-number for your invoice.</span></p>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice organization name</h5>
+                    <div class="input-field">
+                      {{ form.invoice_organisation_name }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice address</h5>
+                    <div class="input-field input-field-address">
+                      {{ form.invoice_address }}
+                      {{ form.invoice_address_zip_code }}
+                    </div>
+                    <p><span class="h-red">Be sure to enter the invoice address, not the address to the office.</span></p>
+                  </li>
+                  <li>
+                    <h5>Invoice additional information</h5>
+                    <div class="input-field">
+                      {{ form.invoice_additional_information }}
+                    </div>
+                  </li>
+                </ul>
+                <ul class="list-unstyled form-to-edit no-editable-form visible" id="invoiceNoEditable">
+                  <li class="address">
+                    <h5><span class="aterix h-red">*</span> Invoice address:</h5>
+                    <div class="input-field">
+                      {{ form.invoice_address }}
+                      {{ form.invoice_address_zip_code }}
+                    </div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice reference:</h5>
+                    {{ form.invoice_reference }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Reference phone number:</h5>
+                      {{ form.invoice_reference_phone_number }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice reference number/PO-number:</h5>
+                      {{ form.invoice_purchase_order_number}}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Invoice organization name:</h5>
+                      {{ form.invoice_organisation_name }}
+                  </li>
+                  <li>
+                    <h5>Invoice additional information:</h5>
+                      {{ form.invoice_additional_information }}
+                  </li>
+                </ul>
+
+                <div id="armadaTransportChosen">
+                  <h3>Armada Transport <small id="editArmadaTransportTrigger" class="toggleEdit">Edit</small></h3>
+                  <ul class="list-unstyled form-to-edit editable-form hidden" id="armadaTransportEditable">
+                    <li class="address">
+                      <h5><span class="aterix h-red">*</span> Delivery address (including zip code)</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_address }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5><span class="aterix h-red">*</span> Recipient's name:</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_recipient_name }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5><span class="aterix h-red">*</span> Recipient's phone number:</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_recipient_phone_number }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5>Number of packages:</h5>
+                      <div class="input-field">
+                        {{ form.number_of_packages_from_fair }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5>Number of pallets:</h5>
+                      <div class="input-field">
+                        {{ form.number_of_pallets_from_fair }}
+                      </div>
+                    </li>
+                  </ul>
+                  <ul class="list-unstyled form-to-edit no-editable-form visible" id="armadaTransportNoEditable">
+                    <li class="address">
+                      <h5><span class="aterix h-red">*</span> Delivery address (including zip code)</h5>
+                      <div class="input-field">
+                        {{ form.transport_from_fair_address }}
+                      </div>
+                    </li>
+                    <li>
+                      <h5><span class="aterix h-red">*</span> Recipient's name:</h5>
+                        {{ form.transport_from_fair_recipient_name }}
+                    </li>
+                    <li>
+                      <h5><span class="aterix h-red">*</span> Recipient's phone number:</h5>
+                        {{ form.transport_from_fair_recipient_phone_number }}
+                    </li>
+                    <li>
+                      <h5>Number of packages:</h5>
+                        {{ form.number_of_packages_from_fair }}
+                    </li>
+                    <li>
+                      <h5>Number of pallets:</h5>
+                        {{ form.number_of_pallets_from_fair }}
+                    </li>
+                  </ul>
+                </div> <!-- end armada transport -->
+
+                <h3>Order confirmation</h3>
+                <p>Please make sure that your order is correct. If you need to change anything, you can go back in the form and change. </p>
+                <div id="orderConfirmation">
+                </div>
+
+                <div class="text-center cr-contract">
+                  <h4>
+                    {{ form.accept_terms }} I have read the <a href={{contract_url}}>contract</a> and agree to Armada Terms and Conditions
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- TAB CONTENT END -->
+
+
+        <!-- Form next, back and save btn, and errors -->
+        <div class="form-footer cr-nav-common cr-nav-bottom">
+          <a class="btn btn-armada btn-armada-green btnBack" id="back-button">Back</a>
+          <span class="has-popover" data-content="You only need to save before closing your browser window", data-placement='top', data-container="body">
+            <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
+          </span>
+
+          <span class="has-popover" data-content="Submit your application to Armada 2017", data-placement='top', data-container="body">
+          <button type="submit" name="submit" class="btn btn-armada" id="submit-button">Submit</button>
+          </span>
+          <a class="btn btn-armada btn-armada-green btnNext" id="next-button">Next</a>
+          <div>{{ form.non_field_errors }}</div>
+        </div>
+
+        <!-- modal to be shown on sucessful submission -->
+        <div class="modal fade submission-success-modal" tabindex="-1" role="dialog" aria-labelledby="submissionSuccess">
+          <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+              <div class="row">
+                <div class="col-md-12">
+                <h1 class="modal-title">Submission successful!</h1>
+                </div>
+              </div>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-12">
+                <p class="modal-text">Thank you for completing your registration to Armada 2017! If you need to change any information in your registration you can do so by visiting this page again until the deadline.</p>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <!-- EXHIBITOR FORM END -->
+    </div>
+    <!-- CONTAINER END -->
+
+    <!-- Scripts -->
+    <script src="{% static 'js/jquery.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'js/complete_registration.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+
+  </body>
+</html>
