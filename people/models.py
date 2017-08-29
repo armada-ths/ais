@@ -64,12 +64,12 @@ class Profile(models.Model):
     def __str__(self):
         return '%s' % (self.user.get_full_name())
 
-    def save(self, *args, **kwargs):
-        super(Profile, self).save(*args, **kwargs)
-        self.picture = update_image_field(
-                self.picture_original,
-                self.picture, 480, 640, 'jpg')
-        super(Profile, self).save(*args, **kwargs)
+    #def save(self, *args, **kwargs):
+    #    super(Profile, self).save(*args, **kwargs)
+    #    self.picture = update_image_field(
+    #            self.picture_original,
+    #            self.picture, 480, 640, 'jpg')
+    #    super(Profile, self).save(*args, **kwargs)
 
     class Meta:
         db_table = 'profile'
