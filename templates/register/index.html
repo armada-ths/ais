@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="container">   
+    <div class="container">
         <div class="row">
             <div class="headline">
                 <svg viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
@@ -22,6 +22,11 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="text-center form-container">
+                    {% if timeFlag == 'warning' %}
+                        <h4 class="text-danger"> The complete registration for THS Armada closes in {{ time_disp }}. </h4>
+                    {% elif timeFlag == 'closed' %}
+                        <h4 class="text-danger"> The complete registration was closed on {{ time_disp }} </h4>
+                    {% endif %}
                     <a href="{% url 'anmalan:login' %}" class="btn-signin btn-green">Sign in</a>
                     <div>
                         <svg viewBox="50 50 200 200" width="100px" height="100px" version="1.1">
@@ -30,7 +35,7 @@
                     </div>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </body>
 

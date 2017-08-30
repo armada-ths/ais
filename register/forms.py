@@ -14,6 +14,7 @@ from exhibitors.models import Exhibitor, CatalogInfo
 from companies.models import Company, Contact
 
 from enum import Enum
+import datetime
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -159,6 +160,10 @@ class ExhibitorForm(ModelForm):
         matching_survey = kwargs.pop('matching_survey')
         matching_questions = kwargs.pop('matching_questions')
         matching_responses = kwargs.pop('matching_responses')
+
+        # time params for warning or close cr
+        self.timeFlag = kwargs.pop('timeFlag')
+        self.time_disp = kwargs.pop('time_disp')
 
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
@@ -436,7 +441,6 @@ class ExhibitorForm(ModelForm):
                         mark_safe(product.name),
                         mark_safe(product.description),
                     )
-
 
     # Returns a generator/iterator with all product fields where you choose an amount.
     # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.
