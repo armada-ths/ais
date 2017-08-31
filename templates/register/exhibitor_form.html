@@ -58,8 +58,11 @@
             </li>
         {% endif %}
       </ul>
-      {% if form.timeFlag == 'overdue' or form.timeFlag == 'closed' %}
-        <br /> <br />
+      {% if form.timeFlag == 'overdue' %}
+        <div class="padding-timeflag-overdue"></div>
+      {% endif %}
+      {% if form.timeFlag == 'closed' %}
+        <div class="padding-timeflag-closed"></div>
       {% endif %}
 
       <!-- EXHIBITOR FORM -->
