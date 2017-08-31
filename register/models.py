@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import DEFERRED
-
+from django.utils import timezone
 
 # A 'Contact' is a person working for a 'Company'
 class SignupContract(models.Model):
@@ -49,3 +49,19 @@ class SignupLog(models.Model):
     
     def __str__(self):
         return self.contact.name + " at " + self.contact.belongs_to.name
+
+# Logs each time an exhibitor updates their complete registration
+class OrderLog(models.Model):
+    timestamp = models.DateTimeField(default=timezone.now)
+    contact = models.ForeignKey('companies.Contact')
+    company = models.ForeignKey('companies.Company')
+    fair = models.ForeignKey('fair.Fair')
+    actionTypes = [
+        ('submit', 'Submitted'),
+        ('save', 'Saved'),
+    ]
+    action = models.CharField(choices=actionTypes, null=True, blank=True, max_length=30)
+    products = models.TextField()
+
+    def __str__(self):
+        return self.company.name + " " + self.action + " at " + self.timestamp.strftime('%Y-%m-%d %H:%M')
