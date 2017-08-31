@@ -2,7 +2,7 @@ from django.contrib import admin
 
 import csv
 from django.http import HttpResponse
-from .models import SignupContract, SignupLog
+from .models import SignupContract, SignupLog, OrderLog
 
 def export_signup_as_csv(modeladmin, request, queryset):
     response = HttpResponse(content_type="text/csv")
@@ -35,6 +35,11 @@ class SignupLogAdmin(admin.ModelAdmin):
     ordering = ('company',)
 
     actions = [export_signup_as_csv]
+
+@admin.register(OrderLog)
+class OrderLogAdmin(admin.ModelAdmin):
+    search_fields = ('company__name',)
+    ordering = ('fair',)
 
 # Register your models here.
 admin.site.register(SignupContract)
