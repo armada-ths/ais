@@ -50,7 +50,7 @@ class SignupLog(models.Model):
     def __str__(self):
         return self.contact.name + " at " + self.contact.belongs_to.name
 
-
+# Logs each time an exhibitor updates their complete registration
 class OrderLog(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     contact = models.ForeignKey('companies.Contact')

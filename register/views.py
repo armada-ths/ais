@@ -487,7 +487,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)}))
 
                     # log
-                    log = OrderLog.objects.create(contact=contact, company = exhibitor.company, action='submit', fair=Fair.objects.get(current=True), products=productLog)
+                    log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='submit', fair=Fair.objects.get(current=True), products=productLog)
                     log.save()
 
                     # send email
@@ -517,7 +517,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     return redirect('anmalan:cr_done')
                 else:
                     # create OrderLog
-                    log = OrderLog.objects.create(contact=contact, company = exhibitor.company, action='save', fair=Fair.objects.get(current=True), products=productLog)
+                    log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='save', fair=Fair.objects.get(current=True), products=productLog)
                     log.save()
 
     return render(request, template_name, {'form': form, 'contract_url': contract.contract.url})
