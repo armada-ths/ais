@@ -23,9 +23,9 @@
             <div class="col-md-12">
                 <div class="text-center form-container">
                     {% if timeFlag == 'warning' %}
-                        <h4 class="text-danger"> The complete registration for THS Armada closes in {{ time_disp }}. </h4>
-                    {% elif timeFlag == 'closed' %}
-                        <h4 class="text-danger"> The complete registration was closed on {{ time_disp }} </h4>
+                        <h4 class="text-danger"> The complete registration for THS Armada closes {{time_end }}. </h4>
+                    {% elif timeFlag == 'closed' or timeFlag == 'overdue' %}
+                        <h4 class="text-danger"> The complete registration for THS Armada closed on {{ time_end }}. </h4>
                     {% endif %}
                     <a href="{% url 'anmalan:login' %}" class="btn-signin btn-green">Sign in</a>
                     <div>

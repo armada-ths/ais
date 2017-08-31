@@ -25,20 +25,26 @@ from .models import SignupContract, SignupLog, OrderLog
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 BASE_PRICE = 39500
-# end time for cr
-END_TIME =  datetime.datetime(2017,8,4,23,59)
-END_TIME_CLOSE = datetime.datetime(2017,8,14,23,59)
 PRODUCT_LOG = ":"
 
-def getTimeFlag():
-    # used to close cr
-    time = datetime.datetime.now().replace(microsecond=0)
-    if time < END_TIME:
-        return('warning', [END_TIME, END_TIME - time])
-    elif time > END_TIME and time < END_TIME_CLOSE:
-        return('overdue', [END_TIME, time - END_TIME])
+def getTimeFlag(close_offset = 10, warning_offset = 7):
+    # used to close cr, a warning text after deadline will pop up, however exhibitors will not be permitted to do any changes after the offset in days has passed
+    currentFair = Fair.objects.get(current=True)
+    if currentFair.complete_registration_close_date:
+        end_time = currentFair.complete_registration_close_date.replace(tzinfo=None)
+        end_time_close = end_time + datetime.timedelta(days=close_offset)
+        time = datetime.datetime.now().replace(microsecond=0)
+        warning_time = end_time - datetime.timedelta(days=warning_offset)
+        if time < end_time and time > warning_time:
+            return('warning', [end_time, end_time - time])
+        elif time > end_time and time < end_time_close:
+            return('overdue', [end_time, time - end_time])
+        elif time > end_time_close:
+            return('closed', [end_time, time - end_time])
+        else:
+            return(None, [None, None])
     else:
-        return('closed', [END_TIME, time - END_TIME])
+        return(None, [None, None])
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -46,8 +52,9 @@ def index(request, template_name='register/index.html'):
             return redirect('anmalan:home')
         else:
             return redirect('anmalan:logout')
-    timeFlag, time_disp = getTimeFlag()
-    return render(request, template_name, {'timeFlag': timeFlag, 'time_disp': time_disp})
+    timeFlag, [time_end, time_diff] = getTimeFlag()
+    print(time_end)
+    return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
 def home(request, template_name='register/home.html'):
     if request.user.is_authenticated():
