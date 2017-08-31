@@ -35,25 +35,31 @@
         {% if form.timeFlag == 'warning' %}
             <br>
             <li class="nav">
-                <p class="text-danger"> Note that the complete registration for THS Armada closes in {{ form.time_disp }}. </p>
+                <p class="text-danger"> Note that the complete registration for THS Armada closes on {{form.time_end }} - that is in {{ form.time_diff }}. </p>
             </li>
-        {% elif form.timeFlag == 'closed' %}
-            <br/>
-            <li class="nav">
-                <h4 class="text-danger">
-                    The complete registration for THS Armada closed on {{ form.time_disp }}
-                </h4>
-            </li>
+        {% elif form.timeFlag == 'closed' or form.timeFlag == 'overdue' %}
             <br/>
             <li class="nav">
                 <p class="text-danger">
+                    The complete registration for THS Armada closed on {{ form.time_end }} , you are overdue by {{ form.time_diff }} .
+                </p>
+            </li>
+            <br/>
+            <li class="nav">
+            {% if form.timeFlag == 'overdue' %}
+                <p class="text-danger">
+                    You may still proceed to make changes, but we can not guarantee that they will be applied. If you have any questions please contact your sales responsible.
+                </p>
+            {% elif form.timeFlag == 'closed' %}
+                <p class="text-danger">
                     You are no longer granted permission to make any changes. If you have any questions please contact your sales responsible.
                 </p>
+            {% endif %}
             </li>
         {% endif %}
       </ul>
-      {% if form.timeFlag == 'danger' %}
-
+      {% if form.timeFlag == 'overdue' or form.timeFlag == 'closed' %}
+        <br /> <br />
       {% endif %}
 
       <!-- EXHIBITOR FORM -->

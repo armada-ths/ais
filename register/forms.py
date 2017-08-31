@@ -163,7 +163,9 @@ class ExhibitorForm(ModelForm):
 
         # time params for warning or close cr
         self.timeFlag = kwargs.pop('timeFlag')
-        self.time_disp = kwargs.pop('time_disp')
+        time_disp = kwargs.pop('time_disp')
+        self.time_end = time_disp[0]
+        self.time_diff = time_disp[1]
 
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 

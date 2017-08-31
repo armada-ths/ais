@@ -26,16 +26,19 @@ from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm
 
 BASE_PRICE = 39500
 # end time for cr
-END_TIME =  datetime.datetime(2017,9,4,23,59)
+END_TIME =  datetime.datetime(2017,8,4,23,59)
+END_TIME_CLOSE = datetime.datetime(2017,8,14,23,59)
 
 
 def getTimeFlag():
     # used to close cr
     time = datetime.datetime.now().replace(microsecond=0)
     if time < END_TIME:
-        return('warning', END_TIME - time)
+        return('warning', [END_TIME, END_TIME - time])
+    elif time > END_TIME and time < END_TIME_CLOSE:
+        return('overdue', [END_TIME, time - END_TIME])
     else:
-        return('closed', END_TIME)
+        return('closed', [END_TIME, time - END_TIME])
 
 
 def index(request, template_name='register/index.html'):
