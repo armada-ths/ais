@@ -1,4 +1,50 @@
 from django.test import TestCase
+from .models import OrderLog
+from companies.models import Company, Contact
+from fair.models import Fair
+from django.contrib.auth.models import User
+
+# Tests that the view is working
+class RegisterViewTestCase(TestCase):
+    def test_view(self):
+        resp = self.client.get('/register/')
+        self.assertEqual(resp.status_code, 200)
+
+class OrderLogTestCase(TestCase):
+    def test(self):
+
+        fair = Fair.objects.create(name="fair1", year=2017, description="description", current=True)
+        fair2 = Fair.objects.create(name="fair2", year=2016, description="description2", current=False)
+        user1 = User.objects.create_user(username='john',
+                                 email='jlennon@beatles.com',
+                                 password='glass onion')
+        user2 = User.objects.create_user(username='paul',
+                                         email='paul@beatles.com',
+                                         password='glass onion')
+
+        company = Company.objects.create(name="TestCompany1 for testing", organisation_type='company')
+        company2 = Company.objects.create(name="TestCompany1 for testing", organisation_type='company')
+        contact = Contact.objects.create(user=user1, belongs_to=company, name="contact name for testing", email="email@hotmail.com", active=True, confirmed=True)
+        contact2 = Contact.objects.create(user=user2, belongs_to=company2, name="contact name 2 for testing", email="email2@hotmail.com", active=True, confirmed=True)
+
+        # Create OrderLog
+        log0 = OrderLog.objects.create(contact=contact, company=contact.belongs_to, action='save', fair=Fair.objects.get(current=True), products="Test product 1")
+        log1 = OrderLog.objects.create(contact=contact, company=contact.belongs_to, action='submit', fair=Fair.objects.get(current=True), products="Test product 1\nTest product 2")
+        log2 = OrderLog.objects.create(contact=contact2, company=contact.belongs_to, action='save', fair=Fair.objects.get(year=2016), products="My test products")
+        # Get all logs from current fair
+        currentLogs = OrderLog.objects.filter(fair=Fair.objects.get(current=True))
+        oldLogs = OrderLog.objects.filter(fair=Fair.objects.get(current=False))
+
+        self.assertEqual(log1.action, 'submit')
+        self.assertEqual(log2.action, 'save')
+        self.assertEqual(log1.products, "Test product 1\nTest product 2")
+        self.assertEqual(log2.products, "My test products")
+        self.assertEqual(len(currentLogs), 2)
+        self.assertEqual(len(oldLogs), 1)
+
+
+
+# Below is old stuff
 """from django.test import Client
 from .forms import ExhibitorForm
 from exhibitors.models import Exhibitor
