@@ -13,6 +13,8 @@ import math
 import json
 import requests as r
 
+import datetime
+
 from companies.models import Company, Contact
 from orders.models import Product, Order, ProductType
 from exhibitors.models import Exhibitor
@@ -23,8 +25,20 @@ from .models import SignupContract, SignupLog
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 BASE_PRICE = 39500
+# end time for cr
+END_TIME =  datetime.datetime(2017,8,4,23,59)
+END_TIME_CLOSE = datetime.datetime(2017,8,14,23,59)
 
 
+def getTimeFlag():
+    # used to close cr
+    time = datetime.datetime.now().replace(microsecond=0)
+    if time < END_TIME:
+        return('warning', [END_TIME, END_TIME - time])
+    elif time > END_TIME and time < END_TIME_CLOSE:
+        return('overdue', [END_TIME, time - END_TIME])
+    else:
+        return('closed', [END_TIME, time - END_TIME])
 
 
 def index(request, template_name='register/index.html'):
@@ -33,7 +47,8 @@ def index(request, template_name='register/index.html'):
             return redirect('anmalan:home')
         else:
             return redirect('anmalan:logout')
-    return render(request, template_name)
+    timeFlag, time_disp = getTimeFlag()
+    return render(request, template_name, {'timeFlag': timeFlag, 'time_disp': time_disp})
 
 def home(request, template_name='register/home.html'):
     if request.user.is_authenticated():
@@ -187,6 +202,10 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             matching_questions = Question.objects.filter(survey=matching_survey)
             # check which questions are already answered
             current_matching_responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
+
+            # Set automated time closing of cr
+            timeFlag, time_disp = getTimeFlag()
+
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
@@ -211,6 +230,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 matching_survey = matching_survey,
                 matching_questions = matching_questions,
                 matching_responses = current_matching_responses,
+                timeFlag = timeFlag,
+                time_disp = time_disp,
             )
 
             if form.is_valid():

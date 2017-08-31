@@ -32,7 +32,35 @@
         <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
         <li class="nav"> | </li>
         <li class="nav"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
+        {% if form.timeFlag == 'warning' %}
+            <br>
+            <li class="nav">
+                <p class="text-danger"> Note that the complete registration for THS Armada closes on {{form.time_end }} - that is in {{ form.time_diff }}. </p>
+            </li>
+        {% elif form.timeFlag == 'closed' or form.timeFlag == 'overdue' %}
+            <br/>
+            <li class="nav">
+                <p class="text-danger">
+                    The complete registration for THS Armada closed on {{ form.time_end }} , you are overdue by {{ form.time_diff }} .
+                </p>
+            </li>
+            <br/>
+            <li class="nav">
+            {% if form.timeFlag == 'overdue' %}
+                <p class="text-danger">
+                    You may still proceed to make changes, but we can not guarantee that they will be applied. If you have any questions please contact your sales responsible.
+                </p>
+            {% elif form.timeFlag == 'closed' %}
+                <p class="text-danger">
+                    You are no longer granted permission to make any changes. If you have any questions please contact your sales responsible.
+                </p>
+            {% endif %}
+            </li>
+        {% endif %}
       </ul>
+      {% if form.timeFlag == 'overdue' or form.timeFlag == 'closed' %}
+        <br /> <br />
+      {% endif %}
 
       <!-- EXHIBITOR FORM -->
       <form method="post" enctype="multipart/form-data">{% csrf_token %}
@@ -836,13 +864,14 @@
         <!-- Form next, back and save btn, and errors -->
         <div class="form-footer cr-nav-common cr-nav-bottom">
           <a class="btn btn-armada btn-armada-green btnBack" id="back-button">Back</a>
-          <span class="has-popover" data-content="You only need to save before closing your browser window", data-placement='top', data-container="body">
-            <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
-          </span>
-
-          <span class="has-popover" data-content="Submit your application to Armada 2017", data-placement='top', data-container="body">
-          <button type="submit" name="submit" class="btn btn-armada" id="submit-button">Submit</button>
-          </span>
+          {% if form.timeFlag != 'closed' %}
+              <span class="has-popover" data-content="You only need to save before closing your browser window", data-placement='top', data-container="body">
+                <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
+              </span>
+              <span class="has-popover" data-content="Submit your application to Armada 2017", data-placement='top', data-container="body">
+              <button type="submit" name="submit" class="btn btn-armada" id="submit-button">Submit</button>
+              </span>
+          {% endif %}
           <a class="btn btn-armada btn-armada-green btnNext" id="next-button">Next</a>
           <div>{{ form.non_field_errors }}</div>
         </div>
