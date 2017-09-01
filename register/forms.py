@@ -297,6 +297,7 @@ class ExhibitorForm(ModelForm):
             self.help_text = prefix
             self.description = object.description
             self.object = object
+            self.required = False
 
     # A modelmultiplechoicefield with a customized label for each instance
     class ProductMultiChoiceField(ModelMultipleChoiceField):
