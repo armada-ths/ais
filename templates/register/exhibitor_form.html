@@ -537,7 +537,10 @@
                             {% if 'question' in field.help_text %}
                             <br />
                             <div class="cr-matching-form">
-                                {{ field.label }}
+                                {{ field.label }} 
+                                  {% if 'integer' in field.help_text %}
+                                  <span class="h-red"> Answer ONLY with numbers!</span>
+                                  {% endif %}
                             </div>
                             <div class="cr-matching-form">
                                 {{ field }}
