@@ -341,6 +341,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # Create or update orders from products that can be chosen in numbers.
                 # If they have an amount equal to zero then delete the order.
+                # Try if amount is None
                 for (banquetProduct, amount) in form.amount_products('banquet_'):
                     try:
                         if amount > 0:

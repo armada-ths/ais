@@ -131,6 +131,13 @@ class ExhibitorCatalogInfoForm(ModelForm):
         exclude = ('exhibitor', 'programs', 'main_work_field', 'work_fields', 'continents', 'tags')
         widgets = {}
 
+"""
+    TODO:
+    * Make field completely dynamic
+        Add all info in help_text, separated by underscore or similar
+        Ex: self.fields['fieldname'].help_text = prefix + "_" + price + "_" + description
+        In template split help_text by separation char.
+"""
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
         # products that can be chosen with an amount
