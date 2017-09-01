@@ -27,7 +27,7 @@ from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm
 BASE_PRICE = 39500
 PRODUCT_LOG = ":"
 
-def getTimeFlag(close_offset = 10, warning_offset = 7):
+def getTimeFlag(close_offset = 7, warning_offset = 7):
     # used to close cr, a warning text after deadline will pop up, however exhibitors will not be permitted to do any changes after the offset in days has passed
     currentFair = Fair.objects.get(current=True)
     if currentFair.complete_registration_close_date:
