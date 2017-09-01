@@ -95,6 +95,7 @@ $("li.nav").click(function(){
     checkTermsCheckbox();
   } else {
     setConfirmAndSubmit(false);
+    setSaveButton(true);
   }
   if (this.id == "start-li") {
     setBackButton(true);
@@ -105,8 +106,10 @@ $("li.nav").click(function(){
 $('#id_accept_terms').click(function() {
   if (this.checked) {
     setSubmitButton(true);
+    setSaveButton(false);
   } else {
     setSubmitButton(false);
+    setSaveButton(true);
   }
 });
 
@@ -141,8 +144,10 @@ var checkTermsCheckbox = function() {
   var checkbox = $('#id_accept_terms');
   if (checkbox[0].checked == true) {
     setSubmitButton(true);
+    setSaveButton(false);
   } else {
     setSubmitButton(false);
+    setSaveButton(true);
   }
 }
 
@@ -151,6 +156,13 @@ var setSubmitButton = function(bool) {
     $("#submit-button").show().addClass("btn-armada-green");
   } else {
     $("#submit-button").hide();
+  }
+}
+var setSaveButton = function(bool) {
+  if (bool) {
+    $("#save-button").show().addClass("btn-armada-green");
+  } else {
+    $("#save-button").hide();
   }
 }
 // hides back button if bool = true
