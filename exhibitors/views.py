@@ -2,15 +2,64 @@ from django.forms import modelform_factory
 from django.http import HttpResponseForbidden
 from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import send_mail
 from django.forms import TextInput
+from django.template.loader import get_template
+from django.conf import settings
+
 from exhibitors.models import Exhibitor
 from companies.models import Company
 from django.urls import reverse
 from fair.models import Fair
+from orders.models import Product, Order
+
+import logging
 
 def user_can_modify_exhibitor(user, exhibitor):
     return user.has_perm(
         'exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
+
+def send_receipt_email(request, year):
+    fair = Fair.objects.filter(current=True)            
+    exhibitors = Exhibitor.objects.filter(fair=fair)
+    products = Product.objects.filter(fair=fair)
+
+    for exhibitor in exhibitors:
+        try:
+            contact_email = exhibitor.contact.email
+        except:
+            logging.error("No contact for this exhibitor")
+            continue
+
+        orders =  Order.objects.filter(exhibitor = exhibitor)
+        total_price = 0
+
+
+        orders_info = []
+        #Go thrue orders and get the total price for everything and place the important info as a dictionary in the list orders_info
+        for o in orders:
+            product = o.product
+            price = product.price
+            amount = o.amount
+            total_price += price*amount
+
+            order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount} 
+            orders_info.append(order)
+
+
+        send_mail(
+            'Your orders for Armada',
+            get_template('exhibitors/send_cr_receipt.html').render(({
+                'orders_info' : orders_info,
+                'total_price' : total_price,
+                })
+            ),
+
+            settings.DEFAULT_FROM_EMAIL,
+            [contact_email],
+            fail_silently=False)
+
+    return redirect('exhibitors', year)
 
 
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
@@ -18,10 +67,13 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
         return HttpResponseForbidden()
 
     fair = get_object_or_404(Fair, year=year)
+
     return render(request, template_name, {
         'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
         'fair': fair
     })
+
+
 
 
 def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):

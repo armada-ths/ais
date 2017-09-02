@@ -46,6 +46,11 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <form action="{% url "send_receipt_email" fair.year %}" method="POST">
+        {% csrf_token %}
+        <button class="btn btn-default">Send Email</button>
+    </form>
     </div>
 {% endblock %}
 {% block scripts %}
@@ -59,4 +64,6 @@
             })
         })
     </script>
+
 {% endblock %}
+

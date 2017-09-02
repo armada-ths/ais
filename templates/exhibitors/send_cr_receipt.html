@@ -8,7 +8,7 @@ Thank you for completing your registration to THS Armada 2017! The registration 
 Your ordered products:
 {% endblocktrans %}
 
-	{% for order in orders_info %}{{ order.amount }} x {{ order.product}} : {{ order.price}} SEK
+	{% for order in orders_info %}{{ order.product}} x {{ order.amount }} : {{ order.price}} SEK
 	{% endfor %}
 
 {% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
