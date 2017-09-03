@@ -46,11 +46,12 @@
         {% endfor %}
         </tbody>
     </table>
-
+    {% if request.user.is_staff %}
     <form action="{% url "send_receipt_email" fair.year %}" method="POST">
         {% csrf_token %}
         <button class="btn btn-default">Send Email</button>
     </form>
+    {% endif %}
     </div>
 {% endblock %}
 {% block scripts %}
