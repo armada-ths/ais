@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.forms import TextInput
 from django.template.loader import get_template
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 
 from exhibitors.models import Exhibitor
 from companies.models import Company
@@ -162,7 +163,7 @@ def send_cr_receipts(request, year):
     fair = get_object_or_404(Fair, year=year)           
     exhibitors = Exhibitor.objects.filter(fair=fair)
     products = Product.objects.filter(fair=fair)
-
+    site_name = get_current_site(request).domain
 
     for exhibitor in exhibitors:
         try:
@@ -192,6 +193,7 @@ def send_cr_receipts(request, year):
             get_template('exhibitors/cr_receipt.html').render(({
                 'orders_info' : orders_info,
                 'total_price' : total_price,
+                'site_name' : site_name
                 })
             ),
 
