@@ -47,10 +47,9 @@
         </tbody>
     </table>
     {% if request.user.is_staff %}
-    <form action="{% url "send_receipt_email" fair.year %}" method="POST">
-        {% csrf_token %}
-        <button class="btn btn-default">Send Email</button>
-    </form>
+    <p><a href="{% url "send_emails" fair.year %}">
+        <button class="btn btn-primary"> Send Emails </button>
+    </a></p>
     {% endif %}
     </div>
 {% endblock %}
