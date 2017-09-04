@@ -373,32 +373,47 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # Create or update orders from products that can be chosen in numbers.
                 # If they have an amount equal to zero then delete the order.
+                # Try if amount is None
                 for (banquetProduct, amount) in form.amount_products('banquet_'):
-                    if amount > 0:
-                        create_or_update_order(banquetProduct, amount)
-                        productLog += product_amount_string(banquetProduct, amount)
-                        num_products.append(NumProduct(banquetProduct.name, amount, amount * banquetProduct.price))
-                        total_price += amount * banquetProduct.price
-                    else:
+                    try:
+                        if amount > 0:
+                            create_or_update_order(banquetProduct, amount)
+                            productLog += product_amount_string(banquetProduct, amount)
+                            num_products.append(NumProduct(banquetProduct.name, amount, amount * banquetProduct.price))
+                            total_price += amount * banquetProduct.price
+                        else:
+                            delete_order_if_exists(banquetProduct)
+                    except TypeError:
+                        amount = 0
                         delete_order_if_exists(banquetProduct)
 
                 for (lunchProduct, amount) in form.amount_products('lunch_'):
-                    if amount > 0:
-                        create_or_update_order(lunchProduct, amount)
-                        productLog += product_amount_string(lunchProduct, amount)
-                        num_products.append(NumProduct(lunchProduct.name, amount, amount * lunchProduct.price))
-                        total_price += amount * lunchProduct.price
-                    else:
+                    try:
+                        if amount > 0:
+                            create_or_update_order(lunchProduct, amount)
+                            productLog += product_amount_string(lunchProduct, amount)
+                            num_products.append(NumProduct(lunchProduct.name, amount, amount * lunchProduct.price))
+                            total_price += amount * lunchProduct.price
+                        else:
+                            delete_order_if_exists(lunchProduct)
+                    except TypeError:
+                        amount = 0
                         delete_order_if_exists(lunchProduct)
 
                 for (eventProduct, amount) in form.amount_products('event_'):
-                    if amount > 0:
-                        create_or_update_order(eventProduct, amount)
-                        productLog += product_amount_string(eventProduct, amount)
-                        num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
-                        total_price += amount * eventProduct.price
-                    else:
+                    try:
+                        if amount > 0:
+                            create_or_update_order(eventProduct, amount)
+                            productLog += product_amount_string(eventProduct, amount)
+                            num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
+                            total_price += amount * eventProduct.price
+                        else:
+                            delete_order_if_exists(eventProduct)
+
+                    except TypeError:
+                        amount = 0
                         delete_order_if_exists(eventProduct)
+
 
 				# Longest name length for padding purposes
                 def getNameLen(item):
