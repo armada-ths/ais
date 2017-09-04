@@ -380,6 +380,13 @@ li.nav {
 	margin-top: 90px;
 	margin-bottom: 110px;
 }
+.padding-timeflag-overdue {
+	padding-top: 95px;
+}
+.padding-timeflag-closed {
+	padding-top: 95px;
+}
+
 /*
 *	TAB: BASKE KIT; *********************************
 */
