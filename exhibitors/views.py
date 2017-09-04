@@ -2,11 +2,19 @@ from django.forms import modelform_factory
 from django.http import HttpResponseForbidden
 from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import send_mail
 from django.forms import TextInput
+from django.template.loader import get_template
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+
 from exhibitors.models import Exhibitor
 from companies.models import Company
 from django.urls import reverse
 from fair.models import Fair
+from orders.models import Product, Order
+
+import logging
 
 def user_can_modify_exhibitor(user, exhibitor):
     return user.has_perm(
@@ -16,8 +24,8 @@ def user_can_modify_exhibitor(user, exhibitor):
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     if not request.user.has_perm('exhibitors.view_exhibitors'):
         return HttpResponseForbidden()
-
     fair = get_object_or_404(Fair, year=year, current=True)
+
     return render(request, template_name, {
         'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
         'fair': fair
@@ -129,6 +137,70 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'fair': fair
     })
 
+
+#Where the user can chose to send email to all exhibiors with their orders
+def send_emails(request, year, template_name='exhibitors/send_emails.html'):
+    if not request.user.is_staff:
+        return HttpResponseForbidden()
+    
+    fair = get_object_or_404(Fair, year=year)
+    return render(request, template_name, {'fair': fair})
+
+#Comfirmation that email has been sent to all exhibitors
+def emails_confirmation(request, year, template_name='exhibitors/emails_confirmation.html'):
+    if not request.user.is_staff:
+        return HttpResponseForbidden()
+
+    fair = get_object_or_404(Fair, year=year)   
+    return render(request, template_name, {'fair': fair})
+
+#Sends email to all exhibitors with their orders
+def send_cr_receipts(request, year):
+    if not request.user.is_staff:
+        return HttpResponseForbidden()
+
+    fair = get_object_or_404(Fair, year=year)           
+    exhibitors = Exhibitor.objects.filter(fair=fair)
+    products = Product.objects.filter(fair=fair)
+    site_name = get_current_site(request).domain
+
+    for exhibitor in exhibitors:
+        try:
+            contact_email = exhibitor.contact.email
+        except:
+            logging.error("No contact for this exhibitor")
+            continue
+
+        orders =  Order.objects.filter(exhibitor = exhibitor)
+        total_price = 0
+
+
+        orders_info = []
+        #Go thrue orders and get the total price for everything and place the important info as a dictionary in the list orders_info
+        for o in orders:
+            product = o.product
+            price = product.price
+            amount = o.amount
+            total_price += price*amount
+
+            order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount} 
+            orders_info.append(order)
+
+
+        send_mail(
+            'Your orders for Armada',
+            get_template('exhibitors/cr_receipt.html').render(({
+                'orders_info' : orders_info,
+                'total_price' : total_price,
+                'site_name' : site_name
+                })
+            ),
+
+            settings.DEFAULT_FROM_EMAIL,
+            [contact_email],
+            fail_silently=False)
+
+    return render(request, 'exhibitors/emails_confirmation.html', {'fair': fair})
 
 def related_object_form(model, model_name, delete_view_name):
     def view(request, year, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):

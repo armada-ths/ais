@@ -1,0 +1,11 @@
+{% extends "base.html" %}	m
+{% load crispy_forms_tags %}
+{% block content %}
+
+	<p>An email has now been sent to all exhibitors with their respective orders.</p>
+    <p><a href="{% url "exhibitors" fair.year %}">
+        <button class="btn btn-default"> Back </button>
+    </a></p>
+
+
+{% endblock %}
