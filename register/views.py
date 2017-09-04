@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.utils import timezone
+from django.utils.timezone import utc
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 from django.core.mail import send_mail
@@ -12,6 +13,8 @@ import math
 
 import json
 import requests as r
+
+import datetime
 
 from companies.models import Company, Contact
 from orders.models import Product, Order, ProductType
@@ -25,7 +28,29 @@ from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm
 BASE_PRICE = 39500
 PRODUCT_LOG = ":"
 
-
+def getTimeFlag(close_offset = 7, warning_offset = 7):
+    # used to close cr, a warning text after deadline will pop up, however exhibitors will not be permitted to do any changes after the offset in days has passed
+    currentFair = None
+    try:
+        currentFair = Fair.objects.get(current=True)
+        if currentFair.complete_registration_close_date:
+            end_time = currentFair.complete_registration_close_date.replace(tzinfo=utc)
+            end_time_close = end_time + datetime.timedelta(days=close_offset)
+            time = datetime.datetime.now().replace(tzinfo=utc)
+            time = time.replace(microsecond=0)
+            warning_time = end_time - datetime.timedelta(days=warning_offset)
+            if time < end_time and time > warning_time:
+                return('warning', [end_time, end_time - time])
+            elif time > end_time and time < end_time_close:
+                return('overdue', [end_time, time - end_time])
+            elif time > end_time_close:
+                return('closed', [end_time, time - end_time])
+            else:
+                return(None, [None, None])
+        else:
+            return(None, [None, None])
+    except Fair.DoesNotExist:
+        return(None, [None, None])
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -33,7 +58,8 @@ def index(request, template_name='register/index.html'):
             return redirect('anmalan:home')
         else:
             return redirect('anmalan:logout')
-    return render(request, template_name)
+    timeFlag, [time_end, time_diff] = getTimeFlag()
+    return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
 def home(request, template_name='register/home.html'):
     if request.user.is_authenticated():
@@ -188,6 +214,10 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             matching_questions = Question.objects.filter(survey=matching_survey)
             # check which questions are already answered
             current_matching_responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
+
+            # Set automated time closing of cr
+            timeFlag, time_disp = getTimeFlag()
+
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
@@ -212,6 +242,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 matching_survey = matching_survey,
                 matching_questions = matching_questions,
                 matching_responses = current_matching_responses,
+                timeFlag = timeFlag,
+                time_disp = time_disp,
             )
 
             if form.is_valid():
