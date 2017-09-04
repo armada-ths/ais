@@ -48,7 +48,7 @@
     </table>
     {% if request.user.is_staff %}
     <p><a href="{% url "send_emails" fair.year %}">
-        <button class="btn btn-primary"> Send Emails </button>
+        <button class="btn btn-primary"> Send Confirmation Email on CR </button>
     </a></p>
     {% endif %}
     </div>
