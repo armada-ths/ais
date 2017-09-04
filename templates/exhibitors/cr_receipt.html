@@ -1,15 +1,15 @@
 {% load i18n %}{% autoescape off %}
 {% blocktrans %}THS Armada 2017 Registration Receipt
 
-Thank you for completing your registration to THS Armada 2017! The registration is now closed. Please look thrue your ordered products to se that everything is correct.	
+Thank you for completing your registration to THS Armada 2017! The registration is now closed. Please look through your ordered products to see that everything is correct.	
 {% endblocktrans %}
 
 {% blocktrans %}
 Your ordered products:
 {% endblocktrans %}
 
-	{% for order in orders_info %}{{ order.product}} x {{ order.amount }} : {{ order.price}} SEK
-	{% endfor %}
+{% for order in orders_info %}{{ order.product}} x {{ order.amount }} : {{ order.price}} SEK
+{% endfor %}
 
 {% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
 

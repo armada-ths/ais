@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.utils import timezone
+from django.utils.timezone import utc
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 from django.core.mail import send_mail
@@ -13,19 +14,43 @@ import math
 import json
 import requests as r
 
+import datetime
+
 from companies.models import Company, Contact
 from orders.models import Product, Order, ProductType
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
 from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
-from .models import SignupContract, SignupLog
+from .models import SignupContract, SignupLog, OrderLog
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 BASE_PRICE = 39500
+PRODUCT_LOG = ":"
 
-
-
+def getTimeFlag(close_offset = 7, warning_offset = 7):
+    # used to close cr, a warning text after deadline will pop up, however exhibitors will not be permitted to do any changes after the offset in days has passed
+    currentFair = None
+    try:
+        currentFair = Fair.objects.get(current=True)
+        if currentFair.complete_registration_close_date:
+            end_time = currentFair.complete_registration_close_date.replace(tzinfo=utc)
+            end_time_close = end_time + datetime.timedelta(days=close_offset)
+            time = datetime.datetime.now().replace(tzinfo=utc)
+            time = time.replace(microsecond=0)
+            warning_time = end_time - datetime.timedelta(days=warning_offset)
+            if time < end_time and time > warning_time:
+                return('warning', [end_time, end_time - time])
+            elif time > end_time and time < end_time_close:
+                return('overdue', [end_time, time - end_time])
+            elif time > end_time_close:
+                return('closed', [end_time, time - end_time])
+            else:
+                return(None, [None, None])
+        else:
+            return(None, [None, None])
+    except Fair.DoesNotExist:
+        return(None, [None, None])
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -33,7 +58,8 @@ def index(request, template_name='register/index.html'):
             return redirect('anmalan:home')
         else:
             return redirect('anmalan:logout')
-    return render(request, template_name)
+    timeFlag, [time_end, time_diff] = getTimeFlag()
+    return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
 def home(request, template_name='register/home.html'):
     if request.user.is_authenticated():
@@ -142,6 +168,7 @@ def company_update(request, pk, template_name='register/company_form.html'):
 # A company's contact can request to have the company
 # become an exhibitor via the ExhibitorForm
 def create_exhibitor(request, template_name='register/exhibitor_form.html'):
+    productLog = "Base kit \n"
     currentFair = Fair.objects.get(current = True)
     contract = SignupContract.objects.get(fair=currentFair, current=True)
     if request.user.is_authenticated():
@@ -187,6 +214,10 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
             matching_questions = Question.objects.filter(survey=matching_survey)
             # check which questions are already answered
             current_matching_responses = Response.objects.filter(exhibitor=exhibitor, survey=matching_survey)
+
+            # Set automated time closing of cr
+            timeFlag, time_disp = getTimeFlag()
+
             # Pass along all relevant information to form
             form = ExhibitorForm(
                 request.POST or None,
@@ -211,6 +242,8 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                 matching_survey = matching_survey,
                 matching_questions = matching_questions,
                 matching_responses = current_matching_responses,
+                timeFlag = timeFlag,
+                time_disp = time_disp,
             )
 
             if form.is_valid():
@@ -277,6 +310,9 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     except Order.DoesNotExist:
                         return
 
+                def product_amount_string(product, amount):
+                    return product.name + " x " + str(amount) + "\n"
+
                 # Create or update orders from the checkbox products (ProductMultiChoiceField).
                 # If they are not checked in but exist as an order in db, then delete.
                 room_products = Product.objects.filter(fair=Fair.objects.get(current = True), product_type=ProductType.objects.filter(name="Rooms"))
@@ -295,6 +331,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
+                        productLog += product_amount_string(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in nova_products:
@@ -302,6 +339,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
+                        productLog += product_amount_string(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_area_products:
@@ -313,6 +351,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
+                        productLog += product_amount_string(product, 1)
                     else:
                         delete_order_if_exists(product)
                 for product in stand_height_products:
@@ -324,6 +363,7 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         bool_products.append(product)
                         total_price += product.price
                         create_or_update_order(product, 1)
+                        productLog += product_amount_string(product, 1)
                     else:
                         delete_order_if_exists(product)
 
@@ -333,29 +373,47 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
 
                 # Create or update orders from products that can be chosen in numbers.
                 # If they have an amount equal to zero then delete the order.
+                # Try if amount is None
                 for (banquetProduct, amount) in form.amount_products('banquet_'):
-                    if amount > 0:
-                        create_or_update_order(banquetProduct, amount)
-                        num_products.append(NumProduct(banquetProduct.name, amount, amount * banquetProduct.price))
-                        total_price += amount * banquetProduct.price
-                    else:
+                    try:
+                        if amount > 0:
+                            create_or_update_order(banquetProduct, amount)
+                            productLog += product_amount_string(banquetProduct, amount)
+                            num_products.append(NumProduct(banquetProduct.name, amount, amount * banquetProduct.price))
+                            total_price += amount * banquetProduct.price
+                        else:
+                            delete_order_if_exists(banquetProduct)
+                    except TypeError:
+                        amount = 0
                         delete_order_if_exists(banquetProduct)
 
                 for (lunchProduct, amount) in form.amount_products('lunch_'):
-                    if amount > 0:
-                        create_or_update_order(lunchProduct, amount)
-                        num_products.append(NumProduct(lunchProduct.name, amount, amount * lunchProduct.price))
-                        total_price += amount * lunchProduct.price
-                    else:
+                    try:
+                        if amount > 0:
+                            create_or_update_order(lunchProduct, amount)
+                            productLog += product_amount_string(lunchProduct, amount)
+                            num_products.append(NumProduct(lunchProduct.name, amount, amount * lunchProduct.price))
+                            total_price += amount * lunchProduct.price
+                        else:
+                            delete_order_if_exists(lunchProduct)
+                    except TypeError:
+                        amount = 0
                         delete_order_if_exists(lunchProduct)
 
                 for (eventProduct, amount) in form.amount_products('event_'):
-                    if amount > 0:
-                        create_or_update_order(eventProduct, amount)
-                        num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
-                        total_price += amount * eventProduct.price
-                    else:
+                    try:
+                        if amount > 0:
+                            create_or_update_order(eventProduct, amount)
+                            productLog += product_amount_string(eventProduct, amount)
+                            num_products.append(NumProduct(eventProduct.name, amount, amount * eventProduct.price))
+                            total_price += amount * eventProduct.price
+                        else:
+                            delete_order_if_exists(eventProduct)
+
+                    except TypeError:
+                        amount = 0
                         delete_order_if_exists(eventProduct)
+
 
 				# Longest name length for padding purposes
                 def getNameLen(item):
@@ -475,6 +533,11 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                     r.post(settings.SALES_HOOK_URL,
                         data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)}))
 
+                    # log
+                    log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='submit', fair=Fair.objects.get(current=True), products=productLog)
+                    log.save()
+
+                    # send email
                     site_name = get_current_site(request).domain
                     send_mail(
                         'Complete Registration Confirmation on ' + site_name,
@@ -499,6 +562,10 @@ def create_exhibitor(request, template_name='register/exhibitor_form.html'):
                         exhibitor.save()
 
                     return redirect('anmalan:cr_done')
+                else:
+                    # create OrderLog
+                    log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='save', fair=Fair.objects.get(current=True), products=productLog)
+                    log.save()
 
     return render(request, template_name, {'form': form, 'contract_url': contract.contract.url})
 
