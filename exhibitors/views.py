@@ -7,6 +7,7 @@ from django.forms import TextInput
 from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import get_connection, EmailMultiAlternatives
 
 from exhibitors.models import Exhibitor
 from companies.models import Company
@@ -164,6 +165,9 @@ def send_cr_receipts(request, year):
     products = Product.objects.filter(fair=fair)
     site_name = get_current_site(request).domain
 
+    connection = get_connection()
+    connection.open()
+
     for exhibitor in exhibitors:
         try:
             contact_email = exhibitor.contact.email
@@ -173,7 +177,6 @@ def send_cr_receipts(request, year):
 
         orders =  Order.objects.filter(exhibitor = exhibitor)
         total_price = 0
-
 
         orders_info = []
         #Go thrue orders and get the total price for everything and place the important info as a dictionary in the list orders_info
@@ -187,7 +190,7 @@ def send_cr_receipts(request, year):
             orders_info.append(order)
 
 
-        send_mail(
+        msg = EmailMultiAlternatives(
             'Your orders for Armada',
             get_template('exhibitors/cr_receipt.html').render(({
                 'orders_info' : orders_info,
@@ -195,12 +198,15 @@ def send_cr_receipts(request, year):
                 'site_name' : site_name
                 })
             ),
-
             settings.DEFAULT_FROM_EMAIL,
             [contact_email],
-            fail_silently=False)
+            connection=connection)
+        msg.send()
+
+    connection.close()
 
     return render(request, 'exhibitors/emails_confirmation.html', {'fair': fair})
+
 
 def related_object_form(model, model_name, delete_view_name):
     def view(request, year, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):
