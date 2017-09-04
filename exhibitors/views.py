@@ -17,7 +17,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     if not request.user.has_perm('exhibitors.view_exhibitors'):
         return HttpResponseForbidden()
 
-    fair = get_object_or_404(Fair, year=year)
+    fair = get_object_or_404(Fair, year=year, current=True)
     return render(request, template_name, {
         'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
         'fair': fair
@@ -29,7 +29,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     if not user_can_modify_exhibitor(request.user, exhibitor):
         return HttpResponseForbidden()
 
-    fair = get_object_or_404(Fair, year=year)
+    fair = get_object_or_404(Fair, year=year, current=True)
 
 
     invoice_fields = (

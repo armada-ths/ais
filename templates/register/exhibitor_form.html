@@ -439,7 +439,8 @@
                     </li>
                     <li>
                       <label class="pretty-label">{{form.number_of_outlets_needed.label}}:</label>
-                      {{form.number_of_outlets_needed}}
+                      {{form.number_of_outlets_needed}}<br/>
+                      <span class="h-red">Use only numbers and write 0 if you don't need any outlets</span>
                     </li>
                     <li>
                       <label class="pretty-label">Heavy duty equipment:</label>
@@ -483,6 +484,9 @@
                         <li>Number of pallets:
                           {{ form.number_of_pallets_to_fair }}
                         </li>
+                        <li>
+                          <span class="h-red">Please don't leave blank. Write 0 if no packages or pallets</span>
+                        </li>
                       </ul>
                 </div>
               </div>
@@ -499,6 +503,9 @@
                         </li>
                         <li>Number of pallets:
                           {{ form.number_of_pallets_from_fair }}
+                        </li>
+                        <li>
+                          <span class="h-red">Please don't leave blank. Write 0 if no packages or pallets</span>
                         </li>
                       </ul>
 
@@ -537,7 +544,10 @@
                             {% if 'question' in field.help_text %}
                             <br />
                             <div class="cr-matching-form">
-                                {{ field.label }}
+                                {{ field.label }} 
+                                  {% if 'integer' in field.help_text %}
+                                  <br/><span class="h-red">Answer ONLY with numbers!</span>
+                                  {% endif %}
                             </div>
                             <div class="cr-matching-form">
                                 {{ field }}
