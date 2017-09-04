@@ -131,6 +131,13 @@ class ExhibitorCatalogInfoForm(ModelForm):
         exclude = ('exhibitor', 'programs', 'main_work_field', 'work_fields', 'continents', 'tags')
         widgets = {}
 
+"""
+    TODO:
+    * Make field completely dynamic
+        Add all info in help_text, separated by underscore or similar
+        Ex: self.fields['fieldname'].help_text = prefix + "_" + price + "_" + description
+        In template split help_text by separation char.
+"""
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
         # products that can be chosen with an amount
@@ -241,7 +248,7 @@ class ExhibitorForm(ModelForm):
 
             elif q.question_type == Question.BOOL:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
-            self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
+            self.fields['%s%d'%(prefix,q.pk)].help_text = prefix + "_" + q.question_type
 
     # get answer to question for corresponding question and current exhibitor if exitsts, this method is not efficient if there would be a large set of question, consider changing in
     def get_answers_by_response(self, responses, q):
@@ -297,6 +304,7 @@ class ExhibitorForm(ModelForm):
             self.help_text = prefix
             self.description = object.description
             self.object = object
+            self.required = False
 
     # A modelmultiplechoicefield with a customized label for each instance
     class ProductMultiChoiceField(ModelMultipleChoiceField):
