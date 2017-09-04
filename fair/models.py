@@ -17,6 +17,8 @@ class Fair(models.Model):
 
     registration_start_date = models.DateTimeField(null=True)
     registration_end_date = models.DateTimeField(null=True)
+    complete_registration_start_date = models.DateTimeField(null=True, blank=True)
+    complete_registration_close_date = models.DateTimeField(null=True, blank=True)
 
     current = models.BooleanField(default=False)
 
