@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.utils import timezone
+from django.utils.timezone import utc
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 from django.core.mail import send_mail
@@ -33,9 +34,10 @@ def getTimeFlag(close_offset = 7, warning_offset = 7):
     try:
         currentFair = Fair.objects.get(current=True)
         if currentFair.complete_registration_close_date:
-            end_time = currentFair.complete_registration_close_date.replace(tzinfo=None)
+            end_time = currentFair.complete_registration_close_date.replace(tzinfo=utc)
             end_time_close = end_time + datetime.timedelta(days=close_offset)
-            time = datetime.datetime.now().replace(microsecond=0)
+            time = datetime.datetime.now().replace(tzinfo=utc)
+            time = time.replace(microsecond=0)
             warning_time = end_time - datetime.timedelta(days=warning_offset)
             if time < end_time and time > warning_time:
                 return('warning', [end_time, end_time - time])
