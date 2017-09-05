@@ -8,20 +8,31 @@
     <meta charset="utf-8">
 	{% include "header.html" %}
 	{% block head-extra %}{% endblock %}
+  <!-- Styling -->
+      <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+      <link href="{% static 'bootstrap/css/bootstrap-theme.css' %}" rel="stylesheet">
+      <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
   </head>
 <body>
 
 
-<div class="container" style="max-width: 500px">
-    <img style="width: 100%; margin-top: 100px;" src="{% static 'images/THS_armada_logga.png' %}" alt="Armada Ship" style="max-height: 20px">
+<div class="container" style="max-width: 555px">
+    <div class="row">
+      <svg class="text-center" viewBox="155 16 480 150" width="555px" height="250px" version="1.1">
+        <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
+      </svg>
+    </div>
+    <idv class="row">
+      <div class="col-md-8 col-md-offset-2">
+        <form method="post">
+            {% csrf_token %}
 
-<form method="post">
-    {% csrf_token %}
-
-    {{ form|crispy }}
-    <input type="hidden" name="next" value="/" />
-    <button class="btn btn-success">Log in</button>
-</form>
+            {{ form|crispy }}
+            <input type="hidden" name="next" value="/" />
+            <button class="btn-signin btn-green">Log in</button>
+        </form>
+      </div>
+    </div>
     </div>
 </body>
 </html>

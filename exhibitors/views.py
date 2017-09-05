@@ -17,7 +17,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     if not request.user.has_perm('exhibitors.view_exhibitors'):
         return HttpResponseForbidden()
 
-    fair = get_object_or_404(Fair, year=year)
+    fair = get_object_or_404(Fair, year=year, current=True)
     return render(request, template_name, {
         'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
         'fair': fair
@@ -29,7 +29,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     if not user_can_modify_exhibitor(request.user, exhibitor):
         return HttpResponseForbidden()
 
-    fair = get_object_or_404(Fair, year=year)
+    fair = get_object_or_404(Fair, year=year, current=True)
 
 
     invoice_fields = (
@@ -132,7 +132,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
 
 def related_object_form(model, model_name, delete_view_name):
     def view(request, year, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):
-        fair = get_object_or_404(Fair, year=year)
+        fair = get_object_or_404(Fair, year=year, current=True)
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):
             return HttpResponseForbidden()
@@ -156,7 +156,7 @@ def related_object_form(model, model_name, delete_view_name):
 
 def related_object_delete(model):
     def view(request, year, exhibitor_pk, instance_pk):
-        fair = get_object_or_404(Fair, year=year)
+        fair = get_object_or_404(Fair, year=year, current=True)
         instance = get_object_or_404(model, pk=instance_pk)
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):

@@ -14,6 +14,7 @@ from exhibitors.models import Exhibitor, CatalogInfo
 from companies.models import Company, Contact
 
 from enum import Enum
+import datetime
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -131,6 +132,13 @@ class ExhibitorCatalogInfoForm(ModelForm):
         exclude = ('exhibitor', 'programs', 'main_work_field', 'work_fields', 'continents', 'tags')
         widgets = {}
 
+"""
+    TODO:
+    * Make field completely dynamic
+        Add all info in help_text, separated by underscore or similar
+        Ex: self.fields['fieldname'].help_text = prefix + "_" + price + "_" + description
+        In template split help_text by separation char.
+"""
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
         # the different products that can be chosen in complete registration form
@@ -159,6 +167,12 @@ class ExhibitorForm(ModelForm):
         matching_survey = kwargs.pop('matching_survey')
         matching_questions = kwargs.pop('matching_questions')
         matching_responses = kwargs.pop('matching_responses')
+
+        # time params for warning or close cr
+        self.timeFlag = kwargs.pop('timeFlag')
+        time_disp = kwargs.pop('time_disp')
+        self.time_end = time_disp[0]
+        self.time_diff = time_disp[1]
 
         super(ExhibitorForm, self).__init__(*args, **kwargs)
 
@@ -191,12 +205,12 @@ class ExhibitorForm(ModelForm):
             ('non_profit_organisation', 'Non-profit organisation'),
             ('union', 'Union'),
         ]
-        self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type)
-        self.fields['address_street'] = CharField(initial=company.address_street)
-        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code)
-        self.fields['address_city'] = CharField(initial=company.address_city)
-        self.fields['address_country'] = CharField(initial=company.address_country)
-        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False)
+        self.fields['type_of_organisation'] = ChoiceField(choices=organisation_types,initial=company.organisation_type, required=False)
+        self.fields['address_street'] = CharField(initial=company.address_street, required=False, widget=forms.TextInput(attrs={'placeholder': 'Street'}))
+        self.fields['address_zip_code'] = CharField(initial=company.address_zip_code, required=False, widget=forms.TextInput(attrs={'placeholder': 'Zip code'}))
+        self.fields['address_city'] = CharField(initial=company.address_city, required=False, widget=forms.TextInput(attrs={'placeholder': 'City'}))
+        self.fields['address_country'] = CharField(initial=company.address_country, required=False, widget=forms.TextInput(attrs={'placeholder': 'Country'}))
+        self.fields['additional_address_information'] = CharField(initial=company.additional_address_information, required=False, widget=forms.TextInput(attrs={'placeholder': 'Addition address info'}))
         self.fields['website'] = CharField(initial=company.website, required=False)
 
 
@@ -241,7 +255,7 @@ class ExhibitorForm(ModelForm):
 
             elif q.question_type == Question.BOOL:
                 self.fields['%s%d'%(prefix,q.pk)] = forms.BooleanField(required=False, label=q.text)
-            self.fields['%s%d'%(prefix,q.pk)].help_text = prefix
+            self.fields['%s%d'%(prefix,q.pk)].help_text = prefix + "_" + q.question_type
 
     # get answer to question for corresponding question and current exhibitor if exitsts, this method is not efficient if there would be a large set of question, consider changing in
     def get_answers_by_response(self, responses, q):
@@ -297,6 +311,7 @@ class ExhibitorForm(ModelForm):
             self.help_text = prefix
             self.description = object.description
             self.object = object
+            self.required = False
 
     # A modelmultiplechoicefield with a customized label for each instance
     class ProductMultiChoiceField(ModelMultipleChoiceField):
@@ -394,7 +409,7 @@ class ExhibitorForm(ModelForm):
             CHECKED = 1
             UNCHECKED = 0
         # List of all checked products
-        checkedProductsList = [None]
+        checkedProductsList = []
         for order in orders:
             checkedProductsList.append(order.product)
         # create field and make sure all products that is inside the dictionary is initially checked
@@ -411,12 +426,21 @@ class ExhibitorForm(ModelForm):
             self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=RadioSelect())
         elif widget == "Select":
             self.fields[fieldname] = self.ProductSelectChoiceField(choices=listProducts, required=False, widget=Select())
-        try:
-            # Fix for radio buttons and select to show ordered product
-            # Try/except because if there is no order, there will be indexError
-            self.initial[fieldname] = orders[0].product.name
-        except IndexError:
-            pass
+        # add preselected product if exists in database (needed for the js)
+        bFlag = False
+        for listP in listProducts:
+            for checkedP in checkedProductsList:
+                if listP[1] == checkedP.name:
+                    self.fields[fieldname].initial = listP[0]
+                    bFlag = True
+        if bFlag == False:
+            try:
+                # Fix for radio buttons and select to show ordered product
+                # Try/except because if there is no order, there will be indexError
+                self.initial[fieldname] = orders[0].product.name
+            except IndexError:
+                pass
+
         #self.fields[fieldname].initial = [p for p in checkedProductsList]
 
 
@@ -427,7 +451,6 @@ class ExhibitorForm(ModelForm):
                         mark_safe(product.name),
                         mark_safe(product.description),
                     )
-
 
     # Returns a generator/iterator with all product fields where you choose an amount.
     # Choose a prefix to get which the correct type, e.g 'banquet_', or 'event_'.

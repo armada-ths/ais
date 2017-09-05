@@ -28,7 +28,10 @@ class Exhibitor(models.Model):
     statuses = [
         ('accepted', 'Accepted'),
         ('registered', 'Registered'),
-        ('complete_registration', 'Complete registration'),
+        ('complete_registration', 'Completed Registration'),
+        ('complete_registration_submit', 'CR - Submitted'),
+        ('complete_registration_start', 'CR - In Progress'),
+        ('complete_registration_terms', 'CR - Accepted Terms'),
         ('contacted_by_host', 'Contacted by host'),
         ('confirmed', 'Confirmed'),
         ('checked_in', 'Checked in'),
@@ -115,11 +118,11 @@ class Exhibitor(models.Model):
     # Goals of participation and offers
     goals = [
         ('employer_branding',
-            'Employer Branding'), 
+            'Employer Branding'),
         ('recruitment_employees',
-            'Recruitment of employees'), 
+            'Recruitment of employees'),
         ('recruitment_master_thesis',
-            'Recruitment of Master Thesis'), 
+            'Recruitment of Master Thesis'),
         ('recruitment_summer_workers',
             'Recruitment of Summer workers'),
     ]
@@ -128,15 +131,15 @@ class Exhibitor(models.Model):
 
     offers = [
         ('trainee_program',
-            'Trainee Program'), 
+            'Trainee Program'),
         ('master_thesis',
-            'Master thesis'), 
+            'Master thesis'),
         ('bachelor_thesis',
-            'Bachelor Thesis'), 
+            'Bachelor Thesis'),
         ('summer_jobs',
-            'Summer jobs'), 
+            'Summer jobs'),
         ('part_time_jobs',
-            'Part-time jobs'), 
+            'Part-time jobs'),
         ('international',
             'International opportunities'),
     ]
