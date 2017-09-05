@@ -166,7 +166,6 @@ def send_cr_receipts(request, year):
     site_name = get_current_site(request).domain
 
     connection = get_connection()
-    connection.open()
 
     for exhibitor in exhibitors:
         try:
@@ -189,7 +188,7 @@ def send_cr_receipts(request, year):
             order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount} 
             orders_info.append(order)
 
-
+        connection.open()
         msg = EmailMultiAlternatives(
             'Your orders for Armada',
             get_template('exhibitors/cr_receipt.html').render(({
@@ -202,8 +201,7 @@ def send_cr_receipts(request, year):
             [contact_email],
             connection=connection)
         msg.send()
-
-    connection.close()
+        connection.close()
 
     return render(request, 'exhibitors/emails_confirmation.html', {'fair': fair})
 
