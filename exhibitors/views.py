@@ -122,7 +122,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
              RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
 
- if request.user.has_perm('exhibitors.change_exhibitor'):
+    if request.user.has_perm('exhibitors.change_exhibitor'):
         exhibitor_form.fields['hosts'].choices = [('', '---------')] + [
             (user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
 
