@@ -10,7 +10,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import get_connection, EmailMultiAlternatives
 
 from exhibitors.models import Exhibitor
-from companies.models import Company
+from companies.models import Company, Contact
 from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
@@ -140,70 +140,60 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
 
 
 #Where the user can chose to send email to all exhibiors with their orders
-def send_emails(request, year, template_name='exhibitors/send_emails.html'):
+def send_emails(request, year, pk, template_name='exhibitors/send_emails.html'):
     if not request.user.is_staff:
-        return HttpResponseForbidden()
+        return HttpResponseForbidden()  
     
     fair = get_object_or_404(Fair, year=year)
-    return render(request, template_name, {'fair': fair})
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+    return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
 
 #Comfirmation that email has been sent to all exhibitors
-def emails_confirmation(request, year, template_name='exhibitors/emails_confirmation.html'):
+def emails_confirmation(request, year, pk, template_name='exhibitors/emails_confirmation.html'):
     if not request.user.is_staff:
         return HttpResponseForbidden()
 
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
     fair = get_object_or_404(Fair, year=year)   
-    return render(request, template_name, {'fair': fair})
+    return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
 
 #Sends email to all exhibitors with their orders
-def send_cr_receipts(request, year):
+def send_cr_receipts(request, year, pk):
     if not request.user.is_staff:
         return HttpResponseForbidden()
 
     fair = get_object_or_404(Fair, year=year)           
-    exhibitors = Exhibitor.objects.filter(fair=fair)
-    products = Product.objects.filter(fair=fair)
-    site_name = get_current_site(request).domain
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+    contact = get_object_or_404(Contact, exhibitor = exhibitor)
 
-    connection = get_connection()
+    orders =  Order.objects.filter(exhibitor = exhibitor)
+    total_price = 0
 
-    for exhibitor in exhibitors:
-        try:
-            contact_email = exhibitor.contact.email
-        except:
-            logging.error("No contact for this exhibitor")
-            continue
+    orders_info = []
+    #Go thrue orders and get the total price for everything and place the important info as a dictionary in the list orders_info
+    for o in orders:
+        product = o.product
+        price = product.price
+        amount = o.amount
+        total_price += price*amount
 
-        orders =  Order.objects.filter(exhibitor = exhibitor)
-        total_price = 0
+        order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount} 
+        orders_info.append(order)
 
-        orders_info = []
-        #Go thrue orders and get the total price for everything and place the important info as a dictionary in the list orders_info
-        for o in orders:
-            product = o.product
-            price = product.price
-            amount = o.amount
-            total_price += price*amount
 
-            order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount} 
-            orders_info.append(order)
-
-        connection.open()
-        msg = EmailMultiAlternatives(
-            'Your orders for Armada',
-            get_template('exhibitors/cr_receipt.html').render(({
-                'orders_info' : orders_info,
-                'total_price' : total_price,
-                'site_name' : site_name
-                })
-            ),
-            settings.DEFAULT_FROM_EMAIL,
-            [contact_email],
-            connection=connection)
-        msg.send()
-        connection.close()
-
-    return render(request, 'exhibitors/emails_confirmation.html', {'fair': fair})
+    send_mail(
+        'Your orders for Armada',
+        get_template('exhibitors/cr_receipt.html').render(({
+            'orders_info' : orders_info,
+            'total_price' : total_price,
+            'exhibitor_name' : exhibitor.company.name,
+            })
+        ),
+        settings.DEFAULT_FROM_EMAIL,
+        [contact.email],
+        fail_silently=False)
+        
+    return render(request, 'exhibitors/emails_confirmation.html', {'fair': fair, 'exhibitor': exhibitor})
 
 
 def related_object_form(model, model_name, delete_view_name):

@@ -1,7 +1,8 @@
 {% load i18n %}{% autoescape off %}
 {% blocktrans %}THS Armada 2017 Registration Receipt
+Dear {{ exhibitor_name }}
 
-Thank you for completing your registration to THS Armada 2017! The registration is now closed. Please look through your ordered products to see that everything is correct.	
+Thank you for registering for THS Armada 2017. We have saved the following information for your Complete Registration:
 {% endblocktrans %}
 
 {% blocktrans %}
@@ -14,5 +15,12 @@ Your ordered products:
 {% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
 
 
-{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{% blocktrans %}
+If any of the above is incorrect, please get in touch with your contact person.
+
+Best Regards
+
+The THS Armada-team
+
+{% endblocktrans %}
 {% endautoescape %}
