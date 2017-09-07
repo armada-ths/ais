@@ -1,19 +1,14 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}THS Armada 2017 Registration Receipt
-Dear {{ exhibitor_name }}
+{% blocktrans %}
+Dear {{ exhibitor_name }},
 
 Thank you for registering for THS Armada 2017. We have saved the following information for your Complete Registration:
-{% endblocktrans %}
-
-{% blocktrans %}
-Your ordered products:
 {% endblocktrans %}
 
 {% for order in orders_info %}{{ order.product}} x {{ order.amount }} : {{ order.price}} SEK
 {% endfor %}
 
 {% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
-
 
 {% blocktrans %}
 If any of the above is incorrect, please get in touch with your contact person.
