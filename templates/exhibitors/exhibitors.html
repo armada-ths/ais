@@ -14,12 +14,11 @@
             <th>Host</th>
             <th>Superior</th>
             <th>Status</th>
-        </tr>
+        </tr>x
         </thead>
         <tbody>
         {% for exhibitor in exhibitors %}
             <tr>
-
                 {% if perms.exhibitors.change_exhibitor or request.user in exhibitor.hosts.all or request.user in exhibitor.superiors %}
                 <td><a href="{% url "exhibitor" fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></td>
                 {% else %}
@@ -46,11 +45,7 @@
         {% endfor %}
         </tbody>
     </table>
-    {% if request.user.is_staff %}
-    <p><a href="{% url "send_emails" fair.year %}">
-        <button class="btn btn-primary"> Send Confirmation Email on CR </button>
-    </a></p>
-    {% endif %}
+    
     </div>
 {% endblock %}
 {% block scripts %}

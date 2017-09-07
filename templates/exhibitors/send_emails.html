@@ -2,8 +2,8 @@
 
 
 {% block content %}
-	<h1>Send email to all exhibitors</h1>
-	<p>This will send an email to <b>all</b> exhibitors with their current orders. Are you sure you want to do that?</p>
+	<h1>Send email with ordered products</h1>
+	<p>This will send an email to this exhibitor with their current orders. Are you sure you want to do that?</p>
 
 	<div class="row">
 		<div class="col-md-12">
@@ -14,9 +14,9 @@
 			</div>
 
 			<div class="col-md-6 text-right">
-			    <form action="{% url "send_cr_receipts" fair.year %}" method="POST">
+			    <form action="{% url "send_cr_receipts" fair.year exhibitor.pk %}" method="POST">
 			        {% csrf_token %}
-			        <button class="btn btn-primary">Send Emails</button>
+			        <button class="btn btn-primary">Send Email</button>
 			    </form>
 			</div>
 
