@@ -103,10 +103,21 @@
                     </tfoot>
                 </table>
                 </div>
-                <a href="{% url 'order_new' fair.year exhibitor.pk %}" class="btn btn-primary"><span
-                        class="glyphicon glyphicon-plus"></span> New order</a>
-
-
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <a href="{% url 'order_new' fair.year exhibitor.pk %}" class="btn btn-primary"><span
+                                class="glyphicon glyphicon-plus"></span> New order</a>
+                        </div>
+                        {% if request.user.is_staff %}
+                        <div class="col-md-6 text-right">
+                            <p><a href="{% url "send_emails" fair.year exhibitor.pk %}">
+                                 <button class="btn btn-default"> Send Confirmation Email on CR </button>
+                            </a></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
                 <h3>Banquet attendants</h3>
 
                     {% for attendant in exhibitor.banquetteattendant_set.all %}
@@ -145,9 +156,8 @@
 
 
                 <a href="{% url 'banquette_attendant_new' fair.year exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
-
             </div>
-            <br>
+        <br>
 
 
 
