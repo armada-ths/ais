@@ -41,7 +41,7 @@ def assign_roles(request, year):
     # Save all roles because that will guarantee that all roles have a group
     for role in Role.objects.all():
         role.save()
-    
+
     # Remove permission groups from everyone that does not have a role this year
     for application in RecruitmentApplication.objects.all().exclude(recruitment_period__fair__year=year, delegated_role=None):
         application.user.groups.clear()
@@ -634,8 +634,18 @@ def set_image_key_from_request(request, model, model_field, file_directory):
 def recruitment_application_interview(request, year, recruitment_period_pk, pk, template_name='recruitment/recruitment_application_interview.html'):
     fair = get_object_or_404(Fair, year=year)
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not request.user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != request.user:
+    user = request.user
+    if not user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != user:
         return HttpResponseForbidden()
+
+    # user should be forbidden to look at interviews
+    # from the same recruitment period as their application
+    try:
+        current_users_application = RecruitmentApplication.objects.get(user=user)
+        if application.recruitment_period.pk == current_users_application.recruitment_period.pk:
+            return HttpResponseForbidden()
+    except (RecruitmentApplication.DoesNotExist):
+        pass
 
     exhibitors = [participation.company for participation in
                   Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
