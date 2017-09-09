@@ -336,6 +336,19 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     fair = get_object_or_404(Fair, year=year)
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    user = request.user
+
+    # user should be forbidden to look at a
+    # recruitment periods that include their application
+    # unless they're in the Project Core Team
+    if not user.groups.filter(name='Project Core Team').exists():
+        try:
+            current_users_applications = RecruitmentApplication.objects.filter(user=user)
+            for a in current_users_applications:
+                if recruitment_period.pk == a.recruitment_period.pk:
+                    return HttpResponseForbidden()
+        except (RecruitmentApplication.DoesNotExist):
+            pass
 
     sort_field = request.GET.get('sort_field')
     if not sort_field:
@@ -638,14 +651,17 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
     if not user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != user:
         return HttpResponseForbidden()
 
-    # user should be forbidden to look at interviews
-    # from the same recruitment period as their application
-    try:
-        current_users_application = RecruitmentApplication.objects.get(user=user)
-        if application.recruitment_period.pk == current_users_application.recruitment_period.pk:
-            return HttpResponseForbidden()
-    except (RecruitmentApplication.DoesNotExist):
-        pass
+    # user should be forbidden to look at an interview
+    # within recruitment periods that include their application
+    # unless they're in the Project Core Team
+    if not user.groups.filter(name='Project Core Team').exists():
+        try:
+            current_users_applications = RecruitmentApplication.objects.filter(user=user)
+            for a in current_users_applications:
+                if application.recruitment_period.pk == a.recruitment_period.pk:
+                    return HttpResponseForbidden()
+        except (RecruitmentApplication.DoesNotExist):
+            pass
 
     exhibitors = [participation.company for participation in
                   Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
