@@ -19,7 +19,6 @@
         <tbody>
         {% for exhibitor in exhibitors %}
             <tr>
-
                 {% if perms.exhibitors.change_exhibitor or request.user in exhibitor.hosts.all or request.user in exhibitor.superiors %}
                 <td><a href="{% url "exhibitor" fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></td>
                 {% else %}
@@ -46,6 +45,7 @@
         {% endfor %}
         </tbody>
     </table>
+    
     </div>
 {% endblock %}
 {% block scripts %}
@@ -59,4 +59,6 @@
             })
         })
     </script>
+
 {% endblock %}
+

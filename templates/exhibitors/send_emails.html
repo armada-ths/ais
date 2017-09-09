@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+	<h1>Send email with ordered products</h1>
+	<p>This will send an email to this exhibitor with their current orders. Are you sure you want to do that?</p>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="col-md-6">
+			    <p><a href="{% url "exhibitors" fair.year %}">
+			        <button class="btn btn-default"> Back </button>
+			    </a></p>
+			</div>
+
+			<div class="col-md-6 text-right">
+			    <form action="{% url "send_cr_receipts" fair.year exhibitor.pk %}" method="POST">
+			        {% csrf_token %}
+			        <button class="btn btn-primary">Send Email</button>
+			    </form>
+			</div>
+
+
+		</div>
+	</div>
+
+{% endblock %}
