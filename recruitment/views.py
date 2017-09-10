@@ -642,9 +642,9 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
-        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role',
+        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
                 'rating') if request.user.has_perm('recruitment.administer_recruitment_applications') else (
-        'interview_date', 'interview_location', 'recommended_role', 'rating'),
+        'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document', 'rating'),
         widgets={
             'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
             'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M')
