@@ -115,6 +115,9 @@ class ExhibitorFormTestCase(TestCase):
         self.timeFlag, self.time_disp = (None, [None, None])
 
     def test_exhibitorform_no_answers(self):
+        """
+        No answers in form, e.g have not accepted contract agreement, should fail.
+        """
         form = ExhibitorForm(
             instance = self.exhibitor,
             banquet = self.banquet_products,

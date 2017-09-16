@@ -168,6 +168,38 @@ def company_update(request, pk, template_name='register/company_form.html'):
 # A company's contact can request to have the company
 # become an exhibitor via the ExhibitorForm
 def create_exhibitor(request, template_name='register/exhibitor_form.html'):
+    """
+    Complete Registration: create_exhibitor view
+    ===============
+    The complete registration is where already signed up companies with contacts
+    can make their final selection of products and send in important info such as
+    invoice address ('faktura' in SWE). The view create_exhibitor() creates the
+    ExhibitorForm, gets the answers and updates the DB.
+
+    Steps
+    ----------------
+    Here is the main steps of what this view does:
+
+     * Check that the current user has a connected company with a contact
+     * Check if the company already is an exhibitor or not
+     * Get all products from DB and also eventual current Orders if the company already is an exhibitor
+     * Initilaze the form and wait for the POST request from user submission
+     * Find all selected products and update DB accordingly.
+     * Update or create exhibitor from the fields entered in form
+     * Update company and contact info (some field in the form helps the user update the company's
+     info incase they want any last minute changes)
+     * Create a log of a contract being signed for the current company becoming an exhibitor
+
+     Extra Info
+     ----------------
+     * If the user 'saves' then the DB will be updated. If one 'submits' then a
+     confirmation email will be sent out.
+     * 'Bool products' are products that has checkboxes, e.g do you want the x room?
+     * 'Amount products' are products chosen in an amount, e.g amoutn of banquet tickets.
+
+
+     """
+
     productLog = "Base kit \n"
     currentFair = Fair.objects.get(current = True)
     # Return 404 if no contract.
