@@ -170,7 +170,11 @@ def company_update(request, pk, template_name='register/company_form.html'):
 def create_exhibitor(request, template_name='register/exhibitor_form.html'):
     productLog = "Base kit \n"
     currentFair = Fair.objects.get(current = True)
-    contract = SignupContract.objects.get(fair=currentFair, current=True)
+    # Return 404 if no contract.
+    # if no contact or company connected to
+    # user then redirect to logout
+    contract = get_object_or_404(SignupContract, fair=currentFair, current=True)
+
     if request.user.is_authenticated():
         contact = Contact.objects.get(user=request.user)
         # make sure user is connected to a 'Contact'

@@ -1,14 +1,53 @@
-from django.test import TestCase
-from .models import OrderLog
+from django.test import TestCase, Client
+from .forms import ExhibitorForm
+from exhibitors.models import Exhibitor
+from .models import OrderLog, SignupContract
 from companies.models import Company, Contact
+from orders.models import Product, Order, ProductType
 from fair.models import Fair
 from django.contrib.auth.models import User
+from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
+from django.forms import Field
+
+from django.test import Client
 
 # Tests that the view is working
 class RegisterViewTestCase(TestCase):
+    def setUp(self):
+        self.fair = Fair.objects.create(name="Armada 2017", year=2017, pk=82189128287123, current=True)
+        self.test_user = User.objects.create_user(username='test', password='test', email='paperback@writer.se')
+        self.test_company = Company.objects.create(name="TestCompany1", organisation_type='company')
+        self.test_contact = Contact.objects.create(user=self.test_user, belongs_to=self.test_company, name="contact name for testing", email="paperback@writer.com", active=True, confirmed=True)
+
     def test_view(self):
         resp = self.client.get('/register/')
         self.assertEqual(resp.status_code, 200)
+
+    # should get redirected if no contact
+    """def test_no_contract(self):
+        client = Client()
+        # log in with test user
+        response = client.post('/accounts/login/', {'username': 'test', 'password': 'test'})
+        self.assertEqual(response.status_code, 302)
+
+        # should be no contract found 404
+        response = client.get('/register/home/')
+        self.assertEqual(response.status_code, 404)"""
+
+    """def test_with_contract(self):
+        client = Client()
+
+        self.contract = SignupContract.objects.create(name="contract1", contract="hhh", fair=self.fair, current=True)
+
+        # log in with test user
+        response = client.post('/accounts/login/', {'username': 'test', 'password': 'test'})
+
+        # test that you will be redirected correctly
+        response = client.get('/register/home/')
+        self.assertEqual(response.status_code, 302)"""
+
+
+
 
 class OrderLogTestCase(TestCase):
     def test(self):
@@ -44,55 +83,60 @@ class OrderLogTestCase(TestCase):
 
 
 
-# Below is old stuff
-"""from django.test import Client
-from .forms import ExhibitorForm
-from exhibitors.models import Exhibitor
-from locations.models import Location, Room, Building
-from orders.models import Order
-
 class ExhibitorFormTestCase(TestCase):
-    def test_exhibitorform_valid(self):
-        # non empty values
-        location = Location.objects.create(room=Room.objects.create(building=Building.objects.create(name="b")))
-        fair_location = Location.objects.create(room=Room.objects.create(building=Building.objects.create(name="fb")))
-        transport_from_fair_type = "self_transport"
-        transport_to_fair_type = "external_transport"
+    def setUp(self):
+        self.fair = Fair.objects.create(name="Armada 2017", year=2017, pk=82189128287123, current=True)
+        self.user = User.objects.create_user(username='test', password='test', email='paperback@writer.se')
+        self.company = Company.objects.create(name="TestCompany1", organisation_type='company')
+        self.contact = Contact.objects.create(user=self.user, belongs_to=self.company, name="contact name for testing", email="paperback@writer.com", active=True, confirmed=True)
+        self.contract = SignupContract.objects.create(name="contract1", contract="hhh", fair=self.fair, current=True)
+        self.exhibitor = None
 
+        self.banquet_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Banquet"))
+        self.lunch_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="AdditionalLunch"))
+        self.event_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Events"))
+        self.room_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Rooms"))
+        self.nova_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Nova"))
+        self.stand_area_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Additional Stand Area"))
+        self.stand_height_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Additional Stand Height"))
 
+        self.current_banquet_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.banquet_products)
+        self.current_lunch_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.lunch_products)
+        self.current_event_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.event_products)
+        self.current_room_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.room_products)
+        self.current_nova_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.nova_products)
+        self.current_stand_area_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.stand_area_products)
+        self.current_stand_height_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.stand_height_products)
 
-        form_data = {
-            'location': location,
-            'fair_location': fair_location,
-            'transport_from_fair_type': transport_from_fair_type,
-            'transport_to_fair_type': transport_to_fair_type,
-            'estimated_arrival_of_representatives':'',
-            'allergies':'',
-            'requests_for_stand_placement':'',
-            'heavy_duty_electric_equipment':'',
-            'other_information_about_the_stand':'',
-            'invoice_reference':'',
-            'invoice_reference_phone_number':'',
-            'invoice_organisation_name':'',
-            'invoice_address':'',
-            'invoice_address_po_box':'',
-            'invoice_address_zip_code':'',
-            'invoice_identification':'',
-            'invoice_additional_information':'',
-            'number_of_packages_to_fair':0,
-            'number_of_pallets_to_fair':0,
-            'estimated_arrival':'',
-            'number_of_packages_from_fair':0,
-            'number_of_pallets_from_fair':0,
-            'transport_from_fair_address':'',
-            'transport_from_fair_zip_code':'',
-            'transport_from_fair_recipient_name':'',
-            'transport_from_fair_recipient_phone_number':'',
-            'wants_information_about_events':False,
-            'wants_information_about_targeted_marketing':False,
-            'manual_invoice':False,
-            'product_selection':()
-        }
-        form = ExhibitorForm(data=form_data)
-        self.assertTrue(form.is_valid())
-"""
+        self.matching_survey = Survey.objects.none()
+        self.matching_questions = Question.objects.none()
+        self.matching_responses = Response.objects.none()
+
+        self.timeFlag, self.time_disp = (None, [None, None])
+
+    def test_exhibitorform_no_answers(self):
+        form = ExhibitorForm(
+            instance = self.exhibitor,
+            banquet = self.banquet_products,
+            lunch = self.lunch_products,
+            events = self.event_products,
+            rooms = self.room_products,
+            nova = self.nova_products,
+            stand_area = self.stand_area_products,
+            stand_height = self.stand_height_products,
+            banquet_orders = self.current_banquet_orders,
+            lunch_orders = self.current_lunch_orders,
+            event_orders = self.current_event_orders,
+            room_orders = self.current_room_orders,
+            nova_orders = self.current_nova_orders,
+            stand_area_orders = self.current_stand_area_orders,
+            stand_height_orders = self.current_stand_height_orders,
+            company = self.company,
+            contact = self.contact,
+            matching_survey = self.matching_survey,
+            matching_questions = self.matching_questions,
+            matching_responses = self.matching_responses,
+            timeFlag = self.timeFlag,
+            time_disp = self.time_disp,
+        )
+        self.assertFalse(form.is_valid())
