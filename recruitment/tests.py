@@ -8,18 +8,17 @@ from django.urls.exceptions import NoReverseMatch
 
 from django.test import Client
 
+from help.image import loadTestImage as load_test_image
+
 # Create your tests here.
 
 class RecruitmentTestCase(TestCase):
-
-
     def setUp(self):
         fair = Fair.objects.create(name="Armada 2016", year=2016, pk=2)
 
         self.now = timezone.now()
         self.tomorrow = self.now + timezone.timedelta(days=1)
         self.yesterday = self.now + timezone.timedelta(days=-1)
-
 
         Programme.objects.create(
             name='Computer Science',
@@ -195,16 +194,20 @@ class RecruitmentTestCase(TestCase):
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307028')
         self.assertEquals(RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 3)
 
+        image = load_test_image()
+
         response = client.post('/fairs/2016/recruitment/1/application/%d' % recruitment_application.pk, {
             'role1': '2',
             'programme': '1',
             'registration_year': '2016',
             'phone_number': '0735307029',
+            'picture_original': image,
         })
 
         self.assertTrue('This field is required' not in str(response.content))
         self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307029')
+        self.assertTrue(User.objects.get(username='bratteby').profile.picture_original)
 
         self.assertEquals(
             RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 2)
