@@ -16,7 +16,7 @@ class ExhibitorTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory(HTTP_HOST='test.com')
         company = Company.objects.create(name='test')
-        fair = Fair.objects.create(name='Armada 2016')
+        fair = Fair.objects.create(name='Armada 2016', current=True)
         self.exhibitor = Exhibitor.objects.create(
                 company=company,
                 fair=fair,
