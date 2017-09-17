@@ -4,11 +4,12 @@
 {% block content %}
     {% if event %}
 <h2>{{ event.name }}</h2>
+    {% if event.image_original %}<img src="/media/{{ event.image_original }}" style="max-width: 100%; max-height: 400px;">{% endif %}
         {% else %}
 <h2>New event</h2>
     {% endif %}
     <p>The date format to be used: <strong>2016-12-24 13:37</strong></p>
-<form method="post">
+<form method="post" enctype="multipart/form-data">
 {% csrf_token %}
   {{ form|crispy }}
     {% include 'recruitment/create_fields.html' with custom_field_name='extra_field' values=custom_fields %}

@@ -85,7 +85,7 @@ def event_edit(request, year, pk=None, template_name='events/event_form.html'):
     fair = get_object_or_404(Fair, year=year)
     event = Event.objects.filter(pk=pk).first()
     EventForm = modelform_factory(Event, exclude=('extra_field', 'image', 'fair'))
-    form = EventForm(request.POST or None, instance=event)
+    form = EventForm(request.POST or None, request.FILES or None, instance=event)
     if form.is_valid():
         event = form.save(commit=False)
         event.fair = fair
