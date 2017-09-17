@@ -8,7 +8,7 @@ from django.urls.exceptions import NoReverseMatch
 
 from django.test import Client
 
-from help.image import loadTestImage as load_test_image
+from lib.image import load_test_image
 
 # Create your tests here.
 
@@ -201,13 +201,13 @@ class RecruitmentTestCase(TestCase):
             'programme': '1',
             'registration_year': '2016',
             'phone_number': '0735307029',
-            'picture_original': image,
+            'portrait': image,
         })
 
         self.assertTrue('This field is required' not in str(response.content))
         self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307029')
-        self.assertTrue(User.objects.get(username='bratteby').profile.picture_original)
+        self.assertTrue(User.objects.get(username='bratteby').profile.portrait)
 
         self.assertEquals(
             RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 2)
