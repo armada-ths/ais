@@ -138,9 +138,11 @@ class ProfileForm(ModelForm):
         self.fields['programme'].required = True
         self.fields['phone_number'].required = True
 
+        self.fields['picture_original'].label = 'Please upload a picture of yourself'
+
     class Meta:
         model = Profile
-        fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url')
+        fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url', 'picture_original')
 
         labels = {
             'linkedin_url': 'Link to your LinkedIn-profile',
