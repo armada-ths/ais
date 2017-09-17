@@ -1,16 +1,15 @@
 from django.test import TestCase
-from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
-from fair.models import Fair
+from django.test import Client
 from django.utils import timezone
 from django.contrib.auth.models import User, Group, Permission
 from django.core.exceptions import PermissionDenied
 from django.urls.exceptions import NoReverseMatch
 
-from django.test import Client
-
+from fair.models import Fair
 from lib.image import load_test_image
 
-# Create your tests here.
+from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
+
 
 class RecruitmentTestCase(TestCase):
     def setUp(self):
@@ -194,14 +193,12 @@ class RecruitmentTestCase(TestCase):
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307028')
         self.assertEquals(RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 3)
 
-        image = load_test_image()
-
         response = client.post('/fairs/2016/recruitment/1/application/%d' % recruitment_application.pk, {
             'role1': '2',
             'programme': '1',
             'registration_year': '2016',
             'phone_number': '0735307029',
-            'portrait': image,
+            'portrait': load_test_image(),
         })
 
         self.assertTrue('This field is required' not in str(response.content))
