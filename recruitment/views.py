@@ -647,8 +647,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
         'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document', 'rating'),
         widgets={
             'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
-            'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M'), 
-            'interview_date': forms.DateTimeInput(attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}), 
+            'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M', attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}),
             'scorecard' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
             'drive_document' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
         }
