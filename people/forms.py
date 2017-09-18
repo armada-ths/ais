@@ -8,7 +8,7 @@ class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         fields = '__all__'
-        exclude = ['user']
+        exclude = ['user', 'picture', 'picture_original',]
 
         widgets = {
             'registration_year': forms.Select(
