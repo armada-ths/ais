@@ -27,8 +27,10 @@
         {% endif %}
         <div class="col-sm-12">
 
-                {% if perms.recruitment.administer_recruitment_applications or application.interviewer == request.user %}
-                {{ profile_pic_form|crispy }}
+                {% if profile_pic_form %}
+                    {% if perms.recruitment.administer_recruitment_applications or application.interviewer == request.user %}
+                        {{ profile_pic_form|crispy }}
+                    {% endif %}
                 {% endif %}
 
                 <label>Registration year</label>

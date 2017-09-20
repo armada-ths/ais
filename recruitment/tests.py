@@ -39,7 +39,6 @@ class RecruitmentTestCase(TestCase):
         self.bratteby_user = User.objects.create_user(username='bratteby', password='bratteby')
         self.core_user = User.objects.create_user(username='core', password='core')
 
-
         self.pg_role = Role.objects.create(name='PG', pk=1)
         self.core_group_role = Role.objects.create(name="Project Core Team",pk=33333333)
         self.system_developer = Role.objects.create(name='System Developer', parent_role=self.pg_role, pk=2)

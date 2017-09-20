@@ -678,7 +678,9 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
         }
     )
 
-    profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=Profile.objects.get(user=application.user))
+    profile_pic_form = None
+    if Profile.objects.filter(user=application.user).first():
+        profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=Profile.objects.get(user=application.user))
 
     interviewers = application.recruitment_period.interviewers()
     interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
