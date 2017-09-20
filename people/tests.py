@@ -85,11 +85,11 @@ class ProfileTestCase(TestCase):
 
         response = client.post('/fairs/'+str(CURRENT_YEAR)+'/people/2/edit', {
             'phone_number' : '123456789',
-            'portrait': load_test_image(),
+            'picture_original': load_test_image(),
             })
         self.assertEqual(response.status_code, 302)
         self.assertEquals(User.objects.get(username='user').profile.phone_number, '123456789')
-        self.assertTrue(User.objects.get(username='user').profile.portrait)
+        self.assertTrue(User.objects.get(username='user').profile.picture_original)
 
 
     def test_profiles_admin(self):
@@ -110,11 +110,11 @@ class ProfileTestCase(TestCase):
 
         response = client.post('/fairs/'+str(CURRENT_YEAR)+'/people/1/edit', {
             'phone_number' : '123456789',
-            'portrait': load_test_image(),
+            'picture_original': load_test_image(),
             })
         self.assertEqual(response.status_code, 302)
         self.assertEquals(User.objects.get(username='admin').profile.phone_number, '123456789')
-        self.assertTrue(User.objects.get(username='admin').profile.portrait)
+        self.assertTrue(User.objects.get(username='admin').profile.picture_original)
 
         try:
             response = client.get('/fairs/'+str(CURRENT_YEAR)+'/people/2/edit')

@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.urls.exceptions import NoReverseMatch
 
 from fair.models import Fair
+from lib.image import load_test_image
 
 from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
 
