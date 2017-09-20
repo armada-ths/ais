@@ -41,7 +41,7 @@ def assign_roles(request, year):
     # Save all roles because that will guarantee that all roles have a group
     for role in Role.objects.all():
         role.save()
-    
+
     # Remove permission groups from everyone that does not have a role this year
     for application in RecruitmentApplication.objects.all().exclude(recruitment_period__fair__year=year, delegated_role=None):
         application.user.groups.clear()
@@ -336,6 +336,19 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     fair = get_object_or_404(Fair, year=year)
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    user = request.user
+
+    # user should be forbidden to look at a
+    # recruitment periods that include their application
+    # unless they're in the Project Core Team
+    if not user.groups.filter(name='Project Core Team').exists():
+        try:
+            current_users_applications = RecruitmentApplication.objects.filter(user=user)
+            for a in current_users_applications:
+                if recruitment_period.pk == a.recruitment_period.pk:
+                    return HttpResponseForbidden()
+        except (RecruitmentApplication.DoesNotExist):
+            pass
 
     sort_field = request.GET.get('sort_field')
     if not sort_field:
@@ -633,22 +646,36 @@ def set_image_key_from_request(request, model, model_field, file_directory):
 def recruitment_application_interview(request, year, recruitment_period_pk, pk, template_name='recruitment/recruitment_application_interview.html'):
     fair = get_object_or_404(Fair, year=year)
     application = get_object_or_404(RecruitmentApplication, pk=pk)
-    if not request.user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != request.user:
+    user = request.user
+    if not user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != user:
         return HttpResponseForbidden()
+
+    # user should be forbidden to look at an interview
+    # within recruitment periods that include their application
+    # unless they're in the Project Core Team
+    if not user.groups.filter(name='Project Core Team').exists():
+        try:
+            current_users_applications = RecruitmentApplication.objects.filter(user=user)
+            for a in current_users_applications:
+                if application.recruitment_period.pk == a.recruitment_period.pk:
+                    return HttpResponseForbidden()
+        except (RecruitmentApplication.DoesNotExist):
+            pass
 
     exhibitors = [participation.company for participation in
                   Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
-        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role',
+        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
                 'rating') if request.user.has_perm('recruitment.administer_recruitment_applications') else (
-        'interview_date', 'interview_location', 'recommended_role', 'rating'),
+        'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document', 'rating'),
         widgets={
             'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
-            'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M')
-        },
-        labels={'interview_date': 'Interview date (Format: 2016-12-24 13:37)'}
+            'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M', attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}),
+            'scorecard' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
+            'drive_document' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
+        }
     )
 
     interviewers = application.recruitment_period.interviewers()

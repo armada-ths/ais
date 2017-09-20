@@ -263,6 +263,8 @@ class RecruitmentApplication(models.Model):
     recommended_role = models.ForeignKey(Role, null=True, blank=True)
     delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role')
     superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user')
+    scorecard = models.CharField(null=True, blank=True, max_length=300)
+    drive_document = models.CharField(null=True, blank=True, max_length=300)
 
     statuses = [
         ('accepted', 'Accepted'),
