@@ -1,25 +1,23 @@
 from django.test import TestCase
-from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
-from fair.models import Fair
+from django.test import Client
 from django.utils import timezone
 from django.contrib.auth.models import User, Group, Permission
 from django.core.exceptions import PermissionDenied
 from django.urls.exceptions import NoReverseMatch
 
-from django.test import Client
+from fair.models import Fair
+from lib.image import load_test_image
 
-# Create your tests here.
+from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
+
 
 class RecruitmentTestCase(TestCase):
-
-
     def setUp(self):
         fair = Fair.objects.create(name="Armada 2016", year=2016, pk=2)
 
         self.now = timezone.now()
         self.tomorrow = self.now + timezone.timedelta(days=1)
         self.yesterday = self.now + timezone.timedelta(days=-1)
-
 
         Programme.objects.create(
             name='Computer Science',
@@ -229,11 +227,13 @@ class RecruitmentTestCase(TestCase):
             'programme': '1',
             'registration_year': '2016',
             'phone_number': '0735307029',
+            'portrait': load_test_image(),
         })
 
         self.assertTrue('This field is required' not in str(response.content))
         self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 3)
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307029')
+        self.assertTrue(User.objects.get(username='bratteby').profile.portrait)
 
         self.assertEquals(
             RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 2)
