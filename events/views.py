@@ -84,7 +84,7 @@ def event_unattend(request, year, pk):
 @permission_required('events.change_event', raise_exception=True)
 def event_edit(request, year, pk=None, template_name='events/event_form.html'):
     fair = get_object_or_404(Fair, year=year)
-    event = Event.objects.get(pk=pk)
+    event = Event.objects.filter(pk=pk).first()
     form = EventForm(request.POST or None, request.FILES or None, instance=event)
     
     if form.is_valid():
