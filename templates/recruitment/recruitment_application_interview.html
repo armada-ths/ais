@@ -18,14 +18,18 @@
 
     <div class="row">
 
-        {% if application.user.profile.image %}
+        {% if application.user.profile.picture_original %}
             <div class="col-sm-12">
                 <div class="form-group">
-                    <img src="/media/{{ application.user.profile.image }}" style="max-width: 100%; max-height: 400px;">
+                    <img src="/media/{{ application.user.profile.picture_original }}" style="max-width: 100%; max-height: 400px;">
                 </div>
             </div>
         {% endif %}
         <div class="col-sm-12">
+
+                {% if perms.recruitment.administer_recruitment_applications or application.interviewer == request.user %}
+                {{ profile_pic_form|crispy }}
+                {% endif %}
 
                 <label>Registration year</label>
                 <p>{{ application.user.profile.registration_year }}</p>

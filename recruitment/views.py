@@ -24,8 +24,8 @@ from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, 
 
 from django.forms import modelform_factory
 from django import forms
-from .forms import RoleApplicationForm, InterviewPlanForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, \
-    RolesForm, ProfileForm
+from .forms import RoleApplicationForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, \
+    RolesForm, ProfileForm, ProfilePictureForm
 
 
 def import_members(request):
@@ -521,7 +521,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
             'fair': fair
         })
 
-    profile_form = ProfileForm(request.POST or None, instance=profile)
+    profile_form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
 
     role_form = RoleApplicationForm(request.POST or None)
 
@@ -538,7 +538,6 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, user)
-        set_image_key_from_request(request, profile, 'image', 'profile')
 
         if role_form.is_valid() and profile_form.is_valid():
 
@@ -653,6 +652,8 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
         }
     )
 
+    profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=Profile.objects.get(user=application.user))
+
     interviewers = application.recruitment_period.interviewers()
     interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
     interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
@@ -688,6 +689,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
                 return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
 
     return render(request, template_name, {
+        'profile_pic_form': profile_pic_form,
         'application': application,
         'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(
             application.user),

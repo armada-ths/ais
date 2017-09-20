@@ -31,15 +31,6 @@
 
         {{ profile_form|crispy }}
 
-        <div class="form-group">
-            <label for="image">Please upload a picture of yourself</label>
-            <input type="file" id="image" name="image" accept="image/*">
-            {% if profile.image %}
-                <br>
-                <div><img src="/media/{{ profile.image }}" style="max-width: 100%; max-height: 400px;"></div>
-            {% endif %}
-        </div>
-
 
         {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
