@@ -115,7 +115,7 @@ class ExtraField(models.Model):
                     ).delete()
 
 class CustomField(models.Model):
-    fields = [
+    field_types = [
         ('text_field', 'Text field'),
         ('check_box', 'Check box'),
         ('text_area', 'Text area'),
@@ -126,7 +126,7 @@ class CustomField(models.Model):
 
     extra_field = models.ForeignKey(ExtraField)
     question = models.TextField()
-    field_type = models.CharField(choices=fields, default='text_field', max_length=20)
+    field_type = models.CharField(choices=field_types, default='text_field', max_length=20)
     position = models.IntegerField(default=0)
     required = models.BooleanField(default=False)
 
@@ -152,6 +152,7 @@ class CustomFieldArgument(models.Model):
     def __str__(self):
         return '%s - %s' % (self.custom_field, self.value)
 
+
 class CustomFieldAnswer(models.Model):
     custom_field = models.ForeignKey(CustomField)
     user = models.ForeignKey(User)
@@ -159,7 +160,7 @@ class CustomFieldAnswer(models.Model):
 
     def __str__(self):
         return '%s - %s - %s' % (self.user.get_full_name(), self.custom_field, self.answer)
-
+  
 
 class Role(models.Model):
     name = models.CharField(max_length=100)

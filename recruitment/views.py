@@ -534,7 +534,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
             'fair': fair
         })
 
-    profile_form = ProfileForm(request.POST or None, instance=profile)
+    profile_form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
 
     role_form = RoleApplicationForm(request.POST or None)
 
@@ -551,7 +551,6 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, user)
-        set_image_key_from_request(request, profile, 'image', 'profile')
 
         if role_form.is_valid() and profile_form.is_valid():
 

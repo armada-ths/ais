@@ -37,6 +37,11 @@ class Profile(models.Model):
         ('other', 'Other')
     )
 
+    portrait = models.ImageField(
+            upload_to=UploadToDir('profiles', 'portrait'),
+            blank=True,
+            )
+
     user = models.OneToOneField(
             settings.AUTH_USER_MODEL,
             default=-1,
@@ -51,7 +56,7 @@ class Profile(models.Model):
     registration_year = models.IntegerField(null=True, blank=True)
     planned_graduation = models.IntegerField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True)
-
+    
     picture_original = models.ImageField(
             upload_to=UploadToDirUUID('profiles', 'picture_original'),
             blank=True,
