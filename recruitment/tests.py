@@ -35,9 +35,11 @@ class RecruitmentTestCase(TestCase):
 
         self.purmonen_user = User.objects.create_user(username='purmonen', password='purmonen')
         self.bratteby_user = User.objects.create_user(username='bratteby', password='bratteby')
+        self.core_user = User.objects.create_user(username='core', password='core')
 
 
         self.pg_role = Role.objects.create(name='PG', pk=1)
+        self.core_group_role = Role.objects.create(name="Project Core Team",pk=33333333)
         self.system_developer = Role.objects.create(name='System Developer', parent_role=self.pg_role, pk=2)
 
 
@@ -60,6 +62,12 @@ class RecruitmentTestCase(TestCase):
             recruitment_period=self.recruitment_period
         )
 
+        self.recruitment_application = RecruitmentApplication.objects.create(
+            pk=2000,
+            user=self.core_user,
+            recruitment_period=self.recruitment_period
+        )
+
         RoleApplication.objects.create(
             recruitment_application=self.recruitment_application,
             role=self.system_developer,
@@ -72,6 +80,8 @@ class RecruitmentTestCase(TestCase):
             order=1
         )
         self.pg_role.add_user_to_groups(self.purmonen_user)
+        self.core_group_role.add_user_to_groups(self.core_user)
+        self.pg_role.add_user_to_groups(self.core_user)
 
 
     def test_recruitment_period(self):
@@ -154,14 +164,33 @@ class RecruitmentTestCase(TestCase):
         response = client.get('/fairs/2016/recruitment/new')
         self.assertEqual(response.status_code, 200)
 
+        # check that regular user gets permission denied when entering a recruitment period with their application in it
         response = client.get('/fairs/2016/recruitment/%d' % self.recruitment_period.pk)
+        self.assertEqual(response.status_code, 403)
+
+        # log in to user that is in core project team
+        response = client.post('/accounts/login/', {'username': 'core', 'password': 'core'})
+        response = client.get('/fairs/2016/recruitment/')
+        self.assertEqual(response.status_code, 200)
+
+        # member of project core team should be able to
+        # enter a recruitment period (also interviews in it) with their application in it
+        response = client.get('/fairs/2016/recruitment/%d' % self.recruitment_period.pk)
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/fairs/2016/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
+        self.assertEqual(response.status_code, 200)
+
+        # log in to other user again
+        response = client.post('/accounts/login/', {'username': 'purmonen', 'password': 'purmonen'})
+        response = client.get('/fairs/2016/recruitment/')
         self.assertEqual(response.status_code, 200)
 
         response = client.get('/fairs/2016/recruitment/%d/application/1337' % self.recruitment_period.pk)
         self.assertEqual(response.status_code, 200)
 
         response = client.get('/fairs/2016/recruitment/%d/application/1337/interview' % self.recruitment_period.pk)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)
 
         response = client.get('/fairs/2016/recruitment/roles/1')
         self.assertEqual(response.status_code, 200)
@@ -171,7 +200,7 @@ class RecruitmentTestCase(TestCase):
         self.recruitment_period.save()
 
         client = Client()
-        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 1)
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
 
         response = client.post('/accounts/login/', {'username': 'bratteby', 'password': 'bratteby'})
         response = client.post('/fairs/2016/recruitment/%d/application/new' % self.recruitment_period.pk, {
@@ -179,7 +208,7 @@ class RecruitmentTestCase(TestCase):
         })
         self.assertTrue('This field is required' in str(response.content))
 
-        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 1)
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
         response = client.post('/fairs/2016/recruitment/1/application/new', {
             'role1': '3',
             'programme': '1',
@@ -188,7 +217,7 @@ class RecruitmentTestCase(TestCase):
         })
 
         self.assertTrue('This field is required' not in str(response.content))
-        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 3)
 
 
         recruitment_application = RecruitmentApplication.objects.get(user=self.bratteby_user)
@@ -203,7 +232,7 @@ class RecruitmentTestCase(TestCase):
         })
 
         self.assertTrue('This field is required' not in str(response.content))
-        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 2)
+        self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 3)
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307029')
 
         self.assertEquals(
