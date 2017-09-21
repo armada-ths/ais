@@ -3,11 +3,8 @@
 
 {% block content %}
 	<h1>Send email with ordered products</h1>
-	{% if no_contact %}
-		<p>Please add a contact for this exhibitor</p>
-	{% else %}
 	<p>This will send an email to this exhibitor with their current orders. Are you sure you want to do that?</p>
-	{% endif %}
+
 	<div class="row">
 		<div class="col-md-12">
 			<div class="col-md-6">
@@ -15,14 +12,14 @@
 			        <button class="btn btn-default"> Back </button>
 			    </a></p>
 			</div>
-			{% if not no_contact %}
+
 			<div class="col-md-6 text-right">
 			    <form action="{% url "send_cr_receipts" fair.year exhibitor.pk %}" method="POST">
 			        {% csrf_token %}
 			        <button class="btn btn-primary">Send Email</button>
 			    </form>
 			</div>
-			{% endif %}
+
 
 		</div>
 	</div>
