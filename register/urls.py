@@ -48,7 +48,7 @@ urlpatterns = [
         password_reset_confirm,
         name='password_reset_confirm',
         kwargs={'template_name': 'register/reset_password_confirm.html',
-                'set_password_form': SetNewPasswordForm, 
+                'set_password_form': SetNewPasswordForm,
                 'post_reset_redirect': 'anmalan:login'}
     ),
 ]
