@@ -141,7 +141,7 @@ class ExhibitorCatalogInfoForm(ModelForm):
 """
 class ExhibitorForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        # the different products that can be chosen in complete registration form
+        # products that can be chosen with an amount
         banquet = kwargs.pop('banquet')
         lunch = kwargs.pop('lunch')
         events = kwargs.pop('events')
