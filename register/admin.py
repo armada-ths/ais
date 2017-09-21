@@ -31,17 +31,15 @@ def export_signup_as_csv(modeladmin, request, queryset):
 # Overrides admin register to add custom actions
 @admin.register(SignupLog)
 class SignupLogAdmin(admin.ModelAdmin):
-    search_fields = ('company__name', 'timestamp')
-    ordering = ('-timestamp',)
-    list_filter = ('type', )
+    search_fields = ('company__name',)
+    ordering = ('company',)
 
     actions = [export_signup_as_csv]
 
 @admin.register(OrderLog)
 class OrderLogAdmin(admin.ModelAdmin):
-    search_fields = ('company__name', 'timestamp',)
-    ordering = ('-timestamp',)
-    list_filter = ('action', 'fair')
+    search_fields = ('company__name',)
+    ordering = ('fair',)
 
 # Register your models here.
 admin.site.register(SignupContract)

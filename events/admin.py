@@ -103,10 +103,7 @@ class EventAdmin(admin.ModelAdmin):
             'fields': ('tags',)
         })
     )
-    search_fields = ('name',)
-    # order by fair in first hand
-    ordering = ('fair', 'name',)
-    list_filter = ('published', 'registration_required', 'fair',)
+    list_filter = ('published', 'registration_required',)
     readonly_fields = ('event_image_preview', 'extra_field',)
     inlines = [QuestionInline]
     filter_horizontal = ("allowed_groups",)
