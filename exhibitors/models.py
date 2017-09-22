@@ -19,6 +19,7 @@ class Exhibitor(models.Model):
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True)
     location = models.ForeignKey(Location, null=True, blank=True)
+    booth_number = models.IntegerField(blank=True, null=True)
     fair_location = models.OneToOneField('locations.Location', blank=True, null=True)
     estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
     about_text = models.TextField(blank=True)
@@ -59,7 +60,7 @@ class Exhibitor(models.Model):
         ('nymble', 'Nymble'),
     ]
     requests_for_exhibition_area = models.CharField(choices=exhibition_area_requests,max_length=200, blank=True, null=True)
-
+    
     # Electrical Equipment
     heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
     number_of_outlets_needed = models.IntegerField(default=0)

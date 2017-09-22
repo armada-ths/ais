@@ -74,12 +74,12 @@ class Event(models.Model):
         return '%s: %s'%(self.fair, self.name)
 
     def save(self, *args, **kwargs):
-        super(Event, self).save(*args, **kwargs)
         if not self.extra_field:
             self.extra_field = ExtraField.objects.create()
-        self.image = update_image_field(
-            self.image_original,
-            self.image, 1000, 1000, 'jpg')
+# TODO: figure out the way to pass the actual name that will be used, not the file's original one!!!
+#        self.image = update_image_field(
+#            self.image_original,
+#            self.image, 1000, 1000, 'jpg')
         super(Event, self).save(*args, **kwargs)
 
 # An EventQuestion belongs to a specific Event

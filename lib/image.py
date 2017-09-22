@@ -117,3 +117,8 @@ def format_jpg(filename, width, height):
         filename,
         buf.getvalue(),
         'image/jpeg')
+
+def load_test_image():
+    return SimpleUploadedFile(name='test_image.jpg', content=open(TEST_IMAGE_PATH, 'rb').read(), content_type='image/jpeg')
+
+TEST_IMAGE_PATH=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_image.jpg')
