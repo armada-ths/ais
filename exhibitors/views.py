@@ -9,11 +9,13 @@ from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import get_connection, EmailMultiAlternatives
 
-from exhibitors.models import Exhibitor
 from companies.models import Company, Contact
 from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
+
+from .forms import ExhibitorViewForm
+from .models import Exhibitor, ExhibitorView
 
 import logging
 
@@ -30,6 +32,16 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     return render(request, template_name, {
         'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
         'fair': fair
+    })
+
+
+def edit_view(request, year, template_name='exhibitors/edit_view.html'):
+    view = ExhibitorView.objects.filter(user=request.user).first()
+    form = ExhibitorViewForm(request.POST or None, instance=view)
+    
+    return render(request, template_name, {
+        'form': form,
+        'fair': get_object_or_404(Fair, year=year, current=True)
     })
 
 
