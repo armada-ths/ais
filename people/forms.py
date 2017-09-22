@@ -8,7 +8,7 @@ class ProfileForm(ModelForm):
     class Meta:
         model = Profile
         fields = '__all__'
-        exclude = {'user'}
+        exclude = {'user', 'picture'}
 
         widgets = {
             'registration_year': forms.Select(
@@ -19,5 +19,5 @@ class ProfileForm(ModelForm):
         }
         labels= {
             'birth_date': 'Birth date (format: 2016-12-24)',
-            'portrait': 'Picture of you',
+            'picture_original': 'Picture of you',
         }

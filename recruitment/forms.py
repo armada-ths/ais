@@ -1,17 +1,18 @@
 from django.forms import ModelForm
+from django.utils import timezone
+from django.template.defaultfilters import date as date_filter
+from django.contrib.auth.models import User
+
 import django.forms as forms
 
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
-from django.contrib.auth.models import User
 from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from fair.models import Fair
+from lib.image import UploadToDirUUID
 
-from django.utils import timezone
-from django.template.defaultfilters import date as date_filter
-
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
+    create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
 
 
 class RecruitmentPeriodForm(ModelForm):
@@ -142,10 +143,11 @@ class ProfileForm(ModelForm):
 
     class Meta:
         model = Profile
-        fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url', 'portrait')
+        fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url', 'picture_original')
 
         labels = {
             'linkedin_url': 'Link to your LinkedIn-profile',
+            'picture_original': 'Please upload a picture of yourself'
         }
 
         widgets = {
@@ -165,23 +167,13 @@ class RoleApplicationForm(forms.Form):
     role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.all(), required=False)
 
 
-## TODO: This is not used, remove it or use it and replace the form that is used in views
-class InterviewPlanForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(InterviewPlanForm, self).__init__(*args, **kwargs)
-
+class ProfilePictureForm(ModelForm):
+    '''
+    Simple 1-field form for changing profile picture in interview form
+    '''
     class Meta:
-        model = RecruitmentApplication
-        fields = ('interviewer', 'interview_location', 'interview_date', 'recommended_role', 'rating')
-
+        model = Profile
+        fields = ('picture_original',)
         labels = {
-            'linkedin_url': 'Link to your LinkedIn-profile',
+            'picture_original': 'Profile picture',
         }
-
-        widgets = {
-            'interviewer': forms.Select(
-                choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)],
-                attrs={'required': True}),
-        }
-
-
