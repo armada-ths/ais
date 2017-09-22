@@ -139,32 +139,38 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     })
 
 
-#Where the user can chose to send email to all exhibiors with their orders
+#Where the user can chose to send email to an exhibiors with their orders
 def send_emails(request, year, pk, template_name='exhibitors/send_emails.html'):
     if not request.user.is_staff:
         return HttpResponseForbidden()  
     
     fair = get_object_or_404(Fair, year=year)
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
-    return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
+    no_contact = False
+    try:
+        contact = Contact.objects.get(exhibitor=exhibitor)
+    except:
+        no_contact=True
+    return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor, 'no_contact': no_contact})
 
-#Comfirmation that email has been sent to all exhibitors
+#Comfirmation that email has been sent to the exhibitor
 def emails_confirmation(request, year, pk, template_name='exhibitors/emails_confirmation.html'):
     if not request.user.is_staff:
         return HttpResponseForbidden()
 
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
+
     fair = get_object_or_404(Fair, year=year)   
     return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
 
-#Sends email to all exhibitors with their orders
+#Sends email to exhibitor with their cúrrent orders
 def send_cr_receipts(request, year, pk):
     if not request.user.is_staff:
         return HttpResponseForbidden()
 
     fair = get_object_or_404(Fair, year=year)           
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
-    contact = get_object_or_404(Contact, exhibitor = exhibitor)
+    contact =  Contact.objects.get(exhibitor=exhibitor)
 
     orders =  Order.objects.filter(exhibitor = exhibitor)
     total_price = 0
