@@ -1,12 +1,14 @@
-from django.test import TestCase
-from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
-from fair.models import Fair
+from django.test import TestCase, Client
 from django.utils import timezone
 from django.contrib.auth.models import User, Group, Permission
 from django.core.exceptions import PermissionDenied
 from django.urls.exceptions import NoReverseMatch
 
-from django.test import Client
+from fair.models import Fair
+from lib.image import load_test_image
+
+from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
+
 
 # Create your tests here.
 
@@ -36,7 +38,6 @@ class RecruitmentTestCase(TestCase):
         self.purmonen_user = User.objects.create_user(username='purmonen', password='purmonen')
         self.bratteby_user = User.objects.create_user(username='bratteby', password='bratteby')
         self.core_user = User.objects.create_user(username='core', password='core')
-
 
         self.pg_role = Role.objects.create(name='PG', pk=1)
         self.core_group_role = Role.objects.create(name="Project Core Team",pk=33333333)
@@ -229,11 +230,13 @@ class RecruitmentTestCase(TestCase):
             'programme': '1',
             'registration_year': '2016',
             'phone_number': '0735307029',
+            'picture_original': load_test_image()
         })
 
         self.assertTrue('This field is required' not in str(response.content))
         self.assertEquals(len(self.recruitment_period.recruitmentapplication_set.all()), 3)
         self.assertEquals(User.objects.get(username='bratteby').profile.phone_number, '0735307029')
+        self.assertTrue(User.objects.get(username='bratteby').profile.picture_original)
 
         self.assertEquals(
             RecruitmentApplication.objects.get(user=self.bratteby_user).roleapplication_set.get(order=0).role.pk, 2)
