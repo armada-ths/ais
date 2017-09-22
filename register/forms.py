@@ -140,6 +140,29 @@ class ExhibitorCatalogInfoForm(ModelForm):
         In template split help_text by separation char.
 """
 class ExhibitorForm(ModelForm):
+    """
+    Complete Registration: create_exhibitor view
+    ===============
+    The complete registration is where already signed up companies with contacts
+    can make their final selection of products and send in important info such as
+    invoice address ('faktura' in SWE). The ExhibitorForm is the form used in
+    the create_exhibitor view to get the companies answers concerning these things.
+
+    Parts of form
+    ----------------
+    Here is what the different part of this form:
+
+     * The form creates its fields in __init__ for all products. They are
+     fetched from db in view and then passed to the dict kwargs where all the
+     objects are poped out in __init__. Company to student matching questions
+     and fields for last minute updates to the company's info and
+     contact info is also created.
+     * There are different fields for products, e.g integer fields for products
+     choosen in an amount (e.g num of banquet tickets) and selection field for
+     products you either want or not, e.g "do you want room x"?
+
+     """
+
     def __init__(self, *args, **kwargs):
         # the different products that can be chosen in complete registration form
         banquet = kwargs.pop('banquet')
