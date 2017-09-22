@@ -61,7 +61,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     'transport_from_fair_recipient_phone_number',)
 
     stand_fields = (
-    'location', 'requests_for_stand_placement', 'heavy_duty_electric_equipment', 'other_information_about_the_stand')
+    'location', 'booth_number', 'requests_for_stand_placement', 'heavy_duty_electric_equipment', 'other_information_about_the_stand')
 
     exhibitor_excluded_fields = armada_transport_from_fair_fields + invoice_fields + transport_from_fair_fields + transport_to_fair_fields + stand_fields
 
