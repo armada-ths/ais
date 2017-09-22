@@ -10,18 +10,13 @@ from lib.image import load_test_image
 from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
 
 
-# Create your tests here.
-
 class RecruitmentTestCase(TestCase):
-
-
     def setUp(self):
         fair = Fair.objects.create(name="Armada 2016", year=2016, pk=2)
 
         self.now = timezone.now()
         self.tomorrow = self.now + timezone.timedelta(days=1)
         self.yesterday = self.now + timezone.timedelta(days=-1)
-
 
         Programme.objects.create(
             name='Computer Science',

@@ -4,7 +4,6 @@ from django.contrib.auth.models import User, Permission
 from django.core.exceptions import PermissionDenied
 from django.urls.exceptions import NoReverseMatch
 
-# Create your tests here.
 from fair.models import Fair
 from lib.image import load_test_image
 
