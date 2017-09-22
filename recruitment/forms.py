@@ -139,8 +139,6 @@ class ProfileForm(ModelForm):
         self.fields['programme'].required = True
         self.fields['phone_number'].required = True
 
-        self.fields['portrait'].label = 'Please upload a picture of yourself'
-
     class Meta:
         model = Profile
         fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url', 'picture_original')
