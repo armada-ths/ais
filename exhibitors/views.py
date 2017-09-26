@@ -114,7 +114,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         invoice_form.save()
         transport_to_fair_form.save()
         transport_from_fair_form.save()
-        company_form.save()	
+        company_form.save()
         armada_transport_from_fair_form.save()
         stand_form.save()
         return redirect('exhibitors', fair.year)
@@ -142,8 +142,8 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
 #Where the user can chose to send email to an exhibiors with their orders
 def send_emails(request, year, pk, template_name='exhibitors/send_emails.html'):
     if not request.user.is_staff:
-        return HttpResponseForbidden()  
-    
+        return HttpResponseForbidden()
+
     fair = get_object_or_404(Fair, year=year)
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     no_contact = False
@@ -160,7 +160,7 @@ def emails_confirmation(request, year, pk, template_name='exhibitors/emails_conf
 
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
 
-    fair = get_object_or_404(Fair, year=year)   
+    fair = get_object_or_404(Fair, year=year)
     return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
 
 #Sends email to exhibitor with their cúrrent orders
@@ -168,7 +168,7 @@ def send_cr_receipts(request, year, pk):
     if not request.user.is_staff:
         return HttpResponseForbidden()
 
-    fair = get_object_or_404(Fair, year=year)           
+    fair = get_object_or_404(Fair, year=year)
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     contact =  Contact.objects.get(exhibitor=exhibitor)
 
@@ -183,7 +183,7 @@ def send_cr_receipts(request, year, pk):
         amount = o.amount
         total_price += price*amount
 
-        order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount} 
+        order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount}
         orders_info.append(order)
 
 
@@ -198,7 +198,7 @@ def send_cr_receipts(request, year, pk):
         settings.DEFAULT_FROM_EMAIL,
         [contact.email],
         fail_silently=False)
-        
+
     return render(request, 'exhibitors/emails_confirmation.html', {'fair': fair, 'exhibitor': exhibitor})
 
 
