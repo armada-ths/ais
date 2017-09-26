@@ -37,12 +37,17 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 
 def edit_view(request, year, template_name='exhibitors/edit_view.html'):
     view = ExhibitorView.objects.filter(user=request.user).first()
-    form = ExhibitorViewForm(request.POST or None, instance=view)
+    form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
     
+    if form.is_valid():
+        form.save()
+        return redirect('exhibitors', year)
+
     return render(request, template_name, {
         'form': form,
         'fair': get_object_or_404(Fair, year=year, current=True)
     })
+
 
 
 def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):

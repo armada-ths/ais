@@ -173,7 +173,7 @@ class ExhibitorView(models.Model):
     A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
     '''
     # A set of field names from Exhibitor model, that are not supposed to be selectable
-    ignore = {'user',}
+    ignore = {'user', 'id', 'pk'}
     # A set of field names from Exhibitor model, that are shown by default
     default = {'location', 'host', 'superior', 'status'}
     user = models.ForeignKey(User)
