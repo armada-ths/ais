@@ -2,7 +2,7 @@ from recruitment.models import RecruitmentPeriod, Role
 from events.models import Event
 from django.forms import modelform_factory
 from django.shortcuts import render, redirect, get_object_or_404
-from exhibitors.models import BanquetteAttendant
+from banquet.models import BanquetteAttendant
 from django.urls import reverse
 from people.models import Profile
 from fair.models import Fair

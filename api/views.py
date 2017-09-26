@@ -12,7 +12,7 @@ from events.models import Event
 from exhibitors.models import Exhibitor
 from fair.models import Partner
 from news.models import NewsArticle
-from exhibitors.models import BanquetteAttendant
+from banquet.models import BanquetteAttendant
 from fair.models import Fair
 
 CURRENT_FAIR = 'Armada 2016'

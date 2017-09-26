@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Exhibitor, WorkField, JobType, \
-    Continent, Value, CatalogInfo, Location, BanquetteAttendant
+    Continent, Value, CatalogInfo, Location
 from lib.util import image_preview
 
 import csv
@@ -46,10 +46,10 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
 
     csv_headers = [
         'company', 'stand_location',
-        'requests_for_stand_placement', 'requests_for_exhibition_area', 
+        'requests_for_stand_placement', 'requests_for_exhibition_area',
         'interested_in_armada_transport',
         'transport_to_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair',
-        'estimated_arrival', 
+        'estimated_arrival',
         'transport_from_fair_type', 'number_of_packages_from_fair',
         'number_of_pallets_from_fair',
         'transport_from_fair_address', 'transport_from_fair_zip_code', 'transport_from_fair_recipient_name',
@@ -108,32 +108,6 @@ class ExhibitorAdmin(admin.ModelAdmin):
     list_filter = ('status', 'requests_for_stand_placement', 'requests_for_exhibition_area', 'transport_to_fair_type', 'transport_from_fair_type', 'fair',)
 
     actions = [export_exhibitor_as_csv]
-
-
-def export_banquet_attendants_as_csv(modeladmin, request, queryset):
-    response = HttpResponse(content_type="text/csv")
-    response['Content-Disposition'] = 'attachment; filename=banquet_attendants.csv'
-
-    csv_headers = [
-        'First name', 'Last name', 'Email', 'Gender', 'Phone number',
-        'Allergies', 'Alcohol', 'Lactose free', 'Gluten free', 'Vegetarian'
-    ]
-
-    writer = csv.writer(response)
-    writer.writerow(csv_headers)
-    for attendant in queryset:
-        writer.writerow([
-            attendant.first_name, attendant.last_name, attendant.email, attendant.gender, attendant.phone_number,
-            attendant.allergies, attendant.wants_alcohol, attendant.wants_lactose_free_food,
-            attendant.wants_gluten_free_food, attendant.wants_vegetarian_food
-        ])
-    return response
-
-
-@admin.register(BanquetteAttendant)
-class BanquetAdmin(admin.ModelAdmin):
-    actions = [export_banquet_attendants_as_csv]
-    search_fields = ('first_name', 'last_name')
 
 
 admin.site.register(WorkField)

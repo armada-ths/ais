@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from . import views
-from .models import BanquetteAttendant
+from banquet.models import BanquetteAttendant
 from orders.models import Order
 from companies.models import Contact
 
