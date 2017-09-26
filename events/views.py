@@ -1,15 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from events.forms import AttendenceForm
-from events.models import EventQuestion, Event, EventAnswer, EventAttendence
-from events.templatetags.event_extras import user_attending_event, \
-    registration_open, user_eligible_event
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
+
 from recruitment.models import CustomFieldAnswer
 from fair.models import Fair
+
+from .forms import AttendenceForm, EventForm
+from .models import EventQuestion, Event, EventAnswer, EventAttendence
+from .templatetags.event_extras import user_attending_event, registration_open, user_eligible_event
 
 
 def send_mail_on_submission(user, event):
@@ -84,15 +85,15 @@ def event_unattend(request, year, pk):
 def event_edit(request, year, pk=None, template_name='events/event_form.html'):
     fair = get_object_or_404(Fair, year=year)
     event = Event.objects.filter(pk=pk).first()
-    EventForm = modelform_factory(Event, exclude=('extra_field', 'image', 'fair'))
-    form = EventForm(request.POST or None, instance=event)
+    form = EventForm(request.POST or None, request.FILES or None, instance=event)
+    
     if form.is_valid():
         event = form.save(commit=False)
         event.fair = fair
         event.save()
         event.extra_field.handle_questions_from_request(request, 'extra_field')
         return redirect('event_list', fair.year)
-
+    
     return render(request, template_name, {
         "event": event, "form": form,
         'custom_fields': event.extra_field.customfield_set.all() if event and event.extra_field else None,

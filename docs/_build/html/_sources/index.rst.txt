@@ -1,0 +1,43 @@
+.. Armada Internal Systems documentation master file, created by
+   sphinx-quickstart on Sat Sep 16 13:38:26 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to Armada Internal Systems's documentation!
+===================================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   Complete Registration
+   ===============
+   Text about complete registration
+
+   Form
+   ----------------
+   Subtitles are set with '-' and are required to have the same length
+   of the subtitle itself, just like titles.
+
+   Lists can be unnumbered like:
+
+    * Item Foo
+    * Item Bar
+
+   Or automatically numbered:
+
+    #. Item 1
+    #. Item 2
+
+   View
+   -------------
+   Words can have *emphasis in italics* or be **bold** and you can define
+   code samples with back quotes, like when you talk about a command: ``sudo``
+   gives you super user powers!
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

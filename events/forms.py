@@ -1,6 +1,7 @@
 from django.forms import ModelForm, formset_factory
-from events.models import EventAttendence, EventAnswer
 from django import forms
+
+from .models import EventAttendence, EventAnswer, Event
 
 class AttendenceForm(forms.Form):
 
@@ -16,3 +17,20 @@ class AttendenceForm(forms.Form):
             self.fields['question_%s' % i] = forms.CharField(label=question, required=question.required)
             self.fields['question_%s' % i].id = question.id
             self.fields['question_%s' % i].initial = answer.answer if answer else ""
+
+
+class EventForm(ModelForm):
+    
+    class Meta:
+        model = Event
+        exclude = {'extra_field', 'image', 'fair'}
+        widgets = {
+            'event_start': forms.DateTimeInput(),
+            'event_end': forms.DateTimeInput(),
+            'capacity': forms.NumberInput()
+        }
+        labels = {
+            'event_start': 'Event start (format: 2017-12-24 13:37:00)',
+            'event_end': 'Event end (format: 2017-12-24 13:37:00)',
+            'image_original': 'Event image'
+        }
