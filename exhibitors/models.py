@@ -174,12 +174,18 @@ class ExhibitorView(models.Model):
     '''
     # A set of field names from Exhibitor model, that are not supposed to be selectable
     ignore = {'user', 'id', 'pk'}
-    # A set of field names from Exhibitor model, that are shown by default
-    default = {'location', 'host', 'superior', 'status'}
     user = models.ForeignKey(User)
     # The idea is to store field name for fields that a user selected to view (shouldn't be too many)
     # and make this procedural, so if the Exhibitor model changes, no large changes to this model would be necessary
     choices = models.TextField()
+
+    def create(self):
+        # A set of field names from Exhibitor model, that are shown by default
+        default = {'location', 'host', 'superior', 'status'}
+            
+        for field in default:
+            self.choices = self.choices + ' ' + field
+        self.save()
 
 
 class BanquetteAttendant(models.Model):

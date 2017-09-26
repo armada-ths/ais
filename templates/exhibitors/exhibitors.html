@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load getattr %}
 {% load crispy_forms_tags %}
 {% block nav-exhibitors %}
     <li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
@@ -11,11 +12,10 @@
         <thead>
         <tr>
             <th>Exhibitor</th>
-            <th>Location</th>
-            <th>Host</th>
-            <th>Superior</th>
-            <th>Status</th>
-        </tr>
+            {% for field in fields %}
+                <th>{{ field }}</th>
+            {% endfor %}
+            </tr>
         </thead>
         <tbody>
         {% for exhibitor in exhibitors %}
@@ -25,23 +25,9 @@
                 {% else %}
                     <td>{{ exhibitor.company }}</td>
                 {% endif %}
-                <td>{{ exhibitor.location|default:"" }}</td>
-                <td>
-					{% for host in exhibitor.hosts.all %}
-						<a href="{% url 'view_person' fair.year  host.pk %}">{{ host.get_full_name | default:"" }}</a>
-						{% if not forloop.last %}
-							<br>
-						{% endif %}
-					{% endfor %}
-				</td>
-                <td>
-                    {% for superior in exhibitor.superiors %}
-                    <a href="{% url 'view_person' fair.year  superior.pk %}">{{ superior.get_full_name }}</a>
-                    {% endfor %}
-                </td>
-                <td>
-                    {{ exhibitor.get_status_display|default:"" }}
-                </td>
+                {% for field in fields %}
+                    <td>{{ exhibitor|getattr:field|default:"" }}</td>
+                {% endfor %}
             </tr>
         {% endfor %}
         </tbody>
