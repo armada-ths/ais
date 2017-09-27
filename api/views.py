@@ -9,14 +9,14 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 
 import api.serializers as serializers
-from events.models import Event
+from events.models import Event     
 from exhibitors.models import Exhibitor
 from fair.models import Partner
 from news.models import NewsArticle
 from exhibitors.models import BanquetteAttendant
 from fair.models import Fair
 
-fair = get_object_or_404(Fair, current=True)
+fair = Fair.objects.get(current=True)
 
 
 def root(request):
