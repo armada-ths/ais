@@ -6,6 +6,7 @@ import subprocess
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
+from django.shortcuts import get_object_or_404
 
 import api.serializers as serializers
 from events.models import Event
@@ -15,7 +16,7 @@ from news.models import NewsArticle
 from exhibitors.models import BanquetteAttendant
 from fair.models import Fair
 
-CURRENT_FAIR = 'Armada 2016'
+fair = get_object_or_404(Fair, current=True)
 
 
 def root(request):
@@ -25,7 +26,7 @@ def root(request):
 @cache_page(60 * 5)
 def exhibitors(request):
     exhibitors = Exhibitor.objects.filter(
-        fair__name=CURRENT_FAIR
+        fair=fair
     ).select_related('cataloginfo').prefetch_related(
         'cataloginfo__programs',
         'cataloginfo__main_work_field',
@@ -57,7 +58,7 @@ def news(request):
 @cache_page(60 * 5)
 def partners(request):
     partners = Partner.objects.filter(
-        fair__name=CURRENT_FAIR
+        fair=fair
     ).order_by('-main_partner')
     data = [serializers.partner(request, partner) for partner in partners]
     return JsonResponse(data, safe=False)
@@ -70,7 +71,7 @@ def organization(request):
         .order_by('name')
 
     # We only want groups that belong to roles that have been recruited during the current fair
-    fair = Fair.objects.get(name=CURRENT_FAIR)
+    fair = get_object_or_404(Fair, current=True)
     recruitment_period_roles = [period.recruitable_roles.all() for period in fair.recruitmentperiod_set.all()]
     role_groups = [role.group for roles in recruitment_period_roles for role in roles]
     groups = [group for group in all_groups if group in role_groups]
