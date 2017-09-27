@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load getattr %}
+{% load exhibitor_model %}
 {% load crispy_forms_tags %}
 {% block nav-exhibitors %}
     <li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
@@ -13,7 +13,7 @@
         <tr>
             <th>Exhibitor</th>
             {% for field in fields %}
-                <th>{{ field }}</th>
+                <th>{% get_field_name field %}</th>
             {% endfor %}
             </tr>
         </thead>
@@ -26,7 +26,7 @@
                     <td>{{ exhibitor.company }}</td>
                 {% endif %}
                 {% for field in fields %}
-                    <td>{{ exhibitor|getattr:field|default:"" }}</td>
+                    <td>{{ exhibitor|get_value:field }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
