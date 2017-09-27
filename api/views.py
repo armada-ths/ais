@@ -16,8 +16,6 @@ from news.models import NewsArticle
 from exhibitors.models import BanquetteAttendant
 from fair.models import Fair
 
-fair = Fair.objects.get(current=True)
-
 
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
@@ -25,6 +23,7 @@ def root(request):
 
 @cache_page(60 * 5)
 def exhibitors(request):
+    fair = Fair.objects.get(current=True)
     exhibitors = Exhibitor.objects.filter(
         fair=fair
     ).select_related('cataloginfo').prefetch_related(
@@ -57,6 +56,7 @@ def news(request):
 
 @cache_page(60 * 5)
 def partners(request):
+    fair = Fair.objects.get(current=True)
     partners = Partner.objects.filter(
         fair=fair
     ).order_by('-main_partner')
@@ -66,6 +66,7 @@ def partners(request):
 
 @cache_page(60 * 5)
 def organization(request):
+    fair = Fair.objects.get(current=True)
     all_groups = Group.objects \
         .prefetch_related('user_set__profile') \
         .order_by('name')
