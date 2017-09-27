@@ -112,4 +112,22 @@ class ExhibitorTestCase(TestCase):
         self.assertTrue(login)
 
         response = client.get('/fairs/2017/exhibitors/')
-        
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/fairs/2017/exhibitors/view')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.post('/fairs/2017/exhibitors/view', {
+            'order': True,
+            'fair': True,
+            'booth_number': True
+            })
+        self.assertEqual(response.url, '/fairs/2017/exhibitors/')
+
+        response = client.get(response.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('Order' in str(response.content))
+        self.assertTrue('Fair' in str(response.content))
+        self.assertTrue('booth_number' not in str(response.content))
+        self.assertTrue('banquette' not in str(response.content))
+        self.assertTrue('Hosts' not in str(response.content))

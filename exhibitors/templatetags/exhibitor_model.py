@@ -15,16 +15,8 @@ def field_hosts(model):
     return retstr
 
 
-def field_superiors(model):
-    retstr = ''
-    for superior in model.superiors():
-        retstr += superior.get_full_name() + '\n'
-    return retstr
-
-
 special_fields = {
     'hosts': field_hosts,
-    'superiors': field_superiors
 }
 
 
@@ -54,5 +46,7 @@ names = {
 def getFieldName(name):
     if name in names:
         return names[name]
-    else:
+    elif hasattr(Exhibitor._meta.get_field(name), 'verbose_name'):
         return Exhibitor._meta.get_field(name).verbose_name.capitalize()
+    else:
+        return name.capitalize()    # might have a '_' inside, but generally also works

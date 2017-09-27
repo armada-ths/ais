@@ -39,7 +39,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     })
 
 
-@permission_required('exhibitor.view_exhibitors', raise_exception=True)
+@permission_required('exhibitors.view_exhibitors', raise_exception=True)
 def edit_view(request, year, template_name='exhibitors/edit_view.html'):
     view = ExhibitorView.objects.filter(user=request.user).first()
     form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
