@@ -28,6 +28,9 @@ class ExhibitorTestCase(TestCase):
         product1 = Product.objects.create(fair=fair, name='product1', coa_number=5, price=100)
         product2 = Product.objects.create(fair=fair, name='product2', coa_number=5, price=200)
 
+        editor = User.objects.create_user(username='editor', password='editor')
+        editor.user_permissions.add(Permission.objects.get(codename='view_exhibitors'))
+
 
     def testEmailFunction(self):
         client = Client()
@@ -105,9 +108,8 @@ class ExhibitorTestCase(TestCase):
     def testExhibitorView(self):
         client = Client()
         
-        login=client.login(username='harry_potter', password='hej')
+        login=client.login(username='editor', password='editor')
         self.assertTrue(login)
 
         response = client.get('/fairs/2017/exhibitors/')
-        print(response)
-        # todo: get harry some permissions
+        
