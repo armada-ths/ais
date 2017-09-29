@@ -130,9 +130,7 @@ If there areno open recrutiment it returns an empty list.
 def recruitment(request):
     fair = Fair.objects.get(current=True)
     recruitments = RecruitmentPeriod.objects.filter(fair=fair)
-    print(recruitments)
     recruitments = list(filter(lambda rec: (rec.start_date < timezone.now()) & (rec.end_date > timezone.now()), recruitments)) #Make sure only current recruitments are shown
-    print(recruitments)
     data = []
     for recruitment in recruitments:
         roles_info = []

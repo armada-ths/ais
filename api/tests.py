@@ -97,17 +97,16 @@ class NewsTestCase(TestCase):
 class RecruitmentTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        fair = Fair(name='Armada 2017', current=True, pk=1)
+        fair = Fair(name='Armada 2017', current=True)
         fair.save()
         tomorrow = timezone.now() + datetime.timedelta(days=1)
         yesterday = timezone.now() - datetime.timedelta(days=1)
-        role1 = Role(name='role1', description='role1 description', pk=1)
+        role1 = Role(name='role1', description='role1 description')
         role1.save()
-        role2 = Role(name='role2', parent_role=role1, description='role2 description', pk=2)
+        role2 = Role(name='role2', parent_role=role1, description='role2 description')
         role2.save()
         self.recruitment = RecruitmentPeriod(
             name="current recruitment", 
-            pk=1,
             start_date=yesterday, 
             end_date=tomorrow, 
             interview_end_date=tomorrow, 
@@ -115,46 +114,43 @@ class RecruitmentTestCase(TestCase):
             recruitable_roles=[role2],
         )
         self.recruitment.save()
-        recruitment2 = RecruitmentPeriod(
+        self.recruitment2 = RecruitmentPeriod(
             name="current recruitment2", 
-            pk=2,
             start_date=yesterday, 
             end_date=tomorrow, 
             interview_end_date=tomorrow, 
             fair=fair,
             recruitable_roles=[role2],
         )
-        recruitment2.save()
-        recruitment_past = RecruitmentPeriod(
+        self.recruitment2.save()
+        self.recruitment_past = RecruitmentPeriod(
             name='past recruitment',
-            pk=3,
             start_date=yesterday,
             end_date=yesterday,
             interview_end_date=tomorrow,
             fair=fair,
             recruitable_roles=[role2],
         )
-        recruitment_past.save()
-        recruitment_future=RecruitmentPeriod(
+        self.recruitment_past.save()
+        self.recruitment_future=RecruitmentPeriod(
             name='future recruitment',
-            pk=4,
             start_date=yesterday,
             end_date=yesterday,
             interview_end_date=tomorrow,
             fair=fair,
             recruitable_roles=[role2],
         )
-        recruitment_future.save()
+        self.recruitment_future.save()
 
     def test_view(self):
         #See that all current recruitment are included but not recruitments that are not open
         request = self.factory.get('/api/recruitment')
         response = views.recruitment(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
-        recruitments = json.loads(response.content.decode(response.charset))
-        self.assertEqual(len(recruitments), 2)
+        self.recruitments = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(self.recruitments), 2)
         #Test content for one recruitment
-        self.assertEqual(recruitments[0]['name'], 'current recruitment') 
-        self.assertEqual(recruitments[0]['roles'][0]['name'], 'role2')
+        self.assertEqual(self.recruitments[0]['name'], 'current recruitment') 
+        self.assertEqual(self.recruitments[0]['roles'][0]['name'], 'role2')
 
         
