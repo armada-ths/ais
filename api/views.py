@@ -19,12 +19,13 @@ from fair.models import Fair
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
 
-'''
-Returns the existing cataloginfo for exhibitors in current fair. 
-Does not return anything for those exhibitors that are without catalog info.
-'''
+
 @cache_page(60 * 5)
 def exhibitors(request):
+    '''
+    Returns the existing cataloginfo for exhibitors in current fair. 
+    Does not return anything for those exhibitors that are without catalog info.
+    '''
     fair = Fair.objects.get(current=True)
     cataloginfos = CatalogInfo.objects.filter(exhibitor__in = Exhibitor.objects.filter(fair=fair)).prefetch_related(
         'programs',
@@ -39,33 +40,32 @@ def exhibitors(request):
     data.sort(key=lambda x: x['name'].lower())
     return JsonResponse(data, safe=False)
 
-
-'''
-Returns all events for this years fair
-'''
 @cache_page(60 * 5)
 def events(request):
+    '''
+    Returns all events for this years fair
+    '''
     fair = Fair.objects.get(current=True)
     events = Event.objects.filter(published=True, fair=fair)
     data = [serializers.event(request, event) for event in events]
     return JsonResponse(data, safe=False)
 
 
-'''
-Returns all news
-'''
+
 @cache_page(60 * 5)
 def news(request):
+    '''
+    Returns all news
+    '''
     news = NewsArticle.public_articles.all()
     data = [serializers.newsarticle(request, article) for article in news]
     return JsonResponse(data, safe=False)
 
-
-'''
-Returns all partners for current fair
-'''
 @cache_page(60 * 5)
 def partners(request):
+    '''
+    Returns all partners for current fair
+    '''
     fair = Fair.objects.get(current=True)
     partners = Partner.objects.filter(
         fair=fair
@@ -73,12 +73,11 @@ def partners(request):
     data = [serializers.partner(request, partner) for partner in partners]
     return JsonResponse(data, safe=False)
 
-
-'''
-Returns all roles for current fair
-'''
 @cache_page(60 * 5)
 def organization(request):
+    '''
+    Returns all roles for current fair
+    '''    
     fair = Fair.objects.get(current=True)
     all_groups = Group.objects \
         .prefetch_related('user_set__profile') \
@@ -107,13 +106,12 @@ def status(request):
     ])
     return JsonResponse(data, safe=False)
 
-
-'''
-Returns all banquet attendance. 
-The field hob_title depends on weather a attendant is a user or exhibitor.
-'''
 @cache_page(60 * 5)
 def banquet_placement(request):
+    '''
+    Returns all banquet attendance. 
+    The field hob_title depends on weather a attendant is a user or exhibitor.
+    '''
     # Tables and seats are mocked with this index, remove when implemented
     index = 0
     banquet_attendees = BanquetteAttendant.objects.all()
