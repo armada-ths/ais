@@ -163,7 +163,7 @@ def emails_confirmation(request, year, pk, template_name='exhibitors/emails_conf
     fair = get_object_or_404(Fair, year=year)   
     return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
 
-#Sends email to exhibitor with their cúrrent orders
+'''Sends email to exhibitor with their cúrrent orders'''
 def send_cr_receipts(request, year, pk):
     if not request.user.is_staff:
         return HttpResponseForbidden()

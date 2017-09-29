@@ -52,7 +52,7 @@ class EventTestCase(TestCase):
         self.factory = RequestFactory(HTTP_HOST='test.com')
 
         now = timezone.now()
-        test_fair = Fair(name="Armada 2000")
+        test_fair = Fair(name="Armada 2000", current=True)
         test_fair.save()
 
         self.event = Event(

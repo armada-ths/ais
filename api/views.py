@@ -10,43 +10,50 @@ from django.shortcuts import get_object_or_404
 
 import api.serializers as serializers
 from events.models import Event     
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner
 from news.models import NewsArticle
 from exhibitors.models import BanquetteAttendant
 from fair.models import Fair
 
-
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
 
-
+'''
+Returns the existing cataloginfo for exhibitors in current fair. 
+Does not return anything for those exhibitors that are without catalog info.
+'''
 @cache_page(60 * 5)
 def exhibitors(request):
     fair = Fair.objects.get(current=True)
-    exhibitors = Exhibitor.objects.filter(
-        fair=fair
-    ).select_related('cataloginfo').prefetch_related(
-        'cataloginfo__programs',
-        'cataloginfo__main_work_field',
-        'cataloginfo__work_fields',
-        'cataloginfo__job_types',
-        'cataloginfo__continents',
-        'cataloginfo__values',
+    cataloginfos = CatalogInfo.objects.filter(exhibitor__in = Exhibitor.objects.filter(fair=fair)).prefetch_related(
+        'programs',
+        'main_work_field',
+        'work_fields',
+        'job_types',
+        'continents',
+        'values',
     )
-    data = [serializers.exhibitor(request, exhibitor.cataloginfo)
-            for exhibitor in exhibitors]
+    data = [serializers.exhibitor(request, cataloginfo)
+            for cataloginfo in cataloginfos]
     data.sort(key=lambda x: x['name'].lower())
     return JsonResponse(data, safe=False)
 
 
+'''
+Returns all events for this years fair
+'''
 @cache_page(60 * 5)
 def events(request):
-    events = Event.objects.filter(published=True)
+    fair = Fair.objects.get(current=True)
+    events = Event.objects.filter(published=True, fair=fair)
     data = [serializers.event(request, event) for event in events]
     return JsonResponse(data, safe=False)
 
 
+'''
+Returns all news
+'''
 @cache_page(60 * 5)
 def news(request):
     news = NewsArticle.public_articles.all()
@@ -54,6 +61,9 @@ def news(request):
     return JsonResponse(data, safe=False)
 
 
+'''
+Returns all partners for current fair
+'''
 @cache_page(60 * 5)
 def partners(request):
     fair = Fair.objects.get(current=True)
@@ -64,6 +74,9 @@ def partners(request):
     return JsonResponse(data, safe=False)
 
 
+'''
+Returns all roles for current fair
+'''
 @cache_page(60 * 5)
 def organization(request):
     fair = Fair.objects.get(current=True)
@@ -95,6 +108,10 @@ def status(request):
     return JsonResponse(data, safe=False)
 
 
+'''
+Returns all banquet attendance. 
+The field hob_title depends on weather a attendant is a user or exhibitor.
+'''
 @cache_page(60 * 5)
 def banquet_placement(request):
     # Tables and seats are mocked with this index, remove when implemented
@@ -109,8 +126,8 @@ def banquet_placement(request):
             recruitment_application = recruitment_applications.filter(user=attendence.user).first()
             if recruitment_application:
                 attendence.job_title = 'Armada: ' + recruitment_application.delegated_role.name
-            if not attendence.linkedin_url:
-                attendence.linkedin_url = attendence.user.profile.linkedin_url
+            #if not attendence.linkedin_url & attendence.user.profile.linkedin_url:
+            #    attendence.linkedin_url = attendence.user.profile.linkedin_url
         if attendence.exhibitor:
             job_title = attendence.job_title
             attendence.job_title = attendence.exhibitor.company.name
