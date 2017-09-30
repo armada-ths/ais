@@ -110,11 +110,11 @@ def status(request):
 def banquet_placement(request):
     '''
     Returns all banquet attendance. 
-    The field hob_title depends on weather a attendant is a user or exhibitor.
+    The field job_title depends on weather a attendant is a user or exhibitor.
     '''
     # Tables and seats are mocked with this index, remove when implemented
     index = 0
-    banquet_attendees = BanquetteAttendant.objects.all()
+    banquet_attendees = BanquetteAttendant.objects.filter(fair=Fair.objects.get(current=True))
 
     from recruitment.models import RecruitmentApplication
     recruitment_applications = RecruitmentApplication.objects.filter(status='accepted')
