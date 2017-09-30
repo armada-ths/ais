@@ -25,7 +25,10 @@ def user_can_modify_exhibitor(user, exhibitor):
 
 @permission_required('exhibitors.view_exhibitors', raise_exception=True)
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
-    fair = get_object_or_404(Fair, year=year, current=True)
+    if not request.user.has_perm('exhibitors.view_exhibitors'):
+        return HttpResponseForbidden()
+    fair = get_object_or_404(Fair, year=year)
+
 
     view = ExhibitorView.objects.filter(user=request.user).first()
     if not view: view = ExhibitorView(user=request.user).create()
@@ -60,7 +63,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     if not user_can_modify_exhibitor(request.user, exhibitor):
         return HttpResponseForbidden()
 
-    fair = get_object_or_404(Fair, year=year, current=True)
+    fair = get_object_or_404(Fair, year=year)
 
 
     invoice_fields = (
@@ -185,7 +188,7 @@ def emails_confirmation(request, year, pk, template_name='exhibitors/emails_conf
     fair = get_object_or_404(Fair, year=year)   
     return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
 
-#Sends email to exhibitor with their cúrrent orders
+'''Sends email to exhibitor with their cúrrent orders'''
 def send_cr_receipts(request, year, pk):
     if not request.user.is_staff:
         return HttpResponseForbidden()
@@ -226,7 +229,7 @@ def send_cr_receipts(request, year, pk):
 
 def related_object_form(model, model_name, delete_view_name):
     def view(request, year, exhibitor_pk, instance_pk=None, template_name='exhibitors/related_object_form.html'):
-        fair = get_object_or_404(Fair, year=year, current=True)
+        fair = get_object_or_404(Fair, year=year)
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):
             return HttpResponseForbidden()
@@ -250,7 +253,7 @@ def related_object_form(model, model_name, delete_view_name):
 
 def related_object_delete(model):
     def view(request, year, exhibitor_pk, instance_pk):
-        fair = get_object_or_404(Fair, year=year, current=True)
+        fair = get_object_or_404(Fair, year=year)
         instance = get_object_or_404(model, pk=instance_pk)
         exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
         if not user_can_modify_exhibitor(request.user, exhibitor):
