@@ -116,6 +116,12 @@ def banquet_placement(request):
                 attendence.job_title += ': ' + job_title
 
 
+
         data.append(serializers.banquet_placement(request, attendence, index))
         index += 1
     return JsonResponse(data, safe=False)
+
+
+def student_profiles(request):
+    return JsonResponse(["hej"], safe=False)
+        

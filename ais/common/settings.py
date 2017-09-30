@@ -45,7 +45,8 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'sales',
     'register',
-    'matching'
+    'matching',
+    'student_profiles'
 )
 
 
