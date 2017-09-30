@@ -1,8 +1,9 @@
 from django.test import TestCase
 from fair.models import Fair
-from .models import Exhibitor 
+from .models import Exhibitor
 from companies.models import Company, Contact
-from orders.models import Order, Product, ProductType 
+from orders.models import Order, Product, ProductType
+from banquet.models import BanquetteAttendant
 from django.contrib.auth.models import User
 from django.test import Client
 from django.core import mail
@@ -17,16 +18,48 @@ class ExhibitorTestCase(TestCase):
 
 	def setUp(self):
 		fair = Fair.objects.create(name='Armada 2017', year=2017, current=True)
+		fairOld = Fair.objects.create(name='Armada Old', year=2016, current=False, pk=99133799)
 		user = User.objects.create(username='harry_potter', email='harry@potter.com')
 		user.set_password('hej')
 		user.save()
 		company = Company.objects.create(name='TestCompany', organisation_number='123')
-		contact = Contact.objects.create(user=user, belongs_to=company, email=user.email)		
+		contact = Contact.objects.create(user=user, belongs_to=company, email=user.email)
 
 		exhibitor = Exhibitor.objects.create(fair=fair, company=company, contact=contact, pk=1)
 
 		product1 = Product.objects.create(fair=fair, name='product1', coa_number=5, price=100)
 		product2 = Product.objects.create(fair=fair, name='product2', coa_number=5, price=200)
+
+
+	def banquetAttendatsFromCorrectYear(self):
+		banquetAttendant = BanquetteAttendant.objects.create(
+			fair=Fair.objects.get(pk=99133799),
+			exhibitor=Exhibitor.objects.get(pk=1),
+			first_name="Dear",
+			last_name="Prudence",
+			email="prudence@dear.com",
+			gender="Other",
+			phone_number="0000000000",
+		)
+
+		# login with an admin account just to be sure that all permission are with the user
+		client = Client()
+		adminUser = User.objects.create(username='admin', email='admin@admin.com', is_superuser=True)
+		adminUser.set_password('hej')
+		adminUser.save()
+		login=client.login(username='admin', password='hej')
+		self.assertEqual(login, True)
+
+		# go to an exhibitor
+		response = client.get('/fairs/2017/exhibitors/1/')
+		self.assertEqual(response.status_code, 200)
+
+		for ba in response.banquet_attendants:
+			if ba == banquetAttendant:
+				self.fail("old banquet attendant in view!")
+				
+		self.assertEqual(response.banquet_attendants, 200)
+
 
 
 	def testEmailFunction(self):
@@ -38,8 +71,8 @@ class ExhibitorTestCase(TestCase):
 		adminUser.save()
 		login=client.login(username='admin', password='hej')
 		self.assertEqual(login, True)
-		
-		#Should NOT work to send email for user without staffstatus 
+
+		#Should NOT work to send email for user without staffstatus
 		response = client.get('/fairs/2017/exhibitors/1/')
 		self.assertEqual(response.status_code, 200)
 		response = client.get('/fairs/2017/exhibitors/1/send_emails/')
@@ -88,6 +121,3 @@ class ExhibitorTestCase(TestCase):
             'exhibitor_name' : exhibitor.company.name,
             }))
 		)
-
-
-

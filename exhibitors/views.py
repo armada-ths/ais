@@ -14,6 +14,7 @@ from companies.models import Company, Contact
 from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
+from banquet.models import BanquetteAttendant
 
 import logging
 
@@ -40,6 +41,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
 
     fair = get_object_or_404(Fair, year=year, current=True)
 
+    banquet_attendants = BanquetteAttendant.objects.filter(fair=fair, exhibitor=exhibitor)
 
     invoice_fields = (
     'invoice_reference', 'invoice_reference_phone_number', 'invoice_organisation_name', 'invoice_address',
@@ -135,7 +137,8 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'armada_transport_from_fair_form': armada_transport_from_fair_form,
         'company_form': company_form,
         'stand_form': stand_form,
-        'fair': fair
+        'fair': fair,
+        'banquet_attendants': banquet_attendants,
     })
 
 
