@@ -13,6 +13,7 @@ from companies.models import Company, Contact
 from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
+from banquet.models import BanquetteAttendant
 
 from .forms import ExhibitorViewForm
 from .models import Exhibitor, ExhibitorView
@@ -65,6 +66,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
 
     fair = get_object_or_404(Fair, year=year)
 
+    banquet_attendants = BanquetteAttendant.objects.filter(fair=fair, exhibitor=exhibitor)
 
     invoice_fields = (
     'invoice_reference', 'invoice_reference_phone_number', 'invoice_organisation_name', 'invoice_address',
@@ -139,7 +141,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         invoice_form.save()
         transport_to_fair_form.save()
         transport_from_fair_form.save()
-        company_form.save()	
+        company_form.save()
         armada_transport_from_fair_form.save()
         stand_form.save()
         return redirect('exhibitors', fair.year)
@@ -160,15 +162,16 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'armada_transport_from_fair_form': armada_transport_from_fair_form,
         'company_form': company_form,
         'stand_form': stand_form,
-        'fair': fair
+        'fair': fair,
+        'banquet_attendants': banquet_attendants,
     })
 
 
 #Where the user can chose to send email to an exhibiors with their orders
 def send_emails(request, year, pk, template_name='exhibitors/send_emails.html'):
     if not request.user.is_staff:
-        return HttpResponseForbidden()  
-    
+        return HttpResponseForbidden()
+
     fair = get_object_or_404(Fair, year=year)
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     no_contact = False
@@ -185,7 +188,7 @@ def emails_confirmation(request, year, pk, template_name='exhibitors/emails_conf
 
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
 
-    fair = get_object_or_404(Fair, year=year)   
+    fair = get_object_or_404(Fair, year=year)
     return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor})
 
 '''Sends email to exhibitor with their cúrrent orders'''
@@ -193,7 +196,7 @@ def send_cr_receipts(request, year, pk):
     if not request.user.is_staff:
         return HttpResponseForbidden()
 
-    fair = get_object_or_404(Fair, year=year)           
+    fair = get_object_or_404(Fair, year=year)
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     contact =  Contact.objects.get(exhibitor=exhibitor)
 
@@ -208,7 +211,7 @@ def send_cr_receipts(request, year, pk):
         amount = o.amount
         total_price += price*amount
 
-        order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount} 
+        order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount}
         orders_info.append(order)
 
 
@@ -223,7 +226,7 @@ def send_cr_receipts(request, year, pk):
         settings.DEFAULT_FROM_EMAIL,
         [contact.email],
         fail_silently=False)
-        
+
     return render(request, 'exhibitors/emails_confirmation.html', {'fair': fair, 'exhibitor': exhibitor})
 
 
