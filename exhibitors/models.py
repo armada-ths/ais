@@ -168,6 +168,26 @@ class Exhibitor(models.Model):
         permissions = (('view_exhibitors', 'View exhibitors'),)
 
 
+class ExhibitorView(models.Model):
+    '''
+    A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
+    '''
+    # A set of field names from Exhibitor model, that are not supposed to be selectable
+    ignore = {'user', 'id', 'pk', 'logo'}
+    user = models.ForeignKey(User)
+    # The idea is to store field name for fields that a user selected to view (shouldn't be too many)
+    # and make this procedural, so if the Exhibitor model changes, no large changes to this model would be necessary
+    choices = models.TextField()
+
+    def create(self):
+        # A set of field names from Exhibitor model, that are shown by default
+        default = {'location', 'hosts', 'status'}
+            
+        for field in default:
+            self.choices = self.choices + ' ' + field
+        self.save()
+        return self
+
 # Work field that an exhibitor operates in
 class WorkField(models.Model):
     name = models.CharField(max_length=64)
