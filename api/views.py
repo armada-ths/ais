@@ -6,6 +6,7 @@ import subprocess
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
+from django.shortcuts import get_object_or_404
 
 import api.serializers as serializers
 from events.models import Event
@@ -14,6 +15,7 @@ from fair.models import Partner
 from news.models import NewsArticle
 from exhibitors.models import BanquetteAttendant
 from fair.models import Fair
+from student_profiles.models import StudentProfile
 
 CURRENT_FAIR = 'Armada 2016'
 
@@ -123,5 +125,12 @@ def banquet_placement(request):
 
 
 def student_profiles(request):
-    return JsonResponse(["hej"], safe=False)
+    '''
+    Get student profiles id.
+    Url: /student_profiles?student_id=STUDENTPROFILEID
+    '''
+    student_id = request.GET['student_id']
+    student = get_object_or_404(StudentProfile, pk=student_id)
+    data = [OrderedDict([('nickname', student.nickname)])]
+    return JsonResponse(data, safe=False)
         
