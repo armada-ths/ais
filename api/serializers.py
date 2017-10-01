@@ -101,7 +101,11 @@ def newsarticle(request, newsarticle):
         ('title', newsarticle.title),
         ('date_published', unix_time(newsarticle.publication_date)),
         ('html_article_text', newsarticle.html_article_text),
-        ('image', image_url_or_missing(request, newsarticle.image)),
+        ('image', image_url_or_missing(request, newsarticle.image_3x_wide)),
+        ('image_3x', image_url_or_missing(request, newsarticle.image_3x_wide)),
+        ('image_2x_wide', image_url_or_missing(request, newsarticle.image_2x_wide)),
+        ('image_3x', image_url_or_missing(request, newsarticle.image_3x)),
+        ('image_2x_wide', image_url_or_missing(request, newsarticle.image_2x)),
     ])
 
 

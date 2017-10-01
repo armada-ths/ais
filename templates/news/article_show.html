@@ -5,6 +5,12 @@
 
 {% block content %}
 	<div class="container">
+        {% if article.image_3x_wide %}
+            <div><img src="/media/{{ article.image_3x_wide }}" style="max-width: 100%; max-height: 400px;"></div>
+        {% elif article.image_3x %}
+            <div><img src="/media/{{ article.image_3x }}" style="max-width: 100%; max-height: 400px;"></div>
+        {% endif %}
+
 		<h1>{{ article.title }}</h1>
 		<h4><i>{{ article.publication_date }}</i></h4>
 		{{ article.html_article_text|safe }}
