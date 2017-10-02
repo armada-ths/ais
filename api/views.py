@@ -126,11 +126,25 @@ def banquet_placement(request):
 
 def student_profiles(request):
     '''
-    Get student profiles id.
+    GET student profiles nickname by their id.
     Url: /student_profiles?student_id=STUDENTPROFILEID
+    or
+    PUT nickname
     '''
-    student_id = request.GET['student_id']
-    student = get_object_or_404(StudentProfile, pk=student_id)
-    data = [OrderedDict([('nickname', student.nickname)])]
+    if request.method == 'GET':
+        student_id = request.GET['student_id']
+        student = get_object_or_404(StudentProfile, pk=student_id)
+        data = [OrderedDict([('nickname', student.nickname)])]
+
+    else:
+        put = QueryDict(request.body)
+        nickname = put.get('nickname')
+        student_id = put.get('student_id')
+        student_profile = StudentProfile.objects.get(pk=student_id)
+        student_profile.nickname = nickname
+        student_profile.save()
+        data=[]
+
     return JsonResponse(data, safe=False)
+
         
