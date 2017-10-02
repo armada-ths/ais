@@ -1,7 +1,7 @@
 from django.forms import modelform_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import BanquetteAttendant
-from .forms import BanquetteAttendantForm
+from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
 from django.urls import reverse
 from fair.models import Fair
 
@@ -52,3 +52,28 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
 
     # not authenticated:
     return render(request, 'login.html', {'next': next, 'fair': fair})
+
+def banquet_external_signup(request, year, template_name='banquet/banquet_attendant.html'):
+    fair = get_object_or_404(Fair, year=year)
+
+    banquet_instance = None
+    user = None
+    if request.user.is_authenticated():
+        try:
+            user = request.user
+            banquet_instance = BanquetteAttendant.objects.get(user=user)
+        except BanquetteAttendant.DoesNotExist:
+            pass
+
+    form = ExternalBanquetSignupForm(
+        request.POST or None,
+        instance = banquet_instance,
+    )
+
+    if form.is_valid():
+        banquet_attendant = form.save(commit=False)
+        banquet_attendant.fair = fair
+        banquet_attendant.user = user
+        banquet_attendant.save()
+        return render(request, 'banquet/thank_you.html', {'fair': fair })
+    return render(request, template_name, {'form': form, 'fair': fair })

@@ -20,3 +20,9 @@ class BanquetteAttendantForm(ModelForm):
         model = BanquetteAttendant
         fields = '__all__'
         exclude = ('fair',)
+
+class ExternalBanquetSignupForm(ModelForm):
+    class Meta:
+        model = BanquetteAttendant
+        fields = '__all__'
+        exclude = ('fair','user', 'exhibitor', 'table_name', 'seat_number', 'ignore_from_placement')
