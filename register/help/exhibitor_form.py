@@ -18,10 +18,16 @@ from register.models import SignupContract, OrderLog
 from orders.models import Product, Order, ProductType
 from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 
-from .methods import get_time_flag, create_signup
+from .methods import get_time_flag, create_signup, create_or_update_order, delete_order_if_exists, \
+create_or_update_answer, create_or_update_response, delete_response_if_exists, product_amount_string
+
 
 BASE_PRICE = 39500
+BASE_PRODUCT_NAME = 'Base Kit \n'
 PRODUCT_LOG = ":"
+
+NumProduct = namedtuple('NumProduct', ['name', 'amount', 'price'])
+
 
 def create_exhibitor_form(request, fair, exhibitor, company, contact):
     # Get products which requires an amount and put them into the Exhibitor form
@@ -86,7 +92,6 @@ def create_exhibitor_form(request, fair, exhibitor, company, contact):
 
 
 def save_exhibitor_form(request, form, fair, company, contact):
-    productLog = "Base kit \n"
 
     # get selected products. IMPORTANT: NEEDS TO BE BEFORE form.save(commit=False)
     product_selection_rooms = form.cleaned_data['product_selection_rooms']
@@ -141,28 +146,28 @@ def save_exhibitor_form(request, form, fair, company, contact):
     # Boolean (checkmark) products
     bool_products = []
 	# TODO fetch prices from elsewhere
-    total_price = BASE_PRICE
+    total_price = BASE_PRICE    # total_price and product_log are updated within process_x functions
+    product_log = BASE_PRODUCT_NAME
 
     # process boolean orders
     for product in room_products:
-        process_product(product, product_selection_rooms, total_price, productLog)
+        (total_price, product_log) = process_product(product, product_selection_rooms, exhibitor, bool_products, total_price, product_log)
     for product in nova_products:
-        process_product(product, product_selection_nova, total_price, productLog)
+        (total_price, product_log) = process_product(product, product_selection_nova, exhibitor, bool_products, total_price, product_log)
 
     # process option orders
     for product in stand_area_products:
-        process_option_product(product, product_selection_additional_stand_area, total_price, productLog)
+        (total_price, product_log) = process_option_product(product, product_selection_additional_stand_area, exhibitor, bool_products, total_price, product_log)
     for product in stand_height_products:
-        process_option_product(product, product_selection_additional_stand_height, total_price, productLog)
+        (total_price, product_log) = process_option_product(product, product_selection_additional_stand_height, exhibitor, bool_products, total_price, product_log)
 
 	# Numerical (amount) products
     num_products = []
-    NumProduct = namedtuple('NumProduct', ['name', 'amount', 'price'])
-
+    
     # process numerical orders
-    process_num_orders(form, 'banquet_', total_price, productLog, num_products)
-    process_num_orders(form, 'lunch_', total_price, productLog, num_products)
-    process_num_orders(form, 'event_', total_price, productLog, num_products)
+    (total_price, product_log) = process_num_orders(form, 'banquet_', exhibitor, num_products, total_price, product_log)
+    (total_price, product_log) = process_num_orders(form, 'lunch_', exhibitor, num_products, total_price, product_log)
+    (total_price, product_log) = process_num_orders(form, 'event_', exhibitor, num_products, total_price, product_log)
 
 	# Longest name length for padding purposes
     def getNameLen(item):
@@ -196,7 +201,7 @@ def save_exhibitor_form(request, form, fair, company, contact):
             amount = 1
 
         if not product in current_base_kit_orders:
-            create_or_update_order(product, amount)
+            create_or_update_order(product, amount, exhibitor)
 
     try:
         matching_survey = Survey.objects.get(fair=fair, name='exhibitor-matching')
@@ -208,9 +213,9 @@ def save_exhibitor_form(request, form, fair, company, contact):
     for q in matching_questions:
         ans = form.cleaned_data['%s%d'%(prefix,q.pk)]
         if ans:
-            create_or_update_response(q, ans)
+            create_or_update_response(q, ans, exhibitor)
         else:
-            delete_response_if_exists(q, ans)
+            delete_response_if_exists(q, ans, exhibitor)
 
 
     # set exhibitor status to in progres if not already submitted
@@ -229,7 +234,7 @@ def save_exhibitor_form(request, form, fair, company, contact):
             data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)}))
 
         # log
-        log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='submit', fair=Fair.objects.get(current=True), products=productLog)
+        log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='submit', fair=Fair.objects.get(current=True), products=product_log)
         log.save()
 
         # send email
@@ -259,48 +264,51 @@ def save_exhibitor_form(request, form, fair, company, contact):
         return redirect('anmalan:cr_done')
     else:
         # create OrderLog
-        log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='save', fair=Fair.objects.get(current=True), products=productLog)
+        log = OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='save', fair=Fair.objects.get(current=True), products=product_log)
         log.save()
 #end of save_exhibitor_form()
 
 
-def process_product(product, selection, total_price, product_log):
+def process_product(product, selection, exhibitor, bool_products, total_price, product_log):
     if product in selection:
         bool_products.append(product)
         total_price += product.price
-        create_or_update_order(product, 1)
+        create_or_update_order(product, 1, exhibitor)
         product_log += product_amount_string(product, 1)
     else:
-        delete_order_if_exists(product)
+        delete_order_if_exists(product, exhibitor)
+    return (total_price, product_log)
 
 
-def process_option_product(product, selection, total_price, product_log):
+def process_option_product(product, selection, exhibitor, bool_products, total_price, product_log):
     # this is a fix due to replace in products_as_select_field foo in register/forms.py, which is needed for the js that generates a product list in the confirm and submit tab
     option = str(product.name)
     option = option.replace(" ", "")
     option = option.replace(",", "_")
-    if option in product_selection_additional_stand_area:
+    if option in selection:
         bool_products.append(product)
         total_price += product.price
-        create_or_update_order(product, 1)
+        create_or_update_order(product, 1, exhibitor)
         product_log += product_amount_string(product, 1)
     else:
-        delete_order_if_exists(product)
+        delete_order_if_exists(product, exhibitor)
+    return (total_price, product_log)
 
 
 # Create or update orders from products that can be chosen in numbers.
 # If they have an amount equal to zero then delete the order.
 # Try if amount is None
-def process_num_orders(form, prefix, total_price, product_log, num_products):
+def process_num_orders(form, prefix, exhibitor, num_products, total_price, product_log):
     for (product, amount) in form.amount_products(prefix):
         try:
             if amount > 0:
-                create_or_update_order(product, amount)
+                create_or_update_order(product, amount, exhibitor)
                 product_log += product_amount_string(product, amount)
                 num_products.append(NumProduct(product.name, amount, amount * product.price))
                 total_price += amount * product.price
             else:
-                delete_order_if_exists(product)
+                delete_order_if_exists(product, exhibitor)
         except TypeError:
             amount = 0
-            delete_order_if_exists(product)
+            delete_order_if_exists(product, exhibitor)
+    return (total_price, product_log)
