@@ -122,12 +122,13 @@ def banquet_placement(request):
     return JsonResponse(data, safe=False)
 
 
-'''
-ais.armada.nu/api/recruitment
-Returns all open recruitments and information about availeble roles for each recruitment.
-If there areno open recrutiment it returns an empty list.  
-'''
+
 def recruitment(request):
+    '''
+    ais.armada.nu/api/recruitment
+    Returns all open recruitments and information about availeble roles for each recruitment.
+    If there areno open recrutiment it returns an empty list.  
+    '''
     fair = Fair.objects.get(current=True)
     recruitments = RecruitmentPeriod.objects.filter(fair=fair)
     recruitments = list(filter(lambda rec: (rec.start_date < timezone.now()) & (rec.end_date > timezone.now()), recruitments)) #Make sure only current recruitments are shown
