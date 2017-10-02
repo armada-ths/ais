@@ -16,7 +16,7 @@ class ExhibitorTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory(HTTP_HOST='test.com')
         company = Company.objects.create(name='test')
-        fair = Fair.objects.create(name='Armada 2016')
+        fair = Fair.objects.create(name='Armada 2016', current=True)
         self.exhibitor = Exhibitor.objects.create(
                 company=company,
                 fair=fair,
@@ -52,7 +52,7 @@ class EventTestCase(TestCase):
         self.factory = RequestFactory(HTTP_HOST='test.com')
 
         now = timezone.now()
-        test_fair = Fair(name="Armada 2000")
+        test_fair = Fair(name="Armada 2000", current=True)
         test_fair.save()
 
         self.event = Event(
