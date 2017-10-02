@@ -1,19 +1,21 @@
-from django.forms import modelform_factory
+from django.forms import modelform_factory, TextInput
 from django.http import HttpResponseForbidden
 from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.mail import send_mail
-from django.forms import TextInput
 from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import get_connection, EmailMultiAlternatives
+from django.core.mail import get_connection, EmailMultiAlternatives, send_mail
+from django.contrib.auth.decorators import permission_required
 
-from exhibitors.models import Exhibitor
+
 from companies.models import Company, Contact
 from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
+
+from .forms import ExhibitorViewForm
+from .models import Exhibitor, ExhibitorView
 
 import logging
 
@@ -21,16 +23,36 @@ def user_can_modify_exhibitor(user, exhibitor):
     return user.has_perm(
         'exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
 
-
+@permission_required('exhibitors.view_exhibitors', raise_exception=True)
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
-    if not request.user.has_perm('exhibitors.view_exhibitors'):
-        return HttpResponseForbidden()
     fair = get_object_or_404(Fair, year=year, current=True)
+
+    view = ExhibitorView.objects.filter(user=request.user).first()
+    if not view: view = ExhibitorView(user=request.user).create()
+    fields = view.choices.split(' ')
+    fields.remove('')
 
     return render(request, template_name, {
         'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
+        'fields' : fields,
         'fair': fair
     })
+
+
+@permission_required('exhibitors.view_exhibitors', raise_exception=True)
+def edit_view(request, year, template_name='exhibitors/edit_view.html'):
+    view = ExhibitorView.objects.filter(user=request.user).first()
+    form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
+    
+    if form.is_valid():
+        form.save()
+        return redirect('exhibitors', year)
+
+    return render(request, template_name, {
+        'form': form,
+        'fair': get_object_or_404(Fair, year=year, current=True)
+    })
+
 
 
 def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
