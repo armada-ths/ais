@@ -1,8 +1,12 @@
+from django.utils import timezone
+from django.utils.timezone import utc
+
 from fair.models import Fair
 from register.models import SignupLog
 from orders.models import Order
 from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 
+import datetime
 
 def get_time_flag(close_offset = 7, warning_offset = 7):
     # used to close cr, a warning text after deadline will pop up, however exhibitors will not be permitted to do any changes after the offset in days has passed
