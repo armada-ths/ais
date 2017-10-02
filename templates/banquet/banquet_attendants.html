@@ -22,11 +22,7 @@
         {% for attendant in banquet_attendants %}
             <tr>
                 <td>
-                    {% if attendant.user %}
-                        <a href="{% url 'view_person' fair.year attendant.user.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</a>
-                    {% else %}
-                        {{ attendant.first_name }} {{ attendant.last_name }}
-                    {% endif %}
+                    <a href="{% url 'banquet/attendant' fair.year attendant.pk %}">{{ attendant.first_name }} {{ attendant.last_name }}</a>
                 </td>
 
                 <td>{{ attendant.get_gender_display }}</td>
