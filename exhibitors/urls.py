@@ -1,12 +1,14 @@
 from django.conf.urls import url
 from . import views
-from .models import BanquetteAttendant
+from banquet.models import BanquetteAttendant
 from orders.models import Order
 from companies.models import Contact
 
 urlpatterns = [
     url(r'^$', views.exhibitors, name='exhibitors'),
 	url(r'^(?P<pk>\d+)/$', views.exhibitor, name='exhibitor'),
+
+    url(r'view$', views.edit_view, name='edit_view'),
 
 	url(r'^(?P<pk>\d+)/emails_confirmation/$', views.emails_confirmation, name='emails_confirmation'),
 	url(r'^(?P<pk>\d+)/send_cr_receipts$', views.send_cr_receipts, name='send_cr_receipts'),
