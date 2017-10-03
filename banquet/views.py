@@ -53,7 +53,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
     # not authenticated:
     return render(request, 'login.html', {'next': next, 'fair': fair})
 
-def banquet_external_signup(request, year, template_name='banquet/banquet_attendant.html'):
+def banquet_external_signup(request, year, template_name='banquet/external_signup.html'):
     fair = get_object_or_404(Fair, year=year)
 
     banquet_instance = None
@@ -77,3 +77,7 @@ def banquet_external_signup(request, year, template_name='banquet/banquet_attend
         banquet_attendant.save()
         return render(request, 'banquet/thank_you.html', {'fair': fair })
     return render(request, template_name, {'form': form, 'fair': fair })
+
+def thank_you(request, year, template_name='banquet/thank_you.html'):
+    fair = get_object_or_404(Fair, year=year)
+    return render(request, 'banquet/thank_you.html', {'fair': fair })
