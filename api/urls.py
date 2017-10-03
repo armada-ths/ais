@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^organization/', views.organization),
     url(r'^status/$', views.status),
     url(r'^banquet_placement/$', views.banquet_placement),
+    url(r'^recruitment/$', views.recruitment),
 ]
