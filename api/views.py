@@ -78,13 +78,12 @@ def organization(request):
     '''
     Returns all roles for current fair
     '''    
-    fair = Fair.objects.get(current=True)
     all_groups = Group.objects \
         .prefetch_related('user_set__profile') \
         .order_by('name')
 
     # We only want groups that belong to roles that have been recruited during the current fair
-    fair = get_object_or_404(Fair, current=True)
+    fair = Fair.objects.get(current=True)
     recruitment_period_roles = [period.recruitable_roles.all() for period in fair.recruitmentperiod_set.all()]
     role_groups = [role.group for roles in recruitment_period_roles for role in roles]
     groups = [group for group in all_groups if group in role_groups]
