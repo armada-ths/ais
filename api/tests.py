@@ -1,11 +1,13 @@
 from django.test import TestCase, RequestFactory
 import json
 from django.utils import timezone
+import datetime
 
 from fair.models import Fair
 from companies.models import Company
 from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
+from recruitment.models import RecruitmentPeriod, Role
 import api.serializers as serializers
 from . import views
 
@@ -90,3 +92,56 @@ class NewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         news = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(news), 0)
+
+
+class RecruitmentTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        fair = Fair(name='Armada 2017', current=True)
+        fair.save()
+        tomorrow = timezone.now() + datetime.timedelta(days=1)
+        yesterday = timezone.now() - datetime.timedelta(days=1)
+        role=Role(name="Role")
+        recruitment = RecruitmentPeriod(
+            name="current recruitment", 
+            start_date=yesterday, 
+            end_date=tomorrow, 
+            interview_end_date=tomorrow, 
+            fair=fair,
+        )
+        recruitment.save()
+        recruitment2 = RecruitmentPeriod(
+            name="current recruitment2", 
+            start_date=yesterday, 
+            end_date=tomorrow, 
+            interview_end_date=tomorrow, 
+            fair=fair,
+        )
+        recruitment2.save()
+        recruitment_past = RecruitmentPeriod(
+            name="past recruitment", 
+            start_date=yesterday, 
+            end_date=yesterday, 
+            interview_end_date=tomorrow, 
+            fair=fair,
+        )
+        recruitment_past.save()
+        recruitment_future = RecruitmentPeriod(
+            name="past recruitment", 
+            start_date=tomorrow, 
+            end_date=tomorrow, 
+            interview_end_date=tomorrow, 
+            fair=fair,
+        )
+        recruitment_future.save()
+    def test_view(self):
+        #See that all current recruitment are included but not recruitments that are not open
+        request = self.factory.get('/api/recruitment')
+        response = views.recruitment(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        recruitments = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(recruitments), 2)
+        #Test content for one recruitment
+        self.assertEqual(recruitments[0]['name'], 'current recruitment') 
+
+        
