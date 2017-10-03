@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load crispy_forms_tags %}
 {% block content %}
   <div class="row">
@@ -11,4 +12,5 @@
       </form>
     </div>
   </div>
+  <script src="{% static 'js/banquet_attendant.js' %}" type="text/javascript" charset="utf-8"></script>
 {% endblock %}
