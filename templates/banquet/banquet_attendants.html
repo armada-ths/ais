@@ -3,6 +3,9 @@
 
 {% block content %}
     <h1>Banquet attendants ({{ banquet_attendants|length }})</h1>
+    <a href="{% url 'banquet/new' fair.year %}" class="btn btn-primary">
+      <span class="glyphicon glyphicon-plus"></span> New attendant
+    </a>
     <div class="table-responsive">
     <table class="table" id="exhibitor_table">
         <thead>
