@@ -23,7 +23,7 @@ from fair.models import Fair
 from sales.models import Sale
 from matching.models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
 from .models import SignupContract, SignupLog, OrderLog
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, InterestForm, ExhibitorForm, ChangePasswordForm
+from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, ExternalUserForm, InterestForm, ExhibitorForm, ChangePasswordForm
 
 BASE_PRICE = 39500
 PRODUCT_LOG = ":"
@@ -136,6 +136,20 @@ def signup(request, template_name='register/create_user.html'):
         login(request, user)
         return redirect('anmalan:home')
     return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
+
+#def external_signup(request, template_name='register/create_external_user.html'):
+#    form = ExternalUserForm(request.POST or None)
+#    fair = get_object_or_404(Fair, current=True)
+#    if form.is_valid():
+#        user = user.save(commit=False)
+#        user.save()
+#        user = authenticate(
+#            username=form.cleaned_data['email'],
+#            password=form.cleaned_data['password1'],
+#        )
+#        login(request, user)
+#        return redirect('banquet/signup', dict(year=fair.year))
+#    return render(request, template_name, dict(form=form, year=fair.year))
 
 def create_company(request, template_name='register/company_form.html'):
     form = CompanyForm(request.POST or None)

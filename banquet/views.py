@@ -1,5 +1,5 @@
 from django.forms import modelform_factory
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from .models import BanquetteAttendant
 from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
 from django.urls import reverse
@@ -47,7 +47,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
             banquet_attendant = form.save(commit=False)
             banquet_attendant.fair = fair
             banquet_attendant.save()
-            return render(request, template_name, {'form': form, 'fair': fair })
+            return HttpResponseRedirect(reverse('banquet_attendants', kwargs={'year': fair.year }))
         return render(request, template_name, {'form': form, 'fair': fair })
 
     # not authenticated:
@@ -56,27 +56,25 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
 def banquet_external_signup(request, year, template_name='banquet/external_signup.html'):
     fair = get_object_or_404(Fair, year=year)
 
-    banquet_instance = None
-    user = None
     if request.user.is_authenticated():
         try:
-            user = request.user
-            banquet_instance = BanquetteAttendant.objects.get(user=user)
+            banquet_instance = BanquetteAttendant.objects.get(user=request.user)
         except BanquetteAttendant.DoesNotExist:
-            pass
+            banquet_instance = None
 
-    form = ExternalBanquetSignupForm(
-        request.POST or None,
-        instance = banquet_instance,
-    )
-
-    if form.is_valid():
-        banquet_attendant = form.save(commit=False)
-        banquet_attendant.fair = fair
-        banquet_attendant.user = user
-        banquet_attendant.save()
-        return render(request, 'banquet/thank_you.html', {'fair': fair })
-    return render(request, template_name, {'form': form, 'fair': fair })
+        form = ExternalBanquetSignupForm(
+            request.POST or None,
+            instance = banquet_instance,
+        )
+        if form.is_valid():
+            banquet_attendant = form.save(commit=False)
+            banquet_attendant.fair = fair
+            banquet_attendant.user = request.user
+            banquet_attendant.save()
+            return render(request, 'banquet/thank_you.html', {'fair': fair })
+        return render(request, template_name, {'form': form, 'fair': fair })
+    # not authenticated
+    return render(request, 'login.html', {'next': next, 'fair': fair})
 
 def thank_you(request, year, template_name='banquet/thank_you.html'):
     fair = get_object_or_404(Fair, year=year)
