@@ -17,6 +17,10 @@ urlpatterns = [
     #url(r'^complete',views.create_exhibitor, name='create_exhibitor'),
     # url(r'^signup', views.signup, name='create_company_user'),
     # url(r'^new_company', views.create_company, name='create_company'),
+
+    # signup for externals
+    #url(r'^external/signup$', views.external_signup, name='external/signup'),
+
     url(
         r'^login/$',
         login,
