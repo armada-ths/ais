@@ -11,10 +11,12 @@ from django.shortcuts import get_object_or_404
 import api.serializers as serializers
 from events.models import Event     
 from exhibitors.models import Exhibitor, CatalogInfo
-from fair.models import Partner
+from fair.models import Partner, Fair
+from django.utils import timezone
 from news.models import NewsArticle
 from exhibitors.models import BanquetteAttendant
-from fair.models import Fair
+from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
+
 
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
@@ -115,7 +117,6 @@ def banquet_placement(request):
     index = 0
     banquet_attendees = BanquetteAttendant.objects.all()
 
-    from recruitment.models import RecruitmentApplication
     recruitment_applications = RecruitmentApplication.objects.filter(status='accepted')
     data = []
     for attendence in banquet_attendees:
@@ -135,3 +136,40 @@ def banquet_placement(request):
         data.append(serializers.banquet_placement(request, attendence, index))
         index += 1
     return JsonResponse(data, safe=False)
+
+
+
+def recruitment(request):
+    '''
+    ais.armada.nu/api/recruitment
+    Returns all open recruitments and information about availeble roles for each recruitment.
+    If there areno open recrutiment it returns an empty list.  
+    '''
+    fair = Fair.objects.get(current=True)
+    recruitments = RecruitmentPeriod.objects.filter(fair=fair)
+    recruitments = list(filter(lambda rec: (rec.start_date < timezone.now()) & (rec.end_date > timezone.now()), recruitments)) #Make sure only current recruitments are shown
+    data = []
+    for recruitment in recruitments:
+        roles_info = []
+        roles = recruitment.recruitable_roles.all()
+        #Adds all roles available for this recruitment
+        for role in roles:
+            roles_info.append(OrderedDict([
+                ('name', role.name),
+                ('parent', role.parent_role.name),
+                ('description', role.description),
+                ]))
+        data.append(OrderedDict([
+            ('name', recruitment.name),
+            ('start date', recruitment.start_date),
+            ('end date', recruitment.end_date),
+            ('roles', roles_info),
+            ]))
+
+    return JsonResponse(data, safe=False)
+
+
+
+
+
+
