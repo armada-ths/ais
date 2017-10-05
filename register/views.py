@@ -139,7 +139,6 @@ def signup(request, template_name='register/create_user.html'):
     return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
 
 def external_signup(request, template_name='register/create_external_user.html'):
-    ''' TODO '''
     form = ExternalUserForm(request.POST or None, prefix='user')
     fair = get_object_or_404(Fair, current=True)
     if form.is_valid():

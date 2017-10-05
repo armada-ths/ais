@@ -17,15 +17,12 @@ from exhibitors.models import Exhibitor, CatalogInfo
 
 class BanquetteAttendantForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        users = kwargs.pop('users')
-        user = kwargs.pop('user')
-        self.users_choice = ModelChoiceField(queryset = User.objects.filter(pk__in=users), required=False, initial=user)
         super(BanquetteAttendantForm, self).__init__(*args, **kwargs)
 
     class Meta:
         model = BanquetteAttendant
         fields = '__all__'
-        exclude = ('fair','users')
+        exclude = ('fair',)
 
 class ExternalBanquetSignupForm(ModelForm):
     class Meta:
