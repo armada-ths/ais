@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
 
-@permission_required('banquet.banquet_full_permission', raise_exception=True)
+@permission_required('banquet.banquet_full_permission', raise_exception=False)
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
     fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
@@ -21,7 +21,7 @@ def banquet_attendants(request, year, template_name='banquet/banquet_attendants.
 
     return render(request, 'login.html', {'next': next, 'fair': fair})
 
-@permission_required('banquet.banquet_full_permission', raise_exception=True)
+@permission_required('banquet.banquet_full_permission', raise_exception=False)
 def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendant.html'):
     fair = get_object_or_404(Fair, year=year)
     banquet_attendant = get_object_or_404(BanquetteAttendant, fair=fair, pk=pk)
@@ -58,7 +58,7 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
     # not authenticated:
     return render(request, 'login.html', {'next': next, 'fair': fair})
 
-@permission_required('banquet.banquet_full_permission', raise_exception=True)
+@permission_required('banquet.banquet_full_permission', raise_exception=False)
 def new_banquet_attendant(request, year, template_name='banquet/banquet_attendant.html'):
     fair = get_object_or_404(Fair, year=year)
 
