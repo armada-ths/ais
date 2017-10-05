@@ -2,11 +2,13 @@ from django.forms import modelform_factory
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from .models import BanquetteAttendant
 from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
+from .exhibitors import Exhibitor
 from django.urls import reverse
 from fair.models import Fair
 from register.views import external_signup
 from django.contrib.auth.models import User
 
+#@permission_required('banquet.can_view_and_edit_attendants', raise_exception=False)
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
     fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
@@ -18,6 +20,7 @@ def banquet_attendants(request, year, template_name='banquet/banquet_attendants.
 
     return render(request, 'login.html', {'next': next, 'fair': fair})
 
+#@permission_required('banquet.can_view_and_edit_attendants', raise_exception=False)
 def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendant.html'):
     fair = get_object_or_404(Fair, year=year)
     banquet_attendant = get_object_or_404(BanquetteAttendant, fair=fair, pk=pk)
@@ -40,6 +43,7 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
         form = BanquetteAttendantForm(
             request.POST or None,
             instance=banquet_attendant,
+            #banquet_attendants=banquet_attendants,
             #users=users,
             #user=currentUser
         )
@@ -54,9 +58,11 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
     # not authenticated:
     return render(request, 'login.html', {'next': next, 'fair': fair})
 
+#@permission_required('banquet.can_view_and_edit_attendants', raise_exception=False)
 def new_banquet_attendant(request, year, template_name='banquet/banquet_attendant.html'):
     fair = get_object_or_404(Fair, year=year)
 
+    #exhibitors =
     #banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
     #users_all = User.objects.all()
     #forbidden_users = []
@@ -69,6 +75,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
         form = BanquetteAttendantForm(
             request.POST or None,
             instance=None,
+            #exhibitors=exhibitors,
             #users=users,
             #user = None
         )
