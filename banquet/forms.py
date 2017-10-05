@@ -17,8 +17,6 @@ from exhibitors.models import Exhibitor, CatalogInfo
 
 class BanquetteAttendantForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        #exhibitors = kwargs.pop('exhibitors')
-        #self.exhibitors =
         super(BanquetteAttendantForm, self).__init__(*args, **kwargs)
 
     class Meta:
