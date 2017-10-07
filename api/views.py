@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from datetime import datetime
-import platform
-import subprocess
+
+import platform, subprocess, json
 
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
@@ -129,25 +129,27 @@ def student_profiles(request):
     GET student profiles nickname by their id.
     Url: /student_profiles?student_id=STUDENTPROFILEID
     or
-    POST nickname
+    PUT student profile nickname by the id
+    URL: /api/student_profiles?student_id=STUDENT_PROFILE_ID
+    DATA: json'{"nickname" : NICKNAME}'
     '''
     if request.method == 'GET':
         student_id = request.GET['student_id']
         student = get_object_or_404(StudentProfile, pk=student_id)
         data = OrderedDict([('nickname', student.nickname)])
-    elif request.method == 'POST':
-        if request.POST:
-            student_id = request.POST.get('student_id')
+    elif request.method == 'PUT':
+        if request.body:
+            student_id = request.GET['student_id']
             student_profile = StudentProfile.objects.filter(pk=student_id).first()
             if student_profile:
-                student_profile.nickname = request.POST.get('nickname')
+                student_profile.nickname = json.loads(request.body.decode()).get('nickname')
                 student_profile.save()
                 data = OrderedDict([('nickname', student_profile.nickname)])
             else:
-                return HttpResponseNotFound()
+                data = []   # we didn't find student_profile with provided key
         else:
-            return HttpResponseBadRequest()
+            data = []   # we were sent an empty PUT request
     else:
-        return HttpResponseBadRequest()
+        data = []   # we were sent some request other than PUT or GET
 
     return JsonResponse(data, safe=False)

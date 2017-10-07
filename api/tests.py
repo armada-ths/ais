@@ -104,10 +104,9 @@ class StudentProfileTestCase(TestCase):
         StudentProfile.objects.get_or_create(pk=1, nickname='Unmodified')
 
 
-    def test_post(self):
-        request = self.factory.post('/api/student_profile', data={
-            'student_id' : 0,
-            'nickname' : 'Postman'})
+    def test_put(self):
+        request = self.factory.put('/api/student_profile?student_id=0',
+            data=json.dumps({'nickname' : 'Postman'}))
         response = views.student_profiles(request)
 
         self.assertEqual(response.status_code, 200)
