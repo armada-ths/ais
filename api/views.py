@@ -13,6 +13,8 @@ import api.serializers as serializers
 from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
+from django.utils import timezone
+from banquet.models import BanquetteAttendant
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
 from django.shortcuts import get_object_or_404
