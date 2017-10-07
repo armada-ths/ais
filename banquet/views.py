@@ -9,8 +9,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
 
-@permission_required('banquet.banquet_full_permission', raise_exception=False)
+@permission_required('banquet.banquet_view_permission', raise_exception=False)
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
+    """
+    banquet_attendants is in url fairs/year/banquet
+    Here you can see all the BanquetteAttendant objects in a table view.
+    The user need the banquet_view_permission permission to see this page
+    """
     fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
         banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
@@ -23,6 +28,11 @@ def banquet_attendants(request, year, template_name='banquet/banquet_attendants.
 
 @permission_required('banquet.banquet_full_permission', raise_exception=False)
 def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendant.html'):
+    """
+    banquet_attendant is in url fairs/year/banquet/attendant/pk
+    Here you can view and edit a specific BanquetteAttendant object in a form view.
+    The user need the banquet_full_permission permission to see this page
+    """
     fair = get_object_or_404(Fair, year=year)
     banquet_attendant = get_object_or_404(BanquetteAttendant, fair=fair, pk=pk)
 
@@ -60,6 +70,11 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
 
 @permission_required('banquet.banquet_full_permission', raise_exception=False)
 def new_banquet_attendant(request, year, template_name='banquet/banquet_attendant.html'):
+    """
+    new_banquet_attendant is in url fairs/year/banquet/attendant/new
+    Here you can create a new BanquetteAttendant object in a form view.
+    The user need the banquet_full_permission permission to see this page
+    """
     fair = get_object_or_404(Fair, year=year)
 
     #banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
@@ -89,6 +104,12 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
     return render(request, 'login.html', {'next': next, 'fair': fair})
 
 def banquet_external_signup(request, year, template_name='banquet/external_signup.html'):
+    """
+    banquet_external_signup is in url fairs/year/banquet/signup
+    Here you can create a new BanquetteAttendant object in a form view as an external
+    user that ahs no AIS account and no KTH account. If not logged in
+    the user will be redirected to register/external/signup
+    """
     fair = get_object_or_404(Fair, year=year)
 
     if request.user.is_authenticated():
