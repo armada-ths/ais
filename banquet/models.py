@@ -20,13 +20,13 @@ class BanquetteAttendant(models.Model):
     gender = models.CharField(choices=genders, max_length=10)
     phone_number = models.CharField(max_length=200)
     allergies = models.CharField(max_length=1000, blank=True)
-    student_ticket = models.BooleanField(default=False)
     wants_alcohol = models.BooleanField(default=True)
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
-    wants_vegetarian_food = models.BooleanField(default=True)
-
+    wants_vegan_food = models.BooleanField(default=False)
     table_name = models.CharField(max_length=20, null=True, blank=True)
+    student_ticket = models.BooleanField(default=False)
+    confirmed = models.BooleanField(default=False)
     seat_number = models.SmallIntegerField(null=True, blank=True)
     ignore_from_placement = models.BooleanField(default=False)
 

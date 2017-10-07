@@ -1,4 +1,5 @@
 from django.forms import modelform_factory
+from django.http import  HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from .models import BanquetteAttendant
 from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
@@ -9,29 +10,28 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
 
-@permission_required('banquet.banquet_view_permission', raise_exception=False)
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
     """
     banquet_attendants is in url fairs/year/banquet
     Here you can see all the BanquetteAttendant objects in a table view.
-    The user need the banquet_view_permission permission to see this page
+    The user need the banquet.banquet_view_permission permission to see this page
     """
     fair = get_object_or_404(Fair, year=year)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and request.user.has_perm('banquet.banquet_view_permission'):
         banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
         return render(request, template_name, {
             'banquet_attendants': banquet_attendants,
             'fair': fair
         })
+    else:
+        return HttpResponseForbidden()
+    #return render(request, 'login.html', {'next': next, 'fair': fair})
 
-    return render(request, 'login.html', {'next': next, 'fair': fair})
-
-@permission_required('banquet.banquet_full_permission', raise_exception=False)
 def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendant.html'):
     """
     banquet_attendant is in url fairs/year/banquet/attendant/pk
     Here you can view and edit a specific BanquetteAttendant object in a form view.
-    The user need the banquet_full_permission permission to see this page
+    The user need the view.banquet_edit_permission permission to see this page
     """
     fair = get_object_or_404(Fair, year=year)
     banquet_attendant = get_object_or_404(BanquetteAttendant, fair=fair, pk=pk)
@@ -50,7 +50,7 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
     #    users = [u.pk for u in users_all if u not in forbidden_users]
     #    currentUser = None
     #
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and request.user.has_perm('banquet.banquet_edit_permission'):
         form = BanquetteAttendantForm(
             request.POST or None,
             instance=banquet_attendant,
@@ -65,15 +65,14 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
             return render(request, template_name, {'form': form, 'fair': fair })
         return render(request, template_name, {'form': form, 'fair': fair })
 
-    # not authenticated:
-    return render(request, 'login.html', {'next': next, 'fair': fair})
+    else:
+        return HttpResponseForbidden()
 
-@permission_required('banquet.banquet_full_permission', raise_exception=False)
 def new_banquet_attendant(request, year, template_name='banquet/banquet_attendant.html'):
     """
     new_banquet_attendant is in url fairs/year/banquet/attendant/new
     Here you can create a new BanquetteAttendant object in a form view.
-    The user need the banquet_full_permission permission to see this page
+    The user need the banquet.banquet_edit_permission permission to see this page
     """
     fair = get_object_or_404(Fair, year=year)
 
@@ -85,7 +84,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
     #        forbidden_users.append(b.user)
     #users = [u.pk for u in users_all if u not in forbidden_users]
     #
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and request.user.has_perm('banquet.banquet_edit_permission'):
         form = BanquetteAttendantForm(
             request.POST or None,
             instance=None,
@@ -100,8 +99,8 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
             return HttpResponseRedirect(reverse('banquet_attendants', kwargs={'year': fair.year }))
         return render(request, template_name, {'form': form, 'fair': fair })
 
-    # not authenticated:
-    return render(request, 'login.html', {'next': next, 'fair': fair})
+    else:
+        return HttpResponseForbidden()
 
 def banquet_external_signup(request, year, template_name='banquet/external_signup.html'):
     """
