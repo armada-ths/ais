@@ -9,13 +9,10 @@ from fair.models import Fair
 from companies.models import Company
 from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
-<<<<<<< HEAD
 from student_profiles.models import StudentProfile
 
-=======
 from recruitment.models import RecruitmentPeriod, Role
 import api.serializers as serializers
->>>>>>> 0923042386d437efc010a298b52f7efc30268312
 from . import views
 
 import api.serializers as serializers
