@@ -2,6 +2,7 @@ from django.forms import modelform_factory
 from django.http import  HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
 from .models import BanquetteAttendant
+from exhibitors.models import Exhibitor
 from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
 from django.urls import reverse
 from fair.models import Fair
@@ -36,26 +37,26 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
     fair = get_object_or_404(Fair, year=year)
     banquet_attendant = get_object_or_404(BanquetteAttendant, fair=fair, pk=pk)
 
-    #banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
-    #users_all = User.objects.all()
-    #forbidden_users = []
-    #for b in banquet_attendants:
-    #    if b.user:
-    #        forbidden_users.append(b.user)
-    #
-    #try:
-    #    currentUser = banquet_attendant.user
-    #    users = [currentUser.pk] + [u.pk for u in users_all if u not in forbidden_users]
-    #except User.DoesNotExist:
-    #    users = [u.pk for u in users_all if u not in forbidden_users]
-    #    currentUser = None
-    #
+    exhibitors = Exhibitor.objects.filter(fair=fair)
+    banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
+
+    users_all = User.objects.all()
+    forbidden_users = []
+    for b in banquet_attendants:
+        if b.user:
+            forbidden_users.append(b.user)
+
+    if banquet_attendant.user is not None:
+        users = [banquet_attendant.user] + [u for u in users_all if u not in forbidden_users]
+    else:
+        users = [u for u in users_all if u not in forbidden_users]
+
     if request.user.is_authenticated() and request.user.has_perm('banquet.banquet_edit_permission'):
         form = BanquetteAttendantForm(
             request.POST or None,
             instance=banquet_attendant,
-            #users=users,
-            #user=currentUser
+            users=users,
+            exhibitors=exhibitors,
         )
         if form.is_valid():
             banquet_attendant = form.save(commit=False)
@@ -76,20 +77,23 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
     """
     fair = get_object_or_404(Fair, year=year)
 
-    #banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
-    #users_all = User.objects.all()
-    #forbidden_users = []
-    #for b in banquet_attendants:
-    #    if b.user:
-    #        forbidden_users.append(b.user)
-    #users = [u.pk for u in users_all if u not in forbidden_users]
-    #
+    banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
+    exhibitors = Exhibitor.objects.filter(fair=fair)
+
+    users_all = User.objects.all()
+    forbidden_users = []
+    for b in banquet_attendants:
+        if b.user:
+            forbidden_users.append(b.user)
+
+    users = [u for u in users_all if u not in forbidden_users]
+
     if request.user.is_authenticated() and request.user.has_perm('banquet.banquet_edit_permission'):
         form = BanquetteAttendantForm(
             request.POST or None,
             instance=None,
-            #users=users,
-            #user = None
+            users=users,
+            exhibitors=exhibitors,
         )
         if form.is_valid():
             banquet_attendant = form.save(commit=False)

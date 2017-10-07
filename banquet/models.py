@@ -10,6 +10,11 @@ class BanquetteAttendant(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
+    ticket_types = [
+        ('company', 'Company Representative Ticket'),
+        ('student', 'Student Ticket'),
+    ]
+    ticket_type = models.CharField(choices=ticket_types, max_length=35, default='company')
     linkedin_url = models.URLField(blank=True)
     job_title = models.CharField(max_length=200, blank=True)
     genders = [

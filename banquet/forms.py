@@ -17,15 +17,24 @@ from exhibitors.models import Exhibitor, CatalogInfo
 
 class BanquetteAttendantForm(ModelForm):
     def __init__(self, *args, **kwargs):
+        users = kwargs.pop('users')
+        exhibitors = kwargs.pop('exhibitors')
         super(BanquetteAttendantForm, self).__init__(*args, **kwargs)
-
+        self.fields['user'].choices = [(user.pk, user.get_full_name()) for user in users]
+        self.fields['exhibitor'].choices = [(exhibitor.pk, exhibitor.__str__()) for exhibitor in exhibitors]
+        self.fields['wants_vegan_food'].help_text = "This evening, everyone will be served a delicious three-course lacto-ovo vegetarian dinner to go along with THS Armada's sustainability work"
     class Meta:
         model = BanquetteAttendant
         fields = '__all__'
-        exclude = ('fair',)
+        exclude = ('fair', 'student_ticket')
+
 
 class ExternalBanquetSignupForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ExternalBanquetSignupForm, self).__init__(*args, **kwargs)
+        self.fields['wants_vegan_food'].help_text = "This evening, everyone will be served a delicious three-course lacto-ovo vegetarian dinner to go along with THS Armada's sustainability work"
+
     class Meta:
         model = BanquetteAttendant
         fields = '__all__'
-        exclude = ('fair','user', 'exhibitor', 'table_name', 'seat_number', 'ignore_from_placement')
+        exclude = ('fair','user', 'exhibitor', 'table_name', 'seat_number', 'ignore_from_placement', 'student_ticket', 'ticket_type', 'confirmed')
