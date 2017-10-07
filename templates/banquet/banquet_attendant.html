@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-12">
+      <a href="{% url 'banquet' fair.year %}" class="btn btn-primary">
+        <span class="glyphicon glyphicon-backward"></span> Back
+      </a>
+      <form method="post">
+        <h3>Banquet Attendant</h3>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="save btn btn-default">Save</button>
+      </form>
+    </div>
+  </div>
+  <script src="{% static 'js/banquet_attendant.js' %}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}

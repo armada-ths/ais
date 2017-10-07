@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'exhibitors',
     'django.contrib.humanize',
     'sales',
+    'banquet',
     'register',
     'matching'
 )

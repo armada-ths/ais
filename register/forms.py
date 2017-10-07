@@ -125,6 +125,11 @@ class UserForm(UserCreationForm):
         model = User
         fields = ('password1','password2',)
 
+class ExternalUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('email', 'password1', 'password2',)
+
 class ExhibitorCatalogInfoForm(ModelForm):
     class Meta:
         model = CatalogInfo
