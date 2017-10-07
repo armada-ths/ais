@@ -129,22 +129,25 @@ def student_profiles(request):
     GET student profiles nickname by their id.
     Url: /student_profiles?student_id=STUDENTPROFILEID
     or
-    PUT nickname
+    POST nickname
     '''
     if request.method == 'GET':
         student_id = request.GET['student_id']
         student = get_object_or_404(StudentProfile, pk=student_id)
         data = [OrderedDict([('nickname', student.nickname)])]
-
+    elif request.method == 'POST':
+        if request.POST:
+            student_id = request.POST.get('student_id')
+            student_profile = StudentProfile.objects.filter(pk=student_id).first()
+            if student_profile:
+                student_profile.nickname = request.POST.get('nickname')
+                student_profile.save()
+                data=[('nickname', student_profile.nickname)]
+            else:
+                return HttpResponseNotFound()
+        else:
+            return HttpResponseBadRequest()
     else:
-        put = QueryDict(request.body)
-        nickname = put.get('nickname')
-        student_id = put.get('student_id')
-        student_profile = StudentProfile.objects.get(pk=student_id)
-        student_profile.nickname = nickname
-        student_profile.save()
-        data=[]
+        return HttpResponseBadRequest()
 
     return JsonResponse(data, safe=False)
-
-        

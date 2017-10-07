@@ -9,6 +9,9 @@ from events.models import Event
 import api.serializers as serializers
 from . import views
 
+from student_profiles.models import StudentProfile
+
+
 HTTP_status_code_OK = 200
 
 
@@ -31,6 +34,7 @@ class ExhibitorTestCase(TestCase):
         self.cataloginfo.save()
         self.request = self.factory.get('/api/exhibitors/')
 
+
     def test_serializer(self):
         serialized = serializers.exhibitor(
                 self.request,
@@ -38,6 +42,7 @@ class ExhibitorTestCase(TestCase):
                 )
         self.assertIn('id', serialized)
         self.assertIn('name', serialized)
+
 
     def test_view(self):
         response = views.exhibitors(self.request)
@@ -90,3 +95,28 @@ class NewsTestCase(TestCase):
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         news = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(news), 0)
+
+
+class StudentProfileTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        StudentProfile.objects.get_or_create(pk=0, nickname='Pre_post')
+        StudentProfile.objects.get_or_create(pk=1, nickname='Unmodified')
+
+    def test_post(self):
+        request = self.factory.post('/api/student_profile', data={
+            'student_id' : 0,
+            'nickname' : 'Postman'})
+        response = views.student_profiles(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(StudentProfile.objects.get(pk=0).nickname, 'Postman')
+        self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Unmodified')
+
+    def test_get(self):
+        request = self.factory.get('/api/student_profile?student_id=0')
+        response = views.student_profiles(request)
+        
+        profiles = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(profiles), 1)
+        self.assertEqual(profiles[0]['nickname'], 'Pre_post')
