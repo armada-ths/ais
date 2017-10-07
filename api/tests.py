@@ -1,15 +1,18 @@
-from django.test import TestCase, RequestFactory
-import json
+from django.test import TestCase, RequestFactory, Client
+from django.contrib.auth.models import User
 from django.utils import timezone
+
+import json
 
 from fair.models import Fair
 from companies.models import Company
 from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
-import api.serializers as serializers
+from student_profiles.models import StudentProfile
+
 from . import views
 
-from student_profiles.models import StudentProfile
+import api.serializers as serializers
 
 
 HTTP_status_code_OK = 200
@@ -102,14 +105,15 @@ class StudentProfileTestCase(TestCase):
         self.factory = RequestFactory()
         StudentProfile.objects.get_or_create(pk=0, nickname='Pre_post')
         StudentProfile.objects.get_or_create(pk=1, nickname='Unmodified')
+        self.user = User.objects.create_user(username='user', password='user')
 
 
     def test_put(self):
-        request = self.factory.put('/api/student_profile?student_id=0',
+        request = self.factory.put('/api/student_profiles?student_id=0',
             data=json.dumps({'nickname' : 'Postman'}))
         response = views.student_profiles(request)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
 
         profile = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(profile), 1)
@@ -120,7 +124,7 @@ class StudentProfileTestCase(TestCase):
 
 
     def test_get(self):
-        request = self.factory.get('/api/student_profile?student_id=0')
+        request = self.factory.get('/api/student_profiles?student_id=0')
         response = views.student_profiles(request)
         
         profile = json.loads(response.content.decode(response.charset))
