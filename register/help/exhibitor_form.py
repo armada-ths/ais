@@ -213,9 +213,9 @@ def save_exhibitor_form(request, form, fair, company, contact):
     for q in matching_questions:
         ans = form.cleaned_data['%s%d'%(prefix,q.pk)]
         if ans:
-            create_or_update_response(q, ans, exhibitor)
+            create_or_update_response(q, ans, exhibitor, matching_survey)
         else:
-            delete_response_if_exists(q, ans, exhibitor)
+            delete_response_if_exists(q, ans, exhibitor, matching_survey)
 
 
     # set exhibitor status to in progres if not already submitted

@@ -101,7 +101,7 @@ def create_or_update_answer(response, question, ans):
 
 
 # create or update responses on matching questions
-def create_or_update_response(question, ans, exhibitor):
+def create_or_update_response(question, ans, exhibitor, matching_survey):
     response = None
     try:
         response = Response.objects.get(exhibitor=exhibitor, question=question, survey=matching_survey)
@@ -112,7 +112,7 @@ def create_or_update_response(question, ans, exhibitor):
 
 
 #delete response via question and current exhibitor
-def delete_response_if_exists(question, ans, exhibitor):
+def delete_response_if_exists(question, ans, exhibitor, matching_survey):
     try:
         Response.objects.get(exhibitor=exhibitor, survey=matching_survey, question=question).delete()
     except Response.DoesNotExist:
