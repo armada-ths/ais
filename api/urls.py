@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^status/$', views.status),
     url(r'^banquet_placement/$', views.banquet_placement),
     url(r'^student_profiles$', views.student_profiles),
+    url(r'^recruitment/$', views.recruitment),
 ]

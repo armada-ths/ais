@@ -12,7 +12,7 @@
 
     <div class="row">
         <div class="col-md-6">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
 
@@ -120,7 +120,7 @@
                 </div>
                 <h3>Banquet attendants</h3>
 
-                    {% for attendant in exhibitor.banquetteattendant_set.all %}
+                    {% for attendant in banquet_attendants %}
                         <div class="panel panel-default">
                             <div class="panel-heading"><strong>{{ attendant.first_name }} {{ attendant.last_name }}</strong>
                                 <a href="{% url 'banquette_attendant' fair.year exhibitor.pk attendant.pk %}" class="pull-right"> Edit</a></div>

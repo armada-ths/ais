@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.urls.exceptions import NoReverseMatch
 
 from fair.models import Fair
+from .models import Profile
 from lib.image import load_test_image
 
 
@@ -52,6 +53,11 @@ class ProfileTestCase(TestCase):
         response = client.get('/fairs/'+str(CURRENT_YEAR)+'/people/2')        
         self.assertEqual(response.status_code, 302)
         self.assertTrue('?next=' in response.url)
+
+
+    def test_profile_create(self):
+        profile = Profile(user=self.basic_user)
+        self.assertTrue(profile)
 
 
     def test_profiles_user(self):
