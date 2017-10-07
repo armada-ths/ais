@@ -5,7 +5,7 @@ from django import forms
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
-from .models import BanquetteAttendant
+from .models import BanquetteAttendant, BanquetTable
 
 from enum import Enum
 import datetime
@@ -19,9 +19,13 @@ class BanquetteAttendantForm(ModelForm):
     def __init__(self, *args, **kwargs):
         users = kwargs.pop('users')
         exhibitors = kwargs.pop('exhibitors')
+        tables = kwargs.pop('tables')
+
         super(BanquetteAttendantForm, self).__init__(*args, **kwargs)
+
         self.fields['user'].choices = [(user.pk, user.get_full_name()) for user in users]
         self.fields['exhibitor'].choices = [(exhibitor.pk, exhibitor.__str__()) for exhibitor in exhibitors]
+        self.fields['table'].choices = [(table.pk, table.__str__()) for table in tables]
         self.fields['wants_vegan_food'].help_text = "This evening, everyone will be served a delicious three-course lacto-ovo vegetarian dinner to go along with THS Armada's sustainability work"
     class Meta:
         model = BanquetteAttendant
@@ -37,4 +41,4 @@ class ExternalBanquetSignupForm(ModelForm):
     class Meta:
         model = BanquetteAttendant
         fields = '__all__'
-        exclude = ('fair','user', 'exhibitor', 'table_name', 'seat_number', 'ignore_from_placement', 'student_ticket', 'ticket_type', 'confirmed')
+        exclude = ('fair','user', 'exhibitor', 'table', 'seat_number', 'ignore_from_placement', 'student_ticket', 'ticket_type', 'confirmed')

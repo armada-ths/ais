@@ -3,6 +3,18 @@ from django.contrib.auth.models import User
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 
+class BanquetTable(models.Model):
+    fair = models.ForeignKey(Fair, default=1)
+    table_name = models.CharField(max_length=60, null=True, blank=True)
+    number_of_seats = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["table_name"]
+
+    def __str__(self):
+        return '%s' % (self.table_name)
+
+
 class BanquetteAttendant(models.Model):
     fair = models.ForeignKey(Fair, default=1)
     user = models.ForeignKey(User, null=True, blank=True)  # Null for exhibitor representants
@@ -29,7 +41,7 @@ class BanquetteAttendant(models.Model):
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
     wants_vegan_food = models.BooleanField(default=False)
-    table_name = models.CharField(max_length=20, null=True, blank=True)
+    table = models.ForeignKey(BanquetTable, null=True, blank=True)
     student_ticket = models.BooleanField(default=False)
     confirmed = models.BooleanField(default=False)
     seat_number = models.SmallIntegerField(null=True, blank=True)

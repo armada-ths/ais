@@ -1,7 +1,7 @@
 from django.forms import modelform_factory
 from django.http import  HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
-from .models import BanquetteAttendant
+from .models import BanquetteAttendant, BanquetTable
 from exhibitors.models import Exhibitor
 from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
 from django.urls import reverse
@@ -39,6 +39,7 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
 
     exhibitors = Exhibitor.objects.filter(fair=fair)
     banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
+    tables = BanquetTable.objects.filter(fair=fair)
 
     users_all = User.objects.all()
     forbidden_users = []
@@ -57,6 +58,7 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
             instance=banquet_attendant,
             users=users,
             exhibitors=exhibitors,
+            tables=tables,
         )
         if form.is_valid():
             banquet_attendant = form.save(commit=False)
@@ -79,6 +81,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
 
     banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
     exhibitors = Exhibitor.objects.filter(fair=fair)
+    tables = BanquetTable.objects.filter(fair=fair)
 
     users_all = User.objects.all()
     forbidden_users = []
@@ -94,6 +97,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
             instance=None,
             users=users,
             exhibitors=exhibitors,
+            tables=tables,
         )
         if form.is_valid():
             banquet_attendant = form.save(commit=False)
