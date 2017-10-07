@@ -16,6 +16,11 @@ from .models import BanquetteAttendant
 from exhibitors.models import Exhibitor, CatalogInfo
 
 class BanquetteAttendantForm(ModelForm):
+    """
+    A form where certain AIS users can edit (or create) a BanquetteAttendant
+    except the fair field. The student_ticket field is redunant but could not
+    be removed in migrations due to old data being dependant on it
+    """
     def __init__(self, *args, **kwargs):
         users = kwargs.pop('users')
         exhibitors = kwargs.pop('exhibitors')
@@ -34,6 +39,9 @@ class BanquetteAttendantForm(ModelForm):
 
 
 class ExternalBanquetSignupForm(ModelForm):
+    """
+    A form where external users (students, people not from KTH) can signup for the Banquet.
+    """
     def __init__(self, *args, **kwargs):
         super(ExternalBanquetSignupForm, self).__init__(*args, **kwargs)
         self.fields['wants_vegan_food'].help_text = "This evening, everyone will be served a delicious three-course lacto-ovo vegetarian dinner to go along with THS Armada's sustainability work"
