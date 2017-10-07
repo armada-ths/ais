@@ -103,6 +103,7 @@ class StudentProfileTestCase(TestCase):
         StudentProfile.objects.get_or_create(pk=0, nickname='Pre_post')
         StudentProfile.objects.get_or_create(pk=1, nickname='Unmodified')
 
+
     def test_post(self):
         request = self.factory.post('/api/student_profile', data={
             'student_id' : 0,
@@ -110,13 +111,19 @@ class StudentProfileTestCase(TestCase):
         response = views.student_profiles(request)
 
         self.assertEqual(response.status_code, 200)
+
+        profile = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(profile), 1)
+        self.assertEqual(profile['nickname'], 'Postman')
+
         self.assertEqual(StudentProfile.objects.get(pk=0).nickname, 'Postman')
         self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Unmodified')
+
 
     def test_get(self):
         request = self.factory.get('/api/student_profile?student_id=0')
         response = views.student_profiles(request)
         
-        profiles = json.loads(response.content.decode(response.charset))
-        self.assertEqual(len(profiles), 1)
-        self.assertEqual(profiles[0]['nickname'], 'Pre_post')
+        profile = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(profile), 1)
+        self.assertEqual(profile['nickname'], 'Pre_post')

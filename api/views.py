@@ -134,7 +134,7 @@ def student_profiles(request):
     if request.method == 'GET':
         student_id = request.GET['student_id']
         student = get_object_or_404(StudentProfile, pk=student_id)
-        data = [OrderedDict([('nickname', student.nickname)])]
+        data = OrderedDict([('nickname', student.nickname)])
     elif request.method == 'POST':
         if request.POST:
             student_id = request.POST.get('student_id')
@@ -142,7 +142,7 @@ def student_profiles(request):
             if student_profile:
                 student_profile.nickname = request.POST.get('nickname')
                 student_profile.save()
-                data=[('nickname', student_profile.nickname)]
+                data = OrderedDict([('nickname', student_profile.nickname)])
             else:
                 return HttpResponseNotFound()
         else:
