@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from lib.util import unix_time
-from django.core import serializers 
 
 MISSING_IMAGE = '/static/missing.png'
 MISSING_MAP = '/static/nymble_2048.png'
@@ -48,11 +47,14 @@ def exhibitor(request, exhibitor, company):
       ('last name', host.last_name),
       ('email', host.email),
     ]) for host in exhibitor.hosts.all()]
-    contact = OrderedDict([
-      ('name', exhibitor.contact.name),
-      ('email', exhibitor.contact.email),
-      ('title', exhibitor.contact.title),
-      ])
+    if exhibitor.contact:
+      contact = OrderedDict([
+        ('name', exhibitor.contact.name),
+        ('email', exhibitor.contact.email),
+        ('title', exhibitor.contact.title),
+        ])
+    else:
+      contact = {}
     return OrderedDict([
                            ('fair', exhibitor.fair.name),
                            ('company', company.name),
