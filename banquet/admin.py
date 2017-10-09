@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import BanquetteAttendant
+from .models import BanquetteAttendant, BanquetTable
 from django.contrib.auth.models import User
 from exhibitors.models import Exhibitor
 from fair.models import Fair
@@ -24,7 +24,7 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
         writer.writerow([
             attendant.first_name, attendant.last_name, attendant.email, attendant.gender, attendant.phone_number,
             attendant.allergies, attendant.wants_alcohol, attendant.wants_lactose_free_food,
-            attendant.wants_gluten_free_food, attendant.wants_vegetarian_food
+            attendant.wants_gluten_free_food, attendant.wants_vegan_food,
         ])
     return response
 
@@ -33,3 +33,7 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
 class BanquetAdmin(admin.ModelAdmin):
     actions = [export_banquet_attendants_as_csv]
     search_fields = ('first_name', 'last_name')
+
+@admin.register(BanquetTable)
+class BanquetAdmin(admin.ModelAdmin):
+    search_fields = ('table_name',)
