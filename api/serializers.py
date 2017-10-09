@@ -47,14 +47,18 @@ def exhibitor(request, exhibitor, company):
       ('last name', host.last_name),
       ('email', host.email),
     ]) for host in exhibitor.hosts.all()]
-    if exhibitor.contact:
+    try:
       contact = OrderedDict([
         ('name', exhibitor.contact.name),
         ('email', exhibitor.contact.email),
         ('title', exhibitor.contact.title),
         ])
-    else:
-      contact = {}
+    except AttributeError:
+      contact = None
+    try:
+        location = exhibitor.location.name
+    except AttributeError:
+        location = None
     return OrderedDict([
                            ('fair', exhibitor.fair.name),
                            ('company', company.name),
@@ -67,7 +71,7 @@ def exhibitor(request, exhibitor, company):
                            ('address other information', company.additional_address_information),
                            ('organisation type', company.organisation_type),
                            ('company contact', contact),
-                           ('exhibitor location', exhibitor.location),
+                           ('exhibitor location', location),
                            ('booth number', exhibitor.booth_number),
                            ('about', exhibitor.about_text),
                            ('facts', exhibitor.facts_text),
