@@ -39,6 +39,12 @@
                         {% endblock %}
                     {% endif %}
 
+                    {% if perms.banquet.banquet_view_permission %}
+                        {% block nav-banquet %}
+                        <li role="presentation"><a href="{% url 'banquet' fair.year %}">Banquet</a></li>
+                        {% endblock %}
+                    {% endif %}
+
                     {% block nav-events %}
                         <li role="presentation"><a href="{% url 'event_list' fair.year %}">Events</a></li>{% endblock %}
                     {% block nav-recruitment %}
