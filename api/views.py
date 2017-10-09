@@ -14,7 +14,8 @@ from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
 from news.models import NewsArticle
-from exhibitors.models import BanquetteAttendant
+from banquet.models import BanquetteAttendant
+from fair.models import Fair
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
 
 
