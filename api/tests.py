@@ -17,36 +17,29 @@ HTTP_status_code_OK = 200
 class ExhibitorTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory(HTTP_HOST='test.com')
-        company = Company.objects.create(name='test')
+        self.company = Company.objects.create(name='test')
         fair = Fair.objects.create(name='Armada 2016', current=True)
         self.exhibitor = Exhibitor.objects.create(
-                company=company,
+                company=self.company,
                 fair=fair,
-                wants_information_about_events=False,
-                wants_information_about_targeted_marketing=False,
-                wants_information_about_osqledaren=False,
                 )
-        self.cataloginfo = CatalogInfo(
-                exhibitor=self.exhibitor,
-                display_name='test test',
-                )
-        self.cataloginfo.save()
-        self.request = self.factory.get('/api/exhibitors/')
+        self.request = self.factory.get('/api/exhibitors')
 
     def test_serializer(self):
         serialized = serializers.exhibitor(
                 self.request,
-                self.exhibitor.cataloginfo
+                self.exhibitor,
+                self.exhibitor.company
                 )
-        self.assertIn('id', serialized)
-        self.assertIn('name', serialized)
+        self.assertIn('company', serialized)
 
     def test_view(self):
         response = views.exhibitors(self.request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         exhibitors = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(exhibitors), 1)
-        self.assertEqual(exhibitors[0]['id'], self.cataloginfo.pk)
+        self.assertEqual(exhibitors[0]['fair'], self.exhibitor.fair.name)
+        self.assertEqual(exhibitors[0]['company'], self.company.name)
 
 
 class EventTestCase(TestCase):

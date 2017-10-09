@@ -30,17 +30,11 @@ def exhibitors(request):
     Does not return anything for those exhibitors that are without catalog info.
     '''
     fair = Fair.objects.get(current=True)
-    cataloginfos = CatalogInfo.objects.filter(exhibitor__in = Exhibitor.objects.filter(fair=fair)).prefetch_related(
-        'programs',
-        'main_work_field',
-        'work_fields',
-        'job_types',
-        'continents',
-        'values',
-    )
-    data = [serializers.exhibitor(request, cataloginfo)
-            for cataloginfo in cataloginfos]
-    data.sort(key=lambda x: x['name'].lower())
+    exhibitors = Exhibitor.objects.filter(fair=fair)
+
+    data = [serializers.exhibitor(request, exhibitor, exhibitor.company)
+            for exhibitor in exhibitors]
+    #data.sort(key=lambda x: x['company_name'].lower())
     return JsonResponse(data, safe=False)
 
 @cache_page(60 * 5)
