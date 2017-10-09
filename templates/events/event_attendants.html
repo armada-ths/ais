@@ -19,6 +19,7 @@
 <tr>
     <th></th>
     <th>User</th>
+    <th>Email</th>
     <th>Submission date</th>
     {% for question in questions %}
     <th>{{ question }}</th>
@@ -38,6 +39,11 @@
     <td><input class="selected" type="checkbox" name="selected" value="{{ attendance.attendance.pk }}" {% if attendance.attendance.status == 'A' %}checked{% endif %}></td>
     {% if attendance.attendance.user %}
         <td><a href="{% url 'view_person' fair.year attendance.attendance.user.pk %}">{{ attendance.attendance.user.get_full_name }}</a></td>
+    {% else %}
+        <td>External user</td>
+    {% endif %}
+    {% if attendance.attendance.user %}
+        <td><a href="{% url 'view_person' fair.year attendance.attendance.user.pk %}"> {{ attendance.attendance.user.email }}</a></td>
     {% else %}
         <td>External user</td>
     {% endif %}
