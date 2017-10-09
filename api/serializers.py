@@ -75,7 +75,7 @@ def exhibitor(request, exhibitor):
 
 def event(request, event):
     tags = tags_mappings(event.tags.all())
-    signup_link = event.external_signup_url if event.external_signup_url else absolute_url(request, '/events/' + str(
+    signup_link = event.external_signup_url if event.external_signup_url else absolute_url(request, '/fairs/2017/events/' + str(
         event.pk) + '/signup')
     return OrderedDict([
                            ('id', event.pk),
