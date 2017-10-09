@@ -514,6 +514,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
     user = recruitment_application.user if recruitment_application else request.user
     profile = Profile.objects.filter(user=user).first()
+    print(profile)
     if not profile:
         p = Profile(user=user)
         p.save()
