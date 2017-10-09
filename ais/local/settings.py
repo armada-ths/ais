@@ -12,7 +12,7 @@ from ais.common.settings import *
 DEBUG = True
 
 # This lets us access AIS via its IP address (usually 127.0.0.1),
-# which you can't do in production for security reasons. 
+# which you can't do in production for security reasons.
 ALLOWED_HOSTS = ['*']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # The URL scheme is slightly different in a development environment
@@ -35,4 +35,3 @@ RECRUITMENT_HOOK_URL = 'https://hooks.slack.com/services/T49AUKM24/B4REPLABG/D9l
 # restarting the server. Again, this is a serious security flaw
 # if used in production!
 SECRET_KEY = '..............¯\_(ツ)_/¯...............'
-

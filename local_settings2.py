@@ -20,7 +20,7 @@ ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 ROOT_URLCONF = 'ais.production.urls'
 
 # Use KTH CAS for authentication
-INSTALLED_APPS += ('cas', 'raven.contrib.django.raven_compat',)
+INSTALLED_APPS += ('cas', 'raven.contrib.django.raven_compat', 'django.contrib.contenttypes')
 AUTHENTICATION_BACKENDS += ('cas.backends.CASBackend',)
 CAS_SERVER_URL = 'https://login.kth.se/'
 CAS_AUTO_CREATE_USER = False
@@ -43,4 +43,3 @@ DATABASES = {
 ADMINS = MANAGERS = (
    ('System', 'system@armada.nu'),
 )
-
