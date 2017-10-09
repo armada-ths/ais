@@ -156,8 +156,8 @@ def recruitment(request):
                 ]))
         data.append(OrderedDict([
             ('name', recruitment.name),
-            ('start date', recruitment.start_date),
-            ('end date', recruitment.end_date),
+            ('start_date', recruitment.start_date),
+            ('end_date', recruitment.end_date),
             ('roles', roles_info),
             ]))
 

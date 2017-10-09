@@ -43,8 +43,8 @@ def names(objects):
 
 def exhibitor(request, exhibitor, company):
     hosts = [OrderedDict([ 
-      ('first name', host.first_name),
-      ('last name', host.last_name),
+      ('first_name', host.first_name),
+      ('last_name', host.last_name),
       ('email', host.email),
     ]) for host in exhibitor.hosts.all()]
     try:
@@ -62,21 +62,21 @@ def exhibitor(request, exhibitor, company):
     return OrderedDict([
                            ('fair', exhibitor.fair.name),
                            ('company', company.name),
-                           ('company website', company.website),
-                           ('phone number', company.phone_number),
-                           ('address street', company.address_street),
-                           ('address zip code', company.address_zip_code),
-                           ('address country', company.address_country),
-                           ('address city', company.address_city),
-                           ('address other information', company.additional_address_information),
-                           ('organisation type', company.organisation_type),
-                           ('company contact', contact),
-                           ('exhibitor location', location),
-                           ('booth number', exhibitor.booth_number),
+                           ('company_website', company.website),
+                           ('phone_number', company.phone_number),
+                           ('address_street', company.address_street),
+                           ('address_zip_code', company.address_zip_code),
+                           ('address_country', company.address_country),
+                           ('address_city', company.address_city),
+                           ('address_other_information', company.additional_address_information),
+                           ('organisation_type', company.organisation_type),
+                           ('company_contact', contact),
+                           ('exhibitor_location', location),
+                           ('booth_number', exhibitor.booth_number),
                            ('about', exhibitor.about_text),
                            ('facts', exhibitor.facts_text),
                            ('hosts', hosts),
-                           ('logo url', image_url_or_missing(request, exhibitor.logo)),
+                           ('logo_url', image_url_or_missing(request, exhibitor.logo)),
                        ])
 
 
