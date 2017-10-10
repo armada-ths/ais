@@ -35,11 +35,7 @@ class BanquetteAttendant(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
-    ticket_types = [
-        ('company', 'Company Representative Ticket'),
-        ('student', 'Student Ticket'),
-    ]
-    ticket_type = models.CharField(choices=ticket_types, max_length=35, default='student')
+    ticket_type = models.ForeignKey(BanquetTicket, null=True, blank=True)
     linkedin_url = models.URLField(blank=True)
     job_title = models.CharField(max_length=200, blank=True)
     genders = [
@@ -55,9 +51,9 @@ class BanquetteAttendant(models.Model):
     wants_gluten_free_food = models.BooleanField(default=False)
     wants_vegan_food = models.BooleanField(default=False)
     table = models.ForeignKey(BanquetTable, null=True, blank=True)
+    seat_number = models.SmallIntegerField(null=True, blank=True)
     student_ticket = models.BooleanField(default=False)
     confirmed = models.BooleanField(default=False)
-    seat_number = models.SmallIntegerField(null=True, blank=True)
     ignore_from_placement = models.BooleanField(default=False)
 
     class Meta:

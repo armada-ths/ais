@@ -20,6 +20,9 @@
             <th>Armada member</th>
             <th>Exhibitor</th>
             <th>Ticket type</th>
+            <th>Table</th>
+            <th>Seat</th>
+            <th>Confirmed</th>
         </tr>
         </thead>
         <tbody>
@@ -51,7 +54,22 @@
 
                 </td>
                 <td>
-                    {{ attendant.ticket_type }}
+                    {% if attendant.ticket_type %}
+                        {{ attendant.ticket_type|default:'' }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if attendant.table %}
+                        {{ attendant.table }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if attendant.seat_number %}
+                        {{ attendant.seat_number }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if attendant.confirmed %}<span class="glyphicon glyphicon-ok"></span>{% endif %}
                 </td>
             </tr>
         {% endfor %}

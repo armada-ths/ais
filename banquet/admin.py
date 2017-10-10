@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import BanquetteAttendant, BanquetTable
+from .models import BanquetteAttendant, BanquetTable, BanquetTicket
 from django.contrib.auth.models import User
 from exhibitors.models import Exhibitor
 from fair.models import Fair
@@ -37,3 +37,7 @@ class BanquetAdmin(admin.ModelAdmin):
 @admin.register(BanquetTable)
 class BanquetAdmin(admin.ModelAdmin):
     search_fields = ('table_name',)
+
+@admin.register(BanquetTicket)
+class BanquetAdmin(admin.ModelAdmin):
+    search_fields = ('name',)
