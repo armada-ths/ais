@@ -99,13 +99,14 @@ class NewsTestCase(TestCase):
 class StudentProfileTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        StudentProfile.objects.get_or_create(pk=0, nickname='Pre_post')
-        StudentProfile.objects.get_or_create(pk=1, nickname='Unmodified')
+        self.url_prefix = '/api/student_profiles'
+        StudentProfile.objects.get_or_create(pk=1, nickname='Pre_post')
+        StudentProfile.objects.get_or_create(pk=2, nickname='Unmodified')
         self.user = User.objects.create_user(username='user', password='user')
 
 
     def test_put(self):
-        request = self.factory.put('/api/student_profiles?student_id=0',
+        request = self.factory.put(self.url_prefix + '?student_id=1',
             data=json.dumps({'nickname' : 'Postman'}))
         response = views.student_profiles(request)
 
@@ -115,12 +116,25 @@ class StudentProfileTestCase(TestCase):
         self.assertEqual(len(profile), 1)
         self.assertEqual(profile['nickname'], 'Postman')
 
-        self.assertEqual(StudentProfile.objects.get(pk=0).nickname, 'Postman')
-        self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Unmodified')
+
+        request = self.factory.put(self.url_prefix + '?student_id=4',
+            data=json.dumps({'nickname' : 'Mojoman'}))
+        response = views.student_profiles(request)
+
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+
+        profile = json.loads(response.content.decode(response.charset))        
+        self.assertEqual(len(profile), 1)
+        self.assertEqual(profile['nickname'], 'Mojoman')
+
+        self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Postman')
+        self.assertEqual(StudentProfile.objects.get(pk=2).nickname, 'Unmodified')
+        self.assertFalse(StudentProfile.objects.filter(pk=3).first())
+        self.assertEqual(StudentProfile.objects.get(pk=4).nickname, 'Mojoman')
 
 
     def test_get(self):
-        request = self.factory.get('/api/student_profiles?student_id=0')
+        request = self.factory.get(self.url_prefix + '?student_id=1')
         response = views.student_profiles(request)
         
         profile = json.loads(response.content.decode(response.charset))
