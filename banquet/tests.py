@@ -60,7 +60,6 @@ class BanquetViewTestCase(TestCase):
             'gender': 'female',
             'email': 'mail@mail.com',
             'phone_number':"070000000000",
-            'ticket_type': 'company',
         }
         form = BanquetteAttendantForm(data=form_data, users=User.objects.all(), exhibitors=Exhibitor.objects.all(), tables=BanquetTable.objects.all())
         self.assertFalse(form.is_valid())
@@ -73,7 +72,6 @@ class BanquetViewTestCase(TestCase):
             'gender': 'female',
             'email': 'mail@mail.com',
             'phone_number':"070000000000",
-            'ticket_type': 'company',
         }
         form = BanquetteAttendantForm(data=form_data, users=User.objects.all(), exhibitors=Exhibitor.objects.all(), tables=BanquetTable.objects.all())
         self.assertTrue(form.is_valid())
