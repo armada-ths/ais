@@ -41,36 +41,39 @@ def names(objects):
     return [obj_name(obj) for obj in objects.all()]
 
 
-def exhibitor(request, exhibitor):
-    tags = tags_mappings(exhibitor.tags.all())
+def exhibitor(request, exhibitor, company):
+    hosts = [OrderedDict([ 
+      ('first name', host.first_name),
+      ('last name', host.last_name),
+      ('email', host.email),
+    ]) for host in exhibitor.hosts.all()]
+    if exhibitor.contact:
+      contact = OrderedDict([
+        ('name', exhibitor.contact.name),
+        ('email', exhibitor.contact.email),
+        ('title', exhibitor.contact.title),
+        ])
+    else:
+      contact = {}
     return OrderedDict([
-                           ('id', exhibitor.pk),
-                           ('name', exhibitor.display_name),
-                           ('slug', exhibitor.slug),
-                           ('short_description', exhibitor.short_description),
-                           ('description', exhibitor.description),
-                           ('employees_sweden', exhibitor.employees_sweden),
-                           ('employees_world', exhibitor.employees_world),
-                           ('countries', exhibitor.countries),
-                           ('website_url', exhibitor.website_url),
-                           ('facebook_url', exhibitor.facebook_url),
-                           ('twitter_url', exhibitor.twitter_url),
-                           ('linkedin_url', exhibitor.linkedin_url),
-                           ('logo_url', image_url_or_missing(request, exhibitor.logo)),
-                           ('logo_small_url',
-                            image_url_or_missing(request, exhibitor.logo_small)),
-                           ('ad_url', image_url_or_missing(request, exhibitor.ad)),
-                           ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair, MISSING_MAP)),
-                           ('map_url', image_url_or_missing(request, exhibitor.location_at_fair, MISSING_MAP)),
-                           ('location', str(exhibitor.exhibitor.location) if exhibitor.exhibitor.location else ''),
-                           ('room', str(exhibitor.exhibitor.location) if exhibitor.exhibitor.location else ''),
-                           ('programs', names(exhibitor.programs)),
-                           ('main_work_field', obj_name(exhibitor.main_work_field)),
-                           ('work_fields', names(exhibitor.work_fields)),
-                           ('job_types', names(exhibitor.job_types)),
-                           ('continents', names(exhibitor.continents)),
-                           ('values', names(exhibitor.values)),
-                       ] + tags)
+                           ('fair', exhibitor.fair.name),
+                           ('company', company.name),
+                           ('company website', company.website),
+                           ('phone number', company.phone_number),
+                           ('address street', company.address_street),
+                           ('address zip code', company.address_zip_code),
+                           ('address country', company.address_country),
+                           ('address city', company.address_city),
+                           ('address other information', company.additional_address_information),
+                           ('organisation type', company.organisation_type),
+                           ('company contact', contact),
+                           ('exhibitor location', exhibitor.location),
+                           ('booth number', exhibitor.booth_number),
+                           ('about', exhibitor.about_text),
+                           ('facts', exhibitor.facts_text),
+                           ('hosts', hosts),
+                           ('logo url', image_url_or_missing(request, exhibitor.logo)),
+                       ])
 
 
 def event(request, event):
