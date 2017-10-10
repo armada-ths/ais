@@ -16,9 +16,10 @@
             <th>Alcohol</th>
             <th>Lactose free</th>
             <th>Gluten free</th>
-            <th>Vegetarian</th>
+            <th>Vegan</th>
             <th>Armada member</th>
             <th>Exhibitor</th>
+            <th>Ticket type</th>
         </tr>
         </thead>
         <tbody>
@@ -33,7 +34,7 @@
                 <td>{% if attendant.wants_alcohol %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
                 <td>{% if attendant.wants_lactose_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
                 <td>{% if attendant.wants_gluten_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
-                <td>{% if attendant.wants_vegetarian_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                <td>{% if attendant.wants_vegan_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
                 <td>
                     {% for group in attendant.user.groups.all %}
                         {% if group.name == 'Armada' %}
@@ -48,6 +49,9 @@
                         {{ attendant.exhibitor.company|default:'' }}
                     {% endif %}
 
+                </td>
+                <td>
+                    {{ attendant.ticket_type }}
                 </td>
             </tr>
         {% endfor %}
