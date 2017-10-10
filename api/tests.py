@@ -1,15 +1,22 @@
-from django.test import TestCase, RequestFactory
-import json
+from django.test import TestCase, RequestFactory, Client
+from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
+
+import json
 
 from fair.models import Fair
 from companies.models import Company
 from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
+from student_profiles.models import StudentProfile
+
 from recruitment.models import RecruitmentPeriod, Role
 import api.serializers as serializers
 from . import views
+
+import api.serializers as serializers
+
 
 HTTP_status_code_OK = 200
 
@@ -25,6 +32,7 @@ class ExhibitorTestCase(TestCase):
                 )
         self.request = self.factory.get('/api/exhibitors')
 
+
     def test_serializer(self):
         serialized = serializers.exhibitor(
                 self.request,
@@ -32,6 +40,7 @@ class ExhibitorTestCase(TestCase):
                 self.exhibitor.company
                 )
         self.assertIn('company', serialized)
+
 
     def test_view(self):
         response = views.exhibitors(self.request)
@@ -87,6 +96,38 @@ class NewsTestCase(TestCase):
         self.assertEqual(len(news), 0)
 
 
+class StudentProfileTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        StudentProfile.objects.get_or_create(pk=0, nickname='Pre_post')
+        StudentProfile.objects.get_or_create(pk=1, nickname='Unmodified')
+        self.user = User.objects.create_user(username='user', password='user')
+
+
+    def test_put(self):
+        request = self.factory.put('/api/student_profiles?student_id=0',
+            data=json.dumps({'nickname' : 'Postman'}))
+        response = views.student_profiles(request)
+
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+
+        profile = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(profile), 1)
+        self.assertEqual(profile['nickname'], 'Postman')
+
+        self.assertEqual(StudentProfile.objects.get(pk=0).nickname, 'Postman')
+        self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Unmodified')
+
+
+    def test_get(self):
+        request = self.factory.get('/api/student_profiles?student_id=0')
+        response = views.student_profiles(request)
+        
+        profile = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(profile), 1)
+        self.assertEqual(profile['nickname'], 'Pre_post')
+
+
 class RecruitmentTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -135,6 +176,4 @@ class RecruitmentTestCase(TestCase):
         recruitments = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(recruitments), 2)
         #Test content for one recruitment
-        self.assertEqual(recruitments[0]['name'], 'current recruitment') 
-
-        
+        self.assertEqual(recruitments[0]['name'], 'current recruitment')

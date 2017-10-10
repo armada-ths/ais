@@ -1,11 +1,12 @@
 from collections import OrderedDict
 from datetime import datetime
-import platform
-import subprocess
+
+import platform, subprocess, json
 
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from banquet.models import BanquetteAttendant
@@ -16,6 +17,7 @@ from fair.models import Partner, Fair
 from django.utils import timezone
 from banquet.models import BanquetteAttendant
 from news.models import NewsArticle
+from student_profiles.models import StudentProfile
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
 from django.shortcuts import get_object_or_404
 
@@ -128,10 +130,41 @@ def banquet_placement(request):
                 attendence.job_title += ': ' + job_title
 
 
+
         data.append(serializers.banquet_placement(request, attendence, index))
         index += 1
     return JsonResponse(data, safe=False)
 
+
+def student_profiles(request):
+    '''
+    GET student profiles nickname by their id.
+    Url: /student_profiles?student_id=STUDENTPROFILEID
+    or
+    PUT student profile nickname by the id
+    URL: /api/student_profiles?student_id=STUDENT_PROFILE_ID
+    DATA: json'{"nickname" : NICKNAME}'
+    '''
+    if request.method == 'GET':
+        student_id = request.GET['student_id']
+        student = get_object_or_404(StudentProfile, pk=student_id)
+        data = OrderedDict([('nickname', student.nickname)])
+    elif request.method == 'PUT':
+        if request.body:
+            student_id = request.GET['student_id']
+            student_profile = StudentProfile.objects.filter(pk=student_id).first()
+            if student_profile:
+                student_profile.nickname = json.loads(request.body.decode()).get('nickname')
+                student_profile.save()
+                data = OrderedDict([('nickname', student_profile.nickname)])
+            else:
+                data = []   # we didn't find student_profile with provided key
+        else:
+            data = []   # we were sent an empty PUT request
+    else:
+        data = []   # we were sent some request other than PUT or GET
+
+    return JsonResponse(data, safe=False)
 
 
 def recruitment(request):
@@ -162,9 +195,3 @@ def recruitment(request):
             ]))
 
     return JsonResponse(data, safe=False)
-
-
-
-
-
-
