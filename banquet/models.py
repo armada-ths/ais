@@ -14,6 +14,19 @@ class BanquetTable(models.Model):
     def __str__(self):
         return '%s' % (self.table_name)
 
+class BanquetTicket(models.Model):
+    '''
+    Banqut ticket. A model to make it possible to administrate ticket types from admin view.
+    Not connected to year, because there's no reason to keep ticket types separeted by year.
+    '''
+    ticket_name = models.CharField(max_length=120, null=True, blank=True)
+
+    class Meta:
+        ordering = ["ticket_name"]
+
+    def __str__(self):
+        return '%s' % (self.ticket_name)
+
 
 class BanquetteAttendant(models.Model):
     fair = models.ForeignKey(Fair, default=1)
