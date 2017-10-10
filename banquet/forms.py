@@ -28,9 +28,9 @@ class BanquetteAttendantForm(ModelForm):
 
         super(BanquetteAttendantForm, self).__init__(*args, **kwargs)
 
-        self.fields['user'].choices = [(user.pk, user.email if not user.get_full_name() else user.get_full_name() ) for user in users]
-        self.fields['exhibitor'].choices = [(exhibitor.pk, exhibitor.__str__()) for exhibitor in exhibitors]
-        self.fields['table'].choices = [(table.pk, table.__str__()) for table in tables]
+        self.fields['user'].choices = [(None,'----')] + [(user.pk, user.email if not user.get_full_name() else user.get_full_name() ) for user in users]
+        self.fields['exhibitor'].choices = [(None,'----')] + [(exhibitor.pk, exhibitor.__str__()) for exhibitor in exhibitors]
+        self.fields['table'].choices = [(None,'----')] + [(table.pk, table.__str__()) for table in tables]
         self.fields['wants_vegan_food'].help_text = "This evening, everyone will be served a delicious three-course lacto-ovo vegetarian dinner to go along with THS Armada's sustainability work"
     class Meta:
         model = BanquetteAttendant
