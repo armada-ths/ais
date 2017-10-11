@@ -11,9 +11,7 @@ from fair.models import Fair
 from sales.models import Sale
 
 from .models import SignupContract, SignupLog
-
 from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, ExternalUserForm, InterestForm, ChangePasswordForm
-
 
 from .help import exhibitor_form as help
 from .help.methods import get_time_flag

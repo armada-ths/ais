@@ -83,6 +83,7 @@ class Exhibitor(models.Model):
         ('arkad_transport', 'Transport from Arkad in Lund'),
         ('self_transport_small', 'We bring our (only small) goods ourselves'),
         ('self_transport_large', 'We bring our (large) goods ourselves'),
+        ('armada_transport_to_fair', 'We use Armada Transport'),
     ]
 
     transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
