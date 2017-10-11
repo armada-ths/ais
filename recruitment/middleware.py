@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+    from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.utils.http import urlquote
 from django.core.urlresolvers import reverse
@@ -27,8 +27,6 @@ class LoginRequiredMiddleware:
         # TODO: not hardcode fairs/2017/banquet/signup and fairs/2018/banquet/signup
         url_exceptions = {
             '/',
-            '/api/events/', '/api/exhibitors/', '/api/news/', '/api/partners/',
-            '/api/organization/', '/api/banquet_placement/', '/api/status/',
             '/register/', '/register/signup', '/register/new_company',
             '/register/password_reset/', '/register/password_reset/done/',
             '/register/external/signup',
@@ -37,7 +35,7 @@ class LoginRequiredMiddleware:
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
         url_prefix_exceptions = {
-            '/api/student_profile',
+            '/api/',
             '/register/reset/'
         }
 
