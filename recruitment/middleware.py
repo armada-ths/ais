@@ -41,10 +41,13 @@ class LoginRequiredMiddleware:
 
         if path in url_exceptions:
             return
+
         for prefix in url_prefix_exceptions:
             if path.startswith(prefix, 0, len(prefix)):
                 return
+
         if 'login' in path:
             return
+
         if not request.user.is_authenticated():
             return HttpResponseRedirect("/?next=%s" % (urlquote(request.get_full_path())))
