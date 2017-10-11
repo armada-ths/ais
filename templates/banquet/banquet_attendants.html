@@ -16,9 +16,13 @@
             <th>Alcohol</th>
             <th>Lactose free</th>
             <th>Gluten free</th>
-            <th>Vegetarian</th>
+            <th>Vegan</th>
             <th>Armada member</th>
             <th>Exhibitor</th>
+            <th>Ticket type</th>
+            <th>Table</th>
+            <th>Seat</th>
+            <th>Confirmed</th>
         </tr>
         </thead>
         <tbody>
@@ -33,7 +37,7 @@
                 <td>{% if attendant.wants_alcohol %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
                 <td>{% if attendant.wants_lactose_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
                 <td>{% if attendant.wants_gluten_free_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
-                <td>{% if attendant.wants_vegetarian_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
+                <td>{% if attendant.wants_vegan_food %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</td>
                 <td>
                     {% for group in attendant.user.groups.all %}
                         {% if group.name == 'Armada' %}
@@ -48,6 +52,24 @@
                         {{ attendant.exhibitor.company|default:'' }}
                     {% endif %}
 
+                </td>
+                <td>
+                    {% if attendant.ticket_type %}
+                        {{ attendant.ticket_type|default:'' }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if attendant.table %}
+                        {{ attendant.table }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if attendant.seat_number %}
+                        {{ attendant.seat_number }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if attendant.confirmed %}<span class="glyphicon glyphicon-ok"></span>{% endif %}
                 </td>
             </tr>
         {% endfor %}
