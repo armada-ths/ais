@@ -136,7 +136,7 @@ def banquet_placement(request):
     return JsonResponse(data, safe=False)
 
 
-def student_profiles(request):
+def student_profile(request):
     '''
     GET student profiles nickname by their id.
     Url: /student_profiles?student_id=STUDENTPROFILEID
