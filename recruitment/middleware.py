@@ -1,4 +1,4 @@
-    from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.utils.http import urlquote
 from django.core.urlresolvers import reverse
