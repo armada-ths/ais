@@ -23,7 +23,7 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
     writer.writerow(csv_headers)
     for attendant in queryset:
         writer.writerow([
-            attendant.first_name, attendant.last_name, attendant.email, attendant.ticket_type, attendant.table, attendant.gender, attendant.phone_number,
+            attendant.first_name, attendant.last_name, attendant.email, attendant.ticket, attendant.table, attendant.gender, attendant.phone_number,
             attendant.allergies, attendant.wants_alcohol, attendant.wants_lactose_free_food,
             attendant.wants_gluten_free_food, attendant.wants_vegan_food, attendant.job_title, attendant.linkedin_url
         ])
