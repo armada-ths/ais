@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='banquetteattendant',
             name='ticket_type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='banquet.BanquetTicket'),
+            field=models.CharField(choices=[('company', 'Company Ticket'), ('student', 'Student Ticket')], default='student', max_length=35),
         ),
     ]
