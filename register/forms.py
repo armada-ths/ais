@@ -130,6 +130,14 @@ class ExternalUserForm(UserCreationForm):
         model = User
         fields = ('email', 'password1', 'password2',)
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return email
+        raise forms.ValidationError(u'Email "%s" is already in use.' % email)
+
 class ExhibitorCatalogInfoForm(ModelForm):
     class Meta:
         model = CatalogInfo

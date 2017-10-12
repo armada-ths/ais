@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
+from django.urls import reverse
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -103,12 +104,16 @@ def signup(request, template_name='register/create_user.html'):
     return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
 
 def external_signup(request, template_name='register/create_external_user.html'):
+    """
+    Sign up for external people meaning those who are not in Armada and not from KTH.
+    """
     form = ExternalUserForm(request.POST or None, prefix='user')
     fair = get_object_or_404(Fair, current=True)
     if form.is_valid():
         user = form.save(commit=False)
         user.username = form.cleaned_data['email']
         user.email = form.cleaned_data['email']
+        # the form's cleaning checks if the user email already exists
         user.save()
         user = authenticate(
             username=form.cleaned_data['email'],
