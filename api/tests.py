@@ -14,6 +14,7 @@ from student_profiles.models import StudentProfile
 from recruitment.models import RecruitmentPeriod, Role
 import api.serializers as serializers
 from . import views
+from .models import QuestionBase, QuestionSlider
 
 import api.serializers as serializers
 
@@ -126,6 +127,20 @@ class StudentProfileTestCase(TestCase):
         profile = json.loads(response.content.decode(response.charset))
         self.assertEqual(len(profile), 1)
         self.assertEqual(profile['nickname'], 'Pre_post')
+
+
+class QuestionTestCase(TestCase):
+    def test_models(self):
+        # Create the objects of models
+        QuestionSlider.objects.create(question='How much do you like me?', min_value=0.0, max_value=10.0)
+
+        self.assertEqual(len(QuestionBase.objects.all()), 1)
+
+        # Test QuestionSlider
+        question = QuestionBase.objects.filter(question_type='slider').first()
+        self.assertTrue(question)
+        self.assertTrue(question.questionslider)
+        self.assertEqual(question.questionslider.max_value, 10.0)
 
 
 class RecruitmentTestCase(TestCase):

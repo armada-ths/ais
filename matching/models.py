@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
+MAX_QUESTION_LENGTH=64
+
 # Matching survey
 class Survey(models.Model):
     fair = models.ForeignKey('fair.Fair', default=1)
@@ -35,7 +37,7 @@ class Question(models.Model):
         (INT, 'integer'),
         (BOOL, 'boolean'),
     )
-    name = models.CharField(max_length=64, blank=True, null=True)
+    name = models.CharField(max_length=MAX_QUESTION_LENGTH, blank=True, null=True)
     text = models.TextField()
     help_text = models.TextField(blank=True, null=True)
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES, blank=True, null=True)
