@@ -231,3 +231,19 @@ def change_password(request, template_name='register/change_password.html'):
     else:
         form = ChangePasswordForm(user=request.user)
     return render(request, template_name, {'form':form})
+
+def batcave_please_attack_me(request):
+    """
+    This view used to make a big calculation for capacity testing
+    SHOULD NOT BE ON AIS, ONLY AIS2!!!!!!
+    Calculates a big fibonacci number with a
+    naive implementation to make it slow :)
+    """
+    def fib(n):
+        a = 0
+        b = 1
+        for i in range(0, n):
+            a, b = b, a + b
+        return a
+    f = fib(650000)
+    return redirect('/')
