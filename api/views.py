@@ -108,11 +108,12 @@ def status(request):
 def banquet_placement(request):
     '''
     Returns all banquet attendance. 
-    The field hob_title depends on weather a attendant is a user or exhibitor.
+    The field job_title depends on weather a attendant is a user or exhibitor.
     '''
-    # Tables and seats are mocked with this index, remove when implemented
-    index = 0
-    banquet_attendees = BanquetteAttendant.objects.all()
+
+    fair = get_object_or_404(Fair, current = True)
+
+    banquet_attendees = BanquetteAttendant.objects.filter(fair=fair)
 
     recruitment_applications = RecruitmentApplication.objects.filter(status='accepted')
     data = []
@@ -129,10 +130,7 @@ def banquet_placement(request):
             if job_title:
                 attendence.job_title += ': ' + job_title
 
-
-
-        data.append(serializers.banquet_placement(request, attendence, index))
-        index += 1
+        data.append(serializers.banquet_placement(request, attendence))
     return JsonResponse(data, safe=False)
 
 
