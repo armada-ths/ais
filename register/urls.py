@@ -57,4 +57,6 @@ urlpatterns = [
                 'set_password_form': SetNewPasswordForm,
                 'post_reset_redirect': 'anmalan:login'}
     ),
+    # OBSERVE: This url should only exist on AIS2! If you see this on AIS remove it please!
+    url(r'^batcavepleaseattackme$', views.batcave_please_attack_me, name='batcavepleaseattackme'),
 ]
