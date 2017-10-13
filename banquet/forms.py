@@ -49,4 +49,4 @@ class ExternalBanquetSignupForm(ModelForm):
     class Meta:
         model = BanquetteAttendant
         fields = '__all__'
-        exclude = ('fair','user', 'exhibitor', 'table', 'seat_number', 'ignore_from_placement', 'student_ticket', 'ticket', 'confirmed')
+        exclude = ('fair','user', 'email', 'exhibitor', 'table', 'seat_number', 'ignore_from_placement', 'student_ticket', 'ticket', 'confirmed')

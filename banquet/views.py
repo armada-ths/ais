@@ -133,6 +133,7 @@ def banquet_external_signup(request, year, template_name='banquet/external_signu
             banquet_attendant = form.save(commit=False)
             banquet_attendant.fair = fair
             banquet_attendant.user = request.user
+            banquet_attendant.email = request.user.email
             banquet_attendant.save()
             return render(request, 'banquet/thank_you.html', {'fair': fair })
         return render(request, template_name, {'form': form, 'fair': fair })
