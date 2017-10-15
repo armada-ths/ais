@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
+from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns, \
+StudentQuestionSlider
 
 class QuestionInline(admin.ModelAdmin):
     list_display=('text', 'question_type')
@@ -34,3 +35,5 @@ admin.site.register(TextAns)
 admin.site.register(ChoiceAns)
 admin.site.register(IntegerAns)
 admin.site.register(BooleanAns)
+
+admin.site.register(StudentQuestionSlider)
