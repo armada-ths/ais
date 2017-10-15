@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from lib.util import unix_time
 
-from .models import QuestionType
+from matching.models import StudentQuestionType as QuestionType
 
 
 MISSING_IMAGE = '/static/missing.png'
@@ -154,7 +154,7 @@ def serialize_slider(question):
     '''
     Serialize a SLIDER question.
     '''
-    question = question.questionslider
+    question = question.studentquestionslider
     return OrderedDict([
             ('question', question.question),
             ('type', question.question_type),

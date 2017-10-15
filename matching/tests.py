@@ -1,8 +1,11 @@
 from django.test import TestCase
+
 from fair.models import Fair
 from companies.models import Company
 from exhibitors.models import Exhibitor
-from .models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
+
+from .models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns, \
+StudentQuestionBase, StudentQuestionSlider
 
 class MatchingTestCase(TestCase):
     ''' Tests the filtering on questions and answers to different surveys, also
@@ -70,3 +73,17 @@ class MatchingTestCase(TestCase):
         self.assertEqual(list(resp_old), [self.resp_old, self.resp_old_on_mixed])
         self.assertEqual(list(ans_current), [self.ans_current, self.ans_current_on_mixed])
         self.assertEqual(list(ans_old), [self.ans_old, self.ans_old_on_mixed])
+
+
+class StudentMatchingTestCase(TestCase):
+    def setUp(self):
+        (self.fair, wasCreated) = Fair.objects.get_or_create(name='Armada 2017', current=True)
+        StudentQuestionSlider.objects.create(question='How is this working?',
+            min_value=0.0, max_value=1.0, fair=self.fair, step=0.05)
+
+
+    def test_models(self):
+        question = StudentQuestionBase.objects.filter(question_type='slider', question='How is this working?').first()
+        self.assertTrue(question)
+        self.assertTrue(question.studentquestionslider)
+        self.assertEqual(question.studentquestionslider.step, 0.05)

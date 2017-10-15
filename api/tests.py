@@ -1,20 +1,18 @@
 from django.test import TestCase, RequestFactory, Client
 from django.contrib.auth.models import User
 from django.utils import timezone
-import datetime
 
-import json
+import json, datetime
 
-from fair.models import Fair
 from companies.models import Company
-from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
+from exhibitors.models import Exhibitor, CatalogInfo
+from fair.models import Fair
 from student_profiles.models import StudentProfile
-
 from recruitment.models import RecruitmentPeriod, Role
-import api.serializers as serializers
+from matching.models import StudentQuestionType, StudentQuestionSlider
+
 from . import views
-from .models import QuestionBase, QuestionSlider, QuestionType
 
 import api.serializers as serializers
 
@@ -134,28 +132,14 @@ class QuestionTestCase(TestCase):
         self.factory = RequestFactory()
         self.fair = Fair.objects.create(name='Armada fair', current=True)
 
-
-    def test_models(self):
-        # Create the objects of models
-        QuestionSlider.objects.create(question='How much do you like me?', min_value=0.0, max_value=10.0, fair=self.fair)
-
-        self.assertEqual(len(QuestionBase.objects.all()), 1)
-
-        # Test QuestionSlider
-        question = QuestionBase.objects.filter(question_type='slider').first()
-        self.assertTrue(question)
-        self.assertEqual(question.question_type, QuestionType.SLIDER.value)
-        self.assertTrue(question.questionslider)
-        self.assertEqual(question.questionslider.max_value, 10.0)
+        # generate questions
+        StudentQuestionSlider.objects.create(question='Question 1?',
+            min_value=0.0, max_value=10000.0, step=0.1, fair=self.fair)
+        StudentQuestionSlider.objects.create(question='Some other question?',
+            min_value=0.0, max_value=1000000.0, step=1.0, fair=self.fair)
 
 
     def test_api(self):
-        # generate questions
-        QuestionSlider.objects.create(question='Question 1?',
-            min_value=0.0, max_value=10000.0, step=0.1, fair=self.fair)
-        QuestionSlider.objects.create(question='Some other question?',
-            min_value=0.0, max_value=1000000.0, step=1.0, fair=self.fair)
-
         # make a request
         request = self.factory.get('/api/questions')
         response = views.questions(request)
