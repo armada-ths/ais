@@ -1,6 +1,7 @@
 from django.test import TestCase, RequestFactory, Client
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.http.response import Http404
 import datetime
 
 import json
@@ -20,6 +21,7 @@ import api.serializers as serializers
 
 
 HTTP_status_code_OK = 200
+STUDENT_PROFILE_SIZE = 1
 
 
 class ExhibitorTestCase(TestCase):
@@ -98,35 +100,67 @@ class NewsTestCase(TestCase):
 
 
 class StudentProfileTestCase(TestCase):
+    def check_student_profile_response(self, response, expected_nickname = None):
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        profile = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(profile), STUDENT_PROFILE_SIZE)
+        if expected_nickname:
+            self.assertEqual(profile['nickname'], expected_nickname)
+
+
     def setUp(self):
         self.factory = RequestFactory()
-        StudentProfile.objects.get_or_create(pk=0, nickname='Pre_post')
-        StudentProfile.objects.get_or_create(pk=1, nickname='Unmodified')
-        self.user = User.objects.create_user(username='user', password='user')
-
-
-    def test_put(self):
-        request = self.factory.put('/api/student_profiles?student_id=0',
-            data=json.dumps({'nickname' : 'Postman'}))
-        response = views.student_profiles(request)
-
-        self.assertEqual(response.status_code, HTTP_status_code_OK)
-
-        profile = json.loads(response.content.decode(response.charset))
-        self.assertEqual(len(profile), 1)
-        self.assertEqual(profile['nickname'], 'Postman')
-
-        self.assertEqual(StudentProfile.objects.get(pk=0).nickname, 'Postman')
-        self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Unmodified')
-
-
-    def test_get(self):
-        request = self.factory.get('/api/student_profiles?student_id=0')
-        response = views.student_profiles(request)
+        self.url_prefix = '/api/student_profile'
+        StudentProfile.objects.get_or_create(pk=1, nickname='Pre_post')
+        StudentProfile.objects.get_or_create(pk=2, nickname='Unmodified')
         
-        profile = json.loads(response.content.decode(response.charset))
-        self.assertEqual(len(profile), 1)
-        self.assertEqual(profile['nickname'], 'Pre_post')
+
+    # Test that this api works without a login
+    def test_client(self):
+        client = Client()
+        
+        response = client.get(self.url_prefix + '?student_id=1')
+        self.check_student_profile_response(response, 'Pre_post')
+        
+        response = client.put(self.url_prefix + '?student_id=1',
+            data = json.dumps({'nickname' : 'Postman'}))
+        self.check_student_profile_response(response, 'Postman')
+
+
+    # Test the PUT protocol
+    def test_put(self):
+        request = self.factory.put(self.url_prefix + '?student_id=1',
+            data = json.dumps({'nickname' : 'Postman'}))
+        response = views.student_profile(request)
+
+        self.check_student_profile_response(response, 'Postman')
+
+        self.assertFalse(StudentProfile.objects.filter(pk=3).first())
+        
+        request = self.factory.put(self.url_prefix + '?student_id=3',
+            data=json.dumps({'nickname' : 'Mojo'}))
+        response = views.student_profile(request)
+
+        self.check_student_profile_response(response, 'Mojo')
+
+        self.assertTrue(StudentProfile.objects.filter(pk=3).first())
+        self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Postman')
+        self.assertEqual(StudentProfile.objects.get(pk=2).nickname, 'Unmodified')
+        self.assertEqual(StudentProfile.objects.get(pk=3).nickname, 'Mojo')
+
+    
+    # Test the GET protocol
+    def test_get(self):
+        request = self.factory.get(self.url_prefix + '?student_id=1')
+        response = views.student_profile(request)
+        
+        self.check_student_profile_response(response, 'Pre_post')
+        
+        request = self.factory.get(self.url_prefix + '?student_id=0')
+        try:
+            response = views.student_profile(request)
+        except Http404:
+            pass    # we expect a 404 as the student with pk=0 doesn't exist!
 
 
 class BanquetPlacementTestCase(TestCase):

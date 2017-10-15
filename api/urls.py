@@ -10,6 +10,6 @@ urlpatterns = [
     url(r'^organization/', views.organization),
     url(r'^status/$', views.status),
     url(r'^banquet_placement/$', views.banquet_placement),
-    url(r'^student_profiles$', views.student_profiles),
+    url(r'^student_profile$', views.student_profile),
     url(r'^recruitment/$', views.recruitment),
 ]
