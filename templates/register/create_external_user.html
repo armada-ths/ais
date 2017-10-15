@@ -19,9 +19,10 @@
         <div class="row header-row">
             <div class="col-md-12">
                 <h1>Create a new account</h1>
-                <a href="{% url 'anmalan:external_login' %}">
-                  <button class="btn btn-success">Already have an account</button>
-                </a>
+
+                <p>If you already have an account click on the KTH login button</p>
+                <a href="/login"><img src="/static/images/kth_login_button.png" alt="Login with KTH"></a>
+                <p>If you don't have an KTH account log in <a href="{% url 'anmalan:external_login' %}">here</a>.</p>
                 <br />
                 <br />
             </div>
