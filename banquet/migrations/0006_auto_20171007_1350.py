@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('fair', '0006_auto_20170831_2211'),
-        ('banquet', '0005_banquetteattendant_ticket_type'),
+        ('banquet', '0004_banquetteattendant_confirmed'),
     ]
 
     operations = [

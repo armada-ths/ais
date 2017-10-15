@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0013_remove_banquetteattendant_ticket_type'),
+        ('banquet', '0011_auto_20171010_2205'),
     ]
 
     operations = [
