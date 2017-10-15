@@ -42,6 +42,8 @@ class QuestionBase(models.Model):
     question = models.CharField(max_length=MAX_QUESTION_LENGTH, blank=True, null=True)
     question_type = models.CharField(max_length=64, blank=True, null=True)
 
+    fair = models.ForeignKey('fair.Fair', default=1)
+
     class Meta:
         default_permissions = ()
         verbose_name = 'question'

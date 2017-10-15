@@ -14,7 +14,7 @@ from student_profiles.models import StudentProfile
 from recruitment.models import RecruitmentPeriod, Role
 import api.serializers as serializers
 from . import views
-from .models import QuestionBase, QuestionSlider
+from .models import QuestionBase, QuestionSlider, QuestionType
 
 import api.serializers as serializers
 
@@ -130,17 +130,42 @@ class StudentProfileTestCase(TestCase):
 
 
 class QuestionTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.fair = Fair.objects.create(name='Armada fair', current=True)
+
+
     def test_models(self):
         # Create the objects of models
-        QuestionSlider.objects.create(question='How much do you like me?', min_value=0.0, max_value=10.0)
+        QuestionSlider.objects.create(question='How much do you like me?', min_value=0.0, max_value=10.0, fair=self.fair)
 
         self.assertEqual(len(QuestionBase.objects.all()), 1)
 
         # Test QuestionSlider
         question = QuestionBase.objects.filter(question_type='slider').first()
         self.assertTrue(question)
+        self.assertEqual(question.question_type, QuestionType.SLIDER.value)
         self.assertTrue(question.questionslider)
         self.assertEqual(question.questionslider.max_value, 10.0)
+
+
+    def test_api(self):
+        # generate questions
+        QuestionSlider.objects.create(question='Question 1?',
+            min_value=0.0, max_value=10000.0, step=0.1, fair=self.fair)
+        QuestionSlider.objects.create(question='Some other question?',
+            min_value=0.0, max_value=1000000.0, step=1.0, fair=self.fair)
+
+        # make a request
+        request = self.factory.get('/api/questions')
+        response = views.questions(request)
+
+        # validate the response
+        questions = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(questions), 1)
+        self.assertEqual(len(questions['questions']), 2)
+        self.assertEqual(questions['questions'][0]['question'], 'Question 1?')
+        self.assertEqual(questions['questions'][1]['step'], 1.0)
 
 
 class RecruitmentTestCase(TestCase):

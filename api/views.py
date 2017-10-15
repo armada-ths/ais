@@ -20,6 +20,7 @@ from news.models import NewsArticle
 from student_profiles.models import StudentProfile
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
 from django.shortcuts import get_object_or_404
+from .models import QuestionBase
 
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
@@ -164,6 +165,21 @@ def student_profiles(request):
     else:
         data = []   # we were sent some request other than PUT or GET
 
+    return JsonResponse(data, safe=False)
+
+
+def questions(request):
+    '''
+    ais.armada.nu/api/questions
+    Returns all questions belonging to the current fair.
+    Each question can be of one of QuestionType types and have special fields depending on that type.
+    '''
+    current_fair = get_object_or_404(Fair, current=True)
+    questions = QuestionBase.objects.filter(fair=current_fair)
+    data = {
+        'questions' : [serializers.question(question) for question in questions],
+        # TODO: areas
+    }
     return JsonResponse(data, safe=False)
 
 
