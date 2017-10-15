@@ -134,7 +134,7 @@ def banquet_placement(request):
     return JsonResponse(data, safe=False)
 
 
-def student_profiles(request):
+def student_profile(request):
     '''
     GET student profiles nickname by their id.
     Url: /student_profiles?student_id=STUDENTPROFILEID
@@ -150,13 +150,10 @@ def student_profiles(request):
     elif request.method == 'PUT':
         if request.body:
             student_id = request.GET['student_id']
-            student_profile = StudentProfile.objects.filter(pk=student_id).first()
-            if student_profile:
-                student_profile.nickname = json.loads(request.body.decode()).get('nickname')
-                student_profile.save()
-                data = OrderedDict([('nickname', student_profile.nickname)])
-            else:
-                data = []   # we didn't find student_profile with provided key
+            (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
+            student_profile.nickname = json.loads(request.body.decode()).get('nickname')
+            student_profile.save()
+            data = OrderedDict([('nickname', student_profile.nickname)])
         else:
             data = []   # we were sent an empty PUT request
     else:
