@@ -9,8 +9,8 @@ urlpatterns = [
     url(r'^news/', views.news),
     url(r'^organization/', views.organization),
     url(r'^partners/', views.partners),
+    url(r'^questions/$', views.questions)
     url(r'^recruitment/$', views.recruitment),
     url(r'^status/$', views.status),
-    url(r'^student_profiles$', views.student_profiles),
-    url(r'^questions/$', views.questions)
+    url(r'^student_profile$', views.student_profile),
 ]

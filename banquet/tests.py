@@ -4,7 +4,7 @@ from exhibitors.models import Exhibitor
 from companies.models import Company, Contact
 from django.test import Client
 from django.contrib.auth.models import User, Group, Permission
-from .models import BanquetteAttendant, BanquetTable
+from .models import BanquetteAttendant, BanquetTable, BanquetTicket
 from .forms import BanquetteAttendantForm
 from django.contrib.contenttypes.models import ContentType
 
@@ -60,7 +60,6 @@ class BanquetViewTestCase(TestCase):
             'gender': 'female',
             'email': 'mail@mail.com',
             'phone_number':"070000000000",
-            'ticket_type': 'company',
         }
         form = BanquetteAttendantForm(data=form_data, users=User.objects.all(), exhibitors=Exhibitor.objects.all(), tables=BanquetTable.objects.all())
         self.assertFalse(form.is_valid())
@@ -73,7 +72,20 @@ class BanquetViewTestCase(TestCase):
             'gender': 'female',
             'email': 'mail@mail.com',
             'phone_number':"070000000000",
-            'ticket_type': 'company',
         }
         form = BanquetteAttendantForm(data=form_data, users=User.objects.all(), exhibitors=Exhibitor.objects.all(), tables=BanquetTable.objects.all())
         self.assertTrue(form.is_valid())
+
+    def test_banquet_ticket_create(self):
+        banquet_ticket1 = BanquetTicket.objects.create(name="Student ticket")
+        banquet_ticket2 = BanquetTicket.objects.create(name="Company ticket")
+        ticket_query = BanquetTicket.objects.filter(name="Student ticket").first()
+        ticket_query_all = BanquetTicket.objects.all()
+        self.assertEqual(banquet_ticket1, ticket_query)
+        self.assertEqual(len(ticket_query_all), 2)
+
+    def test_banquet_ticket_empty(self):
+        banquet_ticket_empty = BanquetTicket.objects.create(name="")
+        banquet_ticket_empty = BanquetTicket.objects.create()
+        ticket_query = BanquetTicket.objects.all()
+        self.assertEqual(len(ticket_query), 2)
