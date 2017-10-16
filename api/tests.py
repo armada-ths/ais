@@ -13,7 +13,7 @@ from events.models import Event
 from student_profiles.models import StudentProfile
 
 from people.models import Profile
-  from banquet.models import BanquetteAttendant
+from banquet.models import BanquetteAttendant
 
 
 from recruitment.models import RecruitmentPeriod, Role
