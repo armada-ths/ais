@@ -44,6 +44,13 @@ class WorkFieldAdmin(admin.ModelAdmin):
     list_display = ('work_field','work_area')
     inlines = [StudentAnswerWFieldInline]
 
+class AnswerSliderAdmin(admin.ModelAdmin):
+    list_display = ('student', 'question', 'answer')
+    model = StudentAnswerSlider
+
+class AnswerGradingAdmin(admin.ModelAdmin):
+    list_display = ('student', 'question', 'answer')
+    model = StudentAnswerGrading
 
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
@@ -55,11 +62,9 @@ admin.site.register(BooleanAns)
 
 admin.site.register(StudentQuestionSlider)
 admin.site.register(StudentQuestionGrading)
-admin.site.register(StudentAnswerSlider)
-admin.site.register(StudentAnswerGrading)
+admin.site.register(StudentAnswerSlider, AnswerSliderAdmin)
+admin.site.register(StudentAnswerGrading, AnswerGradingAdmin)
 
 admin.site.register(WorkField, WorkFieldAdmin)
 admin.site.register(WorkFieldArea, WorkFieldAreaAdmin)
 admin.site.register(StudentAnswerWorkField)
-#admin.site.register(WorkField, WorkFieldAdmin)
-#admin.site.register(StudentAnswerWorkField, StudentAnswerWorkFieldAdmin)

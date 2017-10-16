@@ -134,7 +134,7 @@ class StudentQuestionBase(models.Model):
         else:
             raise Exception('Trying to save a model <' + str(self) + '> of illegal type \'' + str(self.question_type) + '\'!')
     def __str__(self):
-        return '%s of type %s for %s'%(self.question, self.question_type, self.survey)
+        return 'Question: %s    Type: %s'%(self.question, self.question_type)
 
 
 class StudentQuestionSlider(StudentQuestionBase):
@@ -164,7 +164,7 @@ class StudentQuestionSlider(StudentQuestionBase):
 
     def save(self, *args, **kwargs):
         self.question_type = StudentQuestionType.SLIDER.value
-        if not step:
+        if not self.step:
             self.step = self.max_value - self.min_value
         return super(StudentQuestionSlider, self).save(*args, **kwargs)
 
@@ -236,6 +236,9 @@ class StudentAnswerSlider(StudentAnswerBase):
         default_permissions = ()
         verbose_name = 'answer_slider'
 
+    def __str__(self):
+        return '%.2f'%self.answer
+
 class StudentAnswerGrading(StudentAnswerBase):
     '''
     A int answer model with a foregin key to StudentAnswerGrading
@@ -252,6 +255,9 @@ class StudentAnswerGrading(StudentAnswerBase):
     class Meta:
         default_permissions = ()
         verbose_name = 'answer_grading'
+
+    def __str__(self):
+        return '%i'%self.answer
 
 class WorkFieldArea(models.Model):
     '''
