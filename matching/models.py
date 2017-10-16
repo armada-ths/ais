@@ -186,24 +186,36 @@ class StudentQuestionGrading(StudentQuestionBase):
     def __init__(self, *args, **kwargs):
         if kwargs.get('question_type',None): kwargs.pop('question_type')
         self.question_type = StudentQuestionType.GRADING.value
-        return super(StudentQuestionGrading, self).save(*args, **kwargs)
+        return super(StudentQuestionGrading, self).__init__(*args, **kwargs)
+
     def save(self, *args, **kwargs):
         self.question_type = StudentQuestionType.GRADING.value
-        return super(StudentQuestionGrading, self).__init__(*args, **kwargs)
+        return super(StudentQuestionGrading, self).save(*args, **kwargs)
 
 
 class StudentAnswerBase(models.Model):
     '''
     Base model for answers to the student questions created by the matching
-    algorithm
+    algorithm. Contains a timestamp on created/updated that is autosave upon
+    save.
 
     Necessary field(s):
         student (fk)    - foreign key to Student Profile
     '''
-    student=models.ForeignKey('student_profiles.StudentProfile')
+    student = models.ForeignKey('student_profiles.StudentProfile')
+    created = models.DateTimeField(editable=False, null=True, blank=True)
+    updated = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         default_permissions = ()
         verbose_name = 'answer_base'
+
+    def save(self, *args, **kwargs):
+        ''' setting timestamp '''
+        if not self.id:
+            self.created = timezone.now()
+        self.updated = timezone.now()
+        return super(StudentAnswerBase, self).save(*args, **kwargs)
 
 class StudentAnswerSlider(StudentAnswerBase):
     '''
@@ -259,6 +271,12 @@ class WorkField(models.Model):
     Work fields that are auto created by the matching algorithm. These are
     manually associated via a foregin key to WorkFieldArea as a way of manual
     verification
+
+    Necessary field(s):
+        work_field (text)   - the work field name
+
+    Optional field(s):
+        work_area (fk)      - the work area does not necessary be spec to be in db
     '''
     work_field  = models.TextField()
     work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
@@ -271,9 +289,12 @@ class WorkField(models.Model):
 
 class StudentAnswerWorkField(StudentAnswerBase):
     '''
-    An boolean answer connecting a student_profile to the WorkField model
+    An boolean answer connecting a student_profile to the WorkField model. Is a
+    child of StudentAnswerBase.
+
     Necessary field(s):
-        TODO
+        work_field (fk) - foreign key to WorkField
+        answer (bool)   - true or false on that work field
     '''
     work_field  = models.ForeignKey(WorkField)
     answer      = models.BooleanField(choices=((True,'yes'), (False,'no')))
