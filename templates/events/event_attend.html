@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
     <h2>{{ event.name }}</h2>
-    {% if event.image_original %}<img src="/media/{{ event.image_original }}" style="max-width: 100%; max-height: 400px;">{% endif %}
+    {% if event.image %}<img src="/media/{{ event.image }}" style="max-width: 100%; max-height: 400px;">{% endif %}
     <br>
     {{ event.description|safe }}
     <br>

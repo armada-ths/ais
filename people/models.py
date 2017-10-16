@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from lib.image import UploadToDirUUID, UploadToDir, update_image_field
+from lib.image import UploadToDirUUID, UploadToDir, resize_and_save_image
 
 
 class Programme(models.Model):
@@ -64,12 +64,11 @@ class Profile(models.Model):
     def __str__(self):
         return '%s' % (self.user.get_full_name())
 
-    #def save(self, *args, **kwargs):
-    #    super(Profile, self).save(*args, **kwargs)
-    #    self.picture = update_image_field(
-    #            self.picture_original,
-    #            self.picture, 480, 640, 'jpg')
-    #    super(Profile, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        super(Profile, self).save(*args, **kwargs)
+        self.picture = resize_and_save_image(
+                self.picture_original,
+                'picture', 480, 640, 'jpg')
 
     class Meta:
         db_table = 'profile'

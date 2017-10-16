@@ -3,7 +3,7 @@ from PIL import Image, ImageFile
 from io import BytesIO
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.deconstruct import deconstructible
-import os
+import os, shutil
 from django.conf import settings
 
 
@@ -17,6 +17,18 @@ ImageFile.SAFEBLOCK = 1024*10000
 
 def path():
     pass
+
+
+def resize_and_save_image(image, directory, width, height, extension):
+    '''
+    Creates a copy of image in provided directory (same parent directory as the file) if necessary and saves it.
+    '''
+    if os.path.isfile(image.path):
+        path = os.path.join(os.path.dirname(os.path.dirname(image.path)), directory, os.path.basename(image.name))
+        if not os.path.isfile(image.path):
+            shutil.copyfile(image.path, path)
+            return format_image(path, width, height, extension)
+    return image
 
 
 # Updates an imagefield that is linked to another image

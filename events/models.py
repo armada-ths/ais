@@ -2,7 +2,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
 from django.conf import settings
-from lib.image import UploadToDirUUID, UploadToDir, update_image_field
+from lib.image import UploadToDirUUID, UploadToDir, resize_and_save_image
 import os
 from fair.models import Fair, Tag
 from recruitment.models import ExtraField
@@ -76,11 +76,16 @@ class Event(models.Model):
     def save(self, *args, **kwargs):
         if not self.extra_field:
             self.extra_field = ExtraField.objects.create()
+        super(Event, self).save(*args, **kwargs)
+        self.image = resize_and_save_image(
+            self.image_original,
+            'image', 1000, 600, 'jpg')
+
 # TODO: figure out the way to pass the actual name that will be used, not the file's original one!!!
 #        self.image = update_image_field(
 #            self.image_original,
 #            self.image, 1000, 1000, 'jpg')
-        super(Event, self).save(*args, **kwargs)
+#        super(Event, self).save(*args, **kwargs)
 
 # An EventQuestion belongs to a specific Event
 class EventQuestion(models.Model):
