@@ -6,6 +6,7 @@ import platform, subprocess, json
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
 from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -136,6 +137,7 @@ def banquet_placement(request):
     return JsonResponse(data, safe=False)
 
 
+@csrf_exempt
 def student_profile(request):
     '''
     GET student profiles nickname by their id.
