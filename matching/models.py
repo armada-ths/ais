@@ -122,7 +122,7 @@ class StudentQuestionBase(models.Model):
 
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
-    survey = models.ManyToManyField(Survey)
+    survey = models.ManyToManyField(Survey, blank=True)
 
     class Meta:
         default_permissions = ()
@@ -265,9 +265,11 @@ class WorkFieldArea(models.Model):
     of verification step. To each WorkFieldArea a set of WorkField objects are related
 
     Necessary field(s):
-        work_area (text)    - work field area name
+        work_area (unique text) - work field area name
+
+    Note: work_area is set as unique
     '''
-    work_area = models.TextField()
+    work_area = models.TextField(unique=True)
     class Meta:
         default_permissions = ()
         verbose_name = 'work field area'
@@ -281,13 +283,18 @@ class WorkField(models.Model):
     verification
 
     Necessary field(s):
-        work_field (text)   - the work field name
+        work_field (unique text)   - the work field name
 
     Optional field(s):
         work_area (fk)      - the work area does not necessary be spec to be in db
+                              (but wont be used in the matching if not)
+
+    Note: the work_field is set as unique and instead the field can be connected
+          to multiple surveys if necessary.
     '''
-    work_field  = models.TextField()
+    work_field  = models.TextField(unique=True)
     work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
+    survey      = models.ManyToManyField(Survey)
     class Meta:
         default_permissions = ()
         verbose_name = 'work field'
