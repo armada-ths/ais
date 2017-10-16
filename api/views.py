@@ -141,11 +141,11 @@ def banquet_placement(request):
 def student_profile(request):
     '''
     GET student profiles nickname by their id.
-    Url: /student_profiles?student_id=STUDENTPROFILEID
+    Url: /student_profile?student_id={STUDENTPROFILEID}
     or
     PUT student profile nickname by the id
-    URL: /api/student_profiles?student_id=STUDENT_PROFILE_ID
-    DATA: json'{"nickname" : NICKNAME}'
+    URL: /api/student_profile?student_id={STUDENT_PROFILE_ID}
+    DATA: json'{"nickname" : "{NICKNAME}"}'
     '''
     if request.method == 'GET':
         student_id = request.GET['student_id']
