@@ -85,10 +85,11 @@ def event(request, event):
     tags = tags_mappings(event.tags.all())
     signup_link = event.external_signup_url if event.external_signup_url else absolute_url(request, '/fairs/2017/events/' + str(
         event.pk) + '/signup')
+    print(event.image)
     return OrderedDict([
                            ('id', event.pk),
                            ('name', event.name),
-                           ('image_url', image_url_or_missing(request, event.image)),
+                           ('image_url', image_url_or_missing(request, event.image_original)),
                            ('location', event.location),
                            ('description_short', event.description_short),
                            ('description', event.description),
@@ -141,6 +142,7 @@ def person(request, person, role):
           ('name', person.get_full_name()),
           ('role', role)
       ])
+
 
 
 def organization_group(request, group):
