@@ -78,9 +78,11 @@ class IntegerAns(Answer):
 class BooleanAns(Answer):
     ans = models.NullBooleanField(choices=((True,'yes'), (False,'no')), null=True, blank=True)
 
-
-# These question types are different from matching/models.py as we're interested in more specific options
-# More are to follow?
+###########################################################
+#   Thes following question will contain output processed
+#   by the matching algorithm.
+#   The answers below are the ones from
+#   the app/web, connected to a student_profile.
 @unique
 class StudentQuestionType(Enum):
     SLIDER = 'slider'
@@ -97,9 +99,9 @@ class StudentQuestionType(Enum):
 class StudentQuestionBase(models.Model):
     '''
     A base model for all types of student questions.
-    
+
     ATTENTION! Trying to create an object of this model directly will raise an exception, as it's not intended to be used this way, create an object of one of the children instead!
-    
+
     This is to hold all questions in one database, so that we can do more complicated things like rating, ordering or other.
     This model holds all common information for all types of questions, such as the question string.
 
@@ -118,8 +120,7 @@ class StudentQuestionBase(models.Model):
 
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
-
-    fair = models.ForeignKey('fair.Fair', default=1)
+    survey = models.ManyToManyField(Survey)
 
     class Meta:
         default_permissions = ()
@@ -130,6 +131,8 @@ class StudentQuestionBase(models.Model):
             return super(StudentQuestionBase, self).save(*args, **kwargs)
         else:
             raise Exception('Trying to save a model <' + str(self) + '> of illegal type \'' + str(self.question_type) + '\'!')
+    def __str__(self):
+        return '%s of type %s for %s'%(self.question, self.question_type, self.survey)
 
 
 class StudentQuestionSlider(StudentQuestionBase):
@@ -146,7 +149,7 @@ class StudentQuestionSlider(StudentQuestionBase):
     '''
     min_value = models.FloatField()
     max_value = models.FloatField()
-    step = models.FloatField(default=1.0, blank=True, null=True)
+    step = models.FloatField(blank=True, null=True)
 
     class Meta:
         default_permissions = ()
@@ -159,16 +162,124 @@ class StudentQuestionSlider(StudentQuestionBase):
 
     def save(self, *args, **kwargs):
         self.question_type = StudentQuestionType.SLIDER.value
+        if not step:
+            self.step = self.max_value - self.min_value
         return super(StudentQuestionSlider, self).save(*args, **kwargs)
 
 
 class StudentQuestionGrading(StudentQuestionBase):
     '''
-    Work in progress!
+    A integer question answered by grading choices (0-grading_size)
 
-    
+    Parent is StudentQuestionBase
+
+    Necessary field(s):
+        grading_size (int) - number of grading choices
+
     '''
+    grading_size = models.IntegerField(default=5)
 
     class Meta:
         default_permissions = ()
         verbose_name = 'grading question'
+
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('question_type',None): kwargs.pop('question_type')
+        self.question_type = StudentQuestionType.GRADING.value
+        return super(StudentQuestionGrading, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.question_type = StudentQuestionType.GRADING.value
+        return super(StudentQuestionGrading, self).__init__(*args, **kwargs)
+
+
+class StudentAnswerBase(models.Model):
+    '''
+    Base model for answers to the student questions created by the matching
+    algorithm
+
+    Necessary field(s):
+        student (fk)    - foreign key to Student Profile
+    '''
+    student=models.ForeignKey('student_profiles.StudentProfile')
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'answer_base'
+
+class StudentAnswerSlider(StudentAnswerBase):
+    '''
+    A floating point answer model with a foreign key to StudentQuestionSlider
+
+    Parent is StudentAnswerBase
+
+    Necessary field(s):
+        question        - foregin key to StudentQuestionSlider
+        answer (float)  - answer to question
+    '''
+    question    = models.ForeignKey(StudentQuestionSlider)
+    answer      = models.FloatField()
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'answer_slider'
+
+class StudentAnswerGrading(StudentAnswerBase):
+    '''
+    A int answer model with a foregin key to StudentAnswerGrading
+
+    Parent is StudentAnswerBase
+
+    Necessary field(s):
+        question        - foregin key to StudentQuestionGrading
+        answer (int)    - answer to question
+    '''
+    question    = models.ForeignKey(StudentQuestionGrading)
+    answer      = models.IntegerField()
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'answer_grading'
+
+class WorkFieldArea(models.Model):
+    '''
+    Work field main areas. These are manually inputed into the db as a type
+    of verification step. To each WorkFieldArea a set of WorkField objects are related
+
+    Necessary field(s):
+        work_area (text)    - work field area name
+    '''
+    work_area = models.TextField()
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'work field area'
+    def __str__(self):
+        return '%s'%self.work_area
+
+class WorkField(models.Model):
+    '''
+    Work fields that are auto created by the matching algorithm. These are
+    manually associated via a foregin key to WorkFieldArea as a way of manual
+    verification
+    '''
+    work_field  = models.TextField()
+    work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'work field'
+
+    def __str__(self):
+        return '%s in %s'%(self.work_field, self.work_area.work_area)
+
+class StudentAnswerWorkField(StudentAnswerBase):
+    '''
+    An boolean answer connecting a student_profile to the WorkField model
+    Necessary field(s):
+        TODO
+    '''
+    work_field  = models.ForeignKey(WorkField)
+    answer      = models.BooleanField(choices=((True,'yes'), (False,'no')))
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'answer_workfield'
+
+    def __str__(self):
+        return '%s for work field = %s w ans = %s'%(student, work_field, answer)
