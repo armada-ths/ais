@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
+from django.utils.timezone import utc
 
 from enum import Enum, unique
 
@@ -303,4 +305,4 @@ class StudentAnswerWorkField(StudentAnswerBase):
         verbose_name = 'answer_workfield'
 
     def __str__(self):
-        return '%s for work field = %s w ans = %s'%(student, work_field, answer)
+        return '%s for work field = %s w ans = %s'%(self.student, self.work_field, self.answer)
