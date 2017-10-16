@@ -107,8 +107,8 @@ def status(request):
 @cache_page(60 * 5)
 def banquet_placement(request):
     '''
-    Returns all banquet attendance. 
-    The field hob_title depends on weather a attendant is a user or exhibitor.
+    Returns all banquet attendance for current fair. 
+    The field job_title depends on weather a attendant is a user or exhibitor.
     '''
     # Tables and seats are mocked with this index, remove when implemented
     index = 0
@@ -121,8 +121,11 @@ def banquet_placement(request):
             recruitment_application = recruitment_applications.filter(user=attendence.user).first()
             if recruitment_application:
                 attendence.job_title = 'Armada: ' + recruitment_application.delegated_role.name
-            #if not attendence.linkedin_url & attendence.user.profile.linkedin_url:
-            #    attendence.linkedin_url = attendence.user.profile.linkedin_url
+            try:
+                if not attendence.linkedin_url & attendence.user.profile.linkedin_url:
+                    attendence.linkedin_url = attendence.user.profile.linkedin_url
+            except:
+                pass
         if attendence.exhibitor:
             job_title = attendence.job_title
             attendence.job_title = attendence.exhibitor.company.name
@@ -131,8 +134,7 @@ def banquet_placement(request):
 
 
 
-        data.append(serializers.banquet_placement(request, attendence, index))
-        index += 1
+        data.append(serializers.banquet_placement(request, attendence))
     return JsonResponse(data, safe=False)
 
 

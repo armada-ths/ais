@@ -1,5 +1,5 @@
 from django.test import TestCase, RequestFactory, Client
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from django.http.response import Http404
 import datetime
@@ -11,6 +11,7 @@ from companies.models import Company
 from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
 from student_profiles.models import StudentProfile
+from people.models import Profile
 
 from recruitment.models import RecruitmentPeriod, Role
 import api.serializers as serializers
@@ -161,7 +162,51 @@ class StudentProfileTestCase(TestCase):
         except Http404:
             pass    # we expect a 404 as the student with pk=0 doesn't exist!
 
+class Organization(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        fair = Fair.objects.create(name='Current Fair', current=True)
+        group1 = Group.objects.create(name='Group1')
+        group2 = Group.objects.create(name='Group2')
+        role1 = Role.objects.create(name='Role1', group=group1)
+        role2 = Role.objects.create(name='Role2', group=group2)
+        recruitment = RecruitmentPeriod.objects.create(
+            name="recruitment period",
+            fair=fair,
+            start_date=timezone.now(),
+            end_date=timezone.now(),
+            interview_end_date=timezone.now())
+        recruitment.recruitable_roles.set([role1, role2])
+        user1 = User.objects.create(username='user1')
+        user2 = User.objects.create(username='user2', first_name='first', last_name='last')
+        user3 = User.objects.create(username='user3')
+        profile1 = Profile.objects.create(user=user1, linkedin_url='url.url.se')
+        profile2 = Profile.objects.create(user=user2, linkedin_url='url.url.se', picture_original='picture.original.url')
+        profile1.user = user1
+        profile1.save()
+        profile2.user=user2
+        profile2.save() 
+        user1.groups.set([group1])
+        user2.groups.set([group2])
+        user3.groups.set([group1])
 
+
+    def test_view(self):
+        request = self.factory.get('/api/organization', HTTP_HOST='host')
+        response = views.organization(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        organization = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(organization), 2)
+        self.assertEqual(organization[0]['role'], 'Group1')
+        self.assertEqual(len(organization[0]['people']), 2)
+        self.assertEqual(len(organization[1]['people']), 1)
+        self.assertEqual(organization[1]['people'][0]['role'], 'Group2')
+        self.assertEqual(len(organization[1]['people'][0]), 6)
+        self.assertEqual(len(organization[0]['people'][1]), 3)
+        self.assertEqual(organization[1]['people'][0]['picture'], 'http://host/media/picture.original.url')
+        self.assertEqual(organization[0]['people'][0]['picture'], 'http://host/static/images/no-image.png')
+
+        
 class RecruitmentTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
