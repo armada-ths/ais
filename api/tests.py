@@ -11,6 +11,7 @@ from companies.models import Company
 from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
 from student_profiles.models import StudentProfile
+from banquet.models import BanquetteAttendant
 
 from recruitment.models import RecruitmentPeriod, Role
 import api.serializers as serializers
@@ -160,6 +161,27 @@ class StudentProfileTestCase(TestCase):
             response = views.student_profile(request)
         except Http404:
             pass    # we expect a 404 as the student with pk=0 doesn't exist!
+
+
+class BanquetPlacementTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        current_fair = Fair.objects.create(name='Current fair', current=True)
+        last_fair = Fair.objects.create(name='Last fair')
+        company = Company.objects.create(name='Company')
+        exhibitor = Exhibitor.objects.create(fair=current_fair, company=company)
+        user = User.objects.create(username='user', password='password')
+        banquette_attendant1 = BanquetteAttendant.objects.create(first_name='Nr1', user=user, fair=current_fair)
+        banquette_attendant2 = BanquetteAttendant.objects.create(first_name='Nr2', exhibitor=exhibitor, fair=current_fair)
+        banquette_attendant_last = BanquetteAttendant.objects.create(first_name='Last', user=user, fair=last_fair)
+
+    def test_view(self):
+        request = self.factory.get('/api/banquet_placement')
+        response = views.banquet_placement(request)
+        banquet_placement = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(banquet_placement), 2)
+        self.assertEqual(banquet_placement[1]['first_name'],'Nr2')
+
 
 
 class RecruitmentTestCase(TestCase):
