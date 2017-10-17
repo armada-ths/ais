@@ -11,6 +11,7 @@ from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Fair
 from matching.models import StudentQuestionType, StudentQuestionSlider, WorkField, WorkFieldArea, Survey
+from people.models import Profile, Programme
 from recruitment.models import RecruitmentPeriod, Role
 from student_profiles.models import StudentProfile
 
