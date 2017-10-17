@@ -123,6 +123,7 @@ class StudentQuestionBase(models.Model):
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
     survey = models.ManyToManyField(Survey, blank=True)
+    fair = models.ForeignKey('fair.Fair',default=1)
 
     class Meta:
         default_permissions = ()
@@ -205,6 +206,8 @@ class StudentAnswerBase(models.Model):
         student (fk)    - foreign key to Student Profile
     '''
     student = models.ForeignKey('student_profiles.StudentProfile')
+    fair = models.ForeignKey('fair.Fair',default=1)
+    survey = models.ManyToManyField(Survey,blank=True)
     created = models.DateTimeField(editable=False, null=True, blank=True)
     updated = models.DateTimeField(null=True, blank=True)
 
