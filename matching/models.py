@@ -114,17 +114,22 @@ class StudentQuestionBase(models.Model):
     This database isn't be abstract, as it will make querying and other related code more complicated.
     However, it would be more efficient that way as we wouldn't have a single huge table for all questions with additional tables for extra fields for each question type.
 
+    the student question should be related to a company question via a foregin key, for now it is optional
+
     Necessary fields:
         question (string) - the question
         question_type (string) - special field that should always correspond to the type of the related questiontype (a child of this model), and as such should not be written to directly
         fair (Fair) - the fair the question was intended for
+
+    Optional fields:
+        company_question (fk)   - foreign key to a company question
     '''
 
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
     survey = models.ManyToManyField(Survey, blank=True)
     fair = models.ForeignKey('fair.Fair',default=1)
-
+    company_question = models.ForeignKey(Question, blank=True, null=True)
     class Meta:
         default_permissions = ()
         verbose_name = 'question'
