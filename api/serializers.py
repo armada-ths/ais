@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from lib.util import unix_time
+from people.models import Profile
 
 from matching.models import StudentQuestionType as QuestionType
 
@@ -126,20 +127,33 @@ def partner(request, partner):
     ])
 
 
-def person(request, person):
-    return OrderedDict([
-        ('id', person.pk),
-        ('name', person.get_full_name()),
-        ('picture', image_url_or_missing(request, person.profile.picture_original, MISSING_PERSON)),
-    ])
+def person(request, person, role):
+  #Check that there are a profile for the user
+    try:
+      profile = person.profile  
+      return OrderedDict([
+        ('id', profile.user.pk),
+        ('name', profile.user.get_full_name()),
+        ('picture', image_url_or_missing(request, profile.picture_original, MISSING_PERSON)),
+        ('linkedin_url', profile.linkedin_url),
+        ('programme', profile.programme),
+        ('role', role)
+      ])
+    except Profile.DoesNotExist: #There are no profile for this user
+      return OrderedDict([
+          ('id', person.pk),
+          ('name', person.get_full_name()),
+          ('role', role)
+      ])
+
 
 
 def organization_group(request, group):
-    people = [person(request, p) for p in group.user_set.all()]
+    people = [person(request, p, group.name) for p in group.user_set.all()]
     return OrderedDict([
         ('id', group.pk),
         ('role', group.name),
-        ('people', people),
+        ('people', people)
     ])
 
 
