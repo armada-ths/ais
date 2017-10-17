@@ -5,6 +5,8 @@ import platform, subprocess, json
 
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
+from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
@@ -138,14 +140,15 @@ def banquet_placement(request):
     return JsonResponse(data, safe=False)
 
 
+@csrf_exempt
 def student_profile(request):
     '''
     GET student profiles nickname by their id.
-    Url: /student_profiles?student_id=STUDENTPROFILEID
+    Url: /student_profile?student_id={STUDENTPROFILEID}
     or
     PUT student profile nickname by the id
-    URL: /api/student_profiles?student_id=STUDENT_PROFILE_ID
-    DATA: json'{"nickname" : NICKNAME}'
+    URL: /api/student_profile?student_id={STUDENT_PROFILE_ID}
+    DATA: json'{"nickname" : "{NICKNAME}"}'
     '''
     if request.method == 'GET':
         student_id = request.GET['student_id']
