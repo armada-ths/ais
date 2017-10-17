@@ -5,21 +5,21 @@ import platform, subprocess, json
 
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
-from django.views.decorators.cache import cache_page
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.views.decorators.cache import cache_page
+
+import api.serializers as serializers
 
 from banquet.models import BanquetteAttendant
-import api.serializers as serializers
 from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
-from banquet.models import BanquetteAttendant
+from matching.models import StudentQuestionBase as QuestionBase
 from news.models import NewsArticle
-from student_profiles.models import StudentProfile
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
-from django.shortcuts import get_object_or_404
+from student_profiles.models import StudentProfile
 
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
@@ -163,6 +163,21 @@ def student_profile(request):
     else:
         data = []   # we were sent some request other than PUT or GET
 
+    return JsonResponse(data, safe=False)
+
+
+def questions(request):
+    '''
+    ais.armada.nu/api/questions
+    Returns all questions belonging to the current fair.
+    Each question can be of one of QuestionType types and have special fields depending on that type.
+    '''
+    current_fair = get_object_or_404(Fair, current=True)
+    questions = QuestionBase.objects.filter(fair=current_fair)
+    data = {
+        'questions' : [serializers.question(question) for question in questions],
+        # TODO: areas
+    }
     return JsonResponse(data, safe=False)
 
 

@@ -4,12 +4,12 @@ from django.utils import timezone
 from django.http.response import Http404
 import datetime
 
-import json
+import json, datetime
 
-from fair.models import Fair
 from companies.models import Company
-from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
+from exhibitors.models import Exhibitor, CatalogInfo
+from fair.models import Fair
 from student_profiles.models import StudentProfile
 
 from people.models import Profile
@@ -17,7 +17,8 @@ from banquet.models import BanquetteAttendant
 
 
 from recruitment.models import RecruitmentPeriod, Role
-import api.serializers as serializers
+from matching.models import StudentQuestionType, StudentQuestionSlider
+
 from . import views
 
 import api.serializers as serializers
@@ -207,6 +208,30 @@ class Organization(TestCase):
         self.assertEqual(len(organization[0]['people'][1]), 3)
         self.assertEqual(organization[1]['people'][0]['picture'], 'http://host/media/picture.original.url')
         self.assertEqual(organization[0]['people'][0]['picture'], 'http://host/static/images/no-image.png')
+
+class QuestionTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.fair = Fair.objects.create(name='Armada fair', current=True)
+
+        # generate questions
+        StudentQuestionSlider.objects.create(question='Question 1?',
+            min_value=0.0, max_value=10000.0, step=0.1, fair=self.fair)
+        StudentQuestionSlider.objects.create(question='Some other question?',
+            min_value=0.0, max_value=1000000.0, step=1.0, fair=self.fair)
+
+
+    def test_api(self):
+        # make a request
+        request = self.factory.get('/api/questions')
+        response = views.questions(request)
+
+        # validate the response
+        questions = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(questions), 1)
+        self.assertEqual(len(questions['questions']), 2)
+        self.assertEqual(questions['questions'][0]['question'], 'Question 1?')
+        self.assertEqual(questions['questions'][1]['step'], 1.0)
 
         
 class BanquetPlacementTestCase(TestCase):
