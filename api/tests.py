@@ -12,7 +12,7 @@ from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Fair
 from student_profiles.models import StudentProfile
 
-from people.models import Profile
+from people.models import Profile, Programme
 from banquet.models import BanquetteAttendant
 
 
@@ -184,7 +184,8 @@ class Organization(TestCase):
         user1 = User.objects.create(username='user1')
         user2 = User.objects.create(username='user2', first_name='first', last_name='last')
         user3 = User.objects.create(username='user3')
-        profile1 = Profile.objects.create(user=user1, linkedin_url='url.url.se')
+        programme = Programme.objects.create(name='Programme')
+        profile1 = Profile.objects.create(user=user1, linkedin_url='url.url.se', programme=programme)
         profile2 = Profile.objects.create(user=user2, linkedin_url='url.url.se', picture_original='picture.original.url')
         profile1.user = user1
         profile1.save()
@@ -208,6 +209,7 @@ class Organization(TestCase):
         self.assertEqual(len(organization[0]['people'][1]), 3)
         self.assertEqual(organization[1]['people'][0]['picture'], 'http://host/media/picture.original.url')
         self.assertEqual(organization[0]['people'][0]['picture'], 'http://host/static/images/no-image.png')
+        self.assertEqual(organization[0]['people'][0]['programme'], 'Programme')
 
 class QuestionTestCase(TestCase):
     def setUp(self):
