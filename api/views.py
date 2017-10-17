@@ -9,18 +9,19 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.views.decorators.cache import cache_page
+
+import api.serializers as serializers
 
 from banquet.models import BanquetteAttendant
-import api.serializers as serializers
 from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
-from banquet.models import BanquetteAttendant
+from matching.models import StudentQuestionBase as QuestionBase
 from news.models import NewsArticle
-from student_profiles.models import StudentProfile
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
-from django.shortcuts import get_object_or_404
+from student_profiles.models import StudentProfile
 
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
@@ -108,12 +109,14 @@ def status(request):
 @cache_page(60 * 5)
 def banquet_placement(request):
     '''
-    Returns all banquet attendance. 
-    The field hob_title depends on weather a attendant is a user or exhibitor.
+
+    Returns all banquet attendance for current fair. 
+    The field job_title depends on weather a attendant is a user or exhibitor.
     '''
-    # Tables and seats are mocked with this index, remove when implemented
-    index = 0
-    banquet_attendees = BanquetteAttendant.objects.all()
+
+    fair = get_object_or_404(Fair, current = True)
+
+    banquet_attendees = BanquetteAttendant.objects.filter(fair=fair)
 
     recruitment_applications = RecruitmentApplication.objects.filter(status='accepted')
     data = []
@@ -122,18 +125,18 @@ def banquet_placement(request):
             recruitment_application = recruitment_applications.filter(user=attendence.user).first()
             if recruitment_application:
                 attendence.job_title = 'Armada: ' + recruitment_application.delegated_role.name
-            #if not attendence.linkedin_url & attendence.user.profile.linkedin_url:
-            #    attendence.linkedin_url = attendence.user.profile.linkedin_url
+            try:
+                if not attendence.linkedin_url & attendence.user.profile.linkedin_url:
+                    attendence.linkedin_url = attendence.user.profile.linkedin_url
+            except:
+                pass
         if attendence.exhibitor:
             job_title = attendence.job_title
             attendence.job_title = attendence.exhibitor.company.name
             if job_title:
                 attendence.job_title += ': ' + job_title
 
-
-
-        data.append(serializers.banquet_placement(request, attendence, index))
-        index += 1
+        data.append(serializers.banquet_placement(request, attendence))
     return JsonResponse(data, safe=False)
 
 
@@ -163,6 +166,21 @@ def student_profile(request):
     else:
         data = []   # we were sent some request other than PUT or GET
 
+    return JsonResponse(data, safe=False)
+
+
+def questions(request):
+    '''
+    ais.armada.nu/api/questions
+    Returns all questions belonging to the current fair.
+    Each question can be of one of QuestionType types and have special fields depending on that type.
+    '''
+    current_fair = get_object_or_404(Fair, current=True)
+    questions = QuestionBase.objects.filter(fair=current_fair)
+    data = {
+        'questions' : [serializers.question(question) for question in questions],
+        # TODO: areas
+    }
     return JsonResponse(data, safe=False)
 
 

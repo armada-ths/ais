@@ -1,19 +1,24 @@
 from django.test import TestCase, RequestFactory, Client
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from django.http.response import Http404
 import datetime
 
-import json
+import json, datetime
 
-from fair.models import Fair
 from companies.models import Company
-from exhibitors.models import Exhibitor, CatalogInfo
 from events.models import Event
+from exhibitors.models import Exhibitor, CatalogInfo
+from fair.models import Fair
 from student_profiles.models import StudentProfile
 
+from people.models import Profile
+from banquet.models import BanquetteAttendant
+
+
 from recruitment.models import RecruitmentPeriod, Role
-import api.serializers as serializers
+from matching.models import StudentQuestionType, StudentQuestionSlider
+
 from . import views
 
 import api.serializers as serializers
@@ -160,6 +165,93 @@ class StudentProfileTestCase(TestCase):
             response = views.student_profile(request)
         except Http404:
             pass    # we expect a 404 as the student with pk=0 doesn't exist!
+
+class Organization(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        fair = Fair.objects.create(name='Current Fair', current=True)
+        group1 = Group.objects.create(name='Group1')
+        group2 = Group.objects.create(name='Group2')
+        role1 = Role.objects.create(name='Role1', group=group1)
+        role2 = Role.objects.create(name='Role2', group=group2)
+        recruitment = RecruitmentPeriod.objects.create(
+            name="recruitment period",
+            fair=fair,
+            start_date=timezone.now(),
+            end_date=timezone.now(),
+            interview_end_date=timezone.now())
+        recruitment.recruitable_roles.set([role1, role2])
+        user1 = User.objects.create(username='user1')
+        user2 = User.objects.create(username='user2', first_name='first', last_name='last')
+        user3 = User.objects.create(username='user3')
+        profile1 = Profile.objects.create(user=user1, linkedin_url='url.url.se')
+        profile2 = Profile.objects.create(user=user2, linkedin_url='url.url.se', picture_original='picture.original.url')
+        profile1.user = user1
+        profile1.save()
+        profile2.user=user2
+        profile2.save() 
+        user1.groups.set([group1])
+        user2.groups.set([group2])
+        user3.groups.set([group1])
+
+    def test_view(self):
+        request = self.factory.get('/api/organization', HTTP_HOST='host')
+        response = views.organization(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        organization = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(organization), 2)
+        self.assertEqual(organization[0]['role'], 'Group1')
+        self.assertEqual(len(organization[0]['people']), 2)
+        self.assertEqual(len(organization[1]['people']), 1)
+        self.assertEqual(organization[1]['people'][0]['role'], 'Group2')
+        self.assertEqual(len(organization[1]['people'][0]), 6)
+        self.assertEqual(len(organization[0]['people'][1]), 3)
+        self.assertEqual(organization[1]['people'][0]['picture'], 'http://host/media/picture.original.url')
+        self.assertEqual(organization[0]['people'][0]['picture'], 'http://host/static/images/no-image.png')
+
+class QuestionTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.fair = Fair.objects.create(name='Armada fair', current=True)
+
+        # generate questions
+        StudentQuestionSlider.objects.create(question='Question 1?',
+            min_value=0.0, max_value=10000.0, step=0.1, fair=self.fair)
+        StudentQuestionSlider.objects.create(question='Some other question?',
+            min_value=0.0, max_value=1000000.0, step=1.0, fair=self.fair)
+
+
+    def test_api(self):
+        # make a request
+        request = self.factory.get('/api/questions')
+        response = views.questions(request)
+
+        # validate the response
+        questions = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(questions), 1)
+        self.assertEqual(len(questions['questions']), 2)
+        self.assertEqual(questions['questions'][0]['question'], 'Question 1?')
+        self.assertEqual(questions['questions'][1]['step'], 1.0)
+
+        
+class BanquetPlacementTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        current_fair = Fair.objects.create(name='Current fair', current=True)
+        last_fair = Fair.objects.create(name='Last fair')
+        company = Company.objects.create(name='Company')
+        exhibitor = Exhibitor.objects.create(fair=current_fair, company=company)
+        user = User.objects.create(username='user', password='password')
+        banquette_attendant1 = BanquetteAttendant.objects.create(first_name='Nr1', user=user, fair=current_fair)
+        banquette_attendant2 = BanquetteAttendant.objects.create(first_name='Nr2', exhibitor=exhibitor, fair=current_fair)
+        banquette_attendant_last = BanquetteAttendant.objects.create(first_name='Last', user=user, fair=last_fair)
+
+    def test_view(self):
+        request = self.factory.get('/api/banquet_placement')
+        response = views.banquet_placement(request)
+        banquet_placement = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(banquet_placement), 2)
+        self.assertEqual(banquet_placement[1]['first_name'],'Nr2')
 
 
 class RecruitmentTestCase(TestCase):
