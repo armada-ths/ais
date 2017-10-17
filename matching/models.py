@@ -104,31 +104,31 @@ class StudentQuestionBase(models.Model):
 
     ATTENTION! Trying to create an object of this model directly will raise an exception, as it's not intended to be used this way, create an object of one of the children instead!
 
-    This is to hold all questions in one database, so that we can do more complicated things like rating, ordering or other.
     This model holds all common information for all types of questions, such as the question string.
+    This is to hold all questions in one database, so that we can do more complicated things like rating, ordering or other.
 
     Additionally child models can be accessed though this one, by calling StudentQuestionBase.childmodelname (note the small case),
     but it might raise a DoesNotExist exception. To avoid this we have a question_type, which should correspond to one of QuestionTypes.
     To see an example please refer to matching/tests.py StudentQuestionTestCase.test_models().
 
-    This database isn't be abstract, as it will make querying and other related code more complicated.
+    This database isn't be abstract, as it would make querying and other related code more complicated.
     However, it would be more efficient that way as we wouldn't have a single huge table for all questions with additional tables for extra fields for each question type.
 
-    the student question should be related to a company question via a foregin key, for now it is optional
+    The student question should be related to a company question via a foregin key, for now it is optional.
 
     Necessary fields:
-        question (string) - the question
-        question_type (string) - special field that should always correspond to the type of the related questiontype (a child of this model), and as such should not be written to directly
-        fair (Fair) - the fair the question was intended for
+        question (string)       - the question
+        question_type (string)  - special field that should always correspond to the type of the related questiontype (a child of this model), and as such should not be written to directly
+        survey (m2m)            - many-2-many field to Surveys, that use this question
 
     Optional fields:
-        company_question (fk)   - foreign key to a company question
+        company_question (fk) - foreign key to a company question
     '''
 
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
     survey = models.ManyToManyField(Survey, blank=True)
-    fair = models.ForeignKey('fair.Fair',default=1)
+#    fair = models.ForeignKey('fair.Fair',default=1)
     company_question = models.ForeignKey(Question, blank=True, null=True)
     class Meta:
         default_permissions = ()
@@ -150,10 +150,10 @@ class StudentQuestionSlider(StudentQuestionBase):
     Is a child of StudentQuestionBase, which means its fields (question or question_type for example) are also accesable from this model.
 
     Necessary fields:
-        min_value (float) - the minimal value (left) for the slider
-        max_value (float) - the maximal value (right) for the slider
+        min_value (float)   - the minimal value (left) for the slider
+        max_value (float)   - the maximal value (right) for the slider
     Optional fields:
-        step (float) - the step of the slider
+        step (float)        - the step of the slider
     '''
     min_value = models.FloatField()
     max_value = models.FloatField()
@@ -179,7 +179,7 @@ class StudentQuestionGrading(StudentQuestionBase):
     '''
     A integer question answered by grading choices (0-grading_size)
 
-    Parent is StudentQuestionBase
+    Is a child of StudentQuestionBase, which means its fields (question or question_type for example) are also accesable from this model.
 
     Necessary field(s):
         grading_size (int) - number of grading choices
@@ -208,10 +208,10 @@ class StudentAnswerBase(models.Model):
     save.
 
     Necessary field(s):
-        student (fk)    - foreign key to Student Profile
+        student (fk) - foreign key to Student Profile
     '''
     student = models.ForeignKey('student_profiles.StudentProfile')
-    fair = models.ForeignKey('fair.Fair',default=1)
+#    fair = models.ForeignKey('fair.Fair',default=1)
     survey = models.ManyToManyField(Survey,blank=True)
     created = models.DateTimeField(editable=False, null=True, blank=True)
     updated = models.DateTimeField(null=True, blank=True)
@@ -227,6 +227,7 @@ class StudentAnswerBase(models.Model):
         self.updated = timezone.now()
         return super(StudentAnswerBase, self).save(*args, **kwargs)
 
+
 class StudentAnswerSlider(StudentAnswerBase):
     '''
     A floating point answer model with a foreign key to StudentQuestionSlider
@@ -234,7 +235,7 @@ class StudentAnswerSlider(StudentAnswerBase):
     Parent is StudentAnswerBase
 
     Necessary field(s):
-        question        - foregin key to StudentQuestionSlider
+        question (fk)   - foregin key to StudentQuestionSlider
         answer (float)  - answer to question
     '''
     question    = models.ForeignKey(StudentQuestionSlider)
@@ -247,6 +248,7 @@ class StudentAnswerSlider(StudentAnswerBase):
     def __str__(self):
         return '%.2f'%self.answer
 
+
 class StudentAnswerGrading(StudentAnswerBase):
     '''
     A int answer model with a foregin key to StudentAnswerGrading
@@ -254,7 +256,7 @@ class StudentAnswerGrading(StudentAnswerBase):
     Parent is StudentAnswerBase
 
     Necessary field(s):
-        question        - foregin key to StudentQuestionGrading
+        question (fk)   - foregin key to StudentQuestionGrading
         answer (int)    - answer to question
     '''
     question    = models.ForeignKey(StudentQuestionGrading)
@@ -267,13 +269,14 @@ class StudentAnswerGrading(StudentAnswerBase):
     def __str__(self):
         return '%i'%self.answer
 
+
 class WorkFieldArea(models.Model):
     '''
     Work field main areas. These are manually inputed into the db as a type
     of verification step. To each WorkFieldArea a set of WorkField objects are related
 
     Necessary field(s):
-        work_area (unique text) - work field area name
+        work_area (unique string) - work field area name
 
     Note: work_area is set as unique
     '''
@@ -284,6 +287,7 @@ class WorkFieldArea(models.Model):
     def __str__(self):
         return '%s'%self.work_area
 
+
 class WorkField(models.Model):
     '''
     Work fields that are auto created by the matching algorithm. These are
@@ -291,11 +295,10 @@ class WorkField(models.Model):
     verification
 
     Necessary field(s):
-        work_field (unique text)   - the work field name
+        work_field (unique string)  - the work field name
 
     Optional field(s):
-        work_area (fk)      - the work area does not necessary be spec to be in db
-                              (but wont be used in the matching if not)
+        work_area (fk)              - the work area does not necessary be spec to be in db, (but wont be used in the matching if not)
 
     Note: the work_field is set as unique and instead the field can be connected
           to multiple surveys if necessary.
@@ -309,6 +312,7 @@ class WorkField(models.Model):
 
     def __str__(self):
         return '%s in %s'%(self.work_field, self.work_area.work_area)
+
 
 class StudentAnswerWorkField(StudentAnswerBase):
     '''
