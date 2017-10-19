@@ -216,7 +216,7 @@ class StudentAnswerBase(models.Model):
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_base'
+        verbose_name = 'answer base'
 
     def save(self, *args, **kwargs):
         ''' setting timestamp '''
@@ -233,15 +233,17 @@ class StudentAnswerSlider(StudentAnswerBase):
     Parent is StudentAnswerBase
 
     Necessary field(s):
-        question (fk)   - foregin key to StudentQuestionSlider
-        answer (float)  - answer to question
+        question (fk)       - foregin key to StudentQuestionSlider
+        answer_min (float)  - the low bound of the range of the answer
+        answer_max (float)  - the high bound of the range of the answer
     '''
     question    = models.ForeignKey(StudentQuestionSlider)
-    answer      = models.FloatField()
+    answer_min  = models.FloatField()
+    answer_max  = models.FloatField()
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_slider'
+        verbose_name = 'answer slider'
 
     def __str__(self):
         return '%.2f'%self.answer
@@ -262,7 +264,7 @@ class StudentAnswerGrading(StudentAnswerBase):
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_grading'
+        verbose_name = 'answer grading'
 
     def __str__(self):
         return '%i'%self.answer

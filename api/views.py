@@ -4,14 +4,14 @@ from datetime import datetime
 import platform, subprocess, json
 
 from django.contrib.auth.models import Group
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 
-import api.serializers as serializers
+import api.serializers as serializers, api.deserializers as deserializers
 
 from banquet.models import BanquetteAttendant
 from events.models import Event
@@ -158,13 +158,17 @@ def student_profile(request):
         if request.body:
             student_id = request.GET['student_id']
             (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
-            student_profile.nickname = json.loads(request.body.decode()).get('nickname')
-            student_profile.save()
-            data = OrderedDict([('nickname', student_profile.nickname)])
+            payload = json.loads(request.body.decode())
+            if 'nickname' in payload:
+                student_profile.nickname = payload['nickname']
+                student_profile.save()
+                data = OrderedDict([('nickname', student_profile.nickname)])
+            else:
+                return HttpResponse('No nickname in payload!', content_type='text/plain', status=406)
         else:
-            data = []   # we were sent an empty PUT request
+            return HttpResponse('No payload detected!', content_type='text/plain', status=406)
     else:
-        data = []   # we were sent some request other than PUT or GET
+        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
     return JsonResponse(data, safe=False)
 
@@ -222,10 +226,32 @@ def questions_PUT(request):
         ANSWER  - is either an int or a float, depending on the type of question
         AREA_ID - is an integer id for each area that was selected, that was sent with questions_PUT
     '''
-    #TODO: well, everything
-    pass
+    if request.body:
+        student_id = request.GET['student_id']
+        (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
+        fair = get_object_or_404(Fair, current=true)
+        survey = get_object_or_404(Survey, fair=fair)
+        data = json.loads(request.body.decode())
+        modified = False
+        if 'questions' in data:
+            modified = deserializers.answers(data['questions'], student)
+        if 'areas' in data:
+            areas = []
+            for area in data['areas':
+                if type(area) is int:
+                    areas.add(area)
+            if len(areas) > 0:
+                deserializers.fields(areas, student, survey)
+                modified = True
+        if modified:
+            return HttpResponse('Answers submitted!', content_type='text/plain')
+        else:
+            return HttpResponse('No answers were found in payload!', content_type='text/plain', status=406)
+    else:
+        return HttpResponse('No payload detected!', content_type='text/plain', status=406)
 
 
+@csrf_exempt
 def questions(request):
     '''
     ais.armada.nu/api/questions
@@ -237,7 +263,7 @@ def questions(request):
     elif request.methods == 'PUT':
         return questions_PUT(request)
     else
-        pass #unsupported method
+        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
 
 def recruitment(request):

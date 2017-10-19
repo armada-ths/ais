@@ -220,6 +220,8 @@ def question(question):
     # but that adds unncecessary complexity to the code, without optimizing or simplifying it
     if question.question_type in QUESTION_SERIALIZERS:
         return QUESTION_SERIALIZERS[question.question_type](question)
+    else:
+        raise NotImplementedError('Couldn\'t serialize ' + question.question_type + ' type!')
     return []   # could not serialize a type
 
 
