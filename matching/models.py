@@ -246,7 +246,7 @@ class StudentAnswerSlider(StudentAnswerBase):
         verbose_name = 'answer slider'
 
     def __str__(self):
-        return '%.2f'%self.answer
+        return '%.2f to %.2f' % (self.answer_min, self.answer_max)
 
 
 class StudentAnswerGrading(StudentAnswerBase):

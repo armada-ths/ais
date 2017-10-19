@@ -225,6 +225,8 @@ def questions_PUT(request):
         ID      - is an integer id for each question, that was sent with questions_GET
         ANSWER  - is either an int or a float, depending on the type of question
         AREA_ID - is an integer id for each area that was selected, that was sent with questions_PUT
+
+    Should respond "Answers submitted!" to a valid PUT request
     '''
     if request.body:
         student_id = request.GET['student_id']
@@ -233,8 +235,10 @@ def questions_PUT(request):
         survey = get_object_or_404(Survey, fair=fair)
         data = json.loads(request.body.decode())
         modified = False
-        if 'questions' in data:
-            modified = deserializers.answers(data['questions'], student, survey)
+        (modified_count, total_count) = (0, 0)
+        if 'questions' in data and type(data['questions']) is list:
+            (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
+            modified = modified_count > 0
         if 'areas' in data and type(data['areas']) is list:
             areas = []
             for area in data['areas']:
@@ -243,7 +247,11 @@ def questions_PUT(request):
             deserializers.fields(areas, student, survey)
             modified = True
         if modified:
-            return HttpResponse('Answers submitted!', content_type='text/plain')
+            if modified_count > 0:
+                return HttpResponse('Answers submitted! (saved ' + str(modified_count)
+                    + ' out of ' + str(total_count) + ' question answers)', content_type='text/plain')
+            else:
+                return HttpResponse('Answers submitted! (no question answers were saved)', content_type='text/plain')
         else:
             return HttpResponse('No answers were found in payload!', content_type='text/plain', status=406)
     else:

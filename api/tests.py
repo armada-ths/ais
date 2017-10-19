@@ -308,13 +308,20 @@ class QuestionsTestCase(TestCase):
                 if hasattr(answer, 'studentanswerslider'):
                     answer_list.append(answer.studentanswerslider)
                 elif hasattr(answer, 'studentanswergrading'):
-                    answer_list.append(answer.studentasnwergrading)
+                    answer_list.append(answer.studentanswergrading)
                 elif hasattr(answer, 'studentanswerworkfield'):
                     field_list.append(answer.studentanswerworkfield)
                 else:
                     self.assertFalse('Answer is not a subtype!')
             self.assertEqual(answer_list[0].question, self.questions[0])
             self.assertEqual(answer_list[1].question, self.questions[1])
+            self.assertEqual(answer_list[2].question, self.questions[2])
+
+            self.assertEqual(answer_list[0].answer_min, 2.0)
+            self.assertEqual(answer_list[0].answer_max, 3.0)
+            self.assertEqual(answer_list[1].answer_min, 1.0)
+            self.assertEqual(answer_list[1].answer_max, 15.0)
+            self.assertEqual(answer_list[2].answer, -1)
 
             self.assertFalse(field_list[0].answer)
             self.assertFalse(field_list[1].answer)
@@ -330,6 +337,7 @@ class QuestionsTestCase(TestCase):
         response = views.questions(request)
         self.assertEqual(response.status_code, 406)
         test_db()
+
         data = json.dumps({
             'questions' : 'nope',
             'areas' : 'nope'
@@ -338,6 +346,26 @@ class QuestionsTestCase(TestCase):
         response = views.questions(request)
         self.assertEqual(response.status_code, 406)
         test_db()
+
+        data = json.dumps({
+            'questions' : []
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+
+        data = json.dumps({
+            'questions' : [
+                {'id' : 0, 'answer' : 12.0},
+                {'id' : self.questions[2].pk, 'answer' : 5}
+            ]
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+
         data = json.dumps({
             'areas' : []
         })
@@ -348,6 +376,25 @@ class QuestionsTestCase(TestCase):
             test_db()
         except AssertionError as error:
             self.assertEqual(str(error), 'False is not true')
+
+        data = json.dumps({
+            'questions' : [
+                {'id' : 0},
+                {'id' : self.questions[2].pk, 'answer' : 5},
+                {'id' : self.questions[2].pk},
+                {'id' : self.questions[1].pk, 'answer' : []},
+                {'id' : self.questions[1].pk, 'answer' : {'min' : 1.5, 'max' : 2.5}}
+            ],
+            'areas' : [self.fields[2][0].pk]
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('1 out of 5' in str(response.content))  # only the last answer should be taken into account
+        try:
+            test_db()
+        except AssertionError as error:
+            self.assertEqual(str(error), '1.5 != 1.0')
 
 
 class BanquetPlacementTestCase(TestCase):

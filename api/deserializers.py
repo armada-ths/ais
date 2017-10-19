@@ -4,15 +4,19 @@ def answer_slider(answer, student, question, survey):
     '''
     Validate and deserialize an answer to a question of type SLIDER
     '''
+    question = question.studentquestionslider
     if 'min' in answer and 'max' in answer \
     and type(answer['min']) is float and type(answer['max']) is float \
-    and answer['min'] <= answer['max']:
+    and answer['min'] <= answer['max'] \
+    and answer['min'] >= question.min_value \
+    and answer['max'] <= question.max_value:
         question = question.studentquestionslider
         (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(question=question, student=student)
         if was_created:
             answer_model.survey.add(survey)
         answer_model.answer_min = answer['min']
         answer_model.answer_max = answer['max']
+        answer_model.save()
         return True
     return False
 
@@ -22,7 +26,7 @@ def answer_grading(answer, student, question, survey):
     Validate and deseralize an answer to a question of type GRADING
     '''
     if type(answer) is int:
-        sizes = [(question.studentquestiongrading.grading_size - 1) / 2,
+        sizes = [-(question.studentquestiongrading.grading_size - 1) / 2,
                 question.studentquestiongrading.grading_size / 2]
         if (sizes[0] < answer < sizes[1]):
             question = question.studentquestiongrading
@@ -46,14 +50,16 @@ def answers(answers, student, survey):
     Create or modify question answers from payload data
     used by questions_PUT in api/views
     '''
-    modified = False
+    modified_count = 0
+    total_count = 0
     for answer in answers:
+        total_count += 1
         if 'id' in answer and 'answer' in answer:
-            question = StudentQuestionBase.objects.get(pk=answer['id'])
-            if question.question_type in ANSWER_DESERIALIZERS:
+            question = StudentQuestionBase.objects.filter(pk=answer['id']).first()
+            if question and question.question_type in ANSWER_DESERIALIZERS:
                 if ANSWER_DESERIALIZERS[question.question_type](answer['answer'], student, question, survey):
-                    modified = True
-    return modified
+                    modified_count += 1
+    return (modified_count, total_count)
 
 
 def fields(fields, student, survey):
