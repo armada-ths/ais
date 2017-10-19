@@ -238,8 +238,8 @@ class StudentAnswerSlider(StudentAnswerBase):
         answer_max (float)  - the high bound of the range of the answer
     '''
     question    = models.ForeignKey(StudentQuestionSlider)
-    answer_min  = models.FloatField()
-    answer_max  = models.FloatField()
+    answer_min  = models.FloatField(default=0.0)
+    answer_max  = models.FloatField(default=0.0)
 
     class Meta:
         default_permissions = ()
@@ -260,7 +260,7 @@ class StudentAnswerGrading(StudentAnswerBase):
         answer (int)    - answer to question
     '''
     question    = models.ForeignKey(StudentQuestionGrading)
-    answer      = models.IntegerField()
+    answer      = models.IntegerField(default=0)
 
     class Meta:
         default_permissions = ()
@@ -324,7 +324,7 @@ class StudentAnswerWorkField(StudentAnswerBase):
         answer (bool)   - true or false on that work field
     '''
     work_field  = models.ForeignKey(WorkField)
-    answer      = models.BooleanField(choices=((True,'yes'), (False,'no')))
+    answer      = models.BooleanField(choices=((True,'yes'), (False,'no')), default=False)
     class Meta:
         default_permissions = ()
         verbose_name = 'answer_workfield'

@@ -212,7 +212,7 @@ def questions_GET(request):
 
 def questions_PUT(request):
     '''
-    Handles a PUT request to ais.armada.nu/api/questions?id=STUDENT_ID
+    Handles a PUT request to ais.armada.nu/api/questions?student_id=STUDENT_ID
     Where STUDENT_ID is a unique uuid for a student.
     Expected payload looks like:
     {
@@ -228,21 +228,20 @@ def questions_PUT(request):
     '''
     if request.body:
         student_id = request.GET['student_id']
-        (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
-        fair = get_object_or_404(Fair, current=true)
+        (student, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
+        fair = get_object_or_404(Fair, current=True)
         survey = get_object_or_404(Survey, fair=fair)
         data = json.loads(request.body.decode())
         modified = False
         if 'questions' in data:
-            modified = deserializers.answers(data['questions'], student)
-        if 'areas' in data:
+            modified = deserializers.answers(data['questions'], student, survey)
+        if 'areas' in data and type(data['areas']) is list:
             areas = []
-            for area in data['areas':
+            for area in data['areas']:
                 if type(area) is int:
-                    areas.add(area)
-            if len(areas) > 0:
-                deserializers.fields(areas, student, survey)
-                modified = True
+                    areas.append(area)
+            deserializers.fields(areas, student, survey)
+            modified = True
         if modified:
             return HttpResponse('Answers submitted!', content_type='text/plain')
         else:
@@ -258,11 +257,11 @@ def questions(request):
     Handles GET request with questions_GET
     Handles PUT request with questions_PUT
     '''
-    if request.methods == 'GET':
+    if request.method == 'GET':
         return questions_GET(request)
-    elif request.methods == 'PUT':
+    elif request.method == 'PUT':
         return questions_PUT(request)
-    else
+    else:
         return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
 

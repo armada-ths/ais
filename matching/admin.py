@@ -45,7 +45,7 @@ class WorkFieldAdmin(admin.ModelAdmin):
     inlines = [StudentAnswerWFieldInline]
 
 class AnswerSliderAdmin(admin.ModelAdmin):
-    list_display = ('student', 'question', 'answer')
+    list_display = ('student', 'question', 'answer_min', 'answer_max')
     model = StudentAnswerSlider
 
 class AnswerGradingAdmin(admin.ModelAdmin):

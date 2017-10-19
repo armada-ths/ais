@@ -97,7 +97,7 @@ class StudentMatchingTestCase(TestCase):
             question=self.grading_q, answer=3)
 
         self.slider_ans = StudentAnswerSlider.objects.create(student=self.student,
-            question=self.slider_q, answer=0.15)
+            question=self.slider_q, answer_min=0.15, answer_max=0.2)
 
         self.fieldarea = WorkFieldArea.objects.create(work_area='IT')
         self.wfield1 = WorkField.objects.create(work_field='ML', work_area=self.fieldarea)

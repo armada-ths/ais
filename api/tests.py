@@ -11,7 +11,7 @@ from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Fair
 from matching.models import StudentQuestionType, StudentQuestionSlider, StudentQuestionGrading, StudentQuestionBase, \
-WorkField, WorkFieldArea, Survey
+WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField
 from people.models import Profile, Programme
 from recruitment.models import RecruitmentPeriod, Role
 from student_profiles.models import StudentProfile
@@ -216,7 +216,7 @@ class QuestionsTestCase(TestCase):
         (self.survey, wasCreated) = Survey.objects.get_or_create(name='Dummy survey', fair=self.fair)
 
         # generate questions
-        questions = [
+        self.questions = [
             StudentQuestionSlider.objects.create(question='Question 1?',
                 min_value=0.0, max_value=10000.0),
 
@@ -226,17 +226,18 @@ class QuestionsTestCase(TestCase):
             StudentQuestionGrading.objects.create(question='Wait what?',
                 grading_size=5)
         ]
-        for question in questions:
+        for question in self.questions:
             question.save()
             question.survey.add(self.survey)
 
         # generate areas
         (work_area, wasCreated) = WorkFieldArea.objects.get_or_create(work_area='Test area')
-        fields = [
+        self.fields = [
             WorkField.objects.get_or_create(work_area=work_area, work_field='Test field'),
-            WorkField.objects.get_or_create(work_area=work_area, work_field='Another field')
+            WorkField.objects.get_or_create(work_area=work_area, work_field='Another field'),
+            WorkField.objects.get_or_create(work_area=work_area, work_field='My field')
         ]
-        for (field, wasCreated) in fields:
+        for (field, wasCreated) in self.fields:
             if wasCreated:
                 field.save()
                 field.survey.add(self.survey)
@@ -277,12 +278,76 @@ class QuestionsTestCase(TestCase):
                 self.assertTrue('count' in question)
 
         #validate areas
-        self.assertEqual(len(data['areas']), 2)
+        self.assertEqual(len(data['areas']), 3)
         for area in data['areas']:
             self.assertTrue('id' in area)
             self.assertTrue('field' in area)
             self.assertTrue('area' in area)
             self.assertEqual(area['area'], 'Test area')
+
+
+    def test_put(self):
+        #create a paylioad:
+        data = json.dumps({
+            'questions' : [
+                {'id' : self.questions[0].pk, 'answer' : {'min' : 2.0, 'max' : 3.0}},
+                {'id' : self.questions[1].pk, 'answer' : {'min' : 1.0, 'max' : 15.0}},
+                {'id' : self.questions[2].pk, 'answer' : -1}
+            ], 'areas' : [
+                self.fields[2][0].pk
+            ]
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 200)
+        def test_db():
+            answers = StudentAnswerBase.objects.filter(student=StudentProfile.objects.get(pk=2))
+            answer_list = []
+            field_list = []
+            for answer in answers:
+                if hasattr(answer, 'studentanswerslider'):
+                    answer_list.append(answer.studentanswerslider)
+                elif hasattr(answer, 'studentanswergrading'):
+                    answer_list.append(answer.studentasnwergrading)
+                elif hasattr(answer, 'studentanswerworkfield'):
+                    field_list.append(answer.studentanswerworkfield)
+                else:
+                    self.assertFalse('Answer is not a subtype!')
+            self.assertEqual(answer_list[0].question, self.questions[0])
+            self.assertEqual(answer_list[1].question, self.questions[1])
+
+            self.assertFalse(field_list[0].answer)
+            self.assertFalse(field_list[1].answer)
+            self.assertTrue(field_list[2].answer)
+        # run tests described above
+        test_db()
+
+        # test illegal payloads
+        data = json.dumps({
+            'stuff' : 'nope'
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+        data = json.dumps({
+            'questions' : 'nope',
+            'areas' : 'nope'
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+        data = json.dumps({
+            'areas' : []
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 200)
+        try:
+            test_db()
+        except AssertionError as error:
+            self.assertEqual(str(error), 'False is not true')
 
 
 class BanquetPlacementTestCase(TestCase):
