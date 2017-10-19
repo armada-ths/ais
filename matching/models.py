@@ -305,6 +305,7 @@ class WorkField(models.Model):
     work_field  = models.TextField(unique=True)
     work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
     survey      = models.ManyToManyField(Survey)
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
     class Meta:
         default_permissions = ()
         verbose_name = 'work field'
@@ -335,7 +336,7 @@ class SwedenRegion(models.Model):
     '''
     Predefined regions in the app. Is used to connect companies cities to student answers in the app.
     
-    Necessary fields:
+    Necessary field(s):
         survey
         name
 
@@ -354,5 +355,24 @@ class SwedenCities(models.Model):
 
 class StudentAnswerRegion(StudentAnswerBase):
     '''
+    Inherits from StudentAnswerBase.
+    Region is the regions in sweden the student would prefere to work in. 
     '''
     region = models.ForeignKey(SwedenRegion)
+
+class Continent(models.Model):
+    '''
+    Necessary field(s):
+        name
+    All continents should be connected to at least one exhibitor when used. 
+    '''
+    name = models.TextField()
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+
+
+class StudentAnswerContinent(StudentAnswerBase):
+    '''
+    Inherits from StudentAnswerBase.
+    continent is the continents the student would prefere to work in. 
+    '''
+    continent = models.ForeignKey(Continent)
