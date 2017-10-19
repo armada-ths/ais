@@ -3,6 +3,7 @@ from matching.models import StudentQuestionBase, StudentQuestionType, StudentAns
 def answer_slider(answer, student, question, survey):
     '''
     Validate and deserialize an answer to a question of type SLIDER
+    Returns true if the question was validated sucessfuly and saved
     '''
     question = question.studentquestionslider
     if 'min' in answer and 'max' in answer \
@@ -24,6 +25,7 @@ def answer_slider(answer, student, question, survey):
 def answer_grading(answer, student, question, survey):
     '''
     Validate and deseralize an answer to a question of type GRADING
+    Returns true if the question was validated sucessfuly and saved
     '''
     if type(answer) is int:
         sizes = [-(question.studentquestiongrading.grading_size - 1) / 2,
@@ -49,6 +51,9 @@ def answers(answers, student, survey):
     '''
     Create or modify question answers from payload data
     used by questions_PUT in api/views
+    Returns (int, int):
+        where the first int tells the number of saved answers (all of which passed validation)
+        and the second one is total number of processed anwers (some of which may have failed validation)
     '''
     modified_count = 0
     total_count = 0
