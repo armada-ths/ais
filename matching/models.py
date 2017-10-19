@@ -267,6 +267,8 @@ class StudentAnswerGrading(StudentAnswerBase):
     def __str__(self):
         return '%i'%self.answer
 
+
+
 class WorkFieldArea(models.Model):
     '''
     Work field main areas. These are manually inputed into the db as a type
@@ -280,7 +282,7 @@ class WorkFieldArea(models.Model):
     work_area = models.TextField(unique=True)
     class Meta:
         default_permissions = ()
-        verbose_name = 'work field area'
+        verbose_name = 'work field area'    
     def __str__(self):
         return '%s'%self.work_area
 
@@ -327,3 +329,30 @@ class StudentAnswerWorkField(StudentAnswerBase):
 
     def __str__(self):
         return '%s for work field = %s w ans = %s'%(self.student, self.work_field, self.answer)
+
+
+class SwedenRegion(models.Model):
+    '''
+    Predefined regions in the app. Is used to connect companies cities to student answers in the app.
+    
+    Necessary fields:
+        survey
+        name
+
+    '''
+    survey = models.ForeignKey(Survey)
+    name = models.TextField()
+
+class SwedenCities(models.Model):
+    '''
+    Used to connect cities tuo a region in Sweden. Contains preprocessed data from 
+    '''
+    city = models.TextField(unique=True)
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+    region = models.ForeignKey(SwedenRegion)
+
+
+class StudentAnswerRegion(StudentAnswerBase):
+    '''
+    '''
+    region = models.ForeignKey(SwedenRegion)
