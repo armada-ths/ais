@@ -208,7 +208,8 @@ def questions_GET(request):
 
 def questions_PUT(request):
     '''
-    Handles a PUT request to ais.armada.nu/api/questions
+    Handles a PUT request to ais.armada.nu/api/questions?id=STUDENT_ID
+    Where STUDENT_ID is a unique uuid for a student.
     Expected payload looks like:
     {
     "questions" : [
