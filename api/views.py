@@ -169,26 +169,74 @@ def student_profile(request):
     return JsonResponse(data, safe=False)
 
 
-def questions(request):
+def questions_GET(request):
     '''
-    ais.armada.nu/api/questions
-    Returns all questions belonging to the current fair.
+    Handles a GET request to ais.armada.nu/api/questions
+    Returns all questions and possible work fields, that belong to current survey.
     Each question can be of one of QuestionType types and have special fields depending on that type.
+    Expected response:
+    {
+    "questions" : [
+        {"id" : ID_0, "type" : "slider", "question" : "QUESTION_0", "min" : MIN, "max" : MAX, "logarithmic" : LOG, "units" : "UNITS"},
+        {"id" : ID_1, "type" : "grading", "question" : "QUESTION_1", "count" : GRADING_COUNT},
+        ...],
+    "areas" : [
+        {"id" : AREA_ID, "field" : "FIELD", "area" : "AREA"},
+        ...]
+    }
+    Where:
+        ID          - is an integer, identifying that specific question
+        QUESTION    - is a string of that specific question
+        MIN         - a float representing the lowest bound of the answer range
+        MAX         - a float representing the highest bound of the answer range
+        LOG         - a boolean value, selecting a logarithmic vs linear way of displaying the answer
+        UNITS       - the name (plural) of units of entity in question
+        AREA_ID     - is an integer, identifying that specific area
+        FIELD       - the name of the field, which is a subcategory of AREA
+        AREA        - the name of a field area, which is a supercategory of FIELD
     '''
     current_fair = get_object_or_404(Fair, current=True)
     survey = get_object_or_404(Survey, fair=current_fair)
     questions = QuestionBase.objects.filter(survey=survey)
-    main_areas = []
     areas = WorkField.objects.filter(survey=survey)
-    for area in areas:
-        if area.work_area not in main_areas:
-            main_areas.append(area.work_area)
-    data = {
-        'questions' : [serializers.question(question) for question in questions],
-        # Due to the fact that our DB is structured differently from the expected responses, we need a little magic here
-        'areas' : [serializers.work_area(main_area, areas) for main_area in main_areas]
-    }
+    data = OrderedDict([
+        ('questions', [serializers.question(question) for question in questions]),
+        ('areas', [serializers.work_area(area) for area in areas])
+    ])
     return JsonResponse(data, safe=False)
+
+
+def questions_PUT(request):
+    '''
+    Handles a PUT request to ais.armada.nu/api/questions
+    Expected payload looks like:
+    {
+    "questions" : [
+        {"id" : ID, "answer" : ANSWER},
+        ...]
+    "areas" : [AREA_ID, ...]
+    }
+    Where:
+        ID      - is an integer id for each question, that was sent with questions_GET
+        ANSWER  - is either an int or a float, depending on the type of question
+        AREA_ID - is an integer id for each area that was selected, that was sent with questions_PUT
+    '''
+    #TODO: well, everything
+    pass
+
+
+def questions(request):
+    '''
+    ais.armada.nu/api/questions
+    Handles GET request with questions_GET
+    Handles PUT request with questions_PUT
+    '''
+    if request.methods == 'GET':
+        return questions_GET(request)
+    elif request.methods == 'PUT':
+        return questions_PUT(request)
+    else
+        pass #unsupported method
 
 
 def recruitment(request):

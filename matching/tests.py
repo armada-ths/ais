@@ -87,7 +87,7 @@ class StudentMatchingTestCase(TestCase):
         self.student = StudentProfile.objects.create(nickname='Gringo')
 
         # create slider and grading questions
-        self.slider_q = StudentQuestionSlider.objects.create(question='How is this working?', min_value=0.0, max_value=1.0, step=0.05)
+        self.slider_q = StudentQuestionSlider.objects.create(question='How is this working?', min_value=0.0, max_value=1.0, logarithmic=True)
         self.slider_q.survey.add(self.survey)
         self.grading_q = StudentQuestionGrading.objects.create(question='is axel cool?',
             grading_size=5)
@@ -116,7 +116,7 @@ class StudentMatchingTestCase(TestCase):
         question = StudentQuestionBase.objects.filter(question_type='slider', question='How is this working?').first()
         self.assertTrue(question)
         self.assertTrue(question.studentquestionslider)
-        self.assertEqual(question.studentquestionslider.step, 0.05)
+        self.assertEqual(question.studentquestionslider.logarithmic, True)
 
     def test_foregin_keys(self):
         ''' Check that all foreign keys are created correctly '''

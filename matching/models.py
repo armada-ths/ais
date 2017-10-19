@@ -128,7 +128,6 @@ class StudentQuestionBase(models.Model):
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
     survey = models.ManyToManyField(Survey, blank=True)
-#    fair = models.ForeignKey('fair.Fair',default=1)
     company_question = models.ForeignKey(Question, blank=True, null=True)
     class Meta:
         default_permissions = ()
@@ -152,12 +151,14 @@ class StudentQuestionSlider(StudentQuestionBase):
     Necessary fields:
         min_value (float)   - the minimal value (left) for the slider
         max_value (float)   - the maximal value (right) for the slider
+        units (string)      - the units (plural for now) of the measured entity
     Optional fields:
-        step (float)        - the step of the slider
+        logarithmic (bool)  - should the scale be logarithmic (defaults to False)
     '''
     min_value = models.FloatField()
     max_value = models.FloatField()
-    step = models.FloatField(blank=True, null=True)
+    units = models.CharField(max_length=64, null=True)
+    logarithmic = models.BooleanField(default=False)
 
     class Meta:
         default_permissions = ()
@@ -170,8 +171,6 @@ class StudentQuestionSlider(StudentQuestionBase):
 
     def save(self, *args, **kwargs):
         self.question_type = StudentQuestionType.SLIDER.value
-        if not self.step:
-            self.step = self.max_value - self.min_value
         return super(StudentQuestionSlider, self).save(*args, **kwargs)
 
 
@@ -211,7 +210,6 @@ class StudentAnswerBase(models.Model):
         student (fk) - foreign key to Student Profile
     '''
     student = models.ForeignKey('student_profiles.StudentProfile')
-#    fair = models.ForeignKey('fair.Fair',default=1)
     survey = models.ManyToManyField(Survey,blank=True)
     created = models.DateTimeField(editable=False, null=True, blank=True)
     updated = models.DateTimeField(null=True, blank=True)

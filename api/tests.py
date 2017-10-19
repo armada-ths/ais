@@ -10,7 +10,8 @@ from companies.models import Company
 from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Fair
-from matching.models import StudentQuestionType, StudentQuestionSlider, WorkField, WorkFieldArea, Survey
+from matching.models import StudentQuestionType, StudentQuestionSlider, StudentQuestionGrading, StudentQuestionBase, \
+WorkField, WorkFieldArea, Survey
 from people.models import Profile, Programme
 from recruitment.models import RecruitmentPeriod, Role
 from student_profiles.models import StudentProfile
@@ -207,6 +208,7 @@ class Organization(TestCase):
         self.assertEqual(organization[0]['people'][0]['picture'], 'http://host/static/images/no-image.png')
         self.assertEqual(organization[0]['people'][0]['programme'], 'Programme')
 
+
 class QuestionsTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -216,10 +218,13 @@ class QuestionsTestCase(TestCase):
         # generate questions
         questions = [
             StudentQuestionSlider.objects.create(question='Question 1?',
-                min_value=0.0, max_value=10000.0, step=0.1),
+                min_value=0.0, max_value=10000.0),
 
             StudentQuestionSlider.objects.create(question='Some other question?',
-            min_value=0.0, max_value=1000000.0, step=1.0)
+                min_value=0.0, max_value=1000000.0, logarithmic=True, units='meters'),
+
+            StudentQuestionGrading.objects.create(question='Wait what?',
+                grading_size=5)
         ]
         for question in questions:
             question.save()
@@ -237,6 +242,16 @@ class QuestionsTestCase(TestCase):
                 field.survey.add(self.survey)
 
 
+    def test_questions(self):
+        # Make sure no questions share a PK
+        # (they shouldn't, but if django changes its policies this test will catch it)
+        questions = StudentQuestionBase.objects.all()
+        ids = set()
+        for question in questions:
+            self.assertFalse(question.pk in ids)
+            ids.add(question.pk)
+
+
     def test_get(self):
         # make a request
         request = self.factory.get('/api/questions')
@@ -247,18 +262,29 @@ class QuestionsTestCase(TestCase):
         self.assertEqual(len(data), 2)
 
         # validate questions
-        self.assertEqual(len(data['questions']), 2)
-        self.assertEqual(data['questions'][0]['question'], 'Question 1?')
-        self.assertEqual(data['questions'][1]['step'], 1.0)
+        self.assertEqual(len(data['questions']), 3)
+        for question in data['questions']:
+            self.assertTrue('id' in question)
+            self.assertTrue('type' in question)
+            self.assertTrue('question' in question)
+            self.assertTrue(StudentQuestionType.is_type(question['type']))
+            if question['type'] == StudentQuestionType.SLIDER.value:
+                self.assertTrue('min' in question)
+                self.assertTrue('max' in question)
+                self.assertTrue('logarithmic' in question)
+                self.assertTrue('units' in question)
+            elif question['type'] == StudentQuestionType.GRADING.value:
+                self.assertTrue('count' in question)
 
         #validate areas
-        self.assertEqual(len(data['areas']), 1)
-        self.assertEqual(len(data['areas'][0]), 2)
-        self.assertEqual(len(data['areas'][0]['fields']), 2)
-        self.assertEqual(data['areas'][0]['title'], 'Test area')
-        self.assertEqual(data['areas'][0]['fields'][0], 'Test field')
+        self.assertEqual(len(data['areas']), 2)
+        for area in data['areas']:
+            self.assertTrue('id' in area)
+            self.assertTrue('field' in area)
+            self.assertTrue('area' in area)
+            self.assertEqual(area['area'], 'Test area')
 
-        
+
 class BanquetPlacementTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
