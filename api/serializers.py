@@ -2,6 +2,9 @@ from collections import OrderedDict
 from lib.util import unix_time
 from people.models import Profile
 
+from matching.models import StudentQuestionType as QuestionType
+
+
 MISSING_IMAGE = '/static/missing.png'
 MISSING_MAP = '/static/nymble_2048.png'
 MISSING_PERSON = '/static/images/no-image.png'
@@ -172,3 +175,27 @@ def banquet_placement(request, attendence):
         ('seat', attendence.seat_number or ""),
         ('job_title', attendence.job_title)
     ])
+
+
+def serialize_slider(question):
+    '''
+    Serialize a SLIDER question.
+    '''
+    question = question.studentquestionslider
+    return OrderedDict([
+            ('question', question.question),
+            ('type', question.question_type),
+            ('min', question.min_value),
+            ('max', question.max_value),
+            ('step', question.step)
+        ])
+
+# A dictionary of serializer functions, that avoids a huge (eventually) switch-block
+QUESTION_SERIALIZERS = {
+    QuestionType.SLIDER.value : serialize_slider,
+}
+
+def question(question):
+    if question.question_type in QUESTION_SERIALIZERS:
+        return QUESTION_SERIALIZERS[question.question_type](question)
+    return []   # could not serialize a type
