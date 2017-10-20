@@ -183,19 +183,52 @@ def serialize_slider(question):
     '''
     question = question.studentquestionslider
     return OrderedDict([
-            ('question', question.question),
-            ('type', question.question_type),
-            ('min', question.min_value),
-            ('max', question.max_value),
-            ('step', question.step)
-        ])
+        ('question', question.question),
+        ('type', question.question_type),
+        ('min', question.min_value),
+        ('max', question.max_value),
+        ('step', question.step)
+    ])
+
+
+def serialize_grading(question):
+    '''
+    Serialize a GRADING question.
+    '''
+    question = question.studentquestiongrading
+    return OrderedDict([
+        ('question', question.question),
+        ('type', question.question_type),
+        ('steps', question.grading_size)
+    ])
+
 
 # A dictionary of serializer functions, that avoids a huge (eventually) switch-block
 QUESTION_SERIALIZERS = {
     QuestionType.SLIDER.value : serialize_slider,
+    QuestionType.GRADING.value : serialize_grading
 }
 
 def question(question):
+    '''
+    Serialize a StudentQuestionBase child question.
+    '''
+    # theoretically we could have a common process for every question (the question itself and its type)
+    # but that adds unncecessary complexity to the code, without optimizing or simplifying it
     if question.question_type in QUESTION_SERIALIZERS:
         return QUESTION_SERIALIZERS[question.question_type](question)
     return []   # could not serialize a type
+
+
+def work_area(main_area, areas):
+    '''
+    Serialize a work field area (the main area), along with work fields, that correspond to that area
+    '''
+    related_areas = []
+    for area in areas:
+        if area.work_area == main_area:
+            related_areas.append(area.work_field)
+    return OrderedDict([
+        ('title', main_area.work_area),
+        ('fields', related_areas)
+    ])
