@@ -346,7 +346,7 @@ class SwedenRegion(models.Model):
 
 class SwedenCities(models.Model):
     '''
-    Used to connect cities tuo a region in Sweden. Contains preprocessed data from 
+    Used to connect cities tuo a region in Sweden. Contains preprocessed data.
     '''
     city = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
