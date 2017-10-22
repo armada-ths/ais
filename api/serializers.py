@@ -46,7 +46,7 @@ def names(objects):
 
 
 def exhibitor(request, exhibitor, company):
-    hosts = [OrderedDict([ 
+    hosts = [OrderedDict([
       ('first_name', host.first_name),
       ('last_name', host.last_name),
       ('email', host.email),
@@ -64,6 +64,7 @@ def exhibitor(request, exhibitor, company):
     except AttributeError:
         location = None
     return OrderedDict([
+                           ('id', exhibitor.pk),
                            ('fair', exhibitor.fair.name),
                            ('company', company.name),
                            ('company_website', company.website),
@@ -131,7 +132,7 @@ def person(request, person, role):
   #Check that there are a profile for the user
     try:
       profile = person.profile
-      try: 
+      try:
         programme = profile.programme.name
       except AttributeError:
         programme = None
@@ -164,7 +165,7 @@ def organization_group(request, group):
 def banquet_placement(request, attendence):
     try:
       table = attendence.table.name
-    except AttributeError: 
+    except AttributeError:
       table = None
     return OrderedDict([
         ('id', attendence.pk),
