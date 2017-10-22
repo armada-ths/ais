@@ -64,6 +64,7 @@ def exhibitor(request, exhibitor, company):
     except AttributeError:
         location = None
     return OrderedDict([
+                           ('id', exhibitor.pk),
                            ('fair', exhibitor.fair.name),
                            ('company', company.name),
                            ('company_website', company.website),
