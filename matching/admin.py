@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 
 from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, \
 BooleanAns, StudentQuestionSlider, StudentQuestionGrading, StudentAnswerSlider, \
-StudentAnswerGrading, WorkFieldArea, WorkField, StudentAnswerWorkField
+StudentAnswerGrading, WorkFieldArea, WorkField, StudentAnswerWorkField SwedenRegion, \
+Continent, StudentAnswerRegion, StudentAnswerContinent, SwedenCities
 
 class QuestionInline(admin.ModelAdmin):
     list_display=('text', 'question_type')
@@ -52,6 +53,21 @@ class AnswerGradingAdmin(admin.ModelAdmin):
     list_display = ('student', 'question', 'answer')
     model = StudentAnswerGrading
 
+class SwedenRegionAdmin(admin.ModelAdmin):
+    model = SwedenRegion
+
+class ContinentAdmin(admin.ModelAdmin):
+    model = Continent
+
+class SwedenCitiesAdmin(admin.ModelAdmin):
+    model = SwedenCities
+
+class StudentAnswerContinentAdmin(admin.ModelAdmin):
+    model = StudentAnswerContinent
+
+class StudentAnswerRegionAdmin(admin.ModelAdmin):
+    model = StudentAnswerRegion
+
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
 admin.site.register(Response, ResponseAdmin)
@@ -68,3 +84,9 @@ admin.site.register(StudentAnswerGrading, AnswerGradingAdmin)
 admin.site.register(WorkField, WorkFieldAdmin)
 admin.site.register(WorkFieldArea, WorkFieldAreaAdmin)
 admin.site.register(StudentAnswerWorkField)
+
+admin.site.register(SwedenRegion, SwedenRegionAdmin)
+admin.site.register(Continent, ContinentAdmin)
+admin.site.register(SwedenCities, SwedenCitiesAdmin)
+admin.site.register(StudentAnswerContinent, StudentAnswerContinentAdmin)
+admin.site.register(StudentAnswerRegion, StudentAnswerRegionAdmin)
