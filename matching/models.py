@@ -322,3 +322,48 @@ class StudentAnswerWorkField(StudentAnswerBase):
 
     def __str__(self):
         return '%s for work field = %s w ans = %s'%(self.student, self.work_field, self.answer)
+
+class SwedenRegion(models.Model):
+    '''
+    Predefined regions in the app. Is used to connect companies cities to student answers in the app.
+    
+    Necessary field(s):
+        survey
+        name
+
+    '''
+    survey = models.ForeignKey(Survey)
+    name = models.TextField()
+
+class SwedenCities(models.Model):
+    '''
+    Used to connect cities tuo a region in Sweden. Contains preprocessed data.
+    '''
+    city = models.TextField(unique=True)
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+    region = models.ForeignKey(SwedenRegion)
+
+
+class StudentAnswerRegion(StudentAnswerBase):
+    '''
+    Inherits from StudentAnswerBase.
+    Region is the regions in sweden the student would prefere to work in. 
+    '''
+    region = models.ForeignKey(SwedenRegion)
+
+class Continent(models.Model):
+    '''
+    Necessary field(s):
+        name
+    All continents should be connected to at least one exhibitor when used. 
+    '''
+    name = models.TextField()
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+
+
+class StudentAnswerContinent(StudentAnswerBase):
+    '''
+    Inherits from StudentAnswerBase.
+    continent is the continents the student would prefere to work in. 
+    '''
+    continent = models.ForeignKey(Continent)
