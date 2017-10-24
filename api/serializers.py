@@ -64,6 +64,7 @@ def exhibitor(request, exhibitor, company):
     except AttributeError:
         location = None
     return OrderedDict([
+                           ('id', exhibitor.pk),
                            ('fair', exhibitor.fair.name),
                            ('company', company.name),
                            ('company_website', company.website),
@@ -130,13 +131,17 @@ def partner(request, partner):
 def person(request, person, role):
   #Check that there are a profile for the user
     try:
-      profile = person.profile  
+      profile = person.profile
+      try: 
+        programme = profile.programme.name
+      except AttributeError:
+        programme = None
       return OrderedDict([
         ('id', profile.user.pk),
         ('name', profile.user.get_full_name()),
         ('picture', image_url_or_missing(request, profile.picture_original, MISSING_PERSON)),
         ('linkedin_url', profile.linkedin_url),
-        ('programme', profile.programme),
+        ('programme', programme),
         ('role', role)
       ])
     except Profile.DoesNotExist: #There are no profile for this user
