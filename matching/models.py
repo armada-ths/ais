@@ -335,13 +335,24 @@ class SwedenRegion(models.Model):
     survey = models.ForeignKey(Survey)
     name = models.TextField()
 
-class SwedenCities(models.Model):
+    def __str__(self):
+        return self.name
+
+class SwedenCity(models.Model):
     '''
-    Used to connect cities tuo a region in Sweden. Contains preprocessed data.
+    Used to connect cities to a region in Sweden. Contains preprocessed data.
     '''
     city = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
     region = models.ForeignKey(SwedenRegion)
+
+    class Meta:
+            verbose_name = 'sweden cities'
+
+    def __str__(self):
+        return self.city
+
+
 
 
 class StudentAnswerRegion(StudentAnswerBase):
@@ -350,16 +361,25 @@ class StudentAnswerRegion(StudentAnswerBase):
     Region is the regions in sweden the student would prefere to work in. 
     '''
     region = models.ForeignKey(SwedenRegion)
+    
+    class Meta:
+            verbose_name = 'answer_region'
+
+    def __str__(self):
+        return '%s : %s' %(self.student, self.region)
 
 class Continent(models.Model):
     '''
+    Connects a exhibitor to a Continent. 
     Necessary field(s):
         name
     All continents should be connected to at least one exhibitor when used. 
     '''
-    name = models.TextField()
+    name = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
 
+    def __str__(self):
+        return self.name
 
 class StudentAnswerContinent(StudentAnswerBase):
     '''
@@ -367,3 +387,9 @@ class StudentAnswerContinent(StudentAnswerBase):
     continent is the continents the student would prefere to work in. 
     '''
     continent = models.ForeignKey(Continent)
+
+    class Meta:
+            verbose_name = 'answer_continent'
+
+    def __str__(self):
+        return '%s : %s' %(self.student, self.continent)
