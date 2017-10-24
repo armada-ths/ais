@@ -46,7 +46,9 @@ def names(objects):
 
 
 def exhibitor(request, exhibitor, company):
-    hosts = [OrderedDict([ 
+  #All nestled objects needs id in order to work in Android
+    hosts = [OrderedDict([
+      ('id', host.pk),
       ('name', host.first_name + host.last_name),
       ('email', host.email),
     ]) for host in exhibitor.hosts.all()]
@@ -70,9 +72,9 @@ def exhibitor(request, exhibitor, company):
                            ('booth_number', exhibitor.booth_number),
                            ('about', exhibitor.about_text),
                            ('facts', exhibitor.facts_text),
-                           ('hosts', names(hosts)),
+                           ('hosts', hosts),
                            ('logo_url', image_url_or_missing(request, exhibitor.logo)),
-                           ('map_location_url', image_url_or_missing(request, exhibitor_location_at_fair)),
+                           ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair)),
                        ])
 
 
