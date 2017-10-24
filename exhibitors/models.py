@@ -26,6 +26,9 @@ class Exhibitor(models.Model):
     facts_text = models.TextField(blank=True)
     accept_terms = models.BooleanField(default=False)
 
+    # For the logistics team
+    comment = models.TextField(blank=True)
+
     statuses = [
         ('accepted', 'Accepted'),
         ('registered', 'Registered'),
