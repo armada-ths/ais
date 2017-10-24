@@ -233,12 +233,19 @@ def questions_PUT(request):
         (student, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
         fair = get_object_or_404(Fair, current=True)
         survey = get_object_or_404(Survey, fair=fair)
-        data = json.loads(request.body.decode())
+        try:
+            data = json.loads(request.body.decode())
+        except Exception:
+            return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
         modified = False
         (modified_count, total_count) = (0, 0)
+
+        if type(data) is not dict:
+            return HttpResponse('Wrong payload format!', content_type='text/plain', status=406)
+
         if 'questions' in data and type(data['questions']) is list:
             (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
-            modified = modified_count > 0
+
         if 'areas' in data and type(data['areas']) is list:
             areas = []
             for area in data['areas']:
@@ -246,12 +253,13 @@ def questions_PUT(request):
                     areas.append(area)
             deserializers.fields(areas, student, survey)
             modified = True
-        if modified:
-            if modified_count > 0:
-                return HttpResponse('Answers submitted! (saved ' + str(modified_count)
-                    + ' out of ' + str(total_count) + ' question answers)', content_type='text/plain')
-            else:
-                return HttpResponse('Answers submitted! (no question answers were saved)', content_type='text/plain')
+
+        if modified or modified_count > 0:
+            answer = 'Answers submitted! (' + str(modified_count) + '/' + str(total_count) + ' question answers were saved, fields were '
+            if not modified:
+                answer += 'not '
+            answer += 'updated)'
+            return HttpResponse(answer, content_type='text/plain')
         else:
             return HttpResponse('No answers were found in payload!', content_type='text/plain', status=406)
     else:

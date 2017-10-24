@@ -348,6 +348,15 @@ class QuestionsTestCase(TestCase):
         test_db()
 
         data = json.dumps({
+            'questions' : [],
+            'areas' : {'id' : 0}
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+
+        data = json.dumps({
             'questions' : []
         })
         request = self.factory.put('api/questions?student_id=2', data=data)
@@ -366,6 +375,7 @@ class QuestionsTestCase(TestCase):
         self.assertEqual(response.status_code, 406)
         test_db()
 
+        # test partial payloads
         data = json.dumps({
             'areas' : []
         })
@@ -390,7 +400,7 @@ class QuestionsTestCase(TestCase):
         request = self.factory.put('api/questions?student_id=2', data=data)
         response = views.questions(request)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('1 out of 5' in str(response.content))  # only the last answer should be taken into account
+        self.assertTrue('1/5 question answers' in str(response.content))  # only the last answer should be taken into account
         try:
             test_db()
         except AssertionError as error:

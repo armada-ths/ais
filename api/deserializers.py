@@ -6,19 +6,29 @@ def answer_slider(answer, student, question, survey):
     Returns true if the question was validated sucessfuly and saved
     '''
     question = question.studentquestionslider
-    if 'min' in answer and 'max' in answer \
-    and type(answer['min']) is float and type(answer['max']) is float \
-    and answer['min'] <= answer['max'] \
-    and answer['min'] >= question.min_value \
-    and answer['max'] <= question.max_value:
-        question = question.studentquestionslider
-        (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(question=question, student=student)
-        if was_created:
-            answer_model.survey.add(survey)
-        answer_model.answer_min = answer['min']
-        answer_model.answer_max = answer['max']
-        answer_model.save()
-        return True
+    if type(answer) is dict:
+        if 'min' in answer and 'max' in answer \
+        and (type(answer['min']) is float or type(answer['min']) is int) \
+        and (type(answer['max']) is float or type(answer['max']) is int) \
+        and answer['min'] <= answer['max'] \
+        and answer['min'] >= question.min_value \
+        and answer['max'] <= question.max_value:
+            (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(question=question, student=student)
+            if was_created:
+                answer_model.survey.add(survey)
+            answer_model.answer_min = answer['min']
+            answer_model.answer_max = answer['max']
+            answer_model.save()
+            return True
+    elif (type(answer) is float or type(answer) is int):
+        if question.min_value <= answer <= question.max_value:
+            (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(question=question, student=student)
+            if was_created:
+                answer_model.survey.add(survey)
+            answer_model.answer_min = answer
+            answer_model.answer_max = answer
+            answer_model.save()
+            return True
     return False
 
 
@@ -59,7 +69,7 @@ def answers(answers, student, survey):
     total_count = 0
     for answer in answers:
         total_count += 1
-        if 'id' in answer and 'answer' in answer:
+        if type(answer) is dict and 'id' in answer and 'answer' in answer:
             question = StudentQuestionBase.objects.filter(pk=answer['id']).first()
             if question and question.question_type in ANSWER_DESERIALIZERS:
                 if ANSWER_DESERIALIZERS[question.question_type](answer['answer'], student, question, survey):

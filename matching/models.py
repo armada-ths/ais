@@ -157,7 +157,7 @@ class StudentQuestionSlider(StudentQuestionBase):
     '''
     min_value = models.FloatField()
     max_value = models.FloatField()
-    units = models.CharField(max_length=64, null=True)
+    units = models.CharField(max_length=64, blank=True)
     logarithmic = models.BooleanField(default=False)
 
     class Meta:
@@ -217,6 +217,7 @@ class StudentAnswerBase(models.Model):
     class Meta:
         default_permissions = ()
         verbose_name = 'answer base'
+        verbose_name = 'answers base'
 
     def save(self, *args, **kwargs):
         ''' setting timestamp '''
@@ -244,6 +245,7 @@ class StudentAnswerSlider(StudentAnswerBase):
     class Meta:
         default_permissions = ()
         verbose_name = 'answer slider'
+        verbose_name_plural = 'answers slider'
 
     def __str__(self):
         return '%.2f to %.2f' % (self.answer_min, self.answer_max)
@@ -265,6 +267,7 @@ class StudentAnswerGrading(StudentAnswerBase):
     class Meta:
         default_permissions = ()
         verbose_name = 'answer grading'
+        verbose_name_plural = 'answers grading'
 
     def __str__(self):
         return '%i'%self.answer
@@ -327,7 +330,8 @@ class StudentAnswerWorkField(StudentAnswerBase):
     answer      = models.BooleanField(choices=((True,'yes'), (False,'no')), default=False)
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_workfield'
+        verbose_name = 'answer workfield'
+        verbose_name_plural = 'answers workfield'
 
     def __str__(self):
         return '%s for work field = %s w ans = %s'%(self.student, self.work_field, self.answer)

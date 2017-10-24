@@ -52,6 +52,15 @@ class AnswerGradingAdmin(admin.ModelAdmin):
     list_display = ('student', 'question', 'answer')
     model = StudentAnswerGrading
 
+# Student Questions
+class StudentQuestionSliderAdmin(admin.ModelAdmin):
+    exclude = ('question_type',)
+    model = StudentQuestionSlider
+
+class StudentQuestionGradingAdmin(admin.ModelAdmin):
+    exclude = ('question_type',)
+    model = StudentQuestionGrading
+
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
 admin.site.register(Response, ResponseAdmin)
@@ -60,8 +69,8 @@ admin.site.register(ChoiceAns)
 admin.site.register(IntegerAns)
 admin.site.register(BooleanAns)
 
-admin.site.register(StudentQuestionSlider)
-admin.site.register(StudentQuestionGrading)
+admin.site.register(StudentQuestionSlider, StudentQuestionSliderAdmin)
+admin.site.register(StudentQuestionGrading, StudentQuestionGradingAdmin)
 admin.site.register(StudentAnswerSlider, AnswerSliderAdmin)
 admin.site.register(StudentAnswerGrading, AnswerGradingAdmin)
 
