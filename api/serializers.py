@@ -47,18 +47,9 @@ def names(objects):
 
 def exhibitor(request, exhibitor, company):
     hosts = [OrderedDict([ 
-      ('first_name', host.first_name),
-      ('last_name', host.last_name),
+      ('name', host.first_name + host.last_name),
       ('email', host.email),
     ]) for host in exhibitor.hosts.all()]
-    try:
-      contact = OrderedDict([
-        ('name', exhibitor.contact.name),
-        ('email', exhibitor.contact.email),
-        ('title', exhibitor.contact.title),
-        ])
-    except AttributeError:
-      contact = None
     try:
         location = exhibitor.location.name
     except AttributeError:
@@ -75,13 +66,13 @@ def exhibitor(request, exhibitor, company):
                            ('address_city', company.address_city),
                            ('address_other_information', company.additional_address_information),
                            ('organisation_type', company.organisation_type),
-                           ('company_contact', contact),
                            ('exhibitor_location', location),
                            ('booth_number', exhibitor.booth_number),
                            ('about', exhibitor.about_text),
                            ('facts', exhibitor.facts_text),
-                           ('hosts', hosts),
+                           ('hosts', names(hosts)),
                            ('logo_url', image_url_or_missing(request, exhibitor.logo)),
+                           ('map_location_url', image_url_or_missing(request, exhibitor_location_at_fair)),
                        ])
 
 
