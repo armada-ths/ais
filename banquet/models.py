@@ -42,7 +42,7 @@ class BanquetteAttendant(models.Model):
         ('other', 'Other'),
         ('not_specify','Prefer not to specify'),
     ]
-    gender = models.CharField(choices=genders, max_length=10)
+    gender = models.CharField(choices=genders, max_length=100)
     job_title = models.CharField(max_length=200, blank=True)
     linkedin_url = models.URLField(blank=True)
     ticket = models.ForeignKey(BanquetTicket, null=True, blank=True)
