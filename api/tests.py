@@ -1,24 +1,19 @@
-from django.test import TestCase, RequestFactory, Client
 from django.contrib.auth.models import User, Group
-from django.utils import timezone
 from django.http.response import Http404
-import datetime
+from django.test import TestCase, RequestFactory, Client
+from django.utils import timezone
 
 import json, datetime
 
+from banquet.models import BanquetteAttendant
 from companies.models import Company
 from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Fair
 from student_profiles.models import StudentProfile
-from banquet.models import BanquetteAttendant
-
 from people.models import Profile, Programme
-from banquet.models import BanquetteAttendant
-
-
+from matching.models import StudentQuestionType, StudentQuestionSlider, WorkField, WorkFieldArea, Survey
 from recruitment.models import RecruitmentPeriod, Role
-from matching.models import StudentQuestionType, StudentQuestionSlider
 
 from . import views
 
@@ -212,29 +207,56 @@ class Organization(TestCase):
         self.assertEqual(organization[0]['people'][0]['picture'], 'http://host/static/images/no-image.png')
         self.assertEqual(organization[0]['people'][0]['programme'], 'Programme')
 
-class QuestionTestCase(TestCase):
+class QuestionsTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        self.fair = Fair.objects.create(name='Armada fair', current=True)
+        (self.fair, wasCreated) = Fair.objects.get_or_create(name='Armada fair', current=True)
+        (self.survey, wasCreated) = Survey.objects.get_or_create(name='Dummy survey', fair=self.fair)
 
         # generate questions
-        StudentQuestionSlider.objects.create(question='Question 1?',
-            min_value=0.0, max_value=10000.0, step=0.1, fair=self.fair)
-        StudentQuestionSlider.objects.create(question='Some other question?',
-            min_value=0.0, max_value=1000000.0, step=1.0, fair=self.fair)
+        questions = [
+            StudentQuestionSlider.objects.create(question='Question 1?',
+                min_value=0.0, max_value=10000.0, step=0.1),
+
+            StudentQuestionSlider.objects.create(question='Some other question?',
+            min_value=0.0, max_value=1000000.0, step=1.0)
+        ]
+        for question in questions:
+            question.save()
+            question.survey.add(self.survey)
+
+        # generate areas
+        (work_area, wasCreated) = WorkFieldArea.objects.get_or_create(work_area='Test area')
+        fields = [
+            WorkField.objects.get_or_create(work_area=work_area, work_field='Test field'),
+            WorkField.objects.get_or_create(work_area=work_area, work_field='Another field')
+        ]
+        for (field, wasCreated) in fields:
+            if wasCreated:
+                field.save()
+                field.survey.add(self.survey)
 
 
-    def test_api(self):
+    def test_get(self):
         # make a request
         request = self.factory.get('/api/questions')
         response = views.questions(request)
 
         # validate the response
-        questions = json.loads(response.content.decode(response.charset))
-        self.assertEqual(len(questions), 1)
-        self.assertEqual(len(questions['questions']), 2)
-        self.assertEqual(questions['questions'][0]['question'], 'Question 1?')
-        self.assertEqual(questions['questions'][1]['step'], 1.0)
+        data = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(data), 2)
+
+        # validate questions
+        self.assertEqual(len(data['questions']), 2)
+        self.assertEqual(data['questions'][0]['question'], 'Question 1?')
+        self.assertEqual(data['questions'][1]['step'], 1.0)
+
+        #validate areas
+        self.assertEqual(len(data['areas']), 1)
+        self.assertEqual(len(data['areas'][0]), 2)
+        self.assertEqual(len(data['areas'][0]['fields']), 2)
+        self.assertEqual(data['areas'][0]['title'], 'Test area')
+        self.assertEqual(data['areas'][0]['fields'][0], 'Test field')
 
         
 class BanquetPlacementTestCase(TestCase):
