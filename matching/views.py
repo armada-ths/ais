@@ -78,6 +78,11 @@ def init_choosen_sliders_gradings(request, template_name='matching/sliders_gradi
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
 
+    slider_questions = StudentQuestionSlider.objects.filter(fair=fair, survey=survey_proc)
+    slider_exhibitor_responses = Response.objects.filter()
+    grading_questions = StudentQuestionGrading.objects.filter(fair=fair, survey=survey_proc)
+
+
     return render(request, template_name, {'survey': survey_raw})
 
 @staff_member_required
@@ -115,7 +120,7 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
 
 def finalize_workfields(request, template_name='matching/finalize_workfields.html'):
     '''
-    initialize processing and clustering on the workfields
+    finalize the workfields by mapping them to work areas as a group
     '''
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
