@@ -10,7 +10,7 @@ from companies.models import Company
 from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Fair
-from student_profiles.models import StudentProfile
+from student_profiles.models import StudentProfile, MatchingResult
 from people.models import Profile, Programme
 
 from matching.models import StudentQuestionType, StudentQuestionSlider, WorkField, WorkFieldArea, Survey
@@ -350,3 +350,89 @@ class RecruitmentTestCase(TestCase):
         self.assertEqual(len(recruitments), 2)
         #Test content for one recruitment
         self.assertEqual(recruitments[0]['name'], 'current recruitment')
+
+
+class MatchingResultTestCase(TestCase):
+    #This view currently assume that the machting algortim is done after returning 6 matches.
+    def setUp(self):
+        self.factory = RequestFactory()        
+        current_fair = Fair.objects.create(name='Current fair', current=True)
+        self.student1 = StudentProfile.objects.create(nickname='student1')
+        self.student2 = StudentProfile.objects.create(nickname='student2')
+        self.company1 = Company.objects.create(name='company1', organisation_number='1')
+        self.company2 = Company.objects.create(name='company1', organisation_number='2')
+        self.company3 = Company.objects.create(name='company1', organisation_number='3')
+        self.company4 = Company.objects.create(name='company1', organisation_number='4')
+        self.company5 = Company.objects.create(name='company1', organisation_number='5')
+        self.company6 = Company.objects.create(name='company1', organisation_number='6')
+
+    def test_view(self):
+        #Returns empty list when no matching is done
+        request = self.factory.get('/api/matching_result?student_id=1')
+        response = views.matching_result(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        matching = json.loads(response.content.decode(response.charset))
+        self.assertEqual([], matching)
+
+        #returns empty list when one matching is done
+        matching_result1 = MatchingResult.objects.create(student=self.student1, company=self.company1, fair=Fair.objects.get(current=True), score=10)
+        request = self.factory.get('/api/matching_result?student_id=1')
+        response = views.matching_result(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        matching = json.loads(response.content.decode(response.charset))
+        self.assertEqual([], matching)
+
+        #returns empty list when five matchings are done
+        matching_result2 = MatchingResult.objects.create(student=self.student1, company=self.company2, fair=Fair.objects.get(current=True), score=0)
+        matching_result3 = MatchingResult.objects.create(student=self.student1, company=self.company3, fair=Fair.objects.get(current=True), score=20)
+        matching_result4 = MatchingResult.objects.create(student=self.student1, company=self.company4, fair=Fair.objects.get(current=True), score=100)
+        matching_result5 = MatchingResult.objects.create(student=self.student1, company=self.company5, fair=Fair.objects.get(current=True), score=3)
+        request = self.factory.get('/api/matching_result?student_id=1')
+        response = views.matching_result(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        matching = json.loads(response.content.decode(response.charset))
+        self.assertEqual([], matching)
+
+        #returns 5 matches when 6 matchings are done
+        matching_result6 = MatchingResult.objects.create(student=self.student1, company=self.company6, fair=Fair.objects.get(current=True), score=70)
+        request = self.factory.get('/api/matching_result?student_id=1')
+        response = views.matching_result(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        matching = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(matching), 5)
+        #Should be in order
+        self.assertEqual(matching[0]['percent'], 100)
+        self.assertEqual(matching[1]['percent'], 70)
+        self.assertEqual(matching[4]['percent'], 3)
+
+        #still returns empty list for student2
+        request = self.factory.get('/api/matching_result?student_id=2')
+        response = views.matching_result(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        matching = json.loads(response.content.decode(response.charset))
+        self.assertEqual(matching, [])
+
+        #returns 5 matches for studnet2 when 6 matchings are done
+        matching_result6 = MatchingResult.objects.create(student=self.student2, company=self.company1, fair=Fair.objects.get(current=True), score=3)
+        matching_result7 = MatchingResult.objects.create(student=self.student2, company=self.company2, fair=Fair.objects.get(current=True), score=3)
+        matching_result8 = MatchingResult.objects.create(student=self.student2, company=self.company3, fair=Fair.objects.get(current=True), score=3)
+        matching_result9 = MatchingResult.objects.create(student=self.student2, company=self.company4, fair=Fair.objects.get(current=True), score=3)
+        matching_result10 = MatchingResult.objects.create(student=self.student2, company=self.company5, fair=Fair.objects.get(current=True), score=3)
+        matching_result11 = MatchingResult.objects.create(student=self.student2, company=self.company6, fair=Fair.objects.get(current=True), score=3)
+        request = self.factory.get('/api/matching_result?student_id=2')
+        response = views.matching_result(request)
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        matching = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(matching), 5)
+
+        #returns status code 404 if a student doesn't exists
+        request = self.factory.get('/api/matching_result?student_id=5')
+        response = views.matching_result(request)
+        self.assertEqual(response.status_code, 404)
+
+
+
+
+
+
+

@@ -4,7 +4,7 @@ from datetime import datetime
 import platform, subprocess, json
 
 from django.contrib.auth.models import Group
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
@@ -21,7 +21,7 @@ from django.utils import timezone
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role
-from student_profiles.models import StudentProfile
+from student_profiles.models import StudentProfile, MatchingResult
 
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
@@ -187,6 +187,31 @@ def questions(request):
         # Due to the fact that our DB is structured differently from the expected responses, we need a little magic here
         'areas' : [serializers.work_area(main_area, areas) for main_area in main_areas]
     }
+    return JsonResponse(data, safe=False)
+
+def matching_result(request):
+    '''
+    ais.armada.nu/api/matching_result?student_id=STUDENT_PROFILE_PK
+    returns the result for a student after the matching algorithm is done (=> when length of result is the same as MATCHING_DONE)
+    The result is an array of MAX_MATCHES matching exhibitors.
+    If there are no result yet, it will return an empty list [].
+    '''
+    MATCHING_DONE = 6
+    MAX_MATCHES = 5 
+
+    student_id = request.GET['student_id']
+    try:
+        student = StudentProfile.objects.get(pk=student_id)
+    except StudentProfile.DoesNotExist:
+        return HttpResponse('No such student', content_type='text/plain', status=404)
+
+    number_of_matches = MatchingResult.objects.filter(student=student).count()
+    if number_of_matches < MATCHING_DONE:
+        data = []
+    else:
+        matches = MatchingResult.objects.filter(student=student).order_by('-score')[:MAX_MATCHES]
+        data = [serializers.matching_result(matching) for matching in matches]
+
     return JsonResponse(data, safe=False)
 
 

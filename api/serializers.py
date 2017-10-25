@@ -82,7 +82,6 @@ def event(request, event):
     tags = tags_mappings(event.tags.all())
     signup_link = event.external_signup_url if event.external_signup_url else absolute_url(request, '/fairs/2017/events/' + str(
         event.pk) + '/signup')
-    print(event.image)
     return OrderedDict([
                            ('id', event.pk),
                            ('name', event.name),
@@ -226,3 +225,15 @@ def work_area(main_area, areas):
         ('title', main_area.work_area),
         ('fields', related_areas)
     ])
+
+
+
+def matching_result(matching):
+    '''
+    Serialize a matching for a student_profile
+    '''
+    return OrderedDict([
+        ('exhibitor', 1), #TODO::: WHEN MODEL STUDENT_PROFILE HAS CHANGE THIS MUST CHANGE TO EXHIBITOR.PK
+        ('percent', matching.score),
+        ('reasons', ['','','']) #This is just empty strings for now. Might change if we get any reasons from the matching algortithm. 
+      ])
