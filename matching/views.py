@@ -27,11 +27,14 @@ def index(request, template_name='matching/index.html'):
     Returns 404 if current fair does not exist or exhibitor-matching survey does
     not exist.
     '''
+    #change this so the user can pick which survey to edit or create a new one
+    name_survey_raw = 'exhibitor-matching'
+
     fair = get_object_or_404(Fair, current=True)
     exhibitors = Exhibitor.objects.filter(fair=fair)
-
-    name_survey_raw = 'exhibitor-matching'
     survey_raw = get_object_or_404(Survey, fair=fair, name=name_survey_raw)
+    # get the id of the raw survey used so we can pass it between the views
+    request.session['survey_raw_id'] = survey_raw.id
     try:
         survey_proc = Survey.objects.get(fair=fair, name='%s-processed'%name_survey_raw)
     except:
@@ -39,6 +42,9 @@ def index(request, template_name='matching/index.html'):
             name='%s-processed'%name_survey_raw,
             description='processed data for %s'%name_survey_raw
         )
+    # get the id of the processed survey used so we can pass it between the views
+    request.session['survey_proc_id'] = survey_proc.id
+
     exhibitor_slider = Question.objects.filter(survey=survey_raw, question_type=Question.INT)
     exhibitor_grading = Question.objects.filter(survey=survey_raw, question_type = Question.SELECT)
 
@@ -62,3 +68,57 @@ def index(request, template_name='matching/index.html'):
         delete_processed_question(selected_ex_grading, survey_proc, 'grading')
 
     return render(request, template_name, {'form': form})
+
+@staff_member_required
+def init_choosen_sliders_gradings(request, template_name='matching/sliders_gradings.html'):
+    '''
+    edit questions text for student for choosen sliders and gradings
+    '''
+    fair = Fair.objects.get(current=True)
+    survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
+    survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+
+    return render(request, template_name, {'survey': survey_raw})
+
+@staff_member_required
+def map_sweden(request, template_name='matching/sweden_regions.html'):
+    '''
+    edit questions text for student for choosen sliders and gradings
+    '''
+    fair = Fair.objects.get(current=True)
+    survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
+    survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+
+    return render(request, template_name, {'survey': survey_raw})
+
+@staff_member_required
+def map_world(request, template_name='matching/world_regions.html'):
+    '''
+    map world to world representation in apps/web
+    '''
+    fair = Fair.objects.get(current=True)
+    survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
+    survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+
+    return render(request, template_name, {'survey': survey_raw})
+
+@staff_member_required
+def init_workfields(request, template_name='matching/init_workfields.html'):
+    '''
+    initialize processing and clustering on the workfields
+    '''
+    fair = Fair.objects.get(current=True)
+    survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
+    survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+
+    return render(request, template_name, {'survey': survey_raw})
+
+def finalize_workfields(request, template_name='matching/finalize_workfields.html'):
+    '''
+    initialize processing and clustering on the workfields
+    '''
+    fair = Fair.objects.get(current=True)
+    survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
+    survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+
+    return render(request, template_name, {'survey': survey_raw})

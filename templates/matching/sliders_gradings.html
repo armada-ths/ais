@@ -20,24 +20,19 @@
 				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
 			</svg>
             <h2>Matching Algorithm Initialization </h2>
-            <h3>1. Chose which slider and grading questions to use</h3>
+            <h4> Survey: {{ survey }} </h4>
+            <h3>2. Edit Slider and Grading Questions</h3>
+
+
+
+
+
+
+            <a href="{% url 'matching:index' %}"><button type="button" class="btn btn-default">Previous</button></a>
+            <button type="submit" class="btn btn-success">Submit</button>
+            <a href="{% url 'matching:map_sweden' %}"><button type="button" class="btn btn-default">Next</button></a>
         </div>
-
-    	<div class="container">
-            <div class="row">
-                <div class="col-md-12">
-	            <form method="post">
-                   {% csrf_token %} {{ form|crispy }}
-                       {{ form.questions_slider }}
-                       {{ form.questions_grading }}
-                       <button type="submit" class="btn btn-success">Submit</button>
-                       <a href="{% url 'matching:slider_grading' %}"><button type="button" class="btn btn-default">Next</button></a>
-               </form>
-               </div>
-            </div>
-    	</div>
     </div>
-
 
 </body>
 </html>
