@@ -56,6 +56,11 @@ class Exhibitor(models.Model):
         upload_to=UploadToDirUUID('exhibitors', 'logo_original'),
         blank=True,
     )
+    location_at_fair = models.ImageField(
+        upload_to=UploadToDirUUID('exhibitors', 'location_at_fair'),
+        blank=True
+    )
+
 
     exhibition_area_requests = [
         ('kth_library', 'KTH Library'),
