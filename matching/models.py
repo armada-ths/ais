@@ -356,7 +356,8 @@ class SwedenCity(models.Model):
     region = models.ForeignKey(SwedenRegion)
 
     class Meta:
-            verbose_name = 'sweden cities'
+            verbose_name = 'sweden city'
+            verbose_name_plural = 'sweden cities'
 
     def __str__(self):
         return self.city
@@ -372,7 +373,7 @@ class StudentAnswerRegion(StudentAnswerBase):
     region = models.ForeignKey(SwedenRegion)
     
     class Meta:
-            verbose_name = 'answer_region'
+            verbose_name = 'answer region'
 
     def __str__(self):
         return '%s : %s' %(self.student, self.region)
@@ -398,7 +399,7 @@ class StudentAnswerContinent(StudentAnswerBase):
     continent = models.ForeignKey(Continent)
 
     class Meta:
-            verbose_name = 'answer_continent'
+            verbose_name = 'answer continent'
 
     def __str__(self):
         return '%s : %s' %(self.student, self.continent)
