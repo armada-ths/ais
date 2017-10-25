@@ -5,6 +5,8 @@ import platform, subprocess, json
 
 from django.contrib.auth.models import Group
 from django.http import JsonResponse
+from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
@@ -16,9 +18,9 @@ from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
-from matching.models import StudentQuestionBase as QuestionBase
+from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
-from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
+from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role
 from student_profiles.models import StudentProfile
 
 def root(request):
@@ -28,7 +30,7 @@ def root(request):
 @cache_page(60 * 5)
 def exhibitors(request):
     '''
-    Returns the existing cataloginfo for exhibitors in current fair. 
+    Returns the existing cataloginfo for exhibitors in current fair.
     Does not return anything for those exhibitors that are without catalog info.
     '''
     fair = Fair.objects.get(current=True)
@@ -76,7 +78,7 @@ def partners(request):
 def organization(request):
     '''
     Returns all roles for current fair
-    '''    
+    '''
     all_groups = Group.objects \
         .prefetch_related('user_set__profile') \
         .order_by('name')
@@ -107,8 +109,7 @@ def status(request):
 @cache_page(60 * 5)
 def banquet_placement(request):
     '''
-
-    Returns all banquet attendance for current fair. 
+    Returns all banquet attendance for current fair.
     The field job_title depends on weather a attendant is a user or exhibitor.
     '''
 
@@ -138,14 +139,15 @@ def banquet_placement(request):
     return JsonResponse(data, safe=False)
 
 
+@csrf_exempt
 def student_profile(request):
     '''
     GET student profiles nickname by their id.
-    Url: /student_profiles?student_id=STUDENTPROFILEID
+    Url: /student_profile?student_id={STUDENTPROFILEID}
     or
     PUT student profile nickname by the id
-    URL: /api/student_profiles?student_id=STUDENT_PROFILE_ID
-    DATA: json'{"nickname" : NICKNAME}'
+    URL: /api/student_profile?student_id={STUDENT_PROFILE_ID}
+    DATA: json'{"nickname" : "{NICKNAME}"}'
     '''
     if request.method == 'GET':
         student_id = request.GET['student_id']
@@ -173,10 +175,17 @@ def questions(request):
     Each question can be of one of QuestionType types and have special fields depending on that type.
     '''
     current_fair = get_object_or_404(Fair, current=True)
-    questions = QuestionBase.objects.filter(fair=current_fair)
+    survey = get_object_or_404(Survey, fair=current_fair)
+    questions = QuestionBase.objects.filter(survey=survey)
+    main_areas = []
+    areas = WorkField.objects.filter(survey=survey)
+    for area in areas:
+        if area.work_area not in main_areas:
+            main_areas.append(area.work_area)
     data = {
         'questions' : [serializers.question(question) for question in questions],
-        # TODO: areas
+        # Due to the fact that our DB is structured differently from the expected responses, we need a little magic here
+        'areas' : [serializers.work_area(main_area, areas) for main_area in main_areas]
     }
     return JsonResponse(data, safe=False)
 
@@ -185,7 +194,7 @@ def recruitment(request):
     '''
     ais.armada.nu/api/recruitment
     Returns all open recruitments and information about availeble roles for each recruitment.
-    If there areno open recrutiment it returns an empty list.  
+    If there areno open recrutiment it returns an empty list.
     '''
     fair = Fair.objects.get(current=True)
     recruitments = RecruitmentPeriod.objects.filter(fair=fair)
