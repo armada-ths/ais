@@ -109,7 +109,6 @@ def status(request):
 @cache_page(60 * 5)
 def banquet_placement(request):
     '''
-
     Returns all banquet attendance for current fair.
     The field job_title depends on weather a attendant is a user or exhibitor.
     '''

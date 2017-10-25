@@ -132,7 +132,7 @@ def person(request, person, role):
   #Check that there are a profile for the user
     try:
       profile = person.profile
-      try:
+      try: 
         programme = profile.programme.name
       except AttributeError:
         programme = None
