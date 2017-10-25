@@ -15,6 +15,8 @@ from .forms import RawQuestionForm
 
 from collections import Counter
 
+from .helpers_view import update_processed_question, delete_processed_question
+
 @staff_member_required
 def index(request, template_name='matching/index.html'):
     '''
@@ -52,31 +54,11 @@ def index(request, template_name='matching/index.html'):
     )
     if form.is_valid():
         selected_ex_slider = form.cleaned_data['questions_select_slider']
-        update_processed_question(selected_ex_slider, survey_proc)
         selected_ex_grading = form.cleaned_data['questions_select_grading']
+        # update or delete selected questions
+        update_processed_question(selected_ex_slider, survey_proc)
+        delete_processed_question(selected_ex_slider, survey_proc,'slider')
         update_processed_question(selected_ex_grading, survey_proc)
+        delete_processed_question(selected_ex_grading, survey_proc, 'grading')
 
     return render(request, template_name, {'form': form})
-
-def update_processed_question(exhibitor_q, survey):
-    '''
-    For now only add questions, no delete yet
-    '''
-    for ex_q in exhibitor_q:
-        st_q = None
-        try:
-            if ex_q.question_type==Question.INT:
-                st_q = StudentQuestionSlider.objects.get(survey=survey, company_question=ex_q)
-            elif ex_q.question_type==Question.SELECT:
-                st_q = StudentQuestionGrading.objects.get(survey=survey, company_question=ex_q)
-        except:
-            if ex_q.question_type==Question.INT:
-                st_q = StudentQuestionSlider.objects.create(company_question=ex_q,
-                    question='TODO from question: %s'%ex_q.text,
-                    min_value=0.0,
-                    max_value=1337.0,
-                    )
-                st_q.survey.add(survey)
-                st_q.save()
-                ex_q.survey.add(survey)
-                ex_q.save()
