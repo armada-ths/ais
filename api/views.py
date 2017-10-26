@@ -198,14 +198,14 @@ def matching_result(request):
     '''
     MATCHING_DONE = 6
     MAX_MATCHES = 5 
-
+    current_fair = get_object_or_404(Fair, current=True)
     student_id = request.GET['student_id']
     try:
         student = StudentProfile.objects.get(pk=student_id)
     except StudentProfile.DoesNotExist:
         return HttpResponse('No such student', content_type='text/plain', status=404)
 
-    number_of_matches = MatchingResult.objects.filter(student=student).count()
+    number_of_matches = MatchingResult.objects.filter(student=student, fair=current_fair).count()
     if number_of_matches < MATCHING_DONE:
         data = []
     else:
