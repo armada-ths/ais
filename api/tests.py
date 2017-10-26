@@ -15,7 +15,6 @@ from people.models import Profile, Programme
 
 from matching.models import StudentQuestionType, StudentQuestionSlider, WorkField, WorkFieldArea, Survey
 from recruitment.models import RecruitmentPeriod, Role
-from student_profiles.models import StudentProfile
 
 from . import views
 
