@@ -46,19 +46,12 @@ def names(objects):
 
 
 def exhibitor(request, exhibitor, company):
-    hosts = [OrderedDict([ 
-      ('first_name', host.first_name),
-      ('last_name', host.last_name),
+  #All nestled objects needs id in order to work in Android
+    hosts = [OrderedDict([
+      ('id', host.pk),
+      ('name', host.first_name + host.last_name),
       ('email', host.email),
     ]) for host in exhibitor.hosts.all()]
-    try:
-      contact = OrderedDict([
-        ('name', exhibitor.contact.name),
-        ('email', exhibitor.contact.email),
-        ('title', exhibitor.contact.title),
-        ])
-    except AttributeError:
-      contact = None
     try:
         location = exhibitor.location.name
     except AttributeError:
@@ -75,13 +68,13 @@ def exhibitor(request, exhibitor, company):
                            ('address_city', company.address_city),
                            ('address_other_information', company.additional_address_information),
                            ('organisation_type', company.organisation_type),
-                           ('company_contact', contact),
                            ('exhibitor_location', location),
                            ('booth_number', exhibitor.booth_number),
                            ('about', exhibitor.about_text),
                            ('facts', exhibitor.facts_text),
                            ('hosts', hosts),
                            ('logo_url', image_url_or_missing(request, exhibitor.logo)),
+                           ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair)),
                        ])
 
 
@@ -165,7 +158,7 @@ def organization_group(request, group):
 def banquet_placement(request, attendence):
     try:
       table = attendence.table.name
-    except AttributeError: 
+    except AttributeError:
       table = None
     return OrderedDict([
         ('id', attendence.pk),
@@ -184,19 +177,52 @@ def serialize_slider(question):
     '''
     question = question.studentquestionslider
     return OrderedDict([
-            ('question', question.question),
-            ('type', question.question_type),
-            ('min', question.min_value),
-            ('max', question.max_value),
-            ('step', question.step)
-        ])
+        ('question', question.question),
+        ('type', question.question_type),
+        ('min', question.min_value),
+        ('max', question.max_value),
+        ('step', question.step)
+    ])
+
+
+def serialize_grading(question):
+    '''
+    Serialize a GRADING question.
+    '''
+    question = question.studentquestiongrading
+    return OrderedDict([
+        ('question', question.question),
+        ('type', question.question_type),
+        ('steps', question.grading_size)
+    ])
+
 
 # A dictionary of serializer functions, that avoids a huge (eventually) switch-block
 QUESTION_SERIALIZERS = {
     QuestionType.SLIDER.value : serialize_slider,
+    QuestionType.GRADING.value : serialize_grading
 }
 
 def question(question):
+    '''
+    Serialize a StudentQuestionBase child question.
+    '''
+    # theoretically we could have a common process for every question (the question itself and its type)
+    # but that adds unncecessary complexity to the code, without optimizing or simplifying it
     if question.question_type in QUESTION_SERIALIZERS:
         return QUESTION_SERIALIZERS[question.question_type](question)
     return []   # could not serialize a type
+
+
+def work_area(main_area, areas):
+    '''
+    Serialize a work field area (the main area), along with work fields, that correspond to that area
+    '''
+    related_areas = []
+    for area in areas:
+        if area.work_area == main_area:
+            related_areas.append(area.work_field)
+    return OrderedDict([
+        ('title', main_area.work_area),
+        ('fields', related_areas)
+    ])
