@@ -233,7 +233,7 @@ def matching_result(matching):
     Serialize a matching for a student_profile
     '''
     return OrderedDict([
-        ('exhibitor', 1), #TODO::: WHEN MODEL STUDENT_PROFILE HAS CHANGE THIS MUST CHANGE TO EXHIBITOR.PK
+        ('exhibitor', matching.exhibitor.pk),
         ('percent', matching.score),
         ('reasons', ['','','']) #This is just empty strings for now. Might change if we get any reasons from the matching algortithm. 
       ])

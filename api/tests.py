@@ -365,7 +365,12 @@ class MatchingResultTestCase(TestCase):
         self.company4 = Company.objects.create(name='company1', organisation_number='4')
         self.company5 = Company.objects.create(name='company1', organisation_number='5')
         self.company6 = Company.objects.create(name='company1', organisation_number='6')
-
+        self.exhibitor1 = Exhibitor.objects.create(company=self.company1, fair=current_fair)
+        self.exhibitor2 = Exhibitor.objects.create(company=self.company2, fair=current_fair)
+        self.exhibitor3 = Exhibitor.objects.create(company=self.company3, fair=current_fair)
+        self.exhibitor4 = Exhibitor.objects.create(company=self.company4, fair=current_fair)
+        self.exhibitor5 = Exhibitor.objects.create(company=self.company5, fair=current_fair)
+        self.exhibitor6 = Exhibitor.objects.create(company=self.company6, fair=current_fair)
     def test_view(self):
         #Returns empty list when no matching is done
         request = self.factory.get('/api/matching_result?student_id=1')
@@ -375,7 +380,7 @@ class MatchingResultTestCase(TestCase):
         self.assertEqual([], matching)
 
         #returns empty list when one matching is done
-        matching_result1 = MatchingResult.objects.create(student=self.student1, company=self.company1, fair=Fair.objects.get(current=True), score=10)
+        matching_result1 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor1, fair=Fair.objects.get(current=True), score=10)
         request = self.factory.get('/api/matching_result?student_id=1')
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
@@ -383,10 +388,10 @@ class MatchingResultTestCase(TestCase):
         self.assertEqual([], matching)
 
         #returns empty list when five matchings are done
-        matching_result2 = MatchingResult.objects.create(student=self.student1, company=self.company2, fair=Fair.objects.get(current=True), score=0)
-        matching_result3 = MatchingResult.objects.create(student=self.student1, company=self.company3, fair=Fair.objects.get(current=True), score=20)
-        matching_result4 = MatchingResult.objects.create(student=self.student1, company=self.company4, fair=Fair.objects.get(current=True), score=100)
-        matching_result5 = MatchingResult.objects.create(student=self.student1, company=self.company5, fair=Fair.objects.get(current=True), score=3)
+        matching_result2 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor2, fair=Fair.objects.get(current=True), score=0)
+        matching_result3 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor3, fair=Fair.objects.get(current=True), score=20)
+        matching_result4 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor4, fair=Fair.objects.get(current=True), score=100)
+        matching_result5 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor5, fair=Fair.objects.get(current=True), score=3)
         request = self.factory.get('/api/matching_result?student_id=1')
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
@@ -394,7 +399,7 @@ class MatchingResultTestCase(TestCase):
         self.assertEqual([], matching)
 
         #returns 5 matches when 6 matchings are done
-        matching_result6 = MatchingResult.objects.create(student=self.student1, company=self.company6, fair=Fair.objects.get(current=True), score=70)
+        matching_result6 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor6, fair=Fair.objects.get(current=True), score=70)
         request = self.factory.get('/api/matching_result?student_id=1')
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
@@ -413,12 +418,12 @@ class MatchingResultTestCase(TestCase):
         self.assertEqual(matching, [])
 
         #returns 5 matches for studnet2 when 6 matchings are done
-        matching_result6 = MatchingResult.objects.create(student=self.student2, company=self.company1, fair=Fair.objects.get(current=True), score=3)
-        matching_result7 = MatchingResult.objects.create(student=self.student2, company=self.company2, fair=Fair.objects.get(current=True), score=3)
-        matching_result8 = MatchingResult.objects.create(student=self.student2, company=self.company3, fair=Fair.objects.get(current=True), score=3)
-        matching_result9 = MatchingResult.objects.create(student=self.student2, company=self.company4, fair=Fair.objects.get(current=True), score=3)
-        matching_result10 = MatchingResult.objects.create(student=self.student2, company=self.company5, fair=Fair.objects.get(current=True), score=3)
-        matching_result11 = MatchingResult.objects.create(student=self.student2, company=self.company6, fair=Fair.objects.get(current=True), score=3)
+        matching_result6 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor1, fair=Fair.objects.get(current=True), score=3)
+        matching_result7 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor2, fair=Fair.objects.get(current=True), score=3)
+        matching_result8 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor3, fair=Fair.objects.get(current=True), score=3)
+        matching_result9 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor4, fair=Fair.objects.get(current=True), score=3)
+        matching_result10 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor5, fair=Fair.objects.get(current=True), score=3)
+        matching_result11 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor6, fair=Fair.objects.get(current=True), score=3)
         request = self.factory.get('/api/matching_result?student_id=2')
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
