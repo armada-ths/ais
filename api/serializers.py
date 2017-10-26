@@ -46,24 +46,18 @@ def names(objects):
 
 
 def exhibitor(request, exhibitor, company):
-    hosts = [OrderedDict([ 
-      ('first_name', host.first_name),
-      ('last_name', host.last_name),
+  #All nestled objects needs id in order to work in Android
+    hosts = [OrderedDict([
+      ('id', host.pk),
+      ('name', host.first_name + host.last_name),
       ('email', host.email),
     ]) for host in exhibitor.hosts.all()]
-    try:
-      contact = OrderedDict([
-        ('name', exhibitor.contact.name),
-        ('email', exhibitor.contact.email),
-        ('title', exhibitor.contact.title),
-        ])
-    except AttributeError:
-      contact = None
     try:
         location = exhibitor.location.name
     except AttributeError:
         location = None
     return OrderedDict([
+                           ('id', exhibitor.pk),
                            ('fair', exhibitor.fair.name),
                            ('company', company.name),
                            ('company_website', company.website),
@@ -74,13 +68,13 @@ def exhibitor(request, exhibitor, company):
                            ('address_city', company.address_city),
                            ('address_other_information', company.additional_address_information),
                            ('organisation_type', company.organisation_type),
-                           ('company_contact', contact),
                            ('exhibitor_location', location),
                            ('booth_number', exhibitor.booth_number),
                            ('about', exhibitor.about_text),
                            ('facts', exhibitor.facts_text),
                            ('hosts', hosts),
                            ('logo_url', image_url_or_missing(request, exhibitor.logo)),
+                           ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair)),
                        ])
 
 
@@ -164,7 +158,7 @@ def organization_group(request, group):
 def banquet_placement(request, attendence):
     try:
       table = attendence.table.name
-    except AttributeError: 
+    except AttributeError:
       table = None
     return OrderedDict([
         ('id', attendence.pk),

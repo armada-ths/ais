@@ -20,7 +20,7 @@ from fair.models import Partner, Fair
 from django.utils import timezone
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
-from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role 
+from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role
 from student_profiles.models import StudentProfile
 
 def root(request):
@@ -30,7 +30,7 @@ def root(request):
 @cache_page(60 * 5)
 def exhibitors(request):
     '''
-    Returns the existing cataloginfo for exhibitors in current fair. 
+    Returns the existing cataloginfo for exhibitors in current fair.
     Does not return anything for those exhibitors that are without catalog info.
     '''
     fair = Fair.objects.get(current=True)
@@ -78,7 +78,7 @@ def partners(request):
 def organization(request):
     '''
     Returns all roles for current fair
-    '''    
+    '''
     all_groups = Group.objects \
         .prefetch_related('user_set__profile') \
         .order_by('name')
@@ -109,8 +109,7 @@ def status(request):
 @cache_page(60 * 5)
 def banquet_placement(request):
     '''
-
-    Returns all banquet attendance for current fair. 
+    Returns all banquet attendance for current fair.
     The field job_title depends on weather a attendant is a user or exhibitor.
     '''
 
@@ -195,7 +194,7 @@ def recruitment(request):
     '''
     ais.armada.nu/api/recruitment
     Returns all open recruitments and information about availeble roles for each recruitment.
-    If there areno open recrutiment it returns an empty list.  
+    If there areno open recrutiment it returns an empty list.
     '''
     fair = Fair.objects.get(current=True)
     recruitments = RecruitmentPeriod.objects.filter(fair=fair)
