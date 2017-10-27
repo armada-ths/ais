@@ -4,14 +4,14 @@ from datetime import datetime
 import platform, subprocess, json
 
 from django.contrib.auth.models import Group
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 
-import api.serializers as serializers
+import api.serializers as serializers, api.deserializers as deserializers
 
 from banquet.models import BanquetteAttendant
 from events.models import Event
@@ -157,37 +157,127 @@ def student_profile(request):
         if request.body:
             student_id = request.GET['student_id']
             (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
-            student_profile.nickname = json.loads(request.body.decode()).get('nickname')
-            student_profile.save()
-            data = OrderedDict([('nickname', student_profile.nickname)])
+            payload = json.loads(request.body.decode())
+            if 'nickname' in payload:
+                student_profile.nickname = payload['nickname']
+                student_profile.save()
+                data = OrderedDict([('nickname', student_profile.nickname)])
+            else:
+                return HttpResponse('No nickname in payload!', content_type='text/plain', status=406)
         else:
-            data = []   # we were sent an empty PUT request
+            return HttpResponse('No payload detected!', content_type='text/plain', status=406)
     else:
-        data = []   # we were sent some request other than PUT or GET
+        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
     return JsonResponse(data, safe=False)
 
 
-def questions(request):
+def questions_GET(request):
     '''
-    ais.armada.nu/api/questions
-    Returns all questions belonging to the current fair.
+    Handles a GET request to ais.armada.nu/api/questions
+    Returns all questions and possible work fields, that belong to current survey.
     Each question can be of one of QuestionType types and have special fields depending on that type.
+    Expected response:
+    {
+    "questions" : [
+        {"id" : ID_0, "type" : "slider", "question" : "QUESTION_0", "min" : MIN, "max" : MAX, "logarithmic" : LOG, "units" : "UNITS"},
+        {"id" : ID_1, "type" : "grading", "question" : "QUESTION_1", "count" : GRADING_COUNT},
+        ...],
+    "areas" : [
+        {"id" : AREA_ID, "field" : "FIELD", "area" : "AREA"},
+        ...]
+    }
+    Where:
+        ID          - is an integer, identifying that specific question
+        QUESTION    - is a string of that specific question
+        MIN         - a float representing the lowest bound of the answer range
+        MAX         - a float representing the highest bound of the answer range
+        LOG         - a boolean value, selecting a logarithmic vs linear way of displaying the answer
+        UNITS       - the name (plural) of units of entity in question
+        AREA_ID     - is an integer, identifying that specific area
+        FIELD       - the name of the field, which is a subcategory of AREA
+        AREA        - the name of a field area, which is a supercategory of FIELD
     '''
     current_fair = get_object_or_404(Fair, current=True)
     survey = get_object_or_404(Survey, fair=current_fair)
     questions = QuestionBase.objects.filter(survey=survey)
-    main_areas = []
     areas = WorkField.objects.filter(survey=survey)
-    for area in areas:
-        if area.work_area not in main_areas:
-            main_areas.append(area.work_area)
-    data = {
-        'questions' : [serializers.question(question) for question in questions],
-        # Due to the fact that our DB is structured differently from the expected responses, we need a little magic here
-        'areas' : [serializers.work_area(main_area, areas) for main_area in main_areas]
-    }
+    data = OrderedDict([
+        ('questions', [serializers.question(question) for question in questions]),
+        ('areas', [serializers.work_area(area) for area in areas])
+    ])
     return JsonResponse(data, safe=False)
+
+
+def questions_PUT(request):
+    '''
+    Handles a PUT request to ais.armada.nu/api/questions?student_id=STUDENT_ID
+    Where STUDENT_ID is a unique uuid for a student.
+    Expected payload looks like:
+    {
+    "questions" : [
+        {"id" : ID, "answer" : ANSWER},
+        ...]
+    "areas" : [AREA_ID, ...]
+    }
+    Where:
+        ID      - is an integer id for each question, that was sent with questions_GET
+        ANSWER  - is either an int or a float, depending on the type of question
+        AREA_ID - is an integer id for each area that was selected, that was sent with questions_PUT
+
+    Should respond "Answers submitted!" to a valid PUT request
+    '''
+    if request.body:
+        student_id = request.GET['student_id']
+        (student, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
+        fair = get_object_or_404(Fair, current=True)
+        survey = get_object_or_404(Survey, fair=fair)
+        try:
+            data = json.loads(request.body.decode())
+        except Exception:
+            return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+        modified = False
+        (modified_count, total_count) = (0, 0)
+
+        if type(data) is not dict:
+            return HttpResponse('Wrong payload format!', content_type='text/plain', status=406)
+
+        if 'questions' in data and type(data['questions']) is list:
+            (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
+
+        if 'areas' in data and type(data['areas']) is list:
+            areas = []
+            for area in data['areas']:
+                if type(area) is int:
+                    areas.append(area)
+            deserializers.fields(areas, student, survey)
+            modified = True
+
+        if modified or modified_count > 0:
+            answer = 'Answers submitted! (' + str(modified_count) + '/' + str(total_count) + ' question answers were saved, fields were '
+            if not modified:
+                answer += 'not '
+            answer += 'updated)'
+            return HttpResponse(answer, content_type='text/plain')
+        else:
+            return HttpResponse('No answers were found in payload!', content_type='text/plain', status=406)
+    else:
+        return HttpResponse('No payload detected!', content_type='text/plain', status=406)
+
+
+@csrf_exempt
+def questions(request):
+    '''
+    ais.armada.nu/api/questions
+    Handles GET request with questions_GET
+    Handles PUT request with questions_PUT
+    '''
+    if request.method == 'GET':
+        return questions_GET(request)
+    elif request.method == 'PUT':
+        return questions_PUT(request)
+    else:
+        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
 
 def recruitment(request):
