@@ -87,7 +87,7 @@ class StudentMatchingTestCase(TestCase):
         self.student = StudentProfile.objects.create(nickname='Gringo')
 
         # create slider and grading questions
-        self.slider_q = StudentQuestionSlider.objects.create(question='How is this working?', min_value=0.0, max_value=1.0, step=0.05)
+        self.slider_q = StudentQuestionSlider.objects.create(question='How is this working?', min_value=0.0, max_value=1.0, logarithmic=True)
         self.slider_q.survey.add(self.survey)
         self.grading_q = StudentQuestionGrading.objects.create(question='is axel cool?',
             grading_size=5)
@@ -97,7 +97,7 @@ class StudentMatchingTestCase(TestCase):
             question=self.grading_q, answer=3)
 
         self.slider_ans = StudentAnswerSlider.objects.create(student=self.student,
-            question=self.slider_q, answer=0.15)
+            question=self.slider_q, answer_min=0.15, answer_max=0.2)
 
         self.fieldarea = WorkFieldArea.objects.create(work_area='IT')
         self.wfield1 = WorkField.objects.create(work_field='ML', work_area=self.fieldarea)
@@ -116,7 +116,7 @@ class StudentMatchingTestCase(TestCase):
         question = StudentQuestionBase.objects.filter(question_type='slider', question='How is this working?').first()
         self.assertTrue(question)
         self.assertTrue(question.studentquestionslider)
-        self.assertEqual(question.studentquestionslider.step, 0.05)
+        self.assertEqual(question.studentquestionslider.logarithmic, True)
 
     def test_foregin_keys(self):
         ''' Check that all foreign keys are created correctly '''

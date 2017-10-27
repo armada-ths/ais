@@ -128,7 +128,6 @@ class StudentQuestionBase(models.Model):
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
     survey = models.ManyToManyField(Survey, blank=True)
-#    fair = models.ForeignKey('fair.Fair',default=1)
     company_question = models.ForeignKey(Question, blank=True, null=True)
     class Meta:
         default_permissions = ()
@@ -152,12 +151,14 @@ class StudentQuestionSlider(StudentQuestionBase):
     Necessary fields:
         min_value (float)   - the minimal value (left) for the slider
         max_value (float)   - the maximal value (right) for the slider
+        units (string)      - the units (plural for now) of the measured entity
     Optional fields:
-        step (float)        - the step of the slider
+        logarithmic (bool)  - should the scale be logarithmic (defaults to False)
     '''
     min_value = models.FloatField()
     max_value = models.FloatField()
-    step = models.FloatField(blank=True, null=True)
+    units = models.CharField(max_length=64, blank=True)
+    logarithmic = models.BooleanField(default=False)
 
     class Meta:
         default_permissions = ()
@@ -170,8 +171,6 @@ class StudentQuestionSlider(StudentQuestionBase):
 
     def save(self, *args, **kwargs):
         self.question_type = StudentQuestionType.SLIDER.value
-        if not self.step:
-            self.step = self.max_value - self.min_value
         return super(StudentQuestionSlider, self).save(*args, **kwargs)
 
 
@@ -211,14 +210,14 @@ class StudentAnswerBase(models.Model):
         student (fk) - foreign key to Student Profile
     '''
     student = models.ForeignKey('student_profiles.StudentProfile')
-#    fair = models.ForeignKey('fair.Fair',default=1)
     survey = models.ManyToManyField(Survey,blank=True)
     created = models.DateTimeField(editable=False, null=True, blank=True)
     updated = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_base'
+        verbose_name = 'answer base'
+        verbose_name = 'answers base'
 
     def save(self, *args, **kwargs):
         ''' setting timestamp '''
@@ -235,18 +234,21 @@ class StudentAnswerSlider(StudentAnswerBase):
     Parent is StudentAnswerBase
 
     Necessary field(s):
-        question (fk)   - foregin key to StudentQuestionSlider
-        answer (float)  - answer to question
+        question (fk)       - foregin key to StudentQuestionSlider
+        answer_min (float)  - the low bound of the range of the answer
+        answer_max (float)  - the high bound of the range of the answer
     '''
     question    = models.ForeignKey(StudentQuestionSlider)
-    answer      = models.FloatField()
+    answer_min  = models.FloatField(default=0.0)
+    answer_max  = models.FloatField(default=0.0)
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_slider'
+        verbose_name = 'answer slider'
+        verbose_name_plural = 'answers slider'
 
     def __str__(self):
-        return '%.2f'%self.answer
+        return '%.2f to %.2f' % (self.answer_min, self.answer_max)
 
 
 class StudentAnswerGrading(StudentAnswerBase):
@@ -260,11 +262,12 @@ class StudentAnswerGrading(StudentAnswerBase):
         answer (int)    - answer to question
     '''
     question    = models.ForeignKey(StudentQuestionGrading)
-    answer      = models.IntegerField()
+    answer      = models.IntegerField(default=0)
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_grading'
+        verbose_name = 'answer grading'
+        verbose_name_plural = 'answers grading'
 
     def __str__(self):
         return '%i'%self.answer
@@ -324,10 +327,11 @@ class StudentAnswerWorkField(StudentAnswerBase):
         answer (bool)   - true or false on that work field
     '''
     work_field  = models.ForeignKey(WorkField)
-    answer      = models.BooleanField(choices=((True,'yes'), (False,'no')))
+    answer      = models.BooleanField(choices=((True,'yes'), (False,'no')), default=False)
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer_workfield'
+        verbose_name = 'answer workfield'
+        verbose_name_plural = 'answers workfield'
 
     def __str__(self):
         return '%s for work field = %s w ans = %s'%(self.student, self.work_field, self.answer)
