@@ -47,7 +47,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 def edit_view(request, year, template_name='exhibitors/edit_view.html'):
     view = ExhibitorView.objects.filter(user=request.user).first()
     form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
-    
+
     if form.is_valid():
         form.save()
         return redirect('exhibitors', year)
@@ -238,11 +238,18 @@ def related_object_form(model, model_name, delete_view_name):
             return HttpResponseForbidden()
         instance = model.objects.filter(pk=instance_pk).first()
         FormFactory = modelform_factory(model, exclude=(
-        'exhibitor', 'user', 'table_name', 'seat_number', 'ignore_from_placement'))
+        'exhibitor', 'user', 'table_name', 'seat_number', 'ignore_from_placement', 'fair'))
         form = FormFactory(request.POST or None, instance=instance)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.exhibitor = exhibitor
+            try:
+                # Try to put fair to choosen year.
+                # If model does not have field just
+                # pass and move on
+                instance.fair = fair
+            except Exception:
+                pass
             instance.save()
             return redirect('exhibitor', fair.year,exhibitor_pk)
         delete_url = reverse(delete_view_name, args=(
