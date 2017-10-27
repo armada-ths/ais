@@ -176,11 +176,13 @@ def serialize_slider(question):
     '''
     question = question.studentquestionslider
     return OrderedDict([
-        ('question', question.question),
+        ('id', question.pk),
         ('type', question.question_type),
+        ('question', question.question),
         ('min', question.min_value),
         ('max', question.max_value),
-        ('step', question.step)
+        ('logarithmic', question.logarithmic),
+        ('units', question.units)
     ])
 
 
@@ -190,9 +192,10 @@ def serialize_grading(question):
     '''
     question = question.studentquestiongrading
     return OrderedDict([
-        ('question', question.question),
+        ('id', question.pk),
         ('type', question.question_type),
-        ('steps', question.grading_size)
+        ('question', question.question),
+        ('count', question.grading_size)
     ])
 
 
@@ -210,20 +213,19 @@ def question(question):
     # but that adds unncecessary complexity to the code, without optimizing or simplifying it
     if question.question_type in QUESTION_SERIALIZERS:
         return QUESTION_SERIALIZERS[question.question_type](question)
+    else:
+        raise NotImplementedError('Couldn\'t serialize ' + question.question_type + ' type!')
     return []   # could not serialize a type
 
 
-def work_area(main_area, areas):
+def work_area(area):
     '''
-    Serialize a work field area (the main area), along with work fields, that correspond to that area
+    Serialize a work field area
     '''
-    related_areas = []
-    for area in areas:
-        if area.work_area == main_area:
-            related_areas.append(area.work_field)
     return OrderedDict([
-        ('title', main_area.work_area),
-        ('fields', related_areas)
+        ('id', area.pk),
+        ('field', area.work_field),
+        ('area', area.work_area.work_area)
     ])
 
 
