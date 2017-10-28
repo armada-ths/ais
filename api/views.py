@@ -152,18 +152,24 @@ def student_profile(request):
     if request.method == 'GET':
         student_id = request.GET['student_id']
         student = get_object_or_404(StudentProfile, pk=student_id)
-        data = OrderedDict([('nickname', student.nickname)])
+        data = serializers.student_profile(student)
     elif request.method == 'PUT':
         if request.body:
             student_id = request.GET['student_id']
             (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
-            payload = json.loads(request.body.decode())
-            if 'nickname' in payload:
-                student_profile.nickname = payload['nickname']
-                student_profile.save()
-                data = OrderedDict([('nickname', student_profile.nickname)])
+            try:
+                data = json.loads(request.body.decode())
+            except Exception:
+                if wasCreated:
+                    student_profile.delete()
+                return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+            # Here is where the actual deserialization happens:
+            if deserializers.student_profile(data, student_profile):
+                return HttpResponse('Profile updated sucessfully!', content_type='text/plain')
             else:
-                return HttpResponse('No nickname in payload!', content_type='text/plain', status=406)
+                if wasCreated:
+                    student_profile.delete()
+                return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
         else:
             return HttpResponse('No payload detected!', content_type='text/plain', status=406)
     else:
@@ -260,6 +266,8 @@ def questions_PUT(request):
         try:
             data = json.loads(request.body.decode())
         except Exception:
+            if wasCreated:
+                student.delete()
             return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
         modified = False
         (modified_count, total_count) = (0, 0)
@@ -285,6 +293,8 @@ def questions_PUT(request):
             answer += 'updated)'
             return HttpResponse(answer, content_type='text/plain')
         else:
+            if wasCreated:
+                student.delete()
             return HttpResponse('No answers were found in payload!', content_type='text/plain', status=406)
     else:
         return HttpResponse('No payload detected!', content_type='text/plain', status=406)

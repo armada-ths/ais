@@ -23,7 +23,7 @@ import api.serializers as serializers
 
 
 HTTP_status_code_OK = 200
-STUDENT_PROFILE_SIZE = 1
+STUDENT_PROFILE_SIZE = 4
 
 
 class ExhibitorTestCase(TestCase):
@@ -102,12 +102,37 @@ class NewsTestCase(TestCase):
 
 
 class StudentProfileTestCase(TestCase):
-    def check_student_profile_response(self, response, expected_nickname = None):
+    '''
+    Test both PUT and GET requests for Student profile.
+    ais.armada.nu/api/student_profile?student_id={STUDENT_ID}
+    '''
+    def check_student_profile(self, profile, nickname = None, linkedin = None, facebook = None, phone_number = None):
+        student = StudentProfile.objects.filter(pk=profile).first()
+        self.assertTrue(student)
+
+        if nickname:
+            self.assertEqual(student.nickname, nickname)
+        if linkedin:
+            self.assertEqual(student.linkedin_profile, linkedin)
+        if facebook:
+            self.assertEqual(student.facebook_profile, facebook)
+        if phone_number:
+            self.assertEqual(student.phone_number, phone_number)
+
+
+    def check_response(self, response, nickname=None, linkedin=None, facebook=None, phone_number=None):
         self.assertEqual(response.status_code, HTTP_status_code_OK)
-        profile = json.loads(response.content.decode(response.charset))
-        self.assertEqual(len(profile), STUDENT_PROFILE_SIZE)
-        if expected_nickname:
-            self.assertEqual(profile['nickname'], expected_nickname)
+        data = json.loads(response.content.decode(response.charset))
+        self.assertTrue(type(data) is dict)
+
+        if nickname:
+            self.assertEqual(data['nickname'], nickname)
+        if linkedin:
+            self.assertEqual(data['linkedin_profile'], linkedin)
+        if facebook:
+            self.assertEqual(data['facebook_profile'], facebook)
+        if phone_number:
+            self.assertEqual(data['phone_number'], phone_number)
 
 
     def setUp(self):
@@ -115,18 +140,20 @@ class StudentProfileTestCase(TestCase):
         self.url_prefix = '/api/student_profile'
         StudentProfile.objects.get_or_create(pk=1, nickname='Pre_post')
         StudentProfile.objects.get_or_create(pk=2, nickname='Unmodified')
-        
+        StudentProfile.objects.get_or_create(pk=32, nickname='Full', linkedin_profile='linkedin', facebook_profile='facebook', phone_number='911')
+
 
     # Test that this api works without a login
     def test_client(self):
         client = Client()
         
         response = client.get(self.url_prefix + '?student_id=1')
-        self.check_student_profile_response(response, 'Pre_post')
+        self.check_response(response, 'Pre_post')
         
         response = client.put(self.url_prefix + '?student_id=1',
             data = json.dumps({'nickname' : 'Postman'}))
-        self.check_student_profile_response(response, 'Postman')
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        self.check_student_profile(1, 'Postman')
 
 
     # Test the PUT protocol
@@ -135,7 +162,7 @@ class StudentProfileTestCase(TestCase):
             data = json.dumps({'nickname' : 'Postman'}))
         response = views.student_profile(request)
 
-        self.check_student_profile_response(response, 'Postman')
+        self.check_student_profile(1, 'Postman')
 
         self.assertFalse(StudentProfile.objects.filter(pk=3).first())
         
@@ -143,26 +170,51 @@ class StudentProfileTestCase(TestCase):
             data=json.dumps({'nickname' : 'Mojo'}))
         response = views.student_profile(request)
 
-        self.check_student_profile_response(response, 'Mojo')
+        self.check_student_profile(3, 'Mojo')
 
         self.assertTrue(StudentProfile.objects.filter(pk=3).first())
         self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Postman')
         self.assertEqual(StudentProfile.objects.get(pk=2).nickname, 'Unmodified')
         self.assertEqual(StudentProfile.objects.get(pk=3).nickname, 'Mojo')
 
-    
+        request = self.factory.put(self.url_prefix + '?student_id=12',
+            data=json.dumps({
+                'nickname' : 'Request',
+                'facebook_profile' : 'face',
+                'phone_number' : '05'}))
+        response = views.student_profile(request)
+
+        self.check_student_profile(12, 'Request', facebook='face', phone_number='05')
+
+        request = self.factory.put(self.url_prefix + '?student_id=49',
+            data=json.dumps(['bleh bleh']))
+        response = views.student_profile(request)
+        self.assertEqual(response.status_code, 406)
+
+        request = self.factory.put(self.url_prefix + '?student_id=49',
+            data=json.dumps({'noname' : 'name', 'phone_number':'12'}))
+        self.assertEqual(response.status_code, 406)
+
+        self.assertFalse(StudentProfile.objects.filter(pk=49).first())
+
+
     # Test the GET protocol
     def test_get(self):
         request = self.factory.get(self.url_prefix + '?student_id=1')
         response = views.student_profile(request)
-        
-        self.check_student_profile_response(response, 'Pre_post')
-        
+
+        self.check_response(response, 'Pre_post')
+
         request = self.factory.get(self.url_prefix + '?student_id=0')
         try:
             response = views.student_profile(request)
         except Http404:
             pass    # we expect a 404 as the student with pk=0 doesn't exist!
+
+        request = self.factory.get(self.url_prefix + '?student_id=32')
+        response = views.student_profile(request)
+        self.check_response(response, 'Full', 'linkedin', 'facebook', '911')
+
 
 class Organization(TestCase):
     def setUp(self):
