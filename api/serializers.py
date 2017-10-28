@@ -228,3 +228,15 @@ def work_area(area):
         ('field', area.work_field),
         ('area', area.work_area.work_area)
     ])
+
+
+def student_profile(profile):
+    '''
+    Serializes StudentProfile
+    '''
+    return OrderedDict([
+        ('nickname', profile.nickname),
+        ('linkedin_profile', profile.linkedin_profile),
+        ('facebook_profile', profile.facebook_profile),
+        ('phone_number', profile.phone_number)
+    ])
