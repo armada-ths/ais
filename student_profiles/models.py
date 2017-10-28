@@ -35,7 +35,7 @@ class MatchingResult(models.Model):
 
     '''
     student     = models.ForeignKey(StudentProfile)
-    company     = models.ForeignKey('companies.Company')
+    exhibitor     = models.ForeignKey('exhibitors.Exhibitor', null=True)
     fair        = models.ForeignKey('fair.Fair')
     score       = models.PositiveIntegerField(default=0)
     created     = models.DateTimeField(editable=False, null=True, blank=True)
@@ -52,4 +52,4 @@ class MatchingResult(models.Model):
         return super(MatchingResult, self).save(*args, **kwargs)
 
     def __str__(self):
-        return '%s score for %s\t = %i'%(self.student.nickname, self.company.name, self.score)
+        return '%s score for %s\t = %i'%(self.student.nickname, self.exhibitor.company.name, self.score)

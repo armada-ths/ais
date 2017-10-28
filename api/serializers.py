@@ -82,7 +82,6 @@ def event(request, event):
     tags = tags_mappings(event.tags.all())
     signup_link = event.external_signup_url if event.external_signup_url else absolute_url(request, '/fairs/2017/events/' + str(
         event.pk) + '/signup')
-    print(event.image)
     return OrderedDict([
                            ('id', event.pk),
                            ('name', event.name),
@@ -229,7 +228,7 @@ def work_area(area):
         ('area', area.work_area.work_area)
     ])
 
-
+  
 def student_profile(profile):
     '''
     Serializes StudentProfile
@@ -240,3 +239,14 @@ def student_profile(profile):
         ('facebook_profile', profile.facebook_profile),
         ('phone_number', profile.phone_number)
     ])
+
+  
+def matching_result(matching):
+    '''
+    Serialize a matching for a student_profile
+    '''
+    return OrderedDict([
+        ('exhibitor', matching.exhibitor.pk),
+        ('percent', matching.score),
+        ('reasons', ['','','']) #This is just empty strings for now. Might change if we get any reasons from the matching algortithm. 
+      ])
