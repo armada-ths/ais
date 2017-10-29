@@ -11,7 +11,7 @@ from companies.models import Company
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 
-from .forms import RawQuestionForm
+from .forms import RawQuestionForm, StudentQuestionForm
 
 from collections import Counter
 
@@ -78,12 +78,32 @@ def init_choosen_sliders_gradings(request, template_name='matching/sliders_gradi
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
 
-    slider_questions = StudentQuestionSlider.objects.filter(fair=fair, survey=survey_proc)
-    slider_exhibitor_responses = Response.objects.filter()
-    grading_questions = StudentQuestionGrading.objects.filter(fair=fair, survey=survey_proc)
+    slider_questions = StudentQuestionSlider.objects.filter(survey=survey_proc)
+    slider_ex_responses = Response.objects.filter(survey=survey_raw, question__in=[q.company_question for q in slider_questions])
+    grading_questions = StudentQuestionGrading.objects.filter( survey=survey_proc)
+    grading_ex_responses = Response.objects.filter(survey=survey_raw, question__in=[q.company_question for q in grading_questions])
+    slider_prefix = 's_question'
+    grading_prefix = 'g_question'
+    form = StudentQuestionForm(
+        request.POST or None,
+        survey_raw = survey_raw,
+        survey_proc = survey_proc,
+        slider_questions=slider_questions,
+        slider_ex_responses = slider_ex_responses,
+        grading_questions = grading_questions,
+        grading_ex_responses = grading_ex_responses,
+        slider_prefix = slider_prefix,
+        grading_prefix = grading_prefix,
+    )
+    if form.is_valid():
+        for gq in grading_questions:
+            gq.question = form.cleaned_data['%s%i'%(grading_prefix, gq.pk)]
+            gq.save()
+            print(gq.question)
 
 
-    return render(request, template_name, {'survey': survey_raw})
+
+    return render(request, template_name, {'survey': survey_raw, 'form': form})
 
 @staff_member_required
 def map_sweden(request, template_name='matching/sweden_regions.html'):
