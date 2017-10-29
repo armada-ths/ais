@@ -348,7 +348,7 @@ class Region(models.Model):
     region_id = models.IntegerField(primary_key=True)
 
     def __str__(self):
-        return '%self: %s'%(self.region_id, self.name)
+        return '%s: %s'%(self.region_id, self.name)
 
 
 
@@ -380,7 +380,7 @@ class Continent(models.Model):
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
 
     def __str__(self):
-        return self.name
+        return '%s in %s' %(self.region, self.exhibitor)
 
 
 class StudentAnswerRegion(StudentAnswerBase):
@@ -416,6 +416,9 @@ class StudentAnswerJobType(StudentAnswerBase):
     Region is the regions in sweden the student would prefere to work in.
     '''
     job_type = models.ForeignKey(JobType, null=True)
+
+    class Meta:
+        verbose_name = 'answer job type'
 
     def __str__(self):
         return '%s : %s' %(self.student, self.job_type)

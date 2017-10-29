@@ -1,4 +1,7 @@
-from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField
+from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Region, StudentAnswerRegion, \
+StudentAnswerJobType, JobType
+
+from django.shortcuts import get_object_or_404
 
 def answer_slider(answer, student, question, survey):
     '''
@@ -105,5 +108,5 @@ def looking_for(job_types, student, survey):
     used by questions_PUT in api/views.
     '''
     for job_type_id in job_types:
-        job_type = get_object_or_404(JobType, region_id=region_id)
+        job_type = get_object_or_404(JobType, job_type_id=job_type_id)
         StudentAnswerJobType.objects.get_or_create(student=student, job_type=job_type)

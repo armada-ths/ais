@@ -286,16 +286,16 @@ def questions_PUT(request):
             modified = True
 
         sweden_regions = intChoices('regions', data)
-        deserializers.regions(sweden_regions, student, survey)
         if sweden_regions:
+            deserializers.regions(sweden_regions, student, survey)
             modified = True
         continents = intChoices('continents', data)
-        deserializers.regions(continents, student, survey)
         if continents:
+            deserializers.regions(continents, student, survey)
             modified=True
         job_types = intChoices('looking_for', data)
-        deserializers.job_types(job_types, student, survey)
         if job_types:
+            deserializers.looking_for(job_types, student, survey)
             modified=True
 
         if modified or modified_count > 0:

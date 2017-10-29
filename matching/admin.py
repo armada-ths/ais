@@ -77,7 +77,7 @@ class RegionAdmin(admin.ModelAdmin):
 class JobTypeAdmin(admin.ModelAdmin):
     model = JobType
 
-class StudentAnsweJobType(admin.ModelAdmin):
+class StudentAnswerJobTypeAdmin(admin.ModelAdmin):
     model = StudentAnswerJobType
 
 
@@ -103,3 +103,4 @@ admin.site.register(SwedenCity, SwedenCityAdmin)
 admin.site.register(StudentAnswerRegion, StudentAnswerRegionAdmin)
 admin.site.register(Region, RegionAdmin)
 admin.site.register(JobType, JobTypeAdmin)
+admin.site.register(StudentAnswerJobType, StudentAnswerJobTypeAdmin)
