@@ -233,6 +233,13 @@ def matching_result(request):
 
     return JsonResponse(data, safe=False)
 
+def intChoices(objectType, data):
+    if objectType in data and type(data[objectType]) is list:
+        allChosen = [];
+        for chosen in data[objectType]:
+            if type(chosen) is int:
+                allChosen.append(chosen)
+        return allChosen
 
 def questions_PUT(request):
     '''
@@ -277,6 +284,19 @@ def questions_PUT(request):
                     areas.append(area)
             deserializers.fields(areas, student, survey)
             modified = True
+
+        sweden_regions = intChoices('regions', data)
+        deserializers.regions(sweden_regions, student, survey)
+        if sweden_regions:
+            modified = True
+        continents = intChoices('continents', data)
+        deserializers.regions(continents, student, survey)
+        if continents:
+            modified=True
+        job_types = intChoices('looking_for', data)
+        deserializers.job_types(job_types, student, survey)
+        if job_types:
+            modified=True
 
         if modified or modified_count > 0:
             answer = 'Answers submitted! (' + str(modified_count) + '/' + str(total_count) + ' question answers were saved, fields were '
