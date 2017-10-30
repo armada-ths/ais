@@ -1,5 +1,7 @@
 from django.forms import ModelForm, Form, Select, RadioSelect, ChoiceField, ModelMultipleChoiceField, CheckboxSelectMultiple, CharField
 from django.utils.html import mark_safe, format_html
+from django.db.models import Min, Max
+
 from fair.models import Fair
 from .models import *
 from exhibitors.models import Exhibitor
@@ -46,8 +48,6 @@ class RawQuestionForm(Form):
             required=False, widget=CheckboxSelectMultiple())
         self.fields[fieldname].initial = initQuestions
 
-
-
     def clean(self):
         super(RawQuestionForm, self).clean()
 
@@ -60,26 +60,27 @@ class StudentQuestionForm(Form):
         survey_raw = kwargs.pop('survey_raw')
         survey_proc = kwargs.pop('survey_proc')
         slider_questions = kwargs.pop('slider_questions')
-        slider_ex_responses = kwargs.pop('slider_ex_responses')
         grading_questions = kwargs.pop('grading_questions')
-        grading_ex_responses = kwargs.pop('grading_ex_responses')
         slider_prefix = kwargs.pop('slider_prefix')
         grading_prefix = kwargs.pop('grading_prefix')
         super(StudentQuestionForm, self).__init__(*args, **kwargs)
 
-        self.init_slider_fields(slider_questions, slider_ex_responses, slider_prefix, survey_raw)
-        self.init_grading_fields(grading_questions, grading_prefix)
+        self.init_question_fields(slider_questions, slider_prefix)
+        self.init_question_fields(grading_questions, grading_prefix)
 
-    def init_slider_fields(self, slider_questions, slider_ex_responses, slider_prefix):
-        '''
-        Initialize all fields and propose a min/max value for slider
-        '''
-        pass
-
-    def init_grading_fields(self, grading_questions, prefix):
+    def init_question_fields(self, questions, prefix):
         '''
         Initialize all grading fields does not need any grading length since this
         is set earlier in the index view, here we only want to change the text
         '''
-        for gq in grading_questions:
-            self.fields['%s%i'%(prefix, gq.pk)] = CharField(initial=gq.question)
+        for q in questions:
+            self.fields['%s%i'%(prefix, q.pk)] = self.QuestionCharField(object = q, initial=q.question)
+
+    class QuestionCharField(CharField):
+        def __init__(self, object, *args, **kwargs):
+            CharField.__init__(self, *args, **kwargs)
+            ex_q = Question.objects.get(pk=object.company_question.pk)
+            self.label='Exhibitor Question: %s Current Text: %s'%(ex_q.text, object.question)
+
+    def clean(self):
+        super(StudentQuestionForm, self).clean()

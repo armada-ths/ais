@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Min, Max
 
 from .models import *
 from companies.models import Company
@@ -67,7 +68,7 @@ def index(request, template_name='matching/index.html'):
         update_processed_question(selected_ex_grading, survey_proc)
         delete_processed_question(selected_ex_grading, survey_proc, 'grading')
 
-    return render(request, template_name, {'form': form})
+    return render(request, template_name, {'survey': survey_raw, 'form': form})
 
 @staff_member_required
 def init_choosen_sliders_gradings(request, template_name='matching/sliders_gradings.html'):
@@ -79,29 +80,35 @@ def init_choosen_sliders_gradings(request, template_name='matching/sliders_gradi
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
 
     slider_questions = StudentQuestionSlider.objects.filter(survey=survey_proc)
-    slider_ex_responses = Response.objects.filter(survey=survey_raw, question__in=[q.company_question for q in slider_questions])
+    #slider_ex_responses = Response.objects.filter(survey=survey_raw, question__in=[q.company_question for q in slider_questions])
     grading_questions = StudentQuestionGrading.objects.filter( survey=survey_proc)
-    grading_ex_responses = Response.objects.filter(survey=survey_raw, question__in=[q.company_question for q in grading_questions])
-    slider_prefix = 's_question'
-    grading_prefix = 'g_question'
+    #grading_ex_responses = Response.objects.filter(survey=survey_raw, question__in=[q.company_question for q in grading_questions])
+    slider_prefix = 'slider_question_'
+    grading_prefix = 'grading_question_'
+
     form = StudentQuestionForm(
         request.POST or None,
         survey_raw = survey_raw,
         survey_proc = survey_proc,
         slider_questions=slider_questions,
-        slider_ex_responses = slider_ex_responses,
         grading_questions = grading_questions,
-        grading_ex_responses = grading_ex_responses,
         slider_prefix = slider_prefix,
         grading_prefix = grading_prefix,
     )
     if form.is_valid():
+        for sq in slider_questions:
+            sq.question = form.cleaned_data['%s%i'%(slider_prefix, sq.pk)]
+            ex_responses = Response.objects.filter(question=sq.company_question, survey=survey_raw)
+            sq.min_value = float(list(IntegerAns.objects.filter(response__in=ex_responses).aggregate(Min('ans')).values())[0])
+            sq.max_value = float(list(IntegerAns.objects.filter(response__in=ex_responses).aggregate(Max('ans')).values())[0])
+            sq.step = sq.max_value - sq.min_value
+            sq.save()
+            print(sq.min_value)
+            print(sq.max_value)
+
         for gq in grading_questions:
             gq.question = form.cleaned_data['%s%i'%(grading_prefix, gq.pk)]
             gq.save()
-            print(gq.question)
-
-
 
     return render(request, template_name, {'survey': survey_raw, 'form': form})
 

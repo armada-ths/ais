@@ -31,7 +31,8 @@ def update_processed_question(exhibitor_q, survey):
                     max_value=1337.0,
                     )
             elif ex_q.question_type == Question.SELECT:
-                st_q = StudentQuestionGrading.objects.create(company_question=ex_q)
+                st_q = StudentQuestionGrading.objects.create(company_question=ex_q,
+                question='TODO from question: %s'%ex_q.text)
 
             st_q.survey.add(survey)
             st_q.save()

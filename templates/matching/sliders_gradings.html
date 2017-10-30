@@ -19,17 +19,25 @@
     		<svg viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
 				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
 			</svg>
+        </div>
+        <div class="container">
+            <div class="row">
             <h2>Matching Algorithm Initialization </h2>
             <h4> Survey: {{ survey }} </h4>
             <h3>2. Edit Slider and Grading Questions</h3>
-
-
-
-
-
-            <a href="{% url 'matching:index' %}"><button type="button" class="btn btn-default">Previous</button></a>
-            <button type="submit" class="btn btn-success">Submit</button>
-            <a href="{% url 'matching:map_sweden' %}"><button type="button" class="btn btn-default">Next</button></a>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form method="post">
+                            {% csrf_token %} {{ form|crispy }}
+                            <a href="{% url 'matching:index' %}"><button type="button" class="btn btn-default">Previous</button></a>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                            <a href="{% url 'matching:map_sweden' %}"><button type="button" class="btn  btn-default">Next</button></a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        	</div>
         </div>
     </div>
 
