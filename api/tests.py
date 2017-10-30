@@ -13,7 +13,8 @@ from fair.models import Fair
 
 from student_profiles.models import StudentProfile, MatchingResult
 from matching.models import StudentQuestionType, StudentQuestionSlider, StudentQuestionGrading, StudentQuestionBase, \
-WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField
+WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField, \
+StudentAnswerJobType, StudentAnswerRegion, JobType, Region
 from people.models import Profile, Programme
 from recruitment.models import RecruitmentPeriod, Role
 
@@ -243,6 +244,16 @@ class QuestionsTestCase(TestCase):
                 field.save()
                 field.survey.add(self.survey)
 
+        self.job_types = [
+            JobType.objects.get_or_create(job_type='master thesis', job_type_id=1),
+            JobType.objects.get_or_create(job_type='part time job', job_type_id=2)
+        ]
+
+        self.regions = [
+            Region.objects.get_or_create(name='Africa', region_id=1),
+            Region.objects.get_or_create(name='Asia' , region_id=2),
+            Region.objects.get_or_create(name='Australia', region_id=3)
+        ]
 
     def test_questions(self):
         # Make sure no questions share a PK
@@ -296,15 +307,26 @@ class QuestionsTestCase(TestCase):
                 {'id' : self.questions[2].pk, 'answer' : -1}
             ], 'areas' : [
                 self.fields[2][0].pk
+            ], 'regions': [
+                1
+            ], 'continents': [
+                2
+            ],
+            'looking_for': [
+                1
             ]
         })
         request = self.factory.put('api/questions?student_id=2', data=data)
         response = views.questions(request)
         self.assertEqual(response.status_code, 200)
+
         def test_db():
             answers = StudentAnswerBase.objects.filter(student=StudentProfile.objects.get(pk=2))
             answer_list = []
             field_list = []
+            region_list = []
+            job_type_list = []
+
             for answer in answers:
                 if hasattr(answer, 'studentanswerslider'):
                     answer_list.append(answer.studentanswerslider)
@@ -312,6 +334,10 @@ class QuestionsTestCase(TestCase):
                     answer_list.append(answer.studentanswergrading)
                 elif hasattr(answer, 'studentanswerworkfield'):
                     field_list.append(answer.studentanswerworkfield)
+                elif hasattr(answer, 'studentanswerregion'):
+                    region_list.append(answer.studentanswerregion)
+                elif hasattr(answer, 'studentanswerjobtype'):
+                    job_type_list.append(answer.studentanswerjobtype)
                 else:
                     self.assertFalse('Answer is not a subtype!')
             self.assertEqual(answer_list[0].question, self.questions[0])
@@ -327,6 +353,10 @@ class QuestionsTestCase(TestCase):
             self.assertFalse(field_list[0].answer)
             self.assertFalse(field_list[1].answer)
             self.assertTrue(field_list[2].answer)
+
+            self.assertEqual(region_list[0].region.region_id, 1)
+            self.assertEqual(region_list[1].region.region_id, 2)
+            self.assertEqual(job_type_list[0].job_type.job_type_id, 1)
         # run tests described above
         test_db()
 
@@ -376,6 +406,27 @@ class QuestionsTestCase(TestCase):
         self.assertEqual(response.status_code, 406)
         test_db()
 
+        data = json.dumps({
+            'looking_for' : [
+                {'id' : 0, 'answer' : 12.0},
+            ]
+        })
+
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+
+        data = json.dumps({
+            'regions' : [
+                {'id' : 0, 'answer' : 12.0},
+            ]
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+
         # test partial payloads
         data = json.dumps({
             'areas' : []
@@ -383,6 +434,22 @@ class QuestionsTestCase(TestCase):
         request = self.factory.put('api/questions?student_id=2', data=data)
         response = views.questions(request)
         self.assertEqual(response.status_code, 200)
+
+        data = json.dumps({
+            'looking_for' : []
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 200)
+
+
+        data = json.dumps({
+            'regions' : []
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 200)
+
         try:
             test_db()
         except AssertionError as error:

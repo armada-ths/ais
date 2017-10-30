@@ -93,16 +93,16 @@ def fields(fields, student, survey):
         field_model.answer = work_field.pk in fields
         field_model.save()
 
-def regions(sweden_regions, student, survey):
+def regions(regions, student):
     '''
     Create or modify field answers from payload data.
     used by questions_PUT in api/views.
     '''
-    for region_id in sweden_regions:
+    for region_id in regions:
         region = get_object_or_404(Region, region_id=region_id)
         StudentAnswerRegion.objects.get_or_create(student=student, region=region)
 
-def looking_for(job_types, student, survey):
+def looking_for(job_types, student):
     '''
     Create or modify field answers from payload data.
     used by questions_PUT in api/views.

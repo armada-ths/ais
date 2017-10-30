@@ -234,12 +234,18 @@ def matching_result(request):
     return JsonResponse(data, safe=False)
 
 def intChoices(objectType, data):
+    '''
+    help function for questions_PUT. Checks if there data has an objectType with a list of Integers.
+    Returns the list and True if the list is valid.
+    ''' 
     if objectType in data and type(data[objectType]) is list:
         allChosen = [];
         for chosen in data[objectType]:
             if type(chosen) is int:
                 allChosen.append(chosen)
-        return allChosen
+            else:
+                return ([], False)
+        return (allChosen, True)
 
 def questions_PUT(request):
     '''
@@ -277,25 +283,20 @@ def questions_PUT(request):
         if 'questions' in data and type(data['questions']) is list:
             (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
 
-        if 'areas' in data and type(data['areas']) is list:
-            areas = []
-            for area in data['areas']:
-                if type(area) is int:
-                    areas.append(area)
-            deserializers.fields(areas, student, survey)
-            modified = True
-
+        areas = intChoices('areas', data)
+        if areas and areas[0]:
+            deserializers.fields(areas[0], student, survey)
         sweden_regions = intChoices('regions', data)
-        if sweden_regions:
-            deserializers.regions(sweden_regions, student, survey)
-            modified = True
+        if sweden_regions and sweden_regions[0]:
+            deserializers.regions(sweden_regions[0], student)
         continents = intChoices('continents', data)
-        if continents:
-            deserializers.regions(continents, student, survey)
-            modified=True
+        if continents and continents[0]:
+            deserializers.regions(continents[0], student)
         job_types = intChoices('looking_for', data)
-        if job_types:
-            deserializers.looking_for(job_types, student, survey)
+        if job_types and job_types[0]:
+            deserializers.looking_for(job_types[0], student)
+
+        if (sweden_regions and sweden_regions[1]) or (continents and continents[1]) or (job_types and job_types[1] or (areas and areas[1])):
             modified=True
 
         if modified or modified_count > 0:
