@@ -11,6 +11,12 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+# Job type that an exhibitor offers
+class JobType(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.name
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
@@ -141,23 +147,8 @@ class Exhibitor(models.Model):
     ]
     goals_of_participation = models.CharField(choices=goals, null=True, blank=True,
                                                 max_length=300)
-
-    offers = [
-        ('trainee_program',
-            'Trainee Program'),
-        ('master_thesis',
-            'Master thesis'),
-        ('summer_jobs',
-            'Summer jobs'),
-        ('part_time_jobs',
-            'Part-time jobs'),
-    ]
-
-    offers_trainee_program = models.BooleanField(default=False)
-    offers_master_thesis = models.BooleanField(default=False)
-    offers_summer_jobs = models.BooleanField(default=False)
-    offers_part_time_jobs = models.BooleanField(default=False)
-
+    
+    job_types = models.ManyToManyField(JobType, blank=True)
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
@@ -197,14 +188,6 @@ class ExhibitorView(models.Model):
 
 # Work field that an exhibitor operates in
 class WorkField(models.Model):
-    name = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.name
-
-
-# Job type that an exhibitor offers
-class JobType(models.Model):
     name = models.CharField(max_length=64)
 
     def __str__(self):
