@@ -157,7 +157,7 @@ class StudentQuestionSlider(StudentQuestionBase):
     '''
     min_value = models.FloatField()
     max_value = models.FloatField()
-    units = models.CharField(max_length=64, blank=True)
+    units = models.CharField(max_length=64, blank=True, null=True)
     logarithmic = models.BooleanField(default=False)
 
     class Meta:
