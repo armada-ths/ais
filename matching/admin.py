@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 
 from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, \
 BooleanAns, StudentQuestionSlider, StudentQuestionGrading, StudentAnswerSlider, \
-StudentAnswerGrading, WorkFieldArea, WorkField, StudentAnswerWorkField, SwedenRegion, \
-Continent, StudentAnswerRegion, StudentAnswerContinent, SwedenCity
+StudentAnswerGrading, WorkFieldArea, WorkField, StudentAnswerWorkField, Region, \
+Continent, StudentAnswerRegion, SwedenCity, JobType, StudentAnswerJobType
 
 class QuestionInline(admin.ModelAdmin):
     list_display=('text', 'question_type')
@@ -61,8 +61,6 @@ class StudentQuestionSliderAdmin(admin.ModelAdmin):
 class StudentQuestionGradingAdmin(admin.ModelAdmin):
     exclude = ('question_type',)
     model = StudentQuestionGrading
-class SwedenRegionAdmin(admin.ModelAdmin):
-    model = SwedenRegion
 
 class ContinentAdmin(admin.ModelAdmin):
     model = Continent
@@ -70,11 +68,18 @@ class ContinentAdmin(admin.ModelAdmin):
 class SwedenCityAdmin(admin.ModelAdmin):
     model = SwedenCity
 
-class StudentAnswerContinentAdmin(admin.ModelAdmin):
-    model = StudentAnswerContinent
-
 class StudentAnswerRegionAdmin(admin.ModelAdmin):
     model = StudentAnswerRegion
+
+class RegionAdmin(admin.ModelAdmin):
+    model = Region
+
+class JobTypeAdmin(admin.ModelAdmin):
+    model = JobType
+
+class StudentAnswerJobTypeAdmin(admin.ModelAdmin):
+    model = StudentAnswerJobType
+
 
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
@@ -93,9 +98,9 @@ admin.site.register(WorkField, WorkFieldAdmin)
 admin.site.register(WorkFieldArea, WorkFieldAreaAdmin)
 admin.site.register(StudentAnswerWorkField)
 
-admin.site.register(SwedenRegion, SwedenRegionAdmin)
 admin.site.register(Continent, ContinentAdmin)
 admin.site.register(SwedenCity, SwedenCityAdmin)
-admin.site.register(StudentAnswerContinent, StudentAnswerContinentAdmin)
 admin.site.register(StudentAnswerRegion, StudentAnswerRegionAdmin)
-
+admin.site.register(Region, RegionAdmin)
+admin.site.register(JobType, JobTypeAdmin)
+admin.site.register(StudentAnswerJobType, StudentAnswerJobTypeAdmin)

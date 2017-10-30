@@ -1,4 +1,7 @@
-from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField
+from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Region, StudentAnswerRegion, \
+StudentAnswerJobType, JobType
+
+from django.shortcuts import get_object_or_404
 
 def answer_slider(answer, student, question, survey):
     '''
@@ -89,3 +92,21 @@ def fields(fields, student, survey):
             field_model.survey.add(survey)
         field_model.answer = work_field.pk in fields
         field_model.save()
+
+def regions(regions, student):
+    '''
+    Create or modify field answers from payload data.
+    used by questions_PUT in api/views.
+    '''
+    for region_id in regions:
+        region = get_object_or_404(Region, region_id=region_id)
+        StudentAnswerRegion.objects.get_or_create(student=student, region=region)
+
+def looking_for(job_types, student):
+    '''
+    Create or modify field answers from payload data.
+    used by questions_PUT in api/views.
+    '''
+    for job_type_id in job_types:
+        job_type = get_object_or_404(JobType, job_type_id=job_type_id)
+        StudentAnswerJobType.objects.get_or_create(student=student, job_type=job_type)
