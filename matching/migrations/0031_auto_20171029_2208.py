@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='studentanswerregion',
             name='region',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.Region'),
+            field=models.ForeignKey(null=True, to='matching.Region'),
         ),
         migrations.AlterField(
             model_name='studentanswerslider',
@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='swedencity',
             name='region',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.Region'),
+            field=models.ForeignKey(null=True, to='matching.Region'),
         ),
         migrations.DeleteModel(
             name='StudentAnswerContinent',
@@ -85,6 +85,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='continent',
             name='region',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.Region'),
+            field=models.ForeignKey(null=True, to='matching.Region'),
         ),
     ]
