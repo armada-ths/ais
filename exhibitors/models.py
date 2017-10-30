@@ -147,22 +147,16 @@ class Exhibitor(models.Model):
             'Trainee Program'),
         ('master_thesis',
             'Master thesis'),
-        ('bachelor_thesis',
-            'Bachelor Thesis'),
         ('summer_jobs',
             'Summer jobs'),
         ('part_time_jobs',
             'Part-time jobs'),
-        ('international',
-            'International opportunities'),
     ]
 
     offers_trainee_program = models.BooleanField(default=False)
     offers_master_thesis = models.BooleanField(default=False)
-    offers_bachelor_thesis = models.BooleanField(default=False)
     offers_summer_jobs = models.BooleanField(default=False)
     offers_part_time_jobs = models.BooleanField(default=False)
-    offers_international_opportunities = models.BooleanField(default=False)
 
 
     def total_cost(self):
