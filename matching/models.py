@@ -157,7 +157,8 @@ class StudentQuestionSlider(StudentQuestionBase):
     '''
     min_value = models.FloatField()
     max_value = models.FloatField()
-    units = models.CharField(max_length=64, blank=True)
+
+    units = models.CharField(max_length=64, null=True, blank=True)
     logarithmic = models.BooleanField(default=False)
 
     class Meta:
@@ -336,20 +337,21 @@ class StudentAnswerWorkField(StudentAnswerBase):
     def __str__(self):
         return '%s for work field = %s w ans = %s'%(self.student, self.work_field, self.answer)
 
-class SwedenRegion(models.Model):
-    '''
-    Predefined regions in the app. Is used to connect companies cities to student answers in the app.
-    
-    Necessary field(s):
-        survey
-        name
 
+class Region(models.Model):
     '''
-    survey = models.ForeignKey(Survey)
+    All Regions connected to an ID.
+    Necessary field(s):
+        name
+        id
+    '''
     name = models.TextField()
+    region_id = models.IntegerField(primary_key=True)
 
     def __str__(self):
-        return self.name
+        return '%s: %s'%(self.region_id, self.name)
+
+
 
 class SwedenCity(models.Model):
     '''
@@ -357,7 +359,8 @@ class SwedenCity(models.Model):
     '''
     city = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
-    region = models.ForeignKey(SwedenRegion)
+
+    region = models.ForeignKey(Region, null=True)
 
     class Meta:
             verbose_name = 'sweden city'
@@ -367,21 +370,6 @@ class SwedenCity(models.Model):
         return self.city
 
 
-
-
-class StudentAnswerRegion(StudentAnswerBase):
-    '''
-    Inherits from StudentAnswerBase.
-    Region is the regions in sweden the student would prefere to work in. 
-    '''
-    region = models.ForeignKey(SwedenRegion)
-    
-    class Meta:
-            verbose_name = 'answer region'
-
-    def __str__(self):
-        return '%s : %s' %(self.student, self.region)
-
 class Continent(models.Model):
     '''
     Connects a exhibitor to a Continent. 
@@ -389,21 +377,50 @@ class Continent(models.Model):
         name
     All continents should be connected to at least one exhibitor when used. 
     '''
-    name = models.TextField(unique=True)
+    region = models.ForeignKey(Region, null=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
 
     def __str__(self):
-        return self.name
+        return '%s in %s' %(self.region, self.exhibitor)
 
-class StudentAnswerContinent(StudentAnswerBase):
+
+class StudentAnswerRegion(StudentAnswerBase):
     '''
     Inherits from StudentAnswerBase.
-    continent is the continents the student would prefere to work in. 
+    Region is the regions in sweden the student would prefere to work in.
     '''
-    continent = models.ForeignKey(Continent)
+    region = models.ForeignKey(Region, null=True)
 
     class Meta:
-            verbose_name = 'answer continent'
+            verbose_name = 'answer region'
 
     def __str__(self):
-        return '%s : %s' %(self.student, self.continent)
+        return '%s : %s' %(self.student, self.region)
+
+
+class JobType(models.Model):
+    '''
+    All jobtypes connected to an ID.
+    Necessary field(s):
+        job_type
+        job_type_id
+    '''
+    job_type = models.TextField()
+    job_type_id = models.IntegerField(primary_key=True)
+
+    def __str__(self):
+        return '%s: %s'%(self.job_type_id, self.job_type)
+
+class StudentAnswerJobType(StudentAnswerBase):
+    '''
+    Inherits from StudentAnswerBase.
+    Region is the regions in sweden the student would prefere to work in.
+    '''
+    job_type = models.ForeignKey(JobType, null=True)
+
+    class Meta:
+        verbose_name = 'answer job type'
+
+    def __str__(self):
+        return '%s : %s' %(self.student, self.job_type)
+
