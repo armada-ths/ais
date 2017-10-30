@@ -18,12 +18,10 @@ def tags_mappings(items):
         ('startup', 'Startup' in tags),
     ]
 
-
 def absolute_url(request, path):
     protocol = 'https://' if request.is_secure() else 'http://'
     url = request.META['HTTP_HOST']
     return '{}{}{}'.format(protocol, url, path)
-
 
 def image_url_or_missing(request, image, missing=MISSING_IMAGE):
     if image:
@@ -56,6 +54,7 @@ def exhibitor(request, exhibitor, company):
         location = exhibitor.location.name
     except AttributeError:
         location = None
+    tags = tags_mappings(exhibitor.tags.all())
     return OrderedDict([
                            ('id', exhibitor.pk),
                            ('fair', exhibitor.fair.name),
@@ -75,7 +74,8 @@ def exhibitor(request, exhibitor, company):
                            ('hosts', hosts),
                            ('logo_url', image_url_or_missing(request, exhibitor.logo)),
                            ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair)),
-                       ])
+                           ('job_types', names(exhibitor.job_types))
+                       ] + tags)
 
 
 def event(request, event):
