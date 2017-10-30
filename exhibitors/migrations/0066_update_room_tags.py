@@ -30,6 +30,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('exhibitors', '0065_exhibitor_tags'),
+        ('fair', '0006_auto_20170831_2211'),
+        ('orders', '0006_auto_20170525_1838'),
     ]
 
     operations = [
