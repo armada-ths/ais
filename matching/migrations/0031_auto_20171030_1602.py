@@ -51,6 +51,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='studentquestionslider',
             name='units',
-            field=models.CharField(blank=True, max_length=64),
+            field=models.CharField(blank=True, max_length=64, null=True),
         ),
     ]
