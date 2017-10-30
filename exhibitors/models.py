@@ -125,6 +125,8 @@ class Exhibitor(models.Model):
     manual_invoice = models.BooleanField(default=False)
     interested_in_armada_transport = models.BooleanField(default=False)
 
+    tags = models.ManyToManyField('fair.Tag', blank=True)
+
     # Goals of participation and offers
     goals = [
         ('employer_branding',
@@ -191,7 +193,7 @@ class ExhibitorView(models.Model):
     def create(self):
         # A set of field names from Exhibitor model, that are shown by default
         default = {'location', 'hosts', 'status'}
-            
+
         for field in default:
             self.choices = self.choices + ' ' + field
         self.save()

@@ -56,6 +56,7 @@ def exhibitor(request, exhibitor, company):
         location = exhibitor.location.name
     except AttributeError:
         location = None
+    tags = tags_mappings(exhibitor.tags.all())
     return OrderedDict([
                            ('id', exhibitor.pk),
                            ('fair', exhibitor.fair.name),
@@ -75,7 +76,7 @@ def exhibitor(request, exhibitor, company):
                            ('hosts', hosts),
                            ('logo_url', image_url_or_missing(request, exhibitor.logo)),
                            ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair)),
-                       ])
+                       ] + tags)
 
 
 def event(request, event):
