@@ -33,7 +33,7 @@ def add_regions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('matching', '0031_auto_20171029_2208'),
+        ('matching', '0031_auto_20171030_1602'),
     ]
 
     operations = [

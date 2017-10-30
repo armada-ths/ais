@@ -43,6 +43,7 @@ class Migration(migrations.Migration):
             name='studentanswergrading',
             options={'default_permissions': (), 'verbose_name': 'answer grading', 'verbose_name_plural': 'answers grading'},
         ),
+
         migrations.AlterModelOptions(
             name='studentanswerslider',
             options={'default_permissions': (), 'verbose_name': 'answer slider', 'verbose_name_plural': 'answers slider'},
@@ -67,23 +68,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='studentanswerslider',
-            name='answer_max',
-            field=models.FloatField(default=0.0),
-        ),
-        migrations.AlterField(
-            model_name='studentanswerslider',
             name='answer_min',
             field=models.FloatField(default=0.0),
-        ),
-        migrations.AlterField(
-            model_name='studentanswerworkfield',
-            name='answer',
-            field=models.BooleanField(choices=[(True, 'yes'), (False, 'no')], default=False),
-        ),
-        migrations.AlterField(
-            model_name='studentquestionslider',
-            name='units',
-            field=models.CharField(blank=True, max_length=64, null=True),
         ),
         migrations.AlterField(
             model_name='swedencity',
