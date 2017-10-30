@@ -40,6 +40,7 @@ class Exhibitor(models.Model):
         ('confirmed', 'Confirmed'),
         ('checked_in', 'Checked in'),
         ('checked_out', 'Checked out'),
+        ('withdrawn', 'Withdrawn'),
     ]
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
@@ -155,6 +156,7 @@ class Exhibitor(models.Model):
         ('international',
             'International opportunities'),
     ]
+
     offers_trainee_program = models.BooleanField(default=False)
     offers_master_thesis = models.BooleanField(default=False)
     offers_bachelor_thesis = models.BooleanField(default=False)
