@@ -47,7 +47,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 def edit_view(request, year, template_name='exhibitors/edit_view.html'):
     view = ExhibitorView.objects.filter(user=request.user).first()
     form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
-    
+
     if form.is_valid():
         form.save()
         return redirect('exhibitors', year)

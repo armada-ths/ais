@@ -4,4 +4,5 @@ from . import views
 
 app_name = 'matching'
 urlpatterns = [
+    url(r'^test/(?P<total>\d+)/$', views.test_matching, name='matching'),
 ]
