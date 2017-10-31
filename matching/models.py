@@ -307,7 +307,7 @@ class WorkField(models.Model):
     work_field  = models.TextField(unique=True)
     work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
     survey      = models.ManyToManyField(Survey)
-    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+
     class Meta:
         default_permissions = ()
         verbose_name = 'work field'
