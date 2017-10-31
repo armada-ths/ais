@@ -18,12 +18,10 @@ def tags_mappings(items):
         ('startup', 'Startup' in tags),
     ]
 
-
 def absolute_url(request, path):
     protocol = 'https://' if request.is_secure() else 'http://'
     url = request.META['HTTP_HOST']
     return '{}{}{}'.format(protocol, url, path)
-
 
 def image_url_or_missing(request, image, missing=MISSING_IMAGE):
     if image:
@@ -56,6 +54,7 @@ def exhibitor(request, exhibitor, company):
         location = exhibitor.location.name
     except AttributeError:
         location = None
+    tags = tags_mappings(exhibitor.tags.all())
     return OrderedDict([
                            ('id', exhibitor.pk),
                            ('fair', exhibitor.fair.name),
@@ -75,14 +74,14 @@ def exhibitor(request, exhibitor, company):
                            ('hosts', hosts),
                            ('logo_url', image_url_or_missing(request, exhibitor.logo)),
                            ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair)),
-                       ])
+                           ('job_types', names(exhibitor.job_types))
+                       ] + tags)
 
 
 def event(request, event):
     tags = tags_mappings(event.tags.all())
     signup_link = event.external_signup_url if event.external_signup_url else absolute_url(request, '/fairs/2017/events/' + str(
         event.pk) + '/signup')
-    print(event.image)
     return OrderedDict([
                            ('id', event.pk),
                            ('name', event.name),
@@ -177,11 +176,13 @@ def serialize_slider(question):
     '''
     question = question.studentquestionslider
     return OrderedDict([
-        ('question', question.question),
+        ('id', question.pk),
         ('type', question.question_type),
+        ('question', question.question),
         ('min', question.min_value),
         ('max', question.max_value),
-        ('step', question.step)
+        ('logarithmic', question.logarithmic),
+        ('units', question.units)
     ])
 
 
@@ -191,9 +192,10 @@ def serialize_grading(question):
     '''
     question = question.studentquestiongrading
     return OrderedDict([
-        ('question', question.question),
+        ('id', question.pk),
         ('type', question.question_type),
-        ('steps', question.grading_size)
+        ('question', question.question),
+        ('count', question.grading_size)
     ])
 
 
@@ -211,18 +213,29 @@ def question(question):
     # but that adds unncecessary complexity to the code, without optimizing or simplifying it
     if question.question_type in QUESTION_SERIALIZERS:
         return QUESTION_SERIALIZERS[question.question_type](question)
+    else:
+        raise NotImplementedError('Couldn\'t serialize ' + question.question_type + ' type!')
     return []   # could not serialize a type
 
 
-def work_area(main_area, areas):
+def work_area(area):
     '''
-    Serialize a work field area (the main area), along with work fields, that correspond to that area
+    Serialize a work field area
     '''
-    related_areas = []
-    for area in areas:
-        if area.work_area == main_area:
-            related_areas.append(area.work_field)
     return OrderedDict([
-        ('title', main_area.work_area),
-        ('fields', related_areas)
+        ('id', area.pk),
+        ('field', area.work_field),
+        ('area', area.work_area.work_area)
     ])
+
+
+
+def matching_result(matching):
+    '''
+    Serialize a matching for a student_profile
+    '''
+    return OrderedDict([
+        ('exhibitor', matching.exhibitor.pk),
+        ('percent', matching.score),
+        ('reasons', ['','','']) #This is just empty strings for now. Might change if we get any reasons from the matching algortithm. 
+      ])

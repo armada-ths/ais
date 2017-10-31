@@ -46,13 +46,21 @@ class WorkFieldAdmin(admin.ModelAdmin):
     inlines = [StudentAnswerWFieldInline]
 
 class AnswerSliderAdmin(admin.ModelAdmin):
-    list_display = ('student', 'question', 'answer')
+    list_display = ('student', 'question', 'answer_min', 'answer_max')
     model = StudentAnswerSlider
 
 class AnswerGradingAdmin(admin.ModelAdmin):
     list_display = ('student', 'question', 'answer')
     model = StudentAnswerGrading
 
+# Student Questions
+class StudentQuestionSliderAdmin(admin.ModelAdmin):
+    exclude = ('question_type',)
+    model = StudentQuestionSlider
+
+class StudentQuestionGradingAdmin(admin.ModelAdmin):
+    exclude = ('question_type',)
+    model = StudentQuestionGrading
 class SwedenRegionAdmin(admin.ModelAdmin):
     model = SwedenRegion
 
@@ -76,8 +84,8 @@ admin.site.register(ChoiceAns)
 admin.site.register(IntegerAns)
 admin.site.register(BooleanAns)
 
-admin.site.register(StudentQuestionSlider)
-admin.site.register(StudentQuestionGrading)
+admin.site.register(StudentQuestionSlider, StudentQuestionSliderAdmin)
+admin.site.register(StudentQuestionGrading, StudentQuestionGradingAdmin)
 admin.site.register(StudentAnswerSlider, AnswerSliderAdmin)
 admin.site.register(StudentAnswerGrading, AnswerGradingAdmin)
 
