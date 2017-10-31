@@ -13,7 +13,8 @@ from fair.models import Fair
 
 from student_profiles.models import StudentProfile, MatchingResult
 from matching.models import StudentQuestionType, StudentQuestionSlider, StudentQuestionGrading, StudentQuestionBase, \
-WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField
+WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField, \
+StudentAnswerJobType, StudentAnswerRegion, JobType, Region
 from people.models import Profile, Programme
 from recruitment.models import RecruitmentPeriod, Role
 
@@ -23,7 +24,7 @@ import api.serializers as serializers
 
 
 HTTP_status_code_OK = 200
-STUDENT_PROFILE_SIZE = 1
+STUDENT_PROFILE_SIZE = 4
 
 
 class ExhibitorTestCase(TestCase):
@@ -102,12 +103,37 @@ class NewsTestCase(TestCase):
 
 
 class StudentProfileTestCase(TestCase):
-    def check_student_profile_response(self, response, expected_nickname = None):
+    '''
+    Test both PUT and GET requests for Student profile.
+    ais.armada.nu/api/student_profile?student_id={STUDENT_ID}
+    '''
+    def check_student_profile(self, profile, nickname = None, linkedin = None, facebook = None, phone_number = None):
+        student = StudentProfile.objects.filter(pk=profile).first()
+        self.assertTrue(student)
+
+        if nickname:
+            self.assertEqual(student.nickname, nickname)
+        if linkedin:
+            self.assertEqual(student.linkedin_profile, linkedin)
+        if facebook:
+            self.assertEqual(student.facebook_profile, facebook)
+        if phone_number:
+            self.assertEqual(student.phone_number, phone_number)
+
+
+    def check_response(self, response, nickname=None, linkedin=None, facebook=None, phone_number=None):
         self.assertEqual(response.status_code, HTTP_status_code_OK)
-        profile = json.loads(response.content.decode(response.charset))
-        self.assertEqual(len(profile), STUDENT_PROFILE_SIZE)
-        if expected_nickname:
-            self.assertEqual(profile['nickname'], expected_nickname)
+        data = json.loads(response.content.decode(response.charset))
+        self.assertTrue(type(data) is dict)
+
+        if nickname:
+            self.assertEqual(data['nickname'], nickname)
+        if linkedin:
+            self.assertEqual(data['linkedin_profile'], linkedin)
+        if facebook:
+            self.assertEqual(data['facebook_profile'], facebook)
+        if phone_number:
+            self.assertEqual(data['phone_number'], phone_number)
 
 
     def setUp(self):
@@ -115,18 +141,20 @@ class StudentProfileTestCase(TestCase):
         self.url_prefix = '/api/student_profile'
         StudentProfile.objects.get_or_create(pk=1, nickname='Pre_post')
         StudentProfile.objects.get_or_create(pk=2, nickname='Unmodified')
-        
+        StudentProfile.objects.get_or_create(pk=32, nickname='Full', linkedin_profile='linkedin', facebook_profile='facebook', phone_number='911')
+
 
     # Test that this api works without a login
     def test_client(self):
         client = Client()
         
         response = client.get(self.url_prefix + '?student_id=1')
-        self.check_student_profile_response(response, 'Pre_post')
+        self.check_response(response, 'Pre_post')
         
         response = client.put(self.url_prefix + '?student_id=1',
             data = json.dumps({'nickname' : 'Postman'}))
-        self.check_student_profile_response(response, 'Postman')
+        self.assertEqual(response.status_code, HTTP_status_code_OK)
+        self.check_student_profile(1, 'Postman')
 
 
     # Test the PUT protocol
@@ -135,7 +163,7 @@ class StudentProfileTestCase(TestCase):
             data = json.dumps({'nickname' : 'Postman'}))
         response = views.student_profile(request)
 
-        self.check_student_profile_response(response, 'Postman')
+        self.check_student_profile(1, 'Postman')
 
         self.assertFalse(StudentProfile.objects.filter(pk=3).first())
         
@@ -143,26 +171,51 @@ class StudentProfileTestCase(TestCase):
             data=json.dumps({'nickname' : 'Mojo'}))
         response = views.student_profile(request)
 
-        self.check_student_profile_response(response, 'Mojo')
+        self.check_student_profile(3, 'Mojo')
 
         self.assertTrue(StudentProfile.objects.filter(pk=3).first())
         self.assertEqual(StudentProfile.objects.get(pk=1).nickname, 'Postman')
         self.assertEqual(StudentProfile.objects.get(pk=2).nickname, 'Unmodified')
         self.assertEqual(StudentProfile.objects.get(pk=3).nickname, 'Mojo')
 
-    
+        request = self.factory.put(self.url_prefix + '?student_id=12',
+            data=json.dumps({
+                'nickname' : 'Request',
+                'facebook_profile' : 'face',
+                'phone_number' : '05'}))
+        response = views.student_profile(request)
+
+        self.check_student_profile(12, 'Request', facebook='face', phone_number='05')
+
+        request = self.factory.put(self.url_prefix + '?student_id=49',
+            data=json.dumps(['bleh bleh']))
+        response = views.student_profile(request)
+        self.assertEqual(response.status_code, 406)
+
+        request = self.factory.put(self.url_prefix + '?student_id=49',
+            data=json.dumps({'noname' : 'name', 'phone_number':'12'}))
+        self.assertEqual(response.status_code, 406)
+
+        self.assertFalse(StudentProfile.objects.filter(pk=49).first())
+
+
     # Test the GET protocol
     def test_get(self):
         request = self.factory.get(self.url_prefix + '?student_id=1')
         response = views.student_profile(request)
-        
-        self.check_student_profile_response(response, 'Pre_post')
-        
+
+        self.check_response(response, 'Pre_post')
+
         request = self.factory.get(self.url_prefix + '?student_id=0')
         try:
             response = views.student_profile(request)
         except Http404:
             pass    # we expect a 404 as the student with pk=0 doesn't exist!
+
+        request = self.factory.get(self.url_prefix + '?student_id=32')
+        response = views.student_profile(request)
+        self.check_response(response, 'Full', 'linkedin', 'facebook', '911')
+
 
 class Organization(TestCase):
     def setUp(self):
@@ -243,6 +296,16 @@ class QuestionsTestCase(TestCase):
                 field.save()
                 field.survey.add(self.survey)
 
+        self.job_types = [
+            JobType.objects.get_or_create(job_type='master thesis', job_type_id=1),
+            JobType.objects.get_or_create(job_type='part time job', job_type_id=2)
+        ]
+
+        self.regions = [
+            Region.objects.get_or_create(name='Africa', region_id=1),
+            Region.objects.get_or_create(name='Asia' , region_id=2),
+            Region.objects.get_or_create(name='Australia', region_id=3)
+        ]
 
     def test_questions(self):
         # Make sure no questions share a PK
@@ -296,15 +359,26 @@ class QuestionsTestCase(TestCase):
                 {'id' : self.questions[2].pk, 'answer' : -1}
             ], 'areas' : [
                 self.fields[2][0].pk
+            ], 'regions': [
+                1
+            ], 'continents': [
+                2
+            ],
+            'looking_for': [
+                1
             ]
         })
         request = self.factory.put('api/questions?student_id=2', data=data)
         response = views.questions(request)
         self.assertEqual(response.status_code, 200)
+
         def test_db():
             answers = StudentAnswerBase.objects.filter(student=StudentProfile.objects.get(pk=2))
             answer_list = []
             field_list = []
+            region_list = []
+            job_type_list = []
+
             for answer in answers:
                 if hasattr(answer, 'studentanswerslider'):
                     answer_list.append(answer.studentanswerslider)
@@ -312,6 +386,10 @@ class QuestionsTestCase(TestCase):
                     answer_list.append(answer.studentanswergrading)
                 elif hasattr(answer, 'studentanswerworkfield'):
                     field_list.append(answer.studentanswerworkfield)
+                elif hasattr(answer, 'studentanswerregion'):
+                    region_list.append(answer.studentanswerregion)
+                elif hasattr(answer, 'studentanswerjobtype'):
+                    job_type_list.append(answer.studentanswerjobtype)
                 else:
                     self.assertFalse('Answer is not a subtype!')
             self.assertEqual(answer_list[0].question, self.questions[0])
@@ -327,6 +405,10 @@ class QuestionsTestCase(TestCase):
             self.assertFalse(field_list[0].answer)
             self.assertFalse(field_list[1].answer)
             self.assertTrue(field_list[2].answer)
+
+            self.assertEqual(region_list[0].region.region_id, 1)
+            self.assertEqual(region_list[1].region.region_id, 2)
+            self.assertEqual(job_type_list[0].job_type.job_type_id, 1)
         # run tests described above
         test_db()
 
@@ -376,6 +458,27 @@ class QuestionsTestCase(TestCase):
         self.assertEqual(response.status_code, 406)
         test_db()
 
+        data = json.dumps({
+            'looking_for' : [
+                {'id' : 0, 'answer' : 12.0},
+            ]
+        })
+
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+
+        data = json.dumps({
+            'regions' : [
+                {'id' : 0, 'answer' : 12.0},
+            ]
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+        test_db()
+
         # test partial payloads
         data = json.dumps({
             'areas' : []
@@ -383,6 +486,22 @@ class QuestionsTestCase(TestCase):
         request = self.factory.put('api/questions?student_id=2', data=data)
         response = views.questions(request)
         self.assertEqual(response.status_code, 200)
+
+        data = json.dumps({
+            'looking_for' : []
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 200)
+
+
+        data = json.dumps({
+            'regions' : []
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 200)
+
         try:
             test_db()
         except AssertionError as error:

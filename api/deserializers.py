@@ -1,4 +1,7 @@
-from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField
+from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Region, StudentAnswerRegion, \
+StudentAnswerJobType, JobType
+
+from django.shortcuts import get_object_or_404
 
 def answer_slider(answer, student, question, survey):
     '''
@@ -89,3 +92,45 @@ def fields(fields, student, survey):
             field_model.survey.add(survey)
         field_model.answer = work_field.pk in fields
         field_model.save()
+
+
+def student_profile(data, profile):
+    '''
+    Deserialize the data into the student_profile, validating the data on the way
+    '''
+    if type(data) is dict:
+        if 'nickname' in data and type(data['nickname']) is str:
+            profile.nickname = data['nickname']
+        else:
+            return False
+
+        # optional fields
+        if 'facebook_profile' in data and type(data['facebook_profile']) is str:
+            profile.facebook_profile = data['facebook_profile']
+        if 'linkedin_profile' in data and type(data['linkedin_profile']) is str:
+            profile.linkedin_profile = data['linkedin_profile']
+        if 'phone_number' in data and type(data['phone_number']) is str:
+            profile.phone_number = data['phone_number']
+        profile.save()
+        return True
+    else:
+        return False
+      
+      
+def regions(regions, student):
+    '''
+    Create or modify field answers from payload data.
+    used by questions_PUT in api/views.
+    '''
+    for region_id in regions:
+        region = get_object_or_404(Region, region_id=region_id)
+        StudentAnswerRegion.objects.get_or_create(student=student, region=region)
+
+def looking_for(job_types, student):
+    '''
+    Create or modify field answers from payload data.
+    used by questions_PUT in api/views.
+    '''
+    for job_type_id in job_types:
+        job_type = get_object_or_404(JobType, job_type_id=job_type_id)
+        StudentAnswerJobType.objects.get_or_create(student=student, job_type=job_type)

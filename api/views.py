@@ -152,18 +152,24 @@ def student_profile(request):
     if request.method == 'GET':
         student_id = request.GET['student_id']
         student = get_object_or_404(StudentProfile, pk=student_id)
-        data = OrderedDict([('nickname', student.nickname)])
+        data = serializers.student_profile(student)
     elif request.method == 'PUT':
         if request.body:
             student_id = request.GET['student_id']
             (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
-            payload = json.loads(request.body.decode())
-            if 'nickname' in payload:
-                student_profile.nickname = payload['nickname']
-                student_profile.save()
-                data = OrderedDict([('nickname', student_profile.nickname)])
+            try:
+                data = json.loads(request.body.decode())
+            except Exception:
+                if wasCreated:
+                    student_profile.delete()
+                return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+            # Here is where the actual deserialization happens:
+            if deserializers.student_profile(data, student_profile):
+                return HttpResponse('Profile updated sucessfully!', content_type='text/plain')
             else:
-                return HttpResponse('No nickname in payload!', content_type='text/plain', status=406)
+                if wasCreated:
+                    student_profile.delete()
+                return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
         else:
             return HttpResponse('No payload detected!', content_type='text/plain', status=406)
     else:
@@ -233,6 +239,19 @@ def matching_result(request):
 
     return JsonResponse(data, safe=False)
 
+def intChoices(objectType, data):
+    '''
+    help function for questions_PUT. Checks if there data has an objectType with a list of Integers.
+    Returns the list and True if the list is valid.
+    ''' 
+    if objectType in data and type(data[objectType]) is list:
+        allChosen = [];
+        for chosen in data[objectType]:
+            if type(chosen) is int:
+                allChosen.append(chosen)
+            else:
+                return ([], False)
+        return (allChosen, True)
 
 def questions_PUT(request):
     '''
@@ -260,6 +279,8 @@ def questions_PUT(request):
         try:
             data = json.loads(request.body.decode())
         except Exception:
+            if wasCreated:
+                student.delete()
             return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
         modified = False
         (modified_count, total_count) = (0, 0)
@@ -270,13 +291,21 @@ def questions_PUT(request):
         if 'questions' in data and type(data['questions']) is list:
             (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
 
-        if 'areas' in data and type(data['areas']) is list:
-            areas = []
-            for area in data['areas']:
-                if type(area) is int:
-                    areas.append(area)
-            deserializers.fields(areas, student, survey)
-            modified = True
+        areas = intChoices('areas', data)
+        if areas and areas[0]:
+            deserializers.fields(areas[0], student, survey)
+        sweden_regions = intChoices('regions', data)
+        if sweden_regions and sweden_regions[0]:
+            deserializers.regions(sweden_regions[0], student)
+        continents = intChoices('continents', data)
+        if continents and continents[0]:
+            deserializers.regions(continents[0], student)
+        job_types = intChoices('looking_for', data)
+        if job_types and job_types[0]:
+            deserializers.looking_for(job_types[0], student)
+
+        if (sweden_regions and sweden_regions[1]) or (continents and continents[1]) or (job_types and job_types[1] or (areas and areas[1])):
+            modified=True
 
         if modified or modified_count > 0:
             answer = 'Answers submitted! (' + str(modified_count) + '/' + str(total_count) + ' question answers were saved, fields were '
@@ -285,6 +314,8 @@ def questions_PUT(request):
             answer += 'updated)'
             return HttpResponse(answer, content_type='text/plain')
         else:
+            if wasCreated:
+                student.delete()
             return HttpResponse('No answers were found in payload!', content_type='text/plain', status=406)
     else:
         return HttpResponse('No payload detected!', content_type='text/plain', status=406)
