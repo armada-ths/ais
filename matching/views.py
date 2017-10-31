@@ -18,6 +18,8 @@ from collections import Counter
 
 from .helpers_view import update_processed_question, delete_processed_question
 
+from .process_data import processExhibitorAnswers as pea
+
 @staff_member_required
 def index(request, template_name='matching/index.html'):
     '''
@@ -142,6 +144,15 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+    try:
+        questions = Question.objects.get(survey=survey_raw, name='workfields')
+    except Question.DoesNotExist:
+        question = None
+        print("Workfield question is not defined with name='workfields'")
+
+    if question:
+        responses = Response.objects.filter(survey=survey_raw,question=question)
+        
 
     return render(request, template_name, {'survey': survey_raw})
 

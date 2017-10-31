@@ -16,7 +16,7 @@ from fair.models import Fair
 from exhibitors.models import Exhibitor
 from matching.models import Survey, Response, TextAns
 
-import nltk
+from nltk.tokenize import word_tokenize
 import enchant
 import gensim
 
@@ -30,10 +30,18 @@ class SpellChecker():
         suggestion = self.spell_dict.suggest(word)
 
 def genWorldRegions(responses, survey_raw, survey_processed):
+    '''
+    TODO when the db is set up correctly
+    '''
     pass
+
+def genSweRegions(responses, survey_raw, survey_processed):
+    '''
+    TODO when the db is
+    '''
 
 def genWorkFields(responses, survey_raw, survey_processed):
     '''
     Objects must be a list of matching.Response model objects
     '''
-    pass
+    print(responses)
