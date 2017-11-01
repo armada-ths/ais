@@ -342,7 +342,7 @@ class SwedenRegion(models.Model):
     region_id is an id that is used to send objects from the app.
     '''
     name = models.TextField()
-    region_id = models.IntegerField(unique=True, null=True)
+    region_id = models.IntegerField(unique=True, null=True  )
     survey = models.ForeignKey(Survey, null=True)
 
 
@@ -397,6 +397,9 @@ class Country(models.Model):
     name = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
     continent = models.ForeignKey(Continent)
+
+    class Meta:
+        verbose_name_plural = 'countries'
 
 class StudentAnswerContinent(StudentAnswerBase):
     '''
