@@ -342,8 +342,8 @@ class SwedenRegion(models.Model):
     region_id is an id that is used to send objects from the app.
     '''
     name = models.TextField()
-    region_id = IntegerField(unique=True)
-    survey = models.ForeignKey(Survey)
+    region_id = models.IntegerField(unique=True, null=True)
+    survey = models.ForeignKey(Survey, null=True)
 
 
     def __str__(self):
@@ -384,8 +384,8 @@ class Continent(models.Model):
     continent_id is an id that is used to send objects from the app.
     '''
     name = models.TextField(unique=True)
-    continent_id = models.IntegerField(unique=True)
-    survey = models.ForeignKey(Survey)
+    continent_id = models.IntegerField(unique=True, null=True)
+    survey = models.ForeignKey(Survey, null=True)
 
     def __str__(self):
         return self.name
