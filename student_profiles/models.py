@@ -10,7 +10,7 @@ class StudentProfile(models.Model):
     Note:   that nickname is used in tests.py for both this app and matching, if
             this is changed here, these tests will fail on setUp.
     '''
-    nickname = models.CharField(max_length=100)
+    nickname = models.CharField(max_length=512)
 
     def __str__(self):
         return self.nickname
