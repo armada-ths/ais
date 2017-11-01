@@ -13,7 +13,8 @@ from fair.models import Fair
 
 from student_profiles.models import StudentProfile, MatchingResult
 from matching.models import StudentQuestionType, StudentQuestionSlider, StudentQuestionGrading, StudentQuestionBase, \
-WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField
+WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField, \
+SwedenRegion, Continent, StudentAnswerRegion, StudentAnswerContinent
 from people.models import Profile, Programme
 from recruitment.models import RecruitmentPeriod, Role
 
@@ -115,15 +116,15 @@ class StudentProfileTestCase(TestCase):
         self.url_prefix = '/api/student_profile'
         StudentProfile.objects.get_or_create(pk=1, nickname='Pre_post')
         StudentProfile.objects.get_or_create(pk=2, nickname='Unmodified')
-        
+
 
     # Test that this api works without a login
     def test_client(self):
         client = Client()
-        
+
         response = client.get(self.url_prefix + '?student_id=1')
         self.check_student_profile_response(response, 'Pre_post')
-        
+
         response = client.put(self.url_prefix + '?student_id=1',
             data = json.dumps({'nickname' : 'Postman'}))
         self.check_student_profile_response(response, 'Postman')
@@ -138,7 +139,7 @@ class StudentProfileTestCase(TestCase):
         self.check_student_profile_response(response, 'Postman')
 
         self.assertFalse(StudentProfile.objects.filter(pk=3).first())
-        
+
         request = self.factory.put(self.url_prefix + '?student_id=3',
             data=json.dumps({'nickname' : 'Mojo'}))
         response = views.student_profile(request)
@@ -150,14 +151,14 @@ class StudentProfileTestCase(TestCase):
         self.assertEqual(StudentProfile.objects.get(pk=2).nickname, 'Unmodified')
         self.assertEqual(StudentProfile.objects.get(pk=3).nickname, 'Mojo')
 
-    
+
     # Test the GET protocol
     def test_get(self):
         request = self.factory.get(self.url_prefix + '?student_id=1')
         response = views.student_profile(request)
-        
+
         self.check_student_profile_response(response, 'Pre_post')
-        
+
         request = self.factory.get(self.url_prefix + '?student_id=0')
         try:
             response = views.student_profile(request)
@@ -188,7 +189,7 @@ class Organization(TestCase):
         profile1.user = user1
         profile1.save()
         profile2.user=user2
-        profile2.save() 
+        profile2.save()
         user1.groups.set([group1])
         user2.groups.set([group2])
         user3.groups.set([group1])
@@ -243,6 +244,16 @@ class QuestionsTestCase(TestCase):
                 field.save()
                 field.survey.add(self.survey)
 
+        self.regions = [
+            SwedenRegion.objects.get_or_create(name='region1', region_id=1),
+            SwedenRegion.objects.get_or_create(name='region2', region_id=2),
+            SwedenRegion.objects.get_or_create(name='region3', region_id=3)
+        ]
+
+        self.continents = [
+            Continent.objects.get_or_create(name='Asia', continent_id=1),
+            Continent.objects.get_or_create(name='Europe', continent_id=2)
+        ]
 
     def test_questions(self):
         # Make sure no questions share a PK
@@ -296,7 +307,12 @@ class QuestionsTestCase(TestCase):
                 {'id' : self.questions[2].pk, 'answer' : -1}
             ], 'areas' : [
                 self.fields[2][0].pk
+            ], 'regions' : [
+                1
+            ], 'continents' : [
+                2
             ]
+
         })
         request = self.factory.put('api/questions?student_id=2', data=data)
         response = views.questions(request)
@@ -305,6 +321,8 @@ class QuestionsTestCase(TestCase):
             answers = StudentAnswerBase.objects.filter(student=StudentProfile.objects.get(pk=2))
             answer_list = []
             field_list = []
+            region_list = []
+            continent_list = []
             for answer in answers:
                 if hasattr(answer, 'studentanswerslider'):
                     answer_list.append(answer.studentanswerslider)
@@ -312,6 +330,10 @@ class QuestionsTestCase(TestCase):
                     answer_list.append(answer.studentanswergrading)
                 elif hasattr(answer, 'studentanswerworkfield'):
                     field_list.append(answer.studentanswerworkfield)
+                elif hasattr(answer, 'studentanswerregion'):
+                    region_list.append(answer.studentanswerregion)
+                elif hasattr(answer, 'studentanswercontinent'):
+                    continent_list.append(answer.studentanswercontinent)
                 else:
                     self.assertFalse('Answer is not a subtype!')
             self.assertEqual(answer_list[0].question, self.questions[0])
@@ -327,6 +349,10 @@ class QuestionsTestCase(TestCase):
             self.assertFalse(field_list[0].answer)
             self.assertFalse(field_list[1].answer)
             self.assertTrue(field_list[2].answer)
+
+            self.assertEqual(region_list[0].region_id, 1)
+            self.assertEqual(continent_list[0].continent_id, 2)
+
         # run tests described above
         test_db()
 
@@ -376,9 +402,19 @@ class QuestionsTestCase(TestCase):
         self.assertEqual(response.status_code, 406)
         test_db()
 
+        data = json.dumps({
+            'regions' : 'fel'
+        })
+        request = self.factory.put('api/questions?student_id=2', data=data)
+        response = views.questions(request)
+        self.assertEqual(response.status_code, 406)
+
         # test partial payloads
         data = json.dumps({
-            'areas' : []
+            'areas' : [],
+            'regions' : [],
+            'continents' : []
+
         })
         request = self.factory.put('api/questions?student_id=2', data=data)
         response = views.questions(request)
@@ -458,34 +494,34 @@ class RecruitmentTestCase(TestCase):
         yesterday = timezone.now() - datetime.timedelta(days=1)
         role=Role(name="Role")
         recruitment = RecruitmentPeriod(
-            name="current recruitment", 
-            start_date=yesterday, 
-            end_date=tomorrow, 
-            interview_end_date=tomorrow, 
+            name="current recruitment",
+            start_date=yesterday,
+            end_date=tomorrow,
+            interview_end_date=tomorrow,
             fair=fair,
         )
         recruitment.save()
         recruitment2 = RecruitmentPeriod(
-            name="current recruitment2", 
-            start_date=yesterday, 
-            end_date=tomorrow, 
-            interview_end_date=tomorrow, 
+            name="current recruitment2",
+            start_date=yesterday,
+            end_date=tomorrow,
+            interview_end_date=tomorrow,
             fair=fair,
         )
         recruitment2.save()
         recruitment_past = RecruitmentPeriod(
-            name="past recruitment", 
-            start_date=yesterday, 
-            end_date=yesterday, 
-            interview_end_date=tomorrow, 
+            name="past recruitment",
+            start_date=yesterday,
+            end_date=yesterday,
+            interview_end_date=tomorrow,
             fair=fair,
         )
         recruitment_past.save()
         recruitment_future = RecruitmentPeriod(
-            name="past recruitment", 
-            start_date=tomorrow, 
-            end_date=tomorrow, 
-            interview_end_date=tomorrow, 
+            name="past recruitment",
+            start_date=tomorrow,
+            end_date=tomorrow,
+            interview_end_date=tomorrow,
             fair=fair,
         )
         recruitment_future.save()
@@ -503,7 +539,7 @@ class RecruitmentTestCase(TestCase):
 class MatchingResultTestCase(TestCase):
     #This view currently assume that the machting algortim is done after returning 6 matches.
     def setUp(self):
-        self.factory = RequestFactory()        
+        self.factory = RequestFactory()
         current_fair = Fair.objects.create(name='Current fair', current=True)
         self.student1 = StudentProfile.objects.create(nickname='student1')
         self.student2 = StudentProfile.objects.create(nickname='student2')
@@ -582,10 +618,3 @@ class MatchingResultTestCase(TestCase):
         request = self.factory.get('/api/matching_result?student_id=5')
         response = views.matching_result(request)
         self.assertEqual(response.status_code, 404)
-
-
-
-
-
-
-
