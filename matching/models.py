@@ -413,3 +413,27 @@ class StudentAnswerContinent(StudentAnswerBase):
 
     def __str__(self):
         return '%s : %s' %(self.student, self.continent)
+
+class JobType(models.Model):
+    '''
+    All jobtypes connected to an ID.
+    LATER:: This should not be used!! Instead jobtypes in exhibitor should be used. 
+    '''
+    job_type = models.TextField()
+    job_type_id = models.IntegerField(unique=True)
+
+    def __str__(self):
+        return '%s: %s'%(self.job_type_id, self.job_type)
+
+class StudentAnswerJobType(StudentAnswerBase):
+    '''
+    Inherits from StudentAnswerBase.
+    Region is the regions in sweden the student would prefere to work in.
+    '''
+    job_type = models.ForeignKey(JobType, null=True)
+
+    class Meta:
+        verbose_name = 'answer job type'
+
+    def __str__(self):
+        return '%s : %s' %(self.student, self.job_type)
