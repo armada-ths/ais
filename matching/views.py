@@ -145,14 +145,15 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
     try:
-        questions = Question.objects.get(survey=survey_raw, name='workfields')
+        question = Question.objects.get(survey=survey_raw, name='workfields')
     except Question.DoesNotExist:
         question = None
         print("Workfield question is not defined with name='workfields'")
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
-        
+    pea.genWorkFields(responses, survey_raw, survey_proc)
+
 
     return render(request, template_name, {'survey': survey_raw})
 
