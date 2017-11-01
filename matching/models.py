@@ -392,21 +392,10 @@ class Continent(models.Model):
     All continents should be connected to at least one exhibitor when used.
     '''
     name = models.TextField(unique=True)
-    #exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
-    survey = models.ForeignKey(Survey)
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
 
     def __str__(self):
         return self.name
-
-class Country(models.Model):
-    '''
-    Will relate to a continent
-    '''
-    country = models.TextField(unique=True)
-    continent = models.ForeignKey(Continent)
-    exhibitors = models.ManyToManyField('exhibitors.Exhibitor')
-
-
 
 class StudentAnswerContinent(StudentAnswerBase):
     '''
