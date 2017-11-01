@@ -341,14 +341,12 @@ class StudentAnswerWorkField(StudentAnswerBase):
 class SwedenRegion(models.Model):
     '''
     Predefined regions in the app. Is used to connect companies cities to student answers in the app.
-
-    Necessary field(s):
-        survey
-        name
-
+    region_id is an id that is used to send objects from the app.
     '''
-    survey = models.ForeignKey(Survey)
     name = models.TextField()
+    region_id = models.IntegerField(unique=True, null=True  )
+    survey = models.ForeignKey(Survey, null=True)
+
 
     def __str__(self):
         return self.name
@@ -368,12 +366,8 @@ class SwedenCity(models.Model):
     def __str__(self):
         return self.city
 
-
-
-
 class StudentAnswerRegion(StudentAnswerBase):
     '''
-    Inherits from StudentAnswerBase.
     Region is the regions in sweden the student would prefere to work in.
     '''
     region = models.ForeignKey(SwedenRegion)
@@ -384,18 +378,30 @@ class StudentAnswerRegion(StudentAnswerBase):
     def __str__(self):
         return '%s : %s' %(self.student, self.region)
 
+
 class Continent(models.Model):
     '''
     Connects a exhibitor to a Continent.
-    Necessary field(s):
-        name
     All continents should be connected to at least one exhibitor when used.
+    continent_id is an id that is used to send objects from the app.
     '''
     name = models.TextField(unique=True)
-    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+    continent_id = models.IntegerField(unique=True, null=True)
+    survey = models.ForeignKey(Survey, null=True)
 
     def __str__(self):
         return self.name
+
+class Country(models.Model):
+    '''
+    Connects Country (that exhibitors work in) to continents (where student want to work)
+    '''
+    name = models.TextField(unique=True)
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+    continent = models.ForeignKey(Continent)
+
+    class Meta:
+        verbose_name_plural = 'countries'
 
 class StudentAnswerContinent(StudentAnswerBase):
     '''
