@@ -347,7 +347,7 @@ class SwedenRegion(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return '%s: %s' %(self.region_id, self.name)
 
 class SwedenCity(models.Model):
     '''
@@ -388,7 +388,7 @@ class Continent(models.Model):
     survey = models.ForeignKey(Survey, null=True)
 
     def __str__(self):
-        return self.name
+        return '%s: %s' %(self.continent_id, self.name)
 
 class Country(models.Model):
     '''
@@ -417,7 +417,7 @@ class StudentAnswerContinent(StudentAnswerBase):
 class JobType(models.Model):
     '''
     All jobtypes connected to an ID.
-    LATER:: This should not be used!! Instead jobtypes in exhibitor should be used. 
+    LATER:: This should not be used!! Instead jobtypes in exhibitor should be used.
     '''
     job_type = models.TextField()
     job_type_id = models.IntegerField(unique=True)
