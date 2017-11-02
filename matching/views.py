@@ -39,11 +39,12 @@ def index(request, template_name='matching/index.html'):
     # get the id of the raw survey used so we can pass it between the views
     request.session['survey_raw_id'] = survey_raw.id
     try:
-        survey_proc = Survey.objects.get(fair=fair, name='%s-processed'%name_survey_raw)
-    except:
+        survey_proc = Survey.objects.get(fair=fair, relates_to=survey_raw)
+    except Survey.DoesNotExist:
         survey_proc = Survey.objects.create(fair=fair,
             name='%s-processed'%name_survey_raw,
-            description='processed data for %s'%name_survey_raw
+            description='processed data for %s'%name_survey_raw,
+            relates_to=survey_raw
         )
     # get the id of the processed survey used so we can pass it between the views
     request.session['survey_proc_id'] = survey_proc.id
@@ -122,8 +123,18 @@ def map_sweden(request, template_name='matching/sweden_regions.html'):
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+    try:
+        question = Question.objects.get(survey=survey_raw, name='sweden-city')
+    except:
+        question = None
 
-    return render(request, template_name, {'survey': survey_raw})
+    if question:
+        responses = Response.objects.filter(survey=survey_raw, question=question)
+        words = pea.genSubRegions(responses, survey_raw, survey_proc)
+        print(len(words))
+
+
+    return render(request, template_name, {'survey': survey_raw, 'question': question})
 
 @staff_member_required
 def map_world(request, template_name='matching/world_regions.html'):
@@ -133,8 +144,18 @@ def map_world(request, template_name='matching/world_regions.html'):
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+    try:
+        question = Question.objects.get(survey=survey_raw, name='world-country')
+    except Question.DoesNotExist:
+        question = None
 
-    return render(request, template_name, {'survey': survey_raw})
+    if question:
+        responses = Response.objects.filter(survey=survey_raw, question=question)
+        words = pea.genSubRegions(responses, survey_raw, survey_proc)
+        print(words)
+
+
+    return render(request, template_name, {'survey': survey_raw, 'question': question})
 
 @staff_member_required
 def init_workfields(request, template_name='matching/init_workfields.html'):
@@ -152,7 +173,8 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
-    pea.genWorkFields(responses, survey_raw, survey_proc)
+        words = pea.genSubRegions(responses, survey_raw, survey_proc)
+        print(len(words))
 
 
     return render(request, template_name, {'survey': survey_raw})
