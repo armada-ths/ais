@@ -124,7 +124,7 @@ def person(request, person, role):
   #Check that there are a profile for the user
     try:
       profile = person.profile
-      try: 
+      try:
         programme = profile.programme.name
       except AttributeError:
         programme = None
@@ -237,5 +237,5 @@ def matching_result(matching):
     return OrderedDict([
         ('exhibitor', matching.exhibitor.pk),
         ('percent', matching.score),
-        ('reasons', ['','','']) #This is just empty strings for now. Might change if we get any reasons from the matching algortithm. 
+        ('reasons', ['','','']) #This is just empty strings for now. Might change if we get any reasons from the matching algortithm.
       ])

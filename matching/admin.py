@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, \
 BooleanAns, StudentQuestionSlider, StudentQuestionGrading, StudentAnswerSlider, \
 StudentAnswerGrading, WorkFieldArea, WorkField, StudentAnswerWorkField, SwedenRegion, \
-Continent, StudentAnswerRegion, StudentAnswerContinent, SwedenCity, Country
+Continent, StudentAnswerRegion, StudentAnswerContinent, SwedenCity, Country, JobType, \
+StudentAnswerJobType
 
 class QuestionInline(admin.ModelAdmin):
     list_display=('text', 'question_type')
@@ -61,6 +62,7 @@ class StudentQuestionSliderAdmin(admin.ModelAdmin):
 class StudentQuestionGradingAdmin(admin.ModelAdmin):
     exclude = ('question_type',)
     model = StudentQuestionGrading
+
 class SwedenRegionAdmin(admin.ModelAdmin):
     model = SwedenRegion
 
@@ -78,6 +80,12 @@ class StudentAnswerRegionAdmin(admin.ModelAdmin):
 
 class CountryAdmin(admin.ModelAdmin):
     model = Country
+
+class JobTypeAdmin(admin.ModelAdmin):
+    model = JobType
+
+class StudentAnswerJobTypeAdmin(admin.ModelAdmin):
+    model = StudentAnswerJobType
 
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
@@ -102,3 +110,5 @@ admin.site.register(SwedenCity, SwedenCityAdmin)
 admin.site.register(StudentAnswerContinent, StudentAnswerContinentAdmin)
 admin.site.register(StudentAnswerRegion, StudentAnswerRegionAdmin)
 admin.site.register(Country, CountryAdmin)
+admin.site.register(JobType, JobTypeAdmin)
+admin.site.register(StudentAnswerJobType, StudentAnswerJobTypeAdmin)
