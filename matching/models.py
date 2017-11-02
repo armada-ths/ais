@@ -418,9 +418,11 @@ class JobType(models.Model):
     '''
     All jobtypes connected to an ID.
     LATER:: This should not be used!! Instead jobtypes in exhibitor should be used.
+    relates to an exhibitor question for now.
     '''
     job_type = models.TextField()
     job_type_id = models.IntegerField(unique=True)
+    exhibitor_question = models.ForeignKey(Question, blank=True, null=True)
 
     def __str__(self):
         return '%s: %s'%(self.job_type_id, self.job_type)
