@@ -607,13 +607,15 @@ class MatchingResultTestCase(TestCase):
         self.exhibitor4 = Exhibitor.objects.create(company=self.company4, fair=current_fair)
         self.exhibitor5 = Exhibitor.objects.create(company=self.company5, fair=current_fair)
         self.exhibitor6 = Exhibitor.objects.create(company=self.company6, fair=current_fair)
+    
+
     def test_view(self):
         #Returns empty list when no matching is done
         request = self.factory.get('/api/matching_result?student_id=1')
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
-        self.assertEqual([], matching)
+        self.assertEqual(None, matching)
 
         #returns empty list when one matching is done
         matching_result1 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor1, fair=Fair.objects.get(current=True), score=10)
@@ -621,7 +623,7 @@ class MatchingResultTestCase(TestCase):
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
-        self.assertEqual([], matching)
+        self.assertEqual(None, matching)
 
         #returns empty list when five matchings are done
         matching_result2 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor2, fair=Fair.objects.get(current=True), score=0)
@@ -632,7 +634,7 @@ class MatchingResultTestCase(TestCase):
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
-        self.assertEqual([], matching)
+        self.assertEqual(None, matching)
 
         #returns 5 matches when 6 matchings are done
         matching_result6 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor6, fair=Fair.objects.get(current=True), score=70)
@@ -651,7 +653,7 @@ class MatchingResultTestCase(TestCase):
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
-        self.assertEqual(matching, [])
+        self.assertEqual(matching, None)
 
         #returns 5 matches for studnet2 when 6 matchings are done
         matching_result6 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor1, fair=Fair.objects.get(current=True), score=3)
