@@ -374,7 +374,7 @@ class StudentAnswerRegion(StudentAnswerBase):
             verbose_name = 'answer region'
 
     def __str__(self):
-        return '%s : %s' %(self.student, self.region)
+        return '%s chose %s' %(self.student, self.region)
 
 
 class Continent(models.Model):
@@ -412,7 +412,7 @@ class StudentAnswerContinent(StudentAnswerBase):
             verbose_name = 'answer continent'
 
     def __str__(self):
-        return '%s : %s' %(self.student, self.continent)
+        return '%s chose %s' %(self.student, self.continent)
 
 class JobType(models.Model):
     '''
@@ -436,4 +436,4 @@ class StudentAnswerJobType(StudentAnswerBase):
         verbose_name = 'answer job type'
 
     def __str__(self):
-        return '%s : %s' %(self.student, self.job_type)
+        return '%s chose %s' %(self.student, self.job_type)
