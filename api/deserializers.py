@@ -1,4 +1,7 @@
-from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField
+from django.shortcuts import get_object_or_404
+from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Continent, SwedenRegion, \
+StudentAnswerRegion, StudentAnswerContinent
+
 
 def answer_slider(answer, student, question, survey):
     '''
@@ -89,3 +92,22 @@ def fields(fields, student, survey):
             field_model.survey.add(survey)
         field_model.answer = work_field.pk in fields
         field_model.save()
+
+def regions(regions, student, survey):
+    '''
+    Create or modify field answers from payload data.
+    used by questions_PUT in api/views.
+    '''
+    for region_id in regions:
+        region = get_object_or_404(SwedenRegion, region_id=region_id)
+        StudentAnswerRegion.objects.create(student=student, region=region)
+
+
+def continents(continents, student, survey):
+    '''
+    Create or modify field answers from payload data.
+    used by questions_PUT in api/views.
+    '''
+    for continent_id in continents:
+        continent = get_object_or_404(Continent, continent_id=continent_id)
+        StudentAnswerContinent.objects.create(student=student, continent=continent)
