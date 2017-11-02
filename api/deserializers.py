@@ -93,6 +93,28 @@ def fields(fields, student, survey):
         field_model.answer = work_field.pk in fields
         field_model.save()
 
+def student_profile(data, profile):
+    '''
+    Deserialize the data into the student_profile, validating the data on the way
+    '''
+    if type(data) is dict:
+        if 'nickname' in data and type(data['nickname']) is str:
+            profile.nickname = data['nickname']
+        else:
+            return False
+
+        # optional fields
+        if 'facebook_profile' in data and type(data['facebook_profile']) is str:
+            profile.facebook_profile = data['facebook_profile']
+        if 'linkedin_profile' in data and type(data['linkedin_profile']) is str:
+            profile.linkedin_profile = data['linkedin_profile']
+        if 'phone_number' in data and type(data['phone_number']) is str:
+            profile.phone_number = data['phone_number']
+        profile.save()
+        return True
+    else:
+        return False
+
 def regions(regions, student, survey):
     '''
     Create or modify field answers from payload data.
