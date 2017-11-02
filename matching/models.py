@@ -355,7 +355,7 @@ class SwedenRegion(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return '%s: %s' %(self.region_id, self.name)
 
 class SwedenCity(models.Model):
     '''
@@ -382,7 +382,7 @@ class StudentAnswerRegion(StudentAnswerBase):
             verbose_name = 'answer region'
 
     def __str__(self):
-        return '%s : %s' %(self.student, self.region)
+        return '%s chose %s' %(self.student, self.region)
 
 
 class Continent(models.Model):
@@ -396,7 +396,7 @@ class Continent(models.Model):
     survey = models.ForeignKey(Survey, null=True)
 
     def __str__(self):
-        return self.name
+        return '%s: %s' %(self.continent_id, self.name)
 
 class Country(models.Model):
     '''
@@ -420,4 +420,30 @@ class StudentAnswerContinent(StudentAnswerBase):
             verbose_name = 'answer continent'
 
     def __str__(self):
-        return '%s : %s' %(self.student, self.continent)
+        return '%s chose %s' %(self.student, self.continent)
+
+class JobType(models.Model):
+    '''
+    All jobtypes connected to an ID.
+    LATER:: This should not be used!! Instead jobtypes in exhibitor should be used.
+    relates to an exhibitor question for now.
+    '''
+    job_type = models.TextField()
+    job_type_id = models.IntegerField(unique=True)
+    exhibitor_question = models.ForeignKey(Question, blank=True, null=True)
+
+    def __str__(self):
+        return '%s: %s'%(self.job_type_id, self.job_type)
+
+class StudentAnswerJobType(StudentAnswerBase):
+    '''
+    Inherits from StudentAnswerBase.
+    Region is the regions in sweden the student would prefere to work in.
+    '''
+    job_type = models.ForeignKey(JobType, null=True)
+
+    class Meta:
+        verbose_name = 'answer job type'
+
+    def __str__(self):
+        return '%s chose %s' %(self.student, self.job_type)
