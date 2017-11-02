@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Continent, SwedenRegion, \
-StudentAnswerRegion, StudentAnswerContinent
+StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
 
 
 def answer_slider(answer, student, question, survey):
@@ -100,7 +100,7 @@ def regions(regions, student, survey):
     '''
     for region_id in regions:
         region = get_object_or_404(SwedenRegion, region_id=region_id)
-        StudentAnswerRegion.objects.create(student=student, region=region)
+        StudentAnswerRegion.objects.get_or_create(student=student, region=region)
 
 
 def continents(continents, student, survey):
@@ -110,4 +110,14 @@ def continents(continents, student, survey):
     '''
     for continent_id in continents:
         continent = get_object_or_404(Continent, continent_id=continent_id)
-        StudentAnswerContinent.objects.create(student=student, continent=continent)
+        StudentAnswerContinent.objects.get_or_create(student=student, continent=continent)
+
+def jobtype(jobtypes, student, survey):
+    '''
+    Create or modify field answers from payload data.
+    used by questions_PUT in api/views. Uses the JobType defined in the Matching app.
+    LATER: Change it to use the JobType model in the exhibitors app.
+    '''
+    for job_type_id in jobtypes:
+        job_type = get_object_or_404(JobType, job_type_id=job_type_id)
+        StudentAnswerJobType.objects.get_or_create(student=student, job_type=job_type)
