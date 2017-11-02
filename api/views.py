@@ -216,7 +216,7 @@ def matching_result(request):
     If there are no result yet, it will return an empty list [].
     '''
     MATCHING_DONE = 6
-    MAX_MATCHES = 5 
+    MAX_MATCHES = 5
     current_fair = get_object_or_404(Fair, current=True)
     student_id = request.GET['student_id']
     try:
@@ -233,6 +233,18 @@ def matching_result(request):
 
     return JsonResponse(data, safe=False)
 
+def intChoices(objectType, data, student, survey, function):
+    '''
+    help function for questions_PUT. Checks if there data has an objectType with a list of Integers.
+    Returns the list and True if the list is valid.
+    '''
+    allChosen = [];
+    for chosen in data[objectType]:
+        if type(chosen) is int:
+            allChosen.append(chosen)
+    function(allChosen, student, survey)
+    return allChosen
+
 
 def questions_PUT(request):
     '''
@@ -246,7 +258,6 @@ def questions_PUT(request):
     "areas" : [AREA_ID, ...]
     }
     Where:
-        ID      - is an integer id for each question, that was sent with questions_GET
         ANSWER  - is either an int or a float, depending on the type of question
         AREA_ID - is an integer id for each area that was selected, that was sent with questions_PUT
 
@@ -271,11 +282,16 @@ def questions_PUT(request):
             (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
 
         if 'areas' in data and type(data['areas']) is list:
-            areas = []
-            for area in data['areas']:
-                if type(area) is int:
-                    areas.append(area)
-            deserializers.fields(areas, student, survey)
+            intChoices('areas', data, student, survey, deserializers.fields)
+            modified = True
+        if 'regions' in data and type(data['regions']) is list:
+            intChoices('regions', data, student, survey, deserializers.regions)
+            modified = True
+        if 'continents' in data and type(data['continents']) is list:
+            intChoices('continents', data, student, survey, deserializers.continents)
+            modified = True
+        if 'looking_for' in data and type(data['looking_for']) is list:
+            intChoices('looking_for', data, student, survey, deserializers.jobtype)
             modified = True
 
         if modified or modified_count > 0:
