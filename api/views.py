@@ -298,6 +298,9 @@ def questions_PUT(request):
         if 'continents' in data and type(data['continents']) is list:
             intChoices('continents', data, student, survey, deserializers.continents)
             modified = True
+        if 'looking_for' in data and type(data['looking_for']) is list:
+            intChoices('looking_for', data, student, survey, deserializers.jobtype)
+            modified = True
 
         if modified or modified_count > 0:
             answer = 'Answers submitted! (' + str(modified_count) + '/' + str(total_count) + ' question answers were saved, fields were '
