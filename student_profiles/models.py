@@ -2,8 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.timezone import utc
 
-import uuid
-
 class StudentProfile(models.Model):
     '''
     A striped down version of a user profile
@@ -13,7 +11,6 @@ class StudentProfile(models.Model):
             this is changed here, these tests will fail on setUp.
     '''
     nickname = models.CharField(max_length=512)
-    id_string = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # optional fields
     linkedin_profile = models.CharField(max_length=128, null=True, blank=True)
