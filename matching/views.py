@@ -19,7 +19,7 @@ from collections import Counter
 
 from .helpers_view import update_processed_question, delete_processed_question
 
-from .process_data import processExhibitorAnswers as pea
+#from .process_data import processExhibitorAnswers as pea
 from .algorithms import main_classify as classify
 
 @staff_member_required
@@ -132,10 +132,11 @@ def map_sweden(request, template_name='matching/sweden_regions.html'):
 
     if question:
         responses = Response.objects.filter(survey=survey_raw, question=question)
+        '''
         words = pea.genSubRegions(responses, survey_raw, survey_proc)
         print(len(words))
         print(words)
-
+        '''
 
     return render(request, template_name, {'survey': survey_raw, 'question': question})
 
@@ -155,6 +156,7 @@ def map_world(request, template_name='matching/world_regions.html'):
     countries = []
     if question:
         responses = Response.objects.filter(survey=survey_raw, question=question)
+        '''
         words = pea.genSubRegions(responses, survey_raw, survey_proc)
         for w in words:
             country = Country.objects.get_or_create(name=w)[0]
@@ -169,6 +171,7 @@ def map_world(request, template_name='matching/world_regions.html'):
             regions = continents,
             region_prefix = region_prefix
         )
+        '''
 
     return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
 
@@ -188,8 +191,9 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
+        '''
         words = pea.genWorkFields(responses, survey_raw, survey_proc)
-
+        '''
 
 
     return render(request, template_name, {'survey': survey_raw})
