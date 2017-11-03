@@ -150,7 +150,6 @@ class StudentProfileTestCase(TestCase):
 
         response = client.get(self.url_prefix + '?student_id=1')
         self.check_response(response, 'Pre_post')
-        
         response = client.put(self.url_prefix + '?student_id=1',
             data = json.dumps({'nickname' : 'Postman'}))
         self.assertEqual(response.status_code, HTTP_status_code_OK)
@@ -267,7 +266,12 @@ class QuestionsTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         (self.fair, wasCreated) = Fair.objects.get_or_create(name='Armada fair', current=True)
-        (self.survey, wasCreated) = Survey.objects.get_or_create(name='Dummy survey', fair=self.fair)
+        (exhibitor_survey, wasCreated) = Survey.objects.get_or_create(name='exhibitor-matching', fair=self.fair)
+        (self.survey, wasCreated) = Survey.objects.get_or_create(name='student-matching', relates_to=exhibitor_survey)
+        # generate exhibitors for put
+        for i in range(10):
+            company = Company.objects.create(name='Test Company %i'%i, organisation_type='company')
+            Exhibitor.objects.create(company=company, fair=self.fair)
 
         # generate questions
         self.questions = [
@@ -607,7 +611,7 @@ class MatchingResultTestCase(TestCase):
         self.exhibitor4 = Exhibitor.objects.create(company=self.company4, fair=current_fair)
         self.exhibitor5 = Exhibitor.objects.create(company=self.company5, fair=current_fair)
         self.exhibitor6 = Exhibitor.objects.create(company=self.company6, fair=current_fair)
-    
+
 
     def test_view(self):
         #Returns empty list when no matching is done

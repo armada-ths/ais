@@ -207,7 +207,8 @@ def questions_GET(request):
         AREA        - the name of a field area, which is a supercategory of FIELD
     '''
     current_fair = get_object_or_404(Fair, current=True)
-    survey = get_object_or_404(Survey, fair=current_fair)
+    survey_exhibitor = get_object_or_404(Survey, fair=current_fair, name='exhibitor-matching')
+    survey = get_object_or_404(Survey, relates_to=survey_exhibitor)
     questions = QuestionBase.objects.filter(survey=survey)
     areas = WorkField.objects.filter(survey=survey)
     data = OrderedDict([
