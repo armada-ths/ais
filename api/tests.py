@@ -139,6 +139,7 @@ class StudentProfileTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.url_prefix = '/api/student_profile?student_id='
+        #genereate 3 unique IDs
         self.ids = [uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
         StudentProfile.objects.get_or_create(pk=self.ids[0], nickname='Pre_post')
         StudentProfile.objects.get_or_create(pk=self.ids[1], nickname='Unmodified')
