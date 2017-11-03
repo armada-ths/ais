@@ -11,6 +11,12 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+# Job type that an exhibitor offers
+class JobType(models.Model):
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.name
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
@@ -26,6 +32,9 @@ class Exhibitor(models.Model):
     facts_text = models.TextField(blank=True)
     accept_terms = models.BooleanField(default=False)
 
+    # For the logistics team
+    comment = models.TextField(blank=True)
+
     statuses = [
         ('accepted', 'Accepted'),
         ('registered', 'Registered'),
@@ -37,6 +46,7 @@ class Exhibitor(models.Model):
         ('confirmed', 'Confirmed'),
         ('checked_in', 'Checked in'),
         ('checked_out', 'Checked out'),
+        ('withdrawn', 'Withdrawn'),
     ]
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
@@ -53,6 +63,11 @@ class Exhibitor(models.Model):
         upload_to=UploadToDirUUID('exhibitors', 'logo_original'),
         blank=True,
     )
+    location_at_fair = models.ImageField(
+        upload_to=UploadToDirUUID('exhibitors', 'location_at_fair'),
+        blank=True
+    )
+
 
     exhibition_area_requests = [
         ('kth_library', 'KTH Library'),
@@ -117,6 +132,8 @@ class Exhibitor(models.Model):
     manual_invoice = models.BooleanField(default=False)
     interested_in_armada_transport = models.BooleanField(default=False)
 
+    tags = models.ManyToManyField('fair.Tag', blank=True)
+
     # Goals of participation and offers
     goals = [
         ('employer_branding',
@@ -130,28 +147,8 @@ class Exhibitor(models.Model):
     ]
     goals_of_participation = models.CharField(choices=goals, null=True, blank=True,
                                                 max_length=300)
-
-    offers = [
-        ('trainee_program',
-            'Trainee Program'),
-        ('master_thesis',
-            'Master thesis'),
-        ('bachelor_thesis',
-            'Bachelor Thesis'),
-        ('summer_jobs',
-            'Summer jobs'),
-        ('part_time_jobs',
-            'Part-time jobs'),
-        ('international',
-            'International opportunities'),
-    ]
-    offers_trainee_program = models.BooleanField(default=False)
-    offers_master_thesis = models.BooleanField(default=False)
-    offers_bachelor_thesis = models.BooleanField(default=False)
-    offers_summer_jobs = models.BooleanField(default=False)
-    offers_part_time_jobs = models.BooleanField(default=False)
-    offers_international_opportunities = models.BooleanField(default=False)
-
+    
+    job_types = models.ManyToManyField(JobType, blank=True)
 
     def total_cost(self):
         return sum([order.price() for order in self.order_set.all()])
@@ -183,7 +180,7 @@ class ExhibitorView(models.Model):
     def create(self):
         # A set of field names from Exhibitor model, that are shown by default
         default = {'location', 'hosts', 'status'}
-            
+
         for field in default:
             self.choices = self.choices + ' ' + field
         self.save()
@@ -191,14 +188,6 @@ class ExhibitorView(models.Model):
 
 # Work field that an exhibitor operates in
 class WorkField(models.Model):
-    name = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.name
-
-
-# Job type that an exhibitor offers
-class JobType(models.Model):
     name = models.CharField(max_length=64)
 
     def __str__(self):

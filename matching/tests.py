@@ -1,8 +1,16 @@
 from django.test import TestCase
+
 from fair.models import Fair
 from companies.models import Company
 from exhibitors.models import Exhibitor
-from .models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns
+from student_profiles.models import StudentProfile
+
+from .models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns, \
+StudentQuestionBase, StudentQuestionSlider, StudentQuestionGrading, \
+StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, \
+WorkFieldArea, WorkField, StudentAnswerWorkField
+
+
 
 class MatchingTestCase(TestCase):
     ''' Tests the filtering on questions and answers to different surveys, also
@@ -52,7 +60,7 @@ class MatchingTestCase(TestCase):
     def test_correct_filter(self):
         ''' Tests if the db is set up correctly by checkint if questions,
             responses, answers are returned correctly. Especielly check for
-            questions that below to multiple surveys but to exhibitors from
+            questions that belong to multiple surveys but to exhibitors from
             different years
         '''
 
@@ -70,3 +78,63 @@ class MatchingTestCase(TestCase):
         self.assertEqual(list(resp_old), [self.resp_old, self.resp_old_on_mixed])
         self.assertEqual(list(ans_current), [self.ans_current, self.ans_current_on_mixed])
         self.assertEqual(list(ans_old), [self.ans_old, self.ans_old_on_mixed])
+
+
+class StudentMatchingTestCase(TestCase):
+    def setUp(self):
+        (self.fair, wasCreated) = Fair.objects.get_or_create(name='Armada 2017', current=True)
+        self.survey = Survey.objects.create(fair=self.fair, name='dummy-survey')
+        self.student = StudentProfile.objects.create(nickname='Gringo')
+
+        # create slider and grading questions
+        self.slider_q = StudentQuestionSlider.objects.create(question='How is this working?', min_value=0.0, max_value=1.0, logarithmic=True)
+        self.slider_q.survey.add(self.survey)
+        self.grading_q = StudentQuestionGrading.objects.create(question='is axel cool?',
+            grading_size=5)
+        self.grading_q.survey.add(self.survey)
+        # create answers to slider and grading questions
+        self.grading_ans = StudentAnswerGrading.objects.create(student=self.student,
+            question=self.grading_q, answer=3)
+
+        self.slider_ans = StudentAnswerSlider.objects.create(student=self.student,
+            question=self.slider_q, answer_min=0.15, answer_max=0.2)
+
+        self.fieldarea = WorkFieldArea.objects.create(work_area='IT')
+        self.wfield1 = WorkField.objects.create(work_field='ML', work_area=self.fieldarea)
+        self.wfield2 = WorkField.objects.create(work_field='Data Mining', work_area=self.fieldarea)
+        self.wfield_no_survey = WorkField.objects.create(work_field='NoSurveyWfield', work_area=self.fieldarea)
+        self.wfield1.survey.add(self.survey)
+        self.wfield2.survey.add(self.survey)
+
+        self.wfieldans1 = StudentAnswerWorkField.objects.create(student=self.student,
+            work_field=self.wfield1, answer=True)
+        self.wfieldans2 = StudentAnswerWorkField.objects.create(student=self.student,
+            work_field=self.wfield2, answer=False)
+
+    def test_models(self):
+        ''' Testing if questions are set up properly '''
+        question = StudentQuestionBase.objects.filter(question_type='slider', question='How is this working?').first()
+        self.assertTrue(question)
+        self.assertTrue(question.studentquestionslider)
+        self.assertEqual(question.studentquestionslider.logarithmic, True)
+
+    def test_foregin_keys(self):
+        ''' Check that all foreign keys are created correctly '''
+        #filter questions on survey
+        questions = list(StudentQuestionBase.objects.filter(survey=self.survey))
+        self.assertTrue(self.grading_q.pk in [q.pk for q in questions])
+        self.assertTrue(self.slider_q.pk in [q.pk for q in questions])
+        self.assertTrue(self.grading_ans.question, self.grading_q)
+        self.assertTrue(self.slider_ans.question, self.slider_q)
+
+        #filter workfields on survey
+        workfields = list(WorkField.objects.filter(survey=self.survey))
+        self.assertTrue(self.wfield1 in workfields)
+        self.assertTrue(self.wfield2 in workfields)
+        self.assertFalse(self.wfield_no_survey in workfields)
+
+        # filter workfield answers on student to make sure we get them all
+        work_answers = list(StudentAnswerWorkField.objects.filter(student=self.student))
+        self.assertTrue(self.wfieldans1 in work_answers)
+        self.assertTrue(self.wfieldans2 in work_answers)
+        self.assertEqual(len(work_answers), 2)

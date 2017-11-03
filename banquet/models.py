@@ -35,15 +35,16 @@ class BanquetteAttendant(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
-    linkedin_url = models.URLField(blank=True)
-    job_title = models.CharField(max_length=200, blank=True)
+    phone_number = models.CharField(max_length=200)
     genders = [
         ('male', 'Male'),
         ('female', 'Female'),
-        ('other', 'Other')
+        ('other', 'Other'),
+        ('not_specify','Prefer not to specify'),
     ]
-    gender = models.CharField(choices=genders, max_length=10)
-    phone_number = models.CharField(max_length=200)
+    gender = models.CharField(choices=genders, max_length=100)
+    job_title = models.CharField(max_length=200, blank=True)
+    linkedin_url = models.URLField(blank=True)
     ticket = models.ForeignKey(BanquetTicket, null=True, blank=True)
     allergies = models.CharField(max_length=1000, blank=True)
     wants_alcohol = models.BooleanField(default=True)
