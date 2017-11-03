@@ -232,7 +232,7 @@ def matching_result(request):
 
     number_of_matches = MatchingResult.objects.filter(student=student, fair=current_fair).count()
     if number_of_matches < MATCHING_DONE:
-        data = []
+        data = None
     else:
         matches = MatchingResult.objects.filter(student=student).order_by('-score')[:MAX_MATCHES]
         data = [serializers.matching_result(matching) for matching in matches]
