@@ -10,10 +10,16 @@ class StudentProfile(models.Model):
     Note:   that nickname is used in tests.py for both this app and matching, if
             this is changed here, these tests will fail on setUp.
     '''
-    nickname = models.CharField(max_length=100)
+    nickname = models.CharField(max_length=512)
+
+    # optional fields
+    linkedin_profile = models.CharField(max_length=128, null=True, blank=True)
+    facebook_profile = models.CharField(max_length=128, null=True, blank=True)
+    phone_number = models.CharField(max_length=32, null=True, blank=True)
 
     def __str__(self):
         return self.nickname
+
 
 class MatchingResult(models.Model):
     '''
