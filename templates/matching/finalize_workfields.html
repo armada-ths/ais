@@ -1,0 +1,37 @@
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8">
+	{% include "header.html" %}
+	{% block head-extra %}{% endblock %}
+  <!-- Styling -->
+      <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+      <link href="{% static 'bootstrap/css/bootstrap-theme.css' %}" rel="stylesheet">
+      <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
+  </head>
+<body>
+    <div class="container">
+    	<div class="headline">
+    		<svg viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
+				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
+			</svg>
+            <h2>Matching Algorithm Initialization </h2>
+            <h4> Survey: {{ survey }} </h4>
+            <h3>6. Finalize By Mapping Work Fields to Work Areas </h3>
+
+
+
+
+
+
+            <a href="{% url 'matching:init_workfields' %}"><button type="button" class="btn btn-default">Previous</button></a>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </div>
+
+</body>
+</html>

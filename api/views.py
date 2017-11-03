@@ -23,6 +23,8 @@ from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role
 from student_profiles.models import StudentProfile, MatchingResult
 
+from matching.algorithms import main_classify as classify
+
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
 
@@ -205,7 +207,8 @@ def questions_GET(request):
         AREA        - the name of a field area, which is a supercategory of FIELD
     '''
     current_fair = get_object_or_404(Fair, current=True)
-    survey = get_object_or_404(Survey, fair=current_fair)
+    survey_exhibitor = get_object_or_404(Survey, fair=current_fair, name='exhibitor-matching')
+    survey = get_object_or_404(Survey, relates_to=survey_exhibitor)
     questions = QuestionBase.objects.filter(survey=survey)
     areas = WorkField.objects.filter(survey=survey)
     data = OrderedDict([
@@ -273,7 +276,8 @@ def questions_PUT(request):
         student_id = request.GET['student_id']
         (student, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
         fair = get_object_or_404(Fair, current=True)
-        survey = get_object_or_404(Survey, fair=fair)
+        exhibitor_survey = get_object_or_404(Survey, fair=fair, name='exhibitor-matching')
+        survey = get_object_or_404(Survey, relates_to=exhibitor_survey)
         try:
             data = json.loads(request.body.decode())
         except Exception:
@@ -307,6 +311,8 @@ def questions_PUT(request):
             if not modified:
                 answer += 'not '
             answer += 'updated)'
+            # call the matching algorithm to generate results
+            classify.classify(student.pk, survey.pk, 6)
             return HttpResponse(answer, content_type='text/plain')
         else:
             if wasCreated:
