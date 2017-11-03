@@ -84,3 +84,36 @@ class StudentQuestionForm(Form):
 
     def clean(self):
         super(StudentQuestionForm, self).clean()
+
+class MapSubAreaForm(Form):
+    '''
+    Used to map cities and countries to the regions predefined in the app and
+    on the ais db, for now this is also called by the workfield for the teams
+    to get some nice data to use
+    '''
+    def __init__(self, *args, **kwargs):
+        survey_raw = kwargs.pop('survey_raw')
+        survey_proc = kwargs.pop('survey_proc')
+        sub_regions = kwargs.pop('sub_regions')
+        regions = kwargs.pop('regions')
+        region_prefix = kwargs.pop('region_prefix')
+        super(MapSubAreaForm, self).__init__(*args, **kwargs)
+        self.init_area_fields(sub_regions, regions, region_prefix)
+
+    def init_area_fields(self, sub_regions, regions, prefix):
+        '''
+        init the field with a select choice of
+        '''
+        region_select = [(None, 'This data is wrong!')]
+        for region in regions:
+            tup = (region.pk, region.name)
+            region_select.append(tup)
+
+        for sub_region in sub_regions:
+            self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False)
+
+
+    class AreaSelectField(ChoiceField):
+        def __init__(self, object, *args, **kwargs):
+            ChoiceField.__init__(self, *args, **kwargs)
+            self.label='%s'%object.name

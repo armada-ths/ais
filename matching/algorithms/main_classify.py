@@ -3,7 +3,7 @@ from fair.models import Fair
 from exhibitors.models import Exhibitor
 from matching.models import *
 
-from student_profiles import StudentProfile, MatchingResult
+from student_profiles.models import StudentProfile, MatchingResult
 
 from random import randint
 
@@ -30,7 +30,8 @@ def randomize_answers(student, survey, numberOfResults):
             score = randint(0,100)
         genResult(student, exhibitors[randint(0,ex_len-1)], score, fair)
 
-def classify(student_id, survey_id, numberOfResults):
+
+def classify(student_id, survey_id, numberOfResults=10):
     '''
     Main classifer to be called from the api when the final put request is called
     from the apps
@@ -42,12 +43,12 @@ def classify(student_id, survey_id, numberOfResults):
                               generated for the student_id
     '''
     finished_flag = False
-    student = StudentProfile.objects.get(pk=student_id)
-    survey = Survey.objects.get(pk=survey_id)
     # survey_raw = TODO add relates_to = models.ForeignKey('self') in Survey if nec
     try:
+        student = StudentProfile.objects.get(pk=student_id)
+        survey = Survey.objects.get(pk=survey_id)
         randomize_answers(student, survey, numberOfResults)
         finished_flag = True
-    except:
+    except (StudentProfile.DoesNotExist, Survey.DoesNotExist):
         pass
     return finished_flag

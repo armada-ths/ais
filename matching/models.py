@@ -404,10 +404,13 @@ class Country(models.Model):
     '''
     name = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
-    continent = models.ForeignKey(Continent)
+    continent = models.ForeignKey(Continent, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'countries'
+
+    def __str__(self):
+        return '%s'%self.name
 
 class StudentAnswerContinent(StudentAnswerBase):
     '''

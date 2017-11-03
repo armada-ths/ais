@@ -34,33 +34,40 @@ class SpellChecker():
     def check(self, word):
         return(self.spell_dict.check(word))
 
-def genWorldRegions(responses, survey_raw, survey_processed):
+def genSubRegions(responses, survey_raw, survey_processed):
     '''
-    TODO when the db is set up correctly
+    not done, just returns a list of texts without any relation to exhibitors
     '''
-    pass
-
-def genSweRegions(responses, survey_raw, survey_processed):
-    '''
-    TODO when the db is
-    '''
-    pass
+    answers_raw_all = TextAns.objects.filter(response__in=responses)
+    words = check_spelling(answers_raw_all)
+    return(words)
 
 def genWorkFields(responses, survey_raw, survey_processed):
     '''
     Objects must be a list of matching.Response model objects
+    not done, just returns a list of texts without any relation to exhibitors
     '''
-    stop_words = set(stopwords.words('english') + [',', '.', '(', ')'])
     answers_raw_all = TextAns.objects.filter(response__in=responses)
-    sc = SpellChecker()
-    for ans_raw in answers_raw_all:
-        answer_raw = word_tokenize(ans_raw.ans)
-        answer_filtered = [w for w in answer_raw if not w in stop_words]
-        for ans in answer_filtered:
-            if sc.check(ans) == False:
-                print(ans)
-                print(sc.replace(ans))
-                print('===============')
+    words = check_spelling(answers_raw_all)
+    return(words)
 
     #for ans in answer_filtered:
     #    print(ans)
+
+def check_spelling(answers):
+    '''
+    be cool
+    '''
+    stop_words = set(stopwords.words('english') + [',', '.', '(', ')'])
+    sc = SpellChecker()
+    correctly_spelled = []
+    incorrectly_spelled = []
+    for ans_raw in answers:
+        answers_raw = word_tokenize(ans_raw.ans)
+        answers_filtered = [w for w in answers_raw if not w in stop_words]
+        for ans in answers_filtered:
+            if sc.check(ans) == True:
+                correctly_spelled.append(ans)
+            else:
+                incorrectly_spelled.append(ans)
+    return(set(correctly_spelled))

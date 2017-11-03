@@ -11,14 +11,16 @@ from .models import *
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from fair.models import Fair
+from student_profiles.models import StudentProfile
 
-from .forms import RawQuestionForm, StudentQuestionForm
+from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm
 
 from collections import Counter
 
 from .helpers_view import update_processed_question, delete_processed_question
 
 from .process_data import processExhibitorAnswers as pea
+from .algorithms import main_classify as classify
 
 @staff_member_required
 def index(request, template_name='matching/index.html'):
@@ -132,6 +134,7 @@ def map_sweden(request, template_name='matching/sweden_regions.html'):
         responses = Response.objects.filter(survey=survey_raw, question=question)
         words = pea.genSubRegions(responses, survey_raw, survey_proc)
         print(len(words))
+        print(words)
 
 
     return render(request, template_name, {'survey': survey_raw, 'question': question})
@@ -149,13 +152,25 @@ def map_world(request, template_name='matching/world_regions.html'):
     except Question.DoesNotExist:
         question = None
 
+    countries = []
     if question:
         responses = Response.objects.filter(survey=survey_raw, question=question)
         words = pea.genSubRegions(responses, survey_raw, survey_proc)
-        print(words)
+        for w in words:
+            country = Country.objects.get_or_create(name=w)[0]
+            countries.append(country)
+        region_prefix = 'country_'
+        continents = Continent.objects.filter(survey=survey_proc)
+        form = MapSubAreaForm(
+            request.POST or None,
+            survey_raw = survey_raw,
+            survey_proc = survey_proc,
+            sub_regions = countries,
+            regions = continents,
+            region_prefix = region_prefix
+        )
 
-
-    return render(request, template_name, {'survey': survey_raw, 'question': question})
+    return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
 
 @staff_member_required
 def init_workfields(request, template_name='matching/init_workfields.html'):
@@ -173,8 +188,8 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
-        words = pea.genSubRegions(responses, survey_raw, survey_proc)
-        print(len(words))
+        words = pea.genWorkFields(responses, survey_raw, survey_proc)
+
 
 
     return render(request, template_name, {'survey': survey_raw})
@@ -186,5 +201,8 @@ def finalize_workfields(request, template_name='matching/finalize_workfields.htm
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+    # this is only trying the matching alg rand generator
+    student = StudentProfile.objects.filter()
+    classify.classify(student[0].pk, survey_proc.pk, 10)
 
     return render(request, template_name, {'survey': survey_raw})
