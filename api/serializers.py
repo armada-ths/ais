@@ -229,7 +229,6 @@ def work_area(area):
     ])
 
 
-
 def matching_result(matching):
     '''
     Serialize a matching for a student_profile
@@ -239,3 +238,15 @@ def matching_result(matching):
         ('percent', matching.score),
         ('reasons', ['','','']) #This is just empty strings for now. Might change if we get any reasons from the matching algortithm.
       ])
+
+
+def student_profile(profile):
+    '''
+    Serializes StudentProfile
+    '''
+    return OrderedDict([
+        ('nickname', profile.nickname),
+        ('linkedin_profile', profile.linkedin_profile),
+        ('facebook_profile', profile.facebook_profile),
+        ('phone_number', profile.phone_number)
+    ])
