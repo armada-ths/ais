@@ -153,12 +153,12 @@ def student_profile(request):
     '''
     if request.method == 'GET':
         student_id = request.GET['student_id']
-        student = get_object_or_404(StudentProfile, pk=student_id)
+        student = get_object_or_404(StudentProfile, id_string=student_id)
         data = serializers.student_profile(student)
     elif request.method == 'PUT':
         if request.body:
             student_id = request.GET['student_id']
-            (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
+            (student_profile, wasCreated) = StudentProfile.objects.get_or_create(id_string=student_id)
             try:
                 data = json.loads(request.body.decode())
             except Exception:
@@ -229,7 +229,7 @@ def matching_result(request):
     current_fair = get_object_or_404(Fair, current=True)
     student_id = request.GET['student_id']
     try:
-        student = StudentProfile.objects.get(pk=student_id)
+        student = StudentProfile.objects.get(id_string=student_id)
     except StudentProfile.DoesNotExist:
         return HttpResponse('No such student', content_type='text/plain', status=404)
 
@@ -274,7 +274,7 @@ def questions_PUT(request):
     '''
     if request.body:
         student_id = request.GET['student_id']
-        (student, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
+        (student, wasCreated) = StudentProfile.objects.get_or_create(id_string=student_id)
         fair = get_object_or_404(Fair, current=True)
         exhibitor_survey = get_object_or_404(Survey, fair=fair, name='exhibitor-matching')
         survey = get_object_or_404(Survey, relates_to=exhibitor_survey)
