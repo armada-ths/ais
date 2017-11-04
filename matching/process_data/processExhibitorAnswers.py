@@ -21,6 +21,7 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer as ps
 from gensim import corpora, models, similarities
 import enchant
+import re
 
 class SpellChecker():
 
@@ -58,16 +59,25 @@ def check_spelling(answers):
     '''
     be cool
     '''
-    stop_words = set(stopwords.words('english') + [',', '.', '(', ')'])
+    stop_words = set(stopwords.words('english') + ['',',', '.', '(', ')'])
     sc = SpellChecker()
     correctly_spelled = []
     incorrectly_spelled = []
     for ans_raw in answers:
-        answers_raw = word_tokenize(ans_raw.ans)
+        answers_raw = re.split(',|;', ans_raw.ans)
+        #answers_raw = word_tokenize(ans_raw.ans)
         answers_filtered = [w for w in answers_raw if not w in stop_words]
         for ans in answers_filtered:
             if sc.check(ans) == True:
                 correctly_spelled.append(ans)
             else:
-                incorrectly_spelled.append(ans)
-    return(set(correctly_spelled))
+                splitted_ans = ans.split()
+                check_flag = True
+                for s_ans in splitted_ans:
+                    if sc.check(s_ans) == False:
+                        check_flag = False
+                        incorrectly_spelled.append(ans)
+                        break
+                if check_flag:
+                    correctly_spelled.append(ans)
+    return (set(correctly_spelled), set(incorrectly_spelled))

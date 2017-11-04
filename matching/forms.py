@@ -95,14 +95,17 @@ class MapSubAreaForm(Form):
         survey_raw = kwargs.pop('survey_raw')
         survey_proc = kwargs.pop('survey_proc')
         sub_regions = kwargs.pop('sub_regions')
+        sub_regions_wrong = kwargs.pop('sub_regions_wrong')
         regions = kwargs.pop('regions')
         region_prefix = kwargs.pop('region_prefix')
         super(MapSubAreaForm, self).__init__(*args, **kwargs)
         self.init_area_fields(sub_regions, regions, region_prefix)
+        self.init_area_fields(sub_regions_wrong, regions, region_prefix, True)
 
-    def init_area_fields(self, sub_regions, regions, prefix):
+    def init_area_fields(self, sub_regions, regions, prefix, wFlag=False):
         '''
         init the field with a select choice of
+        wFlag indicates if the label should be flagged by an error text
         '''
         region_select = [(None, 'This data is wrong!')]
         for region in regions:
@@ -110,10 +113,13 @@ class MapSubAreaForm(Form):
             region_select.append(tup)
 
         for sub_region in sub_regions:
-            self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False)
+            self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False, wFlag=wFlag)
 
 
     class AreaSelectField(ChoiceField):
-        def __init__(self, object, *args, **kwargs):
+        def __init__(self, object, wFlag, *args, **kwargs):
             ChoiceField.__init__(self, *args, **kwargs)
-            self.label='%s'%object.name
+            if wFlag == False:
+                self.label='%s'%object.name
+            else:
+                self.label='DataError (could not process): %s'%object.name

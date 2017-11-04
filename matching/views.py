@@ -153,12 +153,17 @@ def map_world(request, template_name='matching/world_regions.html'):
         question = None
 
     countries = []
+    incorrect_countries = []
     if question:
         responses = Response.objects.filter(survey=survey_raw, question=question)
-        words = pea.genSubRegions(responses, survey_raw, survey_proc)
-        for w in words:
+        (correct_words, incorrect_words) = pea.genSubRegions(responses, survey_raw, survey_proc)
+        for w in correct_words:
             country = Country.objects.get_or_create(name=w)[0]
             countries.append(country)
+
+        for w in incorrect_words:
+            (incorrect_word, isCreated) = Country.objects.get_or_create(name=w)
+            incorrect_countries.append(incorrect_word)
         region_prefix = 'country_'
         continents = Continent.objects.filter(survey=survey_proc)
         form = MapSubAreaForm(
@@ -166,9 +171,11 @@ def map_world(request, template_name='matching/world_regions.html'):
             survey_raw = survey_raw,
             survey_proc = survey_proc,
             sub_regions = countries,
+            sub_regions_wrong = incorrect_countries,
             regions = continents,
             region_prefix = region_prefix
         )
+
 
     return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
 
