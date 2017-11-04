@@ -108,7 +108,7 @@ class StudentProfileTestCase(TestCase):
     ais.armada.nu/api/student_profile?student_id={STUDENT_ID}
     '''
     def check_student_profile(self, profile, nickname = None, linkedin = None, facebook = None, phone_number = None):
-        student = StudentProfile.objects.filter(pk=profile).first()
+        student = StudentProfile.objects.filter(id_string=profile).first()
         self.assertTrue(student)
 
         if nickname:
@@ -141,9 +141,9 @@ class StudentProfileTestCase(TestCase):
         self.url_prefix = '/api/student_profile?student_id='
         #genereate 3 unique IDs
         self.ids = [uuid.uuid4(), uuid.uuid4(), uuid.uuid4()]
-        StudentProfile.objects.get_or_create(pk=self.ids[0], nickname='Pre_post')
-        StudentProfile.objects.get_or_create(pk=self.ids[1], nickname='Unmodified')
-        StudentProfile.objects.get_or_create(pk=self.ids[2], nickname='Full', linkedin_profile='linkedin', facebook_profile='facebook', phone_number='911')
+        StudentProfile.objects.get_or_create(id_string=self.ids[0], nickname='Pre_post')
+        StudentProfile.objects.get_or_create(id_string=self.ids[1], nickname='Unmodified')
+        StudentProfile.objects.get_or_create(id_string=self.ids[2], nickname='Full', linkedin_profile='linkedin', facebook_profile='facebook', phone_number='911')
 
 
     # Test that this api works without a login
@@ -177,10 +177,10 @@ class StudentProfileTestCase(TestCase):
 
         self.check_student_profile(id3, 'Mojo')
 
-        self.assertTrue(StudentProfile.objects.filter(pk=id3).first())
-        self.assertEqual(StudentProfile.objects.get(pk=self.ids[0]).nickname, 'Postman')
-        self.assertEqual(StudentProfile.objects.get(pk=self.ids[1]).nickname, 'Unmodified')
-        self.assertEqual(StudentProfile.objects.get(pk=id3).nickname, 'Mojo')
+        self.assertTrue(StudentProfile.objects.filter(id_string=id3).first())
+        self.assertEqual(StudentProfile.objects.get(id_string=self.ids[0]).nickname, 'Postman')
+        self.assertEqual(StudentProfile.objects.get(id_string=self.ids[1]).nickname, 'Unmodified')
+        self.assertEqual(StudentProfile.objects.get(id_string=id3).nickname, 'Mojo')
 
         id4 = uuid.uuid4()
 
@@ -204,7 +204,7 @@ class StudentProfileTestCase(TestCase):
             data=json.dumps({'noname' : 'name', 'phone_number':'12'}))
         self.assertEqual(response.status_code, 406)
 
-        self.assertFalse(StudentProfile.objects.filter(pk=id5).first())
+        self.assertFalse(StudentProfile.objects.filter(id_string=id5).first())
 
 
     # Test the GET protocol

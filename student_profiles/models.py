@@ -13,7 +13,7 @@ class StudentProfile(models.Model):
             this is changed here, these tests will fail on setUp.
     '''
     nickname = models.CharField(max_length=512)
-    id_string = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id_string = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
 
     # optional fields
     linkedin_profile = models.CharField(max_length=128, null=True, blank=True)
