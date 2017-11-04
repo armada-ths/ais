@@ -169,7 +169,7 @@ class StudentProfileTestCase(TestCase):
 
         id3 = uuid.uuid4()
 
-        self.assertFalse(StudentProfile.objects.filter(pk=id3).first())
+        self.assertFalse(StudentProfile.objects.filter(id_string=id3).first())
 
         request = self.factory.put(self.url_prefix + str(id3),
             data=json.dumps({'nickname' : 'Mojo'}))
@@ -379,7 +379,7 @@ class QuestionsTestCase(TestCase):
         response = views.questions(request)
         self.assertEqual(response.status_code, 200)
         def test_db():
-            answers = StudentAnswerBase.objects.filter(student=StudentProfile.objects.get(pk=student_id))
+            answers = StudentAnswerBase.objects.filter(student=StudentProfile.objects.get(id_string=student_id))
             answer_list = []
             field_list = []
             region_list = []
@@ -620,7 +620,7 @@ class MatchingResultTestCase(TestCase):
 
     def test_view(self):
         #Returns empty list when no matching is done
-        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.pk))
+        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.id_string))
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
@@ -628,7 +628,7 @@ class MatchingResultTestCase(TestCase):
 
         #returns empty list when one matching is done
         matching_result1 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor1, fair=Fair.objects.get(current=True), score=10)
-        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.pk))
+        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.id_string))
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
@@ -639,7 +639,7 @@ class MatchingResultTestCase(TestCase):
         matching_result3 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor3, fair=Fair.objects.get(current=True), score=20)
         matching_result4 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor4, fair=Fair.objects.get(current=True), score=100)
         matching_result5 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor5, fair=Fair.objects.get(current=True), score=3)
-        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.pk))
+        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.id_string))
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
@@ -647,7 +647,7 @@ class MatchingResultTestCase(TestCase):
 
         #returns 5 matches when 6 matchings are done
         matching_result6 = MatchingResult.objects.create(student=self.student1, exhibitor=self.exhibitor6, fair=Fair.objects.get(current=True), score=70)
-        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.pk))
+        request = self.factory.get('/api/matching_result?student_id=' + str(self.student1.id_string))
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
@@ -658,7 +658,7 @@ class MatchingResultTestCase(TestCase):
         self.assertEqual(matching[4]['percent'], 3)
 
         #still returns empty list for student2
-        request = self.factory.get('/api/matching_result?student_id=' + str(self.student2.pk))
+        request = self.factory.get('/api/matching_result?student_id=' + str(self.student2.id_string))
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
@@ -671,7 +671,7 @@ class MatchingResultTestCase(TestCase):
         matching_result9 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor4, fair=Fair.objects.get(current=True), score=3)
         matching_result10 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor5, fair=Fair.objects.get(current=True), score=3)
         matching_result11 = MatchingResult.objects.create(student=self.student2, exhibitor=self.exhibitor6, fair=Fair.objects.get(current=True), score=3)
-        request = self.factory.get('/api/matching_result?student_id=' + str(self.student2.pk))
+        request = self.factory.get('/api/matching_result?student_id=' + str(self.student2.id_string))
         response = views.matching_result(request)
         self.assertEqual(response.status_code, HTTP_status_code_OK)
         matching = json.loads(response.content.decode(response.charset))
