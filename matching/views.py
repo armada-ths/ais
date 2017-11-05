@@ -143,9 +143,22 @@ def map_sweden(request, template_name='matching/sweden_regions.html'):
             prefix=prefix
         )
         if form.is_valid():
-            pass
-
-
+            for key, values in form.cleaned_data.items():
+                for ex in exhibitors:
+                    if key.split(':')[0] == str(ex.pk):
+                        #remove exhibitor from regions if in values
+                        regions_to_exclude = [r for r in regions if r not in values]
+                        for reg in regions_to_exclude:
+                            try:
+                                reg.exhibitors.remove(ex)
+                            except:
+                                pass
+                        #add exhibitor to regions if in values
+                        for val in values:
+                            try:
+                                val.exhibitors.add(ex)
+                            except:
+                                pass
 
     return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
 
