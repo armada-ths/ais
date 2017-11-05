@@ -9,3 +9,7 @@ django-crispy-forms
 Pillow
 raven
 requests
+numpy
+scipy
+nltk
+enchant
