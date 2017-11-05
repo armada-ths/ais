@@ -3,7 +3,7 @@ from django.contrib import admin
 from . import views
 
 app_name = 'matching'
-<<<<<<< HEAD
+
 urlpatterns = [
     url(r'^test/(?P<total>\d+)/$', views.test_matching, name='matching'),
 ]
