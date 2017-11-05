@@ -12,7 +12,8 @@ class StudentProfile(models.Model):
     Note:   that nickname is used in tests.py for both this app and matching, if
             this is changed here, these tests will fail on setUp.
     '''
-    nickname = models.CharField(max_length=512, null=True, blank=True)
+    id = models.AutoField(primary_key=True)
+    nickname = models.CharField(max_length=512, blank=True, default='Student')
     id_string = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
 
     # optional fields
