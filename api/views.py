@@ -311,6 +311,10 @@ def questions_PUT(request):
             if not modified:
                 answer += 'not '
             answer += 'updated)'
+            # delete old matching results
+            results = MatchingResult.objects.filter(student=student).all()
+            for result in results:
+                result.delete()
             # call the matching algorithm to generate results
             classify.classify(student.pk, survey.pk, 6)
             return HttpResponse(answer, content_type='text/plain')
