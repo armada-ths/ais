@@ -24,11 +24,11 @@ from .helpers_view import update_processed_question, delete_processed_question
 #from .process_data import processExhibitorAnswers as pea
 from .algorithms import main_classify as classify
 
-#from .tasks import create_random_user
-#def test_matching(request, total):
-#    for i in range(int(total)):
-#        create_random_user.delay()
-#    return redirect('/')
+from .tasks import create_random_user
+def test_matching(request, total):
+    for i in range(int(total)):
+        create_random_user.delay()
+    return redirect('/')
 
 @staff_member_required
 def index(request, template_name='matching/index.html'):
