@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+    <ol class="breadcrumb">
+        <li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+        <li class="active">{{ exhibitor.company }}</li>
+    </ol>
+
+    <h2>{{ exhibitor.company }}</h2>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+
+                <h3>Exhibitor</h3>
+                {{ exhibitor_form|crispy }}
+                <h3>Stand information</h3>
+                {{ stand_form|crispy }}
+                <h3>Transport to fair</h3>
+                {{ transport_to_fair_form|crispy }}
+                <h3>Transport from fair</h3>
+                {{ transport_from_fair_form|crispy }}
+
+                <p class="help-block">Only fill in the following fields if you use Armada Transport</p>
+                {{ armada_transport_from_fair_form|crispy }}
+
+                <h3>Company</h3>
+                {{ company_form|crispy }}
+                <h3>Invoice</h3>
+                {{ invoice_form|crispy }}
+
+                <button class="btn btn-primary">Save</button>
+            </form>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div>
+
+            <h3>Contact</h3>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>Contact</strong>
+                    {% if exhibitor.contact %}
+                    <a href="{% url 'contact' fair.year exhibitor.pk exhibitor.contact.pk %}" class="pull-right"> Edit</a>
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    <p>Name: <strong>{{ exhibitor.contact|default:'' }}</strong></p>
+                    <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
+                    <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
+                    <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
+                    <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
+
+                </div>
+            </div>
+
+            <h3>Hosts</h3>
+            {% for host in exhibitor.hosts.all %}
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>Host</strong></div>
+                <div class="panel-body">
+                    <p>Host: <a href="{% url "view_person" fair.year host.pk %}">{{ host.get_full_name }}</a></p>
+                    {% for superior in exhibitor.superiors %}
+                    <p>Superior: <a href="{% url "view_person" fair.year superior.pk %}">{{ superior.get_full_name }}</a></p>
+                    {% endfor %}
+
+                </div>
+            </div>
+            {% endfor %}
+
+                <h3>Products</h3>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Amount</th>
+                        <th>Product price</th>
+                        <th>Total price</th>
+                    </tr>
+                    </thead>
+                    {% for order in exhibitor.order_set.all %}
+                        <tr>
+                            <td><a href="{% url 'order' fair.year exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
+                            <td>{{ order.amount }}</td>
+                            <td>{{ order.product.price }}</td>
+                            <td>{{ order.price }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th></th>
+                        <th></th>
+                        <th>{{ exhibitor.total_cost }}</th>
+                    </tr>
+                    </tfoot>
+                </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <a href="{% url 'order_new' fair.year exhibitor.pk %}" class="btn btn-primary"><span
+                                class="glyphicon glyphicon-plus"></span> New order</a>
+                        </div>
+                        {% if request.user.is_staff %}
+                        <div class="col-md-6 text-right">
+                            <p><a href="{% url "send_emails" fair.year exhibitor.pk %}">
+                                 <button class="btn btn-default"> Send Confirmation Email on CR </button>
+                            </a></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <h3>Banquet attendants</h3>
+
+                    {% for attendant in banquet_attendants %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><strong>{{ attendant.first_name }} {{ attendant.last_name }}</strong>
+                                <a href="{% url 'banquette_attendant' fair.year exhibitor.pk attendant.pk %}" class="pull-right"> Edit</a></div>
+                            <div class="panel-body">
+
+                        <p>Job title: <strong>{{ attendant.job_title }}</strong></p>
+                        <p>LinkedIn: <a href="{{ attendant.linkedin_url }}">{{ attendant.linkedin_url }}</a></p>
+                        <p>Gender: <strong>{{ attendant.get_gender_display }}</strong></p>
+                        <p>Phone number: <strong>{{ attendant.phone_number }}</strong></p>
+                        <p>Allergies: <strong>{{ attendant.allergies|default:'None' }}</strong></p>
+
+
+                        {% if attendant.student_ticket %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Student ticket</p>
+                        {% endif %}
+
+                        {% if attendant.wants_alcohol %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Wants alcohol</p>
+                        {% endif %}
+
+
+                        {% if attendant.wants_lactose_free_food %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Wants lactose free food</p>
+                        {% endif %}
+
+                        {% if attendant.wants_gluten_free_food %}
+                            <p><span class="glyphicon glyphicon-ok"></span> Wants gluten free food</p>
+                        {% endif %}
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+
+                <a href="{% url 'banquette_attendant_new' fair.year exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
+            </div>
+        <br>
+
+
+
+
+
+
+        </div>
+    </div>
+
+
+
+
+
+{% endblock %}

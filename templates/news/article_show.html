@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block nav-news %}<li role="presentation" class="active"><a href="{% url 'news' fair.year %}">News</a></li>{% endblock %}
+
+
+{% block content %}
+	<div class="container">
+		<h1>{{ article.title }}</h1>
+		<h4><i>{{ article.publication_date }}</i></h4>
+		{{ article.html_article_text|safe }}
+		
+		<div>
+			<a href="{{ request.META.HTTP_REFERER }}" type="button" class="btn btn-default">Back</a>
+		</div>
+	</div>
+{% endblock %}

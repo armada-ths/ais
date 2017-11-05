@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block nav-events %}
+<li role="presentation" class="active"><a href="{% url 'location_list' %}">Locations</a></li>
+{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <h3>New Location</h3>
+    <hr>
+  </div>
+  <form method="post" class="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+{% endblock %}

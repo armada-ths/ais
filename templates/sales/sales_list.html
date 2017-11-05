@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block nav-sales %}<li role="presentation" class="active"><a href="{% url 'sales' fair.year %}">Sales</a></li>{% endblock %}
+
+
+{% block content %}
+
+<!--{% if perms.sales.add_sale %}-->
+<div class="pull-right">
+    <a href="new" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New sale</a>
+    <a href="{% url 'companies:new' %}?next={% url 'sales' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a>
+</div>
+<!--{% endif %}--> 
+<h1 style="margin-top: 0;">Sales</h1>
+
+<h3>My sales</h3>
+<div class="table-responsive">
+    <table class="table table-striped" id="my_sales">
+        <thead>
+        <tr>
+            <th>Company</th>
+            <th>Responsible</th>
+            <th>Status</th>
+            <th>Contact by</th>
+            <!-- Diversity room, GReen Room, Events, Nova -->
+            <th>DR</th> 
+            <th>GR</th> 
+            <th>E</th>
+            <th>Nova</th>
+            <th>Registered</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        {% for sale in my_sales %}
+        <tr>
+            {% if sale %}
+            <td><a href="{{sale.id}}">{{ sale.company.name }}</a></td>
+            {% else %}
+                <td>{{ company.name }}</td>
+            {% endif %}
+            <td>
+            {% if sale.responsible %}
+            <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
+            {% endif %}
+            </td>
+            <td>{{ sale.status}}</td>
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
+            <td>{% if sale.diversity_room %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
+            <td>{% if sale.green_room %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
+            <td>{% if sale.events %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+                <!-- Hidden. This is used when searching in search field -->
+                <span style="display: none;">
+                    {% if sale.diversity_room %}
+                            Diversity room 
+                            {% endif%}
+                            {% if sale.green_room %}
+                            Green room
+                            {% endif%}
+                            {% if sale.events %}
+                            Events
+                            {% endif%}
+                            {% if sale.nova %}
+                            Nova
+                            {% endif%}
+                </span>
+            </td>
+
+            <td>
+                {% if sale.nova %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
+            <td>
+                {% if sale.company.name in signedup %}
+                    Preliminary
+                {% else %}
+                    Not registered
+                {% endif %}
+            </td>
+            <!--{% if perms.sales.change_sale %}-->
+            <td>
+                <a href="{% url 'sale_edit' fair.year sale.id %}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> &nbsp;
+        <!--{% endif %}
+            {% if perms.sales.delete_sale %}--> 
+                <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            </td>
+        <!--{% endif %}-->
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+<h3>All sales</h3>
+
+<div class="table-responsive">
+    <table class="table table-striped", id="all_sales">
+        <thead>
+        <tr>
+            <th>Company</th>
+            <th>Responsible</th>
+            <th>Status</th>
+            <th>Contact by</th>
+            <th>DR</th>
+            <th>GR</th>
+            <th>E</th>
+            <th>Nova</th>
+            <th>Registered</th>
+            <th>Actions</th>
+        </tr>
+       </thead>
+        {% for sale in sales %}
+        <tr>
+            {% if sale %}
+            <td><a href="{{sale.id}}">{{ sale.company.name }}</a></td>
+            {% else %}
+                <td>{{ company.name }}</td>
+            {% endif %}
+
+            <td>
+            {% if sale.responsible %}
+            <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
+            {% endif %}
+            </td>
+            <td>{{ sale.status}}</td>
+            <td>
+                {% if sale.contact_by_date %}
+                    {{ sale.contact_by_date }}
+                {% endif %}
+            </td>
+            <td>{% if sale.diversity_room %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
+            <td>{% if sale.green_room %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
+            <td>{% if sale.events %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+                <!-- Hidden. This is used when searching in search field -->
+                <span style="display: none;">
+                    {% if sale.diversity_room %}
+                            Diversity room 
+                            {% endif%}
+                            {% if sale.green_room %}
+                            Green room
+                            {% endif%}
+                            {% if sale.events %}
+                            Events
+                            {% endif%}
+                            {% if sale.nova %}
+                            Nova
+                            {% endif%}
+                </span>
+            </td>
+
+            <td>
+                {% if sale.nova %}
+                    Yes
+                {% else %}
+                    No
+                {% endif%}
+            </td>
+            <td>
+                {% if sale.company.name in signedup %}
+                    Preliminary
+                {% else %}
+                    Not registered
+                {% endif %}
+            </td>
+            <!--{% if perms.sales.change_sale %}-->
+            <td>
+                <a href="{% url 'sale_edit' fair.year sale.id %}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> &nbsp;
+	    <!--{% endif %}
+            {% if perms.sales.delete_sale %}--> 
+                <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            </td>
+	    <!--{% endif %}-->
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+            $('#my_sales').DataTable({
+                'paging': false
+            }),
+            $('#all_sales').DataTable({
+                'paging': false
+            })
+        })
+    </script>
+{% endblock %}

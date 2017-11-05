@@ -1,0 +1,33 @@
+#!/bin/bash
+
+echo "Post-receive started"
+echo "Setting variables"
+SERVER_NAME='ais'
+DEPLOY_DIR=/home/deployment
+#Fill this in, for deployment
+#export SENTRY_USERNAME='a hex string'
+#export SENTRY_PASSWORD='a hex string'
+#export SENTRY_APPID='six numbers'
+unset GIT_INDEX_FILE
+
+echo "Running git checkout"
+git --work-tree=$DEPLOY_DIR/ais --git-dir=$DEPLOY_DIR/git checkout -f master
+
+echo "Running git clean -fdx"
+git --work-tree=$DEPLOY_DIR/ais --git-dir=$DEPLOY_DIR/git clean -fdx --quiet
+
+echo "Linking secrets file"
+ln -s $DEPLOY_DIR/secrets.py $DEPLOY_DIR/ais/ais/
+
+echo "Replacing variables in NGINX conf"
+sed -i 's/{{server_name}}/ais.armada.nu/' $DEPLOY_DIR/ais/ais_nginx.conf
+
+/bin/bash -c "
+	. /home/deployment/ais_venv/bin/activate;
+	echo 'Installing pip requirements';
+	pip install --quiet -r /home/deployment/ais/requirements.txt;
+	echo 'Running migrate';
+	python /home/deployment/ais/manage.py migrate;
+	/bin/bash /home/deployment/ais/restart_uwsgi_server.sh
+"
+echo "Post-receive finished"

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies:companies_list' %}">Companies</a></li>{% endblock %}
+{% block content %}
+<h1>Companies</h1>
+<ul>
+    {% for company in object_list %}
+    <li><a href="{% url "companies:company" company.id %}">{{ company.name }}</a>  :  
+    <a href="{% url "companies:company_edit" company.id %}">EDIT</a>
+    <a href="{% url "companies:company_delete" company.id %}">DELETE</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url "companies:new" %}">New company</a>
+{% endblock %}

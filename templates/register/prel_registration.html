@@ -1,0 +1,41 @@
+{% load crispy_forms_tags %} {% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
+    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
+    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
+            </div>
+        </div>
+        <div class="row header-row">
+            <div class="col-md-12">
+                <h1>Create new user</h1>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <h4>
+              <a href={{contract_url}}>Read the contract here</a>
+            </h4>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+              <form method="post">{% csrf_token %} {{ form | crispy }}
+                  <input type="submit" value="Sign Up!" />
+              </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

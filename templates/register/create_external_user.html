@@ -1,0 +1,42 @@
+{% load crispy_forms_tags %} {% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
+    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
+    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
+            </div>
+        </div>
+        <div class="row header-row">
+            <div class="col-md-12">
+                <h1>Create a new account</h1>
+
+                <p>If you already have an account click on the KTH login button</p>
+                <a href="/login"><img src="/static/images/kth_login_button.png" alt="Login with KTH"></a>
+                <p>If you don't have an KTH account log in <a href="{% url 'anmalan:external_login' %}">here</a>.</p>
+                <br />
+                <br />
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <form method="post">
+              {% csrf_token %}
+              {{ form | crispy }}
+              <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+          </div>
+        </div>
+    </div>
+</body>
+
+</html>

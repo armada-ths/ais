@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block nav-news %}<li role="presentation" class="active"><a href="{% url 'news' fair.year  %}">News</a></li>{% endblock %}
+
+
+{% block content %}
+	<div class="container">
+	<div class="alert alert-warning">
+		<div><strong>Warning!</strong> You are about to delete this post, are you sure?</div>
+		<div class="btn-toolbar">
+			<div class="btn-group">
+			<form method="post">
+				{% csrf_token %}
+				<input type="submit" value="Yes, delete this post" type="button" class="btn btn-danger"/>
+			</form>
+			</div>
+			<div class="btn-group">
+			<div>
+				<a href="{{ request.META.HTTP_REFERER }}" type="button" class="btn btn-default">No, take me back!</a>
+			</div>
+			</div>
+		</div>
+	</div>
+	<h1>{{ article.title }}</h1>
+	<h4><i>{{ article.publication_date }}</i></h4>
+	{{ article.html_article_text|safe }}
+	</div>
+{% endblock %}

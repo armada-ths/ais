@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block nav-recruitment %}
+    <li role="presentation" class="active"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+{% endblock %}
+{% block content %}
+
+
+    <div class="jumbotron recruitment-jumbotron">
+        <div class="container recruitment-jumbotron-container">
+            <h1>Join the Armada</h1>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-9">
+            <h2>Recruitment Periods</h2>
+            {% if recruitment_periods %}
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        {% if perms.recruitment.view_recruitment_applications %}
+                        <th>Applications</th>
+                        {% endif %}
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    {% for period in recruitment_periods %}
+                        <tr>
+                            <td><a href="{% url 'recruitment_period' fair.year period.id %}">{{ period.name }}</a></td>
+                            <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
+                            {% if perms.recruitment.view_recruitment_applications %}
+                            <td>{{ period.recruitmentapplication_set.count }}</td>
+                            {% endif %}
+                            <td>
+                                {% if period.is_past %}
+                                    <span class="label label-default">Closed</span>
+                                {% elif period.is_future %}
+                                    <span class="label label-default">Not opened yet</span>
+                                {% else %}
+                                    <span class="label label-success">Open</span>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+            {% else %}
+                <p>No recruitment periods</p>
+            {% endif %}
+            {% if perms.recruitment.administer_recruitment %}
+                <p><a href="{% url "recruitment_period_new" fair.year %}">
+                    {{ period.year }}
+                    <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
+                        period
+                    </button>
+                </a></p>
+
+
+
+
+            {% endif %}
+            {% if perms.recruitment.administer_recruitment %}
+                <form action="{% url "assign_roles" fair.year %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-default">Assign roles</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="col-md-3">
+
+            <h2>Roles</h2>
+            {% for role in roles %}
+                <p><a href="{% url "roles_new" fair.year role.parent_role.pk %}"><strong>{{ role.parent_role }}</strong></a></p>
+                {% for child_role in role.child_roles %}
+                    <p style="margin-left: 12px"><a href="{% url "roles_new" fair.year child_role.pk %}">{{ child_role }}
+                        ({{ child_role.users|length }})</a></p>
+                {% endfor %}
+                {% empty %}
+                <p>No roles</p>
+            {% endfor %}
+
+            {% if perms.recruitment.administer_roles %}
+                <a class="btn btn-primary" href="{% url "roles_new" fair.year %}"><span class="glyphicon glyphicon-plus"></span>
+                    New role</a>
+
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

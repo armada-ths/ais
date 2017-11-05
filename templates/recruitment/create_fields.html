@@ -1,0 +1,114 @@
+<div id="{{ custom_field_name }}"></div>
+    <div class="form-group">
+    <button onclick="newInterviewQuestion('{{ custom_field_name }}')" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add question</button>
+    </div>
+
+<script>
+var nextCustomFieldId = (function() {
+    var nextValue = Number.MAX_SAFE_INTEGER
+
+    return function() {
+        const tmp = nextValue;
+        nextValue--;
+        return tmp;
+    }
+})()
+
+
+function domElementFromString(html) {
+        const dummy = document.createElement('div')
+        dummy.innerHTML = html.trim()
+        return dummy.firstChild
+    }
+
+    function newInterviewQuestion(extraFieldId) {
+        addInterviewQuestion(extraFieldId, nextCustomFieldId(), 'text_field', '', document.getElementById(extraFieldId).childElementCount+1, false)
+    }
+
+    function addInterviewQuestion(extraFieldId, id, fieldType, question, position, required) {
+        //const id = Math.round((Math.random() * 100000)) % 10000
+
+        document.getElementById(extraFieldId).appendChild(domElementFromString(`<div class="form-group" id="${id}">
+                                <div class="form-group row">
+                                <div class="col-md-2">
+<select class="form-control" name="${extraFieldId}-type_${id}" onchange="(function() { document.getElementById('arguments_${id}_container').hidden = document.forms[0]['${extraFieldId}-type_${id}'].value !== 'radio_buttons' && document.forms[0]['${extraFieldId}-type_${id}'].value !== 'select' })()">
+                                    <option value="text_field" ${'text_field' === fieldType ? 'selected' : ''}>Text field</option>
+                                    <option value="check_box" ${'check_box' === fieldType ? 'selected' : ''}>Check box</option>
+                                    <option value="text_area" ${'text_area' === fieldType ? 'selected' : ''}>Text area</option>
+                                    <option value="radio_buttons" ${'radio_buttons' === fieldType ? 'selected' : ''}>Radio buttons</option>
+                                    <option value="select" ${'select' === fieldType ? 'selected' : ''}>Drop-down list</option>
+                                   <option value="file" ${'file' === fieldType ? 'selected' : ''}>File</option>
+                                    <option value="image" ${'image' === fieldType ? 'selected' : ''}>Image</option>
+                        </select>
+                        </div>
+                                                <div class="col-md-1">
+
+
+                                                <select class="form-control" name="${extraFieldId}-position_${id}">
+                        {% for i in "xxxxxxxxxxxxxxxxxxxxxxxxx" %}
+                                    <option value="{{ forloop.counter }}" ${ {{ forloop.counter }} === position ? 'selected' : ''}>{{ forloop.counter }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+
+                        <div class="col-md-1">
+                                                <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="${extraFieldId}-required_${id}" ${ required ? 'checked' : ''}> Required
+                            </label>
+                        </div>
+                        </div>
+
+                        <div class="col-md-7"><textarea class="form-control" name="${extraFieldId}_${id}" placeholder="Question">${question}</textarea></div>
+
+                        <div class="col-md-1"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button>
+
+                        </div>
+                        </div>
+
+
+                        <div id="arguments_${id}_container" ${fieldType !== 'radio_buttons' && fieldType !== 'select'  ? 'hidden' : ''}>
+                        <div id="arguments_${id}"></div>
+
+                        <div class="form-group row">
+                        <div class="col-lg-12">
+                        <button onclick="(function() { newArgumentToInterviewQuestion(${id}) })()" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add argument</button>
+                        </div>
+                        </div>
+                        </div>
+
+                        </div>
+                        `))
+    }
+
+    function newArgumentToInterviewQuestion(interviewQuestionId) {
+        addArgumentToInterviewQuestion(nextCustomFieldId(), interviewQuestionId, '', document.getElementById(`arguments_${interviewQuestionId}`).childElementCount+1)
+    }
+
+    function addArgumentToInterviewQuestion(argumentId, interviewQuestionId, value, position) {
+            var id = `argument_${interviewQuestionId}_${argumentId}`
+             document.getElementById(`arguments_${interviewQuestionId}`).appendChild(domElementFromString(`
+                        <div class="form-group row" id="${id}">
+                            <div class="col-md-2"><input type="text" class="form-control" value="${value}" name="argument_${interviewQuestionId}_${argumentId}" placeholder="Argument"></div>
+                                                <div class="col-md-1">
+                                                <select class="form-control" name="argument_position_${interviewQuestionId}_${argumentId}">
+                        {% for i in "xxxxxxxxxxxxxxxxxxxxxxxxx" %}
+                                    <option value="{{ forloop.counter }}" ${ {{ forloop.counter }} === position ? 'selected' : ''}>{{ forloop.counter }}</option>
+                        {% endfor %}
+                        </select>
+                        </div>
+
+                            <div class="col-md-2"><button onclick="(function() { document.getElementById('${id}').remove() })()" type="button" class="btn btn-danger">
+<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</button></div>
+                        </div>
+                        `))
+    }
+
+
+{%  for custom_field in values %}
+        addInterviewQuestion('{{custom_field_name}}', {{ custom_field.id }}, '{{ custom_field.field_type }}', `{{ custom_field.question }}`, {{ custom_field.position }}, {% if custom_field.required %} true {% else %} false {% endif %})
+            {% for argument in custom_field.customfieldargument_set.all|dictsort:"position" %}
+                addArgumentToInterviewQuestion({{argument.id}}, {{ custom_field.id }}, '{{argument.value}}', {{argument.position}})
+            {% endfor %}
+        {% endfor %}
+</script>

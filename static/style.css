@@ -1,0 +1,23 @@
+.margin-top5 {
+    margin-top: 5px;
+}
+
+/* Remove rounded corners from navbar */
+.navbar-inverse {
+  border-radius: 0 !important;
+}
+
+.navbar-brand img {
+  opacity: 0.6;
+}
+
+.navbar-brand:hover img {
+  opacity: 1;
+  animation: sailing linear 0.9s infinite;
+}
+
+@keyframes sailing {
+  25% {transform: rotate(20deg) translate(0, -2px);}
+  50% {transform: translate(0, -4px);}
+  75% {transform: rotate(-20deg) translate(0, -2px);}
+}

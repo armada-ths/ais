@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+    <ol class="breadcrumb">
+        <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+        <li class="active">{% if role %}{{ role }} {% else %} New Role {% endif %}</li>
+    </ol>
+
+    <h3>{% if role %}{{ role }} {% else %} New Role {% endif %}</h3>
+    <hr>
+
+
+    <div class="row">
+        <div class="col-md-9">
+            {% if perms.recruitment.administer_roles %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ roles_form|crispy }}
+                    <button class="btn btn-primary">Save</button>
+                    {% if role != None %}
+                        <a class="btn btn-danger" href="{% url "roles_delete" fair.year role.pk %}"
+                           onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+                    {% endif %}
+
+                </form>
+
+            {% else %}
+                {% include 'recruitment/static_form.html' with form=roles_form %}
+            {% endif %}
+        </div>
+
+
+        <div class="col-md-3">
+            <label>People</label>
+            {% if role.users %}
+                <ul class="list-unstyled">
+                    {% for user in role.users %}
+                        <li>
+                            <a href="{% url 'view_person' fair.year user.id %}">{% include 'recruitment/user_name.html' with user=user %}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>None</p>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
