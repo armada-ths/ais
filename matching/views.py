@@ -13,7 +13,7 @@ from exhibitors.models import Exhibitor
 from fair.models import Fair
 from student_profiles.models import StudentProfile
 
-from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm
+from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm, MapSwedenForm
 
 from collections import Counter
 
@@ -131,13 +131,23 @@ def map_sweden(request, template_name='matching/sweden_regions.html'):
         question = None
 
     if question:
+        exhibitors = Exhibitor.objects.filter(fair=fair)
         responses = Response.objects.filter(survey=survey_raw, question=question)
-        words = pea.genSubRegions(responses, survey_raw, survey_proc)
-        print(len(words))
-        print(words)
+        answers_raw_all = TextAns.objects.filter(response__in=responses)
+        regions = SwedenRegion.objects.filter(survey=survey_proc)
+        prefix = 'response_'
+        form = MapSwedenForm(
+            request.POST or None,
+            responses=responses,
+            regions=regions,
+            prefix=prefix
+        )
+        if form.is_valid():
+            pass
 
 
-    return render(request, template_name, {'survey': survey_raw, 'question': question})
+
+    return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
 
 @staff_member_required
 def map_world(request, template_name='matching/world_regions.html'):
@@ -160,10 +170,10 @@ def map_world(request, template_name='matching/world_regions.html'):
         for w in correct_words:
             country = Country.objects.get_or_create(name=w)[0]
             countries.append(country)
-
         for w in incorrect_words:
             (incorrect_word, isCreated) = Country.objects.get_or_create(name=w)
             incorrect_countries.append(incorrect_word)
+
         region_prefix = 'country_'
         continents = Continent.objects.filter(survey=survey_proc)
         form = MapSubAreaForm(
@@ -175,6 +185,13 @@ def map_world(request, template_name='matching/world_regions.html'):
             regions = continents,
             region_prefix = region_prefix
         )
+        if form.is_valid():
+            for sub_reg in countries + incorrect_countries:
+                region_id = form.cleaned_data['%s%i'%(region_prefix, sub_reg.pk)]
+                if region_id:
+                    sub_reg.continent = Continent.objects.get(pk=region_id)
+
+
 
 
     return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
@@ -209,7 +226,8 @@ def finalize_workfields(request, template_name='matching/finalize_workfields.htm
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
     # this is only trying the matching alg rand generator
-    student = StudentProfile.objects.filter()
-    classify.classify(student[0].pk, survey_proc.pk, 10)
+    #student = StudentProfile.objects.filter()
+    #if student:
+    #    classify.classify(student[0].pk, survey_proc.pk, 10)
 
     return render(request, template_name, {'survey': survey_raw})

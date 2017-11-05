@@ -352,6 +352,8 @@ class SwedenRegion(models.Model):
     name = models.TextField()
     region_id = models.IntegerField(unique=True, null=True  )
     survey = models.ForeignKey(Survey, null=True)
+    # this is a fix for now since we wont use the SwedenCity model
+    exhibitors = models.ManyToManyField('exhibitors.Exhibitor')
 
 
     def __str__(self):

@@ -87,10 +87,11 @@ class StudentQuestionForm(Form):
 
 class MapSubAreaForm(Form):
     '''
-    Used to map cities and countries to the regions predefined in the app and
+    Used to map countries to the regions predefined in the app and
     on the ais db, for now this is also called by the workfield for the teams
     to get some nice data to use
     '''
+
     def __init__(self, *args, **kwargs):
         survey_raw = kwargs.pop('survey_raw')
         survey_proc = kwargs.pop('survey_proc')
@@ -99,6 +100,7 @@ class MapSubAreaForm(Form):
         regions = kwargs.pop('regions')
         region_prefix = kwargs.pop('region_prefix')
         super(MapSubAreaForm, self).__init__(*args, **kwargs)
+        self.order_fields(sorted(self.fields.keys()))
         self.init_area_fields(sub_regions, regions, region_prefix)
         self.init_area_fields(sub_regions_wrong, regions, region_prefix, True)
 
@@ -114,6 +116,8 @@ class MapSubAreaForm(Form):
 
         for sub_region in sub_regions:
             self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False, wFlag=wFlag)
+            if sub_region.continent:
+                self.initial['%s%i'%(prefix, sub_region.pk)] = sub_region.continent.pk
 
 
     class AreaSelectField(ChoiceField):
@@ -122,4 +126,42 @@ class MapSubAreaForm(Form):
             if wFlag == False:
                 self.label='%s'%object.name
             else:
-                self.label='DataError (could not process): %s'%object.name
+                self.label='ProcessError: %s'%object.name
+
+class MapSwedenForm(Form):
+    '''
+    Since we cannot process swedish answers for now me make a multiselect
+    form for each exhibitors answer!
+    '''
+    def __init__(self, *args, **kwargs):
+        #raw_answers = kwargs.pop('raw_answers')
+        responses = kwargs.pop('responses')
+        areas_select = kwargs.pop('regions')
+        prefix = kwargs.pop('prefix')
+        super(MapSwedenForm, self).__init__(*args, **kwargs)
+
+        for response in responses:
+            try:
+                raw_answer = TextAns.objects.get(response=response)
+                self.answer_as_select_field(response, raw_answer, areas_select)
+            except TextAns.DoesNotExist:
+                pass
+
+    class SwedenMultiChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, object):
+            return format_html("<span class='btn btn-armada-checkbox product-description'> {} </span>",
+            mark_safe(object.name),
+            )
+
+    def answer_as_select_field(self, response, raw_ans, areas_select):
+        '''
+        Generate multi select boxes for each exhibitor answer
+        '''
+        initials = []
+        for area in areas_select:
+            if list(area.exhibitors.all()):
+                if response.exhibitor in list(area.exhibitors.all()):
+                    initials.append(area)
+
+        self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)] = self.SwedenMultiChoiceField(queryset=areas_select, widget=CheckboxSelectMultiple(), required=False)
+        self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)].initial = initials
