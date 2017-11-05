@@ -203,6 +203,10 @@ def map_world(request, template_name='matching/world_regions.html'):
                 region_id = form.cleaned_data['%s%i'%(region_prefix, sub_reg.pk)]
                 if region_id:
                     sub_reg.continent = Continent.objects.get(pk=region_id)
+                    sub_reg.save()
+                else:
+                    sub_reg.continent = None
+                    sub_reg.save()
 
 
 

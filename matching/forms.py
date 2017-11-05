@@ -117,7 +117,7 @@ class MapSubAreaForm(Form):
         for sub_region in sub_regions:
             self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False, wFlag=wFlag)
             if sub_region.continent:
-                self.initial['%s%i'%(prefix, sub_region.pk)] = sub_region.continent.pk
+                self.fields['%s%i'%(prefix, sub_region.pk)].initial = sub_region.continent.pk
 
 
     class AreaSelectField(ChoiceField):
