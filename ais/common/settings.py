@@ -58,6 +58,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -113,4 +114,3 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
-
