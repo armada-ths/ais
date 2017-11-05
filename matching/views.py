@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User
 
-from .tasks import create_random_user
-
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse, Http404
@@ -26,10 +24,11 @@ from .helpers_view import update_processed_question, delete_processed_question
 #from .process_data import processExhibitorAnswers as pea
 from .algorithms import main_classify as classify
 
-def test_matching(request, total):
-    for i in range(int(total)):
-        create_random_user.delay()
-    return redirect('/')
+#from .tasks import create_random_user
+#def test_matching(request, total):
+#    for i in range(int(total)):
+#        create_random_user.delay()
+#    return redirect('/')
 
 @staff_member_required
 def index(request, template_name='matching/index.html'):

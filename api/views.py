@@ -19,6 +19,7 @@ from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
+from matching.tasks import classify_student
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role
 from student_profiles.models import StudentProfile, MatchingResult
@@ -316,7 +317,7 @@ def questions_PUT(request):
             for result in results:
                 result.delete()
             # call the matching algorithm to generate results
-            classify.classify(student.pk, survey.pk, 6)
+            classify_student.delay(student.pk, survey.pk, 6)
             return HttpResponse(answer, content_type='text/plain')
         else:
             if wasCreated:
