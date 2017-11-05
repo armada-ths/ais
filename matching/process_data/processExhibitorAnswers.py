@@ -19,9 +19,10 @@ from matching.models import Survey, Response, TextAns
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer as ps
-from gensim import corpora, models, similarities
+#from gensim import corpora, models, similarities
 import enchant
 import re
+from collections import Counter
 
 class SpellChecker():
 
@@ -43,19 +44,19 @@ def genSubRegions(responses, survey_raw, survey_processed):
     words = check_spelling(answers_raw_all)
     return(words)
 
-def genWorkFields(responses, survey_raw, survey_processed):
+def genWorkFields(responses, survey_raw, survey_processed, countFlag=False):
     '''
     Objects must be a list of matching.Response model objects
     not done, just returns a list of texts without any relation to exhibitors
     '''
     answers_raw_all = TextAns.objects.filter(response__in=responses)
-    words = check_spelling(answers_raw_all)
+    words = check_spelling(answers_raw_all, countFlag, True)
     return(words)
 
     #for ans in answer_filtered:
     #    print(ans)
 
-def check_spelling(answers):
+def check_spelling(answers, countFlag=False, lowerFlag=False):
     '''
     be cool
     '''
@@ -69,6 +70,8 @@ def check_spelling(answers):
         answers_filtered = [w for w in answers_raw if not w in stop_words]
         for ans in answers_filtered:
             ans = ans.strip(' ')
+            if lowerFlag:
+                ans = ans.lower()
             if ans:
                 if sc.check(ans) == True:
                     correctly_spelled.append(ans)
@@ -82,4 +85,8 @@ def check_spelling(answers):
                             break
                     if check_flag:
                         correctly_spelled.append(ans)
+    if countFlag:
+        most_common = Counter(correctly_spelled).most_common(20)
+        return(most_common)
+
     return (set(correctly_spelled), set(incorrectly_spelled))

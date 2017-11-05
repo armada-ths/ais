@@ -251,9 +251,9 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
-        '''
-        words = pea.genWorkFields(responses, survey_raw, survey_proc)
-        '''
+        most_common = pea.genWorkFields(responses, survey_raw, survey_proc, True)
+        for key, value in most_common:
+            print('%s: %i'%(key, value))
 
 
     return render(request, template_name, {'survey': survey_raw})
