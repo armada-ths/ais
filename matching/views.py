@@ -220,12 +220,16 @@ def map_world(request, template_name='matching/world_regions.html'):
         if form.is_valid():
             for sub_reg in countries + incorrect_countries:
                 region_id = form.cleaned_data['%s%i'%(region_prefix, sub_reg.pk)]
-                if region_id:
-                    sub_reg.continent = Continent.objects.get(pk=region_id)
-                    sub_reg.save()
+                if region_id and region_id != 'None':
+                    try:
+                        sub_reg.continent = Continent.objects.get(pk=int(region_id))
+                        sub_reg.save()
+                    except ValueError:
+                        pass #this should never happen! if you suspect something fishy contact Emma Backstrom
                 else:
-                    sub_reg.continent = None
-                    sub_reg.save()
+                    if sub_reg.continent:
+                        sub_reg.continent = None
+                        sub_reg.save()
 
 
 
@@ -244,7 +248,6 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
         question = Question.objects.get(survey=survey_raw, name='workfields')
     except Question.DoesNotExist:
         question = None
-        print("Workfield question is not defined with name='workfields'")
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)

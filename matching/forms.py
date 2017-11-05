@@ -109,15 +109,19 @@ class MapSubAreaForm(Form):
         init the field with a select choice of
         wFlag indicates if the label should be flagged by an error text
         '''
-        region_select = [(None, 'This data is wrong!')]
+        region_select = [(None, 'This data is wrong (set as Null)!')]
         for region in regions:
             tup = (region.pk, region.name)
             region_select.append(tup)
+        print(region_select)
 
         for sub_region in sub_regions:
-            self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False, wFlag=wFlag)
             if sub_region.continent:
-                self.fields['%s%i'%(prefix, sub_region.pk)].initial = (sub_region.continent.pk, sub_region.continent.name)
+                self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False, wFlag=wFlag, initial=sub_region.continent.pk, widget=RadioSelect)
+            else:
+                self.fields['%s%i'%(prefix, sub_region.pk)] = self.AreaSelectField(choices=region_select, object = sub_region, required=False, wFlag=wFlag)
+            #if sub_region.continent:
+                #self.initial['%s%i'%(prefix, sub_region.pk)] = sub_region.continent.name
 
 
     class AreaSelectField(ChoiceField):
