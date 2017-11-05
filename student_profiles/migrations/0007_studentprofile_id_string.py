@@ -5,6 +5,10 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import uuid
 
+def delete_old_students(apps, schema_editor):
+    StudentProfile = apps.get_model('student_profiles', 'StudentProfile')
+    StudentProfile.objects.all().delete()
+    
 
 class Migration(migrations.Migration):
 
@@ -13,9 +17,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='studentprofile',
-            name='id_string',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
-        ),
+        migrations.RunPython(delete_old_students),
     ]
