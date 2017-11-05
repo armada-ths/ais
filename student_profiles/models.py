@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.timezone import utc
 
+import uuid
+
 class StudentProfile(models.Model):
     '''
     A striped down version of a user profile
@@ -10,7 +12,9 @@ class StudentProfile(models.Model):
     Note:   that nickname is used in tests.py for both this app and matching, if
             this is changed here, these tests will fail on setUp.
     '''
-    nickname = models.CharField(max_length=512)
+    student_id = models.AutoField(primary_key=True)
+    nickname = models.CharField(max_length=512, blank=True, default='Student')
+    id_string = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
 
     # optional fields
     linkedin_profile = models.CharField(max_length=128, null=True, blank=True)

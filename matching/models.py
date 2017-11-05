@@ -9,12 +9,18 @@ from enum import Enum, unique
 
 # Matching survey
 class Survey(models.Model):
+    '''
+    relates_to - used to relate the processed survey to the raw survey/the one
+    that is used to gather the exhibitor info
+    '''
     fair = models.ForeignKey('fair.Fair', default=1)
     name = models.CharField(max_length=256)
     description = models.TextField()
 
+    relates_to = models.ForeignKey('self',null=True, blank=True)
+
     def __str__(self):
-        return "%s"%self.name
+        return "%s at %s"%(self.name, self.fair)
 
     class Meta:
         ordering = ['name']
@@ -273,6 +279,7 @@ class StudentAnswerGrading(StudentAnswerBase):
         return '%i'%self.answer
 
 
+
 class WorkFieldArea(models.Model):
     '''
     Work field main areas. These are manually inputed into the db as a type
@@ -309,6 +316,7 @@ class WorkField(models.Model):
     work_field  = models.TextField(unique=True)
     work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
     survey      = models.ManyToManyField(Survey)
+
     class Meta:
         default_permissions = ()
         verbose_name = 'work field'
@@ -396,10 +404,13 @@ class Country(models.Model):
     '''
     name = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
-    continent = models.ForeignKey(Continent)
+    continent = models.ForeignKey(Continent, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'countries'
+
+    def __str__(self):
+        return '%s'%self.name
 
 class StudentAnswerContinent(StudentAnswerBase):
     '''
