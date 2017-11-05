@@ -178,13 +178,32 @@ def map_world(request, template_name='matching/world_regions.html'):
     countries = []
     incorrect_countries = []
     if question:
+        # get all responses and pass them to the subregiongenerator
         responses = Response.objects.filter(survey=survey_raw, question=question)
         (correct_words, incorrect_words) = pea.genSubRegions(responses, survey_raw, survey_proc)
+        # get exhibitor data to map each region to exhibitors
+        answers_raw = TextAns.objects.filter(response__in=responses)
+        exhibitor_values = [r.exhibitor.pk for r in responses]
+        response_keys = [r.pk for r in responses]
+        ex_resp_dict = dict(zip(response_keys, exhibitor_values))
+
         for w in correct_words:
-            country = Country.objects.get_or_create(name=w)[0]
+            (country, isCreated) = Country.objects.get_or_create(name=w)
+            if isCreated:
+                for answer in answers_raw:
+                    if country.name in answer.ans:
+                        exhibitor = Exhibitor.objects.get(pk=ex_resp_dict[answer.response.pk])
+                        country.exhibitor.add(exhibitor)
+                        country.save()
             countries.append(country)
+
         for w in incorrect_words:
             (incorrect_word, isCreated) = Country.objects.get_or_create(name=w)
+            if isCreated:
+                for answer in answers_raw:
+                    if incorrect_word.name in answer.ans:
+                        exhibitor = Exhibitor.objects.get(pk=ex_resp_dict[answer.response.pk])
+                        country.exhibitor.add(exhibitor)
             incorrect_countries.append(incorrect_word)
 
         region_prefix = 'country_'
