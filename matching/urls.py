@@ -5,7 +5,7 @@ from . import views
 app_name = 'matching'
 
 urlpatterns = [
-    #url(r'^test/(?P<total>\d+)/$', views.test_matching, name='matching'),
+    url(r'^test/(?P<total>\d+)/$', views.test_matching, name='matching'),
 ]
 ''' these needs to go into the final version
 url(r'^$', views.index, name='index'),
