@@ -262,6 +262,7 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
 
+        ''' this does not work properly on the server, fix later
         workfields = WorkField.objects.filter(survey=survey_proc)
         if not workfields:
             (most_common_correct, most_common_incorrect) = pea.genWorkFields(responses, survey_raw, survey_proc, True)
@@ -280,6 +281,7 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
                     wfield.save()
                 except:
                     pass
+        '''
 
         exhibitors = Exhibitor.objects.filter(fair=fair)
         answers_raw_all = TextAns.objects.filter(response__in=responses)
