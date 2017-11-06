@@ -244,7 +244,7 @@ class WorkField(models.Model):
     work_field  = models.TextField(unique=True)
     work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
     survey      = models.ManyToManyField(Survey)
-    exhibitors  = models.ManyToManyField('exhibitors.Exhibitor')
+    exhibitors  = models.ManyToManyField('exhibitors.Exhibitor', blank=True)
 
     class Meta:
         default_permissions = ()
@@ -262,7 +262,7 @@ class SwedenRegion(models.Model):
     region_id = models.IntegerField(unique=True, null=True  )
     survey = models.ManyToManyField(Survey)
     # this is a fix for now since we wont use the SwedenCity model
-    exhibitors = models.ManyToManyField('exhibitors.Exhibitor')
+    exhibitors = models.ManyToManyField('exhibitors.Exhibitor', blank=True)
 
 
     def __str__(self):
@@ -274,8 +274,8 @@ class SwedenCity(models.Model):
     Used to connect cities to a region in Sweden. Contains preprocessed data.
     '''
     city = models.TextField(unique=True)
-    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
-    region = models.ManyToManyField(SwedenRegion)
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor', blank=True)
+    region = models.ManyToManyField(SwedenRegion, blank=True)
 
     class Meta:
             verbose_name = 'sweden city'
@@ -304,7 +304,7 @@ class Country(models.Model):
     Connects Country (that exhibitors work in) to continents (where student want to work)
     '''
     name = models.TextField(unique=True)
-    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+    exhibitor = models.ManyToManyField('exhibitors.Exhibitor', blank=True)
     continent = models.ForeignKey(Continent, null=True, blank=True)
 
     class Meta:
@@ -323,6 +323,7 @@ class JobType(models.Model):
     job_type = models.TextField()
     job_type_id = models.IntegerField(unique=True)
     exhibitor_question = models.ForeignKey(Question, blank=True, null=True)
+    exhibitors = models.ManyToManyField('exhibitors.Exhibitor', blank=True)
 
     def __str__(self):
         return '%s: %s'%(self.job_type_id, self.job_type)
