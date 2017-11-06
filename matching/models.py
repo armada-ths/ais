@@ -316,13 +316,14 @@ class WorkField(models.Model):
     work_field  = models.TextField(unique=True)
     work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
     survey      = models.ManyToManyField(Survey)
+    exhibitors  = models.ManyToManyField('exhibitors.Exhibitor')
 
     class Meta:
         default_permissions = ()
         verbose_name = 'work field'
 
     def __str__(self):
-        return '%s in %s'%(self.work_field, self.work_area.work_area)
+        return '%s'%(self.work_field)
 
 
 class StudentAnswerWorkField(StudentAnswerBase):

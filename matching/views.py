@@ -13,7 +13,7 @@ from exhibitors.models import Exhibitor
 from fair.models import Fair
 from student_profiles.models import StudentProfile
 
-from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm, MapSwedenForm
+from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm, MapSwedenForm, WorkFieldForm
 
 from collections import Counter
 
@@ -129,6 +129,7 @@ def map_sweden(request, template_name='matching/sweden_regions.html'):
         question = Question.objects.get(survey=survey_raw, name='sweden-city')
     except:
         question = None
+        form=None
 
     if question:
         exhibitors = Exhibitor.objects.filter(fair=fair)
@@ -174,6 +175,7 @@ def map_world(request, template_name='matching/world_regions.html'):
         question = Question.objects.get(survey=survey_raw, name='world-country')
     except Question.DoesNotExist:
         question = None
+        form = None
 
     countries = []
     incorrect_countries = []
@@ -251,12 +253,54 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
-        most_common = pea.genWorkFields(responses, survey_raw, survey_proc, True)
-        for key, value in most_common:
-            print('%s: %i'%(key, value))
+
+        workfields = WorkField.objects.filter(survey=survey_proc)
+        if not workfields:
+            (most_common_correct, most_common_incorrect) = pea.genWorkFields(responses, survey_raw, survey_proc, True)
+
+            for key, value in most_common_correct:
+                (wfield, isCreated) = WorkField.objects.get_or_create(work_field=key)
+                try:
+                    wfield.survey.add(survey_proc)
+                    wfield.save()
+                except:
+                    pass
+            for key, value in most_common_incorrect:
+                (wfield, isCreated) = WorkField.objects.get_or_create(work_field=key)
+                try:
+                    wfield.survey.add(survey_proc)
+                    wfield.save()
+                except:
+                    pass
+
+        exhibitors = Exhibitor.objects.filter(fair=fair)
+        answers_raw_all = TextAns.objects.filter(response__in=responses)
+        workfields = WorkField.objects.filter(survey=survey_proc)
+        form = WorkFieldForm(
+            request.POST or None,
+            responses=responses,
+            workfields=workfields,
+        )
+        if form.is_valid():
+            for key, workfields_selected in form.cleaned_data.items():
+                for ex in exhibitors:
+                    if key.split(':')[0] == str(ex.pk):
+                        #remove exhibitor from regions if in values
+                        wfields_to_exclude = [w for w in workfields if w not in workfields_selected]
+                        for wfield in wfields_to_exclude:
+                            try:
+                                wfield.exhibitors.remove(ex)
+                            except:
+                                pass
+                        #add exhibitor to regions if in values
+                        for wfield in workfields_selected:
+                            try:
+                                wfield.exhibitors.add(ex)
+                            except:
+                                pass
 
 
-    return render(request, template_name, {'survey': survey_raw})
+    return render(request, template_name, {'survey': survey_raw, 'form': form, 'question': question})
 
 def finalize_workfields(request, template_name='matching/finalize_workfields.html'):
     '''
@@ -265,9 +309,6 @@ def finalize_workfields(request, template_name='matching/finalize_workfields.htm
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
-    # this is only trying the matching alg rand generator
-    #student = StudentProfile.objects.filter()
-    #if student:
-    #    classify.classify(student[0].pk, survey_proc.pk, 10)
+
 
     return render(request, template_name, {'survey': survey_raw})

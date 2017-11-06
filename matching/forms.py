@@ -113,7 +113,6 @@ class MapSubAreaForm(Form):
         for region in regions:
             tup = (region.pk, region.name)
             region_select.append(tup)
-        print(region_select)
 
         for sub_region in sub_regions:
             if sub_region.continent:
@@ -168,4 +167,31 @@ class MapSwedenForm(Form):
                     initials.append(area)
 
         self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)] = self.SwedenMultiChoiceField(queryset=areas_select, widget=CheckboxSelectMultiple(), required=False)
+        self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)].initial = initials
+
+class WorkFieldForm(Form):
+    '''
+    '''
+    def __init__(self, *args, **kwargs):
+        responses = kwargs.pop('responses')
+        workfields = kwargs.pop('workfields')
+        super(WorkFieldForm, self).__init__(*args, **kwargs)
+
+        for response in responses:
+            try:
+                raw_answer = TextAns.objects.get(response=response)
+                self.answer_as_multi_field(response, raw_answer, workfields)
+            except TextAns.DoesNotExist:
+                pass
+
+    def answer_as_multi_field(self, response, raw_ans, workfields):
+        '''
+        '''
+        initials = []
+        for wfield in workfields:
+            current_ex = list(wfield.exhibitors.all())
+            if current_ex:
+                if response.exhibitor in current_ex:
+                    initials.append(wfield)
+        self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)] = ModelMultipleChoiceField(queryset=workfields, required=False, widget=CheckboxSelectMultiple)
         self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)].initial = initials

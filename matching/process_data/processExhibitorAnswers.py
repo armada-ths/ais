@@ -87,6 +87,7 @@ def check_spelling(answers, countFlag=False, lowerFlag=False):
                         correctly_spelled.append(ans)
     if countFlag:
         most_common = Counter(correctly_spelled).most_common(20)
-        return(most_common)
+        most_common_incorrect = Counter(incorrectly_spelled).most_common(10)
+        return(most_common, most_common_incorrect)
 
     return (set(correctly_spelled), set(incorrectly_spelled))
