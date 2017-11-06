@@ -21,16 +21,29 @@
 			</svg>
             <h2>Matching Algorithm Initialization </h2>
             <h4> Survey: {{ survey }} </h4>
+            <h4>Exhibitor Question: {{ question.text }}</h4>
             <h3>5. Initialize the Clustering of Work Fields </h3>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form method="post">
+                            {% csrf_token %}
+                            {% for field in form %}
 
+                            <h4> {{ field.label }} </h4>
+                                {{ field }}
+                            </br>
+                            </br>
+                            </br>
+                            {% endfor %}
 
-
-
-
-
-            <a href="{% url 'matching:map_world' %}"><button type="button" class="btn btn-default">Previous</button></a>
-            <button type="submit" class="btn btn-success">Submit</button>
-            <a href="{% url 'matching:finalize_workfields' %}"><button type="button" class="btn btn-default">Next</button></a>
+                            <a href="{% url 'matching:map_world' %}"><button type="button" class="btn btn-default">Previous</button></a>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                            <a href="{% url 'matching:finalize_workfields' %}"><button type="button" class="btn btn-default">Next</button></a>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

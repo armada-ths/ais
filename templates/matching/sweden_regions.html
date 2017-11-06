@@ -23,15 +23,27 @@
             <h4> Survey: {{ survey }} </h4>
             <h4> Exhibitor question: {{ question.text }} </h4>
             <h3>3. Map Sweden to Regions in App/Web </h3>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form method="post">
+                            {% csrf_token %}
+                            {% for field in form %}
 
+                            <h4> {{ field.label }} </h4>
+                                {{ field }}
+                            </br>
+                            </br>
+                            </br>
+                            {% endfor %}
 
-
-
-
-
-            <a href="{% url 'matching:slider_grading' %}"><button type="button" class="btn btn-default">Previous</button></a>
-            <button type="submit" class="btn btn-success">Submit</button>
-            <a href="{% url 'matching:map_world' %}"><button type="button" class="btn btn-default">Next</button></a>
+                            <a href="{% url 'matching:slider_grading' %}"><button type="button" class="btn btn-default">Previous</button></a>
+                            <button type="submit" class="btn btn-success">Submit</button>
+                            <a href="{% url 'matching:map_world' %}"><button type="button" class="btn btn-default">Next</button></a>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

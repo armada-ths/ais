@@ -15,13 +15,13 @@ from exhibitors.models import Exhibitor
 from fair.models import Fair
 from student_profiles.models import StudentProfile
 
-from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm
+from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm, MapSwedenForm, WorkFieldForm
 
 from collections import Counter
 
 from .helpers_view import update_processed_question, delete_processed_question
 
-#from .process_data import processExhibitorAnswers as pea
+from .process_data import processExhibitorAnswers as pea
 from .algorithms import main_classify as classify
 
 from .tasks import create_random_user
@@ -137,16 +137,39 @@ def map_sweden(request, template_name='matching/sweden_regions.html'):
         question = Question.objects.get(survey=survey_raw, name='sweden-city')
     except:
         question = None
+        form=None
 
     if question:
+        exhibitors = Exhibitor.objects.filter(fair=fair)
         responses = Response.objects.filter(survey=survey_raw, question=question)
-        '''
-        words = pea.genSubRegions(responses, survey_raw, survey_proc)
-        print(len(words))
-        print(words)
-        '''
+        answers_raw_all = TextAns.objects.filter(response__in=responses)
+        regions = SwedenRegion.objects.filter(survey=survey_proc)
+        prefix = 'response_'
+        form = MapSwedenForm(
+            request.POST or None,
+            responses=responses,
+            regions=regions,
+            prefix=prefix
+        )
+        if form.is_valid():
+            for key, values in form.cleaned_data.items():
+                for ex in exhibitors:
+                    if key.split(':')[0] == str(ex.pk):
+                        #remove exhibitor from regions if in values
+                        regions_to_exclude = [r for r in regions if r not in values]
+                        for reg in regions_to_exclude:
+                            try:
+                                reg.exhibitors.remove(ex)
+                            except:
+                                pass
+                        #add exhibitor to regions if in values
+                        for val in values:
+                            try:
+                                val.exhibitors.add(ex)
+                            except:
+                                pass
 
-    return render(request, template_name, {'survey': survey_raw, 'question': question})
+    return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
 
 @staff_member_required
 def map_world(request, template_name='matching/world_regions.html'):
@@ -160,15 +183,39 @@ def map_world(request, template_name='matching/world_regions.html'):
         question = Question.objects.get(survey=survey_raw, name='world-country')
     except Question.DoesNotExist:
         question = None
+        form = None
 
     countries = []
+    incorrect_countries = []
     if question:
+        # get all responses and pass them to the subregiongenerator
         responses = Response.objects.filter(survey=survey_raw, question=question)
-        '''
-        words = pea.genSubRegions(responses, survey_raw, survey_proc)
-        for w in words:
-            country = Country.objects.get_or_create(name=w)[0]
+        (correct_words, incorrect_words) = pea.genSubRegions(responses, survey_raw, survey_proc)
+        # get exhibitor data to map each region to exhibitors
+        answers_raw = TextAns.objects.filter(response__in=responses)
+        exhibitor_values = [r.exhibitor.pk for r in responses]
+        response_keys = [r.pk for r in responses]
+        ex_resp_dict = dict(zip(response_keys, exhibitor_values))
+
+        for w in correct_words:
+            (country, isCreated) = Country.objects.get_or_create(name=w)
+            if isCreated:
+                for answer in answers_raw:
+                    if country.name in answer.ans:
+                        exhibitor = Exhibitor.objects.get(pk=ex_resp_dict[answer.response.pk])
+                        country.exhibitor.add(exhibitor)
+                        country.save()
             countries.append(country)
+
+        for w in incorrect_words:
+            (incorrect_word, isCreated) = Country.objects.get_or_create(name=w)
+            if isCreated:
+                for answer in answers_raw:
+                    if incorrect_word.name in answer.ans:
+                        exhibitor = Exhibitor.objects.get(pk=ex_resp_dict[answer.response.pk])
+                        country.exhibitor.add(exhibitor)
+            incorrect_countries.append(incorrect_word)
+
         region_prefix = 'country_'
         continents = Continent.objects.filter(survey=survey_proc)
         form = MapSubAreaForm(
@@ -176,10 +223,26 @@ def map_world(request, template_name='matching/world_regions.html'):
             survey_raw = survey_raw,
             survey_proc = survey_proc,
             sub_regions = countries,
+            sub_regions_wrong = incorrect_countries,
             regions = continents,
             region_prefix = region_prefix
         )
-        '''
+        if form.is_valid():
+            for sub_reg in countries + incorrect_countries:
+                region_id = form.cleaned_data['%s%i'%(region_prefix, sub_reg.pk)]
+                if region_id and region_id != 'None':
+                    try:
+                        sub_reg.continent = Continent.objects.get(pk=int(region_id))
+                        sub_reg.save()
+                    except ValueError:
+                        pass #this should never happen! if you suspect something fishy contact Emma Backstrom
+                else:
+                    if sub_reg.continent:
+                        sub_reg.continent = None
+                        sub_reg.save()
+
+
+
 
     return render(request, template_name, {'form': form, 'survey': survey_raw, 'question': question})
 
@@ -195,16 +258,57 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
         question = Question.objects.get(survey=survey_raw, name='workfields')
     except Question.DoesNotExist:
         question = None
-        print("Workfield question is not defined with name='workfields'")
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
-        '''
-        words = pea.genWorkFields(responses, survey_raw, survey_proc)
-        '''
+
+        workfields = WorkField.objects.filter(survey=survey_proc)
+        if not workfields:
+            (most_common_correct, most_common_incorrect) = pea.genWorkFields(responses, survey_raw, survey_proc, True)
+
+            for key, value in most_common_correct:
+                (wfield, isCreated) = WorkField.objects.get_or_create(work_field=key)
+                try:
+                    wfield.survey.add(survey_proc)
+                    wfield.save()
+                except:
+                    pass
+            for key, value in most_common_incorrect:
+                (wfield, isCreated) = WorkField.objects.get_or_create(work_field=key)
+                try:
+                    wfield.survey.add(survey_proc)
+                    wfield.save()
+                except:
+                    pass
+
+        exhibitors = Exhibitor.objects.filter(fair=fair)
+        answers_raw_all = TextAns.objects.filter(response__in=responses)
+        workfields = WorkField.objects.filter(survey=survey_proc)
+        form = WorkFieldForm(
+            request.POST or None,
+            responses=responses,
+            workfields=workfields,
+        )
+        if form.is_valid():
+            for key, workfields_selected in form.cleaned_data.items():
+                for ex in exhibitors:
+                    if key.split(':')[0] == str(ex.pk):
+                        #remove exhibitor from regions if in values
+                        wfields_to_exclude = [w for w in workfields if w not in workfields_selected]
+                        for wfield in wfields_to_exclude:
+                            try:
+                                wfield.exhibitors.remove(ex)
+                            except:
+                                pass
+                        #add exhibitor to regions if in values
+                        for wfield in workfields_selected:
+                            try:
+                                wfield.exhibitors.add(ex)
+                            except:
+                                pass
 
 
-    return render(request, template_name, {'survey': survey_raw})
+    return render(request, template_name, {'survey': survey_raw, 'form': form, 'question': question})
 
 def finalize_workfields(request, template_name='matching/finalize_workfields.html'):
     '''
@@ -213,8 +317,6 @@ def finalize_workfields(request, template_name='matching/finalize_workfields.htm
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
-    # this is only trying the matching alg rand generator
-    student = StudentProfile.objects.filter()
-    classify.classify(student[0].pk, survey_proc.pk, 10)
+
 
     return render(request, template_name, {'survey': survey_raw})

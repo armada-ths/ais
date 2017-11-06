@@ -2,3 +2,11 @@ Django
 django-crispy-forms
 Pillow
 requests
+celery
+django-celery-beat
+django-celery-results
+redis
+numpy
+scipy
+nltk
+pyenchant
