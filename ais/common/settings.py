@@ -47,8 +47,16 @@ INSTALLED_APPS = (
     'banquet',
     'register',
     'matching',
-    'student_profiles'
+    'student_profiles',
+    'django_celery_beat',
+    'django_celery_results',
 )
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 
 MIDDLEWARE_CLASSES = (
