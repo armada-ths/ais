@@ -107,9 +107,7 @@ class StudentMatchingTestCase(TestCase):
         self.wfield2.survey.add(self.survey)
 
         self.wfieldans1 = StudentAnswerWorkField.objects.create(student=self.student,
-            work_field=self.wfield1, answer=True)
-        self.wfieldans2 = StudentAnswerWorkField.objects.create(student=self.student,
-            work_field=self.wfield2, answer=False)
+            work_field=self.wfield1)
 
     def test_models(self):
         ''' Testing if questions are set up properly '''
@@ -136,5 +134,4 @@ class StudentMatchingTestCase(TestCase):
         # filter workfield answers on student to make sure we get them all
         work_answers = list(StudentAnswerWorkField.objects.filter(student=self.student))
         self.assertTrue(self.wfieldans1 in work_answers)
-        self.assertTrue(self.wfieldans2 in work_answers)
-        self.assertEqual(len(work_answers), 2)
+        self.assertEqual(len(work_answers), 1)
