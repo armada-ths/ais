@@ -1,4 +1,4 @@
 Django
 django-crispy-forms
 Pillow
-
+requests
