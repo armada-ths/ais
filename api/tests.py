@@ -14,7 +14,7 @@ from fair.models import Fair
 from student_profiles.models import StudentProfile, MatchingResult
 from matching.models import StudentQuestionType, StudentQuestionSlider, StudentQuestionGrading, StudentQuestionBase, \
 WorkField, WorkFieldArea, Survey, StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, StudentAnswerWorkField, \
-SwedenRegion, Continent, StudentAnswerRegion, StudentAnswerContinent
+SwedenRegion, Continent, StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
 from people.models import Profile, Programme
 from recruitment.models import RecruitmentPeriod, Role
 
@@ -299,25 +299,40 @@ class QuestionsTestCase(TestCase):
         # generate areas
         (work_area, wasCreated) = WorkFieldArea.objects.get_or_create(work_area='Test area')
         self.fields = [
-            WorkField.objects.get_or_create(work_area=work_area, work_field='Test field'),
-            WorkField.objects.get_or_create(work_area=work_area, work_field='Another field'),
-            WorkField.objects.get_or_create(work_area=work_area, work_field='My field')
+            WorkField.objects.get_or_create(work_area=work_area, work_field='Test field', pk=1),
+            WorkField.objects.get_or_create(work_area=work_area, work_field='Another field', pk=2),
+            WorkField.objects.get_or_create(work_area=work_area, work_field='My field', pk=3)
         ]
         for (field, wasCreated) in self.fields:
             if wasCreated:
-                field.save()
                 field.survey.add(self.survey)
+                field.save()
 
         self.regions = [
             SwedenRegion.objects.get_or_create(name='region1', region_id=1),
             SwedenRegion.objects.get_or_create(name='region2', region_id=2),
             SwedenRegion.objects.get_or_create(name='region3', region_id=3)
         ]
+        for (region, wasCreated) in self.regions:
+            if wasCreated:
+                region.survey.add(self.survey)
+                region.save()
 
         self.continents = [
-            Continent.objects.get_or_create(name='Asia', continent_id=1),
-            Continent.objects.get_or_create(name='Europe', continent_id=2)
+            Continent.objects.get_or_create(name='Africa', continent_id=1),
+            Continent.objects.get_or_create(name='Asia', continent_id=2),
+            Continent.objects.get_or_create(name='Oceania', continent_id=3),
+            Continent.objects.get_or_create(name='Europe', continent_id=4)
         ]
+        for (continent, wasCreated) in self.continents:
+            if wasCreated:
+                continent.survey.add(self.survey)
+                continent.save()
+
+        self.job_types = [
+            JobType.objects.get_or_create(job_type='Super Type', job_type_id=5)
+        ]
+
 
     def test_questions(self):
         # Make sure no questions share a PK
@@ -369,25 +384,24 @@ class QuestionsTestCase(TestCase):
                 {'id' : self.questions[0].pk, 'answer' : {'min' : 2.0, 'max' : 3.0}},
                 {'id' : self.questions[1].pk, 'answer' : {'min' : 1.0, 'max' : 15.0}},
                 {'id' : self.questions[2].pk, 'answer' : -1}
-            ], 'areas' : [
-                self.fields[2][0].pk
-            ], 'regions' : [
-                1
-            ], 'continents' : [
-                2
-            ]
-
+            ],
+            'areas'         : [ 2 ],
+            'regions'       : [ 3 ],
+            'continents'    : [ 4 ],
+            'looking_for'   : [ 5 ]
         })
         student_id = uuid.uuid4()
         request = self.factory.put('api/questions?student_id=' + str(student_id), data=data)
         response = views.questions(request)
         self.assertEqual(response.status_code, 200)
+
         def test_db():
             answers = StudentAnswerBase.objects.filter(student=StudentProfile.objects.get(id_string=student_id))
             answer_list = []
             field_list = []
             region_list = []
             continent_list = []
+            job_type_list = []
             for answer in answers:
                 if hasattr(answer, 'studentanswerslider'):
                     answer_list.append(answer.studentanswerslider)
@@ -399,6 +413,8 @@ class QuestionsTestCase(TestCase):
                     region_list.append(answer.studentanswerregion)
                 elif hasattr(answer, 'studentanswercontinent'):
                     continent_list.append(answer.studentanswercontinent)
+                elif hasattr(answer, 'studentanswerjobtype'):
+                    job_type_list.append(answer.studentanswerjobtype)
                 else:
                     self.assertFalse('Answer is not a subtype!')
             self.assertEqual(answer_list[0].question, self.questions[0])
@@ -411,12 +427,15 @@ class QuestionsTestCase(TestCase):
             self.assertEqual(answer_list[1].answer_max, 15.0)
             self.assertEqual(answer_list[2].answer, -1)
 
-            self.assertFalse(field_list[0].answer)
-            self.assertFalse(field_list[1].answer)
-            self.assertTrue(field_list[2].answer)
+            self.assertEqual(len(field_list), 1)
+            self.assertEqual(len(region_list), 1)
+            self.assertEqual(len(continent_list), 1)            
+            self.assertEqual(len(job_type_list), 1)
 
-            self.assertEqual(region_list[0].region_id, 1)
-            self.assertEqual(continent_list[0].continent_id, 2)
+            self.assertEqual(field_list[0].work_field, self.fields[1][0])
+            self.assertEqual(region_list[0].region, self.regions[2][0])
+            self.assertEqual(continent_list[0].continent, self.continents[3][0])
+            self.assertEqual(job_type_list[0].job_type, self.job_types[0][0])
 
         # run tests described above
         test_db()
@@ -487,7 +506,7 @@ class QuestionsTestCase(TestCase):
         try:
             test_db()
         except AssertionError as error:
-            self.assertEqual(str(error), 'False is not true')
+            self.assertEqual(str(error), '0 != 1')
 
         data = json.dumps({
             'questions' : [

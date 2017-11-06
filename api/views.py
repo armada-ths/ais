@@ -18,7 +18,13 @@ from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
-from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
+
+from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey, \
+WorkField, SwedenRegion, Continent, JobType, \
+StudentAnswerWorkField, StudentAnswerRegion, StudentAnswerContinent, StudentAnswerJobType
+
+from matching.tasks import classify_student
+
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role
 from student_profiles.models import StudentProfile, MatchingResult
@@ -217,42 +223,18 @@ def questions_GET(request):
     ])
     return JsonResponse(data, safe=False)
 
-def matching_result(request):
-    '''
-    ais.armada.nu/api/matching_result?student_id=STUDENT_PROFILE_PK
-    returns the result for a student after the matching algorithm is done (=> when length of result is the same as MATCHING_DONE)
-    The result is an array of MAX_MATCHES matching exhibitors.
-    If there are no result yet, it will return an empty list [].
-    '''
-    MATCHING_DONE = 6
-    MAX_MATCHES = 5
-    current_fair = get_object_or_404(Fair, current=True)
-    student_id = request.GET['student_id']
-    try:
-        student = StudentProfile.objects.get(id_string=student_id)
-    except StudentProfile.DoesNotExist:
-        return HttpResponse('No such student', content_type='text/plain', status=404)
 
-    number_of_matches = MatchingResult.objects.filter(student=student, fair=current_fair).count()
-    if number_of_matches < MATCHING_DONE:
-        data = None
-    else:
-        matches = MatchingResult.objects.filter(student=student).order_by('-score')[:MAX_MATCHES]
-        data = [serializers.matching_result(matching) for matching in matches]
-
-    return JsonResponse(data, safe=False)
-
-def intChoices(objectType, data, student, survey, function):
+def filterChoices(data):
     '''
-    help function for questions_PUT. Checks if there data has an objectType with a list of Integers.
-    Returns the list and True if the list is valid.
+    Helper function for questions_PUT.
+    
+    Returns a list of integers that were present in provided data.
     '''
-    allChosen = [];
-    for chosen in data[objectType]:
-        if type(chosen) is int:
-            allChosen.append(chosen)
-    function(allChosen, student, survey)
-    return allChosen
+    integers = []
+    for item in data:
+        if type(item) is int:
+            integers.append(item)
+    return integers
 
 
 def questions_PUT(request):
@@ -284,31 +266,47 @@ def questions_PUT(request):
             if wasCreated:
                 student.delete()
             return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
-        modified = False
-        (modified_count, total_count) = (0, 0)
 
         if type(data) is not dict:
             return HttpResponse('Wrong payload format!', content_type='text/plain', status=406)
+
+        modified = {
+            'work_fields'   : False,
+            'regions'       : False,
+            'continents'    : False,
+            'job_types'     : False
+        }
+        (modified_count, total_count) = (0, 0)
+
 
         if 'questions' in data and type(data['questions']) is list:
             (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
 
         if 'areas' in data and type(data['areas']) is list:
-            intChoices('areas', data, student, survey, deserializers.fields)
-            modified = True
+            deserializers.int_id_list(WorkField, StudentAnswerWorkField, filterChoices(data['areas']), student, survey, 'work_field')
+            modified['work_fields'] = True
         if 'regions' in data and type(data['regions']) is list:
-            intChoices('regions', data, student, survey, deserializers.regions)
-            modified = True
+            deserializers.int_id_list(SwedenRegion, StudentAnswerRegion, filterChoices(data['regions']), student, survey, 'region')
+            modified['regions'] = True
         if 'continents' in data and type(data['continents']) is list:
-            intChoices('continents', data, student, survey, deserializers.continents)
-            modified = True
+            deserializers.int_id_list(Continent, StudentAnswerContinent, filterChoices(data['continents']), student, survey, 'continent')
+            modified['continents'] = True
         if 'looking_for' in data and type(data['looking_for']) is list:
-            intChoices('looking_for', data, student, survey, deserializers.jobtype)
-            modified = True
+            deserializers.int_id_list(JobType, StudentAnswerJobType, filterChoices(data['looking_for']), student, survey, 'job_type')
+            modified['job_types'] = True
 
-        if modified or modified_count > 0:
+        if True in modified.values() or modified_count > 0:
             answer = 'Answers submitted! (' + str(modified_count) + '/' + str(total_count) + ' question answers were saved, fields were '
-            if not modified:
+            if not modified['work_fields']:
+                answer += 'not '
+            answer += 'updated, regions were '
+            if not modified['regions']:
+                answer += 'not '
+            answer += 'updated, continents were '
+            if not modified['continents']:
+                answer += 'not '
+            answer += 'updated and job types were '
+            if not modified['job_types']:
                 answer += 'not '
             answer += 'updated)'
             # delete old matching results
@@ -316,7 +314,7 @@ def questions_PUT(request):
             for result in results:
                 result.delete()
             # call the matching algorithm to generate results
-            classify.classify(student.pk, survey.pk, 6)
+            classify_student.delay(student.pk, survey.pk, 6)
             return HttpResponse(answer, content_type='text/plain')
         else:
             if wasCreated:
@@ -339,6 +337,32 @@ def questions(request):
         return questions_PUT(request)
     else:
         return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
+
+
+def matching_result(request):
+    '''
+    ais.armada.nu/api/matching_result?student_id=STUDENT_PROFILE_ID_STRING
+    returns the result for a student after the matching algorithm is done (=> when length of result is the same as MATCHING_DONE)
+    The result is an array of MAX_MATCHES matching exhibitors.
+    If there are no result yet, it will return an empty list [].
+    '''
+    MATCHING_DONE = 6
+    MAX_MATCHES = 5
+    current_fair = get_object_or_404(Fair, current=True)
+    student_id = request.GET['student_id']
+    try:
+        student = StudentProfile.objects.get(id_string=student_id)
+    except StudentProfile.DoesNotExist:
+        return HttpResponse('No such student', content_type='text/plain', status=404)
+
+    number_of_matches = MatchingResult.objects.filter(student=student, fair=current_fair).count()
+    if number_of_matches < MATCHING_DONE:
+        data = None
+    else:
+        matches = MatchingResult.objects.filter(student=student).order_by('-score')[:MAX_MATCHES]
+        data = [serializers.matching_result(matching) for matching in matches]
+
+    return JsonResponse(data, safe=False)
 
 
 def recruitment(request):

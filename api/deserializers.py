@@ -80,19 +80,6 @@ def answers(answers, student, survey):
     return (modified_count, total_count)
 
 
-def fields(fields, student, survey):
-    '''
-    Create or modify field answers from payload data
-    used by questions_PUT in api/views
-    '''
-    work_fields = WorkField.objects.filter(survey=survey).all()
-    for work_field in work_fields:
-        (field_model, was_created) = StudentAnswerWorkField.objects.get_or_create(student=student, work_field=work_field)
-        if was_created:
-            field_model.survey.add(survey)
-        field_model.answer = work_field.pk in fields
-        field_model.save()
-
 def student_profile(data, profile):
     '''
     Deserialize the data into the student_profile, validating the data on the way
@@ -115,31 +102,37 @@ def student_profile(data, profile):
     else:
         return False
 
-def regions(regions, student, survey):
-    '''
-    Create or modify field answers from payload data.
-    used by questions_PUT in api/views.
-    '''
-    for region_id in regions:
-        region = get_object_or_404(SwedenRegion, region_id=region_id)
-        StudentAnswerRegion.objects.get_or_create(student=student, region=region)
 
+def int_id_list(selection_model, answer_model, answers, student, survey, field_name):
+    '''
+    Creates or modifies answers from an list of valid ids.
 
-def continents(continents, student, survey):
-    '''
-    Create or modify field answers from payload data.
-    used by questions_PUT in api/views.
-    '''
-    for continent_id in continents:
-        continent = get_object_or_404(Continent, continent_id=continent_id)
-        StudentAnswerContinent.objects.get_or_create(student=student, continent=continent)
+    used by questions_PUT in api/views
 
-def jobtype(jobtypes, student, survey):
+    Parameters:
+        selection_model - the class of the model of the "questions", or the selection for answers
+        answer_model    - the class of the model of the answers
+        answers         - list of answers
+        student         - the student to which to correspond the answers
+        survey          - the current survey, to which the answers and the questions should relate to
+        field_name      - a string name of the field that tells the relation between the answer and the choice models
     '''
-    Create or modify field answers from payload data.
-    used by questions_PUT in api/views. Uses the JobType defined in the Matching app.
-    LATER: Change it to use the JobType model in the exhibitors app.
-    '''
-    for job_type_id in jobtypes:
-        job_type = get_object_or_404(JobType, job_type_id=job_type_id)
-        StudentAnswerJobType.objects.get_or_create(student=student, job_type=job_type)
+    if hasattr(selection_model, 'survey'):
+        fields = selection_model.objects.filter(survey=survey).all()
+    else:
+        fields = selection_model.objects.all()
+    argument_dict = {
+        'student' : student,
+        field_name : None
+    }
+    for field in fields:
+        argument_dict[field_name] = field
+        if field.id in answers:
+            (answer_instance, was_created) = answer_model.objects.get_or_create(**argument_dict)
+            if (was_created):
+                answer_instance.survey.add(survey)
+                answer_instance.save()
+        else:
+            answer_instance = answer_model.objects.filter(**argument_dict).first()
+            if answer_instance:
+                answer_instance.delete()
