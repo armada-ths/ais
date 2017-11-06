@@ -415,7 +415,7 @@ class StudentAnswerWorkField(StudentAnswerBase):
     Necessary field(s):
         work_field (fk) - a reference to a selected WorkField that a student would prefer to work in.
     '''
-    work_field  = models.ForeignKey(WorkField)
+    work_field  = models.ForeignKey(WorkField, on_delete=models.CASCADE)
     class Meta:
         default_permissions = ()
         verbose_name = 'answer work field'
