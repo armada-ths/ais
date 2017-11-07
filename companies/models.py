@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from people.models import Programme
 
 # A 'Contact' is a person working for a 'Company'
 class Contact(models.Model):
@@ -33,6 +33,7 @@ class Company(models.Model):
     organisation_number = models.CharField(max_length=100)
     website = models.CharField(max_length=300, blank=True)
     phone_number = models.CharField(max_length=300, blank=True)
+    related_programme = models.ManyToManyField(Programme, blank=True)
 
     address_street = models.CharField(max_length=200, blank=True)
     address_zip_code = models.CharField(max_length=200, blank=True)
