@@ -171,7 +171,7 @@ class KNNTestCase(TestCase):
         saved = False
         space_dict = dict(zip([1,2],[3,4]))
         try:
-            classifier.space_dict.set_dict(space_dict)
+            classifier.set_dict(space_dict)
             classifier.save()
             saved = True
         except:
