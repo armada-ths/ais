@@ -258,6 +258,7 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
         question = Question.objects.get(survey=survey_raw, name='workfields')
     except Question.DoesNotExist:
         question = None
+        form = None
 
     if question:
         responses = Response.objects.filter(survey=survey_raw,question=question)
@@ -312,10 +313,12 @@ def init_workfields(request, template_name='matching/init_workfields.html'):
 
     return render(request, template_name, {'survey': survey_raw, 'form': form, 'question': question})
 
+@staff_member_required
 def finalize_workfields(request, template_name='matching/finalize_workfields.html'):
     '''
     finalize the workfields by mapping them to work areas as a group
     '''
+    print(request)
     fair = Fair.objects.get(current=True)
     survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
@@ -323,9 +326,21 @@ def finalize_workfields(request, template_name='matching/finalize_workfields.htm
 
     return render(request, template_name, {'survey': survey_raw})
 
+@staff_member_required
 def init_classifier(request, template_name='matching/init_classifier.html'):
     '''
     Initialize the classifier with a buttom and print the stats of it TODO
     '''
+    print(request)
+    fair = Fair.objects.get(current=True)
+    survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
+    survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
 
-    return render(request, template_name, {'survey': survey_raw})
+    created_text = 'Classifier not created'
+
+    created = classify.init_classifier(survey_proc.pk)
+    if created:
+        created_text = 'KNN Classifier successfully created!'
+
+
+    return render(request, template_name, {'survey': survey_raw, 'created_text': created_text})

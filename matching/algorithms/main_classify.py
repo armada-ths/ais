@@ -67,3 +67,5 @@ def init_classifier(survey_id, classifer_type = 'euclidian'):
         workfields = WorkField.objects.filter(survey=survey)
         exhibitors_all = [w.exhibitors.all() for w in workfields]
         exhibitors = set(exhibitors_all)
+        print(len(exhibitors))
+    return True

@@ -8,7 +8,7 @@ from student_profiles.models import StudentProfile
 from .models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns, \
 StudentQuestionBase, StudentQuestionSlider, StudentQuestionGrading, \
 StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, \
-WorkFieldArea, WorkField, StudentAnswerWorkField
+WorkFieldArea, WorkField, StudentAnswerWorkField, KNNClassifier, VectorKNN
 
 
 
@@ -135,3 +135,26 @@ class StudentMatchingTestCase(TestCase):
         work_answers = list(StudentAnswerWorkField.objects.filter(student=self.student))
         self.assertTrue(self.wfieldans1 in work_answers)
         self.assertEqual(len(work_answers), 1)
+
+class KNNTestCase(TestCase):
+    '''
+    Test if the classifier works with dictionary and the space length spec
+    for the vectors
+    '''
+    def setUp(self):
+        self.fair = Fair.objects.create(name='Armada 2017',
+                                        year='2017',
+                                        pk=1337,
+                                        current=True)
+        self.survey = Survey.objects.create(fair=self.fair, name='survey2017', description='dummysurvey')
+
+    def test_classifier(self):
+        classifier = KNNClassifier.objects.create(
+            space_dim=3,
+            norm_type = 'euclidian',
+            current = True,
+            )
+        classifier.survey.add(self.survey)
+        classifier.save()
+
+        self.assertEqual(classifier, KNNClassifier.objects.get(pk=classifier.pk))

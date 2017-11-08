@@ -542,6 +542,8 @@ class KNNClassifier(models.Model):
         if self.space_dict:
             if type(self.get_dict) != dict:
                 raise Exception('Your dictionary is not formatted correctly, save it using json.dumps!')
+            if len(self.get_dict.keys()) != self.space_dim:
+                raise Exception('Your dictionary is not if the same dimension as your space dim!')
 
         if not self.created:
             self.created = timezone.now()
