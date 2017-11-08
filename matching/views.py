@@ -322,3 +322,10 @@ def finalize_workfields(request, template_name='matching/finalize_workfields.htm
 
 
     return render(request, template_name, {'survey': survey_raw})
+
+def init_classifier(request, template_name='matching/init_classifier.html'):
+    '''
+    Initialize the classifier with a buttom and print the stats of it TODO
+    '''
+
+    return render(request, template_name, {'survey': survey_raw})

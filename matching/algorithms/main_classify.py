@@ -6,6 +6,8 @@ from matching.models import *
 from student_profiles.models import StudentProfile, MatchingResult
 
 from random import randint
+import math
+import json
 
 def genResult(student, exhibitor, score, fair):
     '''
@@ -52,3 +54,16 @@ def classify(student_id, survey_id, numberOfResults=10):
     except (StudentProfile.DoesNotExist, Survey.DoesNotExist):
         pass
     return finished_flag
+
+def init_classifier(survey_id, classifer_type = 'euclidian'):
+    '''
+    initialization of classifer using KNN only for now and euclidian dist as standard
+    '''
+    survey = Survey.objects.get(pk=survey_id)
+    try:
+        classifier = KNNClassifier.objects.get(survey=survey, current=True)
+
+    except KNNClassifier.DoesNotExist:
+        workfields = WorkField.objects.filter(survey=survey)
+        exhibitors_all = [w.exhibitors.all() for w in workfields]
+        exhibitors = set(exhibitors_all)
