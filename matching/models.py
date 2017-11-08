@@ -6,6 +6,7 @@ from django.utils.timezone import utc
 
 from enum import Enum, unique
 
+import json
 
 # Matching survey
 class Survey(models.Model):
@@ -484,3 +485,107 @@ class StudentAnswerJobType(StudentAnswerBase):
 
     def __str__(self):
         return '%s chose %s' %(self.student, self.job_type)
+
+###########################################################
+## Classifier Models
+
+class KNNClassifier(models.Model):
+    '''
+    A KNN Classifier
+
+    Required:
+    name (str)          :
+    description (str)   :
+    survey (fk)         :   fk to survey
+    space_dim (int)     :   dimension of the spanned space
+    max_abs_value(float):   that length of each vector, default is 1.0
+    norm_type (select)  :   select which norm to use in the classification
+    space_dict (str)    :   a charfield created by json.dumps
+    current (bool)      :   only one classifier can be current for the survey
+
+
+    '''
+    norm_choices = [
+    ('euclidian', 'Euclidian'),
+    ('lebesgue_1', 'Lebesgue p=1'),
+    ]
+
+    name = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    survey = models.ForeignKey(Survey, blank=True, null=True)
+    space_dim = models.IntegerField(default=0)
+    max_abs_value = models.FloatField(default=1.0)
+    norm_type = models.CharField(max_length=128, choices=norm_choices, default='euclidian')
+    space_dict = models.CharField(max_length=512, null=True, blank=True)
+
+    current = models.BooleanField(default=False)
+    created = models.DateTimeField(editable=False, null=True, blank=True)
+    updated = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'KNN Classifier'
+
+    def get_dict(self):
+        '''
+        returns the json.dumps generated charfield as a dictionary
+        '''
+        return json.loads(self.space_dict)
+
+    def set_dict(self, space_dict):
+        if len(space_dict.keys()) == self.space_dim:
+            self.space_dict = json.dumps(space_dict)
+        else:
+            raise Exception('Your dictionary does not have len = space_dim!')
+
+    def save(self, *args, **kwargs):
+        if self.current:
+            for classifier in KNNClassifier.objects.filter(current=True, survey=self.survey):
+                classifier.current = False
+                classifier.save()
+            self.current = True
+
+        if not self.created:
+            self.created = timezone.now()
+
+        self.updated = timezone.now()
+        super(KNNClassifier, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return '%s : type = %s for dim = %i'%(self.name, self.norm_type, self.space_dim)
+
+class VectorKNN(models.Model):
+    '''
+    A N-dim vector representing a exhibitors answers spanning the space a KNNClassifier object. Note that this vector is saved as a char, use the
+    method get_vector() to obtain the array evaluated as an array!
+    '''
+    name = models.TextField(null=True, blank=True)
+    vector = models.CharField(max_length=128)
+    classifier = models.ForeignKey(KNNClassifier)
+    exhibitor = models.ForeignKey('exhibitors.Exhibitor', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'KNN Vector'
+
+    def set_vector(self, vector):
+        self.vector = str(vector)
+
+    def get_vector(self):
+        return eval(self.vector)
+
+    def save(self, *args, **kwargs):
+        '''
+        Check that the vector is formatted corectly and that it has the same length as the space_dim specified in the classifier
+        '''
+        try:
+            vector_eval = eval(self.vector)
+        except SyntaxError:
+            raise Exception('Your vector is not formatted correctly')
+
+        if len(vector_eval) != self.classifier.space_dim:
+            raise Exception('Your vector has dim=%i but the classifier you are using has dim=%i'%(len(vector_eval, self.classifier.space_dim)))
+
+        super(VectorKNN,self).save(*args, **kwargs)
+
+    def __str__(self):
+        return '%s : %s'%(self.exhibitor, self.vector)

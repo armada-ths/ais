@@ -8,7 +8,7 @@ from student_profiles.models import StudentProfile
 from .models import Survey, Question, Response, TextAns, ChoiceAns, IntegerAns, BooleanAns, \
 StudentQuestionBase, StudentQuestionSlider, StudentQuestionGrading, \
 StudentAnswerBase, StudentAnswerSlider, StudentAnswerGrading, \
-WorkFieldArea, WorkField, StudentAnswerWorkField
+WorkFieldArea, WorkField, StudentAnswerWorkField, KNNClassifier, VectorKNN
 
 
 
@@ -135,3 +135,74 @@ class StudentMatchingTestCase(TestCase):
         work_answers = list(StudentAnswerWorkField.objects.filter(student=self.student))
         self.assertTrue(self.wfieldans1 in work_answers)
         self.assertEqual(len(work_answers), 1)
+
+class KNNTestCase(TestCase):
+    '''
+    Test if the classifier works with dictionary and the space length spec
+    for the vectors
+    '''
+    def setUp(self):
+        self.fair = Fair.objects.create(name='Armada 2017',
+                                        year='2017',
+                                        pk=1337,
+                                        current=True)
+        self.survey = Survey.objects.create(fair=self.fair, name='survey2017', description='dummysurvey')
+
+    def test_classifier(self):
+        classifier = KNNClassifier.objects.create(
+            space_dim=3,
+            current = True,
+            survey=self.survey,
+            )
+        self.assertEqual(classifier, KNNClassifier.objects.get(pk=classifier.pk))
+
+        # try to set a dictionary that is currect
+        space_dict = dict(zip([1,2,3], [4,5,6]))
+        saved = False
+        try:
+            classifier.set_dict(space_dict)
+            classifier.save()
+            saved = True
+        except:
+            pass
+        self.assertTrue(saved)
+
+        # try to set a wrong dictionary (of size 2)
+        saved = False
+        space_dict = dict(zip([1,2],[3,4]))
+        try:
+            classifier.set_dict(space_dict)
+            classifier.save()
+            saved = True
+        except:
+            pass
+        self.assertFalse(saved)
+
+    def test_vector(self):
+        '''
+        test the vector connected to a classifier
+        '''
+        classifier = KNNClassifier.objects.create(
+            space_dim=3,
+            current = True,
+            survey=self.survey,
+            )
+
+        saved=False
+        try:
+            array = [1,2,3]
+            vec = VectorKNN.objects.create(classifier=classifier, vector=str(array))
+            saved = True
+        except:
+            pass
+        self.assertTrue(saved)
+
+        array = [1,2]
+        saved=False
+        try:
+            vec.set_vector(array)
+            vec.save()
+            saved = True
+        except:
+            pass
+        self.assertFalse(saved)

@@ -21,12 +21,9 @@
 			</svg>
             <h2>Matching Algorithm Initialization </h2>
             <h4> Survey: {{ survey }} </h4>
-            <h3>6. Finalize By Mapping Work Fields to Work Areas </h3>
-            <h2 class="box-danger">Does not work yet, use the admin view :) </h2>
-
-            <a href="{% url 'matching:init_workfields' %}"><button type="button" class="btn btn-default">Previous</button></a>
-            <button type="submit" class="btn btn-success">Submit</button>
-            <a href="{% url 'matching:init_classifier' %}"><button type="button" class="btn btn-danger">Make Magic</button></a>
+            <h3>7. Init the Classifier! </h3>
+            <h3> {{ created_text }} </h3>
+            <a href="{% url 'matching:finalize_workfields' %}"><button type="button" class="btn btn-default">Previous</button></a>
         </div>
     </div>
 

@@ -6,7 +6,7 @@ from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, 
 BooleanAns, StudentQuestionSlider, StudentQuestionGrading, StudentAnswerSlider, \
 StudentAnswerGrading, WorkFieldArea, WorkField, StudentAnswerWorkField, SwedenRegion, \
 Continent, StudentAnswerRegion, StudentAnswerContinent, SwedenCity, Country, JobType, \
-StudentAnswerJobType
+StudentAnswerJobType, KNNClassifier, VectorKNN
 
 class QuestionInline(admin.ModelAdmin):
     list_display=('text', 'question_type')
@@ -87,6 +87,14 @@ class JobTypeAdmin(admin.ModelAdmin):
 class StudentAnswerJobTypeAdmin(admin.ModelAdmin):
     model = StudentAnswerJobType
 
+class KNNVectorInline(admin.TabularInline):
+    list_display = ('exhibitor', 'vector', 'classifer')
+    model = VectorKNN
+
+class KNNClassifierAdmin(admin.ModelAdmin):
+    inlines = [KNNVectorInline]
+    model = KNNClassifier
+
 admin.site.register(Question, QuestionInline)
 admin.site.register(Survey)
 admin.site.register(Response, ResponseAdmin)
@@ -112,3 +120,6 @@ admin.site.register(StudentAnswerRegion, StudentAnswerRegionAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(StudentAnswerJobType, StudentAnswerJobTypeAdmin)
+
+admin.site.register(VectorKNN)
+admin.site.register(KNNClassifier, KNNClassifierAdmin)
