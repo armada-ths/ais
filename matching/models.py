@@ -516,7 +516,7 @@ class KNNClassifier(models.Model):
     space_dim = models.IntegerField(default=0)
     max_abs_value = models.FloatField(default=1.0)
     norm_type = models.CharField(max_length=128, choices=norm_choices, default='euclidian')
-    space_dict = models.CharField(max_length=512, null=True, blank=True)
+    space_dict = models.CharField(max_length=1028, null=True, blank=True)
 
     current = models.BooleanField(default=False)
     created = models.DateTimeField(editable=False, null=True, blank=True)
@@ -560,7 +560,7 @@ class VectorKNN(models.Model):
     method get_vector() to obtain the array evaluated as an array!
     '''
     name = models.TextField(null=True, blank=True)
-    vector = models.CharField(max_length=128)
+    vector = models.CharField(max_length=256)
     classifier = models.ForeignKey(KNNClassifier)
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', blank=True, null=True)
 
