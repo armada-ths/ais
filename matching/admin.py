@@ -121,4 +121,5 @@ admin.site.register(Country, CountryAdmin)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(StudentAnswerJobType, StudentAnswerJobTypeAdmin)
 
+admin.site.register(VectorKNN)
 admin.site.register(KNNClassifier, KNNClassifierAdmin)

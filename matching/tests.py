@@ -151,10 +151,58 @@ class KNNTestCase(TestCase):
     def test_classifier(self):
         classifier = KNNClassifier.objects.create(
             space_dim=3,
-            norm_type = 'euclidian',
             current = True,
+            survey=self.survey,
             )
-        classifier.survey.add(self.survey)
-        classifier.save()
-
         self.assertEqual(classifier, KNNClassifier.objects.get(pk=classifier.pk))
+
+        # try to set a dictionary that is currect
+        space_dict = dict(zip([1,2,3], [4,5,6]))
+        saved = False
+        try:
+            classifier.set_dict(space_dict)
+            classifier.save()
+            saved = True
+        except:
+            pass
+        self.assertTrue(saved)
+
+        # try to set a wrong dictionary (of size 2)
+        saved = False
+        space_dict = dict(zip([1,2],[3,4]))
+        try:
+            classifier.space_dict.set_dict(space_dict)
+            classifier.save()
+            saved = True
+        except:
+            pass
+        self.assertFalse(saved)
+
+    def test_vector(self):
+        '''
+        test the vector connected to a classifier
+        '''
+        classifier = KNNClassifier.objects.create(
+            space_dim=3,
+            current = True,
+            survey=self.survey,
+            )
+
+        saved=False
+        try:
+            array = [1,2,3]
+            vec = VectorKNN.objects.create(classifier=classifier, vector=str(array))
+            saved = True
+        except:
+            pass
+        self.assertTrue(saved)
+
+        array = [1,2]
+        saved=False
+        try:
+            vec.set_vector(array)
+            vec.save()
+            saved = True
+        except:
+            pass
+        self.assertFalse(saved)

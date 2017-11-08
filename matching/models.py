@@ -512,7 +512,7 @@ class KNNClassifier(models.Model):
 
     name = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    survey = models.ManyToManyField(Survey, blank=True)
+    survey = models.ForeignKey(Survey, blank=True, null=True)
     space_dim = models.IntegerField(default=0)
     max_abs_value = models.FloatField(default=1.0)
     norm_type = models.CharField(max_length=128, choices=norm_choices, default='euclidian')
@@ -532,18 +532,18 @@ class KNNClassifier(models.Model):
         '''
         return json.loads(self.space_dict)
 
+    def set_dict(self, space_dict):
+        if len(space_dict.keys()) == self.space_dim:
+            self.space_dict = json.dumps(space_dict)
+        else:
+            raise Exception('Your dictionary does not have len = space_dim!')
+
     def save(self, *args, **kwargs):
         if self.current:
             for classifier in KNNClassifier.objects.filter(current=True, survey=self.survey):
                 classifier.current = False
                 classifier.save()
             self.current = True
-
-        if self.space_dict:
-            if type(self.get_dict) != dict:
-                raise Exception('Your dictionary is not formatted correctly, save it using json.dumps!')
-            if len(self.get_dict.keys()) != self.space_dim:
-                raise Exception('Your dictionary is not if the same dimension as your space dim!')
 
         if not self.created:
             self.created = timezone.now()
@@ -562,10 +562,13 @@ class VectorKNN(models.Model):
     name = models.TextField(null=True, blank=True)
     vector = models.CharField(max_length=128)
     classifier = models.ForeignKey(KNNClassifier)
-    exhibitor = models.ForeignKey('exhibitors.Exhibitor')
+    exhibitor = models.ForeignKey('exhibitors.Exhibitor', blank=True, null=True)
 
     class Meta:
         verbose_name = 'KNN Vector'
+
+    def set_vector(self, vector):
+        self.vector = str(vector)
 
     def get_vector(self):
         return eval(self.vector)
@@ -574,7 +577,6 @@ class VectorKNN(models.Model):
         '''
         Check that the vector is formatted corectly and that it has the same length as the space_dim specified in the classifier
         '''
-        vector = []
         try:
             vector_eval = eval(self.vector)
         except SyntaxError:
@@ -583,7 +585,7 @@ class VectorKNN(models.Model):
         if len(vector_eval) != self.classifier.space_dim:
             raise Exception('Your vector has dim=%i but the classifier you are using has dim=%i'%(len(vector_eval, self.classifier.space_dim)))
 
-        super(VectorKNN,self).__save__(*args, **kwargs)
+        super(VectorKNN,self).save(*args, **kwargs)
 
     def __str__(self):
         return '%s : %s'%(self.exhibitor, self.vector)
