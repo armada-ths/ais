@@ -423,7 +423,7 @@ class StudentAnswerWorkField(StudentAnswerBase):
         verbose_name_plural = 'answers work field'
 
     def __str__(self):
-        return '%s for work field = %s w ans = %s'%(self.student, self.work_field)
+        return '%s for work field = %s'%(self.student, self.work_field)
 
 
 class StudentAnswerRegion(StudentAnswerBase):
