@@ -4,7 +4,7 @@ from django.core.mail import send_mail, send_mass_mail
 from django.utils import timezone
 from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
-import threading
+from django.contrib.auth.models import User
 
 from recruitment.models import CustomFieldAnswer
 from fair.models import Fair
@@ -23,6 +23,26 @@ def send_mail_on_submission(user, event):
             [user.email],
             fail_silently=False,
         )
+
+def send_mail_confirmation(request, year, event_pk, attendant_pk):
+    fair = get_object_or_404(Fair, year=year)
+    event = get_object_or_404(Event, pk=event_pk)
+    attendant = get_object_or_404(EventAttendence, pk=attendant_pk)
+
+    mail_subject = event.confirmation_mail_subject if attendant.status == 'A' else event.rejection_mail_subject
+    mail_body = event.confirmation_mail_body if attendant.status == 'A' else event.rejection_mail_body
+
+    if attendant.user and attendant.user.email and mail_subject and mail_body:
+        send_mail(
+            mail_subject,
+            mail_body,
+            'system@armada.nu',
+            [attendant.user.email],
+            fail_silently=False,
+        )
+
+    return redirect('event_attendants', fair.year, event.pk)
+
 
 
 def event_attend_form(request, year, pk, template_name='events/event_attend.html'):
@@ -101,16 +121,6 @@ def event_edit(request, year, pk=None, template_name='events/event_form.html'):
         "fair": fair,
     })
 
-class EmailThread(threading.Thread):
-    def __init__(self, subject, content, sender, to_list):
-        self.subject = subject
-        self.sender = sender
-        self.to_list = to_list
-        self.content = content
-        threading.Thread.__init__(self)
-
-    def run(self):
-        send_mail(self.subject, self.content, self.sender, self.to_list, fail_silently=False)
 
 @permission_required('events.change_event', raise_exception=True)
 def event_attendants(request, year, pk, template_name='events/event_attendants.html'):
@@ -118,19 +128,12 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
     event = get_object_or_404(Event, pk=pk)
 
     if request.POST:
-        approved_attendances = []
-        declined_attendances = []
         attendance_pks = [int(pk) for pk in request.POST.getlist('selected')]
         for attendance in event.eventattendence_set.all():
             new_status = 'A' if attendance.pk in attendance_pks else 'D'
             if new_status != attendance.status:
                 attendance.status = new_status
                 attendance.save()
-
-                mail_subject = event.confirmation_mail_subject if new_status == 'A' else event.rejection_mail_subject
-                mail_body = event.confirmation_mail_body if new_status == 'A' else event.rejection_mail_body
-                if attendance.user and attendance.user.email and mail_subject and mail_body:
-                    EmailThread(mail_subject, mail_body, 'system@armada.nu', [attendance.user.email]).start()
 
     attendances_with_answers = []
     questions = event.eventquestion_set.all()
