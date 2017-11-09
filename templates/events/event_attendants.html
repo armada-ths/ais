@@ -29,6 +29,8 @@
     <th>{{ question }}</th>
     {% endfor %}
     <th>State</th>
+    <th>Send Email</th>
+    <th>Email status</th>
 </tr>
 </thead>
 
@@ -62,6 +64,18 @@
         </td>
     {% endfor %}
     <td>{{ attendance.attendance.get_status_display }}</td>
+    {% if attendance.attendance.status == 'A' and attendance.attendance.user and attendance.attendance.user.email %}
+      <td>
+        <a href="{% url 'send_mail_confirmation' fair.year event.pk attendance.attendance.pk %}"> Send Approval Mail </a></td>
+      </td>
+    {% elif attendance.attendance.status == 'D' and attendance.attendance.user and attendance.attendance.user.email %}
+      <td>
+        <a href="{% url 'send_mail_confirmation' fair.year event.pk attendance.attendance.pk %}"> Send Rejected Mail </a></td>
+      </td>
+    {% endif %}
+    <td>
+      {{ attendance.attendance.sent_email }}
+    </td>
 </tr>
 
 {% endfor %}
