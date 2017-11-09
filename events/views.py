@@ -4,6 +4,7 @@ from django.core.mail import send_mail, send_mass_mail
 from django.utils import timezone
 from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
+import threading
 
 from recruitment.models import CustomFieldAnswer
 from fair.models import Fair
@@ -100,6 +101,16 @@ def event_edit(request, year, pk=None, template_name='events/event_form.html'):
         "fair": fair,
     })
 
+class EmailThread(threading.Thread):
+    def __init__(self, subject, content, sender, to_list):
+        self.subject = subject
+        self.sender = sender
+        self.to_list = to_list
+        self.content = content
+        threading.Thread.__init__(self)
+
+    def run(self):
+        send_mail(self.subject, self.content, self.sender, self.to_list, fail_silently=False)
 
 @permission_required('events.change_event', raise_exception=True)
 def event_attendants(request, year, pk, template_name='events/event_attendants.html'):
@@ -110,25 +121,16 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
         approved_attendances = []
         declined_attendances = []
         attendance_pks = [int(pk) for pk in request.POST.getlist('selected')]
-        i = 1
-        test_different_messages = []
         for attendance in event.eventattendence_set.all():
             new_status = 'A' if attendance.pk in attendance_pks else 'D'
-
             if new_status != attendance.status:
                 attendance.status = new_status
                 attendance.save()
-                if attendance.user and attendance.user.email:
-                    test_different_messages.append((str(i), str(i), 'system@armada.nu', [attendance.user.email]))
-                #if attendance.user and attendance.user.email and attendance.status=='A':
-                #    approved_attendances.append(attendance.user.email)
-                #elif attendance.user and attendance.user.email and attendance.status=='D':
-                #    declined_attendances.append(attendance.user.email)
-            i+=1
 
-        #approved_message = (event.confirmation_mail_subject, event.confirmation_mail_body, 'system@armada.nu', approved_attendances)
-        #declined_message = (event.rejection_mail_subject, event.rejection_mail_body, 'system@armada.nu', declined_attendances)
-        send_mass_mail(tuple(test_different_messages), fail_silently=False)
+                mail_subject = event.confirmation_mail_subject if new_status == 'A' else event.rejection_mail_subject
+                mail_body = event.confirmation_mail_body if new_status == 'A' else event.rejection_mail_body
+                if attendance.user and attendance.user.email and mail_subject and mail_body:
+                    EmailThread(mail_subject, mail_body, 'system@armada.nu', [attendance.user.email]).start()
 
     attendances_with_answers = []
     questions = event.eventquestion_set.all()
