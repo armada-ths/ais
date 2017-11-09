@@ -116,7 +116,7 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
 
         approved_attendances = []
         declined_attendances = []
-        for attendance in EventAttendence.objects.filter(status='A').filter(status='D'):
+        for attendance in EventAttendence.objects.filter(status__in=['A', 'D']):
             if attendance.user & attendance.user.email & attendance.status=='A':
                 approved_attendances.append(attendance.user.email)
             elif attendance.user & attendance.user.email & attendance.status=='D':
@@ -125,7 +125,7 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
         approved_message = (event.confirmation_mail_subject, event.confirmation_mail_body, 'system@armada.nu', approved_attendances)
         declined_message = (event.rejection_mail_subject, event.rejection_mail_body, 'system@armada.nu', declined_attendances)
         send_mass_mail((approved_message, declined_message), fail_silently=False)
-        
+
     attendances_with_answers = []
     questions = event.eventquestion_set.all()
     extra_field_questions = event.extra_field.customfield_set.all() if event.extra_field else []
