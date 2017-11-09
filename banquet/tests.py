@@ -91,6 +91,7 @@ class BanquetViewTestCase(TestCase):
         ticket_query = BanquetTicket.objects.all()
         self.assertEqual(len(ticket_query), 2)
 
+        
     def test_banquet_placement_view(self):
         """
         Test that checks that you will get redirected if
@@ -111,3 +112,31 @@ class BanquetViewTestCase(TestCase):
         response = client.post('/accounts/login/', {'username': 'test2', 'password': 'test2'})
         response = client.get('/fairs/2017/banquet/placement')
         self.assertEqual(response.status_code, 200)
+        
+        
+class BanquetPlacementTestCase(TestCase):
+    '''
+    Test specifically banquet placements
+    '''
+    def setUp(self):
+        fair = Fair.objects.create(name='Armada 2017', year=2017, current=True)
+        user = User.objects.create_user(username='test', password='test')
+        
+
+        self.attendants = [BanquetteAttendant.objects.create(fair=fair, first_name='Attendant', last_name=str(i), gender='not_specify', email='', phone_number='', confirmed=True) for i in range(10)]
+        self.attendants.append(BanquetteAttendant.objects.create(pk=12, fair=fair, first_name='Attendant', last_name='11', gender='not_specify', email='', phone_number=''))
+
+
+    def test_sitting(self):
+        client = Client()
+        self.assertEqual(len(BanquetteAttendant.objects.all()), 11)
+        self.assertEqual(len(BanquetTable.objects.all()), 0)
+        response = client.post('/accounts/login/', {'username': 'test', 'password': 'test'})
+        self.assertEqual(response.status_code, 302)
+
+        response = client.get('/fairs/2017/banquet/sit_attendants/')
+        self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(len(BanquetTable.objects.all()), 2)
+        self.assertEqual(BanquetteAttendant.objects.get(pk=4).table, BanquetTable.objects.get(pk=1))
+        self.assertFalse(BanquetteAttendant.objects.get(pk=12).table)
