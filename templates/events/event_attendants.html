@@ -72,6 +72,8 @@
       <td>
         <a href="{% url 'send_mail_confirmation' fair.year event.pk attendance.attendance.pk %}"> Send Rejected Mail </a></td>
       </td>
+    {% else %}
+      <td>Not possible</td>
     {% endif %}
     <td>
       {{ attendance.attendance.sent_email }}
