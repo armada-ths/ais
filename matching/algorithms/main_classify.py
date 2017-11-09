@@ -110,7 +110,7 @@ def classify(student_id, survey_id, numberOfResults=10):
         try:
             gen_answers(student, survey, classifier, numberOfResults)
             finished_flag = True
-            logging.info('Matching Finshed for student %s at %s'%(student.id_string, str(timezone.now())))
+            logging.warning('Matching Finshed for student %s at %s'%(student.id_string, str(timezone.now())))
         except Exception as e:
             randomize_answers(student, survey, numberOfResults)
             logging.error('Failed to run classifier, ran random_answers for student %s : %s'%(student.id_string, str(e)))
