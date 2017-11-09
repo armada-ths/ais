@@ -107,21 +107,19 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
     event = get_object_or_404(Event, pk=pk)
 
     if request.POST:
+        approved_attendances = []
+        declined_attendances = []
         attendance_pks = [int(pk) for pk in request.POST.getlist('selected')]
         for attendance in event.eventattendence_set.all():
             new_status = 'A' if attendance.pk in attendance_pks else 'D'
             if new_status != attendance.status:
                 attendance.status = new_status
                 attendance.save()
-
-        approved_attendances = []
-        declined_attendances = []
-        for attendance in EventAttendence.objects.filter(status__in=['A', 'D']):
-            if attendance.user & attendance.user.email & attendance.status=='A':
-                approved_attendances.append(attendance.user.email)
-            elif attendance.user & attendance.user.email & attendance.status=='D':
-                declined_attendances.append(attendance.user.email)
-
+                if attendance.user and attendance.user.email and attendance.status=='A':
+                    approved_attendances.append(attendance.user.email)
+                elif attendance.user and attendance.user.email and attendance.status=='D':
+                    declined_attendances.append(attendance.user.email)
+                
         approved_message = (event.confirmation_mail_subject, event.confirmation_mail_body, 'system@armada.nu', approved_attendances)
         declined_message = (event.rejection_mail_subject, event.rejection_mail_body, 'system@armada.nu', declined_attendances)
         send_mass_mail((approved_message, declined_message), fail_silently=False)
