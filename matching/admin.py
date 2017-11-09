@@ -122,4 +122,4 @@ admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(StudentAnswerJobType, StudentAnswerJobTypeAdmin)
 
 admin.site.register(VectorKNN)
-admin.site.register(KNNClassifier, KNNClassifierAdmin)
+admin.site.register(KNNClassifier)
