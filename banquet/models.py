@@ -51,7 +51,7 @@ class BanquetteAttendant(models.Model):
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
     wants_vegan_food = models.BooleanField(default=False)
-    table = models.ForeignKey(BanquetTable, null=True, blank=True)
+    table = models.ForeignKey(BanquetTable, null=True, blank=True, on_delete=models.SET_NULL)
     seat_number = models.SmallIntegerField(null=True, blank=True)
     student_ticket = models.BooleanField(default=False)
     confirmed = models.BooleanField(default=False)
