@@ -8,4 +8,5 @@ urlpatterns = [
 	url(r'^attendant/new$', views.new_banquet_attendant, name='banquet/new'),
     url(r'^signup$', views.banquet_external_signup, name='banquet/signup'),
     url(r'^thankyou$', views.thank_you, name='banquet/thankyou'),
+    url(r'^sit_attendants/$', views.sit_attendants, name='banquet/sit_attendants'),
 ]
