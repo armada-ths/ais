@@ -10,6 +10,9 @@ import math
 import json
 import numpy as np
 
+from django.utils import timezone
+import logging
+
 class TempMatchingResult(object):
     '''
     Used to store temporary result data before writing to db
@@ -107,11 +110,13 @@ def classify(student_id, survey_id, numberOfResults=10):
         try:
             gen_answers(student, survey, classifier, numberOfResults)
             finished_flag = True
-        except:
+            logging.info('Matching Finshed for student %s at %s'%(student.id_string, str(timezone.now())))
+        except Exception as e:
             randomize_answers(student, survey, numberOfResults)
+            logging.error('Failed to run classifier, ran random_answers for student %s : %s'%(student.id_string, str(e)))
 
-    except (StudentProfile.DoesNotExist, Survey.DoesNotExist, KNNClassifier.DoesNotExist):
-        pass
+    except Exception as e:
+        logging.error('Failed to run any classifier for student %s : %s'%(str(student.id_string), str(e)))
     return finished_flag
 
 def init_classifier(survey_id, classifer_type = 'euclidian'):
