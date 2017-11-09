@@ -19,6 +19,8 @@ class StudentProfile(models.Model):
     linkedin_profile = models.CharField(max_length=128, null=True, blank=True)
     facebook_profile = models.CharField(max_length=128, null=True, blank=True)
     phone_number = models.CharField(max_length=32, null=True, blank=True)
+    #this is used for debugging purposes of the classifier, should be removed later
+    classifier_log  = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.nickname

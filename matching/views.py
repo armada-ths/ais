@@ -342,3 +342,15 @@ def init_classifier(request, template_name='matching/init_classifier.html'):
         created_text = 'KNN Classifier successfully created!'
 
     return render(request, template_name, {'survey': survey_raw, 'created_text': created_text})
+
+@staff_member_required
+def overwatch(request, template_name='matching/overwatch.html'):
+    '''
+    A simple view to return the matching algorithm status for students
+    '''
+    survey_raw = Survey.objects.get(pk=request.session.get('survey_raw_id'))
+    survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
+
+    students = StudentProfile.objects.all()
+
+    return render(request, template_name, {'survey': survey_raw, 'students': students})
