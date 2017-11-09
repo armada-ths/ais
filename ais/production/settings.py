@@ -9,7 +9,6 @@ from os import environ as env
 from ais.common.settings import *
 from ais.secrets import *
 
-DEBUG = True
 
 # This is important so other people can't set their own domains
 # to point to AIS (which would be a security concern).
