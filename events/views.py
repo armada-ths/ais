@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from django.core.mail import send_mail
+from django.core.mail import send_mail, send_mass_mail
 from django.utils import timezone
 from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
@@ -51,7 +51,7 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
             print(question, id, answer)
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
-        print('WHAT')
+
         if not event.extra_field:
             # This creates an extra field
             event.save()
@@ -86,14 +86,14 @@ def event_edit(request, year, pk=None, template_name='events/event_form.html'):
     fair = get_object_or_404(Fair, year=year)
     event = Event.objects.filter(pk=pk).first()
     form = EventForm(request.POST or None, request.FILES or None, instance=event)
-    
+
     if form.is_valid():
         event = form.save(commit=False)
         event.fair = fair
         event.save()
         event.extra_field.handle_questions_from_request(request, 'extra_field')
         return redirect('event_list', fair.year)
-    
+
     return render(request, template_name, {
         "event": event, "form": form,
         'custom_fields': event.extra_field.customfield_set.all() if event and event.extra_field else None,
@@ -114,17 +114,18 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
                 attendance.status = new_status
                 attendance.save()
 
-                mail_subject = event.confirmation_mail_subject if new_status == 'A' else event.rejection_mail_subject
-                mail_body = event.confirmation_mail_body if new_status == 'A' else event.rejection_mail_body
-                if attendance.user and attendance.user.email and mail_subject and mail_body:
-                    send_mail(
-                        mail_subject,
-                        mail_body,
-                        'system@armada.nu',
-                        [attendance.user.email],
-                        fail_silently=False,
-                    )
+        approved_attendances = []
+        declined_attendances = []
+        for attendance in EventAttendence.objects.filter(status='A').filter(status='D'):
+            if attendance.user & attendance.user.email & attendance.status=='A':
+                approved_attendances.append(attendance.user.email)
+            elif attendance.user & attendance.user.email & attendance.status=='D':
+                declined_attendances.append(attendance.user.email)
 
+        approved_message = (event.confirmation_mail_subject, event.confirmation_mail_body, 'system@armada.nu', approved_attendances)
+        declined_message = (event.rejection_mail_subject, event.rejection_mail_body, 'system@armada.nu', declined_attendances)
+        send_mass_mail((approved_message, declined_message), fail_silently=False)
+        
     attendances_with_answers = []
     questions = event.eventquestion_set.all()
     extra_field_questions = event.extra_field.customfield_set.all() if event.extra_field else []
