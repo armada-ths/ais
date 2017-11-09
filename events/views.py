@@ -40,6 +40,8 @@ def send_mail_confirmation(request, year, event_pk, attendant_pk):
             [attendant.user.email],
             fail_silently=False,
         )
+        attendant.sent_email=True
+        attendant.save()
 
     return redirect('event_attendants', fair.year, event.pk)
 
