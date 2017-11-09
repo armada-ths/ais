@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.utils.http import urlquote
 from django.core.urlresolvers import reverse
+import datetime
 
 
 class LoginRequiredMiddleware:
@@ -24,13 +25,15 @@ class LoginRequiredMiddleware:
  'django.core.context_processors.auth'."
         # PLACEHOLDER until proper authenitaction is in place
         path = request.path_info
-        # TODO: not hardcode fairs/2017/banquet/signup and fairs/2018/banquet/signup
+        
+        current_year = datetime.datetime.now().year
         url_exceptions = {
             '/',
             '/register/', '/register/signup', '/register/new_company',
             '/register/password_reset/', '/register/password_reset/done/',
             '/register/external/signup',
-            '/fairs/2017/banquet/signup', '/fairs/2018/banquet/signup'
+            '/fairs/' + str(current_year) + '/banquet/signup',
+            '/fairs/' + str(current_year) + '/banquet/placement'
         }
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
