@@ -110,19 +110,25 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
         approved_attendances = []
         declined_attendances = []
         attendance_pks = [int(pk) for pk in request.POST.getlist('selected')]
+        i = 1
+        test_different_messages = []
         for attendance in event.eventattendence_set.all():
             new_status = 'A' if attendance.pk in attendance_pks else 'D'
+
             if new_status != attendance.status:
                 attendance.status = new_status
                 attendance.save()
-                if attendance.user and attendance.user.email and attendance.status=='A':
-                    approved_attendances.append(attendance.user.email)
-                elif attendance.user and attendance.user.email and attendance.status=='D':
-                    declined_attendances.append(attendance.user.email)
-                
-        approved_message = (event.confirmation_mail_subject, event.confirmation_mail_body, 'system@armada.nu', approved_attendances)
-        declined_message = (event.rejection_mail_subject, event.rejection_mail_body, 'system@armada.nu', declined_attendances)
-        send_mass_mail((approved_message, declined_message), fail_silently=False)
+                if attendance.user and attendance.user.email:
+                    test_different_messages.append((str(i), str(i), 'system@armada.nu', [attendance.user.email]))
+                #if attendance.user and attendance.user.email and attendance.status=='A':
+                #    approved_attendances.append(attendance.user.email)
+                #elif attendance.user and attendance.user.email and attendance.status=='D':
+                #    declined_attendances.append(attendance.user.email)
+            i+=1
+
+        #approved_message = (event.confirmation_mail_subject, event.confirmation_mail_body, 'system@armada.nu', approved_attendances)
+        #declined_message = (event.rejection_mail_subject, event.rejection_mail_body, 'system@armada.nu', declined_attendances)
+        send_mass_mail(tuple(test_different_messages), fail_silently=False)
 
     attendances_with_answers = []
     questions = event.eventquestion_set.all()
