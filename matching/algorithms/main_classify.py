@@ -102,6 +102,7 @@ def classify(student_id, survey_id, numberOfResults=10):
     '''
     finished_flag = False
     # survey_raw = TODO add relates_to = models.ForeignKey('self') in Survey if nec
+    logging_str = ''
     try:
         student = StudentProfile.objects.get(pk=student_id)
         survey = Survey.objects.get(pk=survey_id)
@@ -110,13 +111,16 @@ def classify(student_id, survey_id, numberOfResults=10):
         try:
             gen_answers(student, survey, classifier, numberOfResults)
             finished_flag = True
-            logging.error(' (not an error but a test) Matching Finshed for student %s at %s'%(student.id_string, str(timezone.now())))
+            logging_str = 'Matching Finshed for student %s at %s'%(student.id_string, str(timezone.now()))
         except Exception as e:
             randomize_answers(student, survey, numberOfResults)
-            logging.error('Failed to run classifier, ran random_answers for student %s : %s'%(student.id_string, str(e)))
+            logging_str = 'Failed to run classifier, ran random_answers for student %s : %s'%(student.id_string, str(e))
 
-    except Exception as e:
-        logging.error('Failed to run any classifier for student %s : %s'%(str(student.id_string), str(e)))
+    except (StudentProfile.DoesNotExist, Survey.DoesNotExist, classifier.DoesNotExist) as e:
+        logging_str = 'Failed to run any classifier for student %s : %s'%(str(student.id_string), str(e))
+
+    student.classifier_log = logging_str
+    student.save()
     return finished_flag
 
 def init_classifier(survey_id, classifer_type = 'euclidian'):

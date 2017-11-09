@@ -16,16 +16,22 @@
 <body>
     <div class="container">
     	<div class="headline">
-    		<svg viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
-				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
-			</svg>
-
-            <h2>Matching Algorithm Initialization </h2>
+            <h2> Overwatch </h2>
             <h4> Survey: {{ survey }} </h4>
-            <h3>7. Init the Classifier! </h3>
-            <h3> {{ created_text }} </h3>
-            <a href="{% url 'matching:finalize_workfields' %}"><button type="button" class="btn btn-default">Previous</button></a>
-            <a href="{% url 'matching:overwatch' %}"><button type="button" class="btn btn-danger"> Overwatch </button></a>
+            <div class="row">
+                <div class="col-md-12">
+                    {% for student in students %}
+                        {% if student.classifier_log %}
+                            <h3> {{ student.id_string }} </h3>
+                            <h4> Status: {{ student.classifier_log }} </h4>
+                            <br />
+                            <br />
+                        {% endif %}
+
+                    {% endfor %}
+                </div>
+            </div>
+            <a href="{% url 'matching:init_classifier' %}"><button type="button" class="btn btn-default">Previous</button></a>
         </div>
     </div>
 
