@@ -29,14 +29,17 @@
                         <form method="post">
                             {% csrf_token %}
                             {% for field in form %}
-
-                            <h4> {{ field.label }} </h4>
+                            {% if not field.initial %}
+                                <h4 class="text-danger">
+                                 {{ field.label }} </h4>
+                            {% else %}
+                                <h4 >{{ field.label }} </h4>
+                            {% endif %}
                                 {{ field }}
                             </br>
                             </br>
                             </br>
                             {% endfor %}
-
                             <a href="{% url 'matching:map_world' %}"><button type="button" class="btn btn-default">Previous</button></a>
                             <button type="submit" class="btn btn-success">Submit</button>
                             <a href="{% url 'matching:finalize_workfields' %}"><button type="button" class="btn btn-default">Next</button></a>
