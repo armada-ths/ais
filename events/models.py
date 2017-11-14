@@ -104,6 +104,7 @@ class EventAttendence(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     status = models.CharField(max_length=3, choices=STATUS, default="S")
     submission_date = models.DateTimeField(default=timezone.now, blank=True)
+    sent_email = models.BooleanField(default=False)
 
     def __str__(self):
         if self.user is not None:
