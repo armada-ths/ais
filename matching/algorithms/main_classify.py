@@ -50,7 +50,7 @@ def gen_results(student, survey, temp_results, N):
     fair = survey.fair
     max_distance = max([temp.distance for temp in temp_results])
     for result in temp_results:
-        result.score -= int( 10 *(1.0 - result.distance/max_distance) * result.score / 90 )
+        result.score -= int( 20 *(1.0 - result.distance/max_distance) * result.score / 90 )
 
     sorted_temp_result = sorted(temp_results, key=lambda t: t.score, reverse=True)
     for i in range(N):
@@ -68,16 +68,16 @@ def get_similarities_value(student_array, exhibitor_array):
     returns a quotient on how many wrong elements student array has
     '''
     ex_sum = sum(exhibitor_array)
-    #stud_sum = sum(student_array)
+    stud_sum = sum(student_array)
     if (student_array == exhibitor_array).all() is True:
         return 1.0
     else:
-        #comp_vec = (student_array == exhibitor_array)
         true_count = 0
         for i in range(len(student_array)):
             if student_array[i] == exhibitor_array[i] and student_array[i] == 1:
                 true_count += 1
-        return float(true_count) / float(ex_sum)
+        return float(true_count) / float(stud_sum)
+
 
 def gen_answers(student, survey, classifier, numberOfResults):
     '''

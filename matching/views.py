@@ -352,6 +352,11 @@ def overwatch(request, template_name='matching/overwatch.html'):
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
 
     students = StudentProfile.objects.all()
+    MatchingResult.objects.all().delete()
+    for s in students:
+        classify.classify(s.pk, survey_proc.pk, 6)
+
     results = MatchingResult.objects.filter(student__in=students)
+
 
     return render(request, template_name, {'survey': survey_raw, 'students': students, 'results': results})
