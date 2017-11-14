@@ -193,5 +193,5 @@ class WorkFieldForm(Form):
             if current_ex:
                 if response.exhibitor in current_ex:
                     initials.append(wfield)
-        self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)] = ModelMultipleChoiceField(queryset=workfields, required=False, widget=CheckboxSelectMultiple)
-        self.fields['%i: %s'%(response.exhibitor.id, raw_ans.ans)].initial = initials
+        self.fields['%i: %s: %s'%(response.exhibitor.id, response.exhibitor.company.name, raw_ans.ans)] = ModelMultipleChoiceField(queryset=workfields, required=False, widget=CheckboxSelectMultiple)
+        self.fields['%i: %s: %s'%(response.exhibitor.id, response.exhibitor.company.name, raw_ans.ans)].initial = initials
