@@ -31,6 +31,7 @@ class ExhibitorTestCase(TestCase):
 
         editor = User.objects.create_user(username='editor', password='editor')
         editor.user_permissions.add(Permission.objects.get(codename='view_exhibitors'))
+        editor.user_permissions.add(Permission.objects.get(codename='change_exhibitor'))
 
 
     def testEmailFunction(self):
@@ -132,6 +133,7 @@ class ExhibitorTestCase(TestCase):
         self.assertTrue('booth_number' not in str(response.content))
         self.assertTrue('banquette' not in str(response.content))
         self.assertTrue('Hosts' not in str(response.content))
+
   
     def banquetAttendatsFromCorrectYear(self):
         banquetAttendant = BanquetteAttendant.objects.create(
@@ -161,4 +163,4 @@ class ExhibitorTestCase(TestCase):
                 self.fail("old banquet attendant in view!")
 
         self.assertEqual(response.banquet_attendants, 200)
-        
+
