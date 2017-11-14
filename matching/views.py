@@ -13,7 +13,7 @@ from .models import *
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from fair.models import Fair
-from student_profiles.models import StudentProfile
+from student_profiles.models import StudentProfile, MatchingResult
 
 from .forms import RawQuestionForm, StudentQuestionForm, MapSubAreaForm, MapSwedenForm, WorkFieldForm
 
@@ -352,5 +352,6 @@ def overwatch(request, template_name='matching/overwatch.html'):
     survey_proc = Survey.objects.get(pk=request.session.get('survey_proc_id'))
 
     students = StudentProfile.objects.all()
+    results = MatchingResult.objects.filter(student__in=students)
 
-    return render(request, template_name, {'survey': survey_raw, 'students': students})
+    return render(request, template_name, {'survey': survey_raw, 'students': students, 'results': results})

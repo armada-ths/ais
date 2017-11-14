@@ -24,6 +24,13 @@
                         {% if student.classifier_log %}
                             <h3> {{ student.id_string }} </h3>
                             <h4> Status: {{ student.classifier_log }} </h4>
+                            {% for result in results %}
+                                {% if result.student == student %}
+                                    <p>
+                                        {{ result.score }}% for {{result.exhibitor}}
+                                    </p>
+                                {% endif %}
+                            {% endfor %}
                             <br />
                             <br />
                         {% endif %}
