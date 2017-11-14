@@ -50,7 +50,8 @@ def gen_results(student, survey, temp_results, N):
     fair = survey.fair
     max_distance = max([temp.distance for temp in temp_results])
     for result in temp_results:
-        result.score = int( 100 *(1.0 - result.distance/max_distance) )
+        result.score -= int( 10 *(1.0 - result.distance/max_distance) * result.score / 90 )
+
     sorted_temp_result = sorted(temp_results, key=lambda t: t.score, reverse=True)
     for i in range(N):
         temp_res = sorted_temp_result[i]
@@ -61,24 +62,52 @@ def gen_results(student, survey, temp_results, N):
             score = temp_res.score,
             )
 
+def get_similarities_value(student_array, exhibitor_array):
+    '''
+    Requires both arrays to be numpy arrays
+    returns a quotient on how many wrong elements student array has
+    '''
+    ex_sum = sum(exhibitor_array)
+    #stud_sum = sum(student_array)
+    if (student_array == exhibitor_array).all() is True:
+        return 1.0
+    else:
+        #comp_vec = (student_array == exhibitor_array)
+        true_count = 0
+        for i in range(len(student_array)):
+            if student_array[i] == exhibitor_array[i] and student_array[i] == 1:
+                true_count += 1
+        return float(true_count) / float(ex_sum)
+
 def gen_answers(student, survey, classifier, numberOfResults):
     '''
-    Use the KNN classifer to generate results
+    Use the KNN classifer to generate results.
+    The classifier gives a 90 percent score if the student has all workfields as an exhibitor. The excess workfields can remove up to 10 percent depending on how many extra fields the student has filled in which are not represented in the exhibitor
+
+    for the slider, grading
     '''
     space_dict = classifier.get_dict()
-    student_array = [0]*classifier.space_dim
+    #key_dict = dict(zip(space_dict.values(), space_dict.keys()))
+    student_array = np.zeros(classifier.space_dim)
     student_answers_workfield = StudentAnswerWorkField.objects.filter(student=student, survey=survey)
     for wfield_ans in student_answers_workfield:
         student_array[ space_dict[str(wfield_ans.work_field.pk)] ] = 1
 
-    norm_fun = eval('%s_norm'%classifier.norm_type)
+    try:
+        norm_fun = eval('%s_norm'%classifier.norm_type)
+    except:
+        norm_fun = euclidian_norm
+
     exhibitor_arrays = VectorKNN.objects.filter(classifier=classifier)
     temp_results = [TempMatchingResult]*len(exhibitor_arrays)
 
     for i, ex_array in enumerate(exhibitor_arrays):
         result = TempMatchingResult()
         result.exhibitor = ex_array.exhibitor
-        result.distance = norm_fun(student_array, ex_array.get_vector())
+        ex_vector = np.array(ex_array.get_vector())
+
+        result.score = int(90 * get_similarities_value(student_array, ex_vector) )
+        result.distance = norm_fun(student_array, ex_vector)
         temp_results[i] = result
     gen_results(student, survey, temp_results, numberOfResults)
 
