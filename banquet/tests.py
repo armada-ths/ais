@@ -111,7 +111,7 @@ class BanquetPlacementTestCase(TestCase):
         self.assertTrue(response)
 
         response = client.get('/fairs/2017/banquet/sit_attendants/')
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
 
         self.assertEqual(len(BanquetTable.objects.all()), 0)
 
