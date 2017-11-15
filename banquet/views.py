@@ -18,8 +18,11 @@ def sit_attendants(request, year):
     A fake button redirection target for fairs/{YEAR}/banquer 'sit attendants' button.
     Will call a function and redirect back to the banquet.
     '''
-    func.sit_attendants()
-    return HttpResponseRedirect(reverse('banquet', kwargs={'year': year }))
+    if request.user.has_perm('banquet.can_seat_attendants'):
+        func.sit_attendants()
+        return HttpResponseRedirect(reverse('banquet', kwargs={'year': year }))
+    else:
+        return HttpResponseForbidden()
 
 
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):

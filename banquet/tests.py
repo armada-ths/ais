@@ -98,7 +98,6 @@ class BanquetPlacementTestCase(TestCase):
     def setUp(self):
         fair = Fair.objects.create(name='Armada 2017', year=2017, current=True)
         user = User.objects.create_user(username='test', password='test')
-        
 
         self.attendants = [BanquetteAttendant.objects.create(fair=fair, first_name='Attendant', last_name=str(i), gender='not_specify', email='', phone_number='', confirmed=True) for i in range(10)]
         self.attendants.append(BanquetteAttendant.objects.create(pk=12, fair=fair, first_name='Attendant', last_name='11', gender='not_specify', email='', phone_number=''))
@@ -108,8 +107,15 @@ class BanquetPlacementTestCase(TestCase):
         client = Client()
         self.assertEqual(len(BanquetteAttendant.objects.all()), 11)
         self.assertEqual(len(BanquetTable.objects.all()), 0)
-        response = client.post('/accounts/login/', {'username': 'test', 'password': 'test'})
+        response = client.login(username='test', password='test')
+        self.assertTrue(response)
+
+        response = client.get('/fairs/2017/banquet/sit_attendants/')
         self.assertEqual(response.status_code, 302)
+
+        self.assertEqual(len(BanquetTable.objects.all()), 0)
+
+        User.objects.get(username='test').user_permissions.add(Permission.objects.get(codename='can_seat_attendants'))
 
         response = client.get('/fairs/2017/banquet/sit_attendants/')
         self.assertEqual(response.status_code, 302)
