@@ -51,6 +51,8 @@ def gen_results(student, survey, temp_results, N):
     max_distance = max([temp.distance for temp in temp_results])
     for result in temp_results:
         result.score -= int( 20 *(1.0 - result.distance/max_distance) * result.score / 90 )
+        if result.score < 0:
+            result.score = 0
 
     sorted_temp_result = sorted(temp_results, key=lambda t: t.score, reverse=True)
     for i in range(N):
