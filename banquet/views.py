@@ -130,7 +130,7 @@ def table_placement(request, year, template_name='banquet/table_placement.html')
         except (BanquetTable.DoesNotExist, Exception) as e:
             table_name = "No table yet"
             table_mates = None
-        return render(request, template_name, {'fair': fair, 'banquet_attendant': banquet_attendant, 'table_name': table_name, 'table_mates': table_mates })
+        return render(request, template_name, {'fair': fair, 'banquet_attendant': banquet_attendant, 'table_name': table_name, 'table_mates': table_mates, 'confirmed': banquet_attendant.confirmed })
     # not authenticated
     return redirect('/fairs/' + year + '/banquet/signup')
 
