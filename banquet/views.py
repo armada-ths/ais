@@ -127,6 +127,7 @@ def table_placement(request, year, template_name='banquet/table_placement.html')
     """
     A view for viewing a user's personal table placement
     """
+
     fair = get_object_or_404(Fair, year=year)
 
     if request.user.is_authenticated():
