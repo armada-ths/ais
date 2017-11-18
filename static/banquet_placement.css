@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'Tagesschrift';
+  src: url("./fonts/BebasNeue-Regular.otf");
+}
+
+
+body {
+	background-color: #fff;
+}

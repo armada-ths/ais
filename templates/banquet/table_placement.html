@@ -5,27 +5,27 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
-  <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
   <link href="{% static 'banquet_placement.css' %}" rel="stylesheet" media="screen">
-  <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
 </head>
 
 <body>
   <div class="container">
     <div class="row">
       <div class="text-center headline">
-        <h1 class="big big-margin-top">THS Armada Banquet</h1>
-        <h2>Personal Ticket: <br /> {{ banquet_attendant.first_name }} {{ banquet_attendant.last_name }}</h2>
+        <h1 class="big big-margin-top banquet-header">THS Armada Banquet</h1>
+        <h2>Personal Ticket: <br /> 
+          <div class="status-text">{{ banquet_attendant.first_name }} {{ banquet_attendant.last_name }}</div>
+        </h2>
       </div>
     </div>
 
     <div class="row">
-      <div class="text-center headline">
+      <div class="text-center">
         <h3>
-          Confirmed: {% if confirmed %} Yes {% else %} No {% endif %}
+          Confirmed: <div class="status-text">{% if confirmed %} Yes {% else %} No {% endif %}</div>
         </h3>
-        <h3>Table: {{ table_name }}</h3>
-        <h3>Seat: {{ banquet_attendant.seat_number }}</h3>
+        <h3>Table: <div class="status-text">{{ table_name }}</div></h3>
+        <h3>Seat: <div class="status-text">{{ banquet_attendant.seat_number }}</div></h3>
       </div>
 
       <div class="text-center headline">
@@ -37,9 +37,7 @@
             {% endfor %}
           </ul>
         {% endif %}
-        <svg viewBox="50 50 200 200" width="100px" height="100px" version="1.1">
-          <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
-        </svg>
+        <img src="{% static 'images/bordsplacering.png' %}" alt="Armada" class="placement-map" />
       </div>
     </div>
   </div>
