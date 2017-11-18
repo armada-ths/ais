@@ -9,9 +9,16 @@
 }
 
 body {
-    background-color: #000;
+    background-color: #050505;
     font-family: "Carlton Std Regular", "Times New Roman", serif;
-    font-size: 16pt;
+    font-size: 18pt;
+    color: #fff;
+}
+ul {
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+    font-size: 2em;
 }
 
 .container {
@@ -20,7 +27,7 @@ body {
 
 h1 {
 	padding: 0.25em 0.25em;
-	font-size: 4em;
+	font-size: 3em;
 	font-family: "Park Lane NF", "Times New Roman", serif;
     color: #D5AD6D;
     /*if no support for background-clip*/
@@ -51,6 +58,12 @@ h2, h3 {
 
 .placement-map {
 	margin: 4em 0em;
-	width: 80%;
+	width: 100%;
 	height: auto;
+}
+
+.mate-card {
+    background-color: #111;
+    margin: 0.5em 0.5em;
+    height: 8em;
 }
