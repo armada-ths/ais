@@ -13,6 +13,7 @@ class BanquetViewTestCase(TestCase):
         # create basic information for tests
         self.fair = Fair.objects.create(name="Armada 2017", year=2017, pk=82189128287123, current=True)
         self.test_user = User.objects.create_user(username='test', password='test', email='paperback@writer.se')
+        self.test_user2 = User.objects.create_user(username='test2', password='test2', email='paperback2@writer.se')
         self.test_company = Company.objects.create(name="TestCompany1", organisation_type='company')
         self.test_contact = Contact.objects.create(user=self.test_user, belongs_to=self.test_company, name="contact name for testing", email="paperback@writer.com", active=True, confirmed=True)
         self.exhibitor = Exhibitor.objects.create(fair=self.fair, company=self.test_company, contact=self.test_contact, pk=99998876544433311)
@@ -89,6 +90,27 @@ class BanquetViewTestCase(TestCase):
         banquet_ticket_empty = BanquetTicket.objects.create()
         ticket_query = BanquetTicket.objects.all()
         self.assertEqual(len(ticket_query), 2)
+        
+    def test_banquet_placement_view(self):
+        """
+        Test that checks that you will get redirected if
+        you have no banquet attendant or are not logged in
+        """
+        client = Client()
+        # no log in, get redirected
+        response = client.get('/fairs/2017/banquet/placement')
+        self.assertEqual(response.status_code, 302)
+
+        # logged in but no attendant, get redirected
+        response = client.post('/accounts/login/', {'username': 'test2', 'password': 'test2'})
+        response = client.get('/fairs/2017/banquet/placement')
+        self.assertEqual(response.status_code, 302)
+
+        BanquetteAttendant.objects.create(fair=self.fair, user=self.test_user2, first_name="f", last_name="l", phone_number='0000', email="test@testerson.com", gender="other")
+        # logged in with attendant, get status code ok
+        response = client.post('/accounts/login/', {'username': 'test2', 'password': 'test2'})
+        response = client.get('/fairs/2017/banquet/placement')
+        self.assertEqual(response.status_code, 200)
 
 
 class BanquetPlacementTestCase(TestCase):

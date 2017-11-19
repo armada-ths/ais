@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from django.core.mail import send_mail
+from django.core.mail import send_mail, send_mass_mail
 from django.utils import timezone
 from django.forms import modelform_factory
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.models import User
 
 from recruitment.models import CustomFieldAnswer
 from fair.models import Fair
@@ -22,6 +23,28 @@ def send_mail_on_submission(user, event):
             [user.email],
             fail_silently=False,
         )
+
+def send_mail_confirmation(request, year, event_pk, attendant_pk):
+    fair = get_object_or_404(Fair, year=year)
+    event = get_object_or_404(Event, pk=event_pk)
+    attendant = get_object_or_404(EventAttendence, pk=attendant_pk)
+
+    mail_subject = event.confirmation_mail_subject if attendant.status == 'A' else event.rejection_mail_subject
+    mail_body = event.confirmation_mail_body if attendant.status == 'A' else event.rejection_mail_body
+
+    if attendant.user and attendant.user.email and mail_subject and mail_body:
+        send_mail(
+            mail_subject,
+            mail_body,
+            'system@armada.nu',
+            [attendant.user.email],
+            fail_silently=False,
+        )
+        attendant.sent_email=True
+        attendant.save()
+
+    return redirect('event_attendants', fair.year, event.pk)
+
 
 
 def event_attend_form(request, year, pk, template_name='events/event_attend.html'):
@@ -51,7 +74,7 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
             print(question, id, answer)
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
-        print('WHAT')
+
         if not event.extra_field:
             # This creates an extra field
             event.save()
@@ -86,14 +109,14 @@ def event_edit(request, year, pk=None, template_name='events/event_form.html'):
     fair = get_object_or_404(Fair, year=year)
     event = Event.objects.filter(pk=pk).first()
     form = EventForm(request.POST or None, request.FILES or None, instance=event)
-    
+
     if form.is_valid():
         event = form.save(commit=False)
         event.fair = fair
         event.save()
         event.extra_field.handle_questions_from_request(request, 'extra_field')
         return redirect('event_list', fair.year)
-    
+
     return render(request, template_name, {
         "event": event, "form": form,
         'custom_fields': event.extra_field.customfield_set.all() if event and event.extra_field else None,
@@ -113,17 +136,6 @@ def event_attendants(request, year, pk, template_name='events/event_attendants.h
             if new_status != attendance.status:
                 attendance.status = new_status
                 attendance.save()
-
-                mail_subject = event.confirmation_mail_subject if new_status == 'A' else event.rejection_mail_subject
-                mail_body = event.confirmation_mail_body if new_status == 'A' else event.rejection_mail_body
-                if attendance.user and attendance.user.email and mail_subject and mail_body:
-                    send_mail(
-                        mail_subject,
-                        mail_body,
-                        'system@armada.nu',
-                        [attendance.user.email],
-                        fail_silently=False,
-                    )
 
     attendances_with_answers = []
     questions = event.eventquestion_set.all()

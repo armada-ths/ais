@@ -125,7 +125,33 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
 
     else:
         return HttpResponseForbidden()
+      
 
+def table_placement(request, year, template_name='banquet/table_placement.html'):
+    """
+    A view for viewing a user's personal table placement
+    """
+
+    fair = get_object_or_404(Fair, year=year)
+
+    if request.user.is_authenticated():
+        try:
+            banquet_attendant = BanquetteAttendant.objects.get(user=request.user, fair=fair)
+        except BanquetteAttendant.DoesNotExist:
+            # if no attendant go to signup
+            return redirect('/fairs/' + year + '/banquet/signup')
+
+        try:
+            table = BanquetTable.objects.get(fair=fair, pk=banquet_attendant.table.pk)
+            table_name = table.table_name
+            table_mates = BanquetteAttendant.objects.filter(fair=fair, table=table, confirmed=True).exclude(pk=banquet_attendant.pk)
+        except (BanquetTable.DoesNotExist, Exception) as e:
+            table_name = "No table yet"
+            table_mates = None
+        return render(request, template_name, {'fair': fair, 'banquet_attendant': banquet_attendant, 'table_name': table_name, 'table_mates': table_mates, 'confirmed': banquet_attendant.confirmed })
+    # not authenticated
+    return redirect('/fairs/' + year + '/banquet/signup')
+  
 
 def banquet_external_signup(request, year, template_name='banquet/external_signup.html'):
     """
