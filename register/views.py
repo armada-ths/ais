@@ -142,7 +142,7 @@ def external_login(request, template_name='register/external_login.html'):
         )
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse('banquet/signup', kwargs={'year': fair.year}))
+            return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year': fair.year}))
 
     return render(request, template_name, dict(form=form, year=fair.year))
 
