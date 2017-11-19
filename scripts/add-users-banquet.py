@@ -1,6 +1,9 @@
 from fair.models import Fair
 from banquet.models import BanquetteAttendant
 from django.contrib.auth.models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 
 attendants = BanquetteAttendant.objects.filter(confirmed=True)
 for attendant in attendants:
@@ -8,6 +11,10 @@ for attendant in attendants:
         continue
     else:
         if attendant.email:
+            try:
+                validate_email(attendant.email)
+            except ValidationError:
+                continue
             user = User.objects.filter(email=attendant.email).first()
             if user:
                 attendant.user = user
@@ -19,8 +26,7 @@ for attendant in attendants:
         else:
             continue
 
-
-
-
+            
+            
             
             
