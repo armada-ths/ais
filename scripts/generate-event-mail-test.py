@@ -25,3 +25,8 @@ event = Event.objects.create(
 for i in range(0, event.capacity):
     user = User.objects.create(username=('testuser' + str(i)), email='ell.westerberg@gmail.com', first_name=('Test'+ str(i)), last_name=('User'+ str(i)))
     EventAttendence.objects.create(user=user, status='S', event=event)
+
+    
+    
+    
+    
