@@ -10,6 +10,20 @@ from register.views import external_signup
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
+import banquet.functions as func
+
+
+def sit_attendants(request, year):
+    '''
+    A fake button redirection target for fairs/{YEAR}/banquer 'sit attendants' button.
+    Will call a function and redirect back to the banquet.
+    '''
+    if request.user.has_perm('banquet.can_seat_attendants'):
+        func.sit_attendants()
+        return HttpResponseRedirect(reverse('banquet', kwargs={'year': year }))
+    else:
+        return HttpResponseForbidden()
+
 
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
     """
@@ -27,6 +41,7 @@ def banquet_attendants(request, year, template_name='banquet/banquet_attendants.
     else:
         return HttpResponseForbidden()
     #return render(request, 'login.html', {'next': next, 'fair': fair})
+
 
 def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendant.html'):
     """
@@ -71,6 +86,7 @@ def banquet_attendant(request, year, pk, template_name='banquet/banquet_attendan
     else:
         return HttpResponseForbidden()
 
+
 def new_banquet_attendant(request, year, template_name='banquet/banquet_attendant.html'):
     """
     new_banquet_attendant is in url fairs/year/banquet/attendant/new
@@ -109,6 +125,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
 
     else:
         return HttpResponseForbidden()
+      
 
 def table_placement(request, year, template_name='banquet/table_placement.html'):
     """
@@ -134,6 +151,7 @@ def table_placement(request, year, template_name='banquet/table_placement.html')
         return render(request, template_name, {'fair': fair, 'banquet_attendant': banquet_attendant, 'table_name': table_name, 'table_mates': table_mates, 'confirmed': banquet_attendant.confirmed })
     # not authenticated
     return redirect('/fairs/' + year + '/banquet/signup')
+  
 
 def banquet_external_signup(request, year, template_name='banquet/external_signup.html'):
     """
@@ -164,6 +182,7 @@ def banquet_external_signup(request, year, template_name='banquet/external_signu
         return render(request, template_name, {'form': form, 'fair': fair })
     # not authenticated
     return redirect('/register/external/signup')
+
 
 def thank_you(request, year, template_name='banquet/thank_you.html'):
     fair = get_object_or_404(Fair, year=year)
