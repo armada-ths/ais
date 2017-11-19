@@ -115,12 +115,13 @@ def external_signup(request, template_name='register/create_external_user.html')
         form = ExternalUserForm(request.POST or None, prefix='user')
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = form.cleaned_data['email']
-            user.email = form.cleaned_data['email']
+            mail = form.cleaned_data['email'].lower()
+            user.username = mail
+            user.email = mail
             # the form's cleaning checks if the user email already exists
             user.save()
             user = authenticate(
-                username=form.cleaned_data['email'],
+                username=mail,
                 password=form.cleaned_data['password1'],
             )
             login(request, user)
@@ -136,12 +137,12 @@ def external_login(request, template_name='register/external_login.html'):
     fair = get_object_or_404(Fair, current=True)
     if form.is_valid():
         user = authenticate(
-            username=form.cleaned_data['email'],
+            username=form.cleaned_data['email'].lower(),
             password=form.cleaned_data['password'],
         )
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse('banquet/signup', kwargs={'year': fair.year}))
+            return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year': fair.year}))
 
     return render(request, template_name, dict(form=form, year=fair.year))
 

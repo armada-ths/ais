@@ -2,6 +2,7 @@ body, html {
 	height: 100%;
 	position: relative;
 	font-family: 'Lato Light', Arial, sans-serif;
+	font-size: 11pt;
 }
 
 /*
@@ -24,8 +25,8 @@ body {
   font-family: "Lato Light";
   src: url("./fonts/Lato-Light.ttf");
 }
-input, select, textarea { 
-	color: black; 
+input, select, textarea {
+	color: black;
 	background: white;
 	border: none;
 	padding: 3px 5px;
@@ -33,12 +34,15 @@ input, select, textarea {
 }
 
 h1,h2,h3,h4 {
-	font-family: 'Bebas Neue', sans-serif; 
+	font-family: 'Bebas Neue', sans-serif;
 	text-transform: uppercase;
 }
 h1 {
 	font-size: 3.5em;
 	color: #00d791;
+}
+h1.armada {
+	font-weight: 100;
 }
 h1.big {
 	font-size: 6em;
@@ -66,16 +70,21 @@ a, a:visited, a:hover {
 	color: #00d791;
 }
 
+.armada-logo {
+	max-width: 555px;
+	width: 100%;
+}
+
 /*
-*	
+*
 */
 .reset-password-title {
 	font-size: 24px;
 	margin-top: 20px;
 }
 .forgot-password, .btn-green, .box-danger, .important, .mail-name, .mail-role {
-	font-family: 'Bebas Neue', sans-serif; 
-	text-transform: uppercase;	
+	font-family: 'Bebas Neue', sans-serif;
+	text-transform: uppercase;
 }
 
 h2 {
@@ -93,7 +102,7 @@ h1.text-highlight {
 .btn-green:hover, .btn-green:focus {
 	color: #fff;
 	background: #00b276;
-	border: none 
+	border: none
 }
 
 .btn-green, a.btn-green {
@@ -112,7 +121,6 @@ h1.text-highlight {
 
 .headline {
 	margin: 0 auto;
-    width: 555px;
 }
 
 .form-container {
@@ -121,7 +129,7 @@ h1.text-highlight {
     width: 300px;
 }
 
-form {	
+form {
     padding: 25px;
 }
 
@@ -300,7 +308,7 @@ span.h-green { color :#00d791; }
 	border-bottom-color: #ea2c49;
 }
 .pretty-label {
-	font-family: 'Bebas Neue', sans-serif; 
+	font-family: 'Bebas Neue', sans-serif;
 	font-size: 18px;
     font-weight: normal;
 }
@@ -428,7 +436,7 @@ li.nav {
 .cr-rooms {
 	position: relative;
 }
-.cr-rooms, 
+.cr-rooms,
 .cr-rooms label {
 	font-weight: normal;
 }
@@ -514,7 +522,7 @@ li.nav {
     border-radius: 5px;
 }
 .cr-event-container h3 {
-	font-family: 'Bebas Neue', sans-serif; 
+	font-family: 'Bebas Neue', sans-serif;
 	font-size: 3em;
 	color: #ea2c49;
 	text-transform: uppercase;
@@ -524,7 +532,7 @@ li.nav {
 	display: inline-block;
     border-bottom: 2px solid #ea2c49;
 }
-.cr-event-left, 
+.cr-event-left,
 .cr-event-right {
 	display: inline-block;
 }
@@ -585,7 +593,7 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 /*
 *	TAB: NOVA *********************************
 */
-/* flexbox fix to make column equal height 
+/* flexbox fix to make column equal height
 .cr-nova .row {
   display: -webkit-box;
   display: -webkit-flex;
@@ -620,9 +628,9 @@ ul.nova-info ul {
     padding-left: 30px;
 }
 ul.nova-info ul li {
-	
+
 }
-.cr-container-nova ul#id_product_selection_nova { 
+.cr-container-nova ul#id_product_selection_nova {
 	list-style: none;
 	padding-left: 0;
 	margin-bottom: 0px;
@@ -722,8 +730,8 @@ ul.nova-info ul li {
 	margin-left: 10px;
 	margin-top: -4px;
 }
-.cr-additional-container label { 
-	font-weight: normal; 
+.cr-additional-container label {
+	font-weight: normal;
 }
 
 /* hides possible product description */
@@ -731,7 +739,7 @@ ul.nova-info ul li {
 	display: none;
 }
 /* styling for a checkbox, or in practice on/off button */
-.btn-armada-checkbox, 
+.btn-armada-checkbox,
 .btn-armada-checkbox:hover {
 	border: 2px solid #00d791;
 	background: transparent;
@@ -793,7 +801,7 @@ ul.additional_stand_height label span {
 }
 .cr-additional-container textarea {}
 /* contact me about box */
-.cr-additional-checkboxes label { 
+.cr-additional-checkboxes label {
 	width: 46%;
 	min-height: 65px;
     line-height: 65px;
@@ -842,7 +850,7 @@ ul.additional_stand_height label span {
 	border-bottom: 1px solid #fff;
 }
 
-#id_requests_for_exhibition_area > li:nth-child(1) > label, 
+#id_requests_for_exhibition_area > li:nth-child(1) > label,
 #id_requests_for_stand_placement > li:nth-child(1) > label {
 	display: none;
 }
@@ -885,8 +893,8 @@ ul.additional_stand_height label span {
 .cr-container-confirm h3 {
 	margin-top: 50px;
 }
-.toggleEdit { 
-	color: #ea2c49; 
+.toggleEdit {
+	color: #ea2c49;
 	cursor: pointer;
 }
 
@@ -1007,14 +1015,14 @@ confirm orders
   .cr-profile h2 {
   	margin-top: 30px;
   }
-  .cr-profile p { 
+  .cr-profile p {
   	text-align: center;
   }
   .cr-profile input {
   	margin-left: auto;
   	margin-right: auto;
   }
-} 
+}
 
 .modal-content {
 	background-color: #2D2D2D;
