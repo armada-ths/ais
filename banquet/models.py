@@ -51,7 +51,7 @@ class BanquetteAttendant(models.Model):
     wants_lactose_free_food = models.BooleanField(default=False)
     wants_gluten_free_food = models.BooleanField(default=False)
     wants_vegan_food = models.BooleanField(default=False)
-    table = models.ForeignKey(BanquetTable, null=True, blank=True)
+    table = models.ForeignKey(BanquetTable, null=True, blank=True, on_delete=models.SET_NULL)
     seat_number = models.SmallIntegerField(null=True, blank=True)
     student_ticket = models.BooleanField(default=False)
     confirmed = models.BooleanField(default=False)
@@ -59,6 +59,7 @@ class BanquetteAttendant(models.Model):
 
     class Meta:
         ordering = ["first_name", "last_name"]
+        permissions = (('can_seat_attendants', 'Can seat attendants'),)
 
     def __str__(self):
         return '%s %s - %s' % (self.first_name, self.last_name, self.exhibitor)
