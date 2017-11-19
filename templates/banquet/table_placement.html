@@ -49,7 +49,9 @@
                 </div>
                 {% endif %}
                 <div class="col-md-4">
+                  {% if mate.linkedin_url %}
                   <p><a href="{{mate.linkedin_url}}">LinkedIn</a></p>
+                  {% endif%}
                 </div>
                 {% if mate.ticket %}
                 <div class="col-md-4">
