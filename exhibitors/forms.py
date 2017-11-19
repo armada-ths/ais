@@ -91,12 +91,12 @@ class ExhibitorFormFull(forms.ModelForm):
             errors = []
             for field in transport_from_fair_fields:
                 if data[field] is None:
-                    error_text = '\"' + Exhibitor._meta.get_field(field).verbose_name.capitalize() + '\" field is required befpre checkout!'
+                    error_text = '\"' + Exhibitor._meta.get_field(field).verbose_name.capitalize() + '\" field is required before checkout!'
                     errors.append(forms.ValidationError(error_text, code='invalid'))
             if data['transport_from_fair_type'] == 'armada_transport':
                 for field in armada_transport_from_fair_fields:
                     if data[field] == '':
-                        error_text = '\"' + Exhibitor._meta.get_field(field).verbose_name.capitalize() + '\" field is required befpre checkout!'
+                        error_text = '\"' + Exhibitor._meta.get_field(field).verbose_name.capitalize() + '\" field is required before checkout!'
                         errors.append(forms.ValidationError(error_text, code='invalid'))
             if len(errors) != 0:
                 raise forms.ValidationError(errors)
