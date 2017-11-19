@@ -18,8 +18,11 @@ def sit_attendants(request, year):
     A fake button redirection target for fairs/{YEAR}/banquer 'sit attendants' button.
     Will call a function and redirect back to the banquet.
     '''
-    func.sit_attendants()
-    return HttpResponseRedirect(reverse('banquet', kwargs={'year': year }))
+    if request.user.has_perm('banquet.can_seat_attendants'):
+        func.sit_attendants()
+        return HttpResponseRedirect(reverse('banquet', kwargs={'year': year }))
+    else:
+        return HttpResponseForbidden()
 
 
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
@@ -122,6 +125,7 @@ def new_banquet_attendant(request, year, template_name='banquet/banquet_attendan
 
     else:
         return HttpResponseForbidden()
+      
 
 def table_placement(request, year, template_name='banquet/table_placement.html'):
     """
@@ -147,6 +151,7 @@ def table_placement(request, year, template_name='banquet/table_placement.html')
         return render(request, template_name, {'fair': fair, 'banquet_attendant': banquet_attendant, 'table_name': table_name, 'table_mates': table_mates, 'confirmed': banquet_attendant.confirmed })
     # not authenticated
     return redirect('/fairs/' + year + '/banquet/signup')
+  
 
 def banquet_external_signup(request, year, template_name='banquet/external_signup.html'):
     """
