@@ -9,6 +9,7 @@
     {% if perms.banquet.can_seat_attendants %}
     <a href="{% url 'banquet/sit_attendants' fair.year %}" class="btn btn-default">Sit attendants</a>    
     {% endif %}
+
     <div class="table-responsive">
     <table class="table" id="exhibitor_table">
         <thead>

@@ -90,6 +90,7 @@ class BanquetViewTestCase(TestCase):
         banquet_ticket_empty = BanquetTicket.objects.create()
         ticket_query = BanquetTicket.objects.all()
         self.assertEqual(len(ticket_query), 2)
+
         
     def test_banquet_placement_view(self):
         """
@@ -112,7 +113,7 @@ class BanquetViewTestCase(TestCase):
         response = client.get('/fairs/2017/banquet/placement')
         self.assertEqual(response.status_code, 200)
 
-
+        
 class BanquetPlacementTestCase(TestCase):
     '''
     Test specifically banquet placements
@@ -138,6 +139,7 @@ class BanquetPlacementTestCase(TestCase):
         self.assertEqual(len(BanquetTable.objects.all()), 0)
 
         User.objects.get(username='test').user_permissions.add(Permission.objects.get(codename='can_seat_attendants'))
+
 
         response = client.get('/fairs/2017/banquet/sit_attendants/')
         self.assertEqual(response.status_code, 302)
