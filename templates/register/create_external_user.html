@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
     <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'login_style_additions.css' %}" rel="stylesheet" media="screen">
     <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
 </head>
 
@@ -15,17 +16,18 @@
         <svg class="armada-logo" viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
 				   <image  xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
         </svg>
-        <h2>Welcome!</h2>
+        <h1 class="login-welcome">Welcome!</h1>
       </div>
         <div class="row header-row">
             <div class="col-md-6 col-md-offset-3">
-
-                <p>If you already have an account click on the KTH login button</p>
-                <a href="/login"><img src="/static/images/kth_login_button.png" alt="Login with KTH"></a>
-                <p>If you don't have an KTH account log in <a href="{% url 'anmalan:external_login' %}">here</a>.</p>
-                <br />
-                <br />
-
+                <p class="important-text">If you are a first time visitor or have forgotten your password <a href="{% url 'anmalan:password_reset' %}">click here</a></p>
+                <p>If you already have an account. Please use one of the options below to log in;</p>
+                <p>
+                  <a href="/login"><img src="/static/images/kth_login_button.png" alt="Login with KTH"></a>
+                </p>
+                <p>
+                  <a href="{% url 'anmalan:external_login' %}" class="btn btn-default btn-green"><span class="bigger-button">E-mail & Password Login</span></a>
+                </p>
                 <svg viewBox="50 90 200 200" width="100px" height="180px" version="1.1">
       				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
             </svg>
