@@ -141,11 +141,10 @@ class ExternalUserForm(UserCreationForm):
 class ExternalUserLoginForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExternalUserLoginForm, self).__init__(*args, **kwargs)
-        self.fields['password'] = forms.CharField(widget=forms.PasswordInput())
+        self.fields['password'] = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder' : 'Password'}))
         self.fields['email'].label = ""
         self.fields['password'].label = ""
         self.fields['email'].widget = forms.TextInput(attrs={'placeholder' : 'Email'})
-        self.fields['password'].widget = forms.TextInput(attrs={'placeholder' : 'Password'})
 
     class Meta:
         model = User
