@@ -65,5 +65,15 @@ h2, h3 {
 .mate-card {
     background-color: #111;
     margin: 0.5em 0.5em;
-    height: 8em;
+    height: 10em;
+    border: 1px #D5AD6D solid;
+}
+
+@media (max-width: 1080px) {
+    .card-info {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
 }
