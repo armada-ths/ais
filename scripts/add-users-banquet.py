@@ -5,7 +5,8 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 
-attendants = BanquetteAttendant.objects.filter(confirmed=True)
+fair = Fair.objects.get(current=True)
+attendants = BanquetteAttendant.objects.filter(fair=fair)
 for attendant in attendants:
     if attendant.user:
         continue
@@ -25,8 +26,3 @@ for attendant in attendants:
                 attendant.save()
         else:
             continue
-
-            
-            
-            
-            
