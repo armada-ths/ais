@@ -27,3 +27,9 @@ for attendant in attendants:
                 attendant.save()
         else:
             continue
+
+
+
+
+
+
