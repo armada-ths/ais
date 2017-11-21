@@ -11,28 +11,37 @@
 
 <body>
     <div class="container text-center">
-      <div class="headline">
-        <svg class="armada-logo" viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
-        <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
-      </svg>
-        <div class="row header-row">
-            <div class="col-md-12">
-                <h2>Login</h2>
-            </div>
-        </div>
-        <div class="row text-center">
-          <div class="col-md-6 col-md-offset-3">
-            <form method="post">
-              {% csrf_token %}
-              {{ form | crispy }}
-              <button type="submit" class="btn-signin btn-green">Submit</button>
-              <p><a href="{% url 'anmalan:password_reset' %}" class="forgot-password">Forgot or create new password</a></p>
-              <svg viewBox="50 90 200 200" width="100px" height="180px" version="1.1">
-        				<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
-              </svg>
-            </form>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="headline">
+            <svg class="armada-logo" viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
+              <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px" />
+            </svg>
           </div>
         </div>
+      </div>
+      <div class="row header-row">
+        <div class="col-md-12">
+          <h2>Login</h2>
+        </div>
+      </div>
+      <div class="row text-center">
+        <div class="col-md-6 col-md-offset-3">
+          <form method="post">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <button type="submit" class="btn-signin btn-green">Submit</button>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+            <p><a href="{% url 'anmalan:password_reset' %}" class="password-text">Forgot or create new password</a></p>
+            <svg viewBox="50 90 200 200" width="100px" height="180px" version="1.1">
+        			<image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px" />
+            </svg>
+        </div>
+      </div>
     </div>
 </body>
 

@@ -15,7 +15,7 @@
         <div class="text-center headline">
           <h1 class="big big-margin-top banquet-header">THS Armada Banquet</h1>
           <h2>Welcome {{ banquet_attendant.first_name }} {{ banquet_attendant.last_name }}!</h2>
-          <p>Here you can find your placement information for the banquet. You'll also find some info about the
+          <p>Here you can find your placement information for the banquet. A full map is available on the bottom of this page. You'll also find some info about the
           you are seated with this evening. Take the chance to get to know them a bit beforehand.</p>
           <p>Have a spectacular evening and thank you for participating at Armada 2017!</p>
         </div>
@@ -25,19 +25,19 @@
     <div class="row">
       <div class="col-md-12">
         <div class="text-center">
-          <h3>Table: <div class="status-text">{{ table_name }}</div></h3>
+          <h3>Your table: <div class="status-text">{{ table_name }}</div></h3>
         </div>
       </div>
       <div class="col-md-12">
         <div class="text-center">
         <div class="row">
             <div class="col-md-12">
-              <h3>Table Mates:</h3>
+              <h3>Tablemates:</h3>
             </div>
             {% if table_mates %}
             {% for mate in table_mates %}
-            <div class="col-md-4 mate-card">
-              <div class="row">
+            <div class="col-md-3 mate-card">
+              <div class="row card-info">
                 <div class="col-md-12">
                   <h2>{{mate.first_name}} {{mate.last_name}}</h2>
                 </div>
@@ -48,16 +48,18 @@
                   </div>
                 </div>
                 {% endif %}
-                <div class="col-md-4">
-                  {% if mate.linkedin_url %}
-                  <p><a href="{{mate.linkedin_url}}">LinkedIn</a></p>
-                  {% endif%}
-                </div>
-                {% if mate.ticket %}
-                <div class="col-md-4">
-                  <p>{{mate.ticket}}</p>
+                {% if mate.job_title %}
+                <div class="row">
+                  <div class="col-md-12">
+                    <p>{{mate.job_title}}</p>
+                  </div>
                 </div>
                 {% endif %}
+                {% if mate.linkedin_url %}
+                <div class="col-md-12">
+                  <p><a href="{{mate.linkedin_url}}">LinkedIn</a></p>
+                </div>
+                {% endif%}
               </div>
             </div>
             {% endfor %}
@@ -68,7 +70,9 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        <img src="{% static 'images/bordsplacering.png' %}" alt="Armada" class="placement-map" />
+        <a href="{% static 'images/bordskarta_small.jpg' %}" target="_blank">
+          <img src="{% static 'images/bordskarta_small.jpg' %}" alt="Armada" class="placement-map" />
+        </a>
       </div>
     </div>
   </div>
