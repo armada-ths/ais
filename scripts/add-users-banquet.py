@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 
 # fair = Fair.objects.get(current=True)
-attendants = BanquetteAttendant.objects.filter()
+attendants = BanquetteAttendant.objects.all()
 for attendant in attendants:
     if attendant.user:
         continue
