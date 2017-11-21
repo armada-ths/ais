@@ -12,10 +12,10 @@ for attendant in attendants:
         continue
     else:
         if attendant.email:
-            try:
-                validate_email(attendant.email)
-            except ValidationError:
-                continue
+            #try:
+            #    validate_email(attendant.email)
+            #except ValidationError:
+            #    continue
             user = User.objects.filter(email=attendant.email).first()
             if user:
                 attendant.user = user
