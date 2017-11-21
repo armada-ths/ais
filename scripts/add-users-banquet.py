@@ -6,16 +6,17 @@ from django.core.exceptions import ValidationError
 
 
 # fair = Fair.objects.get(current=True)
-attendants = BanquetteAttendant.objects.filter()
+attendants = BanquetteAttendant.objects.all()
+
 for attendant in attendants:
     if attendant.user:
         continue
     else:
         if attendant.email:
-            try:
-                validate_email(attendant.email)
-            except ValidationError:
-                continue
+            #try:
+            #    validate_email(attendant.email)
+            #except ValidationError:
+            #    continue
             user = User.objects.filter(email=attendant.email).first()
             if user:
                 attendant.user = user
@@ -26,3 +27,9 @@ for attendant in attendants:
                 attendant.save()
         else:
             continue
+
+
+
+
+
+
