@@ -31,7 +31,8 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
         'Linkedin URL',
         'Confirmed',
         'Table ID',
-        'Ignored from placement'
+        'Ignored from placement',
+        'Seat Number'
 
     ]
 
@@ -41,8 +42,8 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
     for attendant in queryset:
         writer.writerow([
             attendant.fair_id,
-            attendant.first_name, 
-            attendant.last_name, 
+            attendant.first_name,
+            attendant.last_name,
             attendant.email,
             attendant.ticket,
             attendant.table,
@@ -57,7 +58,8 @@ def export_banquet_attendants_as_csv(modeladmin, request, queryset):
             attendant.linkedin_url,
             attendant.confirmed,
             attendant.table_id,
-            attendant.ignore_from_placement
+            attendant.ignore_from_placement,
+            attendant.seat_number
         ])
     return response
 
