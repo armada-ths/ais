@@ -5,16 +5,18 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 
-attendants = BanquetteAttendant.objects.filter(confirmed=True)
+# fair = Fair.objects.get(current=True)
+attendants = BanquetteAttendant.objects.all()
+
 for attendant in attendants:
     if attendant.user:
         continue
     else:
         if attendant.email:
-            try:
-                validate_email(attendant.email)
-            except ValidationError:
-                continue
+            #try:
+            #    validate_email(attendant.email)
+            #except ValidationError:
+            #    continue
             user = User.objects.filter(email=attendant.email).first()
             if user:
                 attendant.user = user
@@ -26,7 +28,8 @@ for attendant in attendants:
         else:
             continue
 
-            
-            
-            
-            
+
+
+
+
+
