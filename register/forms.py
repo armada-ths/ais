@@ -133,7 +133,7 @@ class ExternalUserForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data['email']
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email=email.lower())
         except User.DoesNotExist:
             return email
         raise forms.ValidationError(u'Email "%s" is already in use.' % email)
@@ -141,11 +141,10 @@ class ExternalUserForm(UserCreationForm):
 class ExternalUserLoginForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExternalUserLoginForm, self).__init__(*args, **kwargs)
-        self.fields['password'] = forms.CharField(widget=forms.PasswordInput())
+        self.fields['password'] = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder' : 'Password'}))
         self.fields['email'].label = ""
         self.fields['password'].label = ""
         self.fields['email'].widget = forms.TextInput(attrs={'placeholder' : 'Email'})
-        self.fields['password'].widget = forms.TextInput(attrs={'placeholder' : 'Password'})
 
     class Meta:
         model = User
@@ -158,7 +157,7 @@ class ExternalUserLoginForm(ModelForm):
             # check if a user exists with the inputed credentials.
             # set_passwords hashes the password since its hash string is in the db
             # and not the real password itsef
-            user = User.objects.get(email=email)
+            user = User.objects.get(email=email.lower())
         except User.DoesNotExist:
             # according to standardized recommendations you should not reveil what field is wrong
             raise forms.ValidationError(_("Invalid Email or Password!"))

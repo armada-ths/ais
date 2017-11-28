@@ -39,6 +39,13 @@ class ExhibitorViewForm(forms.Form):
 
 
 # Fields for ordering
+exhibitor_fields = [
+    'hosts', 'contact', 'fair_location', 'estimated_arrival_of_representatives', 'about_text', 'facts_text',
+    'accept_terms', 'comment', 'status', 'allergies', 'logo', 'location_at_fair', 'requests_for_exhibition_area',
+    'number_of_outlets_needed', 'total_power', 'invoice_purchase_order_number',
+    'wants_information_about_events', 'wants_information_about_targeted_marketing', 'wants_information_about_osqledaren',
+    'manual_invoice', 'interested_in_armada_transport', 'tags', 'goals_of_participation', 'job_types'
+]
 invoice_fields = [
     'invoice_reference', 'invoice_reference_phone_number', 'invoice_organisation_name', 'invoice_address',
     'invoice_address_po_box', 'invoice_address_zip_code', 'invoice_identification', 'invoice_additional_information'
@@ -63,12 +70,12 @@ class ExhibitorFormFull(forms.ModelForm):
     The full version of the exhibitor form.
     '''
 
-    field_order = invoice_fields + transport_to_fair_fields + transport_from_fair_fields + armada_transport_from_fair_fields + stand_fields
+    field_order = exhibitor_fields + stand_fields + transport_to_fair_fields + transport_from_fair_fields + armada_transport_from_fair_fields
 
     class Meta:
         model = Exhibitor
         fields = '__all__'
-        exclude = ('company', 'fair',)
+        exclude = ('company', 'fair') + tuple(invoice_fields)
         widgets = {
             'allergies' : forms.TextInput()
         }
@@ -81,14 +88,16 @@ class ExhibitorFormFull(forms.ModelForm):
     def clean(self):
         data = super(ExhibitorFormFull, self).clean()
         if data['status'] == 'checked_out':
-            errors = {}
+            errors = []
             for field in transport_from_fair_fields:
                 if data[field] is None:
-                    errors[field] = forms.ValidationError('Field is required before checkout!', code='invalid')
+                    error_text = '\"' + Exhibitor._meta.get_field(field).verbose_name.capitalize() + '\" field is required before checkout!'
+                    errors.append(forms.ValidationError(error_text, code='invalid'))
             if data['transport_from_fair_type'] == 'armada_transport':
                 for field in armada_transport_from_fair_fields:
                     if data[field] == '':
-                        errors[field] = forms.ValidationError('Field is required before checkout!', code='invalid')
+                        error_text = '\"' + Exhibitor._meta.get_field(field).verbose_name.capitalize() + '\" field is required before checkout!'
+                        errors.append(forms.ValidationError(error_text, code='invalid'))
             if len(errors) != 0:
                 raise forms.ValidationError(errors)
         return data
@@ -102,4 +111,17 @@ class ExhibitorFormPartial(ExhibitorFormFull):
     '''
 
     class Meta(ExhibitorFormFull.Meta):
-        exclude = ('company', 'fair', 'hosts', 'contact')
+        exclude = ('company', 'fair', 'hosts', 'contact') + tuple(invoice_fields)
+
+
+class ExhibitorInvoiceForm(forms.ModelForm):
+    '''
+    A form for exhibitor invoice fields.
+    Was created to preserve old order dof fields in the full form.
+    Should porbably be updated for the next year.
+    '''
+    field_order = invoice_fields
+
+    class Meta:
+        model = Exhibitor
+        fields = tuple(invoice_fields)
