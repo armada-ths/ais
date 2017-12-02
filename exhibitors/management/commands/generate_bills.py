@@ -101,9 +101,9 @@ class Command(BaseCommand):
             help='specify a custom locale to be used (default is swedish)')
 
 
-    def write_exhibitor_txt(self, exhibitor):
+    def create_exhibitor_txt(self, exhibitor):
         '''
-        A helper that writes a formatted exhibitor orders to a file named the exhibitor's company
+        A helper function that creates and writes a new bill txt file for a given exhibitor
         '''
         with codecs.open(self.options['dirname'] + exhibitor.company.name + '.txt', 'w+', 'ISO-8859-1') as txt_file:
             txt_file.write('Rubrik\tRN Faktura\r\n')
@@ -160,11 +160,11 @@ class Command(BaseCommand):
         # A try-with-resources block, this is to make sure we don't change the locale settings of python application
         try:
             self.setlocale()
-            # Loop through all exhibitors:
             generated_file_count = 0
+            # Loop through all exhibitors:
             for exhibitor in Exhibitor.objects.filter(status='checked_out'):
                 try:
-                    self.write_exhibitor_txt(exhibitor)
+                    self.create_exhibitor_txt(exhibitor)
                     generated_file_count += 1
                 except Exception as ex:
                     self.stderr.write('Got the follwoing exception while creating a file for {} exhibitor:\n{}'.format(exhibitor, ex))
