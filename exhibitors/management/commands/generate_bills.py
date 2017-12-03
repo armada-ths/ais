@@ -121,7 +121,7 @@ class Command(BaseCommand):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-        with codecs.open(self.options['dirname'] + exhibitor.company.name + '.txt', 'w+', 'ISO-8859-1') as txt_file:
+        with codecs.open(self.options['dirname'] + (exhibitor.company.name).replace('/', '') + '.txt', 'w+', 'ISO-8859-1') as txt_file:
             txt_file.write('Rubrik\tTHS Armada Faktura\r\n')
             txt_file.write('Datumformat YYYY - MM - DD\r\n')
             # custommer number
