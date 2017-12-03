@@ -18,6 +18,7 @@ static = {
     'cost_carrier'      : 0,
     'row_type'          : 3, # no clue what it is exactly
     'tax'               : 0,
+    'result_center'     : 81,
 }
 
 
@@ -115,7 +116,12 @@ class Command(BaseCommand):
                 cost_carrier = static['cost_carrier'],
                 ref = exhibitor.invoice_reference))
             # TODO: comments 1 through 3 and ?reference?
-            self.write('!IMPORTANT! If you speak swedish please contact Greg about \'comments 1 through 3\'')
+            self.write('!IMPORTANT! EVENEMANGSTITLE etc needs to be updated')
+            txt_file.write('Evenemang: EVENEMANGSTITEL, 2017-11-21<CR>')
+            txt_file.write('Fakturamärkning: FAKTURAMÄRKNING<CR>')
+            txt_file.write('Vid frågor om innehållet kontakta RN Eventteknik på rn@ths.kth.se, ange följande: EVENTID@FAKTUREANUMMER<CR><CR><CR>')
+            txt_file.write('\tKONTAKTPERSPN\t\t\t\t\t\t\t\t\t')
+            txt_file.write('FAKTURAADRESS<CR>\t\t\t\t\t\t\t\t\t\t\t\t')
 
             # TODO: another spot where a Swedish-spekaer is necessary really
             for order in Order.objects.filter(exhibitor=exhibitor):
@@ -138,11 +144,11 @@ class Command(BaseCommand):
         # Title
         out.write('{}\t'.format(order.product.name)) # item_title
         # konto
-        out.write('{}\t\t\t') # rent_account #TODO: figure this out ?maybe invoice-reference?
+        out.write('{}\t\t\t'.format(order.product.coa_number)) # rent_account
         # moms
         out.write('{}\t'.format(static['tax']))
         # enhet
-        out.write('{}\t\t\t\t'.format(order.product.description))# item_suffix
+        out.write('{}\t\t\t\t'.format('st'))# item_suffix
         # resultatställe
         out.write('{}\t\t\t'.format(static['result_center']))
         # KB
