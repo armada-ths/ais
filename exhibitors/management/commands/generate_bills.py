@@ -22,7 +22,8 @@ static = {
 }
 
 
-import os, locale, codecs
+import os, locale, codecs, errno
+import datetime
 from django.core.management import BaseCommand, CommandError
 from exhibitors.models import Exhibitor
 from fair.models import Fair
@@ -91,11 +92,13 @@ class Command(BaseCommand):
         Add arguments to the command, arguments prepened with '--' are optional.
         Look into 'python argparse' for help
         '''
+        now = datetime.datetime.now()
+        dir_str = '../../../bills_%s/'%str(now.year) #adds current year to default directory
         parser.add_argument(
             '--dirname',
             type=str,
-            default='../../../bills/',
-            help='specify a custom relative path to a directory for the generated files (default is \'../../../bills/\')')
+            default=dir_str,
+            help='specify a custom relative path to a directory for the generated files (default is \'../../../bills_YYYY/\', where YYYY is current year)')
         parser.add_argument(
             '--locale',
             type=str,
@@ -107,6 +110,12 @@ class Command(BaseCommand):
         '''
         A helper function that creates and writes a new bill txt file for a given exhibitor
         '''
+        try:
+            # creates directory if it does not exist
+            os.makedirs(self.options['dirname'])
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
         with codecs.open(self.options['dirname'] + exhibitor.company.name + '.txt', 'w+', 'ISO-8859-1') as txt_file:
             txt_file.write('Rubrik\tRN Faktura\r\n')
             txt_file.write('Datumformat YYYY - MM - DD\r\n')
