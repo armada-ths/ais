@@ -24,6 +24,7 @@ static = {
 import os, locale, codecs
 from django.core.management import BaseCommand, CommandError
 from exhibitors.models import Exhibitor
+from fair.models import Fair
 from orders.models import Order, Product
 
 
@@ -112,12 +113,12 @@ class Command(BaseCommand):
             txt_file.write('Kundfaktura\t\t\t\t{customer_number}\t\t\t\t\t{cost_carrier}\t\t\t{ref}\t\t\t'.format(
                 customer_number = static['customer_number'],
                 cost_carrier = static['cost_carrier'],
-                ref = exhibitor.contact.name))
+                ref = exhibitor.invoice_reference))
             # TODO: comments 1 through 3 and ?reference?
             self.write('!IMPORTANT! If you speak swedish please contact Greg about \'comments 1 through 3\'')
-            
+
             # TODO: another spot where a Swedish-spekaer is necessary really
-            for order in Orders.objects.filter(exhibitor=exhibitor):
+            for order in Order.objects.filter(exhibitor=exhibitor):
                 if order.amount > 0:
                     self.write_order_txt(txt_file, order)
             txt_file.write('\r\nKundfaktura-slut')
@@ -162,7 +163,7 @@ class Command(BaseCommand):
             self.setlocale()
             generated_file_count = 0
             # Loop through all exhibitors:
-            for exhibitor in Exhibitor.objects.filter(status='checked_out'):
+            for exhibitor in Exhibitor.objects.filter(fair=Fair.objects.get(current=True)):
                 try:
                     self.create_exhibitor_txt(exhibitor)
                     generated_file_count += 1
