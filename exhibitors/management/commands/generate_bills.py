@@ -104,6 +104,11 @@ class Command(BaseCommand):
             type=str,
             default=None,
             help='specify a custom locale to be used (default is swedish)')
+        parser.add_argument(
+            '--contact',
+            type=str,
+            default='KONTAKTPERSON',
+            help='Specify a contact person to be specified in the bill (default is \'KONTAKTPERSON\')')
 
 
     def create_exhibitor_txt(self, exhibitor):
@@ -117,7 +122,7 @@ class Command(BaseCommand):
             if e.errno != errno.EEXIST:
                 raise
         with codecs.open(self.options['dirname'] + exhibitor.company.name + '.txt', 'w+', 'ISO-8859-1') as txt_file:
-            txt_file.write('Rubrik\tRN Faktura\r\n')
+            txt_file.write('Rubrik\tTHS Armada Faktura\r\n')
             txt_file.write('Datumformat YYYY - MM - DD\r\n')
             # custommer number
             txt_file.write('Kundfaktura\t\t\t\t{customer_number}\t\t\t\t\t{cost_carrier}\t\t\t{ref}\t\t\t'.format(
@@ -126,11 +131,11 @@ class Command(BaseCommand):
                 ref = exhibitor.invoice_reference))
             # TODO: comments 1 through 3 and ?reference?
             self.write('!IMPORTANT! EVENEMANGSTITLE etc needs to be updated')
-            txt_file.write('Evenemang: EVENEMANGSTITEL, 2017-11-21<CR>')
+            txt_file.write('Evenemang: Armada, 2017-11-21<CR>')
             txt_file.write('Fakturamärkning: FAKTURAMÄRKNING<CR>')
-            txt_file.write('Vid frågor om innehållet kontakta RN Eventteknik på rn@ths.kth.se, ange följande: EVENTID@FAKTUREANUMMER<CR><CR><CR>')
-            txt_file.write('\tKONTAKTPERSPN\t\t\t\t\t\t\t\t\t')
-            txt_file.write('FAKTURAADRESS<CR>\t\t\t\t\t\t\t\t\t\t\t\t')
+            txt_file.write('Vid frågor om innehållet kontakta armada@ths.kth.se, ange följande: EVENTID@FAKTUREANUMMER<CR><CR><CR>')
+            txt_file.write('\t{}\t\t\t\t\t\t\t\t\t'.format(self.options['contact']))
+            txt_file.write('Tekniska Högskolans Studentkår<CR>Referens: Armada<CR>Kund-id LKH1165, FE 108<CR>105 69 Stockholm<CR><CR>\t\t\t\t\t\t\t\t\t\t\t\t')
 
             # TODO: another spot where a Swedish-spekaer is necessary really
             for order in Order.objects.filter(exhibitor=exhibitor):
