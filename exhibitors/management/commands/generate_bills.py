@@ -1,5 +1,5 @@
 '''
-A command that generates 2 files for each exhibitor: a specially formatted {comany-name}.txt and a human-readable {company-name}.pdf
+A command that generates 2 files for each exhibitor: a specially formatted {comany-name}.txt and a human-readable {company-name}.xlsx
 
 To use:
 > python manage.py generate_bills
@@ -14,11 +14,11 @@ to list options
 #Taken from the example php, you can probably change this if you know what you're doing
 static = {
     'customer_number'   : '000000',
-    'profit_center'     : 81,
+    'profit_center'     : 11,
     'cost_carrier'      : 0,
     'row_type'          : 3, # no clue what it is exactly
     'tax'               : 0,
-    'result_center'     : 81,
+    'result_center'     : 11,
 }
 
 
@@ -28,10 +28,10 @@ from django.core.management import BaseCommand, CommandError
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from orders.models import Order, Product
-
+from openpyxl import load_workbook
 
 class Command(BaseCommand):
-    help = 'Generates 2 bills: a specially formatted \'bills.txt\' and a human-readable \'bills.pdf\''
+    help = 'Generates 2 bills: a specially formatted \'bills.txt\' and a human-readable \'bills.xlsx\''
     options = None,
     last_locale = None
 
@@ -92,7 +92,7 @@ class Command(BaseCommand):
         Add arguments to the command, arguments prepened with '--' are optional.
         Look into 'python argparse' for help
         '''
-        now = datetime.datetime.now()
+        now = datetime.datetime.now() # TODO: Set to air year instead of current year. Maybe variable?
         dir_str = '../../../bills_%s/'%str(now.year) #adds current year to default directory
         parser.add_argument(
             '--dirname',
@@ -121,7 +121,7 @@ class Command(BaseCommand):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-        with codecs.open(self.options['dirname'] + exhibitor.company.name + '.txt', 'w+', 'ISO-8859-1') as txt_file:
+        with codecs.open(self.options['dirname'] + (exhibitor.company.name).replace('/', '') + '.txt', 'w+', 'ISO-8859-1') as txt_file:
             txt_file.write('Rubrik\tTHS Armada Faktura\r\n')
             txt_file.write('Datumformat YYYY - MM - DD\r\n')
             # custommer number
@@ -131,9 +131,9 @@ class Command(BaseCommand):
                 ref = exhibitor.invoice_reference))
             # TODO: comments 1 through 3 and ?reference?
             self.write('!IMPORTANT! EVENEMANGSTITLE etc needs to be updated')
-            txt_file.write('Evenemang: Armada, 2017-11-21<CR>')
-            txt_file.write('Fakturamärkning: FAKTURAMÄRKNING<CR>')
-            txt_file.write('Vid frågor om innehållet kontakta armada@ths.kth.se, ange följande: EVENTID@FAKTUREANUMMER<CR><CR><CR>')
+            txt_file.write('Armada, 2017-11-21<CR>')
+            txt_file.write('Fakturamärkning: {0}<CR>'.format(exhibitor.invoice_identification))
+            txt_file.write('For questions and feedback, contact armada@ths.kth.se.<CR><CR><CR>')
             txt_file.write('\t{}\t\t\t\t\t\t\t\t\t'.format(self.options['contact']))
             txt_file.write('Tekniska Högskolans Studentkår<CR>Referens: Armada<CR>Kund-id LKH1165, FE 108<CR>105 69 Stockholm<CR><CR>\t\t\t\t\t\t\t\t\t\t\t\t')
 
@@ -169,6 +169,34 @@ class Command(BaseCommand):
         out.write('{}\t'.format(static['cost_carrier']))
         out.write('{}'.format(order.price()))# total_price
 
+    def create_readable_output(self, options):
+        for exhibitor in Exhibitor.objects.filter(fair=Fair.objects.get(current=True)):
+            wb = load_workbook(os.path.dirname(os.path.realpath(__file__)) + '/invoice_template.xlsx')
+            ws = wb.active # Select fakturaunderlag-mall sheet
+            
+            # Assign company info to template
+            ws['E5'] = exhibitor.company.name
+            ws['C8'] = exhibitor.invoice_reference
+            ws['C9'] = 'Project Manager THS Armada'
+            ws['E8'] = exhibitor.invoice_address
+            if exhibitor.invoice_address_po_box:
+                ws['E9'] = exhibitor.invoice_address_po_box
+                ws['E10'] = exhibitor.invoice_address_zip_code        
+            else:
+                ws['E9'] = exhibitor.invoice_address_zip_code
+            ws['A16'] = exhibitor.invoice_additional_information
+
+            current_row = 23
+            for order in Order.objects.filter(exhibitor=exhibitor):
+                ws['A' + str(current_row)] = order.amount
+                ws['B' + str(current_row)] = order.product.name
+                ws['E' + str(current_row)] = order.product.price
+                ws['G' + str(current_row)] = order.product.coa_number
+                ws['H' + str(current_row)] = 11 # Resultatställe armada
+                ws['J' + str(current_row)] = 0 # Resultatställe armada
+                current_row += 1
+
+            wb.save('{}/{}.xlsx'.format( options['dirname'] ,exhibitor.company.name))
 
     def handle(self, *args, **options):
         '''
@@ -189,7 +217,9 @@ class Command(BaseCommand):
                     generated_file_count += 1
                 except Exception as ex:
                     self.stderr.write('Got the follwoing exception while creating a file for {} exhibitor:\n{}'.format(exhibitor, ex))
+            self.create_readable_output(options)
             self.verbose_write('Generated {} files'.format(generated_file_count), 1)
 
         finally:
             self.resetlocale()
+
