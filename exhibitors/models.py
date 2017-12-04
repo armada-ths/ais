@@ -147,7 +147,7 @@ class Exhibitor(models.Model):
     ]
     goals_of_participation = models.CharField(choices=goals, null=True, blank=True,
                                                 max_length=300)
-    
+
     job_types = models.ManyToManyField(JobType, blank=True)
 
     def total_cost(self):
