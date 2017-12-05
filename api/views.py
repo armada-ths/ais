@@ -342,7 +342,7 @@ def recruitment(request):
     recruitments = list(filter(lambda rec: (rec.start_date < timezone.now()) & (rec.end_date > timezone.now()), recruitments)) #Make sure only current recruitments are shown
     data = []
     for recruitment in recruitments:
-        roles_info = []
+        roles_info = dict()
         roles = recruitment.recruitable_roles.all()
         #Adds all roles available for this recruitment
         for role in roles:
