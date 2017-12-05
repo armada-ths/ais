@@ -346,13 +346,17 @@ def recruitment(request):
         roles = recruitment.recruitable_roles.all()
         #Adds all roles available for this recruitment
         for role in roles:
-            roles_info.append(OrderedDict([
+            organization_group = role.organization_group
+            if organization_group == None or organization_group =='':
+                organization_group = 'Other'
+            roles_info[organization_group].append(OrderedDict([
                 ('name', role.name),
                 ('parent', role.parent_role.name),
                 ('description', role.description),
                 ]))
         data.append(OrderedDict([
             ('name', recruitment.name),
+            ('link', '/fairs/' + str(fair.year) + '/recruitment/'),
             ('start_date', recruitment.start_date),
             ('end_date', recruitment.end_date),
             ('roles', roles_info),
