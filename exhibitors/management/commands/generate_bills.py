@@ -129,8 +129,7 @@ class Command(BaseCommand):
                 customer_number = static['customer_number'],
                 cost_carrier = static['cost_carrier'],
                 ref = exhibitor.invoice_reference))
-            # TODO: comments 1 through 3 and ?reference?
-            self.write('!IMPORTANT! EVENEMANGSTITLE etc needs to be updated')
+
             txt_file.write('Armada, 2017-11-21<CR>')
             txt_file.write('Fakturamärkning: {0}<CR>'.format(exhibitor.invoice_identification))
             txt_file.write('For questions and feedback, contact armada@ths.kth.se.<CR><CR><CR>')
@@ -175,7 +174,7 @@ class Command(BaseCommand):
             ws = wb.active # Select fakturaunderlag-mall sheet
             
             # Assign company info to template
-            ws['E5'] = exhibitor.company.name
+            ws['E5'] = exhibitor.company.name.replace('/', '')
             ws['C8'] = exhibitor.invoice_reference
             ws['C9'] = 'Project Manager THS Armada'
             ws['E8'] = exhibitor.invoice_address
@@ -196,7 +195,7 @@ class Command(BaseCommand):
                 ws['J' + str(current_row)] = 0 # Resultatställe armada
                 current_row += 1
 
-            wb.save('{}/{}.xlsx'.format( options['dirname'] ,exhibitor.company.name))
+            wb.save('{}/{}.xlsx'.format( options['dirname'] ,exhibitor.company.name.replace('/', '')))
 
     def handle(self, *args, **options):
         '''
