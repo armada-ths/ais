@@ -353,6 +353,7 @@ def recruitment(request):
                 ]))
         data.append(OrderedDict([
             ('name', recruitment.name),
+            ('link', '/fairs/' + str(fair.year) + '/recruitment/'),
             ('start_date', recruitment.start_date),
             ('end_date', recruitment.end_date),
             ('roles', roles_info),
