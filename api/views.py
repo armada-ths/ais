@@ -349,17 +349,22 @@ def recruitment(request):
             organization_group = role.organization_group
             if organization_group == None or organization_group =='':
                 organization_group = 'Other'
-            roles_info[organization_group].append(OrderedDict([
-                ('name', role.name),
-                ('parent', role.parent_role.name),
-                ('description', role.description),
-                ]))
+            role = OrderedDict([
+                    ('name', role.name),
+                    ('parent', role.parent_role.name),
+                    ('description', role.description),
+                    ])
+            if organization_group in roles_info:
+                roles_info[organization_group].append(role)
+            else:
+                roles_info[organization_group] = [role]
+
         data.append(OrderedDict([
             ('name', recruitment.name),
             ('link', '/fairs/' + str(fair.year) + '/recruitment/'),
             ('start_date', recruitment.start_date),
             ('end_date', recruitment.end_date),
-            ('roles', roles_info),
+            ('groups', roles_info),
             ]))
 
     return JsonResponse(data, safe=False)
