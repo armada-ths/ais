@@ -15,7 +15,7 @@ to list options
 static = {
     'customer_number'   : '000000',
     'profit_center'     : 11,
-    'cost_carrier'      : 0,
+    'cost_carrier'      : 11,
     'row_type'          : 3, # no clue what it is exactly
     'tax'               : 0,
     'result_center'     : 11,
@@ -134,9 +134,8 @@ class Command(BaseCommand):
             txt_file.write('Fakturamärkning: <CR>')
             txt_file.write('For questions and feedback, contact armada@ths.kth.se.<CR><CR><CR>')
             txt_file.write('\t{}\t\t\t\t\t\t\t\t\t'.format(self.options['contact']))
-            txt_file.write('Tekniska Högskolans Studentkår<CR>Referens: Armada<CR>Kund-id LKH1165, FE 108<CR>105 69 Stockholm<CR><CR>\t\t\t\t\t\t\t\t\t\t\t\t')
+            txt_file.write('{0}<CR>{1}<CR>{2}<CR>{3}<CR><CR>\t\t\t\t\t\t\t\t\t\t\t\t'.format(exhibitor.company.name, exhibitor.invoice_address, exhibitor.invoice_address_po_box, exhibitor.invoice_address_zip_code))
 
-            # TODO: another spot where a Swedish-spekaer is necessary really
             for order in Order.objects.filter(exhibitor=exhibitor):
                 if order.amount > 0:
                     self.write_order_txt(txt_file, order)
