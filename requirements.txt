@@ -9,3 +9,4 @@ django-crispy-forms
 Pillow
 raven
 requests
+openpyxl
