@@ -47,7 +47,7 @@ INSTALLED_APPS = (
     'banquet',
     'register',
     'matching',
-    'student_profiles'
+    'student_profiles',
 )
 
 
