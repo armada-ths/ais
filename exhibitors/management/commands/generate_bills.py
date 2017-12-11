@@ -131,7 +131,7 @@ class Command(BaseCommand):
                 ref = exhibitor.invoice_reference))
 
             txt_file.write('Armada, 2017-11-21<CR>')
-            txt_file.write('Fakturamärkning: {0}<CR>'.format(exhibitor.invoice_identification))
+            txt_file.write('Fakturamärkning: <CR>')
             txt_file.write('For questions and feedback, contact armada@ths.kth.se.<CR><CR><CR>')
             txt_file.write('\t{}\t\t\t\t\t\t\t\t\t'.format(self.options['contact']))
             txt_file.write('Tekniska Högskolans Studentkår<CR>Referens: Armada<CR>Kund-id LKH1165, FE 108<CR>105 69 Stockholm<CR><CR>\t\t\t\t\t\t\t\t\t\t\t\t')
