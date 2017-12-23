@@ -3,6 +3,7 @@ from django.contrib import admin
 from ais.common import settings
 from django.conf.urls.static import static
 from root.views import login_redirect
+import djangosaml2
 
 urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
@@ -13,6 +14,9 @@ urlpatterns = [
     url(r'^banquet/', include('banquet.urls')),
     url(r'^$', login_redirect),
     url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),
+    url(r'^saml2/', include('djangosaml2.urls')),
+    #url(r'^metadata/$', djangosaml2.views.metadata, name='saml2_metadata'),
+    url(r'^samltest/', djangosaml2.views.echo_attributes, name='saml2_test'), # saml test
     #url(r'^matching/', include('matching.urls')),
 ]
 
