@@ -16,4 +16,3 @@ ais_venv/
 nohup.out
 env/
 private
-remote_metadata.xml
