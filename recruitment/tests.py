@@ -1,6 +1,4 @@
-'''
-Not used right now (2017-11-28) since recruitment is disabled at the moment.
-See urls.py.
+
 
 from django.test import TestCase, Client
 from django.utils import timezone
@@ -294,5 +292,3 @@ def check_users():
 
     accepted_users_with_not_2_groups = [user for user in accepted_users_with_roles if len(user[0].groups.all()) != 2]
     len(accepted_users_with_not_2_groups)
-
-'''
