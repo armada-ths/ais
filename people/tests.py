@@ -8,7 +8,7 @@ from fair.models import Fair
 from .models import Profile
 from lib.image import load_test_image
 
-"""
+
 CURRENT_YEAR=timezone.now().year
 
 
@@ -59,7 +59,8 @@ class ProfileTestCase(TestCase):
         profile = Profile(user=self.basic_user)
         self.assertTrue(profile)
 
-
+    """
+    PROFILES NO LONGER USED
     def test_profiles_user(self):
         client = Client()
         response = client.post('/accounts/login/', { 'username':'user', 'password':'user'})
@@ -96,7 +97,9 @@ class ProfileTestCase(TestCase):
         self.assertEquals(User.objects.get(username='user').profile.phone_number, '123456789')
         self.assertTrue(User.objects.get(username='user').profile.picture_original)
 
-
+    """
+    """
+    PROFILES NO LONGER USED!
     def test_profiles_admin(self):
         client = Client()
         response = client.post('/accounts/login/', { 'username':'admin', 'password':'admin' })
