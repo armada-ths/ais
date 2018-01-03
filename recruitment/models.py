@@ -167,6 +167,7 @@ class Role(models.Model):
     parent_role = models.ForeignKey('Role', null=True, blank=True)
     description = models.TextField(default="", blank=True)
     group = models.ForeignKey(Group, null=True, blank=True)
+    organization_group = models.CharField(max_length=100, default='', null=True)
 
     def save(self, *args, **kwargs):
         if not self.group:
