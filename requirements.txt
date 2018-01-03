@@ -10,4 +10,4 @@ Pillow
 raven
 requests
 openpyxl
-
+djangosaml2
