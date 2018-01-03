@@ -150,13 +150,13 @@ SAML_CONFIG = {
               # present in our metadata
 
               # the keys of this dictionary are entity ids
-              'https://mds.swamid.se/md/swamid-idp.xml': {
+              'https://saml.sys.kth.se/idp/shibboleth': {
                   'single_sign_on_service': {
-                      saml2.BINDING_HTTP_REDIRECT: 'https://saml.sys.kth.se/idp/shibboleth',
+                      saml2.BINDING_HTTP_REDIRECT: 'https://saml-5.sys.kth.se/idp/profile/SAML2/Redirect/SSO',
                       },
-                  'single_logout_service': {
-                      saml2.BINDING_HTTP_REDIRECT: 'https://saml.sys.kth.se/idp/shibboleth',
-                      },
+                  #'single_logout_service': {
+                    #  saml2.BINDING_HTTP_REDIRECT: 'https://saml.sys.kth.se/idp/shibboleth',
+                     # },
                   },
               },
           },
