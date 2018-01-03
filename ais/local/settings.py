@@ -10,6 +10,7 @@ import saml2
 import saml2.saml
 from ais.common.settings import *
 
+
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
 DEBUG = True
