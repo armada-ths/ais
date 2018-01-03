@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'events',
     'companies',
     'fair',
@@ -48,6 +49,7 @@ INSTALLED_APPS = (
     'register',
     'matching',
     'student_profiles',
+    'djangosaml2', # SAML, used for KTH Single sign on
 )
 
 
@@ -68,6 +70,7 @@ USE_ETAGS = True
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
+    'djangosaml2.backends.Saml2Backend',
 )
 
 TEMPLATES = [
@@ -106,3 +109,19 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
+
+# SAML and PYSAML settings
+# followed documentation in html file in /docs/saml_html_files/
+LOGIN_URL = '/saml2/login/'
+LOGIN_REDIRECT_URL = '/'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SAML_CREATE_UNKNOWN_USER = True
+#SAML_CONFIG_LOADER = 'python.path.to.your.callable'
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
+SAML_USE_NAME_ID_AS_USERNAME = True
+SAML_ATTRIBUTE_MAPPING = {
+    'mail': ('username', ),
+    'mail': ('email', ),
+    'cn': ('first_name', ),
+    'sn': ('last_name', ),
+}

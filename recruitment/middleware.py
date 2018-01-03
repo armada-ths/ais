@@ -25,7 +25,7 @@ class LoginRequiredMiddleware:
  'django.core.context_processors.auth'."
         # PLACEHOLDER until proper authenitaction is in place
         path = request.path_info
-        
+
         current_year = datetime.datetime.now().year
         url_exceptions = {
             '/',
@@ -33,7 +33,8 @@ class LoginRequiredMiddleware:
             '/register/password_reset/', '/register/password_reset/done/',
             '/register/external/signup',
             '/fairs/' + str(current_year) + '/banquet/signup',
-            '/fairs/' + str(current_year) + '/banquet/placement'
+            '/fairs/' + str(current_year) + '/banquet/placement',
+            '/saml2/','/saml2/metadata', '/saml2/login', '/saml2/acs/'
         }
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
