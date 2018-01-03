@@ -7,6 +7,7 @@ and is generally easier to work with.
 import os
 from os import path
 import saml2
+import saml2.saml
 from ais.common.settings import *
 
 # Debug mode gives us helpful error messages when a server error
@@ -56,23 +57,20 @@ SAML_CONFIG = {
       # we are just a lonely SP
       'sp' : {
           'name': 'THS Armada',
+          'name_id_format': saml2.saml.NAMEID_FORMAT_PERSISTENT,
           'endpoints': {
-              # url and binding to the assetion consumer service view
-              # do not change the binding or service name
-              'assertion_consumer_service': [
-                  ('http://localhost:8000/saml2/acs/',
-                   saml2.BINDING_HTTP_POST),
-                  ],
-              # url and binding to the single logout service view
-              # do not change the binding or service name
-              'single_logout_service': [
-                  [('http://localhost:8000/saml2/ls/',
-                   saml2.BINDING_HTTP_REDIRECT),
-                  ],
-                  [('http://localhost:8000/saml2/ls/post',saml2.BINDING_HTTP_POST)
-                  ],
-                 ]
-              },
+            # url and binding to the assetion consumer service view
+            # do not change the binding or service name
+            'assertion_consumer_service': [
+                ('http://localhost:8000/saml2/acs/', saml2.BINDING_HTTP_POST),
+            ],
+            # url and binding to the single logout service view
+            # do not change the binding or service name
+            'single_logout_service': [
+                ('http://localhost:8000/saml2/ls/', saml2.BINDING_HTTP_REDIRECT),
+                ('http://localhost:8000/saml2/ls/post', saml2.BINDING_HTTP_POST),
+            ],
+          },
 
            # attributes that this project need to identify a user
           'required_attributes': ['uid', 'mail'],
@@ -87,7 +85,7 @@ SAML_CONFIG = {
               # present in our metadata
 
               # the keys of this dictionary are entity ids
-              'https://stubidp.sustainsys.com/1f7a2abe-6cbb-4d34-9734-5262dc6bb9a4/Metadata/BrowserFriendly': {
+              'https://stubidp.sustainsys.com/Metadata': {
                   'single_sign_on_service': {
                       saml2.BINDING_HTTP_REDIRECT: 'https://stubidp.sustainsys.com/',
                       },

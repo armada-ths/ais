@@ -8,6 +8,7 @@ import os
 from os import environ as env
 from os import path
 import saml2
+import saml2.saml
 from ais.common.settings import *
 from ais.secrets import *
 
