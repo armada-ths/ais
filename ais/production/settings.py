@@ -122,17 +122,17 @@ SAML_CONFIG = {
               # url and binding to the assetion consumer service view
               # do not change the binding or service name
               'assertion_consumer_service': [
-                  ('https://armada.nu/saml2/acs/',
-                   saml2.BINDING_HTTP_POST),
-                  ],
+                  ('https://armada.nu/saml2/acs/',saml2.BINDING_HTTP_POST),
+              ],
               # url and binding to the single logout service view
               # do not change the binding or service name
               'single_logout_service': [
-                  [('https://armada.nu/saml2/ls/',
-                   saml2.BINDING_HTTP_REDIRECT),
+                  [
+                    ('https://armada.nu/saml2/ls/', saml2.BINDING_HTTP_REDIRECT),
                   ],
-                  [('https://armada.nu/saml2/ls/post',
-                   saml2.BINDING_HTTP_POST),
+                  [
+                    ('https://armada.nu/saml2/ls/post', saml2.BINDING_HTTP_POST),
+                    ('https://armada/saml2/ls/post', saml2.BINDING_HTTP_POST),
                   ]
                  ]
               },
@@ -150,7 +150,7 @@ SAML_CONFIG = {
               # present in our metadata
 
               # the keys of this dictionary are entity ids
-              'https://localhost/simplesaml/saml2/idp/metadata.php': {
+              'http://mds.swamid.se/md/swamid-idp.xml': {
                   'single_sign_on_service': {
                       saml2.BINDING_HTTP_REDIRECT: 'https://saml.sys.kth.se/idp/shibboleth',
                       },
