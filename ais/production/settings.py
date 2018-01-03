@@ -108,7 +108,7 @@ SAML_CONFIG = {
   'xmlsec_binary': '/usr/bin/xmlsec1',
 
   # your entity id, usually your subdomain plus the url to the metadata view
-  'entityid': 'https://ais2.armada.nu/saml2/metadata/',
+  'entityid': 'https://ais.armada.nu/saml2/metadata/',
 
   # directory with attribute mapping
   'attribute_map_dir': path.join(BASEDIR, '../../attribute-maps'),
@@ -122,17 +122,17 @@ SAML_CONFIG = {
               # url and binding to the assetion consumer service view
               # do not change the binding or service name
               'assertion_consumer_service': [
-                  ('https://ais2.armada.nu/saml2/acs/',saml2.BINDING_HTTP_POST),
+                  ('https://ais.armada.nu/saml2/acs/',saml2.BINDING_HTTP_POST),
               ],
               # url and binding to the single logout service view
               # do not change the binding or service name
               'single_logout_service': [
                   [
-                    ('https://ais2.armada.nu/saml2/ls/', saml2.BINDING_HTTP_REDIRECT),
+                    ('https://ais.armada.nu/saml2/ls/', saml2.BINDING_HTTP_REDIRECT),
                   ],
                   [
-                    ('https://ais2.armada.nu/saml2/ls/post', saml2.BINDING_HTTP_POST),
-                    ('https://ais2.armada/saml2/ls/post', saml2.BINDING_HTTP_POST),
+                    ('https://ais.armada.nu/saml2/ls/post', saml2.BINDING_HTTP_POST),
+                    ('https://ais.armada/saml2/ls/post', saml2.BINDING_HTTP_POST),
                   ]
                  ]
               },
@@ -150,7 +150,7 @@ SAML_CONFIG = {
               # present in our metadata
 
               # the keys of this dictionary are entity ids
-              'http://mds.swamid.se/md/swamid-idp.xml': {
+              'https://mds.swamid.se/md/swamid-idp.xml': {
                   'single_sign_on_service': {
                       saml2.BINDING_HTTP_REDIRECT: 'https://saml.sys.kth.se/idp/shibboleth',
                       },
@@ -186,6 +186,6 @@ SAML_CONFIG = {
   'organization': {
       'name': [('THS Armada', 'en')],
       'display_name': [('THS Armada', 'en')],
-      'url': [('https://ais2.armada.nu', 'en')],
+      'url': [('https://ais.armada.nu', 'en')],
       }
  }
