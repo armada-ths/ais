@@ -73,10 +73,10 @@ SAML_CONFIG = {
           },
 
            # attributes that this project need to identify a user
-          'required_attributes': ['uid', 'mail'],
+          'required_attributes': ['uid', 'mail', 'displayName'],
 
            # attributes that may be useful to have but not required
-          'optional_attributes': ['eduPersonAffiliation','givenName'],
+          'optional_attributes': ['eduPersonAffiliation'],
 
           # in this section the list of IdPs we talk to are defined
           'idp': {

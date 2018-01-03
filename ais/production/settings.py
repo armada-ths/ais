@@ -138,7 +138,7 @@ SAML_CONFIG = {
               },
 
            # attributes that this project need to identify a user
-          'required_attributes': ['uid'],
+          'required_attributes': ['uid', 'mail', 'displayName'],
 
            # attributes that may be useful to have but not required
           'optional_attributes': ['eduPersonAffiliation'],
