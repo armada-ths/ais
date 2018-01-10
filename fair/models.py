@@ -2,18 +2,24 @@ from django.db import models
 from datetime import date
 from lib.image import UploadToDirUUID
 
+
 def current_fair():
+    """
+    This function is used by other apps to get the current fair object
+    """
     try:
         current = Fair.objects.get(current=True).id
         return current
     except Exception:
         return None
 
+def default_name(): 
+    return "Armada %d"%(date.today().year)
 
 class Fair(models.Model):
-    name = models.CharField(max_length=100, default="Armada %d"%(date.today().year))
+    name = models.CharField(max_length=100, default=default_name)
     year = models.IntegerField(default=date.today().year)
-    description = models.TextField(max_length=500, default="Armada %d"%(date.today().year))
+    description = models.TextField(max_length=500, default=default_name)
 
     registration_start_date = models.DateTimeField(null=True)
     registration_end_date = models.DateTimeField(null=True)
