@@ -20,13 +20,13 @@ class JobType(models.Model):
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
-    company = models.ForeignKey('companies.Company')
-    fair = models.ForeignKey('fair.Fair')
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
+    fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     hosts = models.ManyToManyField(User, blank=True)
-    contact = models.ForeignKey('companies.Contact', null=True, blank=True)
-    location = models.ForeignKey(Location, null=True, blank=True)
+    contact = models.ForeignKey('companies.Contact', null=True, blank=True, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.CASCADE)
     booth_number = models.IntegerField(blank=True, null=True)
-    fair_location = models.OneToOneField('locations.Location', blank=True, null=True)
+    fair_location = models.OneToOneField('locations.Location', blank=True, null=True, on_delete=models.CASCADE)
     estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
     about_text = models.TextField(blank=True)
     facts_text = models.TextField(blank=True)
@@ -172,7 +172,7 @@ class ExhibitorView(models.Model):
     '''
     # A set of field names from Exhibitor model, that are not supposed to be selectable
     ignore = {'user', 'id', 'pk', 'logo'}
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     # The idea is to store field name for fields that a user selected to view (shouldn't be too many)
     # and make this procedural, so if the Exhibitor model changes, no large changes to this model would be necessary
     choices = models.TextField()
@@ -259,7 +259,7 @@ class CatalogInfo(models.Model):
     # ManyToMany relationships
     programs = models.ManyToManyField('people.Programme', blank=True)
     main_work_field = models.ForeignKey(
-        WorkField, blank=True, null=True, related_name='+')
+        WorkField, blank=True, null=True, related_name='+', on_delete=models.CASCADE)
     work_fields = models.ManyToManyField(
         WorkField, blank=True, related_name='+')
     job_types = models.ManyToManyField(JobType, blank=True)
