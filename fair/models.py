@@ -50,7 +50,7 @@ class Fair(models.Model):
 
 class Partner(models.Model):
     name = models.CharField(max_length=50)
-    fair = models.ForeignKey(Fair)
+    fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
     logo = models.ImageField(
             upload_to=UploadToDirUUID('partners', 'logo')
             )
