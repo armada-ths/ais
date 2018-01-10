@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
 from django.conf import settings
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
