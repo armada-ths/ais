@@ -16,7 +16,7 @@ class Building(models.Model):
 class Room(models.Model):
     name = models.CharField(max_length=80, blank=True)
     floor = models.PositiveSmallIntegerField(default=0, blank=False)
-    building = models.ForeignKey(Building)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
 
     def __str__(self):
         if self.name:
@@ -27,7 +27,7 @@ class Room(models.Model):
 class Location(models.Model):
     x_pos = models.FloatField(default=0.0, blank=False)
     y_pos = models.FloatField(default=0.0, blank=False)
-    room = models.ForeignKey(Room)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.room)
