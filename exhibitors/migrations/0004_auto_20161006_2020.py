@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('exhibitors', '0003_exhibitor_location'),
     ]
+    atomic = False
 
     operations = [
         migrations.RenameModel(
