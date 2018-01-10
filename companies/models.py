@@ -7,7 +7,8 @@ class Contact(models.Model):
     user = models.OneToOneField(
             settings.AUTH_USER_MODEL,
             null = True,
-            blank = True)
+            blank = True,
+            on_delete=models.CASCADE)
     belongs_to = models.ForeignKey('Company', null=True, related_name="belongs_to", on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     email = models.EmailField(max_length=200)
