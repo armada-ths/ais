@@ -40,7 +40,8 @@ class Profile(models.Model):
     user = models.OneToOneField(
             settings.AUTH_USER_MODEL,
             default=-1,
-            primary_key=True)
+            primary_key=True,
+            on_delete=models.CASCADE)
     birth_date = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GENDERS, blank=True)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES, blank=True)
