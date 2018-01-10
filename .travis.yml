@@ -10,7 +10,6 @@ cache:
   - $HOME/.pip-accel
 env:
 - DJANGO_SETTINGS_MODULE=local_settings
-- DJANGO=1.11
 install:
 - pip install pip-accel --cache-dir $HOME/.pip-cache
 - pip-accel install -r test-requirements.txt
