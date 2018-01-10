@@ -48,7 +48,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     drivers_license = models.CharField(max_length=10, null=True, blank=True)
     allergy = models.CharField(max_length=30, null=True, blank=True)
-    programme = models.ForeignKey(Programme, null=True, blank=True)
+    programme = models.ForeignKey(Programme, null=True, blank=True, on_delete=models.CASCADE)
     registration_year = models.IntegerField(null=True, blank=True)
     planned_graduation = models.IntegerField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True)
