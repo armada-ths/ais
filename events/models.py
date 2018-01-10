@@ -11,7 +11,7 @@ from django.utils import timezone
 # An 'Event' belongs to a specific 'Fair'
 class Event(models.Model):
     # Add event attendence per model
-    fair = models.ForeignKey(Fair)
+    fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
     name = models.CharField(max_length=75)
     event_start = models.DateTimeField()
     event_end = models.DateTimeField()
@@ -67,7 +67,7 @@ class Event(models.Model):
             upload_to=UploadToDir('events', 'image'), blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
 
-    extra_field = models.ForeignKey(ExtraField, blank=True, null=True)
+    extra_field = models.ForeignKey(ExtraField, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s'%(self.fair, self.name)
@@ -99,7 +99,7 @@ class EventAttendence(models.Model):
     ("S","Submitted"),
     )
 
-    user = models.ForeignKey(User, null=True, default=None, blank=True)
+    user = models.ForeignKey(User, null=True, default=None, blank=True, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     status = models.CharField(max_length=3, choices=STATUS, default="S")
     submission_date = models.DateTimeField(default=timezone.now, blank=True)
