@@ -9,7 +9,7 @@ from enum import Enum, unique
 
 # Matching survey
 class Survey(models.Model):
-    fair = models.ForeignKey('fair.Fair', default=1)
+    fair = models.ForeignKey('fair.Fair', default=1, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     description = models.TextField()
 
@@ -57,13 +57,13 @@ class Question(models.Model):
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    survey = models.ForeignKey(Survey, blank=True, null=True)
+    survey = models.ForeignKey(Survey, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s'%self.exhibitor
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     response = models.ForeignKey(Response, on_delete=models.CASCADE)
 
 class TextAns(Answer):
@@ -128,7 +128,7 @@ class StudentQuestionBase(models.Model):
     question = models.CharField(max_length=256)
     question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
     survey = models.ManyToManyField(Survey, blank=True)
-    company_question = models.ForeignKey(Question, blank=True, null=True)
+    company_question = models.ForeignKey(Question, blank=True, null=True, on_delete=models.CASCADE)
     class Meta:
         default_permissions = ()
         verbose_name = 'question'
@@ -209,7 +209,7 @@ class StudentAnswerBase(models.Model):
     Necessary field(s):
         student (fk) - foreign key to Student Profile
     '''
-    student = models.ForeignKey('student_profiles.StudentProfile')
+    student = models.ForeignKey('student_profiles.StudentProfile', on_delete=models.CASCADE)
     survey = models.ManyToManyField(Survey,blank=True)
     created = models.DateTimeField(editable=False, null=True, blank=True)
     updated = models.DateTimeField(null=True, blank=True)
@@ -238,7 +238,7 @@ class StudentAnswerSlider(StudentAnswerBase):
         answer_min (float)  - the low bound of the range of the answer
         answer_max (float)  - the high bound of the range of the answer
     '''
-    question    = models.ForeignKey(StudentQuestionSlider)
+    question    = models.ForeignKey(StudentQuestionSlider, on_delete=models.CASCADE)
     answer_min  = models.FloatField(default=0.0)
     answer_max  = models.FloatField(default=0.0)
 
@@ -261,7 +261,7 @@ class StudentAnswerGrading(StudentAnswerBase):
         question (fk)   - foregin key to StudentQuestionGrading
         answer (int)    - answer to question
     '''
-    question    = models.ForeignKey(StudentQuestionGrading)
+    question    = models.ForeignKey(StudentQuestionGrading, on_delete=models.CASCADE)
     answer      = models.IntegerField(default=0)
 
     class Meta:
@@ -307,7 +307,7 @@ class WorkField(models.Model):
           to multiple surveys if necessary.
     '''
     work_field  = models.TextField(unique=True)
-    work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True)
+    work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True, on_delete=models.CASCADE)
     survey      = models.ManyToManyField(Survey)
     class Meta:
         default_permissions = ()
@@ -326,7 +326,7 @@ class StudentAnswerWorkField(StudentAnswerBase):
         work_field (fk) - foreign key to WorkField
         answer (bool)   - true or false on that work field
     '''
-    work_field  = models.ForeignKey(WorkField)
+    work_field  = models.ForeignKey(WorkField, on_delete=models.CASCADE)
     answer      = models.BooleanField(choices=((True,'yes'), (False,'no')), default=False)
     class Meta:
         default_permissions = ()
@@ -343,7 +343,7 @@ class SwedenRegion(models.Model):
     '''
     name = models.TextField()
     region_id = models.IntegerField(unique=True, null=True  )
-    survey = models.ForeignKey(Survey, null=True)
+    survey = models.ForeignKey(Survey, null=True, on_delete=models.CASCADE)
 
 
     def __str__(self):
@@ -355,7 +355,7 @@ class SwedenCity(models.Model):
     '''
     city = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
-    region = models.ForeignKey(SwedenRegion)
+    region = models.ForeignKey(SwedenRegion, on_delete=models.CASCADE)
 
     class Meta:
             verbose_name = 'sweden city'
@@ -368,7 +368,7 @@ class StudentAnswerRegion(StudentAnswerBase):
     '''
     Region is the regions in sweden the student would prefere to work in.
     '''
-    region = models.ForeignKey(SwedenRegion)
+    region = models.ForeignKey(SwedenRegion, on_delete=models.CASCADE)
 
     class Meta:
             verbose_name = 'answer region'
@@ -385,7 +385,7 @@ class Continent(models.Model):
     '''
     name = models.TextField(unique=True)
     continent_id = models.IntegerField(unique=True, null=True)
-    survey = models.ForeignKey(Survey, null=True)
+    survey = models.ForeignKey(Survey, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s' %(self.continent_id, self.name)
@@ -396,7 +396,7 @@ class Country(models.Model):
     '''
     name = models.TextField(unique=True)
     exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
-    continent = models.ForeignKey(Continent)
+    continent = models.ForeignKey(Continent, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = 'countries'
@@ -406,7 +406,7 @@ class StudentAnswerContinent(StudentAnswerBase):
     Inherits from StudentAnswerBase.
     continent is the continents the student would prefere to work in.
     '''
-    continent = models.ForeignKey(Continent)
+    continent = models.ForeignKey(Continent, on_delete=models.CASCADE)
 
     class Meta:
             verbose_name = 'answer continent'
@@ -422,7 +422,7 @@ class JobType(models.Model):
     '''
     job_type = models.TextField()
     job_type_id = models.IntegerField(unique=True)
-    exhibitor_question = models.ForeignKey(Question, blank=True, null=True)
+    exhibitor_question = models.ForeignKey(Question, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s: %s'%(self.job_type_id, self.job_type)
@@ -432,7 +432,7 @@ class StudentAnswerJobType(StudentAnswerBase):
     Inherits from StudentAnswerBase.
     Region is the regions in sweden the student would prefere to work in.
     '''
-    job_type = models.ForeignKey(JobType, null=True)
+    job_type = models.ForeignKey(JobType, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'answer job type'

@@ -34,9 +34,9 @@ class MatchingResult(models.Model):
         score (int)     - integer value repr. how good the matching is
 
     '''
-    student     = models.ForeignKey(StudentProfile)
-    exhibitor     = models.ForeignKey('exhibitors.Exhibitor', null=True)
-    fair        = models.ForeignKey('fair.Fair')
+    student     = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
+    exhibitor     = models.ForeignKey('exhibitors.Exhibitor', null=True, on_delete=models.CASCADE)
+    fair        = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     score       = models.PositiveIntegerField(default=0)
     created     = models.DateTimeField(editable=False, null=True, blank=True)
     updated     = models.DateTimeField(null=True, blank=True)
