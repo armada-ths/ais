@@ -331,6 +331,26 @@ def remember_last_query_params(url_name, query_params):
     return do_decorator
 
 
+def eligible_to_see_application(application, user):
+    """ 
+    This function checks if the user should have the right to see the application.
+    It is based on that the user should have right to see it if the application is for roles "below" the user in the 
+    organization hierarki
+    """
+    roles = RoleApplication.objects.filter(recruitment_application=application)
+    #DFS search if user is member of any parent role
+    user_groups = user.groups.all()
+    if len(user_groups) == 0:
+        return False
+    for role in roles:
+        r = role.role.parent_role
+        while (r!=None):
+            if r.group in user_groups:
+                return True
+            r = r.parent_role
+    return False
+
+
 @remember_last_query_params('recruitment', [field for field in RecruitmentApplicationSearchForm().fields])
 def recruitment_period(request, year, pk, template_name='recruitment/recruitment_period.html'):
     fair = get_object_or_404(Fair, year=year)
@@ -345,13 +365,13 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     sort_ascending = request.GET.get('sort_ascending') == 'true'
 
     order_by_query = ('' if sort_ascending else '-') + sort_field
-    application_list = []
 
-    # user should be forbidden to look at a
-    # recruitment periods that include their application
-    # unless they're in the Project Core Team
-    if user.groups.filter(name='Project Core Team').exists():
-        recruitment_period.recruitmentapplication_set.order_by(order_by_query, '-submission_date').all().prefetch_related('roleapplication_set')
+    application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query, '-submission_date').all().prefetch_related('roleapplication_set')
+
+    # user should be forbidden to look at applications that are not below them in hierari
+    application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
+
+
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
