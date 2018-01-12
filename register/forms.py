@@ -67,6 +67,12 @@ class CompanyForm(ModelForm):
             self.add_error('name', msg)
             raise ValidationError(msg)
 
+class EditCompanyForm(ModelForm):
+    class Meta:
+        model = Company
+        fields = '__all__'
+
+
 
 class ContactForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -119,6 +125,17 @@ class CreateContactForm(ModelForm):
             msg = "Already existing account"
             self.add_error('email', msg)
             raise ValidationError("Account already exists")
+
+class CreateContactNoCompanyForm(CreateContactForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CreateContactForm, self).__init__(*args, **kwargs)
+        self.fields['name'].label = "Full name"
+
+    class Meta:
+        model = Contact
+        fields = '__all__'
+        exclude = ('user', 'active', 'confirmed', 'belongs_to')
 
 class UserForm(UserCreationForm):
     class Meta:

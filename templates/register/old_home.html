@@ -14,16 +14,11 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1> Welcome to {{ fair }}! </h1>
-             </div>
-             <svg class="armada-ship-green" viewBox="50 90 200 200" width="100px" height="180px" version="1.1">
-                  <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
-              </svg>
-
+                <h1> Welcome! </h1>
+            </div>
         </div>
         <div class="row header-row">
             <div class="col-md-12">
-              <a href={{contract_url}}>Read the contract here</a>
                 <p class="box-danger">The complete registration for THS Armada 2017 is open between <span class="text-danger">1st of July 00:01 and 4th of September 23:59</span></p>
             </div>
         </div>
@@ -31,18 +26,51 @@
             <p>Make sure the form is completed and sent in before the last date of registration. It is possible to start with the form, save it by clicking "Save" in the right bottom corner, and then continue later. The questions in the form are divided into 10 pages and you can fill out the information in any order you like. Questions marked with (*) are mandatory.</p>
             <p>Some information in this form may be copied from your profile. Please check this information so that it is updated for THS Armada 2017. Your registration is completed when you click on the button "Submit" in the right bottom corner. When you have submitted the application you will receive a confirmation e­mail as soon as the application has been approved.</p>
             <p class ="text-danger"> Please note that the complete registration is binding and you will be liable for all additional services chosen, provided that Armada is be able to supply your organisation with your choices.</p>
+            <p class="important">If you have any questions,<br/>
+             please contact:</p>
         </div>
         <div class="row spacer">
             <div class="col-md-12 mail-container">
               <div class="mail">
-                <p class="mail-name">Lovisa Westerlund</p>
+                <p class="mail-name">Axel Ingo</p>
                 <p class="mail-role">Project Manager</p>
                 <a class = "mail-ref" href="mailto:armada@ths.kth.se">armada@ths.kth.se</a><br/>
                 +46 70 790 98 44
               </div>
+              <div class="mail">
+                <p class="mail-name">Peter Finnman</p>
+                <p class="mail-role">Key Account Manager</p>
+                <a class ="mail-ref"href="mailto:peter.finnman@armada.nu">peter.finnman@armada.nu</a><br/>
+                +46 72 042 22 89
+              </div>
+              <div class="mail">
+                <p class="mail-name">Dana El Malla</p>
+                <p class="mail-role">Key Account Manager</p>
+                <a class ="mail-ref" href="mailto:dana.elmalla@armada.nu">dana.elmalla@armada.nu</a><br/>
+                +46 73-659 59 57
+              </div>
+            </div>
+            <div class="col-md-12 mail-container">
+              <div class="mail">
+                <p class="mail-name">Petter Cedell</p>
+                <p class="mail-role">Key Account Manager</p>
+                <a class ="mail-ref" href="mailto:petter.cedell@armada.nu">petter.cedell@armada.nu</a><br/>
+                +46 70-570 48 87
+              </div>
+              <div class="mail">
+                <p class="mail-name">Fredrik Magnusson</p>
+                <p class="mail-role">Head of Business Relations and Events</p>
+                <a class ="mail-ref" href="mailto:fredrik.magnusson@armada.nu">fredrik.magnusson@armada.nu</a><br/>
+                +46 70 268 63 29
+              </div>
             </div>
         </div>
     </div>
-      </body>
+      <svg class="armada-ship-green" viewBox="50 90 200 200" width="100px" height="180px" version="1.1">
+          <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
+      </svg>
+      <button class="btn-start btn-green" onclick="window.location.href='{% url 'anmalan:home' %}'">Start</button>
+      <p class="important press-start">Press <span class = "text-highlight"> start </span>to continue</p>
+</body>
 
 </html>

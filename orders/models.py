@@ -37,6 +37,14 @@ class Product(models.Model):
     def __str__(self):
         return "%s, %s" % (self.name, self.fair.name)
 
+class StandArea(Product):
+    width = models.IntegerField()
+    depth = models.IntegerField()
+    height = models.IntegerField()
+
+    def __str__(self):
+        return "%s %i x %i x %i  %s" % (self.name, self.width, self.depth, self.height,  self.fair.name)
+
 
 # An 'Exhibitor' places an 'Order' for a 'Product'
 class Order(models.Model):

@@ -1,41 +1,96 @@
-{% load crispy_forms_tags %} {% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends "register/base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %} 
+{% block content %}
+<div class="container-fluid cr-container">
 
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
-    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
-    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
-</head>
+      <!-- Tabs -->
+      <ul class="nav nav-tabs cr-nav-common cr-nav-top">
+          <li class="nav"> 
+              <div class="nav-logo">
+                  <svg  viewBox="50 50 500 280" width="350px" height="40px" version="1.1">
+                      <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="350px" width="700px"/>
+                  </svg>
+              </div>
+          </li>
+        <!--
+        <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
+        <li class="nav"><a href="#base-kit" data-toggle="tab">Base Kit</a></li>
+        <li class="nav"><a href="#rooms" data-toggle="tab">Rooms</a></li>
+        <li class="nav"><a href="#events" data-toggle="tab">Events</a></li>
+        <li class="nav"><a href="#banquet" data-toggle="tab">Banquet</a></li>
+        <li class="nav"><a href="#sture" data-toggle="tab">Sture</a></li>
+        <li class="nav"><a href="#nova" data-toggle="tab">Nova</a></li>
+        <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
+        <li class="nav"><a href="#additional-services" data-toggle="tab">Additional Services</a></li>
+        <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
+        <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
+        <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
+        -->
+        <li class="nav pull-right"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
+    </ul>
+</div>
 
-<body>
     <div class="container">
+              
         <div class="row">
             <div class="col-md-12">
-                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
-            </div>
+                <h1> Welcome to {{ fair }}! </h1>
+             </div>
+             
+            <!-- Here we can write general info in a box or something -->
         </div>
-        <div class="row header-row">
-            <div class="col-md-12">
-                <h1>Create new user</h1>
-            </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <h4>
-              <a href={{contract_url}}>Read the contract here</a>
-            </h4>
-          </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-              <form method="post">{% csrf_token %} {{ form | crispy }}
-                  <input type="submit" value="Sign Up!" />
-              </form>
-            </div>
-        </div>
-    </div>
-</body>
 
-</html>
+        <!--This next row section has two sections, the signup to the left and the company/contact information to the right -->
+        <div class="row">
+            <!-- Signup column -->
+            <div class="col-md-6">
+                <p> Here we could put some short descriptive text about the registration. Maybe put in a </p>
+                <p><span class="text-danger"> NOTE: The contract is binding after a certain date </p>
+                    <p> For more information, read the invitation <a href="https://armada.nu/assets/i17.pdf" target="_blank"> here </a> </p>
+                <h4>
+                  <a href={{contract_url}} target="_blank" >Read the latest contract here</a>
+                </h4>
+                {% if signed_up %} 
+                        <h3 >Your company {{company}} is already signed up. Make sure your contact information is correct and we will contact you when it is time for the next step of the registration.</h3>
+                        {% if not contact.confirmed %}
+                        <h3><span class="text-danger"> You have not been confirmed as a contact to your company. Please contact us to get access to edit your registration. </span></h3>
+                        {% endif %}
+                {% else %}
+                <form method="post">{% csrf_token %} 
+                    {{ form2 | crispy }}
+                    {{ form1 | crispy }}
+                    {{ form3 | crispy }}
+                      <input class="btn-signin btn-green" type="submit" value="Sign Up!" />
+                  </form>
+                {% endif %}
+            </div>
+
+            <!-- Company/Contact column -->
+            <div class="col-md-6">
+                <h2> Company Information </h2>
+                <h3> {{company}} </h3>
+                <p> <b> Organisation number: </b> {{company.organisation_number}} </p>
+                <p> <b> Organisation type: </b> {{company.organisation_type}} </p>
+                <p> <b> Website: </b> {{company.website}} </p>
+                <p> <b> Address: </b> {{company.address_street}} {{company.address_zip_code}} {{company.address_city}}</p>
+                {% if contact.confirmed %}
+                <a href={% url 'anmalan:edit_company' company.id  %}> <button class="btn-green"> Edit company info </button></a>
+                {% else %}
+                <p><span class="text-danger"> To edit your company info your user needs to be confirmed. Please contact us.</span> </p>
+                {% endif %}
+                <h3> Contact </h3>
+                {{ contact.name }} </br>
+                {{ contact.title }} </br>
+                {{ contact.email }} </br>
+                {{ contact.cell_phone }}
+                </br>
+                <a href={% url 'anmalan:edit_me' %}><button class="btn-green" > Edit contact info </button></a>
+                </br>
+                <a href={% url 'anmalan:change_password' %}> <button class="btn-green"> Change password </button></a>
+            </div>
+
+        </div>
+        
+    </div>
+{% endblock %}

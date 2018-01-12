@@ -13,7 +13,9 @@ from sales.models import Sale
 
 from .models import SignupContract, SignupLog
 
-from .forms import CompanyForm, ContactForm, RegistrationForm, CreateContactForm, UserForm, ExternalUserForm, ExternalUserLoginForm, InterestForm, ChangePasswordForm
+from .forms import EditCompanyForm, CompanyForm, ContactForm, RegistrationForm, CreateContactForm, CreateContactNoCompanyForm, UserForm, ExternalUserForm, ExternalUserLoginForm, InterestForm, ChangePasswordForm
+from orders.forms import SelectStandAreaForm
+
 
 from .help import exhibitor_form as help
 from .help.methods import get_time_flag
@@ -28,7 +30,7 @@ def index(request, template_name='register/index.html'):
     timeFlag, [time_end, time_diff] = get_time_flag()
     return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
-def home(request, template_name='register/home.html'):
+def home(request, template_name='register/prel_registration.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is None:
             return redirect('anmalan:logout')
@@ -40,15 +42,29 @@ def home(request, template_name='register/home.html'):
             if registration_open:
                 form1 = RegistrationForm(request.POST or None, prefix='registration')
                 form2 = InterestForm(request.POST or None, prefix='interest')
+                form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
+
                 contact = Contact.objects.get(user=request.user)
                 company = contact.belongs_to
 
-                if form1.is_valid() and form2.is_valid():
+                if form1.is_valid() and form2.is_valid() and form3.is_valid():
                     SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
                     if len(Sale.objects.filter(fair=fair, company=company))==0:
                         sale = form2.save(commit=False)
                         sale.company = company
                         sale.save()
+
+                    exhibitor = None
+                    try:
+                        exhibitor = Exhibitor.objects.get(company=company, fair=fair)
+                    except Exhibitor.DoesNotExist:
+                        exhibitor = Exhibitor.objects.create(company=company, fair=fair, status='registered')
+
+                    try:
+                        Order.objects.create(exhibitor=exhibitor, product=form3.cleaned_data['stand_area'], amount=1)
+                    except:
+                        pass
+
                     for sale in Sale.objects.filter(fair=fair, company=company):
                         sale.diversity_room = form2.cleaned_data['diversity_room']
                         sale.green_room = form2.cleaned_data['green_room']
@@ -56,11 +72,8 @@ def home(request, template_name='register/home.html'):
                         sale.nova = form2.cleaned_data['nova']
                         sale.save()
 
-                    r.post(settings.SALES_HOOK_URL,
-                        data=json.dumps({'text': 'User {!s} just signed up {!s}!'.format(contact, company)}))
-
                     return redirect('anmalan:home')
-                signed_up = SignupLog.objects.filter(company = company, contact=contact).first() != None
+                signed_up = SignupLog.objects.filter(company = company).first() != None
                 return render(request, template_name, dict(registration_open = registration_open,
                                                            signed_up = signed_up,
                                                            contact = contact,
@@ -68,6 +81,7 @@ def home(request, template_name='register/home.html'):
                                                            fair=fair,
                                                            form1=form1,
                                                            form2=form2,
+                                                           form3=form3,
                                                            contract_url=contract.contract.url))
 
 
@@ -151,10 +165,25 @@ def external_login(request, template_name='register/external_login.html'):
 
 def create_company(request, template_name='register/company_form.html'):
     form = CompanyForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('/register/signup')
-    return render(request, template_name, dict(form=form))
+    contact_form = CreateContactNoCompanyForm(request.POST or None, prefix='contact')
+    user_form = UserForm(request.POST or None, prefix='user')
+    if contact_form.is_valid() and user_form.is_valid() and form.is_valid():
+        company = form.save()
+        user = user_form.save(commit=False)
+        contact = contact_form.save(commit=False)
+        user.username = contact.email
+        user.email = contact.email
+        user.save()
+        contact.user = user
+        contact.confirmed = True #Auto confirm contacts who register a new company
+        contact.belongs_to = company
+        contact.save()
+        user = authenticate(username=contact_form.cleaned_data['email'],
+                                    password=user_form.cleaned_data['password1'],
+                                    )
+        login(request, user)
+        return redirect('anmalan:home')
+    return render(request, template_name, dict(form=form, contact_form=contact_form, user_form=user_form))
 
 
 def contact_update(request, template_name='register/contact_form.html'):
@@ -169,7 +198,7 @@ def contact_update(request, template_name='register/contact_form.html'):
 def company_update(request, pk, template_name='register/company_form.html'):
     redirect_to = request.GET.get('next','')
     company = get_object_or_404(Company, pk=pk)
-    form = CompanyForm(request.POST or None, instance=company)
+    form = EditCompanyForm(request.POST or None, instance=company)
     if form.is_valid():
         form.save()
         if redirect_to:

@@ -18,14 +18,21 @@
         </div>
         <div class="row header-row">
             <div class="col-md-12">
-                <h1>Create new company profile</h1>
+                <h1>Company profile</h1>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-              <form method="post">{% csrf_token %} {{ form | crispy }}
-                  <button type="submit" class="btn btn-success">Submit</button>
-                  <a href="{% url 'anmalan:create_company_user' %}"><button type="button" class="btn btn-default">Back</button></a>
+                <form method="post">{% csrf_token %} 
+                    {{ form | crispy }}
+                    {% if contact_form %}
+                    <!-- This template is used both when editing just company information and when creating a new company which requires contact information as well. Therefore this other section is just displayed when contact information is requested. -->
+                        </br>
+                        <h3> Contact Person </h3>
+                        {{ contact_form | crispy }}
+                        {{ user_form | crispy }}
+                    {% endif %}
+                  <button type="submit" class="btn btn-success">Save</button>
               </form>
             </div>
         </div>

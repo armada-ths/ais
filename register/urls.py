@@ -6,8 +6,8 @@ from .forms import LoginForm, ResetPasswordForm, SetNewPasswordForm
 app_name = 'anmalan'
 urlpatterns = [
     # Updated home url to show complete registration form
-    #url(r'^home$', views.home, name='home'),
-    url(r'^home$', views.create_exhibitor, name='home'),
+    url(r'^home$', views.home, name='home'),
+    #url(r'^home$', views.create_exhibitor, name='home'),
     # Initial registration closed, to allow: rm kwargs and uncomment signup and create_company, also uncomment in templates/register/login.html
     url(r'^$', views.index, name='index',
         kwargs={'template_name': 'register/index.html'}),
@@ -15,8 +15,8 @@ urlpatterns = [
     url(r'^me/edit', views.contact_update, name='edit_me'),
     url(r'^thankyou/$', views.cr_done, name='cr_done'),
     # url(r'^complete',views.create_exhibitor, name='create_exhibitor'),
-    # url(r'^signup', views.signup, name='create_company_user'),
-    # url(r'^new_company', views.create_company, name='create_company'),
+    url(r'^signup', views.signup, name='create_company_user'),
+    url(r'^new_company', views.create_company, name='create_company'),
 
     # signup for externals
     url(r'^external/signup$', views.external_signup, name='external/signup'),
