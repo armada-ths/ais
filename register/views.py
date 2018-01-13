@@ -22,19 +22,22 @@ from .help import exhibitor_form as help
 from .help.methods import get_time_flag
 
 def save_profile_info(request):
-    redirect_to = request.POST.get('next', '')
-    print(redirect_to)
+    """
+    This funcion saves the form exhibito_profile and redirects to the
+    link that was specified as next, or just return status 204. 
+    204 means successfully processed and not returning anything
+    Makes it possible to save and stay on same page
+    """
     exhibitor = Exhibitor.objects.get(company=Contact.objects.get(user=request.user).belongs_to, fair=Fair.objects.get(current=True))
     profile_form = ExhibitorProfileForm(request.POST or None, prefix='exhibitor_profile', instance=exhibitor)
     if profile_form.is_valid():
         profile_form.save()
 
+    redirect_to = request.POST.get('next', '')
     if redirect_to:
         return redirect(redirect_to)
     else:
         return HttpResponse(status=204)
-        # 204 means successfully processed and not returning anything
-        # Makes it possible to save and stay on same page
 
     
 
@@ -62,7 +65,7 @@ def home(request, template_name='register/registration.html'):
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
             profile_form = ExhibitorProfileForm(prefix='exhibitor_profile', instance=exhibitor)
 
-            signed_up = SignupLog.objects.filter(company = company).first() != None
+            signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
             if registration_open:
 
@@ -81,7 +84,17 @@ def home(request, template_name='register/registration.html'):
                         try:
                             exhibitor = Exhibitor.objects.get(company=company, fair=fair)
                         except Exhibitor.DoesNotExist:
-                            exhibitor = Exhibitor.objects.create(company=company, fair=fair, status='registered')
+                            # Try and copy exhibitor information from last year to make it easier to fill out the form. 
+                            old_exhibitor = Exhibitor.objects.filter(company=company).order_by('-fair__year').first()
+                            exhibitor = None
+                            if old_exhibitor is None:
+                                exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
+                            else:
+                                #Try to copy fields from last year. If failing, just create a new blank one
+                                try:
+                                    exhibitor = create_new_exhibitor_from_old(old_exhibitor, contact, fair)
+                                except:
+                                    exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
 
                         try:
                             Order.objects.create(exhibitor=exhibitor, product=form3.cleaned_data['stand_area'], amount=1)
@@ -122,6 +135,35 @@ def home(request, template_name='register/registration.html'):
     return redirect('anmalan:index')
 
 
+def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
+    exhibitor = Exhibitor.objects.create(fair=fair, status='registered',
+            company=old_exhibitor.company,
+            contact=contact,
+            about_text = old_exhibitor.about_text,
+            logo = old_exhibitor.logo,
+            requests_for_stand_placement = old_exhibitor.requests_for_stand_placement,
+            other_information_about_the_stand = old_exhibitor.other_information_about_the_stand,
+            invoice_reference = old_exhibitor.invoice_reference,
+            invoice_purchase_order_number = old_exhibitor.invoice_purchase_order_number,
+            invoice_reference_phone_number = old_exhibitor.invoice_reference_phone_number,
+            invoice_organisation_name = old_exhibitor.invoice_organisation_name,
+            invoice_address = old_exhibitor.invoice_address,
+            invoice_address_po_box = old_exhibitor.invoice_address_po_box,
+            invoice_address_zip_code = old_exhibitor.invoice_address_zip_code,
+            invoice_identification = old_exhibitor.invoice_identification,
+            invoice_additional_information = old_exhibitor.invoice_additional_information
+            )
+    # ManyToMany fields needs to be copied after creation
+    # the * unpacks the list, taking [a,b,c] to a,b,c
+    exhibitor.job_types.add(*old_exhibitor.job_types.all())
+    exhibitor.save()
+    return exhibitor
+    
+
+
+            
+
+            
 
 
 def signup(request, template_name='register/create_user.html'):
