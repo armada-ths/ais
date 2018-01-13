@@ -30,7 +30,7 @@ def index(request, template_name='register/index.html'):
     timeFlag, [time_end, time_diff] = get_time_flag()
     return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
-def home(request, template_name='register/prel_registration.html'):
+def home(request, template_name='register/registration.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is None:
             return redirect('anmalan:logout')

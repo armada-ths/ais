@@ -1,43 +1,11 @@
-{% extends "register/base.html" %}
-{% load staticfiles %}
 {% load crispy_forms_tags %} 
-{% block content %}
-<div class="container-fluid cr-container">
 
-      <!-- Tabs -->
-      <ul class="nav nav-tabs cr-nav-common cr-nav-top">
-          <li class="nav"> 
-              <div class="nav-logo">
-                  <svg  viewBox="50 50 500 280" width="350px" height="40px" version="1.1">
-                      <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="350px" width="700px"/>
-                  </svg>
-              </div>
-          </li>
-        <!--
-        <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
-        <li class="nav"><a href="#base-kit" data-toggle="tab">Base Kit</a></li>
-        <li class="nav"><a href="#rooms" data-toggle="tab">Rooms</a></li>
-        <li class="nav"><a href="#events" data-toggle="tab">Events</a></li>
-        <li class="nav"><a href="#banquet" data-toggle="tab">Banquet</a></li>
-        <li class="nav"><a href="#sture" data-toggle="tab">Sture</a></li>
-        <li class="nav"><a href="#nova" data-toggle="tab">Nova</a></li>
-        <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
-        <li class="nav"><a href="#additional-services" data-toggle="tab">Additional Services</a></li>
-        <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
-        <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
-        <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
-        -->
-        <li class="nav pull-right"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
-    </ul>
-</div>
-
-    <div class="container">
-              
+<div class="tab-pane fade in active" id="start">
+                      
         <div class="row">
             <div class="col-md-12">
                 <h1> Welcome to {{ fair }}! </h1>
              </div>
-             
             <!-- Here we can write general info in a box or something -->
         </div>
 
@@ -93,6 +61,4 @@
             </div>
 
         </div>
-        
     </div>
-{% endblock %}
