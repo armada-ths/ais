@@ -15,11 +15,28 @@ from .models import SignupContract, SignupLog
 
 from .forms import EditCompanyForm, CompanyForm, ContactForm, RegistrationForm, CreateContactForm, CreateContactNoCompanyForm, UserForm, ExternalUserForm, ExternalUserLoginForm, InterestForm, ChangePasswordForm
 from orders.forms import SelectStandAreaForm
+from exhibitors.forms import ExhibitorProfileForm
 
 
 from .help import exhibitor_form as help
 from .help.methods import get_time_flag
 
+def save_profile_info(request):
+    redirect_to = request.POST.get('next', '')
+    print(redirect_to)
+    exhibitor = Exhibitor.objects.get(company=Contact.objects.get(user=request.user).belongs_to, fair=Fair.objects.get(current=True))
+    profile_form = ExhibitorProfileForm(request.POST or None, prefix='exhibitor_profile', instance=exhibitor)
+    if profile_form.is_valid():
+        profile_form.save()
+
+    if redirect_to:
+        return redirect(redirect_to)
+    else:
+        return HttpResponse(status=204)
+        # 204 means successfully processed and not returning anything
+        # Makes it possible to save and stay on same page
+
+    
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -39,41 +56,46 @@ def home(request, template_name='register/registration.html'):
             fair = Fair.objects.get(current = True)
             registration_open = fair.registration_start_date <= timezone.now() and fair.registration_end_date > timezone.now()
             contract = SignupContract.objects.get(fair=fair, current=True)
+
+            contact = Contact.objects.get(user=request.user)
+            company = contact.belongs_to
+            exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
+            profile_form = ExhibitorProfileForm(prefix='exhibitor_profile', instance=exhibitor)
+
+            signed_up = SignupLog.objects.filter(company = company).first() != None
+
             if registration_open:
+
                 form1 = RegistrationForm(request.POST or None, prefix='registration')
                 form2 = InterestForm(request.POST or None, prefix='interest')
                 form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
+                if not signed_up:
+                    if form1.is_valid() and form2.is_valid() and form3.is_valid():
+                        SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
+                        if len(Sale.objects.filter(fair=fair, company=company))==0:
+                            sale = form2.save(commit=False)
+                            sale.company = company
+                            sale.save()
 
-                contact = Contact.objects.get(user=request.user)
-                company = contact.belongs_to
+                        exhibitor = None
+                        try:
+                            exhibitor = Exhibitor.objects.get(company=company, fair=fair)
+                        except Exhibitor.DoesNotExist:
+                            exhibitor = Exhibitor.objects.create(company=company, fair=fair, status='registered')
 
-                if form1.is_valid() and form2.is_valid() and form3.is_valid():
-                    SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
-                    if len(Sale.objects.filter(fair=fair, company=company))==0:
-                        sale = form2.save(commit=False)
-                        sale.company = company
-                        sale.save()
+                        try:
+                            Order.objects.create(exhibitor=exhibitor, product=form3.cleaned_data['stand_area'], amount=1)
+                        except:
+                            pass
 
-                    exhibitor = None
-                    try:
-                        exhibitor = Exhibitor.objects.get(company=company, fair=fair)
-                    except Exhibitor.DoesNotExist:
-                        exhibitor = Exhibitor.objects.create(company=company, fair=fair, status='registered')
+                        for sale in Sale.objects.filter(fair=fair, company=company):
+                            sale.diversity_room = form2.cleaned_data['diversity_room']
+                            sale.green_room = form2.cleaned_data['green_room']
+                            sale.events = form2.cleaned_data['events']
+                            sale.nova = form2.cleaned_data['nova']
+                            sale.save()
 
-                    try:
-                        Order.objects.create(exhibitor=exhibitor, product=form3.cleaned_data['stand_area'], amount=1)
-                    except:
-                        pass
-
-                    for sale in Sale.objects.filter(fair=fair, company=company):
-                        sale.diversity_room = form2.cleaned_data['diversity_room']
-                        sale.green_room = form2.cleaned_data['green_room']
-                        sale.events = form2.cleaned_data['events']
-                        sale.nova = form2.cleaned_data['nova']
-                        sale.save()
-
-                    return redirect('anmalan:home')
-                signed_up = SignupLog.objects.filter(company = company).first() != None
+                        return redirect('anmalan:home')
                 return render(request, template_name, dict(registration_open = registration_open,
                                                            signed_up = signed_up,
                                                            contact = contact,
@@ -82,6 +104,7 @@ def home(request, template_name='register/registration.html'):
                                                            form1=form1,
                                                            form2=form2,
                                                            form3=form3,
+                                                           profile_form=profile_form,
                                                            contract_url=contract.contract.url))
 
 
@@ -94,6 +117,7 @@ def home(request, template_name='register/registration.html'):
                                                            signed_up = signed_up,
                                                            contact = contact,
                                                            company=company,
+                                                           profile_form=profile_form,
                                                            fair=fair))
     return redirect('anmalan:index')
 

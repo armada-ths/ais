@@ -4,6 +4,11 @@ import inspect
 
 from .models import ExhibitorView, Exhibitor
 
+class ExhibitorProfileForm(forms.ModelForm):
+    class Meta:
+        model = Exhibitor
+        fields = ('logo', 'about_text','job_types')
+
 class ExhibitorViewForm(forms.Form):
     instance = None
 
