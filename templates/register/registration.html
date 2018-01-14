@@ -6,11 +6,16 @@
 {% include 'register/registration_nav.html' %}
       
 <div class="container tab-content cr-tab-content">
-    {% include 'register/tabs/start_tab.html' %}
+    {% include 'register/tabs/start/start_tab.html' %}
 
     <!-- Only show these tabs after preliminary registration -->
+    <!-- Note that this is the content, the tab needs to be activated in registration_nav.html as well -->
     {% if signed_up %}
         {% include 'register/tabs/profile_tab.html' %}
+    {% endif %}
+
+    {% if complete_registration_open or complete_registration_closed %}
+        {% include 'register/tabs/base-kit.html' %}
     {% endif %}
 
 

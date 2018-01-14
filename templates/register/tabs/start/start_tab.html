@@ -11,30 +11,32 @@
 
         <!--This next row section has two sections, the signup to the left and the company/contact information to the right -->
         <div class="row">
-            <!-- Signup column -->
-            <div class="col-md-6">
-                <p> Here we could put some short descriptive text about the registration. Maybe put in a </p>
-                <p><span class="text-danger"> NOTE: The contract is binding after a certain date </p>
-                    <p> For more information, read the invitation <a href="https://armada.nu/assets/i17.pdf" target="_blank"> here </a> </p>
-                <h4>
-                  <a href={{contract_url}} target="_blank" >Read the latest contract here</a>
-                </h4>
-                {% if signed_up %} 
-                        <h3 >Your company {{company}} is signed up. Make sure your contact information is correct and we will contact you when it is time for the next step of the registration.</h3>
-                        {% if not contact.confirmed %}
-                        <h3><span class="text-danger"> You have not been confirmed as a contact to your company. Please contact us to get access to edit your registration. </span></h3>
-                        {% endif %}
-                {% else %}
-                <form method="post">{% csrf_token %} 
-                    {{ form2 | crispy }}
-                    {{ form1 | crispy }}
-                    {{ form3 | crispy }}
-                      <input class="btn-signin btn-green" type="submit" value="Sign Up!" />
-                  </form>
-                {% endif %}
 
-            {% include 'contact_us.html' %}
-            </div>
+
+            <!-- Before preliminary registration has opened -->
+            {% if pre_preliminary %}
+                {% include 'register/tabs/start/pre_preliminary.html' %}
+            {% endif %}
+            <!-- When preliminary registration is opened -->
+            {% if registration_open %}
+                {% include 'register/tabs/start/preliminary.html' %}
+            {% endif %}
+
+            <!-- When preliminary registration has closed -->
+            {% if registration_closed %}
+                {% include 'register/tabs/start/between_preliminary_and_complete.html' %}
+            {% endif %}
+
+            <!-- When complete registration is opened -->
+            {% if complete_registration_open %}
+                {% include 'register/tabs/start/complete.html' %}
+            {% endif %}
+
+            <!-- When complete registration has closed -->
+            {% if complete_registration_closed %}
+                {% include 'register/tabs/start/complete_closed.html' %}
+            {% endif %}
+
 
             <!-- Company/Contact column -->
             <div class="col-md-6">

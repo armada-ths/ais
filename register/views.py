@@ -50,6 +50,67 @@ def index(request, template_name='register/index.html'):
     timeFlag, [time_end, time_diff] = get_time_flag()
     return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
+def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form):
+    form1 = RegistrationForm(request.POST or None, prefix='registration')
+    form2 = InterestForm(request.POST or None, prefix='interest')
+    form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
+    if not signed_up:
+        if form1.is_valid() and form2.is_valid() and form3.is_valid():
+            SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
+            if len(Sale.objects.filter(fair=fair, company=company))==0:
+                sale = form2.save(commit=False)
+                sale.company = company
+                sale.save()
+
+            exhibitor = None
+            try:
+                exhibitor = Exhibitor.objects.get(company=company, fair=fair)
+            except Exhibitor.DoesNotExist:
+                # Try and copy exhibitor information from last year to make it easier to fill out the form. 
+                old_exhibitor = Exhibitor.objects.filter(company=company).order_by('-fair__year').first()
+                exhibitor = None
+                if old_exhibitor is None:
+                    exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
+                else:
+                    #Try to copy fields from last year. If failing, just create a new blank one
+                    try:
+                        exhibitor = create_new_exhibitor_from_old(old_exhibitor, contact, fair)
+                    except:
+                        exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
+
+            try:
+                Order.objects.create(exhibitor=exhibitor, product=form3.cleaned_data['stand_area'], amount=1)
+            except:
+                pass
+
+            for sale in Sale.objects.filter(fair=fair, company=company):
+                sale.diversity_room = form2.cleaned_data['diversity_room']
+                sale.green_room = form2.cleaned_data['green_room']
+                sale.events = form2.cleaned_data['events']
+                sale.nova = form2.cleaned_data['nova']
+                sale.save()
+
+            return redirect('anmalan:home')
+    return render(request, 'register/registration.html', dict(registration_open = True,
+                                               signed_up = signed_up,
+                                               contact = contact,
+                                               company=company,
+                                               fair=fair,
+                                               form1=form1,
+                                               form2=form2,
+                                               form3=form3,
+                                               profile_form=profile_form,
+                                               contract_url=contract.contract.url))
+
+
+def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form):
+    return render(request, 'register/registration.html', dict(complete_registration_open = True,
+                                                            signed_up = signed_up,
+                                                            contact=contact,
+                                                            company=company,
+                                                            fair=fair))
+
+
 def home(request, template_name='register/registration.html'):
     if request.user.is_authenticated():
         if Contact.objects.filter(user=request.user).first() is None:
@@ -57,81 +118,64 @@ def home(request, template_name='register/registration.html'):
         else:
             ## Find what contact is signing in and the company
             fair = Fair.objects.get(current = True)
+            pre_preliminary = fair.registration_start_date > timezone.now()
             registration_open = fair.registration_start_date <= timezone.now() and fair.registration_end_date > timezone.now()
-            contract = SignupContract.objects.get(fair=fair, current=True)
+            registration_closed = fair.registration_end_date < timezone.now()
+            complete_registration_open = fair.complete_registration_start_date < timezone.now() and fair.complete_registration_close_date > timezone.now()
+            complete_registration_closed = fair.complete_registration_close_date < timezone.now()
 
+            contract = SignupContract.objects.get(fair=fair, current=True)
             contact = Contact.objects.get(user=request.user)
             company = contact.belongs_to
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
-            profile_form = ExhibitorProfileForm(prefix='exhibitor_profile', instance=exhibitor)
-
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
+            profile_form = ExhibitorProfileForm(prefix='exhibitor_profile', instance=exhibitor)
+
+            #needs to start check if complete is opened as that should override preliminary
+            # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
+            if complete_registration_open:
+                if signed_up:
+                    #return view of complete registration
+                    return complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form)
+
             if registration_open:
+                return preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form)
 
-                form1 = RegistrationForm(request.POST or None, prefix='registration')
-                form2 = InterestForm(request.POST or None, prefix='interest')
-                form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
-                if not signed_up:
-                    if form1.is_valid() and form2.is_valid() and form3.is_valid():
-                        SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
-                        if len(Sale.objects.filter(fair=fair, company=company))==0:
-                            sale = form2.save(commit=False)
-                            sale.company = company
-                            sale.save()
+            if registration_closed:
+                return render(request, template_name, dict(registration_closed = registration_closed,
+                                                       signed_up = signed_up,
+                                                       contact = contact,
+                                                       company=company,
+                                                       profile_form=profile_form,
+                                                       fair=fair))
+                #if signed_up:
+                    #return view that says more information will come
+                #    pass
+                #else:
+                #return view of that preliminary is closed and you are not signed up. Hope you come back next year.
+                #    pass
 
-                        exhibitor = None
-                        try:
-                            exhibitor = Exhibitor.objects.get(company=company, fair=fair)
-                        except Exhibitor.DoesNotExist:
-                            # Try and copy exhibitor information from last year to make it easier to fill out the form. 
-                            old_exhibitor = Exhibitor.objects.filter(company=company).order_by('-fair__year').first()
-                            exhibitor = None
-                            if old_exhibitor is None:
-                                exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
-                            else:
-                                #Try to copy fields from last year. If failing, just create a new blank one
-                                try:
-                                    exhibitor = create_new_exhibitor_from_old(old_exhibitor, contact, fair)
-                                except:
-                                    exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
-
-                        try:
-                            Order.objects.create(exhibitor=exhibitor, product=form3.cleaned_data['stand_area'], amount=1)
-                        except:
-                            pass
-
-                        for sale in Sale.objects.filter(fair=fair, company=company):
-                            sale.diversity_room = form2.cleaned_data['diversity_room']
-                            sale.green_room = form2.cleaned_data['green_room']
-                            sale.events = form2.cleaned_data['events']
-                            sale.nova = form2.cleaned_data['nova']
-                            sale.save()
-
-                        return redirect('anmalan:home')
-                return render(request, template_name, dict(registration_open = registration_open,
-                                                           signed_up = signed_up,
-                                                           contact = contact,
-                                                           company=company,
-                                                           fair=fair,
-                                                           form1=form1,
-                                                           form2=form2,
-                                                           form3=form3,
-                                                           profile_form=profile_form,
-                                                           contract_url=contract.contract.url))
+            if pre_preliminary:
+                # this should be basically nothing. Just return with variable, or return a specific template
+                return render(request, template_name, dict(pre_preliminary = pre_preliminary,
+                                                            contact=contact,
+                                                            company=company,
+                                                            fair=fair))
 
 
-            else:
-                contact = Contact.objects.get(user=request.user)
-                company = contact.belongs_to
-                signed_up = SignupLog.objects.filter(company = company).first() != None
+            if complete_registration_closed:
+                if signed_up:
+                    pass
+                else:
+                    pass
 
-                return render(request, template_name, dict(registration_open = registration_open,
-                                                           signed_up = signed_up,
-                                                           contact = contact,
-                                                           company=company,
-                                                           profile_form=profile_form,
-                                                           fair=fair))
+
+            return render(request, template_name, dict(registration_open = registration_open,
+                                                       signed_up = signed_up,
+                                                       contact = contact,
+                                                       company=company,
+                                                       fair=fair))
     return redirect('anmalan:index')
 
 
