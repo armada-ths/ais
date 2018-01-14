@@ -257,6 +257,7 @@ class RecruitmentApplication(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField(null=True, blank=True)
     interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer', on_delete=models.CASCADE)
+    interviewer2 = models.ForeignKey(User, null=True, blank=True, related_name='interviewer2', on_delete=models.CASCADE)
     exhibitor = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
     interview_date = models.DateTimeField(null=True, blank=True)
     interview_location = models.CharField(null=True, blank=True, max_length=100)
