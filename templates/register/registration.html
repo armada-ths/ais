@@ -12,6 +12,7 @@
     <!-- Note that this is the content, the tab needs to be activated in registration_nav.html as well -->
     {% if signed_up %}
         {% include 'register/tabs/profile_tab.html' %}
+        {% include 'register/tabs/student_matching.html' %}
     {% endif %}
 
     {% if complete_registration_open or complete_registration_closed %}
@@ -23,7 +24,6 @@
         {% include 'register/tabs/nova.html' %}
         {% include 'register/tabs/additional_services.html' %}
         {% include 'register/tabs/logistics.html' %}
-        {% include 'register/tabs/student_matching.html' %}
         {% include 'register/tabs/confirm_and_submit.html' %}
     {% endif %}
 </div> 
