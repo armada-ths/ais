@@ -6,8 +6,6 @@ from orders.models import Product, Order, ProductType, StandArea
 
 
 class SelectStandAreaForm(Form):
-    stand_area = forms.ModelChoiceField(queryset=StandArea.objects.filter(fair=Fair.objects.get(current=True)))
+    stand_area = forms.ModelChoiceField(queryset=StandArea.objects.filter(fair=Fair.objects.filter(current=True).first()))
     #def __init__(self, *args, **kwargs):
         #super(SelectStandArea, self).__init__(*args, **kwargs)
-
-
