@@ -5,25 +5,23 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta charset="utf-8"> {% include "header.html" %} {% block head-extra %}{% endblock %}
-    <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
     <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
 </head>
 
 <body>
-    <div class="container">
+  <div class="text-center container">
+      <div class="row">
+          <div class="headline">
+              <svg class="armada-logo" viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
+                  <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
+              </svg>
+              <h2>Company profile </h2>
+          </div>
+      </div>
         <div class="row">
-            <div class="col-md-12">
-                <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo">
-            </div>
-        </div>
-        <div class="row header-row">
-            <div class="col-md-12">
-                <h1>Company profile</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <form method="post">{% csrf_token %} 
+            <div class="col-md-6 col-md-offset-3">
+                <form method="post">{% csrf_token %}
                     {{ form | crispy }}
                     {% if contact_form %}
                     <!-- This template is used both when editing just company information and when creating a new company which requires contact information as well. Therefore this other section is just displayed when contact information is requested. -->
@@ -32,9 +30,16 @@
                         {{ contact_form | crispy }}
                         {{ user_form | crispy }}
                     {% endif %}
-                  <button type="submit" class="btn btn-success">Save</button>
+                  <button type="submit" class="btn btn-green">Save</button>
               </form>
             </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3">
+              <svg viewBox="50 50 200 200" width="100px" height="100px" version="1.1">
+                  <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="300px" width="700px"/>
+              </svg>
+          </div>
         </div>
     </div>
 </body>

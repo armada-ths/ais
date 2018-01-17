@@ -10,24 +10,24 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="text-center container">
         <div class="row">
             <div class="headline">
                 <svg class="armada-logo" viewBox="305 16 320 150" width="555px" height="250px" version="1.1">
                     <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
                 </svg>
-                <h2>Company registration for THS Armada  </h2>
+                <h2>Company registration for {{fair}} </h2>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8 col-md-offset-2">
                 <div class="text-center form-container">
                     {% if timeFlag == 'warning' %}
                         <h4 class="text-danger"> The complete registration for THS Armada closes {{time_end }}. </h4>
                     {% elif timeFlag == 'closed' or timeFlag == 'overdue' %}
                         <h4 class="text-danger"> The complete registration for THS Armada closed on {{ time_end }}. </h4>
                     {% endif %}
-                    <p> Login with existing account or create a new </p>
+                    <p> Sign in with existing account or create a new </p>
                     <a href="{% url 'anmalan:login' %}" class="btn-signin btn-green">Sign in</a>
                     <a href="{% url 'anmalan:create_company_user' %}" class="btn-signin btn-green">Create Account</a>
                     <div>

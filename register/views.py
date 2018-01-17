@@ -24,7 +24,7 @@ from .help.methods import get_time_flag
 def save_profile_info(request):
     """
     This funcion saves the form exhibito_profile and redirects to the
-    link that was specified as next, or just return status 204. 
+    link that was specified as next, or just return status 204.
     204 means successfully processed and not returning anything
     Makes it possible to save and stay on same page
     """
@@ -39,7 +39,7 @@ def save_profile_info(request):
     else:
         return HttpResponse(status=204)
 
-    
+
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -48,7 +48,8 @@ def index(request, template_name='register/index.html'):
         else:
             return redirect('anmalan:logout')
     timeFlag, [time_end, time_diff] = get_time_flag()
-    return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
+    fair = Fair.objects.filter(current=True).first()
+    return render(request, template_name, {'fair': fair, 'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
 def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form):
     form1 = RegistrationForm(request.POST or None, prefix='registration')
@@ -66,7 +67,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
             try:
                 exhibitor = Exhibitor.objects.get(company=company, fair=fair)
             except Exhibitor.DoesNotExist:
-                # Try and copy exhibitor information from last year to make it easier to fill out the form. 
+                # Try and copy exhibitor information from last year to make it easier to fill out the form.
                 old_exhibitor = Exhibitor.objects.filter(company=company).order_by('-fair__year').first()
                 exhibitor = None
                 if old_exhibitor is None:
@@ -202,12 +203,12 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
     exhibitor.job_types.add(*old_exhibitor.job_types.all())
     exhibitor.save()
     return exhibitor
-    
 
 
-            
 
-            
+
+
+
 
 
 def signup(request, template_name='register/create_user.html'):

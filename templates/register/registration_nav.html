@@ -2,7 +2,7 @@
 <div class="container-fluid cr-container">
   <!-- Tabs -->
   <ul class="nav nav-tabs cr-nav-common cr-nav-top">
-      <li class="nav"> 
+      <li class="nav">
           <div class="nav-logo">
               <svg  viewBox="200 50 500 120" width="80px" height="38px" version="1.1">
                   <image xlink:href="{% static 'images/armadalogo.svg' %}" alt="Armada" height="230px" width="700px"/>
@@ -10,15 +10,16 @@
           </div>
       </li>
 
-      <!-- Only show these tabs after preliminary registration -->
+
       {% if signed_up and contact.confirmed %}
+      <!-- Only show these tabs after preliminary registration -->
       <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
       <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
       <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
       {% endif %}
 
       {% if complete_registration_open or complete_registration_closed %}
-        <!-- This variable does not exist yet but the principle is that 
+        <!-- This variable does not exist yet but the principle is that
         you should display some more tabs if complete registration is open
         or if closing date has passed. The reason for still displaying after closing
         date is for companies to be able to see what they have ordered.
@@ -33,7 +34,7 @@
         <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
         <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
       {% endif %}
-        
+
         <li class="nav pull-right"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
     </ul>
 </div>
