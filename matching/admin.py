@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Question, Survey, Response, TextAns, ChoiceAns, IntegerAns, \
+from .models import Question,Answer, Category, Survey, Response, TextAns, ChoiceAns, IntegerAns, \
 BooleanAns, StudentQuestionSlider, StudentQuestionGrading, StudentAnswerSlider, \
 StudentAnswerGrading, WorkFieldArea, WorkField, StudentAnswerWorkField, SwedenRegion, \
 Continent, StudentAnswerRegion, StudentAnswerContinent, SwedenCity, Country, JobType, \
@@ -25,11 +25,6 @@ class IntegerAnsInline(AnswerInline):
 
 class BooleanAnsInline(AnswerInline):
     model = BooleanAns
-
-class ResponseAdmin(admin.ModelAdmin):
-    #note: one response only have one question and one answer that has the correct type! so be careful when you add in admin (maybe remove the ans inline)
-    list_display = ('exhibitor', 'question')
-    inlines = [TextAnsInline, ChoiceAnsInline, IntegerAnsInline, BooleanAnsInline]
 
 class WorkFieldInline(admin.TabularInline):
     model = WorkField
@@ -87,13 +82,56 @@ class JobTypeAdmin(admin.ModelAdmin):
 class StudentAnswerJobTypeAdmin(admin.ModelAdmin):
     model = StudentAnswerJobType
 
-admin.site.register(Question, QuestionInline)
-admin.site.register(Survey)
+
+
+
+
+
+
+
+
+
+
+
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+    ordering = ('id', 'category', )
+    extra = 1
+
+
+class CategoryInline(admin.TabularInline):
+    model = Category
+    extra = 0
+
+
+class SurveyAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+    list_filter = ('fair',)
+    inlines = [CategoryInline, QuestionInline]
+
+
+class ResponseAdmin(admin.ModelAdmin):
+    list_display = ('survey', 'exhibitor')
+    list_filter = ('survey', 'exhibitor')
+    inlines = [TextAnsInline, ChoiceAnsInline, IntegerAnsInline, BooleanAnsInline]
+    # specifies the order as well as which fields to act on
+    readonly_fields = (
+        'survey', 'exhibitor'
+    )
+
+
+# admin.site.register(Question, QuestionInline)
+# admin.site.register(Category, CategoryInline)
+admin.site.register(Survey, SurveyAdmin)
 admin.site.register(Response, ResponseAdmin)
-admin.site.register(TextAns)
-admin.site.register(ChoiceAns)
-admin.site.register(IntegerAns)
-admin.site.register(BooleanAns)
+
+admin.site.register(Answer)
+#admin.site.register(Question, QuestionInline)
+#admin.site.register(TextAns)
+#admin.site.register(ChoiceAns)
+#admin.site.register(IntegerAns)
+#admin.site.register(BooleanAns)
 
 admin.site.register(StudentQuestionSlider, StudentQuestionSliderAdmin)
 admin.site.register(StudentQuestionGrading, StudentQuestionGradingAdmin)

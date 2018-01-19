@@ -10,12 +10,14 @@ from orders.models import Product, Order
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
+from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
 from .forms import EditCompanyForm, CompanyForm, ContactForm, RegistrationForm, CreateContactForm, CreateContactNoCompanyForm, UserForm, ExternalUserForm, ExternalUserLoginForm, InterestForm, ChangePasswordForm
 from orders.forms import SelectStandAreaForm
 from exhibitors.forms import ExhibitorProfileForm
+from matching.forms import ResponseForm
 
 
 from .help import exhibitor_form as help
@@ -91,6 +93,11 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                 sale.save()
 
             return redirect('anmalan:home')
+
+    if profile_form.is_valid():
+        profile_form.save()
+
+    
     return render(request, 'register/registration.html', dict(registration_open = True,
                                                signed_up = signed_up,
                                                contact = contact,
@@ -104,11 +111,40 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
 
 
 def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form):
-    return render(request, 'register/registration.html', dict(complete_registration_open = True,
-                                                            signed_up = signed_up,
-                                                            contact=contact,
-                                                            company=company,
-                                                            fair=fair))
+    form = help.create_exhibitor_form(request, fair, exhibitor, company, contact)
+    current_matching_survey = Survey.objects.filter(fair=fair).first()
+
+# TODO: needs to prefil this form with data from request.POST if saving fails.
+# This is usually done with request.POST or None in init if it is modelform but this is not
+    print('EXHIBITOR', exhibitor)
+    survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
+
+    if survey_form.is_valid():
+        survey_form.save()
+    else:
+        print("survey_form invalid")
+
+    if profile_form.is_valid():
+        profile_form.save()
+    else:
+        print('profile_form invalid')
+
+    if form.is_valid():
+        # a huge amount of stuff happens here, check help/ExhibitorForm.py for details
+        #help.save_exhibitor_form(request, form, currentFair, company, contact)
+        pass
+
+    print("signed_up:", signed_up)
+    return render(request, 'register/registration.html', {'form': form, 'contract_url': contract.contract.url,
+                                                              'signed_up': signed_up,
+                                                              'company':company,
+                                                              'contact':contact,
+                                                              'complete_registration_open': True,
+                                                              'fair':fair,
+                                                              'profile_form': profile_form,
+                                                              'survey_form': survey_form,
+                                                              'survey': current_matching_survey})
+
 
 
 def home(request, template_name='register/registration.html'):
@@ -128,9 +164,10 @@ def home(request, template_name='register/registration.html'):
             contact = Contact.objects.get(user=request.user)
             company = contact.belongs_to
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
+            print('variables in home', contact, company, exhibitor)
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
-            profile_form = ExhibitorProfileForm(prefix='exhibitor_profile', instance=exhibitor)
+            profile_form = ExhibitorProfileForm(request.POST, prefix='exhibitor_profile', instance=exhibitor)
 
             #needs to start check if complete is opened as that should override preliminary
             # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.

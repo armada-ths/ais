@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.utils.timezone import utc
+from polymorphic.models import PolymorphicModel
 
 from enum import Enum, unique
 
@@ -28,23 +29,50 @@ CHOICES = (
     (5,'Definitely')
 )
 
+
+class Category(models.Model):
+
+    name = models.CharField(max_length=400)
+    survey = models.ForeignKey(Survey, related_name="categories")
+    order = models.IntegerField(blank=True, null=True)
+    description = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta(object):
+        verbose_name = 'category'
+        verbose_name_plural = 'categories'
+
+    def __str__(self):
+        return self.name
+
+    def slugify(self):
+        return slugify(str(self))
+
 class Question(models.Model):
     TEXT = 'text'
     SELECT = 'select'
+    SELECT_MULTIPLE = 'select-multiple'
     INT = 'integer'
     BOOL = 'boolean'
 
     QUESTION_TYPES = (
         (TEXT, 'text'),
         (SELECT, 'select'),
+        (SELECT_MULTIPLE, 'Select Multiple'),
         (INT, 'integer'),
         (BOOL, 'boolean'),
     )
+    required = models.BooleanField(default=False)
     name = models.CharField(max_length=64, blank=True, null=True)
     text = models.TextField()
     help_text = models.TextField(blank=True, null=True)
+    category = models.ForeignKey(Category, blank=True, null=True,
+                                 related_name="questions", on_delete=models.CASCADE)
     question_type = models.CharField(max_length=256, choices=QUESTION_TYPES, blank=True, null=True)
-    survey = models.ManyToManyField(Survey)
+    survey = models.ForeignKey(Survey, related_name="questions", on_delete=models.CASCADE, null=True)
+
+    class Meta(object):
+        verbose_name = 'question'
+        verbose_name_plural = 'questions'
 
     def get_choices(self):
         return CHOICES
@@ -56,15 +84,24 @@ class Question(models.Model):
 
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    survey = models.ForeignKey(Survey, blank=True, null=True, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True, blank=True)
+    survey = models.ForeignKey(Survey, blank=True, null=True, on_delete=models.CASCADE, related_name="responses")
 
+    class Meta(object):
+        verbose_name = 'response'
+        verbose_name_plural = 'responses'
+
+        
     def __str__(self):
         return '%s'%self.exhibitor
 
-class Answer(models.Model):
+class Answer(PolymorphicModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     response = models.ForeignKey(Response, on_delete=models.CASCADE)
+
+    class Meta(object):
+        verbose_name = 'answer'
+        verbose_name_plural = 'answers'
 
 class TextAns(Answer):
     ans = models.CharField(null=True, blank=True, max_length=4096)
@@ -78,7 +115,7 @@ class IntegerAns(Answer):
     ans = models.IntegerField(null=True, blank=True)
 
 class BooleanAns(Answer):
-    ans = models.NullBooleanField(choices=((True,'yes'), (False,'no')), null=True, blank=True)
+    ans = models.NullBooleanField(choices=((True,'yes'), (False,'no')), null=True, blank=True, default=None)
 
 ###########################################################
 #   Thes following question will contain output processed

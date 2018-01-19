@@ -6,6 +6,7 @@ uWSGI
 wheel
 ldap3
 django-crispy-forms
+django-polymorphic
 Pillow
 raven
 requests
