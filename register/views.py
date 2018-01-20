@@ -23,25 +23,6 @@ from matching.forms import ResponseForm
 from .help import exhibitor_form as help
 from .help.methods import get_time_flag
 
-def save_profile_info(request):
-    """
-    This funcion saves the form exhibito_profile and redirects to the
-    link that was specified as next, or just return status 204. 
-    204 means successfully processed and not returning anything
-    Makes it possible to save and stay on same page
-    """
-    exhibitor = Exhibitor.objects.get(company=Contact.objects.get(user=request.user).belongs_to, fair=Fair.objects.get(current=True))
-    profile_form = ExhibitorProfileForm(request.POST or None, prefix='exhibitor_profile', instance=exhibitor)
-    if profile_form.is_valid():
-        profile_form.save()
-
-    redirect_to = request.POST.get('next', '')
-    if redirect_to:
-        return redirect(redirect_to)
-    else:
-        return HttpResponse(status=204)
-
-    
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
@@ -110,14 +91,8 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                contract_url=contract.contract.url))
 
 
-def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form):
+def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form):
     form = help.create_exhibitor_form(request, fair, exhibitor, company, contact)
-    current_matching_survey = Survey.objects.filter(fair=fair).first()
-
-# TODO: needs to prefil this form with data from request.POST if saving fails.
-# This is usually done with request.POST or None in init if it is modelform but this is not
-    print('EXHIBITOR', exhibitor)
-    survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
 
     if survey_form.is_valid():
         survey_form.save()
@@ -168,16 +143,20 @@ def home(request, template_name='register/registration.html'):
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
             profile_form = ExhibitorProfileForm(request.POST, prefix='exhibitor_profile', instance=exhibitor)
+            current_matching_survey = Survey.objects.filter(fair=fair).first()
+            survey_form = None
+            if current_matching_survey:
+                survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
 
             #needs to start check if complete is opened as that should override preliminary
             # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
             if complete_registration_open:
                 if signed_up:
                     #return view of complete registration
-                    return complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form)
+                    return complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form=survey_form)
 
             if registration_open:
-                return preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form)
+                return preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form=survey_form)
 
             if registration_closed:
                 return render(request, template_name, dict(registration_closed = registration_closed,
@@ -185,7 +164,7 @@ def home(request, template_name='register/registration.html'):
                                                        contact = contact,
                                                        company=company,
                                                        profile_form=profile_form,
-                                                       fair=fair))
+                                                       fair=fair, survey_form=survey_form))
                 #if signed_up:
                     #return view that says more information will come
                 #    pass

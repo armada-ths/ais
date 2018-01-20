@@ -7,7 +7,6 @@ app_name = 'anmalan'
 urlpatterns = [
     # Updated home url to show complete registration form
     url(r'^home$', views.home, name='home'),
-    url(r'^save_profile_info$', views.save_profile_info, name='save_profile_info'),
     #url(r'^home$', views.create_exhibitor, name='home'),
     # Initial registration closed, to allow: rm kwargs and uncomment signup and create_company, also uncomment in templates/register/login.html
     url(r'^$', views.index, name='index',
