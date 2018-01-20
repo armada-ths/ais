@@ -34,7 +34,7 @@ def index(request, template_name='register/index.html'):
     fair = Fair.objects.filter(current=True).first()
     return render(request, template_name, {'fair': fair, 'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
-def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form):
+def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form):
     form1 = RegistrationForm(request.POST or None, prefix='registration')
     form2 = InterestForm(request.POST or None, prefix='interest')
     form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
@@ -89,7 +89,8 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                form2=form2,
                                                form3=form3,
                                                profile_form=profile_form,
-                                               contract_url=contract.contract.url))
+                                               contract_url=contract.contract.url,
+                                               survey_form=survey_form))
 
 
 def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form):
@@ -119,7 +120,7 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
                                                               'fair':fair,
                                                               'profile_form': profile_form,
                                                               'survey_form': survey_form,
-                                                              'survey': current_matching_survey})
+                                                              })
 
 
 
@@ -142,7 +143,7 @@ def home(request, template_name='register/registration.html'):
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
-            profile_form = ExhibitorProfileForm(request.POST, prefix='exhibitor_profile', instance=exhibitor)
+            profile_form = ExhibitorProfileForm(request.POST or None, prefix='exhibitor_profile', instance=exhibitor)
             current_matching_survey = Survey.objects.filter(fair=fair).first()
             survey_form = None
             if current_matching_survey:
