@@ -96,7 +96,8 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
 def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form):
     form = help.create_exhibitor_form(request, fair, exhibitor, company, contact)
 
-    if survey_form.is_valid():
+    # Only check survey form if there is a survey form
+    if survey_form and  survey_form.is_valid():
         survey_form.save()
     else:
         print("survey_form invalid")

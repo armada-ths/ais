@@ -14,7 +14,9 @@
       {% if signed_up and contact.confirmed %}
           <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
           <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
-          <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
+          {% if survey_form %}
+              <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
+          {% endif %}
       {% endif %}
 
       {% if contact.confirmed and complete_registration_open or complete_registration_closed and contact.confirmed %}

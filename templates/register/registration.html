@@ -15,7 +15,9 @@
     <!-- Note that this is the content, the tab needs to be activated in registration_nav.html as well -->
     {% if signed_up and contact.confirmed%}
         {% include 'register/tabs/profile_tab.html' %}
-        {% include 'register/tabs/student_matching.html' %}
+        {% if survey_form %}
+            {% include 'register/tabs/student_matching.html' %}
+        {% endif %}
     {% endif %}
 
     {% if contact.confirmed and complete_registration_open or complete_registration_closed and contact.confirmed%}
