@@ -219,6 +219,14 @@ a.forgot-password:hover {
 	margin: 0px;
 }
 
+.armada-ship-green {
+	position: absolute;
+	display: inline-block;
+	float: left;
+	bottom: 0px;
+	left: 10px;
+}
+
 .btn-start {
 	float: right;
 	width: 100px;
@@ -348,6 +356,7 @@ span.h-green { color :#00d791; }
 li.nav {
 	float: none;
 	display: inline-block;
+	vertical-align: middle;
 }
 .nav-tabs.cr-nav-top > li > a {
     color: #898989;

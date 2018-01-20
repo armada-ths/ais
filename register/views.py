@@ -31,7 +31,8 @@ def index(request, template_name='register/index.html'):
         else:
             return redirect('anmalan:logout')
     timeFlag, [time_end, time_diff] = get_time_flag()
-    return render(request, template_name, {'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
+    fair = Fair.objects.filter(current=True).first()
+    return render(request, template_name, {'fair': fair, 'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
 def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form):
     form1 = RegistrationForm(request.POST or None, prefix='registration')
@@ -49,7 +50,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
             try:
                 exhibitor = Exhibitor.objects.get(company=company, fair=fair)
             except Exhibitor.DoesNotExist:
-                # Try and copy exhibitor information from last year to make it easier to fill out the form. 
+                # Try and copy exhibitor information from last year to make it easier to fill out the form.
                 old_exhibitor = Exhibitor.objects.filter(company=company).order_by('-fair__year').first()
                 exhibitor = None
                 if old_exhibitor is None:
@@ -139,7 +140,6 @@ def home(request, template_name='register/registration.html'):
             contact = Contact.objects.get(user=request.user)
             company = contact.belongs_to
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
-            print('variables in home', contact, company, exhibitor)
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
             profile_form = ExhibitorProfileForm(request.POST, prefix='exhibitor_profile', instance=exhibitor)
@@ -218,12 +218,12 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
     exhibitor.job_types.add(*old_exhibitor.job_types.all())
     exhibitor.save()
     return exhibitor
-    
 
 
-            
 
-            
+
+
+
 
 
 def signup(request, template_name='register/create_user.html'):

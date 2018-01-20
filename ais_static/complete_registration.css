@@ -356,6 +356,7 @@ span.h-green { color :#00d791; }
 li.nav {
 	float: none;
 	display: inline-block;
+	vertical-align: middle;
 }
 .nav-tabs.cr-nav-top > li > a {
     color: #898989;
