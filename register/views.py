@@ -131,9 +131,9 @@ def home(request, template_name='register/registration.html'):
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
-            contact_form = ContactForm(request.POST or None, instance=contact)
-            invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details) if exhibitor else None
-            company_form = EditCompanyForm(request.POST or None, instance=company)
+            contact_form = ContactForm(request.POST or None, instance=contact, prefix='contact_info')
+            invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
+            company_form = EditCompanyForm(request.POST or None, instance=company, prefix='company_info')
             profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
             current_matching_survey = Survey.objects.filter(fair=fair).first()
             survey_form = None
