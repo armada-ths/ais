@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, HiddenInput
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Company, Contact, InvoiceDetails
@@ -35,10 +35,19 @@ class ContactForm(ModelForm):
         exclude = ('user','belongs_to','active','confirmed' )
 
 class InvoiceDetailsForm(ModelForm):
+
     class Meta:
         model = InvoiceDetails
         fields = '__all__'
-        exclude = ('company',)
+
+    def __init__(self, company, *args, **kwargs):
+        instance = kwargs.get('instance')
+        super(InvoiceDetailsForm, self).__init__(*args, **kwargs)
+        if instance == None:
+            self.initial['company'] =  Company.objects.filter(id=company.pk).first()
+        self.fields['company'].disabled = True #make sure company field is not editable
+        self.fields['company'].widget= HiddenInput()
+
 
 
 class ContactForm(ModelForm):

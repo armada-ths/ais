@@ -73,6 +73,67 @@
                 <p>Pack up your exhibition material and leave it as the fair ends, THS Armada Transport service will transport it according to your preference. THS Armada Transport is a part of our sustainability work.</p>
               </div>
             </div>
+
+            <div id="armadaTransportChosen">
+              <h3>Transport Details <small id="editArmadaTransportTrigger" class="toggleEdit">Edit</small></h3>
+              <ul class="list-unstyled form-to-edit editable-form hidden" id="armadaTransportEditable">
+                <li class="address">
+                  <h5><span class="aterix h-red">*</span> Delivery address (including zip code)</h5>
+                  <div class="input-field">
+                    {{ form.transport_from_fair_address }}
+                  </div>
+                </li>
+                <li>
+                  <h5><span class="aterix h-red">*</span> Recipient's name:</h5>
+                  <div class="input-field">
+                    {{ form.transport_from_fair_recipient_name }}
+                  </div>
+                </li>
+                <li>
+                  <h5><span class="aterix h-red">*</span> Recipient's phone number:</h5>
+                  <div class="input-field">
+                    {{ form.transport_from_fair_recipient_phone_number }}
+                  </div>
+                </li>
+                <li>
+                  <h5>Number of packages:</h5>
+                  <div class="input-field">
+                    {{ form.number_of_packages_from_fair }}
+                  </div>
+                </li>
+                <li>
+                  <h5>Number of pallets:</h5>
+                  <div class="input-field">
+                    {{ form.number_of_pallets_from_fair }}
+                  </div>
+                </li>
+              </ul>
+              <ul class="list-unstyled form-to-edit no-editable-form visible" id="armadaTransportNoEditable">
+                <li class="address">
+                  <h5><span class="aterix h-red">*</span> Delivery address (including zip code)</h5>
+                  <div class="input-field">
+                    {{ form.transport_from_fair_address }}
+                  </div>
+                </li>
+                <li>
+                  <h5><span class="aterix h-red">*</span> Recipient's name:</h5>
+                    {{ form.transport_from_fair_recipient_name }}
+                </li>
+                <li>
+                  <h5><span class="aterix h-red">*</span> Recipient's phone number:</h5>
+                    {{ form.transport_from_fair_recipient_phone_number }}
+                </li>
+                <li>
+                  <h5>Number of packages:</h5>
+                    {{ form.number_of_packages_from_fair }}
+                </li>
+                <li>
+                  <h5>Number of pallets:</h5>
+                    {{ form.number_of_pallets_from_fair }}
+                </li>
+              </ul>
+            </div> <!-- end transport details -->
+
           </div>
         </div>
       </div>

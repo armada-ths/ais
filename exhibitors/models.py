@@ -21,6 +21,7 @@ class JobType(models.Model):
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
     company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
+    invoice_details = models.ForeignKey('companies.InvoiceDetails', on_delete=models.SET_NULL, blank=True, null=True)
     fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True, on_delete=models.CASCADE)
@@ -80,17 +81,6 @@ class Exhibitor(models.Model):
     heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
     number_of_outlets_needed = models.IntegerField(default=0)
     total_power = models.CharField(max_length=500, blank=True)
-
-    # Invoice
-    invoice_reference = models.CharField(max_length=200, blank=True)
-    invoice_purchase_order_number = models.CharField(max_length=200, blank=True)
-    invoice_reference_phone_number = models.CharField(max_length=200, blank=True)
-    invoice_organisation_name = models.CharField(max_length=200, blank=True)
-    invoice_address = models.CharField(max_length=200, blank=True)
-    invoice_address_po_box = models.CharField(max_length=200, blank=True)
-    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
-    invoice_identification = models.CharField(max_length=200, blank=True)
-    invoice_additional_information = models.CharField(max_length=500, blank=True)
 
     # Transport to fair
     transport_to_fair_types = [

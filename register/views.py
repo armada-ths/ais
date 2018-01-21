@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 
-from companies.models import Company, Contact
+from companies.models import Company, Contact, InvoiceDetails
 from orders.models import Product, Order
 from exhibitors.models import Exhibitor
 from fair.models import Fair
@@ -16,7 +16,7 @@ from .models import SignupContract, SignupLog
 
 from .forms import  RegistrationForm,  InterestForm, ChangePasswordForm
 from orders.forms import SelectStandAreaForm
-from exhibitors.forms import ExhibitorProfileForm
+from exhibitors.forms import ExhibitorProfileForm, SelectInvoiceDetailsForm
 from matching.forms import ResponseForm
 from companies.forms import InvoiceDetailsForm, CompanyForm, ContactForm, EditCompanyForm, CreateContactForm, CreateContactNoCompanyForm, UserForm
 
@@ -97,29 +97,33 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
 def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form):
     form = help.create_exhibitor_form(request, fair, exhibitor, company, contact)
 
-    # Only check survey form if there is a survey form
-    if survey_form and  survey_form.is_valid():
-        survey_form.save()
-    else:
-        print("survey_form invalid")
 
-    if profile_form.is_valid():
-        profile_form.save()
-    else:
-        print('profile_form invalid')
+    # If post, try and validate and save forms
+    if request.POST:
 
-    if form.is_valid():
-        # a huge amount of stuff happens here, check help/ExhibitorForm.py for details
-        #help.save_exhibitor_form(request, form, currentFair, company, contact)
-        pass
+        # Only check survey form if there is a survey form
+        if survey_form and  survey_form.is_valid():
+            survey_form.save()
+        else:
+            print("survey_form invalid")
 
-    print("signed_up:", signed_up)
+        if profile_form.is_valid():
+            profile_form.save()
+        else:
+            print('profile_form invalid')
+
+        if form.is_valid():
+            # a huge amount of stuff happens here, check help/ExhibitorForm.py for details
+            #help.save_exhibitor_form(request, form, currentFair, company, contact)
+            pass
+
     return render(request, 'register/registration.html', {'form': form, 'contract_url': contract.contract.url,
                                                               'signed_up': signed_up,
                                                               'company':company,
                                                               'contact':contact,
                                                               'complete_registration_open': True,
                                                               'fair':fair,
+                                                              'exhibitor': exhibitor,
                                                               'profile_form': profile_form,
                                                               'survey_form': survey_form,
                                                               })
@@ -145,7 +149,7 @@ def home(request, template_name='register/registration.html'):
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
-            profile_form = ExhibitorProfileForm(request.POST or None, prefix='exhibitor_profile', instance=exhibitor)
+            profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
             current_matching_survey = Survey.objects.filter(fair=fair).first()
             survey_form = None
             if current_matching_survey:
@@ -206,15 +210,15 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
             logo = old_exhibitor.logo,
             requests_for_stand_placement = old_exhibitor.requests_for_stand_placement,
             other_information_about_the_stand = old_exhibitor.other_information_about_the_stand,
-            invoice_reference = old_exhibitor.invoice_reference,
-            invoice_purchase_order_number = old_exhibitor.invoice_purchase_order_number,
-            invoice_reference_phone_number = old_exhibitor.invoice_reference_phone_number,
-            invoice_organisation_name = old_exhibitor.invoice_organisation_name,
-            invoice_address = old_exhibitor.invoice_address,
-            invoice_address_po_box = old_exhibitor.invoice_address_po_box,
-            invoice_address_zip_code = old_exhibitor.invoice_address_zip_code,
-            invoice_identification = old_exhibitor.invoice_identification,
-            invoice_additional_information = old_exhibitor.invoice_additional_information
+            invoice_reference = old_exhibitor.invoice_detials.invoice_reference,
+            invoice_purchase_order_number = old_exhibitor.invoice_detials.invoice_purchase_order_number,
+            invoice_reference_phone_number = old_exhibitor.invoice_detials.invoice_reference_phone_number,
+            invoice_organisation_name = old_exhibitor.invoice_detials.invoice_organisation_name,
+            invoice_address = old_exhibitor.invoice_detials.invoice_address,
+            invoice_address_po_box = old_exhibitor.invoice_detials.invoice_address_po_box,
+            invoice_address_zip_code = old_exhibitor.invoice_detials.invoice_address_zip_code,
+            invoice_identification = old_exhibitor.invoice_detials.invoice_identification,
+            invoice_additional_information = old_exhibitor.invoice_detials.invoice_additional_information
             )
     # ManyToMany fields needs to be copied after creation
     # the * unpacks the list, taking [a,b,c] to a,b,c
@@ -275,7 +279,7 @@ def create_company(request, template_name='register/company_form.html'):
 def contact_update(request, template_name='register/contact_form.html'):
     contact = Contact.objects.get(user = request.user)
     form = ContactForm(request.POST or None, instance=contact)
-    if form.is_valid():
+    if request.POST and form.is_valid():
         contact = form.save()
         return redirect('anmalan:home')
     return render(request, template_name, dict(form=form))
@@ -285,12 +289,27 @@ def company_update(request, pk, template_name='register/company_form.html'):
     redirect_to = request.GET.get('next','')
     company = get_object_or_404(Company, pk=pk)
     form = EditCompanyForm(request.POST or None, instance=company)
-    if form.is_valid():
+    if request.POST and form.is_valid():
         form.save()
         if redirect_to:
             return redirect(redirect_to)
         return redirect('anmalan:home')
     return render(request, template_name, {'form':form})
+
+
+#update invoice details 
+def invoice_details_update(request, pk, template_name='register/invoice_details_form.html'):
+    redirect_to = request.GET.get('next','')
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+    form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details)
+    if form.is_valid() and request.POST:
+        form.save()
+        if redirect_to:
+            return redirect(redirect_to)
+        return redirect('anmalan:home')
+    return render(request, template_name, {'form':form})
+
+
 
 # A company's contact can request to have the company
 # become an exhibitor via the ExhibitorForm

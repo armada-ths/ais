@@ -15,7 +15,7 @@ from fair.models import Fair
 from orders.models import Product, Order
 from banquet.models import BanquetteAttendant
 
-from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorInvoiceForm
+from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial
 from .models import Exhibitor, ExhibitorView
 
 import logging
@@ -79,12 +79,10 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     else:
         exhibitor_form = ExhibitorFormPartial(request.POST or None, request.FILES or None, instance=exhibitor)
     company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
-    invoice_form = ExhibitorInvoiceForm(request.POST or None, instance=exhibitor)
 
-    if exhibitor_form.is_valid() and company_form.is_valid() and invoice_form.is_valid():
+    if exhibitor_form.is_valid() and company_form.is_valid():
         exhibitor_form.save()
         company_form.save()
-        invoice_form.save()
         return redirect('exhibitors', fair.year)
 
     users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
@@ -98,7 +96,6 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'exhibitor': exhibitor,
         'exhibitor_form': exhibitor_form,
         'company_form': company_form,
-        'invoice_form': invoice_form,
         'fair': fair,
         'banquet_attendants': banquet_attendants,
     })

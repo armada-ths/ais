@@ -48,6 +48,18 @@
                 <p> <b> Address: </b> {{company.address_street}} {{company.address_zip_code}} {{company.address_city}}</p>
                 {% if contact.confirmed %}
                 <a href={% url 'anmalan:edit_company' company.id  %}> <button class="btn-green"> Edit company info </button></a>
+                <h3> Invoice Details </h3>
+                <p> Organisation Name: {{exhibitor.invoice_details.organisation_name}} </p>
+                <p> Reference: {{exhibitor.invoice_details.reference}} </p>
+                <p> Purchase Order Number: {{exhibitor.invoice_details.purchase_order_number}} </p>
+                <p> Reference Phone Number: {{exhibitor.invoice_details.reference_phone_number}} </p>
+                <p> Address: {{exhibitor.invoice_details.address}} </p>
+                <p> Address Po Box: {{exhibitor.invoice_details.address_po_box}} </p>
+                <p> Address Zip Code: {{exhibitor.invoice_details.address_zip_code}} </p>
+                <p> Identification: {{exhibitor.invoice_details.identification}} </p>
+                <p> Additional Information: {{exhibitor.invoice_details.additional_information}} </p>
+                {{ exhibitor }}
+                <a href={% url 'anmalan:edit_invoice_details' exhibitor.id  %}> <div class="btn-green"> Edit invoice details </div></a>
                 {% else %}
                 <p><span class="text-danger"> To edit your company info your user needs to be confirmed. Please contact us.</span> </p>
                 {% endif %}
@@ -59,7 +71,6 @@
                 </br>
                 <a href={% url 'anmalan:edit_me' %}><button class="btn-green" > Edit contact info </button></a>
                 </br>
-                <a href={% url 'anmalan:change_password' %}> <button class="btn-green"> Change password </button></a>
             </div>
 
         </div>

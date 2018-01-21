@@ -3,6 +3,17 @@ from django import forms
 import inspect
 
 from .models import ExhibitorView, Exhibitor
+from companies.models import InvoiceDetails
+
+
+class SelectInvoiceDetailsForm(forms.ModelForm):
+    class Meta:
+        model = Exhibitor
+        fields = ('invoice_details',)
+
+    def __init__(self, exhibitor, *args, **kwargs):
+        super(SelectInvoiceDetailsForm, self).__init__(*args, **kwargs)
+        self.fields['invoice_details'].queryset = InvoiceDetails.objects.filter(company=exhibitor.company)
 
 class ExhibitorProfileForm(forms.ModelForm):
     class Meta:
@@ -47,13 +58,9 @@ class ExhibitorViewForm(forms.Form):
 exhibitor_fields = [
     'hosts', 'contact', 'fair_location', 'estimated_arrival_of_representatives', 'about_text', 'facts_text',
     'accept_terms', 'comment', 'status', 'allergies', 'logo', 'location_at_fair', 'requests_for_exhibition_area',
-    'number_of_outlets_needed', 'total_power', 'invoice_purchase_order_number',
+    'number_of_outlets_needed', 'total_power', 
     'wants_information_about_events', 'wants_information_about_targeted_marketing', 'wants_information_about_osqledaren',
     'manual_invoice', 'interested_in_armada_transport', 'tags', 'goals_of_participation', 'job_types'
-]
-invoice_fields = [
-    'invoice_reference', 'invoice_reference_phone_number', 'invoice_organisation_name', 'invoice_address',
-    'invoice_address_po_box', 'invoice_address_zip_code', 'invoice_identification', 'invoice_additional_information'
 ]
 transport_to_fair_fields = [
     'transport_to_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair', 'estimated_arrival'
@@ -80,7 +87,7 @@ class ExhibitorFormFull(forms.ModelForm):
     class Meta:
         model = Exhibitor
         fields = '__all__'
-        exclude = ('company', 'fair') + tuple(invoice_fields)
+        exclude = ('company', 'fair') 
         widgets = {
             'allergies' : forms.TextInput()
         }
@@ -116,17 +123,6 @@ class ExhibitorFormPartial(ExhibitorFormFull):
     '''
 
     class Meta(ExhibitorFormFull.Meta):
-        exclude = ('company', 'fair', 'hosts', 'contact') + tuple(invoice_fields)
+        exclude = ('company', 'fair', 'hosts', 'contact')
 
 
-class ExhibitorInvoiceForm(forms.ModelForm):
-    '''
-    A form for exhibitor invoice fields.
-    Was created to preserve old order dof fields in the full form.
-    Should porbably be updated for the next year.
-    '''
-    field_order = invoice_fields
-
-    class Meta:
-        model = Exhibitor
-        fields = tuple(invoice_fields)
