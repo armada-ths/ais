@@ -14,11 +14,12 @@ from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
-from .forms import  RegistrationForm, ExternalUserForm, ExternalUserLoginForm, InterestForm, ChangePasswordForm
+from .forms import  RegistrationForm,  InterestForm, ChangePasswordForm
 from orders.forms import SelectStandAreaForm
 from exhibitors.forms import ExhibitorProfileForm
 from matching.forms import ResponseForm
 from companies.forms import InvoiceDetailsForm, CompanyForm, ContactForm, EditCompanyForm, CreateContactForm, CreateContactNoCompanyForm, UserForm
+from accounts.forms import ExternalUserForm, ExternalUserLoginForm
 
 
 from .help import exhibitor_form as help
@@ -247,50 +248,7 @@ def signup(request, template_name='register/create_user.html'):
         return redirect('anmalan:home')
     return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
 
-def external_signup(request, template_name='register/create_external_user.html'):
-    """
-    Sign up for external people meaning those who are not in Armada and not from KTH.
-    """
-    fair = get_object_or_404(Fair, current=True)
-    if request.user.is_authenticated():
-        # TODO: this line needs to be changed for next years banquet signup.
-        # Now it redirects to placement
-        return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year': fair.year}))
-    else:
-        form = ExternalUserForm(request.POST or None, prefix='user')
-        if form.is_valid():
-            user = form.save(commit=False)
-            mail = form.cleaned_data['email'].lower()
-            user.username = mail
-            user.email = mail
-            # the form's cleaning checks if the user email already exists
-            user.save()
-            user = authenticate(
-                username=mail,
-                password=form.cleaned_data['password1'],
-            )
-            login(request, user)
 
-            return HttpResponseRedirect(reverse('banquet/signup', kwargs={'year': fair.year}))
-    return render(request, template_name, dict(form=form, year=fair.year))
-
-def external_login(request, template_name='register/external_login.html'):
-    """
-    Login in for external people meaning those who are not in Armada and not from KTH.
-    Will redirect to external banquet signup
-    """
-    form = ExternalUserLoginForm(request.POST or None)
-    fair = get_object_or_404(Fair, current=True)
-    if form.is_valid():
-        user = authenticate(
-            username=form.cleaned_data['email'].lower(),
-            password=form.cleaned_data['password'],
-        )
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year': fair.year}))
-
-    return render(request, template_name, dict(form=form, year=fair.year))
 
 def create_company(request, template_name='register/company_form.html'):
     form = CompanyForm(request.POST or None)

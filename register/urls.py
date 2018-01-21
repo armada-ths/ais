@@ -19,9 +19,9 @@ urlpatterns = [
     url(r'^new_company', views.create_company, name='create_company'),
 
     # signup for externals
-    url(r'^external/signup$', views.external_signup, name='external/signup'),
+    #url(r'^external/signup$', views.external_signup, name='external/signup'),
     # login for externals
-    url(r'^external/login$', views.external_login, name='external_login'),
+    #url(r'^external/login$', views.external_login, name='external_login'),
 
     url(
         r'^login/$',

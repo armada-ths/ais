@@ -6,7 +6,7 @@ from exhibitors.models import Exhibitor
 from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
 from django.urls import reverse
 from fair.models import Fair
-from register.views import external_signup
+from accounts.views import external_signup
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
