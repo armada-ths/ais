@@ -187,18 +187,3 @@ class ResponseForm(ModelForm):
                 answer.save()
         return response
 
-#class TextAns(Answer):
-#    ans = models.CharField(null=True, blank=True, max_length=4096)
-#    #def __str__(self):
-#    #    return '%s: %s'%(self.question, self.ans)
-#
-#class ChoiceAns(Answer):
-#    ans = models.IntegerField(choices=CHOICES, null=True, blank=True)
-#
-#class IntegerAns(Answer):
-#    ans = models.IntegerField(null=True, blank=True)
-#
-#class BooleanAns(Answer):
-#    ans = models.NullBooleanField(choices=((True,'yes'), (False,'no')), null=True, blank=True)
-
-
