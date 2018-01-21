@@ -304,7 +304,10 @@ def invoice_details_update(request, pk, template_name='register/invoice_details_
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details)
     if form.is_valid() and request.POST:
-        form.save()
+        details = form.save()
+        exhibitor.invoice_details = details
+        exhibitor.save()
+        print(details)
         if redirect_to:
             return redirect(redirect_to)
         return redirect('anmalan:home')

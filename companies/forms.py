@@ -44,7 +44,7 @@ class InvoiceDetailsForm(ModelForm):
         instance = kwargs.get('instance')
         super(InvoiceDetailsForm, self).__init__(*args, **kwargs)
         if instance == None:
-            self.initial['company'] =  Company.objects.filter(id=company.pk).first()
+            self.initial['company'] =  Company.objects.filter(id=company.pk).first().id
         self.fields['company'].disabled = True #make sure company field is not editable
         self.fields['company'].widget= HiddenInput()
 
