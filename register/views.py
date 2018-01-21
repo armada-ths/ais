@@ -19,7 +19,6 @@ from orders.forms import SelectStandAreaForm
 from exhibitors.forms import ExhibitorProfileForm
 from matching.forms import ResponseForm
 from companies.forms import InvoiceDetailsForm, CompanyForm, ContactForm, EditCompanyForm, CreateContactForm, CreateContactNoCompanyForm, UserForm
-from accounts.forms import ExternalUserForm, ExternalUserLoginForm
 
 
 from .help import exhibitor_form as help
