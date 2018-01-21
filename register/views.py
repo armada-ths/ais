@@ -171,6 +171,7 @@ def home(request, template_name='register/registration.html'):
                                                        signed_up = signed_up,
                                                        contact = contact,
                                                        company=company,
+                                                       exhibitor=exhibitor,
                                                        profile_form=profile_form,
                                                        fair=fair, survey_form=survey_form))
                 #if signed_up:
