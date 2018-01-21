@@ -190,7 +190,8 @@ def home(request, template_name='register/registration.html'):
                                                        exhibitor=exhibitor,
                                                        profile_form=profile_form,
                                                        fair=fair, survey_form=survey_form,
-                                                       company_form=company_form))
+                                                       company_form=company_form,
+                                                       contact_form=contact_form))
                 #if signed_up:
                     #return view that says more information will come
                 #    pass

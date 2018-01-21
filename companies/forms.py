@@ -50,12 +50,6 @@ class InvoiceDetailsForm(ModelForm):
 
 
 
-class ContactForm(ModelForm):
-    class Meta:
-        model = Contact
-        fields = '__all__'
-        exclude = ('user', )
-
 class UserForm(UserCreationForm):
     class Meta:
         model = User
