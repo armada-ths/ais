@@ -85,6 +85,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                signed_up = signed_up,
                                                contact = contact,
                                                company=company,
+                                               exhibitor = exhibitor,
                                                fair=fair,
                                                form1=form1,
                                                form2=form2,
