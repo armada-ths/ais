@@ -54,36 +54,6 @@ class ChangePasswordForm(PasswordChangeForm):
         self.fields['new_password2'].widget = forms.TextInput(attrs={'class' : 'input', 'placeholder' : 'New Password Confirmation', 'type' : 'password'})
 
 
-class CompanyForm(ModelForm):
-    class Meta:
-        model = Company
-        fields = '__all__'
-
-    def clean(self):
-        super(CompanyForm, self).clean()
-        name = self.cleaned_data.get("name")
-        if Company.objects.filter(name=name).first() != None:
-            msg = "Company name already exists"
-            self.add_error('name', msg)
-            raise ValidationError(msg)
-
-class EditCompanyForm(ModelForm):
-    class Meta:
-        model = Company
-        fields = '__all__'
-
-
-
-class ContactForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(ContactForm, self).__init__(*args, **kwargs)
-        self.fields['name'].label = "Full name"
-
-    class Meta:
-        model = Contact
-        fields = '__all__'
-        exclude = ('user','belongs_to','active','confirmed' )
-
 
 class RegistrationForm(Form):
     agreement_accepted = BooleanField(required=True)
@@ -105,42 +75,7 @@ class InterestForm(ModelForm):
         #}
 
 
-class CreateContactForm(ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super(CreateContactForm, self).__init__(*args, **kwargs)
-        self.fields['name'].label = "Full name"
-        self.fields['belongs_to'].label = "Company"
-
-    class Meta:
-        model = Contact
-        fields = '__all__'
-        exclude = ('user', 'active','confirmed')
-
-    def clean(self):
-        self.cleaned_data['email'] = self.cleaned_data['email'].lower()
-        super(CreateContactForm, self).clean()
-        email = self.cleaned_data.get("email")
-        if User.objects.filter(username=email).first() != None:
-            msg = "Already existing account"
-            self.add_error('email', msg)
-            raise ValidationError("Account already exists")
-
-class CreateContactNoCompanyForm(CreateContactForm):
-
-    def __init__(self, *args, **kwargs):
-        super(CreateContactForm, self).__init__(*args, **kwargs)
-        self.fields['name'].label = "Full name"
-
-    class Meta:
-        model = Contact
-        fields = '__all__'
-        exclude = ('user', 'active', 'confirmed', 'belongs_to')
-
-class UserForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = ('password1','password2',)
 
 class ExternalUserForm(UserCreationForm):
     class Meta:

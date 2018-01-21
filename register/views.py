@@ -14,10 +14,11 @@ from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
-from .forms import EditCompanyForm, CompanyForm, ContactForm, RegistrationForm, CreateContactForm, CreateContactNoCompanyForm, UserForm, ExternalUserForm, ExternalUserLoginForm, InterestForm, ChangePasswordForm
+from .forms import  RegistrationForm, ExternalUserForm, ExternalUserLoginForm, InterestForm, ChangePasswordForm
 from orders.forms import SelectStandAreaForm
 from exhibitors.forms import ExhibitorProfileForm
 from matching.forms import ResponseForm
+from companies.forms import InvoiceDetailsForm, CompanyForm, ContactForm, EditCompanyForm, CreateContactForm, CreateContactNoCompanyForm, UserForm
 
 
 from .help import exhibitor_form as help
