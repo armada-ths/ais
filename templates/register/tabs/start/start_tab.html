@@ -48,6 +48,7 @@
                 <p> <b> Address: </b> {{company.address_street}} {{company.address_zip_code}} {{company.address_city}}</p>
                 {% if contact.confirmed %}
                 <a href={% url 'anmalan:edit_company' company.id  %}> <button class="btn-green"> Edit company info </button></a>
+                {% if exhibitor %}
                 <h3> Invoice Details </h3>
                 <p> Organisation Name: {{exhibitor.invoice_details.organisation_name}} </p>
                 <p> Reference: {{exhibitor.invoice_details.reference}} </p>
@@ -58,8 +59,8 @@
                 <p> Address Zip Code: {{exhibitor.invoice_details.address_zip_code}} </p>
                 <p> Identification: {{exhibitor.invoice_details.identification}} </p>
                 <p> Additional Information: {{exhibitor.invoice_details.additional_information}} </p>
-                {{ exhibitor }}
-                <a href={% url 'anmalan:edit_invoice_details' exhibitor.id  %}> <div class="btn-green"> Edit invoice details </div></a>
+                    <a href={% url 'anmalan:edit_invoice_details' exhibitor.id  %}> <div class="btn-green"> Edit invoice details </div></a>
+                {% endif %}
                 {% else %}
                 <p><span class="text-danger"> To edit your company info your user needs to be confirmed. Please contact us.</span> </p>
                 {% endif %}
