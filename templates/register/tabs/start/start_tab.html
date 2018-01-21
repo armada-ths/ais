@@ -1,7 +1,7 @@
-{% load crispy_forms_tags %} 
+{% load crispy_forms_tags %}
 
 <div class="tab-pane fade in active" id="start">
-                      
+
         <div class="row">
             <div class="col-md-12">
                 <h1> Welcome to {{ fair }}! </h1>
@@ -38,16 +38,63 @@
             {% endif %}
 
 
+
+
             <!-- Company/Contact column -->
             <div class="col-md-6">
-                <h2> Company Information </h2>
-                <h3> {{company}} </h3>
-                <p> <b> Organisation number: </b> {{company.organisation_number}} </p>
-                <p> <b> Organisation type: </b> {{company.organisation_type}} </p>
-                <p> <b> Website: </b> {{company.website}} </p>
-                <p> <b> Address: </b> {{company.address_street}} {{company.address_zip_code}} {{company.address_city}}</p>
+              {% if not signed_up %}
+              <form method="post" enctype="multipart/form-data">{% csrf_token %}
+              {% endif %}
+
+                <h3>Company Information</h3>
+                        <div class="list-unstyled form-to-edit editable-form hidden" id="organistaionEditable">
+                            {{ company_form | crispy }}
+
+                        </div>
+                        <ul class="list-unstyled form-to-edit no-editable-form visible" id="organisationNoEditable">
+                          <li>
+                            <h5><span class="aterix h-red">*</span> Organisation name:</h5>
+                            <div class="input-field">{{ company }}</div>
+                          </li>
+                          <li>
+                            <h5><span class="aterix h-red">*</span> Organisation number:</h5>
+                            <div class="input-field">{{ company.organisation_number }}
+                          </li>
+                          <li>
+                            <h5>Type of organisation:</h5>
+                            <div class="input-field">{{ company.organisation_type }}
+                          </li>
+                          <li>
+                            <h5>Webpage:</h5>
+                            {{ company.website }}
+                          </li>
+                          <li class="address">
+                            <h5><span class="aterix h-red">*</span> Address:</h5>
+                            <div class="input-field">
+                              {{ company.address_street }}
+                              {{ company.address_city }}
+                              {{ company.address_zip_code }}
+                              {{ company.address_country }}
+                              {{ company.additional_address_information }}
+                            </div>
+                          </li>
+                          {% if contact.confirmed %}
+                            <div id="editOrganisationTrigger" class="toggleEdit btn-green"> Edit company info </div>
+                          {% endif %}
+                        </ul>
+
+
+
+
+
+
+
+
+
+
+
+
                 {% if contact.confirmed %}
-                <a href={% url 'anmalan:edit_company' company.id  %}> <button class="btn-green"> Edit company info </button></a>
                 {% if exhibitor %}
                 <h3> Invoice Details </h3>
                 <p> Organisation Name: {{exhibitor.invoice_details.organisation_name}} </p>
@@ -64,14 +111,73 @@
                 {% else %}
                 <p><span class="text-danger"> To edit your company info your user needs to be confirmed. Please contact us.</span> </p>
                 {% endif %}
-                <h3> Contact </h3>
-                {{ contact.name }} </br>
-                {{ contact.title }} </br>
-                {{ contact.email }} </br>
-                {{ contact.cell_phone }}
-                </br>
-                <a href={% url 'anmalan:edit_me' %}><button class="btn-green" > Edit contact info </button></a>
-                </br>
+
+
+
+
+
+                <h3>Contact</h3>
+                <div class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
+                  {{ contact_form | crispy }}
+                </div>
+                <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Name:</h5>
+                    {{ contact.name }}
+                  </li>
+
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Title:</h5>
+                    {{ contact.title }}
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
+                    {{ contact.work_phone }}
+                  </li>
+                  <li>
+                    <h5>Cell phone number:</h5>
+                    {{ contact.cell_phone }}
+                  </li>
+                  <!--<li>
+                    <h5>Phone switchboard:</h5>
+                    {{ form.phone_switchboard }}
+                  </li>-->
+                  <li>
+                    <h5><span class="aterix h-red">*</span> E­mail:</h5>
+                    {{ contact.contact_email }}
+                  </li>
+                  <!--<li>
+                    <h5>Alternative e­mail address:</h5>
+                    {{ form.alternative_email }}
+                  </li>-->
+                  <div id="editContactTrigger" class="toggleEdit btn-green"> Edit contact info </div>
+                </ul>
+
+                <a href={% url 'anmalan:change_password' %}> Change Password </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {% if not signed_up %}
+                <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
+              </form>
+                {% endif %}
             </div>
 
         </div>

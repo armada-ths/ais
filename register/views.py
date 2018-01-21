@@ -35,7 +35,7 @@ def index(request, template_name='register/index.html'):
     fair = Fair.objects.filter(current=True).first()
     return render(request, template_name, {'fair': fair, 'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
-def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form):
+def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up):
     form1 = RegistrationForm(request.POST or None, prefix='registration')
     form2 = InterestForm(request.POST or None, prefix='interest')
     form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
@@ -77,11 +77,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
 
             return redirect('anmalan:home')
 
-    if profile_form.is_valid():
-        profile_form.save()
-
-    
-    return render(request, 'register/registration.html', dict(registration_open = True,
+    return ('register/registration.html', dict(registration_open = True,
                                                signed_up = signed_up,
                                                contact = contact,
                                                company=company,
@@ -90,43 +86,28 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                form1=form1,
                                                form2=form2,
                                                form3=form3,
-                                               profile_form=profile_form,
-                                               contract_url=contract.contract.url,
-                                               survey_form=survey_form))
+                                               contract_url=contract.contract.url
+                                               ))
 
 
-def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form):
+def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up):
     form = help.create_exhibitor_form(request, fair, exhibitor, company, contact)
 
 
     # If post, try and validate and save forms
     if request.POST:
-
-        # Only check survey form if there is a survey form
-        if survey_form and  survey_form.is_valid():
-            survey_form.save()
-        else:
-            print("survey_form invalid")
-
-        if profile_form.is_valid():
-            profile_form.save()
-        else:
-            print('profile_form invalid')
-
         if form.is_valid():
             # a huge amount of stuff happens here, check help/ExhibitorForm.py for details
             #help.save_exhibitor_form(request, form, currentFair, company, contact)
             pass
 
-    return render(request, 'register/registration.html', {'form': form, 'contract_url': contract.contract.url,
+    return ('register/registration.html', {'form': form, 'contract_url': contract.contract.url,
                                                               'signed_up': signed_up,
                                                               'company':company,
                                                               'contact':contact,
                                                               'complete_registration_open': True,
                                                               'fair':fair,
                                                               'exhibitor': exhibitor,
-                                                              'profile_form': profile_form,
-                                                              'survey_form': survey_form,
                                                               })
 
 
@@ -150,21 +131,56 @@ def home(request, template_name='register/registration.html'):
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
+            contact_form = ContactForm(request.POST or None, instance=contact)
+            invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details) if exhibitor else None
+            company_form = EditCompanyForm(request.POST or None, instance=company)
             profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
             current_matching_survey = Survey.objects.filter(fair=fair).first()
             survey_form = None
             if current_matching_survey:
                 survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
 
+            if request.POST:
+                if company_form.is_valid():
+                    company_form.save()
+                else:
+                    print('company_from invalid')
+                if contact_form.is_valid():
+                    contact_form.save()
+
+                if signed_up:
+                    # Only check survey form if there is a survey form
+                    if survey_form and  survey_form.is_valid():
+                        survey_form.save()
+                    else:
+                        print("survey_form invalid")
+
+                    if profile_form.is_valid():
+                        profile_form.save()
+                    else:
+                        print('profile_form invalid')
+                    if invoice_details_form.is_valid():
+                        invoice_details_form.save()
+
             #needs to start check if complete is opened as that should override preliminary
             # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
+            kwargs = dict(company_form=company_form, profile_form=profile_form, survey_form=survey_form, invoice_details_form=invoice_details_form, contact_form=contact_form)
             if complete_registration_open:
                 if signed_up:
                     #return view of complete registration
-                    return complete_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form=survey_form)
+                    (template, kwargs_a) = complete_registration(request,fair, company, contact, contract, exhibitor, signed_up)
+                    kwargs.update(kwargs_a)
+                    return render(request, template, kwargs)
 
             if registration_open:
-                return preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, profile_form, survey_form=survey_form)
+                res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up)
+                if(type(res) == tuple):
+                    (template, kwargs_a) = res
+                    kwargs.update(kwargs_a)
+                    return render(request, template, kwargs)
+                else:
+                    # here we trust that preliminary registration returns some HTTP response
+                    return res
 
             if registration_closed:
                 return render(request, template_name, dict(registration_closed = registration_closed,
@@ -173,7 +189,8 @@ def home(request, template_name='register/registration.html'):
                                                        company=company,
                                                        exhibitor=exhibitor,
                                                        profile_form=profile_form,
-                                                       fair=fair, survey_form=survey_form))
+                                                       fair=fair, survey_form=survey_form,
+                                                       company_form=company_form))
                 #if signed_up:
                     #return view that says more information will come
                 #    pass
@@ -186,7 +203,8 @@ def home(request, template_name='register/registration.html'):
                 return render(request, template_name, dict(pre_preliminary = pre_preliminary,
                                                             contact=contact,
                                                             company=company,
-                                                            fair=fair))
+                                                            fair=fair,
+                                                            company_form=company_form))
 
 
             if complete_registration_closed:
@@ -200,7 +218,8 @@ def home(request, template_name='register/registration.html'):
                                                        signed_up = signed_up,
                                                        contact = contact,
                                                        company=company,
-                                                       fair=fair))
+                                                       fair=fair,
+                                                       company_form=company_form))
     return redirect('anmalan:index')
 
 
@@ -299,7 +318,7 @@ def company_update(request, pk, template_name='register/company_form.html'):
     return render(request, template_name, {'form':form})
 
 
-#update invoice details 
+#update invoice details
 def invoice_details_update(request, pk, template_name='register/invoice_details_form.html'):
     redirect_to = request.GET.get('next','')
     exhibitor = get_object_or_404(Exhibitor, pk=pk)

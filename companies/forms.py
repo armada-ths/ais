@@ -93,4 +93,3 @@ class CreateContactNoCompanyForm(CreateContactForm):
         model = Contact
         fields = '__all__'
         exclude = ('user', 'active', 'confirmed', 'belongs_to')
-
