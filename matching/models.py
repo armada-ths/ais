@@ -84,7 +84,6 @@ class Question(models.Model):
 
 class Response(models.Model):
     exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, null=True, blank=True)
     survey = models.ForeignKey(Survey, blank=True, null=True, on_delete=models.CASCADE, related_name="responses")
 
     class Meta(object):
