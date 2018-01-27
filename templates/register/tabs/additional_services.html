@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <div class="tab-pane fade" id="additional-services">
     <!--<h2>Additional Services</h2>-->
     <div class="row cr-additional-services">
@@ -12,9 +13,21 @@
             {{ form.product_selection_additional_stand_area }}
             </div>
           </div>
+
+          <div class="col-md-6">
+            <div class="cr-additional-container">
+              <h3>FURNITURE FROM STURE</h3>
+              <p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
+              <p>Aligned with THS Armada’s focus on environmental sustainability, we are very proud to collaborate with Sture that has received a gold rating from Svensk miljöbas due to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
+              <p>In a separate email, you will receive three complete fair solutions put together exclusively from Sture’s furniture catalogue. To facilitate the ordering process, just click the link to Sture’s dedicated email address below and state your request. For more information visit <a target="_blank" href="http://www.sture.se/">Sture’s homepage</a></p>
+              <h4>For contact and ordering:</h4>
+              <a href="mailto:gitte.friberg@sture.se">gitte.friberg@sture.se</a>
+              <img src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
+            </div>
+          </div>
         </div>
-        
       </div>
+
       <div class="col-md-4">
         <div class="cr-additional-container cr-additional-container-electrical">
           <h3>ELECTRIC OUTLETS (Included)</h3>
