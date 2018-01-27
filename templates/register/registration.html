@@ -24,12 +24,9 @@
 
     {% if contact.confirmed and complete_registration_open or complete_registration_closed and contact.confirmed%}
     <!-- not possible to use paretheses in template expressions -->
-        {% include 'register/tabs/base-kit.html' %}
-        {% include 'register/tabs/rooms.html' %}
-        {% include 'register/tabs/events.html' %}
-        {% include 'register/tabs/banquet.html' %}
+        {% include 'register/tabs/product_info.html' %}
+        {% include 'register/tabs/products.html' %}
         {% include 'register/tabs/sture.html' %}
-        {% include 'register/tabs/nova.html' %}
         {% include 'register/tabs/additional_services.html' %}
         {% include 'register/tabs/logistics.html' %}
         {% include 'register/tabs/confirm_and_submit.html' %}

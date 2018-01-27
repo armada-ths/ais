@@ -1,0 +1,11 @@
+<div class="tab-pane fade" id="products">
+    {% for product_type, order_forms in product_type_order_forms %}
+        <h2> {{product_type.name}} </h2>
+        <p> {{product_type.description}} </p>
+        {% for f in order_forms %}
+        <div>
+        {{f}}
+    </div>
+        {% endfor %}
+    {% endfor %}
+</div>

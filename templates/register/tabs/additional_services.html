@@ -12,65 +12,8 @@
             {{ form.product_selection_additional_stand_area }}
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="cr-additional-container">
-              <h3>ADDITIONAL STAND <span class="h-red">HEIGHT</span></h3>
-              <p>The stand height of 0 - 2,30 meters is included in the base kit. You can choose to add additional height, please note that we cannot guarantee that we will be able to fulfill your request.</p>
-              {{ form.product_selection_additional_stand_height }}
-              <!--<ul class="list-unstyled additional_stand_height">
-              {% for choice in form.product_selection_additional_stand_height.field.choices %}
-                <li>
-                  <label for="id_{{choice.0}}">
-                    <input type="radio" name="product_selection_additional_stand_height" id="id_{{choice.0}}" value="{{choice.0}}"
-                      {% ifequal form.my_choice_field.data choice.0 %}
-                         checked="checked"
-                      {% endifequal %}/>
-                    <span class='btn btn-armada-checkbox product-label'>
-                      {{choice.1}}
-                    </span>
-                  </label>
-                </li>
-              {% endfor %}
-              </ul>-->
-            </div>
-          </div>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="cr-additional-container">
-              <h3>ADDITIONAL LUNCH TICKETS</h3>
-              <p>Please note that 8 tickets (4 per day) is already included in the base kit. Price for additional lunch tickets is <span class="h-red">125 SEK / ticket.</span> </p>
-              <ul class="cr-additional-lunch">
-              {% for field in form %}
-                {% if 'lunch' in field.help_text %}
-                  <li>
-                    <label class="pretty-label">{{ field.label }} </label> {{ field }}
-                  </li>
-                {% endif %}
-              {% endfor %}
-                <li class="cr-allergies">
-                  <label class="pretty-label">{{ form.allergies.label }} </label>
-                  {{ form.allergies }}
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="cr-additional-container">
-              <h3>Contact me about ...</h3>
-              <div class="cr-additional-checkboxes">
-                {{ form.wants_information_about_events }}
-                <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_events"><span>Info about events</span></label>
-
-                {{ form.wants_information_about_targeted_marketing }}
-                <label class="pretty-label btn btn-armada-checkbox" for="id_wants_information_about_targeted_marketing"><span>Info about targeted marketing</span></label>
-
-                {{ form.manual_invoice }}
-                <label class="pretty-label btn btn-armada-checkbox" for="id_manual_invoice"><span>{{ form.manual_invoice.label }}</span></label>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
       <div class="col-md-4">
         <div class="cr-additional-container cr-additional-container-electrical">

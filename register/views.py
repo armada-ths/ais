@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 
 from companies.models import Company, Contact, InvoiceDetails
-from orders.models import Product, Order
+from orders.models import Product, Order, ProductType
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 from sales.models import Sale
@@ -15,7 +15,7 @@ from matching.models import Survey
 from .models import SignupContract, SignupLog
 
 from .forms import  RegistrationForm,  InterestForm, ChangePasswordForm
-from orders.forms import SelectStandAreaForm
+from orders.forms import SelectStandAreaForm, get_order_forms
 from exhibitors.forms import ExhibitorProfileForm, SelectInvoiceDetailsForm
 from matching.forms import ResponseForm
 from companies.forms import InvoiceDetailsForm, CompanyForm, ContactForm, EditCompanyForm, CreateContactForm, CreateContactNoCompanyForm, UserForm
@@ -93,6 +93,12 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
 def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up):
     form = help.create_exhibitor_form(request, fair, exhibitor, company, contact)
 
+    product_type_order_forms = []
+    product_types = ProductType.objects.filter(display_in_product_list=True)
+    for product_type in product_types:
+        product_type_order_forms.append((product_type,get_order_forms(exhibitor, product_type, request.POST or None, prefix=product_type.name)))
+    print(product_type_order_forms)
+
 
     # If post, try and validate and save forms
     if request.POST:
@@ -100,15 +106,18 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
             # a huge amount of stuff happens here, check help/ExhibitorForm.py for details
             #help.save_exhibitor_form(request, form, currentFair, company, contact)
             pass
+        for product_type, order_forms in product_type_order_forms:
+            for order_form in order_forms:
+                if order_form.is_valid():
+                    order_form.save()
 
-    return ('register/registration.html', {'form': form, 'contract_url': contract.contract.url,
-                                                              'signed_up': signed_up,
-                                                              'company':company,
-                                                              'contact':contact,
-                                                              'complete_registration_open': True,
-                                                              'fair':fair,
-                                                              'exhibitor': exhibitor,
-                                                              })
+    return ('register/registration.html', dict(form=form, contract_url=contract.contract.url,
+                                               signed_up= signed_up, company=company,
+                                               contact=contact, complete_registration_open= True,
+                                               fair=fair, exhibitor= exhibitor,
+                                               product_type_order_forms=product_type_order_forms
+                                               )
+            )
 
 
 
