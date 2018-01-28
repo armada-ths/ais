@@ -1,11 +1,16 @@
+{% load crispy_forms_tags %} 
 <div class="tab-pane fade" id="products">
+    <div class="row">
+    <div class="col-md-6">
     {% for product_type, order_forms in product_type_order_forms %}
         <h2> {{product_type.name}} </h2>
         <p> {{product_type.description}} </p>
         {% for f in order_forms %}
         <div>
-        {{f}}
+        {{f | crispy}}
     </div>
         {% endfor %}
     {% endfor %}
+    </div>
+    </div>
 </div>

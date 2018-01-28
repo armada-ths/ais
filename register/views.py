@@ -5,24 +5,53 @@ from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 
+import requests as r
+
 from companies.models import Company, Contact, InvoiceDetails
-from orders.models import Product, Order, ProductType
-from exhibitors.models import Exhibitor
+from orders.models import Product, Order, ProductType, ElectricityOrder
+from exhibitors.models import Exhibitor, TransportationAlternative
 from fair.models import Fair
 from sales.models import Sale
 from matching.models import Survey
 
-from .models import SignupContract, SignupLog
+from .models import SignupContract, SignupLog, OrderLog
 
 from .forms import  RegistrationForm,  InterestForm, ChangePasswordForm
-from orders.forms import SelectStandAreaForm, get_order_forms
-from exhibitors.forms import ExhibitorProfileForm, SelectInvoiceDetailsForm
+from orders.forms import SelectStandAreaForm, get_order_forms, ElectricityOrderForm
+from exhibitors.forms import ExhibitorProfileForm, SelectInvoiceDetailsForm, TransportationForm
 from matching.forms import ResponseForm
 from companies.forms import InvoiceDetailsForm, CompanyForm, ContactForm, EditCompanyForm, CreateContactForm, CreateContactNoCompanyForm, UserForm
+from transportation.forms import PickupForm, DeliveryForm
 
 
-from .help import exhibitor_form as help
 from .help.methods import get_time_flag
+
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import get_template
+
+
+
+
+def send_confirmation_email(request, contact, products, total_price):
+    site_name = get_current_site(request).domain
+    max_name_length = max(map(lambda product: len(product[0]), products)) # used for setting width of columns
+    max_amount_length = max(map(lambda product: len(str(product[1])), products))
+    send_mail(
+        'Complete Registration Confirmation on ' + site_name,
+        get_template('register/confirmation_email.html').render(({
+                'username': contact.email,
+                'site_name': site_name,
+                'products': products,
+                'name_len': max_name_length,
+                'amount_len': max_amount_length,
+                'total_price': total_price
+            })
+        ),
+        settings.DEFAULT_FROM_EMAIL,
+        [contact.email],
+        fail_silently=False)
+
 
 
 def index(request, template_name='register/index.html'):
@@ -37,7 +66,8 @@ def index(request, template_name='register/index.html'):
 
 def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up):
     form1 = RegistrationForm(request.POST or None, prefix='registration')
-    form2 = InterestForm(request.POST or None, prefix='interest')
+    prev_sale = Sale.objects.filter(fair=fair, company=company).first()
+    form2 = InterestForm(request.POST or None, instance=prev_sale,prefix='interest')
     form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
     if not signed_up:
         if form1.is_valid() and form2.is_valid() and form3.is_valid():
@@ -68,12 +98,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
             except:
                 pass
 
-            for sale in Sale.objects.filter(fair=fair, company=company):
-                sale.diversity_room = form2.cleaned_data['diversity_room']
-                sale.green_room = form2.cleaned_data['green_room']
-                sale.events = form2.cleaned_data['events']
-                sale.nova = form2.cleaned_data['nova']
-                sale.save()
+            form3.save()
 
             return redirect('anmalan:home')
 
@@ -90,32 +115,130 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                ))
 
 
+def get_product_list_and_price(exhibitor):
+    orders = Order.objects.filter(exhibitor=exhibitor)
+    total_price = sum(map(lambda order: order.product.price * order.amount, orders))
+    product_list = list(map(lambda order: [str(order.product.product_type) + ', ' + str(order.product), str(order.amount), str(order.amount*order.product.price)], orders))
+    return product_list, total_price
+
+
+
 def complete_registration(request,fair, company, contact, contract, exhibitor, signed_up):
-    form = help.create_exhibitor_form(request, fair, exhibitor, company, contact)
+    """
+    Complete Registration: create_exhibitor view
+    ===============
+    The complete registration is where already signed up companies with contacts
+    can make their final selection of products and send in important info such as
+    invoice address ('faktura' in SWE). 
+
+    Extra Info
+     ----------------
+     * If the user 'saves' then the DB will be updated. If one 'submits' then a
+     confirmation email will be sent out.
+
+    """
+
+    included_products = Product.objects.filter(included_for_all=True, fair=fair)
+    orders = Order.objects.filter(exhibitor=exhibitor)
+    # Create orders of included products if not present
+    for product in included_products:
+        values_list = orders.values_list('product', flat=True)
+        if not product.pk in orders.values_list('product', flat=True):
+            Order.objects.create(exhibitor=exhibitor, product=product, amount=1)
+    product_list, total_price = get_product_list_and_price(exhibitor)
+
+    forms = [] # this is a list of all forms that is used to collect all errors on start page
 
     product_type_order_forms = []
     product_types = ProductType.objects.filter(display_in_product_list=True)
     for product_type in product_types:
-        product_type_order_forms.append((product_type,get_order_forms(exhibitor, product_type, request.POST or None, prefix=product_type.name)))
-    print(product_type_order_forms)
+        order_forms = get_order_forms(exhibitor, product_type, request.POST or None, prefix=product_type.name)
+        if not len(order_forms) == 0:
+            forms += order_forms
+            product_type_order_forms.append((product_type,order_forms))
 
+    electricity_order = ElectricityOrderForm(exhibitor, request.POST or None, 
+            instance = ElectricityOrder.objects.filter(exhibitor=exhibitor).first(), prefix='electricity')
+
+    transportation_form = TransportationForm(request.POST or None, instance=exhibitor, prefix='transportation_alternatives')
+    forms.append(transportation_form)
+
+    # There should only be a transportation order form if the organization provides transportation services
+    inbound_transportation_order_form = None
+    if len(TransportationAlternative.objects.filter(inbound=True, transportation_type='internal')) >0:
+        inbound_transportation_order_form = PickupForm(request.POST or None, instance=exhibitor.pickup_order,  prefix='inbound_transportation_order')
+        forms.append(inbound_transportation_order_form)
+    outbound_transportation_order_form = None
+    if len(TransportationAlternative.objects.filter(inbound=False, transportation_type='internal')) >0:
+        outbound_transportation_order_form = DeliveryForm(request.POST or None, instance=exhibitor.delivery_order,  prefix='outbound_transportation_order')
+        forms.append(outbound_transportation_order_form)
 
     # If post, try and validate and save forms
     if request.POST:
-        if form.is_valid():
-            # a huge amount of stuff happens here, check help/ExhibitorForm.py for details
-            #help.save_exhibitor_form(request, form, currentFair, company, contact)
-            pass
+        # Save all the orders of products. (The products that the user has chosen)
         for product_type, order_forms in product_type_order_forms:
             for order_form in order_forms:
                 if order_form.is_valid():
                     order_form.save()
 
-    return ('register/registration.html', dict(form=form, contract_url=contract.contract.url,
-                                               signed_up= signed_up, company=company,
-                                               contact=contact, complete_registration_open= True,
-                                               fair=fair, exhibitor= exhibitor,
-                                               product_type_order_forms=product_type_order_forms
+        if electricity_order.is_valid():
+            electricity_order.save()
+
+        if transportation_form.is_valid():
+            transportation_form.save()
+        if transportation_form.cleaned_data['inbound_transportation'].transportation_type == 'internal':
+            if inbound_transportation_order_form.is_valid():
+                inbound_transportation_order_form.save()
+        if transportation_form.cleaned_data['outbound_transportation'].transportation_type == 'internal':
+            if outbound_transportation_order_form.is_valid():
+                outbound_transportation_order_form.save()
+
+        # Check if the user sumbitted or just saved
+        if 'submit' in request.POST:
+            # Make sure there are no errors at all.
+            errors = False
+            for form in forms:
+                if errors == True:
+                    break
+                if len(form.non_field_errors()) !=0:
+                    errors = True
+                    break
+                for field in form._errors:
+                    if len(form._errors[field])!= 0:
+                        errors = True
+                        break
+            if not errors:
+                # Continue with submission, if there were errors, it will just be saved and not submitted, and return to the complete registration
+                # Create order log
+                orders = Order.objects.filter(exhibitor=exhibitor)
+                product_log = "\n".join(map(lambda order: ",".join([str(order.product.product_type), str(order.product), str(order.amount), str(order.amount*order.product.price)]), orders))
+                OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='submit', fair=fair, products=product_log)
+                # Set progression status
+                SignupLog.objects.create(contact=contact, company=company, contract=contract, type='complete')
+                exhibitor.status = 'complete_registration_submit'
+                exhibitor.save(update_fields=['status'])
+                r.post(settings.SALES_HOOK_URL,
+                    data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)}))
+
+                try:
+                    send_email(request, contact, product_list, total_price)
+                except:
+                    pass
+                return redirect('anmalan:submitted')
+
+
+
+
+    return ('register/registration.html', dict(contract_url=contract.contract.url,
+                                               complete_registration_open= True,
+                                               product_type_order_forms=product_type_order_forms,
+                                               electricity_order = electricity_order,
+                                               transportation_form = transportation_form,
+                                               inbound_transportation_form = inbound_transportation_order_form,
+                                               outbound_transportation_form = outbound_transportation_order_form,
+                                               forms = forms,
+                                               total_price=total_price,
+                                               product_list=product_list
                                                )
             )
 
@@ -126,6 +249,7 @@ def home(request, template_name='register/registration.html'):
         if Contact.objects.filter(user=request.user).first() is None:
             return redirect('anmalan:logout')
         else:
+            forms = [] # this is a list of all forms that is used to collect all errors on start page
             ## Find what contact is signing in and the company
             fair = Fair.objects.get(current = True)
             pre_preliminary = fair.registration_start_date > timezone.now()
@@ -141,45 +265,50 @@ def home(request, template_name='register/registration.html'):
             signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
 
             contact_form = ContactForm(request.POST or None, instance=contact, prefix='contact_info')
+            forms.append(contact_form)
             invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
+            forms.append(invoice_details_form)
             company_form = EditCompanyForm(request.POST or None, instance=company, prefix='company_info')
+            forms.append(company_form)
             profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
+            forms.append(profile_form)
             current_matching_survey = Survey.objects.filter(fair=fair).first()
             survey_form = None
             if current_matching_survey:
                 survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
+                forms.append(survey_form)
 
             if request.POST:
                 if company_form.is_valid():
                     company_form.save()
-                else:
-                    print('company_from invalid')
                 if contact_form.is_valid():
                     contact_form.save()
 
-                if signed_up:
+                if signed_up and contact.confirmed:
                     # Only check survey form if there is a survey form
                     if survey_form and  survey_form.is_valid():
                         survey_form.save()
-                    else:
-                        print("survey_form invalid")
-
                     if profile_form.is_valid():
                         profile_form.save()
-                    else:
-                        print('profile_form invalid')
                     if invoice_details_form.is_valid():
                         invoice_details_form.save()
 
             #needs to start check if complete is opened as that should override preliminary
             # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
-            kwargs = dict(company_form=company_form, profile_form=profile_form, survey_form=survey_form, invoice_details_form=invoice_details_form, contact_form=contact_form)
+            kwargs = dict(common_forms=forms, company_form=company_form, profile_form=profile_form, 
+                        survey_form=survey_form, invoice_details_form=invoice_details_form, contact_form=contact_form, 
+                        contact=contact, company=company, exhibitor=exhibitor, fair=fair, signed_up=signed_up)
+
             if complete_registration_open:
                 if signed_up:
                     #return view of complete registration
-                    (template, kwargs_a) = complete_registration(request,fair, company, contact, contract, exhibitor, signed_up)
-                    kwargs.update(kwargs_a)
-                    return render(request, template, kwargs)
+                    res = complete_registration(request,fair, company, contact, contract, exhibitor, signed_up)
+                    if(type(res) == tuple):
+                        (template, kwargs_a) = res
+                        kwargs.update(kwargs_a)
+                        return render(request, template, kwargs)
+                    else:
+                        return res
 
             if registration_open:
                 res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up)
@@ -191,45 +320,26 @@ def home(request, template_name='register/registration.html'):
                     # here we trust that preliminary registration returns some HTTP response
                     return res
 
-            if registration_closed:
-                return render(request, template_name, dict(registration_closed = registration_closed,
-                                                       signed_up = signed_up,
-                                                       contact = contact,
-                                                       company=company,
-                                                       exhibitor=exhibitor,
-                                                       profile_form=profile_form,
-                                                       fair=fair, survey_form=survey_form,
-                                                       company_form=company_form,
-                                                       contact_form=contact_form))
-                #if signed_up:
-                    #return view that says more information will come
-                #    pass
-                #else:
-                #return view of that preliminary is closed and you are not signed up. Hope you come back next year.
-                #    pass
-
+            if registration_closed and not signed_up:
+                kwargs.update(dict(registration_closed=registration_closed, signed_up=signed_up))
+                return render(request, template_name, kwargs)
+                
             if pre_preliminary:
                 # this should be basically nothing. Just return with variable, or return a specific template
-                return render(request, template_name, dict(pre_preliminary = pre_preliminary,
-                                                            contact=contact,
-                                                            company=company,
-                                                            fair=fair,
-                                                            company_form=company_form))
+                kwargs.update(dict(pre_preliminary = pre_preliminary))
+                return render(request, template_name, kwargs)
 
-
-            if complete_registration_closed:
+            else:
+                #complete_registration_closed is closed
                 if signed_up:
-                    pass
+                    product_list, total_price = get_product_list_and_price(exhibitor)
+                    kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up,
+                                        product_list=product_list, total_price=total_price))
+                    return render(request, template_name, kwargs)
                 else:
-                    pass
+                    kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up))
+                    return render(request, template_name, kwargs)
 
-
-            return render(request, template_name, dict(registration_open = registration_open,
-                                                       signed_up = signed_up,
-                                                       contact = contact,
-                                                       company=company,
-                                                       fair=fair,
-                                                       company_form=company_form))
     return redirect('anmalan:index')
 
 
@@ -241,15 +351,7 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
             logo = old_exhibitor.logo,
             requests_for_stand_placement = old_exhibitor.requests_for_stand_placement,
             other_information_about_the_stand = old_exhibitor.other_information_about_the_stand,
-            invoice_reference = old_exhibitor.invoice_detials.invoice_reference,
-            invoice_purchase_order_number = old_exhibitor.invoice_detials.invoice_purchase_order_number,
-            invoice_reference_phone_number = old_exhibitor.invoice_detials.invoice_reference_phone_number,
-            invoice_organisation_name = old_exhibitor.invoice_detials.invoice_organisation_name,
-            invoice_address = old_exhibitor.invoice_detials.invoice_address,
-            invoice_address_po_box = old_exhibitor.invoice_detials.invoice_address_po_box,
-            invoice_address_zip_code = old_exhibitor.invoice_detials.invoice_address_zip_code,
-            invoice_identification = old_exhibitor.invoice_detials.invoice_identification,
-            invoice_additional_information = old_exhibitor.invoice_detials.invoice_additional_information
+            invoice_details = old_exhibitor.invoice_detials,
             )
     # ManyToMany fields needs to be copied after creation
     # the * unpacks the list, taking [a,b,c] to a,b,c
@@ -257,17 +359,10 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
     exhibitor.save()
     return exhibitor
 
-
-
-
-
-
-
-
 def signup(request, template_name='register/create_user.html'):
     contact_form = CreateContactForm(request.POST or None, prefix='contact')
     user_form = UserForm(request.POST or None, prefix='user')
-    if contact_form.is_valid() and user_form.is_valid():
+    if request.POST and contact_form.is_valid() and user_form.is_valid():
         user = user_form.save(commit=False)
         contact = contact_form.save(commit=False)
         user.username = contact.email
@@ -316,6 +411,7 @@ def contact_update(request, template_name='register/contact_form.html'):
     return render(request, template_name, dict(form=form))
 
 #update a company
+# I do not think this one is used anymore
 def company_update(request, pk, template_name='register/company_form.html'):
     redirect_to = request.GET.get('next','')
     company = get_object_or_404(Company, pk=pk)
@@ -337,84 +433,16 @@ def invoice_details_update(request, pk, template_name='register/invoice_details_
         details = form.save()
         exhibitor.invoice_details = details
         exhibitor.save()
-        print(details)
         if redirect_to:
             return redirect(redirect_to)
         return redirect('anmalan:home')
     return render(request, template_name, {'form':form})
 
 
-
-# A company's contact can request to have the company
-# become an exhibitor via the ExhibitorForm
-def create_exhibitor(request, template_name='register/exhibitor_form.html'):
-    """
-    Complete Registration: create_exhibitor view
-    ===============
-    The complete registration is where already signed up companies with contacts
-    can make their final selection of products and send in important info such as
-    invoice address ('faktura' in SWE). The view create_exhibitor() creates the
-    ExhibitorForm, gets the answers and updates the DB.
-
-    Steps
-    ----------------
-    Here is the main steps of what this view does:
-
-     * Check that the current user has a connected company with a contact
-     * Check if the company already is an exhibitor or not
-     * Get all products from DB and also eventual current Orders if the company already is an exhibitor
-     * Initilaze the form and wait for the POST request from user submission
-     * Find all selected products and update DB accordingly.
-     * Update or create exhibitor from the fields entered in form
-     * Update company and contact info (some field in the form helps the user update the company's
-     info incase they want any last minute changes)
-     * Create a log of a contract being signed for the current company becoming an exhibitor
-
-     Extra Info
-     ----------------
-     * If the user 'saves' then the DB will be updated. If one 'submits' then a
-     confirmation email will be sent out.
-     * 'Bool products' are products that has checkboxes, e.g do you want the x room?
-     * 'Amount products' are products chosen in an amount, e.g amoutn of banquet tickets.
-
-
-     """
-
-    currentFair = Fair.objects.get(current = True)
-    # Return 404 if no contract.
-    # if no contact or company connected to
-    # user then redirect to logout
-    contract = get_object_or_404(SignupContract, fair=currentFair, current=True)
-
-    if request.user.is_authenticated():
-        contact = Contact.objects.get(user=request.user)
-        # make sure user is connected to a 'Contact'
-        if contact is None:
-            return redirect('anmalan:logout')
-        else:
-            # make sure a 'Company' is connected to contact
-            company = contact.belongs_to
-            if company is None:
-                return redirect('anmalan:logout')
-
-            exhibitor = None
-            try:
-                exhibitor = Exhibitor.objects.get(company=company, fair=currentFair)
-            except Exhibitor.DoesNotExist:
-                pass
-
-            form = help.create_exhibitor_form(request, currentFair, exhibitor, company, contact)
-
-            if form.is_valid():
-                # a huge amount of stuff happens here, check help/ExhibitorForm.py for details
-                help.save_exhibitor_form(request, form, currentFair, company, contact)
-
-    return render(request, template_name, {'form': form, 'contract_url': contract.contract.url})
-
-
 # thank you screen after submission of complete registration
-def cr_done(request, template_name='register/finished_registration.html'):
-    return render(request, template_name)
+def submission_view(request, template_name='register/finished_registration.html'):
+    fair = Fair.objects.filter(current=True).first()
+    return render(request, template_name, dict(fair=fair))
 
 
 #change password

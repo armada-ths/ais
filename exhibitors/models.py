@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from recruitment.models import RecruitmentApplication
 from fair.models import Fair
+from transportation.models import TransportationOrder
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
@@ -17,6 +18,20 @@ class JobType(models.Model):
 
     def __str__(self):
         return self.name
+
+class TransportationAlternative(models.Model):
+    name = models.CharField(max_length=150)
+    types = [
+            ('3rd_party', 'Third party'),
+            ('self', 'By Customer'),
+            ('internal', 'Fair arranger')
+            ]
+    transportation_type = models.CharField(choices=types, null=True, blank=True, max_length=30)
+    inbound = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
@@ -90,6 +105,18 @@ class Exhibitor(models.Model):
         ('self_transport_large', 'We bring our (large) goods ourselves'),
         ('armada_transport_to_fair', 'We use Armada Transport'),
     ]
+
+
+    inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
+            null=True, related_name='inbound_transportation',
+            verbose_name='Transportation to the fair')
+    outbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
+            null=True, related_name='outbound_transportation',
+            verbose_name='Transportation from the fair')
+    pickup_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
+            null=True, related_name='pickup_order')
+    delivery_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
+            null=True, related_name='delivery_order')
 
     transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
     number_of_packages_to_fair = models.IntegerField(default=0)

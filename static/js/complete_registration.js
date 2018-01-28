@@ -2,7 +2,6 @@
 $('.has-popover').popover({'trigger':'hover'});
 
 // Hide extra fields from start
-$('#externalTransportChosen').hide();
 $('#armadaTransportChosen').hide();
 
 // If a certain field is selected show more fields
@@ -14,14 +13,7 @@ $('#transportFromFairType').children().change(function() {
     $('#armadaTransportChosen').hide();
   }
 });
-$('#transportToFairType').children().change(function() {
-  var selected = $(this).val();
-  if(selected == 'external_transport') {
-    $('#externalTransportChosen').show();
-  } else {
-    $('#externalTransportChosen').hide();
-  }
-});
+
 // if armada transport is chosen on load
 $(document).ready(function(){
   $("#submit-button").hide();

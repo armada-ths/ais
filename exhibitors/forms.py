@@ -2,8 +2,18 @@ from django import forms
 
 import inspect
 
-from .models import ExhibitorView, Exhibitor
+from .models import ExhibitorView, Exhibitor, TransportationAlternative
 from companies.models import InvoiceDetails
+
+class TransportationForm(forms.ModelForm):
+    class Meta:
+        model = Exhibitor
+        fields = ('inbound_transportation', 'outbound_transportation')
+
+    def __init__(self, *args, **kwargs):
+        super(TransportationForm, self).__init__(*args, **kwargs)
+        self.fields['inbound_transportation'].queryset = TransportationAlternative.objects.filter(inbound=True)
+        self.fields['outbound_transportation'].queryset = TransportationAlternative.objects.filter(inbound=False)
 
 
 class SelectInvoiceDetailsForm(forms.ModelForm):

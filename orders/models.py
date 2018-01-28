@@ -39,6 +39,8 @@ class Product(models.Model):
     # Variable for control of what products are visible to exhibitors in their registration
     display_in_product_list = models.BooleanField(default=True)
 
+    included_for_all = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['name']
         permissions = (('view_products', 'View products'),)
@@ -50,7 +52,7 @@ class Product(models.Model):
         return self.ordered_quantity() * self.price
 
     def __str__(self):
-        return "%s, %s" % (self.name, self.fair.name)
+        return "%s - %s, %s, %i :-" % (self.product_type, self.name, self.fair.name, self.price)
 
 class StandArea(Product):
     width = models.IntegerField()
@@ -78,3 +80,13 @@ class Order(models.Model):
 
     def __str__(self):
         return "%s order for %s" % (self.exhibitor.company.name, self.product)
+
+
+class ElectricityOrder(models.Model):
+    exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
+    total_power = models.IntegerField(default=0)
+    number_of_outlets = models.IntegerField(default=0)
+    equipment_description = models.CharField(max_length=150, null=True, blank=True)
+
+
+

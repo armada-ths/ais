@@ -2,13 +2,25 @@ from django.forms import Select,  Form, ModelChoiceField, HiddenInput
 from django import forms
 
 from fair.models import Fair
-from orders.models import Product, Order, ProductType, StandArea
+from orders.models import Product, Order, ProductType, StandArea, ElectricityOrder
 
 
 class SelectStandAreaForm(Form):
     stand_area = forms.ModelChoiceField(queryset=StandArea.objects.filter(fair=Fair.objects.filter(current=True).first()))
-    #def __init__(self, *args, **kwargs):
-        #super(SelectStandArea, self).__init__(*args, **kwargs)
+
+class ElectricityOrderForm(forms.ModelForm):
+    class Meta:
+        model = ElectricityOrder
+        fields = '__all__'
+
+    def __init__(self, exhibitor, *args, **kwargs):
+        instance = kwargs.get('instance')
+        super(ElectricityOrderForm, self).__init__(*args, **kwargs)
+        if instance == None:
+            self.fields['exhibitor'].initial = exhibitor.pk
+        self.fields['exhibitor'].disabled = True #make sure exhibitor field is not editable
+        self.fields['exhibitor'].widget= HiddenInput()
+
 
 class OrderForm(forms.ModelForm):
     class Meta:
@@ -31,9 +43,9 @@ class OrderSelectionForm(OrderForm):
         model = Order
         fields = '__all__'
 
-    def __init__(self, exhibitor, product_type, *args, **kwargs):
+    def __init__(self, exhibitor, product_type,query_set, *args, **kwargs):
         super(OrderSelectionForm, self).__init__(exhibitor,*args, **kwargs)
-        self.fields['product'].queryset = Product.objects.filter(product_type=product_type, display_in_product_list=True)
+        self.fields['product'].queryset = query_set
         
 class OrderCheckboxForm(OrderForm):
     class Meta:
@@ -90,12 +102,16 @@ def get_order_forms(exhibitor, product_type, *args, **kwargs):
         where the choices are the products that has that product type.
     """
     if product_type.selection_policy == 'SELECT':
+        query_set = Product.objects.filter(fair=exhibitor.fair, product_type=product_type, display_in_product_list=True)
         kwargs['instance'] = Order.objects.filter(exhibitor=exhibitor, 
-                product__in=Product.objects.filter(product_type=product_type, display_in_product_list=True)).first()
-        return [OrderSelectionForm(exhibitor, product_type, *args, **kwargs)]
+                product__in=query_set).first()
+        if len(query_set) == 0:
+            return []
+        else:
+            return [OrderSelectionForm(exhibitor, product_type,query_set, *args, **kwargs)]
     else:
         order_forms = []
-        products = Product.objects.filter(product_type=product_type, display_in_product_list=True)
+        products = Product.objects.filter(product_type=product_type,fair=exhibitor.fair,  display_in_product_list=True)
         for i, product in enumerate(products):
             kwargs['instance'] = Order.objects.filter(exhibitor=exhibitor, product=product).first()
             kwargs['prefix'] = kwargs['prefix'] + str(i)

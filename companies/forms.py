@@ -9,13 +9,17 @@ class CompanyForm(ModelForm):
         model = Company
         fields = '__all__'
 
-    def clean(self):
-        super(CompanyForm, self).clean()
+    def is_valid(self):
+        valid = super(CompanyForm, self).is_valid()
+        if not valid:
+            return valid
         name = self.cleaned_data.get("name")
-        if Company.objects.filter(name=name).first() != None:
-            msg = "Company name already exists"
-            self.add_error('name', msg)
-            raise ValidationError(msg)
+        if Company.objects.filter(name=name).first()!=None:
+            self.add_error('name', 'Company name already exists')
+            return False
+
+        return valid
+    
 
 class EditCompanyForm(ModelForm):
     class Meta:
@@ -68,14 +72,19 @@ class CreateContactForm(ModelForm):
         fields = '__all__'
         exclude = ('user', 'active','confirmed')
 
+    def is_valid(self):
+        valid = super(CreateContactForm, self).is_valid()
+        if not valid:
+            return valid
+        email = self.cleaned_data['email'].lower()
+        if User.objects.filter(username=email).first() != None:
+            self.add_error('email', 'Account already exists')
+            return False
+        return valid
+
     def clean(self):
         self.cleaned_data['email'] = self.cleaned_data['email'].lower()
         super(CreateContactForm, self).clean()
-        email = self.cleaned_data.get("email")
-        if User.objects.filter(username=email).first() != None:
-            msg = "Already existing account"
-            self.add_error('email', msg)
-            raise ValidationError("Account already exists")
 
 class CreateContactNoCompanyForm(CreateContactForm):
 

@@ -12,6 +12,23 @@
         <!--This next row section has two sections, the signup to the left and the company/contact information to the right -->
         <div class="row">
 
+            {% for form in forms %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-block alert-danger">
+                    {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {% for form in common_forms %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-block alert-danger">
+                    {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+
 
             <!-- Before preliminary registration has opened -->
             {% if pre_preliminary %}

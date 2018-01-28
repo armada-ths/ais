@@ -1,20 +1,9 @@
 {% load staticfiles %}
+{% load crispy_forms_tags %} 
 <div class="tab-pane fade" id="additional-services">
     <!--<h2>Additional Services</h2>-->
     <div class="row cr-additional-services">
       <div class="col-md-8">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="cr-additional-container">
-            <h3>ADDITIONAL STAND <span class="h-red">AREA</span></h3>
-            <p>Six square meters of stand area is included in the base kit. You can choose to add additional area, please note that we cannot guarantee that we will be able to fulfill your request.</p>
-            <p>For the base kit area (2x3 meters) we recommend you to have a maximum of five people in the stand to represent your organisation.</p>
-            <!--<p>2x3 meters (included)</p>-->
-            {{ form.product_selection_additional_stand_area }}
-            </div>
-          </div>
-
-          <div class="col-md-6">
             <div class="cr-additional-container">
               <h3>FURNITURE FROM STURE</h3>
               <p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
@@ -24,8 +13,6 @@
               <a href="mailto:gitte.friberg@sture.se">gitte.friberg@sture.se</a>
               <img src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
             </div>
-          </div>
-        </div>
       </div>
 
       <div class="col-md-4">
@@ -44,19 +31,7 @@
             <li>Stand spotlight (LED) ~ 20W</li>
           </ul>
           <ul class="cr-additional-electrical">
-            <li>
-              <label class="pretty-label">{{form.total_power.label}}:</label>
-              {{form.total_power}}
-            </li>
-            <li>
-              <label class="pretty-label">{{form.number_of_outlets_needed.label}}:</label>
-              {{form.number_of_outlets_needed}}<br/>
-              <span class="h-red">Use only numbers and write 0 if you don't need any outlets</span>
-            </li>
-            <li>
-              <label class="pretty-label">Heavy duty equipment:</label>
-              {{ form.heavy_duty_electric_equipment }}
-            </li>
+              {{ electricity_order | crispy }}
           </ul>
         </div>
       </div>

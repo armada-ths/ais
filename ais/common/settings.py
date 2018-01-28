@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'register',
     'matching',
     'student_profiles',
+    'transportation',
 )
 
 

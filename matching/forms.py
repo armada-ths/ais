@@ -40,7 +40,7 @@ class ResponseForm(ModelForm):
         kwargs = {"label": question.text,
                   "required": question.required, }
         initial = self.get_question_initial(question, data)
-        if initial:
+        if not initial is None:
             kwargs["initial"] = initial
         choices = self.get_question_choices(question)
         if choices:
@@ -80,6 +80,8 @@ class ResponseForm(ModelForm):
             # Initialize the field field from a POST request, if any.
             # Replace values from the database
             initial = data.get('question_%d' % question.pk)
+        if question.question_type == Question.INT:
+            initial = 0
         return initial
 
 
@@ -95,7 +97,6 @@ class ResponseForm(ModelForm):
         try:
 
             answer = Answer.objects.get(question=question, response=response).get_real_instance()
-            print(answer)
             return answer
         except Answer.DoesNotExist:
             return None
@@ -172,17 +173,19 @@ class ResponseForm(ModelForm):
                 q_id = int(field_name.split("_")[1])
                 question = Question.objects.get(pk=q_id)
                 answer = self._get_preexisting_answer(question)
-                print('Answer object', answer)
                 if answer is None:
                     if question.question_type == Question.INT:
                         answer = IntegerAns(question=question)
+                        answer.ans = int(field_value)
                     if question.question_type == Question.TEXT:
                         answer = TextAns(question=question)
+                        answer.ans = field_value
                     if question.question_type == Question.BOOL:
                         answer = BooleanAns(question=question)
+                        answer.ans = bool(field_value)
                     if question.question_type == Question.SELECT:
                         answer = ChoiceAns(question=question)
-                answer.ans = field_value
+                        answer.ans = field_value
                 answer.response = response
                 answer.save()
         return response

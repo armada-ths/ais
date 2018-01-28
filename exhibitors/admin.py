@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Exhibitor, WorkField, JobType, \
-    Continent, Value, CatalogInfo, Location
+    Continent, Value, CatalogInfo, Location, TransportationAlternative
 from lib.util import image_preview
 
 import csv
@@ -115,3 +115,4 @@ admin.site.register(JobType)
 admin.site.register(Continent)
 admin.site.register(Value)
 admin.site.register(Location)
+admin.site.register(TransportationAlternative)

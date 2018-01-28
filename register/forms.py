@@ -63,12 +63,11 @@ class RegistrationForm(Form):
 class InterestForm(ModelForm):
     class Meta:
         model = Sale
-        fields = ('diversity_room','green_room', 'events', 'nova')
+        fields = ('diversity_room','green_room', 'events' )
         labels = {
             "diversity_room": _("Interested in diversity room"),
             "green_room": _("Interested in green room"),
-            "events": _("Interested in having events"),
-            "nova": ("Interested in Nova")
+            "events": _("Interested in having events")
         }
         #help_texts = {
         #    "diversity_room": _("Tick this if you are interested in our diversity room concept"),

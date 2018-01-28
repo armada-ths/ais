@@ -22,7 +22,7 @@
         {% endif %}
     {% endif %}
 
-    {% if contact.confirmed and complete_registration_open or complete_registration_closed and contact.confirmed%}
+    {% if contact.confirmed and complete_registration_open %}
     <!-- not possible to use paretheses in template expressions -->
         {% include 'register/tabs/product_info.html' %}
         {% include 'register/tabs/products.html' %}
@@ -30,21 +30,21 @@
         {% include 'register/tabs/logistics.html' %}
         {% include 'register/tabs/confirm_and_submit.html' %}
     {% endif %}
+
+    {% if contact.confirmed and complete_registration_closed %}
+    <!-- Show order confirmation, a list of everything that has been ordered. But not editable anymore -->
+        {% include 'register/tabs/product_info.html' %}
+        {% include 'register/tabs/summary.html' %}
+    {% endif %}
     </div>
 {% if signed_up %}
 <!-- Form next, back and save btn, and errors -->
 <div class="form-footer cr-nav-common cr-nav-bottom">
   <a class="btn btn-armada btn-armada-green btnBack" id="back-button">Back</a>
-  {% if form.timeFlag != 'closed' %}
       <span class="has-popover" data-content="You only need to save before closing your browser window", data-placement='top', data-container="body">
         <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
       </span>
-      <span class="has-popover" data-content="Submit your application to {{fair}}", data-placement='top', data-container="body">
-      <button type="submit" name="submit" class="btn btn-armada" id="submit-button">Submit</button>
-      </span>
-  {% endif %}
   <a class="btn btn-armada btn-armada-green btnNext" id="next-button">Next</a>
-  <div>{{ form.non_field_errors }}</div>
 </div>
 
 <!-- modal to be shown on sucessful submission -->

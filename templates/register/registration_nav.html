@@ -19,13 +19,18 @@
           {% endif %}
       {% endif %}
 
-      {% if contact.confirmed and complete_registration_open or complete_registration_closed and contact.confirmed %}
+      {% if contact.confirmed and complete_registration_open %}
         <!-- not possible to use paretheses in template expressions -->
         <li class="nav"><a href="#product-info" data-toggle="tab">Product Information</a></li>
         <li class="nav"><a href="#products" data-toggle="tab">Products</a></li>
         <li class="nav"><a href="#additional-services" data-toggle="tab">Monter</a></li>
         <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
         <li class="nav" id="confirm-li"><a href="#confirm-and-submit" data-toggle="tab">Confirm &amp; Submit</a></li>
+      {% endif %}
+
+      {% if contact.confirmed and complete_registration_closed %}
+        <li class="nav"><a href="#product-info" data-toggle="tab">Product Information</a></li>
+        <li class="nav"><a href="#summary" data-toggle="tab">Summary</a></li>
       {% endif %}
 
         <li class="nav pull-right"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
