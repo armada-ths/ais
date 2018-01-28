@@ -349,8 +349,6 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
             contact=contact,
             about_text = old_exhibitor.about_text,
             logo = old_exhibitor.logo,
-            requests_for_stand_placement = old_exhibitor.requests_for_stand_placement,
-            other_information_about_the_stand = old_exhibitor.other_information_about_the_stand,
             invoice_details = old_exhibitor.invoice_detials,
             )
     # ManyToMany fields needs to be copied after creation

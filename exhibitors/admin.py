@@ -46,15 +46,6 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
 
     csv_headers = [
         'company', 'stand_location',
-        'requests_for_stand_placement', 'requests_for_exhibition_area',
-        'interested_in_armada_transport',
-        'transport_to_fair_type', 'number_of_packages_to_fair', 'number_of_pallets_to_fair',
-        'estimated_arrival',
-        'transport_from_fair_type', 'number_of_packages_from_fair',
-        'number_of_pallets_from_fair',
-        'transport_from_fair_address', 'transport_from_fair_zip_code', 'transport_from_fair_recipient_name',
-        'transport_from_fair_recipient_phone_number',
-        'heavy_duty_electric_equipment', 'other_information_about_the_stand',
     ]
 
     # the list of products is not fair specific
@@ -68,26 +59,6 @@ def export_exhibitor_as_csv(modeladmin, request, queryset):
         csv_row = [
             exhibitor.company.name,
             exhibitor.location.name if exhibitor.location else '',
-            exhibitor.requests_for_stand_placement,
-            exhibitor.requests_for_exhibition_area,
-
-            exhibitor.interested_in_armada_transport,
-            exhibitor.transport_to_fair_type,
-            exhibitor.number_of_packages_to_fair,
-            exhibitor.number_of_pallets_to_fair,
-            exhibitor.estimated_arrival,
-
-            exhibitor.transport_from_fair_type,
-            exhibitor.number_of_packages_from_fair,
-            exhibitor.number_of_pallets_from_fair,
-
-            exhibitor.transport_from_fair_address,
-            exhibitor.transport_from_fair_zip_code,
-            exhibitor.transport_from_fair_recipient_name,
-            exhibitor.transport_from_fair_recipient_phone_number,
-
-            exhibitor.heavy_duty_electric_equipment,
-            exhibitor.other_information_about_the_stand,
         ]
 
         for product in Product.objects.all():
@@ -105,7 +76,7 @@ class ExhibitorAdmin(admin.ModelAdmin):
     # order by fair in first hand
     ordering = ('-fair__year', 'company',)
     # filters to filter search query
-    list_filter = ('status', 'requests_for_stand_placement', 'requests_for_exhibition_area', 'transport_to_fair_type', 'transport_from_fair_type', 'fair',)
+    list_filter = ('status', 'fair',)
 
     actions = [export_exhibitor_as_csv]
 
