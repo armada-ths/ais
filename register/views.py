@@ -402,43 +402,6 @@ def create_company(request, template_name='register/company_form.html'):
     return render(request, template_name, dict(form=form, contact_form=contact_form, user_form=user_form))
 
 
-def contact_update(request, template_name='register/contact_form.html'):
-    contact = Contact.objects.get(user = request.user)
-    form = ContactForm(request.POST or None, instance=contact)
-    if request.POST and form.is_valid():
-        contact = form.save()
-        return redirect('anmalan:home')
-    return render(request, template_name, dict(form=form))
-
-#update a company
-# I do not think this one is used anymore
-def company_update(request, pk, template_name='register/company_form.html'):
-    redirect_to = request.GET.get('next','')
-    company = get_object_or_404(Company, pk=pk)
-    form = EditCompanyForm(request.POST or None, instance=company)
-    if request.POST and form.is_valid():
-        form.save()
-        if redirect_to:
-            return redirect(redirect_to)
-        return redirect('anmalan:home')
-    return render(request, template_name, {'form':form})
-
-
-#update invoice details
-def invoice_details_update(request, pk, template_name='register/invoice_details_form.html'):
-    redirect_to = request.GET.get('next','')
-    exhibitor = get_object_or_404(Exhibitor, pk=pk)
-    form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details)
-    if form.is_valid() and request.POST:
-        details = form.save()
-        exhibitor.invoice_details = details
-        exhibitor.save()
-        if redirect_to:
-            return redirect(redirect_to)
-        return redirect('anmalan:home')
-    return render(request, template_name, {'form':form})
-
-
 # thank you screen after submission of complete registration
 def submission_view(request, template_name='register/finished_registration.html'):
     fair = Fair.objects.filter(current=True).first()
