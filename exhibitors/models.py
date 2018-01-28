@@ -75,13 +75,6 @@ class Exhibitor(models.Model):
         blank=True
     )
 
-
-    # Electrical Equipment
-    heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
-    number_of_outlets_needed = models.IntegerField(default=0)
-    total_power = models.CharField(max_length=500, blank=True)
-
-    
     inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
             null=True, related_name='inbound_transportation',
             verbose_name='Transportation to the fair')
