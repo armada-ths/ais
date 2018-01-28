@@ -1,5 +1,4 @@
 from django.test import TestCase, Client
-from .forms import ExhibitorForm
 from exhibitors.models import Exhibitor
 from .models import OrderLog, SignupContract
 from companies.models import Company, Contact
@@ -82,64 +81,3 @@ class OrderLogTestCase(TestCase):
         self.assertEqual(len(oldLogs), 1)
 
 
-
-class ExhibitorFormTestCase(TestCase):
-    def setUp(self):
-        self.fair = Fair.objects.create(name="Armada 2017", year=2017, pk=82189128287123, current=True)
-        self.user = User.objects.create_user(username='test', password='test', email='paperback@writer.se')
-        self.company = Company.objects.create(name="TestCompany1", organisation_type='company')
-        self.contact = Contact.objects.create(user=self.user, belongs_to=self.company, name="contact name for testing", email="paperback@writer.com", active=True, confirmed=True)
-        self.contract = SignupContract.objects.create(name="contract1", contract="hhh", fair=self.fair, current=True)
-        self.exhibitor = None
-
-        self.banquet_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Banquet"))
-        self.lunch_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="AdditionalLunch"))
-        self.event_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Events"))
-        self.room_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Rooms"))
-        self.nova_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Nova"))
-        self.stand_area_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Additional Stand Area"))
-        self.stand_height_products = Product.objects.filter(fair=self.fair, product_type=ProductType.objects.filter(name="Additional Stand Height"))
-
-        self.current_banquet_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.banquet_products)
-        self.current_lunch_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.lunch_products)
-        self.current_event_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.event_products)
-        self.current_room_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.room_products)
-        self.current_nova_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.nova_products)
-        self.current_stand_area_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.stand_area_products)
-        self.current_stand_height_orders = Order.objects.filter(exhibitor=self.exhibitor, product__in=self.stand_height_products)
-
-        self.matching_survey = Survey.objects.none()
-        self.matching_questions = Question.objects.none()
-        self.matching_responses = Response.objects.none()
-
-        self.timeFlag, self.time_disp = (None, [None, None])
-
-    def test_exhibitorform_no_answers(self):
-        """
-        No answers in form, e.g have not accepted contract agreement, should fail.
-        """
-        form = ExhibitorForm(
-            instance = self.exhibitor,
-            banquet = self.banquet_products,
-            lunch = self.lunch_products,
-            events = self.event_products,
-            rooms = self.room_products,
-            nova = self.nova_products,
-            stand_area = self.stand_area_products,
-            stand_height = self.stand_height_products,
-            banquet_orders = self.current_banquet_orders,
-            lunch_orders = self.current_lunch_orders,
-            event_orders = self.current_event_orders,
-            room_orders = self.current_room_orders,
-            nova_orders = self.current_nova_orders,
-            stand_area_orders = self.current_stand_area_orders,
-            stand_height_orders = self.current_stand_height_orders,
-            company = self.company,
-            contact = self.contact,
-            matching_survey = self.matching_survey,
-            matching_questions = self.matching_questions,
-            matching_responses = self.matching_responses,
-            timeFlag = self.timeFlag,
-            time_disp = self.time_disp,
-        )
-        self.assertFalse(form.is_valid())
