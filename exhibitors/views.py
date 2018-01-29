@@ -18,6 +18,8 @@ from banquet.models import BanquetteAttendant
 from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial
 from .models import Exhibitor, ExhibitorView
 
+from companies.forms import InvoiceDetailsForm
+
 import logging
 
 def user_can_modify_exhibitor(user, exhibitor):
@@ -76,13 +78,15 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     if request.user.has_perm('exhibitors.change_exhibitor'):
         # pass the FILES, because the form has a picture
         exhibitor_form = ExhibitorFormFull(request.POST or None, request.FILES or None, instance=exhibitor)
+        invoice_form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details')
     else:
         exhibitor_form = ExhibitorFormPartial(request.POST or None, request.FILES or None, instance=exhibitor)
     company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
 
-    if exhibitor_form.is_valid() and company_form.is_valid():
+    if request.POST and exhibitor_form.is_valid() and company_form.is_valid() and invoice_form.is_valid():
         exhibitor_form.save()
         company_form.save()
+        invoice_form.save()
         return redirect('exhibitors', fair.year)
 
     users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
@@ -98,6 +102,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'company_form': company_form,
         'fair': fair,
         'banquet_attendants': banquet_attendants,
+        'invoice_form': invoice_form
     })
 
 
