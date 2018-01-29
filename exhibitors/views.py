@@ -84,9 +84,11 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
 
     if request.POST and exhibitor_form.is_valid() and company_form.is_valid() and invoice_form.is_valid():
-        exhibitor_form.save()
+        invoice_details = invoice_form.save()
+        exh = exhibitor_form.save(commit=False)
+        exh.invoice_details = invoice_details
+        exh.save()
         company_form.save()
-        invoice_form.save()
         return redirect('exhibitors', fair.year)
 
     users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in

@@ -76,15 +76,15 @@ class Exhibitor(models.Model):
     )
 
     inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
-            null=True, related_name='inbound_transportation',
+            null=True, blank=True, related_name='inbound_transportation',
             verbose_name='Transportation to the fair')
     outbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
-            null=True, related_name='outbound_transportation',
+            null=True, blank=True, related_name='outbound_transportation',
             verbose_name='Transportation from the fair')
     pickup_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
-            null=True, related_name='pickup_order')
+            null=True, blank=True, related_name='pickup_order')
     delivery_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
-            null=True, related_name='delivery_order')
+            null=True, blank=True, related_name='delivery_order')
 
     tags = models.ManyToManyField('fair.Tag', blank=True)
 

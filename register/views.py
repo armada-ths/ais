@@ -291,7 +291,9 @@ def home(request, template_name='register/registration.html'):
                     if profile_form.is_valid():
                         profile_form.save()
                     if invoice_details_form.is_valid():
-                        invoice_details_form.save()
+                        invoice_details = invoice_details_form.save()
+                        exhibitor.invoice_details = invoice_details
+                        exhibitor.save(update_fields=['invoice_details'])
 
             #needs to start check if complete is opened as that should override preliminary
             # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
