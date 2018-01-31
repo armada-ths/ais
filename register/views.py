@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
 
 import requests as r
+import json
 
 from companies.models import Company, Contact, InvoiceDetails
 from orders.models import Product, Order, ProductType, ElectricityOrder

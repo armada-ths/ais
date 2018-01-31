@@ -69,9 +69,9 @@ $('.editable-form').find('select').prop( "disabled", false );
 $('.btnNext').click(function(){
   $('.nav-tabs > .active').next('li').find('a').trigger('click');
   // Check if on confirm and save
-  checkIfOnConformAndSubmit();
+  //  checkIfOnConformAndSubmit();
   // Check if on start
-  checkIfOnStart();
+  //checkIfOnStart();
 });
 
 $('.btnBack').click(function(){
@@ -83,8 +83,6 @@ $('.btnBack').click(function(){
 $("li.nav").click(function(){
   if (this.id == "confirm-li") {
     setConfirmAndSubmit(true);
-    calcProducts();
-    checkTermsCheckbox();
   } else {
     setConfirmAndSubmit(false);
     setSaveButton(true);
@@ -92,7 +90,7 @@ $("li.nav").click(function(){
   if (this.id == "start-li") {
     setBackButton(true);
   } else {
-    setBackButton(false);
+        setBackButton(false);
   }
 })
 $('#id_accept_terms').click(function() {
@@ -108,7 +106,6 @@ $('#id_accept_terms').click(function() {
 var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {
     setConfirmAndSubmit(true);
-    checkTermsCheckbox();
   } else {
     setConfirmAndSubmit(false);
   }; 
@@ -132,16 +129,6 @@ var checkIfOnStart = function () {
   };
 }
 
-var checkTermsCheckbox = function() {
-  var checkbox = $('#id_accept_terms');
-  if (checkbox[0].checked == true) {
-    setSubmitButton(true);
-    setSaveButton(false);
-  } else {
-    setSubmitButton(false);
-    setSaveButton(true);
-  }
-}
 
 var setSubmitButton = function(bool) {
   if (bool) {

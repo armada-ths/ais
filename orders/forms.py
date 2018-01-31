@@ -38,6 +38,23 @@ class OrderForm(forms.ModelForm):
         self.fields['exhibitor'].widget= HiddenInput()
         self.fields['amount'].widget= HiddenInput()
 
+    def save(self, **kwargs):
+        order_form = super(OrderForm, self).save(commit=False)
+        try:
+            # Check if it is an update or just a new one
+            order = Order.objects.get(pk=order_form.pk)
+            # if previous line does not fail, it is an update that is being made
+            # if the amount is 0, we should rather delete the order than setting it to 0
+            if order_form.amount == 0:
+                order.delete()
+            else:
+                order_form.save()
+        except:
+            # Previous order did not exist so just save it if it is not 0 amonut
+            if not order_form.amount == 0:
+                order_form.save()
+
+
 class OrderSelectionForm(OrderForm):
     class Meta:
         model = Order
@@ -46,6 +63,7 @@ class OrderSelectionForm(OrderForm):
     def __init__(self, exhibitor, product_type,query_set, *args, **kwargs):
         super(OrderSelectionForm, self).__init__(exhibitor,*args, **kwargs)
         self.fields['product'].queryset = query_set
+        self.fields['product'].label = 'Select product'
         
 class OrderCheckboxForm(OrderForm):
     class Meta:
@@ -56,7 +74,7 @@ class OrderCheckboxForm(OrderForm):
         instance = kwargs.get('instance')
         super(OrderCheckboxForm, self).__init__(exhibitor,*args, **kwargs)
         self.fields['add'] = forms.BooleanField(initial=False, required=False)
-        self.fields['add'].label = product.name + str(product.price)
+        self.fields['add'].label = 'Add product '  + product.name 
         self.fields['add'].help_text = product.description
         self.fields['add'].widget = forms.CheckboxInput()
 
@@ -65,6 +83,7 @@ class OrderCheckboxForm(OrderForm):
         else:
             self.fields['add'].initial = True
 
+        self.fields['product'].label = product.name + ', +' + str(product.price) + ':-'
         self.fields['product'].disabled = True 
         self.fields['product'].widget = HiddenInput() 
         
@@ -86,7 +105,8 @@ class OrderAmountForm(OrderForm):
         self.fields['amount'].disabled = False
         self.fields['amount'].widget = forms.NumberInput()
         self.fields['amount'].help_text = product.description
-        self.fields['amount'].label = product.name
+        self.fields['amount'].label = 'Amount'
+        self.fields['product'].label = product.name + ', +' + str(product.price) + ':-'
         if instance == None:
             self.fields['product'].initial = product.pk
             self.fields['amount'].initial = 0

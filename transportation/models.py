@@ -2,8 +2,8 @@ from django.db import models
 
 
 class TransportationOrder(models.Model):
-    nuber_of_packages = models.IntegerField(default=0)
-    nuber_of_pallets = models.IntegerField(default=0)
+    number_of_packages = models.IntegerField(default=0)
+    number_of_pallets = models.IntegerField(default=0)
     goods_description = models.TextField(max_length=250, blank=True)
     contact_name = models.CharField(max_length=50, blank=True)
     contact_phone_number = models.CharField(max_length=50, blank=True)
