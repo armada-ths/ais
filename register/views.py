@@ -406,7 +406,12 @@ def create_company(request, template_name='register/company_form.html'):
 # thank you screen after submission of complete registration
 def submission_view(request, template_name='register/finished_registration.html'):
     fair = Fair.objects.filter(current=True).first()
-    return render(request, template_name, dict(fair=fair))
+    contact = Contact.objects.get(user=request.user)
+    company = contact.belongs_to
+    exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
+    s
+    product_list = get_product_list(exhibitor);
+    return render(request, template_name, dict(fair=fair, product_list=product_list))
 
 
 #change password
