@@ -683,7 +683,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
-        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
+        fields=('interviewer', 'interviewer2', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
                 'rating') if request.user.has_perm('recruitment.administer_recruitment_applications') else (
         'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document', 'rating'),
         widgets={
@@ -704,6 +704,11 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
     if 'interviewer' in interview_planning_form.fields:
         interview_planning_form.fields['interviewer'].choices = [('', '---------')] + [
             (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
+    if 'interviewer2' in interview_planning_form.fields:
+        interview_planning_form.fields['interviewer2'].choices = [('', '---------')] + [
+            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
 
     RoleDelegationForm = modelform_factory(
         RecruitmentApplication,
