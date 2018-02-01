@@ -1,32 +1,6 @@
 // If a bootstrap popover is speciefied
 $('.has-popover').popover({'trigger':'hover'});
 
-// Hide extra fields from start
-$('#armadaTransportChosen').hide();
-
-// If a certain field is selected show more fields
-$('#transportFromFairType').children().change(function() {
-  var selected = $(this).val();
-  if(selected == 'armada_transport') {
-    $('#armadaTransportChosen').show();
-  } else {
-    $('#armadaTransportChosen').hide();
-  }
-});
-
-// if armada transport is chosen on load
-$(document).ready(function(){
-  $("#submit-button").hide();
-  setBackButton(true);
-  showImage();
-  var selected = $('#id_transport_from_fair_type').val();
-  if(selected == 'armada_transport') {
-    $('#armadaTransportChosen').show();
-  } else {
-    $('#armadaTransportChosen').hide();
-  }
-});
-
 // Exhibitor profile
 var showImage = function() {
   var a = $("#fileUpload > a");
@@ -80,28 +54,56 @@ $('.btnBack').click(function(){
   checkIfOnStart();
 });
 
-$("li.nav").click(function(){
-  if (this.id == "confirm-li") {
-    setConfirmAndSubmit(true);
-  } else {
-    setConfirmAndSubmit(false);
-    setSaveButton(true);
-  }
-  if (this.id == "start-li") {
-    setBackButton(true);
-  } else {
+// Select all links with hashes, This listener is used for when navigation tabs are clicked
+$('a[href*="#"]')
+  // Remove links that don't actually link to anything
+  .not('[href="#"]')
+  .not('[href="#0"]')
+  .click(function(event) {
+    // On-page links
+    if (
+      location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') 
+      && 
+      location.hostname == this.hostname
+    ) {
+      console.error(this)
+      console.error(this.href.split('#')[1])
+      if (this.href.split('#')[1] == "confirm-and-submit") {
+        setConfirmAndSubmit(true);
+      } else {
+        setConfirmAndSubmit(false);
+        setSaveButton(true);
+      }
+      if (this.href.split('#')[1] == "start") {
+        setBackButton(true);
+      } else {
         setBackButton(false);
-  }
-})
-$('#id_accept_terms').click(function() {
-  if (this.checked) {
-    setSubmitButton(true);
-    setSaveButton(false);
-  } else {
-    setSubmitButton(false);
-    setSaveButton(true);
-  }
-});
+      }
+      // Figure out element to scroll to
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      // Does a scroll target exist?
+      if (target.length) {
+        // Only prevent default if animation is actually gonna happen
+        event.preventDefault();
+        $('html, body').animate({
+          scrollTop: target.offset().top -90
+        }, 10, function() {
+          // Callback after animation
+          // Must change focus!
+          var $target = $(target);
+          $target.focus();
+          if ($target.is(":focus")) { // Checking if the target was focused
+            return false;
+          } else {
+            $target.attr('tabindex','-1'); // Adding tabindex for elements not focusable
+            $target.focus(); // Set focus again
+          };
+        });
+      }
+    }
+  });
+
 
 var checkIfOnConformAndSubmit = function () {
   if ($("#confirm-li").hasClass("active")) {

@@ -1,5 +1,5 @@
 {% load staticfiles %}
-<div class="container-fluid cr-container">
+<div class="registration-container">
   <!-- Tabs -->
   <ul class="nav nav-tabs cr-nav-common cr-nav-top">
       <li class="nav">
@@ -30,6 +30,8 @@
 
       {% if contact.confirmed and complete_registration_closed %}
         <li class="nav"><a href="#product-info" data-toggle="tab">Product Information</a></li>
+        <li class="nav"><a href="#additional-services" data-toggle="tab">Monter</a></li>
+        <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
         <li class="nav"><a href="#summary" data-toggle="tab">Summary</a></li>
       {% endif %}
 

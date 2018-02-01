@@ -60,9 +60,6 @@ h4 {
 a, a:visited, a:hover {
 	color: #00d791;
 }
-.hidden {
-	display: none;
-}
 .big-margin-top {
 	margin-top: 100px;
 }
@@ -265,7 +262,7 @@ a.forgot-password:hover {
 /*
 *	DROP DOWN STYLE / INPUT STYLE
 */
-.cr-container select {
+select {
 	background: #353535;
     color: #fff;
     border: 2px solid #00d791;
@@ -392,6 +389,22 @@ li.nav {
 	margin-top: 90px;
 	margin-bottom: 110px;
 }
+
+.registration-tab-content{
+    margin-top: 90px;
+    margin-bottom: 100px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.registration-tab-pane{
+    min-width: 100%;
+    padding:15px;
+    margin: 0 10%;
+}
+
 .padding-timeflag-overdue {
 	padding-top: 95px;
 }
@@ -429,87 +442,6 @@ li.nav {
 }
 .cr-basekit-mandatory {
 	margin-bottom: 20px;
-}
-
-/*
-*	TAB: ROOMS; *********************************
-*/
-.cr-rooms {
-	position: relative;
-}
-.cr-rooms,
-.cr-rooms label {
-	font-weight: normal;
-}
-.cr-rooms ul {
-	list-style: none;
-}
-.cr-rooms li {
-	display: inline-block;
-	width: 49%;
-	position: relative;
-}
-.cr-rooms h3 {
-	font-size: 3.5em;
-	text-align: center;
-	padding-bottom: 120px;
-}
-.cr-rooms h3,
-.cr-rooms p {
-	width: 75%;
-	margin-left: auto;
-	margin-right: auto;
-}
-.cr-rooms p.confirm-title {
-	font-family: 'Bebas Neue', sans-serif;
-	font-size: 1.7em;
-	border-bottom: 2px solid #00d791;
-	margin-top: 40px;
-	cursor: pointer;
-}
-.cr-rooms li:nth-child(2) h3,
-.cr-rooms li:nth-child(2) p.product-description {
-	position: relative;
-	top: -20px;
-}
-.cr-rooms input {
-	position: absolute;
-	right: 12.5%;
-	bottom: 59px;
-	cursor: pointer;
-}
-.cr-rooms .room-price {
-	text-align: right;
-    margin-right: 12.5%;
-}
-.cr-rooms p.product-description {
-}
-.cr-rooms img {
-	/*width: 250px;*/
-	height: 100px;
-	position: absolute;
-	top: 60px;
-}
-.cr-rooms img.logo-diversity {
-	/*width: 200px;*/
-	left: 25%;
-	margin-left: -33px;
-}
-.cr-rooms img.logo-sustainability {
-	/*width: 100px;*/
-	right: 25%;
-	margin-right: -30px;
-}
-.divider.rooms {
-	width: 3px;
-	height: 100%;
-	background: #fff;
-	position: absolute;
-	left: 50%;
-	top: 0;
-	transform:rotate(6deg);
-	-moz-transform:rotate(6deg);
-	-webkit-transform:rotate(6deg);
 }
 
 /*
@@ -591,69 +523,6 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 	text-align: justify;
 }
 
-/*
-*	TAB: NOVA *********************************
-*/
-/* flexbox fix to make column equal height
-.cr-nova .row {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display:         flex;
-  flex-wrap: wrap;
-}
-.cr-nova .row > [class*='col-'] {
-  display: flex;
-  flex-direction: column;
-}*/
-.cr-container-nova {
-	height: 100%;
-	overflow: visible;
-	position: relative;
-}
-/* column that wraps double column */
-.cr-nova > div > div {
-	position: relative;
-}
-.cr-container-nova-left {
-	padding-bottom: 40px;
-}
-.cr-nova-col {
-	position: static;
-}
-ul.nova-info ul {
-    border: 2px solid #ea2c49;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    padding: 10px;
-    padding-left: 30px;
-}
-ul.nova-info ul li {
-
-}
-.cr-container-nova ul#id_product_selection_nova {
-	list-style: none;
-	padding-left: 0;
-	margin-bottom: 0px;
-	overflow: visible;
-}
-.cr-container-nova h4.confirm-title {
-	border-bottom: 2px solid #00d791;
-	cursor: pointer;
-	position: absolute;
-	bottom: 0px;
-	left: 0px;
-	width: 100%;
-}
-.cr-container-nova #id_product_selection_nova_0 {
-	position: absolute;
-	bottom: 20px;
-	right: 10px;
-}
-
-.cr-container-nova p {
-	text-align: justify;
-}
 
 /*
 *	TAB: EXHIBITOR PROFILE *********************************
@@ -735,10 +604,6 @@ ul.nova-info ul li {
 	font-weight: normal;
 }
 
-/* hides possible product description */
-.cr-additional-container .product-description {
-	display: none;
-}
 /* styling for a checkbox, or in practice on/off button */
 .btn-armada-checkbox,
 .btn-armada-checkbox:hover {

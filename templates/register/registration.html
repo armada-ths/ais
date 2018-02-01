@@ -3,14 +3,14 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<div class="container-fluid cr-container">
+<div class="registration-container">
 {% include 'register/registration_nav.html' %}
 
   {% if signed_up %}
   <form method="post" enctype="multipart/form-data">{% csrf_token %}
   {% endif %}
 
-    <div class="tab-content cr-tab-content">
+    <div class="registration-tab-content">
     {% include 'register/tabs/start/start_tab.html' %}
 
     <!-- Only show these tabs after preliminary registration -->
@@ -34,6 +34,8 @@
     {% if contact.confirmed and complete_registration_closed %}
     <!-- Show order confirmation, a list of everything that has been ordered. But not editable anymore -->
         {% include 'register/tabs/product_info.html' %}
+        {% include 'register/tabs/additional_services.html' %}
+        {% include 'register/tabs/logistics.html' %}
         {% include 'register/tabs/summary.html' %}
     {% endif %}
     </div>
