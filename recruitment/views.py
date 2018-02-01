@@ -420,7 +420,9 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
+        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | 
+            recruitment_period.recruitmentapplication_set.filter(interviewer2=request.user)| 
+            recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
         'paginator': paginator,
         'applications': applications,
         'now': timezone.now(),
