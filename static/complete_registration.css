@@ -402,7 +402,7 @@ li.nav {
 .registration-tab-pane{
     min-width: 100%;
     padding:15px;
-    margin: 0 10%;
+    margin: 0 15% 0 0;
 }
 
 .padding-timeflag-overdue {
