@@ -1,0 +1,16 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %} {{ fair }} Registration complete
+
+Thank you for completing your registration to {{fair}}! If you need to change anything in your application or add any product you can do so by visiting http://register.armada.nu. You can also find contact information if you have any questions regarding your application.
+{% endblocktrans %}
+
+{% blocktrans %}
+Your ordered products:
+{% endblocktrans %}
+	{% for product in products %}{{ product.name|ljust:name_len }}{{ ""|ljust:amount_len }}    : {{ product.price }}
+	{% endfor %}
+{% trans "Total price:" %}{% blocktrans %} {{ total_price }} SEK{% endblocktrans %}
+
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+	{% endautoescape %}

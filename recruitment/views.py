@@ -420,7 +420,9 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
+        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | 
+            recruitment_period.recruitmentapplication_set.filter(interviewer2=request.user)| 
+            recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
         'paginator': paginator,
         'applications': applications,
         'now': timezone.now(),
@@ -683,7 +685,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
-        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
+        fields=('interviewer', 'interviewer2', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
                 'rating') if request.user.has_perm('recruitment.administer_recruitment_applications') else (
         'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document', 'rating'),
         widgets={
@@ -704,6 +706,11 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
     if 'interviewer' in interview_planning_form.fields:
         interview_planning_form.fields['interviewer'].choices = [('', '---------')] + [
             (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
+    if 'interviewer2' in interview_planning_form.fields:
+        interview_planning_form.fields['interviewer2'].choices = [('', '---------')] + [
+            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
 
     RoleDelegationForm = modelform_factory(
         RecruitmentApplication,

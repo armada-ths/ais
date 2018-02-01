@@ -1,4 +1,4 @@
-{% load crispy_forms_tags %} {% load staticfiles %}
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +14,7 @@
         <div class="row">
             <div class="text-center headline">
                 <h1 class="big big-margin-top">Thank you</h1>
-                <h2>For your registration for ths armada 2017. If you need to change any information in your registration you can do so by visiting this page again until the deadline. </h2>
+                <h2>For your registration for {{fair}}. If you need to change any information in your registration you can do so by visiting this page again until the deadline. </h2>
             </div>
         </div>
         <div class="row">
@@ -30,6 +30,20 @@
                 </div>
             </div>
         </div> 
+        <div class="row">
+            <h3> Your products </h3>
+        <table>
+            <tr> <th>Product</th> <th> Amount </th> <th> Price </th> </tr>
+            {% for product_log in product_list %}
+            <p><tr> {% for col in product_log %} <td> {{col}} </td> {% endfor %} </tr></p>
+            {% endfor %}
+        </table>
+        <hr>
+        <table>
+            <tr> <th> Total price: </th> <th> {{total_price}} </th> </tr>
+        </table>
+
+        </div>
     </div>
 </body>
 

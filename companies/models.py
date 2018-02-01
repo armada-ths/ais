@@ -58,6 +58,22 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
+class InvoiceDetails(models.Model):
+    company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='invoice_details')
+    reference = models.CharField(max_length=200, blank=True)
+    purchase_order_number = models.CharField(max_length=200, blank=True)
+    reference_phone_number = models.CharField(max_length=200, blank=True)
+    organisation_name = models.CharField(max_length=200, blank=True)
+    address = models.CharField(max_length=200, blank=True)
+    address_po_box = models.CharField(max_length=200, blank=True)
+    address_zip_code = models.CharField(max_length=100, blank=True)
+    identification = models.CharField(max_length=200, blank=True)
+    additional_information = models.CharField(max_length=500, blank=True)
+
+    def __str__(self):
+        return str(self.reference) + ', ' + str(self.company)
+
+
 # TODO some model to be able to add a company to sales/sponsorship
 
 # TODO some model to be able to comment on a sale/sponsorship

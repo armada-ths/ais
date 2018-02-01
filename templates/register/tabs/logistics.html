@@ -1,0 +1,33 @@
+{% load crispy_forms_tags %} 
+<div class="registration-tab-pane" id="logistics">
+    <div class="row cr-logistics">
+      
+      <div class="col-md-4"> 
+        <div class="cr-logistics-container">
+          <h3>Transport <span class="h-red">to and from</span> fair</h3>
+              <p> Please provide what transportation alternatives you will use </p>
+              <p> Our transportation services are free and one of our initiatives for sustainability </p>
+              {{ transportation_form.as_p }}
+        </div>
+      </div>
+      {% if inbound_transportation_form %}
+      <div class="col-md-4">
+          <div class="cr-logistics-container">
+          <h3>Transport <span class="h-red">to</span> fair</h3>
+          <p> This is only applicable if you chose to use our transportation service </p>
+          {{ inbound_transportation_form.as_p }}
+          </div>
+      </div>
+      {% endif %}
+      {% if outbound_transportation_form %}
+      <div class="col-md-4"> 
+        <div class="cr-logistics-container">
+          <h3>Transport <span class="h-red">from</span> fair</h3>
+          <p> This is only applicable if you chose to use our transportation service </p>
+          {{ outbound_transportation_form | crispy }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+</div>

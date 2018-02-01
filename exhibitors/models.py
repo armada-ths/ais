@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from recruitment.models import RecruitmentApplication
 from fair.models import Fair
+from transportation.models import TransportationOrder
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
@@ -18,16 +19,30 @@ class JobType(models.Model):
     def __str__(self):
         return self.name
 
+class TransportationAlternative(models.Model):
+    name = models.CharField(max_length=150)
+    types = [
+            ('3rd_party', 'Third party'),
+            ('self', 'By Customer'),
+            ('internal', 'Fair arranger')
+            ]
+    transportation_type = models.CharField(choices=types, null=True, blank=True, max_length=30)
+    inbound = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
     company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
+    invoice_details = models.ForeignKey('companies.InvoiceDetails', on_delete=models.SET_NULL, blank=True, null=True)
     fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     hosts = models.ManyToManyField(User, blank=True)
     contact = models.ForeignKey('companies.Contact', null=True, blank=True, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.CASCADE)
     booth_number = models.IntegerField(blank=True, null=True)
     fair_location = models.OneToOneField('locations.Location', blank=True, null=True, on_delete=models.CASCADE)
-    estimated_arrival_of_representatives = models.DateTimeField(null=True, blank=True)
     about_text = models.TextField(blank=True)
     facts_text = models.TextField(blank=True)
     accept_terms = models.BooleanField(default=False)
@@ -50,15 +65,7 @@ class Exhibitor(models.Model):
     ]
 
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
-    allergies = models.CharField(null=True, blank=True, max_length=500)
 
-    stand_placement_requests = [
-        ('mixed', 'Mixed with a diverse group of companies'),
-        ('same_industry', 'In connection with companies in the same industry/field'),
-    ]
-
-    requests_for_stand_placement = models.CharField(choices=stand_placement_requests,max_length=200, blank=True, null=True)
-    other_information_about_the_stand = models.CharField(max_length=500, blank=True)
     logo = models.ImageField(
         upload_to=UploadToDirUUID('exhibitors', 'logo_original'),
         blank=True,
@@ -68,85 +75,18 @@ class Exhibitor(models.Model):
         blank=True
     )
 
-
-    exhibition_area_requests = [
-        ('kth_library', 'KTH Library'),
-        ('kth_entre', 'KTH Entré'),
-        ('nymble', 'Nymble'),
-    ]
-    requests_for_exhibition_area = models.CharField(choices=exhibition_area_requests,max_length=200, blank=True, null=True)
-
-    # Electrical Equipment
-    heavy_duty_electric_equipment = models.CharField(max_length=500, blank=True)
-    number_of_outlets_needed = models.IntegerField(default=0)
-    total_power = models.CharField(max_length=500, blank=True)
-
-    # Invoice
-    invoice_reference = models.CharField(max_length=200, blank=True)
-    invoice_purchase_order_number = models.CharField(max_length=200, blank=True)
-    invoice_reference_phone_number = models.CharField(max_length=200, blank=True)
-    invoice_organisation_name = models.CharField(max_length=200, blank=True)
-    invoice_address = models.CharField(max_length=200, blank=True)
-    invoice_address_po_box = models.CharField(max_length=200, blank=True)
-    invoice_address_zip_code = models.CharField(max_length=100, blank=True)
-    invoice_identification = models.CharField(max_length=200, blank=True)
-    invoice_additional_information = models.CharField(max_length=500, blank=True)
-
-    # Transport to fair
-    transport_to_fair_types = [
-        ('external_transport', 'Arranged with external delivery firm'),
-        ('arkad_transport', 'Transport from Arkad in Lund'),
-        ('self_transport_small', 'We bring our (only small) goods ourselves'),
-        ('self_transport_large', 'We bring our (large) goods ourselves'),
-        ('armada_transport_to_fair', 'We use Armada Transport'),
-    ]
-
-    transport_to_fair_type = models.CharField(choices=transport_to_fair_types, null=True, blank=True, max_length=30)
-    number_of_packages_to_fair = models.IntegerField(default=0)
-    number_of_pallets_to_fair = models.IntegerField(default=0)
-    estimated_arrival = models.DateTimeField(null=True, blank=True)
-
-    # Transport from fair
-    transport_from_fair_types = [
-        ('third_party_builders_transport',
-         'We use a third-party to build our stand who will transport our goods from the fair'),
-        ('armada_transport', 'We use Armada Transport'),
-        ('self_transport',
-         'We only have small goods with us and our representatives will bring it with them when they leave the fair'),
-    ]
-
-    transport_from_fair_type = models.CharField(choices=transport_from_fair_types, null=True, blank=True,
-                                                max_length=300)
-    number_of_packages_from_fair = models.IntegerField(default=0)
-    number_of_pallets_from_fair = models.IntegerField(default=0)
-
-    transport_from_fair_address = models.CharField(max_length=200, blank=True)
-    transport_from_fair_zip_code = models.CharField(max_length=100, blank=True)
-    transport_from_fair_recipient_name = models.CharField(max_length=200, blank=True)
-    transport_from_fair_recipient_phone_number = models.CharField(max_length=200, blank=True)
-
-    # Marketing
-    wants_information_about_events = models.BooleanField(default=False)
-    wants_information_about_targeted_marketing = models.BooleanField(default=False)
-    wants_information_about_osqledaren = models.BooleanField(default=False)
-    manual_invoice = models.BooleanField(default=False)
-    interested_in_armada_transport = models.BooleanField(default=False)
+    inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
+            null=True, blank=True, related_name='inbound_transportation',
+            verbose_name='Transportation to the fair')
+    outbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
+            null=True, blank=True, related_name='outbound_transportation',
+            verbose_name='Transportation from the fair')
+    pickup_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
+            null=True, blank=True, related_name='pickup_order')
+    delivery_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
+            null=True, blank=True, related_name='delivery_order')
 
     tags = models.ManyToManyField('fair.Tag', blank=True)
-
-    # Goals of participation and offers
-    goals = [
-        ('employer_branding',
-            'Employer Branding'),
-        ('recruitment_employees',
-            'Recruitment of employees'),
-        ('recruitment_master_thesis',
-            'Recruitment of Master Thesis'),
-        ('recruitment_summer_workers',
-            'Recruitment of Summer workers'),
-    ]
-    goals_of_participation = models.CharField(choices=goals, null=True, blank=True,
-                                                max_length=300)
 
     job_types = models.ManyToManyField(JobType, blank=True)
 

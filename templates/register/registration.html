@@ -1,0 +1,81 @@
+{% extends "register/base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="registration-container">
+{% include 'register/registration_nav.html' %}
+
+  {% if signed_up %}
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+  {% endif %}
+
+    <div class="registration-tab-content">
+    {% include 'register/tabs/start/start_tab.html' %}
+
+    <!-- Only show these tabs after preliminary registration -->
+    <!-- Note that this is the content, the tab needs to be activated in registration_nav.html as well -->
+    {% if signed_up and contact.confirmed%}
+        {% include 'register/tabs/profile_tab.html' %}
+        {% if survey_form %}
+            {% include 'register/tabs/student_matching.html' %}
+        {% endif %}
+    {% endif %}
+
+    {% if contact.confirmed and complete_registration_open %}
+    <!-- not possible to use paretheses in template expressions -->
+        {% include 'register/tabs/product_info.html' %}
+        {% include 'register/tabs/products.html' %}
+        {% include 'register/tabs/additional_services.html' %}
+        {% include 'register/tabs/logistics.html' %}
+        {% include 'register/tabs/confirm_and_submit.html' %}
+    {% endif %}
+
+    {% if contact.confirmed and complete_registration_closed %}
+    <!-- Show order confirmation, a list of everything that has been ordered. But not editable anymore -->
+        {% include 'register/tabs/product_info.html' %}
+        {% include 'register/tabs/additional_services.html' %}
+        {% include 'register/tabs/logistics.html' %}
+        {% include 'register/tabs/summary.html' %}
+    {% endif %}
+    </div>
+{% if signed_up %}
+<!-- Form next, back and save btn, and errors -->
+<div class="form-footer cr-nav-common cr-nav-bottom">
+  <a class="btn btn-armada btn-armada-green btnBack" id="back-button">Back</a>
+      <span class="has-popover" data-content="You only need to save before closing your browser window", data-placement='top', data-container="body">
+        <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
+      </span>
+  <a class="btn btn-armada btn-armada-green btnNext" id="next-button">Next</a>
+</div>
+
+<!-- modal to be shown on sucessful submission -->
+<div class="modal fade submission-success-modal" tabindex="-1" role="dialog" aria-labelledby="submissionSuccess">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+      <div class="row">
+        <div class="col-md-12">
+        <h1 class="modal-title">Submission successful!</h1>
+        </div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-md-12">
+            <p class="modal-text">Thank you for completing your registration to {{ fair }}! If you need to change any information in your registration you can do so by visiting this page again until the deadline.</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+</form>
+{% endif %}
+</div>
+    <script src="{% static 'js/jquery.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'js/complete_registration.js' %}" type="text/javascript" charset="utf-8"></script>
+    <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+
+{% endblock %}

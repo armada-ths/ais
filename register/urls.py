@@ -5,23 +5,17 @@ from .forms import LoginForm, ResetPasswordForm, SetNewPasswordForm
 
 app_name = 'anmalan'
 urlpatterns = [
-    # Updated home url to show complete registration form
-    #url(r'^home$', views.home, name='home'),
-    url(r'^home$', views.create_exhibitor, name='home'),
-    # Initial registration closed, to allow: rm kwargs and uncomment signup and create_company, also uncomment in templates/register/login.html
+    url(r'^home$', views.home, name='home'),
     url(r'^$', views.index, name='index',
         kwargs={'template_name': 'register/index.html'}),
-    url(r'^company/(?P<pk>\d+)/edit', views.company_update, name='edit_company'),
-    url(r'^me/edit', views.contact_update, name='edit_me'),
-    url(r'^thankyou/$', views.cr_done, name='cr_done'),
-    # url(r'^complete',views.create_exhibitor, name='create_exhibitor'),
-    # url(r'^signup', views.signup, name='create_company_user'),
-    # url(r'^new_company', views.create_company, name='create_company'),
+    url(r'^submitted/$', views.submission_view, name='submitted'),
+    url(r'^signup', views.signup, name='create_company_user'),
+    url(r'^new_company', views.create_company, name='create_company'),
 
     # signup for externals
-    url(r'^external/signup$', views.external_signup, name='external/signup'),
+    #url(r'^external/signup$', views.external_signup, name='external/signup'),
     # login for externals
-    url(r'^external/login$', views.external_login, name='external_login'),
+    #url(r'^external/login$', views.external_login, name='external_login'),
 
     url(
         r'^login/$',
@@ -36,7 +30,7 @@ urlpatterns = [
         kwargs={'next_page': 'anmalan:index'}
     ),
     url(r'^password/change', views.change_password, name='change_password'),
-    #urls for resetting password
+
     url(r'^password_reset/$',
         password_reset,
         name='password_reset',
