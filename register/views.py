@@ -409,9 +409,8 @@ def submission_view(request, template_name='register/finished_registration.html'
     contact = Contact.objects.get(user=request.user)
     company = contact.belongs_to
     exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
-    s
-    product_list = get_product_list(exhibitor);
-    return render(request, template_name, dict(fair=fair, product_list=product_list))
+    product_list, total_price = get_product_list_and_price(exhibitor);
+    return render(request, template_name, dict(fair=fair, product_list=product_list, total_price=total_price))
 
 
 #change password
