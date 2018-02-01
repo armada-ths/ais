@@ -86,7 +86,7 @@ class ExhibitorFormFull(forms.ModelForm):
     class Meta:
         model = Exhibitor
         fields = '__all__'
-        exclude = ('company', 'fair') 
+        exclude = ('company', 'fair', 'invoice_details', 'pickup_order', 'delivery_order') 
 
 
 
@@ -98,6 +98,6 @@ class ExhibitorFormPartial(ExhibitorFormFull):
     '''
 
     class Meta(ExhibitorFormFull.Meta):
-        exclude = ('company', 'fair', 'hosts', 'contact')
+        exclude = ('company', 'fair', 'hosts', 'contact', 'invoice_details','pickup_order', 'delivery_order')
 
 

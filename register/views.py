@@ -181,16 +181,18 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
             for order_form in order_forms:
                 if order_form.is_valid():
                     order_form.save()
+        #Update the product list and price after saving
+        product_list, total_price = get_product_list_and_price(exhibitor)
 
         if electricity_order.is_valid():
             electricity_order.save()
 
         if transportation_form.is_valid():
             transportation_form.save()
-        if transportation_form.cleaned_data['inbound_transportation'].transportation_type == 'internal':
+        if transportation_form.cleaned_data['inbound_transportation'] and transportation_form.cleaned_data['inbound_transportation'].transportation_type == 'internal':
             if inbound_transportation_order_form.is_valid():
                 inbound_transportation_order_form.save()
-        if transportation_form.cleaned_data['outbound_transportation'].transportation_type == 'internal':
+        if transportation_form.cleaned_data['outbound_transportation'] and transportation_form.cleaned_data['outbound_transportation'].transportation_type == 'internal':
             if outbound_transportation_order_form.is_valid():
                 outbound_transportation_order_form.save()
 
@@ -217,7 +219,8 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
                 # Set progression status
                 SignupLog.objects.create(contact=contact, company=company, contract=contract, type='complete')
                 exhibitor.status = 'complete_registration_submit'
-                exhibitor.save(update_fields=['status'])
+                exhibitor.accept_terms = True
+                exhibitor.save(update_fields=['status', 'accept_terms'])
                 r.post(settings.SALES_HOOK_URL,
                     data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, company)}))
 
