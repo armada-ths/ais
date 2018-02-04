@@ -12,6 +12,7 @@ from fair.models import Fair
 from .forms import AttendenceForm, EventForm
 from .models import EventQuestion, Event, EventAnswer, EventAttendence
 from .templatetags.event_extras import user_attending_event, registration_open, user_eligible_event
+from accounts.forms import UserForm
 
 
 def send_mail_on_submission(user, event):
@@ -59,9 +60,10 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
         attendence=ea, question=question).first()) for question in questions]
     form = AttendenceForm(
         request.POST or None, questions_answers=questions_answers)
+    user_form = UserForm(request.POST or None, instance=request.user)
     print('Form is valid', form.is_valid())
     print('registration_open(event)', registration_open(event))
-    if form.is_valid() and registration_open(event):
+    if form.is_valid() and registration_open(event) and user_form.is_valid():
         if not ea:
             status = 'A'
             if event.attendence_approvement_required or (0 < event.capacity <= number_of_registrations):
@@ -79,10 +81,11 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
             # This creates an extra field
             event.save()
         event.extra_field.handle_answers_from_request(request, ea.user)
+        user_form.save()
         return redirect('event_list', fair.year)
 
     return render(request, template_name, {
-        "event": event, "form": form,
+        "event": event, "form": form, "user_form": user_form,
         "extra_field_questions_with_answers": event.extra_field.questions_with_answers_for_user(ea.user if ea else None) if event.extra_field else None,
         "fair": fair,
     })

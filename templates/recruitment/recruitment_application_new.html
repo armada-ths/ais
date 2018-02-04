@@ -29,6 +29,7 @@
 
         {{ role_form|crispy }}
 
+        {{ user_form | crispy }}
         {{ profile_form|crispy }}
 
         {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}

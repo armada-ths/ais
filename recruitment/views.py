@@ -26,6 +26,7 @@ from django.forms import modelform_factory
 from django import forms
 from .forms import RoleApplicationForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, \
     RolesForm, ProfileForm, ProfilePictureForm
+from accounts.forms import UserForm
 
 
 def import_members(request):
@@ -531,7 +532,6 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
     user = recruitment_application.user if recruitment_application else request.user
     profile = Profile.objects.filter(user=user).first()
-    print(profile)
     if not profile:
         p = Profile(user=user)
         p.save()
@@ -556,6 +556,8 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
     role_form = RoleApplicationForm(request.POST or None)
 
+    user_form = UserForm(request.POST or None, instance=user)
+
     for i in range(1, 4):
         key = 'role%d' % i
         role_form.fields[key].queryset = recruitment_period.recruitable_roles
@@ -570,7 +572,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, user)
 
-        if role_form.is_valid() and profile_form.is_valid():
+        if role_form.is_valid() and profile_form.is_valid() and user_form.is_valid():
 
             if not recruitment_application:
                 recruitment_application = RecruitmentApplication()
@@ -596,6 +598,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
                         data=json.dumps({'text': ' {!s} {!s} just applied for {!s}!'.format(user.first_name, user.last_name, role_form.cleaned_data["role1"])}))
 
             profile_form.save()
+            user_form.save()
             return redirect('recruitment_period', fair.year, recruitment_period.pk)
 
     return render(request, template_name, {
@@ -603,6 +606,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
             recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
         'profile_form': profile_form,
+        'user_form': user_form,
         'profile': profile,
         'role_form': role_form,
         'new_application': pk == None,
