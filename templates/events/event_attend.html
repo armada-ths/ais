@@ -11,6 +11,7 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
+        {{ user_form | crispy }}
         {% include 'recruitment/custom_fields.html' with questions_with_answers=extra_field_questions_with_answers %}
         <br>
         <br>

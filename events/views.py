@@ -60,7 +60,7 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
         attendence=ea, question=question).first()) for question in questions]
     form = AttendenceForm(
         request.POST or None, questions_answers=questions_answers)
-    user_form = UserForm(request.POST or None, instance=request.User)
+    user_form = UserForm(request.POST or None, instance=request.user)
     print('Form is valid', form.is_valid())
     print('registration_open(event)', registration_open(event))
     if form.is_valid() and registration_open(event) and user_form.is_valid():
