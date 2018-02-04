@@ -398,7 +398,7 @@ def home(request, template_name='register/registration.html'):
             complete_registration_open = fair.complete_registration_start_date < timezone.now() and fair.complete_registration_close_date > timezone.now()
             complete_registration_closed = fair.complete_registration_close_date < timezone.now()
 
-            contract = SignupContract.objects.get(fair=fair, current=True)
+            contract = SignupContract.objects.filter(fair=fair, current=True).first()
             contact = Contact.objects.get(user=request.user)
             company = contact.belongs_to
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
