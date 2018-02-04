@@ -15,8 +15,10 @@ from fair.models import Fair
 from orders.models import Product, Order
 from banquet.models import BanquetteAttendant
 
-from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorInvoiceForm
+from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial
 from .models import Exhibitor, ExhibitorView
+
+from companies.forms import InvoiceDetailsForm
 
 import logging
 
@@ -76,15 +78,17 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     if request.user.has_perm('exhibitors.change_exhibitor'):
         # pass the FILES, because the form has a picture
         exhibitor_form = ExhibitorFormFull(request.POST or None, request.FILES or None, instance=exhibitor)
+        invoice_form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details')
     else:
         exhibitor_form = ExhibitorFormPartial(request.POST or None, request.FILES or None, instance=exhibitor)
     company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
-    invoice_form = ExhibitorInvoiceForm(request.POST or None, instance=exhibitor)
 
-    if exhibitor_form.is_valid() and company_form.is_valid() and invoice_form.is_valid():
-        exhibitor_form.save()
+    if request.POST and exhibitor_form.is_valid() and company_form.is_valid() and invoice_form.is_valid():
+        invoice_details = invoice_form.save()
+        exh = exhibitor_form.save(commit=False)
+        exh.invoice_details = invoice_details
+        exh.save()
         company_form.save()
-        invoice_form.save()
         return redirect('exhibitors', fair.year)
 
     users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
@@ -98,9 +102,9 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'exhibitor': exhibitor,
         'exhibitor_form': exhibitor_form,
         'company_form': company_form,
-        'invoice_form': invoice_form,
         'fair': fair,
         'banquet_attendants': banquet_attendants,
+        'invoice_form': invoice_form
     })
 
 

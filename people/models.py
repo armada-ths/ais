@@ -40,14 +40,15 @@ class Profile(models.Model):
     user = models.OneToOneField(
             settings.AUTH_USER_MODEL,
             default=-1,
-            primary_key=True)
+            primary_key=True,
+            on_delete=models.CASCADE)
     birth_date = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=10, choices=GENDERS, blank=True)
     shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     drivers_license = models.CharField(max_length=10, null=True, blank=True)
     allergy = models.CharField(max_length=30, null=True, blank=True)
-    programme = models.ForeignKey(Programme, null=True, blank=True)
+    programme = models.ForeignKey(Programme, null=True, blank=True, on_delete=models.CASCADE)
     registration_year = models.IntegerField(null=True, blank=True)
     planned_graduation = models.IntegerField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True)

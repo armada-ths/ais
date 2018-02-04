@@ -162,9 +162,6 @@ class RecruitmentTestCase(TestCase):
         response = client.get('/fairs/2016/recruitment/new')
         self.assertEqual(response.status_code, 200)
 
-        # check that regular user gets permission denied when entering a recruitment period with their application in it
-        response = client.get('/fairs/2016/recruitment/%d' % self.recruitment_period.pk)
-        self.assertEqual(response.status_code, 403)
 
         # log in to user that is in core project team
         response = client.post('/accounts/login/', {'username': 'core', 'password': 'core'})

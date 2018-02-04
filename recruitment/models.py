@@ -124,7 +124,7 @@ class CustomField(models.Model):
         ('file', 'File'),
         ('image', 'Image')]
 
-    extra_field = models.ForeignKey(ExtraField)
+    extra_field = models.ForeignKey(ExtraField, on_delete=models.CASCADE)
     question = models.TextField()
     field_type = models.CharField(choices=field_types, default='text_field', max_length=20)
     position = models.IntegerField(default=0)
@@ -140,7 +140,7 @@ class CustomField(models.Model):
 
 class CustomFieldArgument(models.Model):
     value = models.TextField()
-    custom_field = models.ForeignKey(CustomField)
+    custom_field = models.ForeignKey(CustomField, on_delete=models.CASCADE)
     position = models.IntegerField(default=0)
 
     def user_answer(self, user):
@@ -154,8 +154,8 @@ class CustomFieldArgument(models.Model):
 
 
 class CustomFieldAnswer(models.Model):
-    custom_field = models.ForeignKey(CustomField)
-    user = models.ForeignKey(User)
+    custom_field = models.ForeignKey(CustomField, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     answer = models.TextField()
 
     def __str__(self):
@@ -164,9 +164,9 @@ class CustomFieldAnswer(models.Model):
 
 class Role(models.Model):
     name = models.CharField(max_length=100)
-    parent_role = models.ForeignKey('Role', null=True, blank=True)
+    parent_role = models.ForeignKey('Role', null=True, blank=True, on_delete=models.CASCADE)
     description = models.TextField(default="", blank=True)
-    group = models.ForeignKey(Group, null=True, blank=True)
+    group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
     organization_group = models.CharField(max_length=100, default='', null=True)
 
     def save(self, *args, **kwargs):
@@ -215,9 +215,9 @@ class RecruitmentPeriod(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     interview_end_date = models.DateTimeField()
-    fair = models.ForeignKey(Fair)
-    interview_questions = models.ForeignKey(ExtraField, blank=True, null=True)
-    application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions')
+    fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
+    interview_questions = models.ForeignKey(ExtraField, blank=True, null=True, on_delete=models.CASCADE)
+    application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
     eligible_roles = models.IntegerField(default=3)
     recruitable_roles = models.ManyToManyField(Role)
 
@@ -253,17 +253,18 @@ class RecruitmentPeriod(models.Model):
 
 
 class RecruitmentApplication(models.Model):
-    recruitment_period = models.ForeignKey(RecruitmentPeriod)
-    user = models.ForeignKey(User)
+    recruitment_period = models.ForeignKey(RecruitmentPeriod, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField(null=True, blank=True)
-    interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer')
-    exhibitor = models.ForeignKey(Company, null=True, blank=True)
+    interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer', on_delete=models.CASCADE)
+    interviewer2 = models.ForeignKey(User, null=True, blank=True, related_name='interviewer2', on_delete=models.CASCADE)
+    exhibitor = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
     interview_date = models.DateTimeField(null=True, blank=True)
     interview_location = models.CharField(null=True, blank=True, max_length=100)
     submission_date = models.DateTimeField(default=timezone.now, blank=True)
-    recommended_role = models.ForeignKey(Role, null=True, blank=True)
-    delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role')
-    superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user')
+    recommended_role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
+    delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role', on_delete=models.CASCADE)
+    superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user', on_delete=models.CASCADE)
     scorecard = models.CharField(null=True, blank=True, max_length=300)
     drive_document = models.CharField(null=True, blank=True, max_length=300)
 
@@ -304,15 +305,15 @@ class RecruitmentApplication(models.Model):
 
 class RecruitmentApplicationComment(models.Model):
     comment = models.TextField(null=True, blank=True)
-    recruitment_application = models.ForeignKey(RecruitmentApplication)
+    recruitment_application = models.ForeignKey(RecruitmentApplication, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=timezone.now, blank=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class RoleApplication(models.Model):
     class Meta:
         ordering = ['order']
-    recruitment_application = models.ForeignKey(RecruitmentApplication, default=None)
-    role = models.ForeignKey(Role)
+    recruitment_application = models.ForeignKey(RecruitmentApplication, default=None, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
     order = models.IntegerField(default=0)
 
     def __str__(self):

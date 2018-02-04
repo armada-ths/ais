@@ -6,7 +6,7 @@ from exhibitors.models import Exhibitor
 from .forms import BanquetteAttendantForm, ExternalBanquetSignupForm
 from django.urls import reverse
 from fair.models import Fair
-from register.views import external_signup
+from accounts.views import external_create_account
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
@@ -181,7 +181,7 @@ def banquet_external_signup(request, year, template_name='banquet/external_signu
             return render(request, 'banquet/thank_you.html', {'fair': fair })
         return render(request, template_name, {'form': form, 'fair': fair })
     # not authenticated
-    return redirect('/register/external/signup')
+    return redirect('accounts:external_login')
 
 
 def thank_you(request, year, template_name='banquet/thank_you.html'):

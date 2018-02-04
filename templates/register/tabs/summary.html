@@ -1,0 +1,20 @@
+<div class="registration-tab-pane" id="summary">
+    <div class="row">
+
+        <div class="col-md-8">
+        <h3> Your ordered products: </h3>
+        <p> If you need to change anything or think that something is incorrect, please contact us. </p>
+            <table>
+                <tr> <th>Product</th> <th> Amount </th> <th> Price </th> </tr>
+                {% for product_log in product_list %}
+                <p><tr> {% for col in product_log %} <td> {{col}} </td> {% endfor %} </tr></p>
+                {% endfor %}
+            </table>
+            <hr>
+            <table>
+                <tr> <th> Total price: </th> <th> {{total_price}} </th> </tr>
+            </table>
+        </div>
+    </div>
+</div>
+

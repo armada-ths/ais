@@ -1,18 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.forms import ModelForm
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.forms import UserCreationForm
 
-from companies.models import Company, Contact
+from companies.models import Company, Contact, InvoiceDetails
 from fair.models import Fair
+from .forms import CompanyForm, ContactForm, UserForm
 
-
-###COMPANY###
-class CompanyForm(ModelForm):
-    class Meta:
-        model = Company
-        fields = '__all__'
 
 def current_fair():
     return get_object_or_404(Fair, current=True)
@@ -70,17 +62,6 @@ def company_delete(request, pk, template_name='companies/company_confirm_delete.
         return redirect('companies_list') #redirect back to company list
     return render(request, template_name, {'object':company, 'fair':fair})
 
-###COMPANY CONTACT###
-class ContactForm(ModelForm):
-    class Meta:
-        model = Contact
-        fields = '__all__'
-        exclude = ('user', )
-
-class UserForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = ['password1', 'password2']
 
 #crate a company contact
 def contact_create(request, pk, template_name='companies/contact_form.html'):

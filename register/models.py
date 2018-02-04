@@ -6,7 +6,7 @@ from django.utils import timezone
 class SignupContract(models.Model):
     name = models.CharField(max_length=30)
     contract = models.FileField(upload_to='contracts/%Y%m%d/')
-    fair = models.ForeignKey('fair.Fair')
+    fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     current = models.BooleanField(default=False);
 
     _loaded_values = None
@@ -36,10 +36,10 @@ class SignupContract(models.Model):
         return self.name
 
 class SignupLog(models.Model):
-    contract = models.ForeignKey('SignupContract')
+    contract = models.ForeignKey('SignupContract', on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
-    contact = models.ForeignKey('companies.Contact')
-    company = models.ForeignKey('companies.Company', null= True)
+    contact = models.ForeignKey('companies.Contact', on_delete=models.CASCADE)
+    company = models.ForeignKey('companies.Company', null= True, on_delete=models.CASCADE)
     types = [
         ('initial', 'Initial'),
         ('complete', 'Complete'),
@@ -53,9 +53,9 @@ class SignupLog(models.Model):
 # Logs each time an exhibitor updates their complete registration
 class OrderLog(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
-    contact = models.ForeignKey('companies.Contact')
-    company = models.ForeignKey('companies.Company')
-    fair = models.ForeignKey('fair.Fair')
+    contact = models.ForeignKey('companies.Contact', on_delete=models.CASCADE)
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
+    fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     actionTypes = [
         ('submit', 'Submitted'),
         ('save', 'Saved'),

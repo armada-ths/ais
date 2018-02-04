@@ -1,0 +1,46 @@
+<div class="tab-pane fade cr-banquet" id="banquet">
+    <div class="row">
+      <div class="col-md-9">
+        <div class="row">
+          <div class="col-md-6">
+            <h1>The Banquet</h1>
+            <h5>Welcome to the Grand Banquet of THS Armada!</h5>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <h3><span class="h-green">November 21st</span> <span class="h-red">Annexet, Globen </span><span class="h-white">Dark suit</span> </h3>
+            <p>This is one of the biggest university banquets in Sweden where you and your organization will have the wonderful opportunity to network with many ambitious students in a casual atmosphere. The evening will start off with a refreshing drink and continue with a three course menu and spectacular entertainment.</p>
+            <p>You will be contacted in October to specify the names of the participants and any special dietary requirements. This information will be gathered before October 27th.</p>
+            <h4>Tables <span class="h-red">9,900 / 12,900 SEK</span></h4>
+            <p>New for this year is that you also have the opportunity to purchase entire tables to the banquet. These tables will have 8 seats, a favorable placement and be branded with your organization logo.  You will have the unique chance to handpick top students of your choosing to this table, which will give you a great chance to deepen your connection with interesting top students that you have met at events, at the fair or to get to know new students that have shown great interest in your organization. </p>
+            <p>Prices:</p>
+            <ul>
+              <li>Including two tickets from the base kit: 9,900 SEK</li>
+              <li>Excluding two tickets from the base kit: 12,900 SEK</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h4>Banquet ticket - Exhibitor representative <span class="h-red">1,190 SEK</span></h4>
+            <p>This year we have chosen to include 2 banquet tickets in the base kit for each participating exhibitor. Of course you also have the opportunity to purchase additional tickets if you're so inclined. </p>
+            <h4>Banquet ticket - student <span class="h-red">1,190 SEK</span></h4>
+            <p>Did you meet any interesting students during the first day of the fair? Let these students know more about your organisation and get to know them personally in a different setting by inviting them to the banquet. A ticket to the banquet can also be used as a very appreciated prize for students in a possible contest at your stand.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 cr-banquet-purchase">
+        <h3>Purchase</h3>
+        <p>Specify the number of tickets you wish to purchase:</p>
+        <ul class="list-unstyled cr-banquet-tickets">
+          {% for field in form %}
+            {% if 'banquet' in field.help_text %}
+              <li>
+                <h4>{{ field.label }}</h4>
+                {{ field }}
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+</div>

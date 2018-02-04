@@ -27,9 +27,9 @@ class Sale(models.Model):
         ('Rejected', 'Rejected'),
     )
     
-    fair = models.ForeignKey(Fair, null=True, default=current_fair)
-    company = models.ForeignKey('companies.Company')
-    responsible = models.ForeignKey(User, null=True, default=None, blank=True)
+    fair = models.ForeignKey(Fair, null=True, default=current_fair, on_delete=models.CASCADE)
+    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
+    responsible = models.ForeignKey(User, null=True, default=None, blank=True, on_delete=models.CASCADE)
 
     status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
     contact_by_date = models.DateField(blank = True, null=True)
@@ -43,8 +43,8 @@ class Sale(models.Model):
 
 
 class SaleComment(models.Model):
-    sale = models.ForeignKey(Sale)
-    user = models.ForeignKey(User)
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_date = models.DateTimeField(default=timezone.now, blank=True)
     comment = models.TextField(null=True, blank=True)
 
@@ -61,7 +61,7 @@ class FollowUp(models.Model):
         ('no_follow_up', 'No follow up'),
     )
 
-    sale = models.ForeignKey(Sale)
+    sale = models.ForeignKey(Sale, on_delete=models.CASCADE)
     status = models.CharField(max_length=30, choices=STATUS, null=True, default=None, blank=True)
     follow_up_date = models.DateTimeField(default=one_week_ahead, blank=True)
 

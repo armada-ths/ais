@@ -331,6 +331,26 @@ def remember_last_query_params(url_name, query_params):
     return do_decorator
 
 
+def eligible_to_see_application(application, user):
+    """ 
+    This function checks if the user should have the right to see the application.
+    It is based on that the user should have right to see it if the application is for roles "below" the user in the 
+    organization hierarki
+    """
+    roles = RoleApplication.objects.filter(recruitment_application=application)
+    #DFS search if user is member of any parent role
+    user_groups = user.groups.all()
+    if len(user_groups) == 0:
+        return False
+    for role in roles:
+        r = role.role.parent_role
+        while (r!=None):
+            if r.group in user_groups:
+                return True
+            r = r.parent_role
+    return False
+
+
 @remember_last_query_params('recruitment', [field for field in RecruitmentApplicationSearchForm().fields])
 def recruitment_period(request, year, pk, template_name='recruitment/recruitment_period.html'):
     fair = get_object_or_404(Fair, year=year)
@@ -338,25 +358,20 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     user = request.user
 
-    # user should be forbidden to look at a
-    # recruitment periods that include their application
-    # unless they're in the Project Core Team
-    if not user.groups.filter(name='Project Core Team').exists():
-        try:
-            current_users_applications = RecruitmentApplication.objects.filter(user=user)
-            for a in current_users_applications:
-                if recruitment_period.pk == a.recruitment_period.pk:
-                    return HttpResponseForbidden()
-        except (RecruitmentApplication.DoesNotExist):
-            pass
-
+   
     sort_field = request.GET.get('sort_field')
     if not sort_field:
         sort_field = 'submission_date'
     sort_ascending = request.GET.get('sort_ascending') == 'true'
 
     order_by_query = ('' if sort_ascending else '-') + sort_field
+
     application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query, '-submission_date').all().prefetch_related('roleapplication_set')
+
+    # user should be forbidden to look at applications that are not below them in hierari
+    application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
+
+
 
     search_form = RecruitmentApplicationSearchForm(request.GET or None)
     search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
@@ -405,7 +420,9 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     return render(request, template_name, {
         'recruitment_period': recruitment_period,
         'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
+        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | 
+            recruitment_period.recruitmentapplication_set.filter(interviewer2=request.user)| 
+            recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
         'paginator': paginator,
         'applications': applications,
         'now': timezone.now(),
@@ -668,7 +685,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
-        fields=('interviewer', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
+        fields=('interviewer', 'interviewer2', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
                 'rating') if request.user.has_perm('recruitment.administer_recruitment_applications') else (
         'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document', 'rating'),
         widgets={
@@ -689,6 +706,11 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
     if 'interviewer' in interview_planning_form.fields:
         interview_planning_form.fields['interviewer'].choices = [('', '---------')] + [
             (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
+    if 'interviewer2' in interview_planning_form.fields:
+        interview_planning_form.fields['interviewer2'].choices = [('', '---------')] + [
+            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+
 
     RoleDelegationForm = modelform_factory(
         RecruitmentApplication,

@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'polymorphic',
     'events',
     'companies',
     'fair',
@@ -48,6 +49,7 @@ INSTALLED_APPS = (
     'register',
     'matching',
     'student_profiles',
+    'transportation',
 )
 
 

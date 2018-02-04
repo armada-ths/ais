@@ -1,4 +1,4 @@
-Django
+Django==1.11
 django-cas-client
 psycopg2
 setuptools
@@ -6,6 +6,7 @@ uWSGI
 wheel
 ldap3
 django-crispy-forms
+django-polymorphic
 Pillow
 raven
 requests
