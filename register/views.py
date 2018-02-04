@@ -173,7 +173,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                form1=form1,
                                                form2=form2,
                                                form3=form3,
-                                               contract_url=contract.contract.url
+                                               contract_url=contract.contract.url if contract else None
                                                ))
 
 
@@ -351,7 +351,7 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
                 return redirect('anmalan:submitted')
 
     # Default behaviour on a get request. Show the complete registration
-    return ('register/registration.html', dict(contract_url=contract.contract.url,
+    return ('register/registration.html', dict(contract_url=contract.contract.url if contract else None,
                                                complete_registration_open= True,
                                                product_type_order_forms=product_type_order_forms,
                                                electricity_order = electricity_order,
