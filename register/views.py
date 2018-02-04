@@ -173,7 +173,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                form1=form1,
                                                form2=form2,
                                                form3=form3,
-                                               contract_url=contract.contract.url
+                                               contract_url=contract.contract.url if contract else None
                                                ))
 
 
@@ -351,7 +351,7 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
                 return redirect('anmalan:submitted')
 
     # Default behaviour on a get request. Show the complete registration
-    return ('register/registration.html', dict(contract_url=contract.contract.url,
+    return ('register/registration.html', dict(contract_url=contract.contract.url if contract else None,
                                                complete_registration_open= True,
                                                product_type_order_forms=product_type_order_forms,
                                                electricity_order = electricity_order,
@@ -398,7 +398,7 @@ def home(request, template_name='register/registration.html'):
             complete_registration_open = fair.complete_registration_start_date < timezone.now() and fair.complete_registration_close_date > timezone.now()
             complete_registration_closed = fair.complete_registration_close_date < timezone.now()
 
-            contract = SignupContract.objects.get(fair=fair, current=True)
+            contract = SignupContract.objects.filter(fair=fair, current=True).first()
             contact = Contact.objects.get(user=request.user)
             company = contact.belongs_to
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
