@@ -30,7 +30,7 @@ class Company(models.Model):
         verbose_name_plural = 'Companies'
         ordering = ['name']
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name='Organisation name')
     organisation_number = models.CharField(max_length=100)
     website = models.CharField(max_length=300, blank=True)
     phone_number = models.CharField(max_length=300, blank=True)
