@@ -73,15 +73,15 @@
                           </li>
                           <li>
                             <h5><span class="aterix h-red">*</span> Organisation number:</h5>
-                            <div class="input-field">{{ company.organisation_number }}
+                            <div class="input-field">{{ company.organisation_number }}</div>
                           </li>
                           <li>
                             <h5>Type of organisation:</h5>
-                            <div class="input-field">{{ company.organisation_type }}
+                            <div class="input-field">{{ company.organisation_type }}</div>
                           </li>
                           <li>
                             <h5>Webpage:</h5>
-                            {{ company.website }}
+                              <div class="input-field">{{ company.website }}</div>
                           </li>
                           <li class="address">
                             <h5><span class="aterix h-red">*</span> Address:</h5>
@@ -154,33 +154,33 @@
                 <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
                   <li>
                     <h5><span class="aterix h-red">*</span> Name:</h5>
-                    {{ contact.name }}
+                    <div class="input-field">{{ contact.name }}</div>
                   </li>
-
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Title:</h5>
-                    {{ contact.title }}
-                  </li>
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
-                    {{ contact.work_phone }}
-                  </li>
-                  <li>
-                    <h5>Cell phone number:</h5>
-                    {{ contact.cell_phone }}
-                  </li>
-                  <!--<li>
-                    <h5>Phone switchboard:</h5>
-                    {{ form.phone_switchboard }}
-                  </li>-->
                   <li>
                     <h5><span class="aterix h-red">*</span> E­mail:</h5>
-                    {{ contact.contact_email }}
+                    <div class="input-field">{{ contact.email }}</div>
                   </li>
                   <!--<li>
                     <h5>Alternative e­mail address:</h5>
-                    {{ form.alternative_email }}
+                    <div class="input-field">{{ contact.alternative_email }}</div>
                   </li>-->
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Title:</h5>
+                    <div class="input-field">{{ contact.title }}</div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
+                    <div class="input-field">{{ contact.work_phone }}</div>
+                  </li>
+                  <li>
+                    <h5>Cell phone number:</h5>
+                    <div class="input-field">{{ contact.cell_phone }}</div>
+                  </li>
+                  <!--<li>
+                    <h5>Phone switchboard:</h5>
+                    <div class="input-field">{{ contact.phone_switchboard }}</div>
+                  </li>-->
+
                   <div id="editContactTrigger" class="toggleEdit btn-green"> Edit contact info </div>
                 </ul>
                 <a href={% url 'anmalan:change_password' %}> Change Password </a>
