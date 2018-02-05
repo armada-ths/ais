@@ -61,8 +61,8 @@ class Company(models.Model):
 class InvoiceDetails(models.Model):
     company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='invoice_details')
     reference = models.CharField(max_length=200, blank=True)
-    purchase_order_number = models.CharField(max_length=200, blank=True)
     reference_phone_number = models.CharField(max_length=200, blank=True)
+    purchase_order_number = models.CharField(max_length=200, blank=True)
     organisation_name = models.CharField(max_length=200, blank=True)
     address = models.CharField(max_length=200, blank=True)
     address_po_box = models.CharField(max_length=200, blank=True)
