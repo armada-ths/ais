@@ -62,11 +62,9 @@
               {% if not signed_up %}
               <form method="post" enctype="multipart/form-data">{% csrf_token %}
               {% endif %}
-
                 <h3>Company Information</h3>
                         <div class="list-unstyled form-to-edit editable-form hidden" id="organistaionEditable">
                             {{ company_form | crispy }}
-
                         </div>
                         <ul class="list-unstyled form-to-edit no-editable-form visible" id="organisationNoEditable">
                           <li>
@@ -75,15 +73,15 @@
                           </li>
                           <li>
                             <h5><span class="aterix h-red">*</span> Organisation number:</h5>
-                            <div class="input-field">{{ company.organisation_number }}
+                            <div class="input-field">{{ company.organisation_number }}</div>
                           </li>
                           <li>
                             <h5>Type of organisation:</h5>
-                            <div class="input-field">{{ company.organisation_type }}
+                            <div class="input-field">{{ company.organisation_type }}</div>
                           </li>
                           <li>
                             <h5>Webpage:</h5>
-                            {{ company.website }}
+                              <div class="input-field">{{ company.website }}</div>
                           </li>
                           <li class="address">
                             <h5><span class="aterix h-red">*</span> Address:</h5>
@@ -97,38 +95,55 @@
                           </li>
                           {% if contact.confirmed %}
                             <div id="editOrganisationTrigger" class="toggleEdit btn-green"> Edit company info </div>
+                          {% else %}
+                            <p><span class="text-danger"> To edit your company info your user needs to be confirmed. Please contact us.</span> </p>
                           {% endif %}
                         </ul>
 
 
-
-
-
-
-
-
-
-
-
-
                 {% if contact.confirmed %}
                 {% if exhibitor %}
-                <h3> Invoice Details </h3>
-                <p> Organisation Name: {{exhibitor.invoice_details.organisation_name}} </p>
-                <p> Reference: {{exhibitor.invoice_details.reference}} </p>
-                <p> Purchase Order Number: {{exhibitor.invoice_details.purchase_order_number}} </p>
-                <p> Reference Phone Number: {{exhibitor.invoice_details.reference_phone_number}} </p>
-                <p> Address: {{exhibitor.invoice_details.address}} </p>
-                <p> Address Po Box: {{exhibitor.invoice_details.address_po_box}} </p>
-                <p> Address Zip Code: {{exhibitor.invoice_details.address_zip_code}} </p>
-                <p> Identification: {{exhibitor.invoice_details.identification}} </p>
-                <p> Additional Information: {{exhibitor.invoice_details.additional_information}} </p>
+                        <h3>Invoice Details</h3>
+                        <div class="list-unstyled form-to-edit editable-form hidden" id="invoiceEditable">
+                          {{ invoice_details_form | crispy }}
+                        </div>
+                        <ul class="list-unstyled form-to-edit no-editable-form visible" id="invoiceNoEditable">
+                          <li>
+                            <h5><span class="aterix h-red">*</span> Invoice reference:</h5>
+                            <div class="input-field">{{ exhibitor.invoice_details.reference }}</div>
+                          </li>
+                          <li>
+                            <h5><span class="aterix h-red">*</span> Reference phone number:</h5>
+                              <div class="input-field">{{ exhibitor.invoice_details.reference_phone_number }}</div>
+                          </li>
+                          <li>
+                            <h5><span class="aterix h-red">*</span> Invoice reference number/PO-number:</h5>
+                              <div class="input-field">{{ exhibitor.invoice_details.purchase_order_number}}</div>
+                          </li>
+                          <li>
+                            <h5><span class="aterix h-red">*</span> Invoice organization name:</h5>
+                              <div class="input-field">{{ exhibitor.invoice_details.organisation_name }}</div>
+                          </li>
+                          <li>
+                            <h5><span class="aterix h-red">*</span> Invoice address:</h5>
+                            <div class="input-field">
+                              {{ exhibitor.invoice_details.address }}
+                              {{ exhibitor.invoice_details.address_zip_code }}
+                              {{ exhibitor.invoice_details.address_po_box }}
+                            </div>
+                          </li>
+                          <li>
+                            <h5>Invoice identification:</h5>
+                            <div class="input-field">{{exhibitor.invoice_details.identification}}</div>
+                          </li>
+                          <li>
+                            <h5>Invoice additional information:</h5>
+                              <div class="input-field">{{ exhibitor.invoice_details.additional_information }}</div>
+                          </li>
+                          <div id="editInvoiceToggle" class="toggleEdit btn-green"> Edit invoice details</div>
+                        </ul>
                 {% endif %}
-                {% else %}
-                <p><span class="text-danger"> To edit your company info your user needs to be confirmed. Please contact us.</span> </p>
                 {% endif %}
-
-
 
 
 
@@ -139,55 +154,36 @@
                 <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
                   <li>
                     <h5><span class="aterix h-red">*</span> Name:</h5>
-                    {{ contact.name }}
+                    <div class="input-field">{{ contact.name }}</div>
                   </li>
-
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Title:</h5>
-                    {{ contact.title }}
-                  </li>
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
-                    {{ contact.work_phone }}
-                  </li>
-                  <li>
-                    <h5>Cell phone number:</h5>
-                    {{ contact.cell_phone }}
-                  </li>
-                  <!--<li>
-                    <h5>Phone switchboard:</h5>
-                    {{ form.phone_switchboard }}
-                  </li>-->
                   <li>
                     <h5><span class="aterix h-red">*</span> E­mail:</h5>
-                    {{ contact.contact_email }}
+                    <div class="input-field">{{ contact.email }}</div>
                   </li>
                   <!--<li>
                     <h5>Alternative e­mail address:</h5>
-                    {{ form.alternative_email }}
+                    <div class="input-field">{{ contact.alternative_email }}</div>
                   </li>-->
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Title:</h5>
+                    <div class="input-field">{{ contact.title }}</div>
+                  </li>
+                  <li>
+                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
+                    <div class="input-field">{{ contact.work_phone }}</div>
+                  </li>
+                  <li>
+                    <h5>Cell phone number:</h5>
+                    <div class="input-field">{{ contact.cell_phone }}</div>
+                  </li>
+                  <!--<li>
+                    <h5>Phone switchboard:</h5>
+                    <div class="input-field">{{ contact.phone_switchboard }}</div>
+                  </li>-->
+
                   <div id="editContactTrigger" class="toggleEdit btn-green"> Edit contact info </div>
                 </ul>
-
                 <a href={% url 'anmalan:change_password' %}> Change Password </a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                 {% if not signed_up %}

@@ -14,8 +14,8 @@ class Contact(models.Model):
     email = models.EmailField(max_length=200)
     alternative_email = models.EmailField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)  # work title, such as CEO or HR.
-    cell_phone = models.CharField(max_length=200, blank=True)
     work_phone = models.CharField(max_length=200)
+    cell_phone = models.CharField(max_length=200, blank=True)
     active = models.BooleanField(default=True)  # if the contact is active
     confirmed = models.BooleanField(default=False)  # (means Armada KAM have confirmed and they are allowed to change company info)
     phone_switchboard = models.CharField(max_length=200, null=True, blank=True)
@@ -61,8 +61,8 @@ class Company(models.Model):
 class InvoiceDetails(models.Model):
     company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='invoice_details')
     reference = models.CharField(max_length=200, blank=True)
-    purchase_order_number = models.CharField(max_length=200, blank=True)
     reference_phone_number = models.CharField(max_length=200, blank=True)
+    purchase_order_number = models.CharField(max_length=200, blank=True)
     organisation_name = models.CharField(max_length=200, blank=True)
     address = models.CharField(max_length=200, blank=True)
     address_po_box = models.CharField(max_length=200, blank=True)

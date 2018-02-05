@@ -178,7 +178,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
 
 
 def get_product_list_and_price(exhibitor):
-    """ 
+    """
     Get a list of all products that the exhibitor has ordered and the total price of them.
     returns a tuple: product_list, total_price
     """
@@ -188,8 +188,8 @@ def get_product_list_and_price(exhibitor):
     return product_list, total_price
 
 def create_orders_for_included_products(fair, exhibitor):
-    """ 
-    Some products are marked as included for everyone. 
+    """
+    Some products are marked as included for everyone.
     If these products are not added to exhibitor, they will be added
     """
     included_products = Product.objects.filter(included_for_all=True, fair=fair)
@@ -201,7 +201,7 @@ def create_orders_for_included_products(fair, exhibitor):
             Order.objects.create(exhibitor=exhibitor, product=product, amount=1)
 
 def get_product_type_order_forms(request, exhibitor, forms):
-    """ 
+    """
     Get a list of order forms, grouped by their product category
     """
     product_type_order_forms = []
@@ -214,7 +214,7 @@ def get_product_type_order_forms(request, exhibitor, forms):
     return product_type_order_forms
 
 
-def save_complete_registration(product_type_ordor_forms, electricity_order, transportation_form, 
+def save_complete_registration(product_type_order_forms, electricity_order, transportation_form, 
         inbound_transportation_order_form, outbound_transportation_order_form):
     """ Validate and try to save all the provided forms """
 
@@ -223,7 +223,7 @@ def save_complete_registration(product_type_ordor_forms, electricity_order, tran
         for order_form in order_forms:
             if order_form.is_valid():
                 order_form.save()
-    
+
     if electricity_order.is_valid():
         electricity_order.save()
 
@@ -297,7 +297,7 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
     ===============
     The complete registration is where already signed up companies with contacts
     can make their final selection of products and send in important info such as
-    invoice address ('faktura' in SWE). 
+    invoice address ('faktura' in SWE).
 
     Extra Info
      ----------------
@@ -313,7 +313,7 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
     ######### Create required forms ##########
     forms = [] # this is a list of all forms that is used to collect all errors on start page
     product_type_order_forms = get_product_type_order_forms(request, exhibitor, forms)
-    electricity_order = ElectricityOrderForm(exhibitor, request.POST or None, 
+    electricity_order = ElectricityOrderForm(exhibitor, request.POST or None,
             instance = ElectricityOrder.objects.filter(exhibitor=exhibitor).first(), prefix='electricity')
     forms.append(electricity_order)
     transportation_form = TransportationForm(request.POST or None, instance=exhibitor, prefix='transportation_alternatives')
@@ -369,13 +369,13 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
 
 def home(request, template_name='register/registration.html'):
     """
-    If there is no logged in company user that is associated with a contact object, 
+    If there is no logged in company user that is associated with a contact object,
     they will be logged out and redirected to the index page.
 
-    This view controls what stage the registration is in. 
+    This view controls what stage the registration is in.
     There are five different stages:
     1. Before any registration is open, this is just when a new fair has been created and the registration period has not started yet.
-    2. The preliminary registration period has started. 
+    2. The preliminary registration period has started.
     3. The preliminary registration period has ended and the complete registration has not opened yet. Note that it is possible to have overlapping
         preliminary and complete registration periods. Then this stage would not exist.
     4. The  complete registration has opened.
@@ -437,8 +437,8 @@ def home(request, template_name='register/registration.html'):
 
             #needs to start check if complete is opened as that should override preliminary
             # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
-            kwargs = dict(common_forms=forms, company_form=company_form, profile_form=profile_form, 
-                        survey_form=survey_form, invoice_details_form=invoice_details_form, contact_form=contact_form, 
+            kwargs = dict(common_forms=forms, company_form=company_form, profile_form=profile_form,
+                        survey_form=survey_form, invoice_details_form=invoice_details_form, contact_form=contact_form,
                         contact=contact, company=company, exhibitor=exhibitor, fair=fair, signed_up=signed_up)
 
             if complete_registration_open:
@@ -465,7 +465,7 @@ def home(request, template_name='register/registration.html'):
             if registration_closed and not signed_up:
                 kwargs.update(dict(registration_closed=registration_closed, signed_up=signed_up))
                 return render(request, template_name, kwargs)
-                
+
             if pre_preliminary:
                 # this should be basically nothing. Just return with variable, or return a specific template
                 kwargs.update(dict(pre_preliminary = pre_preliminary))
@@ -483,6 +483,3 @@ def home(request, template_name='register/registration.html'):
                     return render(request, template_name, kwargs)
 
     return redirect('anmalan:index')
-
-
-
