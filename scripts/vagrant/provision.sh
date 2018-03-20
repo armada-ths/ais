@@ -17,18 +17,24 @@ silent sudo apt-get update
 
 echo "Installing dependencies..."
 cd /vagrant
-silent sudo apt-get install -y libpq-dev
-silent sudo apt-get install -y python3-pip
+silent sudo apt-get install -y libpq-dev python3-pip postgresql postgresql-contrib
 silent sudo pip3 install virtualenv
 silent virtualenv ais_venv
 silent source ais_venv/bin/activate
 silent pip3 install -r requirements.txt
 
+echo "Setting up database..."
+echo "create user ais password 'ais';" | silent sudo -u postgres psql
+silent sudo -u postgres createdb ais
+echo "grant all privileges on database ais to ais;" | silent sudo -u postgres psql
+export PGPASSWORD=ais
+silent psql -h 127.0.0.1 -U ais < /vagrant/scripts/vagrant/ais.sql
+
 echo "Configuring..."
 silent python manage.py migrate --settings local_settings
 silent python manage.py makemigrations --settings local_settings
 silent python manage.py migrate --settings local_settings
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', '', 'admin')" | silent python manage.py shell --settings local_settings
+#echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', '', 'admin')" | silent python manage.py shell --settings local_settings
 
 echo "Sprinkling magic..."
 echo "cd /vagrant" >> ~/.bashrc
