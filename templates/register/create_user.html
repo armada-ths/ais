@@ -20,19 +20,20 @@
             <div class="col-md-12">
                 <h1>Create a new account</h1>
             </div>
-        </div>
+	</div>
         <div class="row">
-          <div class="col-md-12">
-            <a href="{% url 'anmalan:create_company' %}">
-              <p>Not in the company list? Create a new company profile here</p>
-            </a>
+	    <div class="col-md-8">
+              <a href="{% url 'anmalan:create_company' %}">
+                <p>Not in the company list? Create a new company profile here!</p>
+              </a>
+	    </div>
           </div>
-        </div>
         <div class="row">
           <div class="col-md-12">
             <form method="post">
               {% csrf_token %} {{ contact_form | crispy }} {{ user_form | crispy }}
-              <button type="submit" class="btn btn-success">Submit</button>
+	      <p align="left">* Required fields</p>
+	      <button type="submit" class="btn btn-success">Submit</button>
               <a href="{% url 'anmalan:index' %}"><button type="button" class="btn btn-default">Back</button></a>
             </form>
           </div>

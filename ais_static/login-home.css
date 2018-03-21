@@ -39,6 +39,12 @@ h1,h2,h3,h4, .input, .forgot-password, .btn-green, .box-danger, .important, .mai
 	text-transform: uppercase;	
 }
 
+h3 {
+	font-size: 2em;
+	color: #00d791;
+	margin-top: 0;
+}
+
 h2 {
 	font-size: 42px;
 	margin-top: 2px;
@@ -56,14 +62,14 @@ h1 {
 
 .btn-green:hover, .btn-green:focus {
 	display: block;
-	color: #333;
+	color: #fff;
 	background: #00b276;
 	border: none 
 }
 
 .btn-green {
 	background-color: #00d791;
-	color: #fff;
+	color: #2d2d2c;
 	border: none;
 	font-size: 21px;
 	padding: 6px 22px;
