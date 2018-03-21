@@ -78,11 +78,11 @@
                             </li>
                             <li>
                                 <h5><span class="aterix h-red">*</span> Organisation number:</h5>
-                                <div class="input-field">{{ company.organisation_number }}
+                                <div class="input-field">{{ company.organisation_number }}</div>
                             </li>
                             <li>
                                 <h5>Type of organisation:</h5>
-                                <div class="input-field">{{ company.organisation_type }}
+                                <div class="input-field">{{ company.organisation_type }}</div>
                             </li>
                             <li>
                                 <h5>Webpage:</h5>
@@ -136,6 +136,8 @@
                                     <li>
                                         <h5> Address Zip Code: </h5>
                                         <div class="input-field"> {{exhibitor.invoice_details.address_zip_code}} </div>
+                                    </li>
+                                    <li>
                                         <h5> Identification: </h5>
                                         <div class="input-field"> {{exhibitor.invoice_details.identification}} </div>
                                     </li>
@@ -211,13 +213,13 @@
                             <div class="row">
                                 <div class="col-md-11">
                                     <button type="submit" name="save" class="btn btn-armada btn-armada-green btn-block" id="save-button">Save all changes to registration</button>
-                </form>
-                        {% endif %}
                                 </div>
                             </div>
+                </form>
+                        {% endif %}
                     </div>
                 </div>
-			</div>
+            </div>
         </div>
-    </div>
+	</div>
 </div>
