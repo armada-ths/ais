@@ -138,14 +138,15 @@ class ProfileForm(ModelForm):
         self.fields['registration_year'].required = True
         self.fields['programme'].required = True
         self.fields['phone_number'].required = True
+        self.fields['picture_original'].required = True
 
     class Meta:
         model = Profile
         fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url', 'picture_original')
 
         labels = {
-            'linkedin_url': 'Link to your LinkedIn-profile',
-            'picture_original': 'Please upload a picture of yourself'
+            'linkedin_url': 'Link to your LinkedIn profile',
+            'picture_original': 'A picture of yourself'
         }
 
         widgets = {
