@@ -25,44 +25,49 @@
             </div>
             <div class="collapse navbar-collapse" id="navHeaderCollapse">
                 <ul class="nav navbar-nav">
-
-
-                        {% if perms.people.view_people %}
-                            {% block nav-people %}
-                                <li role="presentation"><a href="{% url 'people' fair.year %}">People</a></li>
-                            {% endblock %}
-                        {% endif %}
-
-                    {% if perms.exhibitors.view_exhibitors %}
-                        {% block nav-exhibitors %}
-                        <li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+                    {% if perms.people.base %}
+                        {% block nav-people %}
+                            <li role="presentation"><a href="{% url 'people' fair.year %}">People</a></li>
                         {% endblock %}
                     {% endif %}
 
-                    {% if perms.banquet.banquet_view_permission %}
+                    {% if perms.exhibitors.base %}
+                        {% block nav-exhibitors %}
+                            <li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+                        {% endblock %}
+                    {% endif %}
+
+                    {% if perms.banquet.base %}
                         {% block nav-banquet %}
-                        <li role="presentation"><a href="{% url 'banquet' fair.year %}">Banquet</a></li>
+                            <li role="presentation"><a href="{% url 'banquet' fair.year %}">Banquet</a></li>
                         {% endblock %}
                     {% endif %}
 
                     {% block nav-events %}
-                        <li role="presentation"><a href="{% url 'event_list' fair.year %}">Events</a></li>{% endblock %}
+                        <li role="presentation"><a href="{% url 'event_list' fair.year %}">Events</a></li>
+                    {% endblock %}
+                    
                     {% block nav-recruitment %}
-                        <li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>{% endblock %}
+                        <li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+                    {% endblock %}
+                    
                     {% if perms.news %}
                         {% block nav-news %}
-                            <li role="presentation"><a href="{% url 'news' fair.year %}">News</a></li>{% endblock %}
+                            <li role="presentation"><a href="{% url 'news' fair.year %}">News</a></li>
+                        {% endblock %}
                     {% endif %}
-                    {% if perms.sales %}
-                    {% block nav-sales %}
-                        <li role="presentation"><a href="{% url 'sales' fair.year %}">Sales</a></li>{% endblock %}
+                    
+                    {% if perms.sales.base %}
+                        {% block nav-sales %}
+                            <li role="presentation"><a href="{% url 'sales' fair.year %}">Sales</a></li>
+                        {% endblock %}
                     {% endif %}
 
-
-                {% if perms.orders.view_products %}
-                    {% block nav-products %}
-                        <li role="presentation"><a href="{% url 'products' fair.year %}">Products</a></li>{% endblock %}
-                {% endif %}
+                    {% if perms.orders.base %}
+                        {% block nav-products %}
+                            <li role="presentation"><a href="{% url 'products' fair.year %}">Products</a></li>
+                        {% endblock %}
+                    {% endif %}
                 </ul>
                 <p class="navbar-text navbar-right"><strong><a href="{% url 'view_person' fair.year request.user.pk %}"
                                                                style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong>

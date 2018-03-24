@@ -3,6 +3,15 @@ from django.contrib.auth.models import User
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 
+class Banquet(models.Model):
+    fair = models.ForeignKey(Fair, default=1, on_delete=models.CASCADE)
+    
+    class Meta:
+        permissions = (('base', 'Banquet'),)
+
+    def __str__(self):
+        return 'Banquet %s' % (self.fair.year)
+
 class BanquetTable(models.Model):
     fair = models.ForeignKey(Fair, default=1, on_delete=models.CASCADE)
     table_name = models.CharField(max_length=60, null=True, blank=True)

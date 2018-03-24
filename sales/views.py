@@ -10,7 +10,6 @@ from recruitment.models import RecruitmentApplication
 from companies.models import Company
 from register.models import SignupLog
 
-
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
@@ -28,13 +27,12 @@ class ImportForm(forms.ModelForm):
         model = Sale
         fields = ('fair',)
 
-
 class SaleCommentForm(forms.ModelForm):
     class Meta:
         model = SaleComment
         fields = '__all__'
 
-
+@permission_required('sales.base')
 def sales_list(request, year, template_name='sales/sales_list.html'):
     fair = get_object_or_404(Fair, year=year)
     sales = Sale.objects.filter(fair=fair).order_by('company__name')
@@ -43,7 +41,7 @@ def sales_list(request, year, template_name='sales/sales_list.html'):
     signedup = [signup.company.name for signup in signups]
     return render(request, template_name, {'sales': sales, 'fair': fair, 'my_sales': my_sales, 'signedup': signedup })
 
-
+@permission_required('sales.base')
 def sale_edit(request, year, pk=None, template_name='sales/sale_form.html'):
     fair = get_object_or_404(Fair, year=year)
     sale = None
@@ -60,6 +58,7 @@ def sale_edit(request, year, pk=None, template_name='sales/sale_form.html'):
         return redirect('sales', fair.year)
     return render(request, template_name, {'form': form, 'sale': sale, 'fair':fair})
 
+@permission_required('sales.base')
 def import_companies(request, year):
     fair = get_object_or_404(Fair, year=year)
     form = ImportForm(request.POST or None)
@@ -71,8 +70,7 @@ def import_companies(request, year):
         return redirect('sales', fair.year)
     return render(request, 'sales/sale_form.html', {'form':form, 'fair':fair})
 
-
-
+@permission_required('sales.base')
 def sale_show(request, year,pk, template_name='sales/sale_show.html'):
     fair = get_object_or_404(Fair, year=year)
     sale = get_object_or_404(Sale, pk=pk)
@@ -89,14 +87,14 @@ def sale_show(request, year,pk, template_name='sales/sale_show.html'):
                                             'fair':fair,
                                             'signups':signups})
 
-
+@permission_required('sales.base')
 def sale_delete(request, year, pk, template_name='sales/sale_delete.html'):
     fair = get_object_or_404(Fair, year=year)
     sale = get_object_or_404(Sale, pk=pk)
     sale.delete()
     return redirect('sales', fair.year)
 
-
+@permission_required('sales.base')
 def sale_comment_create(request, year, pk, template_name='sales/sale_show.html'):
     fair = get_object_or_404(Fair, year=year)
     sale = get_object_or_404(Sale, pk=pk)
@@ -107,8 +105,7 @@ def sale_comment_create(request, year, pk, template_name='sales/sale_show.html')
     comment.save()
     return redirect('sale_show', year, pk)
 
-
-
+@permission_required('sales.base')
 def sale_comment_delete(request, year, sale_pk, comment_pk):
     comment = get_object_or_404(SaleComment, pk=comment_pk)
     comment.delete()

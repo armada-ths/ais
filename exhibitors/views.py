@@ -26,9 +26,9 @@ def user_can_modify_exhibitor(user, exhibitor):
     return user.has_perm(
         'exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
 
-@permission_required('exhibitors.view_exhibitors', raise_exception=True)
+@permission_required('exhibitors.base')
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
-    if not request.user.has_perm('exhibitors.view_exhibitors'):
+    if not request.user.has_perm('exhibitors.base'):
         return HttpResponseForbidden()
     fair = get_object_or_404(Fair, year=year)
 
@@ -45,7 +45,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     })
 
 
-@permission_required('exhibitors.view_exhibitors', raise_exception=True)
+@permission_required('exhibitors.base')
 def edit_view(request, year, template_name='exhibitors/edit_view.html'):
     view = ExhibitorView.objects.filter(user=request.user).first()
     form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)

@@ -41,6 +41,9 @@ class Sale(models.Model):
     def __str__(self):
         return '%s at %s ' % (self.company.name, self.fair)
 
+    class Meta:
+        permissions = (('base', 'Sales'),)
+
 
 class SaleComment(models.Model):
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE)

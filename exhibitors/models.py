@@ -103,7 +103,7 @@ class Exhibitor(models.Model):
 
 
     class Meta:
-        permissions = (('view_exhibitors', 'View exhibitors'),)
+        permissions = (('base', 'Exhibitors'),)
 
 
 class ExhibitorView(models.Model):
