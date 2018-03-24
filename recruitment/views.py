@@ -10,6 +10,7 @@ from django.template.defaultfilters import date as date_filter
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 import json
 import requests as r
@@ -698,6 +699,9 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
             'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M', attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}),
             'scorecard' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
             'drive_document' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
+        },
+        labels = {
+            'drive_document': _('Interview document'),
         }
     )
 
