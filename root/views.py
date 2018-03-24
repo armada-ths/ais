@@ -17,7 +17,7 @@ def login_redirect(request):
         contact  = Contact.objects.filter(user=request.user).first()
         if not contact is None:
             return redirect('anmalan:home')
-        return redirect('home', 2017)
+        return redirect('home', 2018)
 
     return render(request, 'login.html', {
         'next': next,
