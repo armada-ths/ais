@@ -20,3 +20,8 @@
 .bigger-button {
 	font-size: 1.35em;
 }
+.bigger-button:hover, .bigger-button:focus {
+	color: #fff;
+	background: #00b771;
+	border:none;
+}

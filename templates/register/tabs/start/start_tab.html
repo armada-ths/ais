@@ -2,199 +2,224 @@
 
 <div class="registration-tab-pane" id="start">
 
-        <div class="row">
-            <div class="col-md-12">
-                <h1> Welcome to {{ fair }}! </h1>
-             </div>
-            <!-- Here we can write general info in a box or something -->
+    <div class="row">
+        <div class="col-md-12">
+            <h1> Welcome to {{ fair }}! </h1>
+        </div>
+        <!-- Here we can write general info in a box or something -->
+    </div>
+
+    <!--This next row section has two sections, the signup to the left and the company/contact information to the right -->
+    <div class="row contract-company-contact-row">
+        {% for form in forms %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-block alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% for form in common_forms %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-block alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Contract/Contact us column -->
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-11 col-md-offset-1" id="company-contract-div">
+                    <h3>Contract</h3>                    
+                    <!-- Before preliminary registration has opened -->
+                    {% if pre_preliminary %}
+                        {% include 'register/tabs/start/pre_preliminary.html' %}
+                    {% endif %}
+                    <!-- When preliminary registration is opened -->
+                    {% if registration_open %}
+                        {% include 'register/tabs/start/preliminary.html' %}
+                    {% endif %}
+                    <!-- When preliminary registration has closed -->
+                    {% if registration_closed %}
+                        {% include 'register/tabs/start/between_preliminary_and_complete.html' %}
+                    {% endif %}
+                    <!-- When complete registration is opened -->
+                    {% if complete_registration_open %}
+                        {% include 'register/tabs/start/complete.html' %}
+                    {% endif %}
+                    <!-- When complete registration has closed -->
+                    {% if complete_registration_closed %}
+                        {% include 'register/tabs/start/complete_closed.html' %}
+                    {% endif %}
+                </div>
+
+            </div>
         </div>
 
-        <!--This next row section has two sections, the signup to the left and the company/contact information to the right -->
-        <div class="row">
-
-            {% for form in forms %}
-                {% if form.non_field_errors %}
-                    <div class="alert alert-block alert-danger">
-                    {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-            {% for form in common_forms %}
-                {% if form.non_field_errors %}
-                    <div class="alert alert-block alert-danger">
-                    {{ form.non_field_errors }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-
-
-
-            <!-- Before preliminary registration has opened -->
-            {% if pre_preliminary %}
-                {% include 'register/tabs/start/pre_preliminary.html' %}
+        <!-- Company/Contact column -->
+        <div class="col-md-6">
+            {% if not signed_up %}
+                <form method="post" enctype="multipart/form-data">{% csrf_token %}
             {% endif %}
-            <!-- When preliminary registration is opened -->
-            {% if registration_open %}
-                {% include 'register/tabs/start/preliminary.html' %}
-            {% endif %}
-
-            <!-- When preliminary registration has closed -->
-            {% if registration_closed %}
-                {% include 'register/tabs/start/between_preliminary_and_complete.html' %}
-            {% endif %}
-
-            <!-- When complete registration is opened -->
-            {% if complete_registration_open %}
-                {% include 'register/tabs/start/complete.html' %}
-            {% endif %}
-
-            <!-- When complete registration has closed -->
-            {% if complete_registration_closed %}
-                {% include 'register/tabs/start/complete_closed.html' %}
-            {% endif %}
-
-
-
-
-            <!-- Company/Contact column -->
-            <div class="col-md-6">
-              {% if not signed_up %}
-              <form method="post" enctype="multipart/form-data">{% csrf_token %}
-              {% endif %}
-
-                <h3>Company Information</h3>
+		
+            <div class="row">
+                <div class="col-md-11 col-md-offset-1">
+                    <!-- Company info -->
+                    <div id="company-info-div">
+                        <h3>Company Info</h3>
                         <div class="list-unstyled form-to-edit editable-form hidden" id="organistaionEditable">
                             {{ company_form | crispy }}
-
                         </div>
                         <ul class="list-unstyled form-to-edit no-editable-form visible" id="organisationNoEditable">
-                          <li>
-                            <h5><span class="aterix h-red">*</span> Organisation name:</h5>
-                            <div class="input-field">{{ company }}</div>
-                          </li>
-                          <li>
-                            <h5><span class="aterix h-red">*</span> Organisation number:</h5>
-                            <div class="input-field">{{ company.organisation_number }}
-                          </li>
-                          <li>
-                            <h5>Type of organisation:</h5>
-                            <div class="input-field">{{ company.organisation_type }}
-                          </li>
-                          <li>
-                            <h5>Webpage:</h5>
-                            {{ company.website }}
-                          </li>
-                          <li class="address">
-                            <h5><span class="aterix h-red">*</span> Address:</h5>
-                            <div class="input-field">
-                              {{ company.address_street }}
-                              {{ company.address_city }}
-                              {{ company.address_zip_code }}
-                              {{ company.address_country }}
-                              {{ company.additional_address_information }}
-                            </div>
-                          </li>
-                          {% if contact.confirmed %}
-                            <div id="editOrganisationTrigger" class="toggleEdit btn-green"> Edit company info </div>
-                          {% endif %}
+                            <li>
+                                <h5><span class="aterix h-red">*</span> Organisation name:</h5>
+                                <div class="input-field">{{ company }}</div>
+                            </li>
+                            <li>
+                                <h5><span class="aterix h-red">*</span> Organisation number:</h5>
+                                <div class="input-field">{{ company.organisation_number }}</div>
+                            </li>
+                            <li>
+                                <h5>Type of organisation:</h5>
+                                <div class="input-field">{{ company.organisation_type }}</div>
+                            </li>
+                            <li>
+                                <h5>Webpage:</h5>
+                                <div class="input-field">{{ company.website }}</div>
+                            </li>
+                            <li class="address">
+                                <h5><span class="aterix h-red">*</span> Address:</h5>
+                                <div class="input-field">
+				                    {{ company.address_street }} <br>
+				                    {{ company.address_zip_code }} {{ company.address_city }}<br>
+				                    {{ company.address_country }}<br>
+                                    {{ company.additional_address_information }}
+                                </div>
+                            </li>
+                            {% if contact.confirmed %}
+                                <div id="editOrganisationTrigger" class="toggleEdit btn-green btn-edit"> Edit company info </div>
+                            {% endif %}
                         </ul>
+                    </div>
+                    
+                    <!-- Invoice details -->
+                    {% if contact.confirmed %}
+                        {% if exhibitor %}
+                            <div id="company-invoice-div">
+                                <ul class="list-unstyled form-to-edit no-editable-form visible">
+                                    <h3> Invoice Details </h3>
+                                    <li>
+                                        <h5> Organisation Name: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.organisation_name}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Reference: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.reference}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Purchase Order Number: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.purchase_order_number}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Reference Phone Number: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.reference_phone_number}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Address: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.address}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Adress Po Box: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.address_po_box}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Address Zip Code: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.address_zip_code}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Identification: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.identification}} </div>
+                                    </li>
+                                    <li>
+                                        <h5> Additional Information: </h5>
+                                        <div class="input-field"> {{exhibitor.invoice_details.additional_information}} </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% else %}
 
+                    <!-- User not confirmed -->
+                    <div class="row">
+                        <div class="confirm-user-info-box col-md-10 col-md-offset-1" id="company-confirm-div">
+                            <div class="confirm-user-info">
+                                <h4>Note</h4>
+                                <p class="important-text"> 
+                                    To edit your company info your user needs to be confirmed. Please contact us at
+                                    <a class="mail-ref-white" href="mailto:armada@ths.kth.se">armada@ths.kth.se</a> 
+                                    if this is the case.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
 
+                    <!-- Contact person -->
+                    <div id="company-contact-div">
+                        <h3>Contact Person</h3>
+                        <div class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
+                            {{ contact_form | crispy }}
+                        </div>
+                        <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
+                            <li>
+                                <h5><span class="aterix h-red">*</span> Name:</h5>
+                                <div class="input-field">{{ contact.name }}</div>
+                            </li>
+                            <li>
+                                <h5><span class="aterix h-red">*</span> Title:</h5>
+                                <div class="input-field">{{ contact.title }}</div>
+                            </li>
+                            <li>
+                                <h5><span class="aterix h-red">*</span> Phone number:</h5>
+                                <div class="input-field">{{ contact.work_phone }}</div>
+                            </li>
+                            <li>
+                                <h5>Cell phone number:</h5>
+                                <div class="input-field">{{ contact.cell_phone }}</div>
+                            </li>
+                            <!--<li>
+                                <h5>Phone switchboard:</h5>
+                                <div class="input-field"> {{ form.phone_switchboard }}</div>
+                            </li>-->
+                            <li>
+                                <h5><span class="aterix h-red">*</span> E­mail:</h5>
+                                <div class="input-field">{{ contact.email }}</div>
+                            </li>
+                            <!--<li>
+                                <h5>Alternative e­mail address:</h5>
+                                <div class="input-field">{{ form.alternative_email }}</div>
+                            </li>-->
 
+                            <!-- Change password link -->
+                            <br><a href={% url 'anmalan:change_password' %} class="important-text"> Change Password </a>
+                            <div id="editContactTrigger" class="toggleEdit btn-green btn-edit"> Edit contact person </div>
+                        </ul>
+                    </div>
 
-
-
-
-
-
-
-
-
-                {% if contact.confirmed %}
-                {% if exhibitor %}
-                <h3> Invoice Details </h3>
-                <p> Organisation Name: {{exhibitor.invoice_details.organisation_name}} </p>
-                <p> Reference: {{exhibitor.invoice_details.reference}} </p>
-                <p> Purchase Order Number: {{exhibitor.invoice_details.purchase_order_number}} </p>
-                <p> Reference Phone Number: {{exhibitor.invoice_details.reference_phone_number}} </p>
-                <p> Address: {{exhibitor.invoice_details.address}} </p>
-                <p> Address Po Box: {{exhibitor.invoice_details.address_po_box}} </p>
-                <p> Address Zip Code: {{exhibitor.invoice_details.address_zip_code}} </p>
-                <p> Identification: {{exhibitor.invoice_details.identification}} </p>
-                <p> Additional Information: {{exhibitor.invoice_details.additional_information}} </p>
-                {% endif %}
-                {% else %}
-                <p><span class="text-danger"> To edit your company info your user needs to be confirmed. Please contact us.</span> </p>
-                {% endif %}
-
-
-
-
-
-                <h3>Contact</h3>
-                <div class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
-                  {{ contact_form | crispy }}
+                    <!-- Button to submit above forms -->
+                    <div class="company-buttons">
+                        {% if not signed_up %}
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <button type="submit" name="save" class="btn btn-armada btn-armada-green btn-block" id="save-button">Save all changes to registration</button>
+                                </div>
+                            </div>
+                </form>
+                        {% endif %}
+                    </div>
                 </div>
-                <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Name:</h5>
-                    {{ contact.name }}
-                  </li>
-
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Title:</h5>
-                    {{ contact.title }}
-                  </li>
-                  <li>
-                    <h5><span class="aterix h-red">*</span> Phone number:</h5>
-                    {{ contact.work_phone }}
-                  </li>
-                  <li>
-                    <h5>Cell phone number:</h5>
-                    {{ contact.cell_phone }}
-                  </li>
-                  <!--<li>
-                    <h5>Phone switchboard:</h5>
-                    {{ form.phone_switchboard }}
-                  </li>-->
-                  <li>
-                    <h5><span class="aterix h-red">*</span> E­mail:</h5>
-                    {{ contact.contact_email }}
-                  </li>
-                  <!--<li>
-                    <h5>Alternative e­mail address:</h5>
-                    {{ form.alternative_email }}
-                  </li>-->
-                  <div id="editContactTrigger" class="toggleEdit btn-green"> Edit contact info </div>
-                </ul>
-
-                <a href={% url 'anmalan:change_password' %}> Change Password </a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                {% if not signed_up %}
-                <button type="submit" name="save" class="btn btn-armada btn-armada-green" id="save-button">Save</button>
-              </form>
-                {% endif %}
             </div>
-
         </div>
-    </div>
+	</div>
+</div>
