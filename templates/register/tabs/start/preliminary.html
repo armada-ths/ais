@@ -15,7 +15,6 @@
         <form method="post">{% csrf_token %} 
             {{ form2 | crispy }}
             {{ form1 | crispy }}
-            {{ form3 | crispy }}
               <input class="btn-signin btn-green" type="submit" value="Sign Up!" />
           </form>
         {% endif %}
