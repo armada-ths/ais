@@ -333,6 +333,7 @@ def remember_last_query_params(url_name, query_params):
 
 
 def eligible_to_see_application(application, user):
+    return True
     """ 
     This function checks if the user should have the right to see the application.
     It is based on that the user should have right to see it if the application is for roles "below" the user in the 
