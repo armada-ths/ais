@@ -75,6 +75,11 @@ label {
 	margin-right:auto;
 }
 
+.main-logo-small {
+	max-width: 100%;
+	padding-top: 30px;
+}
+
 .form-holder, .endings {
 	margin-top: 4em;
 }
