@@ -30,26 +30,32 @@
         <!-- Contract/Contact us column -->
         <div class="col-md-6">
             <div class="row">
-                <div class="col-md-11 col-md-offset-1" id="company-contract-div">
-                    <h3>Contract</h3>                    
+                <div class="col-md-11 col-md-offset-1" id="company-contract-div">                    
                     <!-- Before preliminary registration has opened -->
                     {% if pre_preliminary %}
+                        <br>
+                        <h3>Contract</h3>
                         {% include 'register/tabs/start/pre_preliminary.html' %}
                     {% endif %}
                     <!-- When preliminary registration is opened -->
                     {% if registration_open %}
+                        <br>
+                        <h3>Contract</h3>
                         {% include 'register/tabs/start/preliminary.html' %}
                     {% endif %}
                     <!-- When preliminary registration has closed -->
                     {% if registration_closed %}
+                        <h3>Contract</h3>
                         {% include 'register/tabs/start/between_preliminary_and_complete.html' %}
                     {% endif %}
                     <!-- When complete registration is opened -->
                     {% if complete_registration_open %}
+                        <h3>Contract</h3>
                         {% include 'register/tabs/start/complete.html' %}
                     {% endif %}
                     <!-- When complete registration has closed -->
                     {% if complete_registration_closed %}
+                        <h3>Contract</h3>
                         {% include 'register/tabs/start/complete_closed.html' %}
                     {% endif %}
                 </div>
