@@ -19,12 +19,16 @@
 			{% endif %}
 		{% else %}
 			<!-- Contract is not yet signed -->
-			<form class="room-form" method="post">{% csrf_token %}
-				<h4>Sign up for Armada 2018</h4>
-				{{ form2 | crispy }}
-				{{ form1 | crispy }}
-				<input class="btn-sign-contract btn-green" type="submit" value="Sign Contract" />
-			</form>
+            <div class="row">
+                <div class="col-md-11">
+        			<form class="room-form" method="post">{% csrf_token %}
+        				<h4>Sign up for Armada 2018</h4>
+        				    {{ form2 | crispy }}
+        				    {{ form1 | crispy }}
+        				<input class="btn-sign-contract btn-green" type="submit" value="Sign Contract" />
+        			</form>
+                </div>
+            </div>
 		{% endif %}
 	{% else %}
 		<!-- Contract is not available -->
