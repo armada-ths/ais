@@ -42,7 +42,10 @@ def sales_list(request, year, template_name='sales/sales_list.html'):
     signups = SignupLog.objects.filter(contract__fair=fair)
     signedup = [signup.company.name for signup in signups]
     
+    users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=fair).order_by('user__first_name', 'user__last_name')]
+    
     search_form = SalesSearchForm(request.GET or None)
+    search_form.fields['responsible'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name()) for user in users]
 
     if search_form.is_valid():
         sales_list = search_form.sales_matching_search(sales_list, fair)
