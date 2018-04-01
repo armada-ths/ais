@@ -28,9 +28,7 @@
         <div class="col-sm-12">
 
                 {% if profile_pic_form %}
-                    {% if administrator_access or application.interviewer == request.user %}
-                        {{ profile_pic_form|crispy }}
-                    {% endif %}
+                    {{ profile_pic_form|crispy }}
                 {% endif %}
 
                 <label>Registration year</label>
@@ -64,11 +62,10 @@
     </div>
     <hr>
 
-    {% if administrator_access %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <h3>Interview planning</h3>
-        {% include 'recruitment/static_form.html' with form=interview_planning_form %}
+        {{ interview_planning_form|crispy }}
 
         <hr>
 
@@ -77,27 +74,21 @@
         {% if not interview_questions_with_answers %}
             <p>No interview questions</p>
         {% endif %}
-        {% if administrator_access or request.user == application.interviewer %}
+        
         {% include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
-        {% else %}
-        {% include 'recruitment/custom_fields_static.html' with questions_with_answers=interview_questions_with_answers %}
-        {% endif %}
+        
         <hr>
 
-        {% if administrator_access %}
-            <h3>Role Delegation</h3>
-            {{ role_delegation_form|crispy }}
-            <hr>
-        {% endif %}
+        <h3>Role Delegation</h3>
+        {{ role_delegation_form|crispy }}
+        <hr>
 
 
-        {% if administrator_access or request.user == application.interviewer %}
-            <button type="submit" class="btn btn-primary">Save</button>
-            
-            <a class="btn btn-danger"
-               href="{% url 'recruitment_application_delete' fair.year application.recruitment_period.id application.id %}"
-               onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
-        {% endif %}
+        <button type="submit" class="btn btn-primary">Save</button>
+        
+        <a class="btn btn-danger"
+            href="{% url 'recruitment_application_delete' fair.year application.recruitment_period.id application.id %}"
+            onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
     </form>
 
     <h3>Comments</h3>
@@ -136,9 +127,5 @@
             </form>
         </div>
     </div>
-    
-    {% elif application.interviewer == request.user %}
-        {{ interview_planning_form|crispy }}
-    {% endif %}
     
 {% endblock %}
