@@ -17,19 +17,18 @@
 <div class="table-responsive">
     <table class="table table-striped" id="my_sales">
         <thead>
-        <tr>
-            <th>Company</th>
-            <th>Responsible</th>
-            <th>Status</th>
-            <th>Contact by</th>
-            <!-- Diversity room, GReen Room, Events, Nova -->
-            <th>DR</th> 
-            <th>GR</th> 
-            <th>E</th>
-            <th>Nova</th>
-            <th>Registered</th>
-            <th>Actions</th>
-        </tr>
+            <tr>
+                <th>Company</th>
+                <th>Responsible</th>
+                <th>Status</th>
+                <th>Contact by</th>
+                <th>DR</th> 
+                <th>GR</th> 
+                <th>E</th>
+                <th>Nova</th>
+                <th>Registered</th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
         </thead>
         {% for sale in my_sales %}
         <tr>
@@ -40,7 +39,7 @@
             {% endif %}
             <td>
             {% if sale.responsible %}
-            <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
+                <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
             {% endif %}
             </td>
             <td>{{ sale.status}}</td>
@@ -98,7 +97,7 @@
                 {% endif %}
             </td>
             <!--{% if perms.sales.change_sale %}-->
-            <td>
+            <td style="text-align: right;">
                 <a href="{% url 'sale_edit' fair.year sale.id %}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> &nbsp;
         <!--{% endif %}
             {% if perms.sales.delete_sale %}--> 
@@ -111,116 +110,119 @@
 </div>
 
 
+
+<p><br /></p>
+
+
+
 <h3>All sales</h3>
 
+<form class="search-form">
 <div class="table-responsive">
-    <table class="table table-striped", id="all_sales">
-        <thead>
+    <table class="table table-striped" id="all_sales">
+    <thead>
         <tr>
-            <th>Company</th>
-            <th>Responsible</th>
-            <th>Status</th>
-            <th>Contact by</th>
-            <th>DR</th>
-            <th>GR</th>
-            <th>E</th>
-            <th>Nova</th>
-            <th>Registered</th>
-            <th>Actions</th>
+            <input type="hidden" name="scroll_y" class="scroll_y" value="0">
+            <input type="hidden" name="sort_field" value="{{ request.GET.sort_field }}">
+            <input type="hidden" name="sort_ascending" value="{{ request.GET.sort_ascending }}">
+            <td>{{ search_form.company }}</td>
+            <td>{{ search_form.responsible }}</td>
+            <td>{{ search_form.status }}</td>
+            <td>{{ search_form.contact_by_date }}</td>
+            <td style="padding-top: 20px;">{{ search_form.diversity_room }}</td>
+            <td style="padding-top: 20px;">{{ search_form.green_room }}</td>
+            <td style="padding-top: 20px;">{{ search_form.events }}</td>
+            <td style="padding-top: 20px;">{{ search_form.nova }}</td>
+            <td style="padding-top: 20px;">{{ search_form.registered }}<br></td>
+            <td><button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search"></span> Search</button></td>
         </tr>
-       </thead>
-        {% for sale in sales %}
+        
         <tr>
-            {% if sale %}
-            <td><a href="{{sale.id}}">{{ sale.company.name }}</a></td>
-            {% else %}
-                <td>{{ company.name }}</td>
-            {% endif %}
+            {% for search_field in search_fields %}
+                <th>
+                    {{ search_field.name }}
+                </th>
+            {% endfor %}
+            <th style="text-align: right;">Actions</th>
+        </tr>
+    </thead>
+    
+    {% for sale in sales %}
+    <tr>
+        {% if sale %} <td><a href="{{sale.id}}">{{ sale.company.name }}</a></td>
+        {% else %} <td>{{ company.name }}</td> {% endif %}
 
-            <td>
+        <td>
             {% if sale.responsible %}
-            <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
+                <a href="{% url "view_person" fair.year sale.responsible.id %}">{{ sale.responsible.first_name }} {{ sale.responsible.last_name }}</a>
             {% endif %}
-            </td>
-            <td>{{ sale.status}}</td>
-            <td>
-                {% if sale.contact_by_date %}
-                    {{ sale.contact_by_date }}
-                {% endif %}
-            </td>
-            <td>{% if sale.diversity_room %}
-                    Yes
-                {% else %}
-                    No
-                {% endif%}
-            </td>
-            <td>{% if sale.green_room %}
-                    Yes
-                {% else %}
-                    No
-                {% endif%}
-            </td>
-            <td>{% if sale.events %}
-                    Yes
-                {% else %}
-                    No
-                {% endif%}
-                <!-- Hidden. This is used when searching in search field -->
-                <span style="display: none;">
-                    {% if sale.diversity_room %}
-                            Diversity room 
-                            {% endif%}
-                            {% if sale.green_room %}
-                            Green room
-                            {% endif%}
-                            {% if sale.events %}
-                            Events
-                            {% endif%}
-                            {% if sale.nova %}
-                            Nova
-                            {% endif%}
-                </span>
-            </td>
+        </td>
+        <td>{{ sale.status}}</td>
+        <td>
+            {% if sale.contact_by_date %}
+                {{ sale.contact_by_date }}
+            {% endif %}
+        </td>
+        <td>{% if sale.diversity_room %} Yes
+            {% else %} No {% endif%}
+        </td>
+        <td>{% if sale.green_room %} Yes
+            {% else %} No {% endif%}
+        </td>
+        <td>{% if sale.events %} Yes
+            {% else %} No {% endif%}
+            <!-- Hidden. This is used when searching in search field -->
+            <span style="display: none;">
+                {% if sale.diversity_room %} Diversity room  {% endif%}
+                {% if sale.green_room %} Green room {% endif%}
+                {% if sale.events %} Events {% endif%}
+                {% if sale.nova %} Nova {% endif%}
+            </span>
+        </td>
 
-            <td>
-                {% if sale.nova %}
-                    Yes
-                {% else %}
-                    No
-                {% endif%}
-            </td>
-            <td>
-                {% if sale.company.name in signedup %}
-                    Preliminary
-                {% else %}
-                    Not registered
-                {% endif %}
-            </td>
-            <!--{% if perms.sales.change_sale %}-->
-            <td>
-                <a href="{% url 'sale_edit' fair.year sale.id %}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> &nbsp;
-	    <!--{% endif %}
-            {% if perms.sales.delete_sale %}--> 
-                <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-            </td>
-	    <!--{% endif %}-->
-        </tr>
-        {% endfor %}
-    </table>
+        <td>
+            {% if sale.nova %} Yes
+            {% else %} No {% endif%}
+        </td>
+        <td>
+            {% if sale.company.name in signedup %} Preliminary
+            {% else %} Not registered {% endif %}
+        </td>
+        <!--{% if perms.sales.change_sale %}-->
+        <td style="text-align: right;">
+            <a href="{% url 'sale_edit' fair.year sale.id %}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a> &nbsp;
+    <!--{% endif %}
+        {% if perms.sales.delete_sale %}--> 
+            <a href="{% url 'sale_delete' fair.year sale.id %}" onclick="return confirm('Are you sure you wan\'t to delete?')"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+        </td>
+    <!--{% endif %}-->
+    </tr>
+    {% endfor %}
+</table>
 </div>
+</form>
+
 {% endblock %}
 {% block scripts %}
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
     <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
     <script>
-        $(document).ready(function () {
-            $('#my_sales').DataTable({
-                'paging': false
-            }),
-            $('#all_sales').DataTable({
-                'paging': false
-            })
-        })
+        $(function()
+        {
+            $('#my_sales').DataTable(
+            {
+                'paging': false,
+                'columnDefs': [{ 'orderable': false, 'targets': 9 }]
+            });
+            
+            
+            $('#all_sales').DataTable(
+            {
+                'paging': false,
+                'bFilter': false,
+                'columnDefs': [{ 'orderable': false, 'targets': 9 }]
+            });
+        });
     </script>
 {% endblock %}

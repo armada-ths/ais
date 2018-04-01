@@ -36,28 +36,24 @@
             <input type="hidden" name="scroll_y" class="scroll_y" value="0">
             <input type="hidden" name="sort_field" value="{{ request.GET.sort_field }}">
             <input type="hidden" name="sort_ascending" value="{{ request.GET.sort_ascending }}">
-        <td>{{ search_form.name }}
-            <br>
+            <td>{{ search_form.name }}
+                <br>
 
 
-                    <div class="btn-group">
-                <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search"></span> Search</button>
+                        <div class="btn-group">
+                    <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search"></span> Search</button>
 
-            </div>
+                </div>
 
-        </td>
-        <td>{{ search_form.programme }}</td>
-        <td>{{ search_form.registration_year }}</td>
-        <td>{{ search_form.rating }}</td>
-        <td>{{ search_form.submission_date }}</td>
-        <td>{{ search_form.roles }}</td>
-        <td>{{ search_form.recommended_role }}</td>
-        <td>{{ search_form.interviewer }}</td>
-        <td>
-            {{ search_form.state }}
-            <br>
-
-        </td>
+            </td>
+            <td>{{ search_form.programme }}</td>
+            <td>{{ search_form.registration_year }}</td>
+            <td>{{ search_form.rating }}</td>
+            <td>{{ search_form.submission_date }}</td>
+            <td>{{ search_form.roles }}</td>
+            <td>{{ search_form.recommended_role }}</td>
+            <td>{{ search_form.interviewer }}</td>
+            <td>{{ search_form.state }}<br></td>
         </form>
     </tr>
     {% endif %}

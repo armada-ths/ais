@@ -10,6 +10,8 @@ from recruitment.models import RecruitmentApplication
 from companies.models import Company
 from register.models import SignupLog
 
+from .forms import SalesSearchForm
+
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
@@ -35,11 +37,34 @@ class SaleCommentForm(forms.ModelForm):
 @permission_required('sales.base')
 def sales_list(request, year, template_name='sales/sales_list.html'):
     fair = get_object_or_404(Fair, year=year)
-    sales = Sale.objects.filter(fair=fair).order_by('company__name')
-    my_sales = filter(lambda sale: sale.responsible == request.user, sales)
+    sales_list = Sale.objects.filter(fair=fair).order_by('company__name')
+    my_sales = filter(lambda sale: sale.responsible == request.user, sales_list)
     signups = SignupLog.objects.filter(contract__fair=fair)
     signedup = [signup.company.name for signup in signups]
-    return render(request, template_name, {'sales': sales, 'fair': fair, 'my_sales': my_sales, 'signedup': signedup })
+    
+    search_form = SalesSearchForm(request.GET or None)
+
+    if search_form.is_valid():
+        sales_list = search_form.sales_matching_search(sales_list, fair)
+    
+    class SearchField(object):
+        def __init__(self, name, model_field_name):
+            self.name = name
+            self.model_field_name = model_field_name
+    
+    search_fields = [
+        SearchField('Company', 'sale__company'),
+        SearchField('Responsible', 'sale__responsible'),
+        SearchField('Status', 'sale__status'),
+        SearchField('Contact by', 'sale__contact_by_date'),
+        SearchField('DR', 'sale__diversity_room'),
+        SearchField('GR', 'sale__green_room'),
+        SearchField('E', 'sale__events'),
+        SearchField('Nova', 'sale__nova'),
+        SearchField('Registered', None),
+    ]
+    
+    return render(request, template_name, {'sales': sales_list, 'fair': fair, 'my_sales': my_sales, 'signedup': signedup, 'search_form': search_form, 'search_fields': search_fields })
 
 @permission_required('sales.base')
 def sale_edit(request, year, pk=None, template_name='sales/sale_form.html'):
