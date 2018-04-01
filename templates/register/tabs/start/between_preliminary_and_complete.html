@@ -1,13 +1,12 @@
+<h3>Contract</h3>
 <!-- If preliminary registration has closed. -->
-<div class="col-md-6">
-{% if signed_up %} 
-            <h3 >Your company {{company}} is signed up. Make sure your contact information is correct and we will contact you when it is time for the next step of the registration.</h3>
-            {% if not contact.confirmed %}
-            <h3><span class="text-danger"> You have not been confirmed as a contact to your company. Please contact us to get access to edit your registration. </span></h3>
-            {% endif %}
+{% if signed_up %}
+	<h3 >Your company {{company}} is signed up. Make sure your contact information is correct and we will contact you when it is time for the next step of the registration.</h3>
+	{% if not contact.confirmed %}
+		<h3><span class="text-danger"> You have not been confirmed as a contact to your company. Please contact us to get access to edit your registration. </span></h3>
+	{% endif %}
 {% else %}
-<h3 > Unfortunately the registration has closed for this year and your company {{company}} is not signed up. However, you are now in our system and we will contact you next year when the registration for the new fair opens.  </h3>
+	<h3> Unfortunately the registration has closed for this year and your company {{company}} is not signed up. However, you are now in our system and we will contact you next year when the registration for the new fair opens. </h3>
 {% endif %}
-</div>
 
 

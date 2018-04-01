@@ -51,8 +51,10 @@ label {
 	padding-right: 10em;
 	padding-bottom: 10em;
 	margin-top: 4em;
+	margin-bottom: 4em;
 	border-radius: 0px 0px 4px 4px;
 	border-top: 4px solid #00d790;
+	border-bottom: 4px solid #00d790;
 }
 
 .container-fluid {
@@ -71,6 +73,11 @@ label {
 	padding-top: -1200px;
 	margin-left:auto;
 	margin-right:auto;
+}
+
+.main-logo-small {
+	max-width: 100%;
+	padding-top: 30px;
 }
 
 .form-holder, .endings {
@@ -126,6 +133,10 @@ label[for="id_agreement_accepted"] {
 #id_agreement_accepted {
 	margin-left: -20px;
 	margin-top: -0.5em;
+}
+
+#info-required {
+	text-align: right;
 }
 
 textarea:focus,

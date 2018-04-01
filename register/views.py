@@ -130,9 +130,8 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
     form1 = RegistrationForm(request.POST or None, prefix='registration')
     prev_sale = Sale.objects.filter(fair=fair, company=company).first()
     form2 = InterestForm(request.POST or None, instance=prev_sale,prefix='interest')
-    form3 = SelectStandAreaForm(request.POST or None, prefix='stand_area')
     if not signed_up:
-        if form1.is_valid() and form2.is_valid() and form3.is_valid():
+        if form1.is_valid() and form2.is_valid():
             SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
             if len(Sale.objects.filter(fair=fair, company=company))==0:
                 sale = form2.save(commit=False)
@@ -156,11 +155,9 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                         exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
 
             try:
-                Order.objects.create(exhibitor=exhibitor, product=form3.cleaned_data['stand_area'], amount=1)
+                Order.objects.create(exhibitor=exhibitor, amount=1)
             except:
                 pass
-
-            form3.save()
 
             return redirect('anmalan:home')
 
@@ -172,7 +169,6 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
                                                fair=fair,
                                                form1=form1,
                                                form2=form2,
-                                               form3=form3,
                                                contract_url=contract.contract.url if contract else None
                                                ))
 

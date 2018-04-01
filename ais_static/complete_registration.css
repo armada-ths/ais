@@ -79,9 +79,15 @@ a, a:visited, a:hover {
 	font-size: 24px;
 	margin-top: 20px;
 }
-.forgot-password, .btn-green, .box-danger, .important, .mail-name, .mail-role {
+.forgot-password, .box-danger, .important, .mail-name, .mail-role {
 	font-family: 'Bebas Neue', sans-serif;
 	text-transform: uppercase;
+}
+
+.btn-green {
+	font-family: 'Bebas Neue', sans-serif;
+	text-transform: uppercase;
+	color: #2d2d2c !important;
 }
 
 h2 {
@@ -97,9 +103,8 @@ h1.text-highlight {
 }
 
 .btn-green:hover, .btn-green:focus {
-	color: #fff;
+	color: #fff !important;
 	background: #00b276;
-	border: none
 }
 
 .btn-green, a.btn-green {
@@ -206,6 +211,11 @@ a.forgot-password:hover {
 	color: #00b276;
 }
 
+.mail-ref-white {
+	color: #fff;
+	font-weight: bold;
+}
+
 .mail-name {
 	font-size: 21px;
 	margin: 0px;
@@ -244,12 +254,12 @@ a.forgot-password:hover {
 }
 .btn-armada-green {
 	background: #00d791;
-	color: #fff;
+	color: #2d2d2c;
 }
 
 .btn-armada-red {
 	background: #ea2c49;
-	color: #fff;
+	color: #2d2d2c;
 }
 .btn-armada-green:hover, .btn-armada-green:focus {
 	background: #00b276;
@@ -411,6 +421,85 @@ li.nav {
 .padding-timeflag-closed {
 	padding-top: 95px;
 }
+.contract-company-contact-row {
+	padding-top: 30px;
+	padding-left: 40px;
+	padding-right: 40px;
+}
+
+.btn-edit {
+	width: 200px;
+	text-align: center;
+	margin-top: 20px;
+}
+
+.btn-sign-contract {
+	width: 200px;
+	text-align: center;
+	margin-top: 10px;
+}
+
+.div-save-registration {
+	text-align: center;
+}
+
+.btn-save-registration {
+	padding-left: 100px !important;
+	padding-right: 100px !important;
+	margin-top: 30px;
+}
+
+.company-buttons {
+	margin-top = 0px;
+}
+
+.contact-info-box {
+	background-color: #2d2d2c;
+	padding: 0px;
+	margin-left: 10px;
+	border-color: #00d790;
+	border-width: thin;
+	border-style: solid;
+	margin-top: 30px;
+}
+.contact-info {
+	padding: 10px;
+}
+
+.confirm-user-info-box {
+	background-color: #2d2d2c;
+	padding: 0px;
+	margin-left: 10px;
+	border-color: #00d790;
+	border-width: thin;
+	border-style: solid;
+	margin-bottom: 20px;
+}
+.confirm-user-info {
+	padding: 10px;
+}
+
+.important-info {
+	border-color: #00d790;
+	border-width: thin;
+	border-style: solid;
+	padding: 10px;
+	display: inline-block;
+}
+
+.room-form {
+	padding: 0px;
+	margin-top: 30px;
+}
+
+#company-contract-div, #company-info-div, #company-invoice-div, #company-contact-div, #company-confirm-div {
+	margin-bottom: 40px;
+}
+
+#exhibitor-profile-div {
+	margin-top: 30px;
+	padding-left: 10px;
+}
 
 /*
 *	TAB: BASKE KIT; *********************************
@@ -529,7 +618,9 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 */
 .cr-container-profile {
 	text-align: left;
-	width: 90%;
+	width: 80%;
+	margin-top: 20px;
+	padding: 10px;
 }
 .cr-container-profile h2 {
 	text-align: center;
@@ -548,10 +639,14 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 	width: 100%;
 	padding: 30px;
 }
+
+.cr-container-profile #fileUpload {
+	width: 50%;
+}
 .cr-container-profile img {
-	max-width: 100%;
+	max-width: 50%;
 	width: 100%;
-	margin: 15px 0;
+	margin-bottom: 5px;
 }
 .cr-profile .divider {
 	display: none;
@@ -760,7 +855,7 @@ ul.additional_stand_height label span {
 	margin-top: 50px;
 }
 .toggleEdit {
-	color: #ea2c49;
+	color: #fff;
 	cursor: pointer;
 }
 
@@ -795,10 +890,11 @@ ul.additional_stand_height label span {
 .no-editable-form li.address {
 	border: none;
 	padding-bottom: 15px;
+	border-bottom: thin solid #fff;
 }
 .no-editable-form li.address .input-field {
-	border: 2px solid #00d791;
-	border-radius: 5px;
+	/*border: 2px solid #00d791;
+	border-radius: 5px;*/
 	text-align: left;
 	width: 50%;
     float: none;
@@ -806,6 +902,7 @@ ul.additional_stand_height label span {
     margin-top: -32px;
     position: relative;
     left: 100%;
+    text-align: right;
 }
 /* a form that is editable */
 .editable-form h5 {
