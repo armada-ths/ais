@@ -5,18 +5,18 @@
       <li class="nav">
           <div class="nav-logo">
               <svg  viewBox="200 50 500 120" width="80px" height="38px" version="1.1">
-                  <image xlink:href="{% static 'images/armadalogo.svg' %}" alt="Armada" height="230px" width="700px"/>
+                  <a href="{% url 'anmalan:index' %}"><image xlink:href="{% static 'images/armadalogo.svg' %}" alt="Armada" height="230px" width="700px"/></a>
               </svg>
           </div>
       </li>
 
       <!-- Only show these tabs after preliminary registration -->
       {% if signed_up and contact.confirmed %}
-          <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
+          <!-- <li class="nav active" id="start-li"><a href="#start" data-toggle="tab">Start</a></li>
           <li class="nav"><a href="#exhibitor-profile" data-toggle="tab">Exhibitor Profile</a></li>
           {% if survey_form %}
               <li class="nav"><a href="#matching" data-toggle="tab">Student Matching</a></li>
-          {% endif %}
+          {% endif %} -->
       {% endif %}
 
       {% if contact.confirmed and complete_registration_open %}
@@ -34,7 +34,6 @@
         <li class="nav"><a href="#logistics" data-toggle="tab">Logistics</a></li>
         <li class="nav"><a href="#summary" data-toggle="tab">Summary</a></li>
       {% endif %}
-
         <li class="nav pull-right"><a href="{% url 'anmalan:logout' %}">Logout</a></li>
     </ul>
 </div>

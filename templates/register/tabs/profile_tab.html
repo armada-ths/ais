@@ -1,52 +1,33 @@
-<div class="registration-tab-pane cr-profile" id="exhibitor-profile">
-	<span class="divider left"></span>
-	<span class="divider right"></span>
-	<div class="row">
-		<div class="col-md-12">
-			<h1> Exhibitor Profile </h1>
-		</div>
-		<!-- Here we can write general info in a box or something -->
-	</div>
-	
-	<!-- Company logo field -->
-	<div class="row" id="exhibitor-profile-div">
-		{{ profile_form.non_field_errors }}
-		<div class="col-md-4">
-			<div class="col-md-11 col-md-offset-1 cr-container-profile">
-				<h3>Upload logo</h3>
-				<p>Upload your logo so we can display it in our apps.</p>
-				{% if exhibitor.logo %}
-					<img src="/media/{{exhibitor.logo}}"/>
-				{% endif %}
-			  	<div id="fileUpload">
-			  		{{ profile_form.logo.errors }}
-			  		{{ profile_form.logo }}
-			  	</div>
-			</div>
-		</div>
-
-		<!-- Company text field -->
-		<div class="col-md-4">
-			<div class="col-md-11 col-md-offset-1 cr-container-profile">
-				<h3>Text about organisation</h3>
-				<p>Write a selling text about your company, this is what a student will be able to read in our apps.</p>
-				{{ profile_form.about_text.errors }}
-				{{ profile_form.about_text }}
-			</div>
-		</div>
-		  
-		<!-- Company job field -->
-		<div class="col-md-4">
-			<div class="col-md-11 col-md-offset-1 cr-container-profile">
-				<h3>Organisation Job Types</h3>
-				<p>Select all relevant job types within your company.</p>
-				{{ profile_form.job_types.errors }}
-				{{ profile_form.job_types }}
-			</div>
-		</div>
-	</div>
-		
-	<div class="row">
-		{{ profile_form.errors }}
-	</div>
-</div>
+<!-- <div class="row" id="exhibitor-profile-div">
+    {{ profile_form.non_field_errors }}
+    <div class="col-md-4">
+        <div class="col-md-11 col-md-offset-1 cr-container-profile">
+            <h3>Text about organisation</h3>
+            <p>Write a selling text about your company, this is what a student will be able to read in our apps.</p>
+            {{ profile_form.about_text.errors }}
+            {{ profile_form.about_text }}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="col-md-11 col-md-offset-1 cr-container-profile">
+            <h3>Upload logo</h3>
+            <p>Upload your logo so we can display it in our apps.</p>
+            {% if exhibitor.logo %}
+                <img src="/media/{{exhibitor.logo}}"/>
+            {% endif %}
+            <div id="fileUpload">
+                {{ profile_form.logo.errors }}
+                {{ profile_form.logo }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="col-md-11 col-md-offset-1 cr-container-profile">
+            <h3>Organisation Job Types</h3>
+            <p>Select all relevant job types within your company.</p>
+            {{ profile_form.job_types.errors }}
+            {{ profile_form.job_types }}
+        </div>
+    </div>
+    {{ profile_form.errors }}
+</div> -->

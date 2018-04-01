@@ -33,38 +33,38 @@
                 <div class="col-md-11 col-md-offset-1" id="company-contract-div">                    
                     <!-- Before preliminary registration has opened -->
                     {% if pre_preliminary %}
-                        <br>
-                        <h3>Contract</h3>
                         {% include 'register/tabs/start/pre_preliminary.html' %}
                     {% endif %}
                     <!-- When preliminary registration is opened -->
                     {% if registration_open %}
-                        <br>
-                        <h3>Contract</h3>
                         {% include 'register/tabs/start/preliminary.html' %}
+                        <p>Hello</p>
                     {% endif %}
                     <!-- When preliminary registration has closed -->
                     {% if registration_closed %}
-                        <h3>Contract</h3>
                         {% include 'register/tabs/start/between_preliminary_and_complete.html' %}
                     {% endif %}
                     <!-- When complete registration is opened -->
                     {% if complete_registration_open %}
-                        <h3>Contract</h3>
                         {% include 'register/tabs/start/complete.html' %}
                     {% endif %}
                     <!-- When complete registration has closed -->
                     {% if complete_registration_closed %}
-                        <h3>Contract</h3>
                         {% include 'register/tabs/start/complete_closed.html' %}
                     {% endif %}
                 </div>
+                <!-- Exhibitor profile -->
 
-            </div>
+                    <div class="row">
+                        <div class="col-md-11 col-md-offset-1">   
+                            {% include 'contact_us.html' %}
+                        </div>
+                    </div>
+                </div>
         </div>
 
         <!-- Company/Contact column -->
-        <div class="col-md-6">
+        <div class="col-md-6" style="">
             {% if not signed_up %}
                 <form method="post" enctype="multipart/form-data">{% csrf_token %}
             {% endif %}
@@ -110,7 +110,7 @@
                     </div>
                     
                     <!-- Invoice details -->
-                    {% if contact.confirmed %}
+                    {% if contact.confirmed and complete_registration_open %}
                         {% if exhibitor.invoice_details %}
                             <div id="company-invoice-div">
                                 <ul class="list-unstyled form-to-edit no-editable-form visible">
@@ -154,8 +154,8 @@
                                 </ul>
                             </div>
                         {% endif %}
-                    {% else %}
-
+                    {% endif %}
+                    {% if not contact.confirmed %}
                     <!-- User not confirmed -->
                     <div class="row">
                         <div class="confirm-user-info-box col-md-10 col-md-offset-1" id="company-confirm-div">
@@ -213,8 +213,39 @@
                         </ul>
                     </div>
 
+                    {% if signed_up and contact.confirmed %}
+                    <div class="row" id="exhibitor-profile-div">
+                        {{ profile_form.non_field_errors }}
+                        <div class="col-md-11 cr-container-profile">
+                            <h3>Exhibitor profile</h3>
+                                <p><u>Text about organisation</u><br>Write a selling text about your company;<br>this is what a student will be able to read in our apps.</p>
+                                {{ profile_form.about_text.errors }}
+                                {{ profile_form.about_text }}
+                            </div>
+                            <div class="col-md-11 cr-container-profile">
+                                <p><u>Organisation Job Types</u><br>Select all relevant job types within your company.</p>
+                                {{ profile_form.job_types.errors }}
+                                {{ profile_form.job_types }}
+                            </div>
+                            <div class="col-md-11 cr-container-profile">
+                                <p><u>Upload logo</u><br>Upload your logo so we can display it in our apps.</p>
+                                {% if exhibitor.logo %}
+                                    <img src="/media/{{exhibitor.logo}}"/>
+                                {% endif %}
+                                <div id="fileUpload">
+                                    {{ profile_form.logo.errors }}
+                                    {{ profile_form.logo }}
+                                </div>
+                            </div>
+                        {{ profile_form.errors }}
+                        <!-- <div class="row div-save-registration"> -->
+        <button type="submit" name="save" class="btn btn-armada btn-armada-green btn-save-registration" id="save-button">Save all changes to registration</button>
+    <!-- </div> -->
+                    </div>
+                    {% endif %}
+
                     <!-- Button to submit above forms -->
-                    <div class="company-buttons">
+                    <!-- <div class="company-buttons">
                         {% if not signed_up %}
                             <div class="row">
                                 <div class="col-md-11">
@@ -223,7 +254,7 @@
                             </div>
                 </form>
                         {% endif %}
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

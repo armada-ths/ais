@@ -439,6 +439,16 @@ li.nav {
 	margin-top: 10px;
 }
 
+.div-save-registration {
+	text-align: center;
+}
+
+.btn-save-registration {
+	padding-left: 100px !important;
+	padding-right: 100px !important;
+	margin-top: 30px;
+}
+
 .company-buttons {
 	margin-top = 0px;
 }
@@ -450,11 +460,12 @@ li.nav {
 	border-color: #00d790;
 	border-width: thin;
 	border-style: solid;
-	margin-top: 50px;
+	margin-top: 30px;
 }
 .contact-info {
 	padding: 10px;
 }
+
 .confirm-user-info-box {
 	background-color: #2d2d2c;
 	padding: 0px;
@@ -487,6 +498,7 @@ li.nav {
 
 #exhibitor-profile-div {
 	margin-top: 30px;
+	padding-left: 10px;
 }
 
 /*
@@ -606,7 +618,9 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 */
 .cr-container-profile {
 	text-align: left;
-	width: 90%;
+	width: 80%;
+	margin-top: 20px;
+	padding: 10px;
 }
 .cr-container-profile h2 {
 	text-align: center;
@@ -625,10 +639,14 @@ ul.cr-banquet-tickets li:nth-child(odd) {
 	width: 100%;
 	padding: 30px;
 }
+
+.cr-container-profile #fileUpload {
+	width: 50%;
+}
 .cr-container-profile img {
-	max-width: 100%;
+	max-width: 50%;
 	width: 100%;
-	margin: 15px 0;
+	margin-bottom: 5px;
 }
 .cr-profile .divider {
 	display: none;
