@@ -25,6 +25,7 @@ def send_mail_on_submission(user, event):
             fail_silently=False,
         )
 
+@permission_required('events.base')
 def send_mail_confirmation(request, year, event_pk, attendant_pk):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=event_pk)
@@ -47,7 +48,7 @@ def send_mail_confirmation(request, year, event_pk, attendant_pk):
     return redirect('event_attendants', fair.year, event.pk)
 
 
-
+@permission_required('events.base')
 def event_attend_form(request, year, pk, template_name='events/event_attend.html'):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=pk)
@@ -91,7 +92,7 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
     })
 
 
-
+@permission_required('events.base')
 def event_list(request, year, template_name='events/event_list.html'):
     fair = get_object_or_404(Fair, year=year)
     events = Event.objects.filter(fair=fair).order_by('-event_start')
@@ -100,6 +101,7 @@ def event_list(request, year, template_name='events/event_list.html'):
     return render(request, template_name, {"events": events, "fair": fair})
 
 
+@permission_required('events.base')
 def event_unattend(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     EventAttendence.objects.filter(
@@ -107,7 +109,7 @@ def event_unattend(request, year, pk):
     return redirect('event_list', fair.year)
 
 
-@permission_required('events.change_event', raise_exception=True)
+@permission_required('events.change_event')
 def event_edit(request, year, pk=None, template_name='events/event_form.html'):
     fair = get_object_or_404(Fair, year=year)
     event = Event.objects.filter(pk=pk).first()
@@ -127,7 +129,8 @@ def event_edit(request, year, pk=None, template_name='events/event_form.html'):
     })
 
 
-@permission_required('events.change_event', raise_exception=True)
+@permission_required('events.base')
+@permission_required('events.change_event')
 def event_attendants(request, year, pk, template_name='events/event_attendants.html'):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=pk)

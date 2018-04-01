@@ -43,7 +43,7 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['name']
-        permissions = (('view_products', 'View products'),)
+        permissions = (('base', 'Products'),)
 
     def ordered_quantity(self):
         return sum([order.amount for order in self.order_set.all()])

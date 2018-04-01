@@ -24,22 +24,20 @@ def sit_attendants(request, year):
     else:
         return HttpResponseForbidden()
 
-
+@permission_required('banquet.base')
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
     """
     banquet_attendants is in url fairs/year/banquet
     Here you can see all the BanquetteAttendant objects in a table view.
-    The user need the banquet.banquet_view_permission permission to see this page
+    The user need the banquet.base permission to see this page
     """
     fair = get_object_or_404(Fair, year=year)
-    if request.user.is_authenticated() and request.user.has_perm('banquet.banquet_view_permission'):
-        banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
-        return render(request, template_name, {
-            'banquet_attendants': banquet_attendants,
-            'fair': fair
-        })
-    else:
-        return HttpResponseForbidden()
+    
+    banquet_attendants = BanquetteAttendant.objects.filter(fair=fair)
+    return render(request, template_name, {
+        'banquet_attendants': banquet_attendants,
+        'fair': fair
+    })
     #return render(request, 'login.html', {'next': next, 'fair': fair})
 
 

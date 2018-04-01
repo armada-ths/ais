@@ -14,7 +14,7 @@ from .models import Profile
 from .forms import ProfileForm
 
 
-@permission_required('people.view_people', raise_exception=True)
+@permission_required('people.base')
 def list_people(request, year):
     fair = get_object_or_404(Fair, year=year)
     users = User.objects.filter(is_superuser=False)
@@ -25,7 +25,7 @@ def view_person(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     user = get_object_or_404(User, pk=pk)
 
-    if (request.user == user) or request.user.has_perm('people.view_people'):
+    if (request.user == user) or request.user.has_perm('people.base'):
         profile = Profile.objects.filter(user=user).first()
         if not profile:
             profile = Profile.objects.create(user=user)

@@ -72,6 +72,9 @@ class Event(models.Model):
     def __str__(self):
         return '%s: %s'%(self.fair, self.name)
 
+    class Meta:
+        permissions = (('base', 'Events'),)
+
     def save(self, *args, **kwargs):
         if not self.extra_field:
             self.extra_field = ExtraField.objects.create()

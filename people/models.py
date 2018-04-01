@@ -74,4 +74,4 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'profile'
-        permissions = (('view_people', 'View people'),)
+        permissions = (('base', 'People'),)
