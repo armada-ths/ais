@@ -32,7 +32,7 @@ class ImportForm(forms.ModelForm):
 class SaleCommentForm(forms.ModelForm):
     class Meta:
         model = SaleComment
-        fields = '__all__'
+        fields = ('comment',)
 
 @permission_required('sales.base')
 def sales_list(request, year, template_name='sales/sales_list.html'):
@@ -132,6 +132,22 @@ def sale_comment_create(request, year, pk, template_name='sales/sale_show.html')
     comment.comment = request.POST['comment']
     comment.save()
     return redirect('sale_show', year, pk)
+
+@permission_required('sales.base')
+def sale_comment_edit(request, year, sale_pk, comment_pk, template_name='sales/sale_comment_form.html'):
+    fair = get_object_or_404(Fair, year=year)
+    sale = get_object_or_404(Sale, pk=sale_pk)
+    comment = get_object_or_404(SaleComment, pk=comment_pk)
+    
+    form = SaleCommentForm(request.POST or None, instance = comment)
+
+    print(form.errors.as_data())
+
+    if form.is_valid():
+        form.save()
+        return redirect('sale_show', fair.year, sale_pk)
+    
+    return render(request, template_name, {'form': form, 'sale': sale, 'fair': fair, 'comment': comment})
 
 @permission_required('sales.base')
 def sale_comment_delete(request, year, sale_pk, comment_pk):
