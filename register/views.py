@@ -130,7 +130,7 @@ def preliminary_registration(request,fair, company, contact, contract, exhibitor
     form1 = RegistrationForm((request.POST or None) if allow_saving else None, prefix='registration')
     prev_sale = Sale.objects.filter(fair=fair, company=company).first()
     form2 = InterestForm((request.POST or None) if allow_saving else None, instance=prev_sale,prefix='interest')
-    if not signed_up and not allow_saving:
+    if not signed_up:
         if form1.is_valid() and form2.is_valid():
             SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
             if len(Sale.objects.filter(fair=fair, company=company))==0:
