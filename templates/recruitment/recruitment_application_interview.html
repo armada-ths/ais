@@ -28,7 +28,7 @@
         <div class="col-sm-12">
 
                 {% if profile_pic_form %}
-                    {% if perms.recruitment.administer_recruitment_applications or application.interviewer == request.user %}
+                    {% if administrator_access or application.interviewer == request.user %}
                         {{ profile_pic_form|crispy }}
                     {% endif %}
                 {% endif %}
@@ -64,15 +64,11 @@
     </div>
     <hr>
 
-
+    {% if administrator_access %}
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <h3>Interview planning</h3>
-        {% if perms.recruitment.administer_recruitment_applications or application.interviewer == request.user %}
-            {{ interview_planning_form|crispy }}
-        {% elif perms.recruitment.view_recruitment_applications %}
-            {% include 'recruitment/static_form.html' with form=interview_planning_form %}
-        {% endif %}
+        {% include 'recruitment/static_form.html' with form=interview_planning_form %}
 
         <hr>
 
@@ -81,24 +77,23 @@
         {% if not interview_questions_with_answers %}
             <p>No interview questions</p>
         {% endif %}
-        {% if perms.recruitment.administer_recruitment_applications or request.user == application.interviewer %}
+        {% if administrator_access or request.user == application.interviewer %}
         {% include 'recruitment/custom_fields.html' with questions_with_answers=interview_questions_with_answers %}
         {% else %}
         {% include 'recruitment/custom_fields_static.html' with questions_with_answers=interview_questions_with_answers %}
         {% endif %}
         <hr>
 
-        {% if perms.recruitment.administer_recruitment_applications %}
+        {% if administrator_access %}
             <h3>Role Delegation</h3>
             {{ role_delegation_form|crispy }}
             <hr>
         {% endif %}
 
 
-        {% if perms.recruitment.administer_recruitment_applications or request.user == application.interviewer %}
+        {% if administrator_access or request.user == application.interviewer %}
             <button type="submit" class="btn btn-primary">Save</button>
-        {% endif %}
-        {% if perms.recruitment.administer_recruitment_applications %}
+            
             <a class="btn btn-danger"
                href="{% url 'recruitment_application_delete' fair.year application.recruitment_period.id application.id %}"
                onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
@@ -141,5 +136,9 @@
             </form>
         </div>
     </div>
-
+    
+    {% elif application.interviewer == request.user %}
+        {{ interview_planning_form|crispy }}
+    {% endif %}
+    
 {% endblock %}
