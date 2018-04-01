@@ -60,15 +60,15 @@ def recruitment(request, year, template_name='recruitment/recruitment.html'):
     fair = get_object_or_404(Fair, year=year)
 
     recruitment_periods = RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date')
+    
     roles = []
+    
     for period in recruitment_periods:
         for role in period.recruitable_roles.all():
             roles.append(role)
 
-
-
     return render(request, template_name, {
-        'recruitment_periods': RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date'),
+        'recruitment_periods': recruitment_periods,
         'fair': fair,
         'roles': [{'parent_role': role,
                    'child_roles': [child_role for child_role in roles if child_role.has_parent(role)]} for
@@ -85,7 +85,6 @@ def daterange(start_date, end_date):
 import time
 from django.http import JsonResponse
 
-@permission_required('recruitment.view_recruitment_applications', raise_exception=True)
 def interview_state_counts(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     application_list = recruitment_period.recruitmentapplication_set.order_by(
@@ -116,7 +115,6 @@ def interview_state_counts(request, year, pk):
     })
 
 
-@permission_required('recruitment.view_recruitment_applications', raise_exception=True)
 def recruitment_period_graphs(request, year, pk):
     start = time.time()
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
@@ -333,33 +331,12 @@ def remember_last_query_params(url_name, query_params):
     return do_decorator
 
 
-def eligible_to_see_application(application, user):
-    return True
-    """ 
-    This function checks if the user should have the right to see the application.
-    It is based on that the user should have right to see it if the application is for roles "below" the user in the 
-    organization hierarki
-    """
-    roles = RoleApplication.objects.filter(recruitment_application=application)
-    #DFS search if user is member of any parent role
-    user_groups = user.groups.all()
-    if len(user_groups) == 0:
-        return False
-    for role in roles:
-        r = role.role.parent_role
-        while (r!=None):
-            if r.group in user_groups:
-                return True
-            r = r.parent_role
-    return False
-
-
 @remember_last_query_params('recruitment', [field for field in RecruitmentApplicationSearchForm().fields])
 def recruitment_period(request, year, pk, template_name='recruitment/recruitment_period.html'):
+    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    
     fair = get_object_or_404(Fair, year=year)
     start = time.time()
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    user = request.user
 
    
     sort_field = request.GET.get('sort_field')
@@ -372,7 +349,7 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
     application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query, '-submission_date').all().prefetch_related('roleapplication_set')
 
     # user should be forbidden to look at applications that are not below them in hierari
-    application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
+    #application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
 
 
 
@@ -385,6 +362,8 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 
     if search_form.is_valid():
         application_list = search_form.applications_matching_search(application_list)
+    
+    administrator_access = user_can_access_recruitment_period(request.user, recruitment_period)
 
     number_of_applications_per_page = 25
     paginator = Paginator(application_list, number_of_applications_per_page)
@@ -432,20 +411,27 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
         'search_form': search_form,
         'search_fields': search_fields,
         'fair': fair,
+        'administrator_access': administrator_access,
     })
 
 
-@permission_required('recruitment.administer_recruitment', raise_exception=True)
 def recruitment_period_delete(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+    
+    if not user_can_access_recruitment_period(request.user, recruitment_period):
+        return HttpResponseForbidden()
+    
     recruitment_period.delete()
     return redirect('recruitment', year)
 
 
-@permission_required('recruitment.administer_recruitment', raise_exception=True)
 def recruitment_period_edit(request, year, pk=None, template_name='recruitment/recruitment_period_new.html'):
-    fair = get_object_or_404(Fair, year=year)
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
+    
+    if not user_can_access_recruitment_period(request.user, recruitment_period):
+        return HttpResponseForbidden()
+    
+    fair = get_object_or_404(Fair, year=year)
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
 
     if request.POST:
@@ -671,20 +657,9 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
     fair = get_object_or_404(Fair, year=year)
     application = get_object_or_404(RecruitmentApplication, pk=pk)
     user = request.user
-    if not user.has_perm('recruitment.view_recruitment_interviews') and application.interviewer != user:
-        return HttpResponseForbidden()
 
-    # user should be forbidden to look at an interview
-    # within recruitment periods that include their application
-    # unless they're in the Project Core Team
-    if not user.groups.filter(name='Project Core Team').exists():
-        try:
-            current_users_applications = RecruitmentApplication.objects.filter(user=user)
-            for a in current_users_applications:
-                if application.recruitment_period.pk == a.recruitment_period.pk:
-                    return HttpResponseForbidden()
-        except (RecruitmentApplication.DoesNotExist):
-            pass
+    if not user_can_access_recruitment_period(user, application.recruitment_period):
+        return HttpResponseForbidden()
 
     exhibitors = [participation.company for participation in
                   Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
@@ -692,8 +667,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
     InterviewPlanningForm = modelform_factory(
         RecruitmentApplication,
         fields=('interviewer', 'interviewer2', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
-                'rating') if request.user.has_perm('recruitment.administer_recruitment_applications') else (
-        'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document', 'rating'),
+                'rating'),
         widgets={
             'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
             'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M', attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}),
@@ -761,9 +735,24 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
     })
 
 
-@permission_required('recruitment.administer_recruitment_applications', raise_exception=True)
 def recruitment_application_delete(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
     recruitment_application.delete()
     return redirect('recruitment_period', fair.year, recruitment_application.recruitment_period.pk)
+
+def user_can_access_recruitment_period(user, recruitment_period):
+    if user.is_superuser:
+        return True
+    
+    print(user.groups.all())
+    print(recruitment_period.allowed_groups.all())
+    
+    if len(user.groups.all().intersection(recruitment_period.allowed_groups.all())) != 0:
+        return True
+    
+    #for group in user.groups.all():
+    #    if group in recruitment_period.allowed_groups.all():
+    #        return True
+    
+    return False

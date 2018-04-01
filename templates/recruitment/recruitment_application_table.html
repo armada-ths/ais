@@ -65,13 +65,9 @@
     {% for application in applications %}
         <tr>
             <td>
-                {% if perms.recruitment.view_recruitment_interviews %}
                 <a href="{% url 'recruitment_application_interview' fair.year recruitment_period.id application.id %}">
                     {% include 'recruitment/user_name.html' with user=application.user %}
                 </a>
-                {% else %}
-                    {% include 'recruitment/user_name.html' with user=application.user %}
-                {% endif %}
             </td>
 
             <td>{{ application.user.profile.programme }}</td>
