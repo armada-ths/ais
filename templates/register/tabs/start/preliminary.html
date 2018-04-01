@@ -26,6 +26,7 @@
         			<form class="room-form" method="post">{% csrf_token %}
         				<h4>Sign up for Armada 2018</h4>
         				    {{ form2 | crispy }}
+        				    <br>
         				    {{ form1 | crispy }}
         				<input class="btn-green" type="submit" value="Sign Contract" />
         			</form>
