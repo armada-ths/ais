@@ -57,11 +57,11 @@ class ChangePasswordForm(PasswordChangeForm):
 
 class RegistrationForm(Form):
     agreement_accepted = BooleanField(required=True)
-    agreement_accepted.label = "I have read the contract and agree to terms"
+    agreement_accepted.label = "I have read the contract and agree to terms*"
     gdpr_accepted = BooleanField(required=True)
-    gdpr_accepted.label = "I accept that my personal information is treated in accordance with GDPR"
+    gdpr_accepted.label = "I accept that my personal information is treated in accordance with GDPR*"
     authorized_accepted = BooleanField(required=True)
-    authorized_accepted.label = "I am authorized to register my company for Armada 2018 and sign this contract"
+    authorized_accepted.label = "I am authorized to register my company for Armada 2018 and sign this contract*"
 
 
 class InterestForm(ModelForm):
