@@ -126,10 +126,10 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
     exhibitor.save()
     return exhibitor
 
-def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up):
-    form1 = RegistrationForm(request.POST or None, prefix='registration')
+def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, allow_saving):
+    form1 = RegistrationForm((request.POST or None) if allow_saving else None, prefix='registration')
     prev_sale = Sale.objects.filter(fair=fair, company=company).first()
-    form2 = InterestForm(request.POST or None, instance=prev_sale,prefix='interest')
+    form2 = InterestForm((request.POST or None) if allow_saving else None, instance=prev_sale,prefix='interest')
     if not signed_up:
         if form1.is_valid() and form2.is_valid():
             SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
@@ -402,12 +402,16 @@ def home(request, template_name='register/registration.html'):
 
             contact_form = ContactForm(request.POST or None, instance=contact, prefix='contact_info')
             forms.append(contact_form)
+            
             invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
             forms.append(invoice_details_form)
+            
             company_form = EditCompanyForm(request.POST or None, instance=company, prefix='company_info')
             forms.append(company_form)
+            
             profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
             forms.append(profile_form)
+            
             current_matching_survey = Survey.objects.filter(fair=fair).first()
             survey_form = None
             if current_matching_survey:
@@ -417,6 +421,7 @@ def home(request, template_name='register/registration.html'):
             if request.POST:
                 if company_form.is_valid():
                     company_form.save()
+                
                 if contact_form.is_valid():
                     contact_form.save()
 
@@ -424,8 +429,10 @@ def home(request, template_name='register/registration.html'):
                     # Only check survey form if there is a survey form
                     if survey_form and  survey_form.is_valid():
                         survey_form.save()
+                    
                     if profile_form.is_valid():
                         profile_form.save()
+                    
                     if invoice_details_form.is_valid():
                         invoice_details = invoice_details_form.save()
                         exhibitor.invoice_details = invoice_details
@@ -449,11 +456,13 @@ def home(request, template_name='register/registration.html'):
                         return res
 
             if registration_open:
-                res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up)
+                res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, 'save' not in request.POST)
+                
                 if(type(res) == tuple):
                     (template, kwargs_a) = res
                     kwargs.update(kwargs_a)
                     return render(request, template, kwargs)
+                
                 else:
                     # here we trust that preliminary registration returns some HTTP response
                     return res

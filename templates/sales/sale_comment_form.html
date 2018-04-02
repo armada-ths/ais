@@ -6,51 +6,26 @@
 
     <ol class="breadcrumb">
         <li><a href="{% url 'sales' fair.year %}">Sales</a></li>
-        <li class="active">{{ sale }}</li>
+        <li><a href="{% url 'sale_show' fair.year sale.id %}">{{ sale }}</a></li>
+        <li class="active">Edit comment</li>
     </ol>
 
 
 		<div class="page-header", class="col-md-12">
-			<h1>{{ company_name }}</h1>
+			<h1>{{ sale.company.name }} – Edit comment</h1>
 		</div>
 
     <div class="row">
 		<div class="col-md-9">
-
-
-            <form action="{% url 'sale_comment_create' fair.year sale.pk %}" method="post">
+            <form action="{% url 'sale_comment_edit' fair.year sale.pk comment.pk %}" method="post">
                 {% csrf_token %}
+                
                 <div class="form-group">
-                    <textarea class="form-control" placeholder="Your comment..." name="comment"></textarea>
+                    <textarea class="form-control" placeholder="Your comment..." name="comment">{{ form.comment.value }}</textarea>
                 </div>
-                <p><button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add
-                    comment
-                </button></p>
+                
+                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Save changes</button>
             </form>
-
-
-
-			{% for comment in comments %}
-			<div class="panel panel-default">
-				<div class="panel-heading">
-                    <button onclick="document.location = '{% url 'sale_comment_edit' fair.year sale.id comment.id %}';" class="btn-link pull-right">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                    </button>
-                    
-                    <form action="{% url 'sale_comment_delete' fair.year sale.pk comment.pk %}" method="post" class="pull-right">
-                        {% csrf_token %}
-                        <button onclick="return confirm('Are you sure you want to delete this comment?')" type="submit" class="btn-link">
-                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                        </button>
-                    </form>
-                    
-				    <h5 class="panel-title">{{comment.created_date}} {{comment.user.first_name}} {{comment.user.last_name}}</h5>
-				</div>
-				<div class="panel-body">
-                    {{ comment.comment }}
-                </div>
-			</div>
-			{% endfor %}
 		</div>
 
 		<div class="col-md-3">

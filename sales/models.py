@@ -30,8 +30,7 @@ class Sale(models.Model):
     fair = models.ForeignKey(Fair, null=True, default=current_fair, on_delete=models.CASCADE)
     company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
     responsible = models.ForeignKey(User, null=True, default=None, blank=True, on_delete=models.CASCADE)
-
-    status = models.CharField(max_length=30, choices=STATUS, null=True, default='not_contacted', blank=False)
+    status = models.CharField(max_length=30, choices=STATUS, null=True, default='Not contacted', blank=False)
     contact_by_date = models.DateField(blank = True, null=True)
     diversity_room = models.BooleanField(default=False)
     green_room = models.BooleanField(default=False)

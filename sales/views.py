@@ -10,6 +10,8 @@ from recruitment.models import RecruitmentApplication
 from companies.models import Company
 from register.models import SignupLog
 
+from .forms import SalesSearchForm
+
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
@@ -30,16 +32,42 @@ class ImportForm(forms.ModelForm):
 class SaleCommentForm(forms.ModelForm):
     class Meta:
         model = SaleComment
-        fields = '__all__'
+        fields = ('comment',)
 
 @permission_required('sales.base')
 def sales_list(request, year, template_name='sales/sales_list.html'):
     fair = get_object_or_404(Fair, year=year)
-    sales = Sale.objects.filter(fair=fair).order_by('company__name')
-    my_sales = filter(lambda sale: sale.responsible == request.user, sales)
+    sales_list = Sale.objects.filter(fair=fair).order_by('company__name')
+    my_sales = filter(lambda sale: sale.responsible == request.user, sales_list)
     signups = SignupLog.objects.filter(contract__fair=fair)
     signedup = [signup.company.name for signup in signups]
-    return render(request, template_name, {'sales': sales, 'fair': fair, 'my_sales': my_sales, 'signedup': signedup })
+    
+    users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=fair).order_by('user__first_name', 'user__last_name')]
+    
+    search_form = SalesSearchForm(request.GET or None)
+    search_form.fields['responsible'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name()) for user in users]
+
+    if search_form.is_valid():
+        sales_list = search_form.sales_matching_search(sales_list, fair)
+    
+    class SearchField(object):
+        def __init__(self, name, model_field_name):
+            self.name = name
+            self.model_field_name = model_field_name
+    
+    search_fields = [
+        SearchField('Company', 'sale__company'),
+        SearchField('Responsible', 'sale__responsible'),
+        SearchField('Status', 'sale__status'),
+        SearchField('Contact by', 'sale__contact_by_date'),
+        SearchField('DR', 'sale__diversity_room'),
+        SearchField('GR', 'sale__green_room'),
+        SearchField('E', 'sale__events'),
+        SearchField('Nova', 'sale__nova'),
+        SearchField('Registered', None),
+    ]
+    
+    return render(request, template_name, {'sales': sales_list, 'fair': fair, 'my_sales': my_sales, 'signedup': signedup, 'search_form': search_form, 'search_fields': search_fields })
 
 @permission_required('sales.base')
 def sale_edit(request, year, pk=None, template_name='sales/sale_form.html'):
@@ -104,6 +132,22 @@ def sale_comment_create(request, year, pk, template_name='sales/sale_show.html')
     comment.comment = request.POST['comment']
     comment.save()
     return redirect('sale_show', year, pk)
+
+@permission_required('sales.base')
+def sale_comment_edit(request, year, sale_pk, comment_pk, template_name='sales/sale_comment_form.html'):
+    fair = get_object_or_404(Fair, year=year)
+    sale = get_object_or_404(Sale, pk=sale_pk)
+    comment = get_object_or_404(SaleComment, pk=comment_pk)
+    
+    form = SaleCommentForm(request.POST or None, instance = comment)
+
+    print(form.errors.as_data())
+
+    if form.is_valid():
+        form.save()
+        return redirect('sale_show', fair.year, sale_pk)
+    
+    return render(request, template_name, {'form': form, 'sale': sale, 'fair': fair, 'comment': comment})
 
 @permission_required('sales.base')
 def sale_comment_delete(request, year, sale_pk, comment_pk):

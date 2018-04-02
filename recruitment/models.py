@@ -209,7 +209,6 @@ class Role(models.Model):
         return [application.user for application in RecruitmentApplication.objects.filter(delegated_role=self, status='accepted')]
 
 
-# Model for company
 class RecruitmentPeriod(models.Model):
     name = models.CharField(max_length=30)
     start_date = models.DateTimeField()
@@ -220,6 +219,9 @@ class RecruitmentPeriod(models.Model):
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
     eligible_roles = models.IntegerField(default=3)
     recruitable_roles = models.ManyToManyField(Role)
+    allowed_groups = models.ManyToManyField(
+        Group, blank=False,
+        help_text="Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.")
 
     class Meta:
         permissions = (
