@@ -59,11 +59,11 @@ class SalesSearchForm(forms.Form):
         
         contact_by_date = search_form.cleaned_data['contact_by_date']
         if contact_by_date == 'TODAY':
-            sales_list = [sale for sale in sales_list if sale.contact_by_date is not None and date.today() == sale.contact_by_date]
+            sales_list = [sale for sale in sales_list.exclude(contact_by_date=None) if date.today() == sale.contact_by_date]
         elif contact_by_date == 'FUTURE':
-            sales_list = [sale for sale in sales_list if sale.contact_by_date is not None and date.today() < sale.contact_by_date]
+            sales_list = [sale for sale in sales_list.exclude(contact_by_date=None) if date.today() < sale.contact_by_date]
         elif contact_by_date == 'PAST':
-            sales_list = [sale for sale in sales_list if sale.contact_by_date is not None and date.today() > sale.contact_by_date]
+            sales_list = [sale for sale in sales_list.exclude(contact_by_date=None) if date.today() > sale.contact_by_date]
         
         diversity_room = search_form.cleaned_data['diversity_room']
         if diversity_room:
