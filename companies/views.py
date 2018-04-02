@@ -26,7 +26,7 @@ def list_company(request, pk, template_name='companies/list_company.html'):
 # page gets logged out. If set to True, it crashes as fair.year does not 
 # necessarily exists and then base.html cannot load.
 # TODO: This is bad design which might need fixing
-@permission_required('companies.company.can_add_company', raise_exception=False)
+@permission_required('sales.base', raise_exception=False)
 def company_create(request, template_name='companies/company_form.html'):
     fair = current_fair()
     form = CompanyForm(request.POST or None)
@@ -39,7 +39,7 @@ def company_create(request, template_name='companies/company_form.html'):
     return render(request, template_name, {'form':form, 'fair':fair})
 
 #update a company
-@permission_required('companies.company.can_change_company', raise_exception=False)
+@permission_required('sales.base', raise_exception=False)
 def company_update(request, pk, template_name='companies/company_form.html'):
     redirect_to = request.GET.get('next','')
     fair = current_fair()
@@ -53,7 +53,7 @@ def company_update(request, pk, template_name='companies/company_form.html'):
     return render(request, template_name, {'form':form, 'fair':fair})
 
 #delete a company
-@permission_required('companies.company.can_delete_company', raise_exception=False)
+@permission_required('sales.base', raise_exception=False)
 def company_delete(request, pk, template_name='companies/company_confirm_delete.html'):
     fair = current_fair()
     company = get_object_or_404(Company, pk=pk)
