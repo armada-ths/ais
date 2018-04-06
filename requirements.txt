@@ -12,3 +12,4 @@ raven
 requests
 openpyxl
 jsonfield
+django_dynamic_formsets
