@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>{% endblock %}
+
+{% block content %}
+<div class="pull-right">
+	<a href="{% url 'companies_customers_groups_new' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New group</a>
+	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies at {{ fair }}</a>
+</div>
+
+<h1>Groups in {{ fair }}</h1>
+
+<div class="row">
+	<div class="col-md-5">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Groups</h3>
+			</div>
+			
+			<div class="panel-body">
+				{% for group in groups_list %}
+					{% if group == 'open' %}<ul>
+					{% elif group == 'open_short' %}<li>
+					{% elif group == 'close' %}</ul></li>
+					{% elif group == 'close_short' %}</li>
+					{% else %}
+						{% if group.group == form_group %}<strong>{% endif %}
+						<a href="{% url 'companies_customers_groups_edit' fair.year group.group.pk %}">{{ group.group.name }}</a>
+						{% if group.group == form_group %}</strong>{% endif %}
+					{% endif %}
+				{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-7">
+		{% if request.resolver_match.url_name != 'companies_customers_groups' %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">{% if form_group %} Edit group {% else %} New group {% endif %}</h3>
+				</div>
+				
+				<div class="panel-body">
+					<form method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+						{{ form|crispy }}
+						<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> {% if form_group %} Save changes {% else %} Save group {% endif %}</button>
+					</form>
+				</div>
+			</div>
+		{% else %}
+			<p>Click on a group in the left column to edit it or use the button above to create a new group.</p>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

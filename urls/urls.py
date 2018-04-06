@@ -10,6 +10,6 @@ urlpatterns = [
     url(r'^recruitment/', include('recruitment.urls')),
     url(r'^exhibitors/', include('exhibitors.urls')),
     url(r'^products/', include('orders.urls')),
-    url(r'^sales/', include('sales.urls')),
+    url(r'^companies/', include('companies.urls_fair')),
     url(r'^banquet/', include('banquet.urls')),
 ]

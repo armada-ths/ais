@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>{% endblock %}
+
+{% block content %}
+
+{% if company %}
+	<div class="pull-right">
+		<a href="{% url 'companies_view' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Overview</a>
+	</div>
+	
+	<h1>Edit company</h1>
+{% else %}
+	<h1>New company</h1>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	
+	<div class="row">
+		<div class="col-md-5">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Details</h2>
+				</div>
+				
+				<div class="panel-body">
+					{{ form|crispy }}
+				</div>
+			</div>
+			
+			{{ contact_formset.management_form }}
+			
+			{% for contact_form in contact_formset %}
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h2 class="panel-title">Edit company contact</h2>
+					</div>
+					
+					<div class="panel-body">
+						{{ contact_form | crispy }}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+		
+		{% if address_formset %}
+			{{ address_formset.management_form }}
+			
+			<div class="col-md-7">
+				{% for address_form in address_formset %}
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h2 class="panel-title">Edit address</h2>
+						</div>
+						
+						<div class="panel-body">
+							{{ address_form | crispy }}
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+	</div>
+	
+	<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> {% if company %} Save changes {% else %} Save company {% endif %}</button>
+</form>
+{% endblock %}

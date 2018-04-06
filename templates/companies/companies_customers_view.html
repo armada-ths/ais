@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>{% endblock %}
+
+{% block content %}
+<div class="pull-right">
+	<a href="{% url 'companies_customers_edit' fair.year company_customer.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> Groups and responsibilities</a>
+	<a href="{% url 'companies_edit' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit company</a>
+	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies at {{ fair }}</a>
+</div>
+
+<h1>{{ company.name }} at {{ fair }}</h1>
+
+<div class="row">
+	<div class="col-md-5">
+		<ul class="list-unstyled">
+			{% if company.identity_number %} <li><strong>Identity number:</strong>
+				{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
+				{% else %} {{ company.identity_number }} {% endif %}
+			</li>{% endif %}
+			
+			{% if company.website %} <li><strong>Website:</strong> <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></li>{% endif %}
+		</ul>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Groups</h3>
+			</div>
+			
+			<div class="panel-body">
+				{% if company_customer.groups_iterable %}
+					<ul>
+						{% for group in company_customer.groups_iterable %}
+							<li>{{ group }}</li>
+						{% endfor %}
+					</ul>
+				{% else %}
+					<p>No groups specified.</p>
+				{% endif %}
+			</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Responsibilities</h3>
+			</div>
+			
+			<div class="panel-body">
+				{% if company_customer.responsibles %}
+					<ul>
+						{% for responsible in company_customer.responsibles %}
+							<li>{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}</li>
+						{% endfor %}
+					</ul>
+				{% else %}
+					<p>No responsibilities specified.</p>
+				{% endif %}
+			</div>
+		</div>
+		
+		{% for address in company.addresses %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">{{ address.get_type_display }} address</h3>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>{% if address.name %} {{ address.name }} {% else %} {{ company.name }} {% endif %}</strong></li>
+						<li><strong>{{ address.street }}</strong></li>
+						<li><strong>{{ address.zipcode }} {{ address.city }}</strong></li>
+					</ul>
+					
+					<ul class="list-unstyled">
+						{% if address.phone_number %} <li><strong>Phone number:</strong> {{ address.phone_number }}</li> {% endif %}
+						{% if address.email_address %} <li><strong>E-mail address:</strong> <a href="mailto:{{ address.email_address }}" target="_blank">{{ address.email_address }}</a></li>{% endif %}
+						{% if address.reference %} <li><strong>Reference:</strong> {{ address.reference }}</li> {% endif %}</li>
+					</ul>
+				</div>
+			</div>
+		{% endfor %}
+		
+		{% for company_contact in company_contacts %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">{{ company_contact.name }} ({{ company_contact.title }})</h3>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>E-mail address:</strong> <a href="mailto:{{ company_contact.email_address }}">{{ company_contact.email_address }}</a></li>
+						{% if company_contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> {{ company_contact.mobile_phone_number }}</li>{% endif %}
+						{% if company_contact.work_phone_number %}<li><strong>Work phone number:</strong> {{ company_contact.work_phone_number }}</li>{% endif %}
+						<li><strong>Confirmed:</strong> {% if company_contact.confimed %} Yes {% else %} No {% endif %}</li>
+						<li><strong>Active:</strong> {% if company_contact.active %} Yes {% else %} No {% endif %}</li>
+					</ul>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	
+	<div class="col-md-7">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2 class="panel-title">Write comment</h2>
+			</div>
+			
+			<div class="panel-body">
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ form | crispy }}
+					<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save comment</button>
+				</form>
+			</div>
+		</div>
+		
+		{% for comment in company_customer.comments %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
+					{{ comment.groups_iterable | join:", " }}
+				</div>
+				
+				<div class="panel-body">
+					<p>{{ comment.comment }}</p>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

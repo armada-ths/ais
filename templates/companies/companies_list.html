@@ -1,15 +1,36 @@
 {% extends "base.html" %}
-{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies:companies_list' %}">Companies</a></li>{% endblock %}
-{% block content %}
-<h1>Companies</h1>
-<ul>
-    {% for company in object_list %}
-    <li><a href="{% url "companies:company" company.id %}">{{ company.name }}</a>  :  
-    <a href="{% url "companies:company_edit" company.id %}">EDIT</a>
-    <a href="{% url "companies:company_delete" company.id %}">DELETE</a>
-    </li>
-    {% endfor %}
-</ul>
 
-<a href="{% url "companies:new" %}">New company</a>
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>{% endblock %}
+
+{% block content %}
+<div class="pull-right">
+	<a href="{% url 'companies_new' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a>
+</div>
+
+<h1>Companies</h1>
+
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Identity number</th>
+				<th>Website</th>
+			</tr>
+		</thead>
+		
+		{% for company in companies %}
+			<tr>
+				<td><a href="{% url 'companies_view' company.pk %}">{{ company.name }}</a></td>
+				<td>
+					{% if company.identity_number %}
+						{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
+						{% else %} {{ company.identity_number }} {% endif %}
+					{% endif %}
+				</td>
+				<td>{% if company.website %} <a href="{{ company.website }}" target="_blank">{{ company.website }}</a> {% endif %}</td>
+			</tr>
+		{% endfor %}
+	</table>
+</div>
 {% endblock %}

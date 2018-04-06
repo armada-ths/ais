@@ -1,0 +1,114 @@
+[
+    {
+        "pk": 1, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Black-eyed Peas"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Kidney Beans"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Minty Loin of Lamb"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Olive Oil (Extra Virgin)"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Oreos"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Prime Bac'n"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Reese's Peanut Butter Cups"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Rice Wine Vinegar"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Sweetcorn"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Szechuan Peppercorn"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "example.product", 
+        "fields": {
+            "name": "Uncle Bob's Hot, Hot Sauce"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "example.order", 
+        "fields": {
+            "customer": "Kermit the frog", 
+            "date": "2010-02-13"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "example.ordereditem", 
+        "fields": {
+            "product": 1, 
+            "order": 1, 
+            "quantity": 5
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "example.ordereditem", 
+        "fields": {
+            "product": 3, 
+            "order": 1, 
+            "quantity": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "example.ordereditem", 
+        "fields": {
+            "product": 7, 
+            "order": 1, 
+            "quantity": 1
+        }
+    }
+]

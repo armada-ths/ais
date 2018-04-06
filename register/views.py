@@ -8,20 +8,19 @@ from django.conf import settings
 import requests as r
 import json
 
-from companies.models import Company, Contact, InvoiceDetails
+from companies.models import Company, CompanyCustomer, CompanyContact
 from orders.models import Product, Order, ProductType, ElectricityOrder
 from exhibitors.models import Exhibitor, TransportationAlternative
 from fair.models import Fair
-from sales.models import Sale
 from matching.models import Survey
 
-from .models import SignupContract, SignupLog, OrderLog
+from .models import SignupContract, SignupLog
 
-from .forms import  RegistrationForm,  InterestForm, ChangePasswordForm
+from .forms import RegistrationForm, ChangePasswordForm
 from orders.forms import SelectStandAreaForm, get_order_forms, ElectricityOrderForm
-from exhibitors.forms import ExhibitorProfileForm, SelectInvoiceDetailsForm, TransportationForm
+from exhibitors.forms import ExhibitorProfileForm, TransportationForm
 from matching.forms import ResponseForm
-from companies.forms import InvoiceDetailsForm, CompanyForm, ContactForm, EditCompanyForm, CreateContactForm, CreateContactNoCompanyForm, UserForm
+from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from transportation.forms import PickupForm, DeliveryForm
 
 
@@ -34,7 +33,7 @@ from django.template.loader import get_template
 
 def index(request, template_name='register/index.html'):
     if request.user.is_authenticated():
-        if Contact.objects.filter(user=request.user).first() is not None:
+        if CompanyContact.objects.filter(user=request.user).first() is not None:
             return redirect('anmalan:home')
         else:
             return redirect('anmalan:logout')
@@ -43,44 +42,43 @@ def index(request, template_name='register/index.html'):
     return render(request, template_name, {'fair': fair, 'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
 
 def signup(request, template_name='register/create_user.html'):
-    contact_form = CreateContactForm(request.POST or None, prefix='contact')
-    user_form = UserForm(request.POST or None, prefix='user')
-    if request.POST and contact_form.is_valid() and user_form.is_valid():
-        user = user_form.save(commit=False)
-        contact = contact_form.save(commit=False)
-        user.username = contact.email
-        user.email = contact.email
-        user.save()
-        contact.user = user
-        contact.save()
-        user = authenticate(username=contact_form.cleaned_data['email'],
-                                    password=user_form.cleaned_data['password1'],
-                                    )
-        login(request, user)
-        return redirect('anmalan:home')
-    return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
+	contact_form = CreateCompanyContactForm(request.POST or None, prefix='contact')
+	user_form = UserForm(request.POST or None, prefix='user')
+
+	if request.POST and contact_form.is_valid() and user_form.is_valid():
+		user = user_form.save(commit=False)
+		contact = contact_form.save(commit=False)
+		user.username = contact.email_address
+		user.email = contact.email_address
+		user.save()
+		contact.user = user
+		contact.save()
+		user = authenticate(username=contact_form.cleaned_data['email_address'], password=user_form.cleaned_data['password1'],)
+		login(request, user)
+		return redirect('anmalan:home')
+	
+	return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
 
 def create_company(request, template_name='register/company_form.html'):
-    form = CompanyForm(request.POST or None)
-    contact_form = CreateContactNoCompanyForm(request.POST or None, prefix='contact')
-    user_form = UserForm(request.POST or None, prefix='user')
-    if contact_form.is_valid() and user_form.is_valid() and form.is_valid():
-        company = form.save()
-        user = user_form.save(commit=False)
-        contact = contact_form.save(commit=False)
-        user.username = contact.email
-        user.email = contact.email
-        user.save()
-        contact.user = user
-        contact.confirmed = True #Auto confirm contacts who register a new company
-        contact.belongs_to = company
-        contact.save()
-        user = authenticate(username=contact_form.cleaned_data['email'],
-                                    password=user_form.cleaned_data['password1'],
-                                    )
-        login(request, user)
-        return redirect('anmalan:home')
-    return render(request, template_name, dict(form=form, contact_form=contact_form, user_form=user_form))
+	form = CompanyForm(request.POST or None)
+	contact_form = CreateCompanyContactNoCompanyForm(request.POST or None, prefix='contact')
+	user_form = UserForm(request.POST or None, prefix='user')
+
+	if contact_form.is_valid() and user_form.is_valid() and form.is_valid(None):
+		company = form.save()
+		user = user_form.save(commit=False)
+		contact = contact_form.save(commit=False)
+		user.username = contact.email_address
+		user.email = contact.email_address
+		user.save()
+		contact.user = user
+		contact.confirmed = True #Auto confirm contacts who register a new company
+		contact.company = company
+		contact.save()
+		user = authenticate(username=contact_form.cleaned_data['email_address'], password=user_form.cleaned_data['password1'],)
+		login(request, user)
+		return redirect('anmalan:home')
+	return render(request, template_name, dict(form=form, contact_form=contact_form, user_form=user_form))
 
 
 def submission_view(request, template_name='register/finished_registration.html'):
@@ -88,8 +86,8 @@ def submission_view(request, template_name='register/finished_registration.html'
     Thank you screen after submission of complete registration
     """
     fair = Fair.objects.filter(current=True).first()
-    contact = Contact.objects.get(user=request.user)
-    company = contact.belongs_to
+    contact = CompanyContact.objects.get(user=request.user)
+    company = contact.company
     exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
     product_list, total_price = get_product_list_and_price(exhibitor);
     return render(request, template_name, dict(fair=fair, product_list=product_list, total_price=total_price))
@@ -118,7 +116,6 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
             contact=contact,
             about_text = old_exhibitor.about_text,
             logo = old_exhibitor.logo,
-            invoice_details = old_exhibitor.invoice_detials,
             )
     # ManyToMany fields needs to be copied after creation
     # the * unpacks the list, taking [a,b,c] to a,b,c
@@ -126,51 +123,21 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
     exhibitor.save()
     return exhibitor
 
-def preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, allow_saving):
-    form1 = RegistrationForm((request.POST or None) if allow_saving else None, prefix='registration')
-    prev_sale = Sale.objects.filter(fair=fair, company=company).first()
-    form2 = InterestForm((request.POST or None) if allow_saving else None, instance=prev_sale,prefix='interest')
-    if not signed_up:
-        if form1.is_valid() and form2.is_valid():
-            SignupLog.objects.create(contact=contact, contract=contract, company = contact.belongs_to)
-            if len(Sale.objects.filter(fair=fair, company=company))==0:
-                sale = form2.save(commit=False)
-                sale.company = company
-                sale.save()
+def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving):
+	company_customer = CompanyCustomer.objects.filter(fair = fair, company = company).first()
+	
+	if company_customer is None:
+		company_customer = CompanyCustomer.objects.create(company = contact.company, fair = fair)
+	
+	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company_customer)
 
-            exhibitor = None
-            try:
-                exhibitor = Exhibitor.objects.get(company=company, fair=fair)
-            except Exhibitor.DoesNotExist:
-                # Try and copy exhibitor information from last year to make it easier to fill out the form.
-                old_exhibitor = Exhibitor.objects.filter(company=company).order_by('-fair__year').first()
-                exhibitor = None
-                if old_exhibitor is None:
-                    exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
-                else:
-                    #Try to copy fields from last year. If failing, just create a new blank one
-                    try:
-                        exhibitor = create_new_exhibitor_from_old(old_exhibitor, contact, fair)
-                    except:
-                        exhibitor = Exhibitor.objects.create(company=company, contact=contact, fair=fair, status='registered')
+	if not signed_up and form.is_valid():
+		form.save()
+		SignupLog.objects.create(company_contact = contact, contract = contract, company = contact.company)
 
-            try:
-                Order.objects.create(exhibitor=exhibitor, amount=1)
-            except:
-                pass
+		return redirect('anmalan:home')
 
-            return redirect('anmalan:home')
-
-    return ('register/registration.html', dict(registration_open = True,
-                                               signed_up = signed_up,
-                                               contact = contact,
-                                               company=company,
-                                               exhibitor = exhibitor,
-                                               fair=fair,
-                                               form1=form1,
-                                               form2=form2,
-                                               contract_url=contract.contract.url if contract else None
-                                               ))
+	return ('register/registration.html', dict(registration_open = True, signed_up = signed_up, contact = contact, company=company, exhibitor = exhibitor, fair=fair, form = form, contract_url = contract.contract.url if contract else None ))
 
 
 def get_product_list_and_price(exhibitor):
@@ -248,20 +215,22 @@ def check_form_errors(forms):
     return False
 
 def create_sumbission(exhibitor, contact, fair, contract):
-    """
-    Create objects in database for a sumbission of the complete registration
-    """
-    # Create order log
-    orders = Order.objects.filter(exhibitor=exhibitor)
-    product_log = "\n".join(map(lambda order: ",".join([str(order.product.product_type), str(order.product), str(order.amount), str(order.amount*order.product.price)]), orders))
-    OrderLog.objects.create(contact=contact, company = contact.belongs_to, action='submit', fair=fair, products=product_log)
-    # Set progression status
-    SignupLog.objects.create(contact=contact, company=contact.belongs_to, contract=contract, type='complete')
-    exhibitor.status = 'complete_registration_submit'
-    exhibitor.accept_terms = True
-    exhibitor.save(update_fields=['status', 'accept_terms'])
-    r.post(settings.SALES_HOOK_URL,
-        data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, contact.belongs_to)}))
+	"""
+	Create objects in database for a sumbission of the complete registration
+	"""
+	# Create order log
+	orders = Order.objects.filter(exhibitor=exhibitor)
+	product_log = "\n".join(map(lambda order: ",".join([str(order.product.product_type), str(order.product), str(order.amount), str(order.amount*order.product.price)]), orders))
+
+	# Set progression status
+	SignupLog.objects.create(company_contact = contact, company = contact.company, contract = contract, type = 'complete')
+
+	exhibitor.status = 'complete_registration_submit'
+	exhibitor.accept_terms = True
+	exhibitor.save(update_fields=['status', 'accept_terms'])
+
+	r.post(settings.SALES_HOOK_URL,
+		data=json.dumps({'text': 'User {!s} just submitted complete registration for {!s}!'.format(contact, contact.company)}))
 
 def send_confirmation_email(request, contact, products, total_price):
     try:
@@ -382,7 +351,7 @@ def home(request, template_name='register/registration.html'):
     This view also creates forms and variables that are common for all stages.
     """
     if request.user.is_authenticated():
-        if Contact.objects.filter(user=request.user).first() is None:
+        if CompanyContact.objects.filter(user=request.user).first() is None:
             return redirect('anmalan:logout')
         else:
             forms = [] # this is a list of all forms that is used to collect all errors on start page
@@ -395,22 +364,24 @@ def home(request, template_name='register/registration.html'):
             complete_registration_closed = fair.complete_registration_close_date < timezone.now()
 
             contract = SignupContract.objects.filter(fair=fair, current=True).first()
-            contact = Contact.objects.get(user=request.user)
-            company = contact.belongs_to
+            contact = CompanyContact.objects.get(user=request.user)
+            company = contact.company
             exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
-            signed_up = SignupLog.objects.filter(company = company, contract=contract).first() != None
+            signed_up = SignupLog.objects.filter(company = company, contract = contract).first() != None
 
-            contact_form = ContactForm(request.POST or None, instance=contact, prefix='contact_info')
+            contact_form = CompanyContactForm(request.POST or None, instance = contact, prefix = 'contact_info')
+            del contact_form.fields["active"]
+            del contact_form.fields["confirmed"]
             forms.append(contact_form)
             
-            invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
-            forms.append(invoice_details_form)
+            #invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
+            #forms.append(invoice_details_form)
             
-            company_form = EditCompanyForm(request.POST or None, instance=company, prefix='company_info')
+            company_form = CompanyForm(request.POST or None, instance = company, prefix = 'company_info')
             forms.append(company_form)
             
-            profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
-            forms.append(profile_form)
+            #profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
+            #forms.append(profile_form)
             
             current_matching_survey = Survey.objects.filter(fair=fair).first()
             survey_form = None
@@ -419,7 +390,7 @@ def home(request, template_name='register/registration.html'):
                 forms.append(survey_form)
 
             if request.POST:
-                if company_form.is_valid():
+                if company_form.is_valid(company):
                     company_form.save()
                 
                 if contact_form.is_valid():
@@ -430,18 +401,18 @@ def home(request, template_name='register/registration.html'):
                     if survey_form and  survey_form.is_valid():
                         survey_form.save()
                     
-                    if profile_form.is_valid():
-                        profile_form.save()
+                    #if profile_form.is_valid():
+                    #    profile_form.save()
                     
-                    if invoice_details_form.is_valid():
-                        invoice_details = invoice_details_form.save()
-                        exhibitor.invoice_details = invoice_details
-                        exhibitor.save(update_fields=['invoice_details'])
+                    #if invoice_details_form.is_valid():
+                    #    invoice_details = invoice_details_form.save()
+                    #    exhibitor.invoice_details = invoice_details
+                    #    exhibitor.save(update_fields=['invoice_details'])
 
             #needs to start check if complete is opened as that should override preliminary
             # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
-            kwargs = dict(common_forms=forms, company_form=company_form, profile_form=profile_form, 
-                        survey_form=survey_form, invoice_details_form=invoice_details_form, contact_form=contact_form, 
+            kwargs = dict(common_forms=forms, company_form=company_form, profile_form=None, 
+                        survey_form=survey_form, contact_form=contact_form, 
                         contact=contact, company=company, exhibitor=exhibitor, fair=fair, signed_up=signed_up)
 
             if complete_registration_open:

@@ -81,27 +81,33 @@
                                 <h5>Organisation name:</h5>
                                 <div class="input-field">{{ company }}</div>
                             </li>
-                            <li>
-                                <h5>Organisation number:</h5>
-                                <div class="input-field">{{ company.organisation_number }}</div>
-                            </li>
-                            <li>
-                                <h5>Type of organisation:</h5>
-                                <div class="input-field">{{ company.organisation_type }}</div>
-                            </li>
-                            <li>
-                                <h5>Webpage:</h5>
-                                <div class="input-field">{{ company.website }}</div>
-                            </li>
-                            <li class="address">
-                                <h5>Address:</h5>
-                                <div class="input-field">
-				                    {{ company.address_street }} <br>
-				                    {{ company.address_zip_code }} {{ company.address_city }}<br>
-				                    {{ company.address_country }}<br>
-                                    {{ company.additional_address_information }}
-                                </div>
-                            </li>
+							
+							{% if company.identity_number %}
+								<li>
+									<h5>Identity number:</h5>
+									<div class="input-field">{{ company.identity_number }}</div>
+								</li>
+							{% endif %}
+							
+							{% if company.website %}
+								<li>
+									<h5>Website:</h5>
+									<div class="input-field">{{ company.website }}</div>
+								</li>
+							{% endif %}
+							
+							{% if company.phone_number %}
+								<li>
+									<h5>Phone number:</h5>
+									<div class="input-field">{{ company.phone_number }}</div>
+								</li>
+							{% endif %}
+							
+							<li>
+								<h5>Type:</h5>
+								<div class="input-field">{{ company.type }}</div>
+							</li>
+                            
                             {% if contact.confirmed %}
                                 <div id="editOrganisationTrigger" class="toggleEdit btn-green btn-edit"> Edit company info </div>
                             {% endif %}

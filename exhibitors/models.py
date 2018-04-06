@@ -36,10 +36,9 @@ class TransportationAlternative(models.Model):
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
     company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
-    invoice_details = models.ForeignKey('companies.InvoiceDetails', on_delete=models.SET_NULL, blank=True, null=True)
     fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     hosts = models.ManyToManyField(User, blank=True)
-    contact = models.ForeignKey('companies.Contact', null=True, blank=True, on_delete=models.CASCADE)
+    contact = models.ForeignKey('companies.CompanyContact', null=True, blank=True, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.CASCADE)
     booth_number = models.IntegerField(blank=True, null=True)
     fair_location = models.OneToOneField('locations.Location', blank=True, null=True, on_delete=models.CASCADE)

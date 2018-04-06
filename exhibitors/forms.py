@@ -3,7 +3,6 @@ from django import forms
 import inspect
 
 from .models import ExhibitorView, Exhibitor, TransportationAlternative
-from companies.models import InvoiceDetails
 
 class TransportationForm(forms.ModelForm):
     class Meta:
@@ -14,17 +13,6 @@ class TransportationForm(forms.ModelForm):
         super(TransportationForm, self).__init__(*args, **kwargs)
         self.fields['inbound_transportation'].queryset = TransportationAlternative.objects.filter(inbound=True)
         self.fields['outbound_transportation'].queryset = TransportationAlternative.objects.filter(inbound=False)
-
-
-class SelectInvoiceDetailsForm(forms.ModelForm):
-    class Meta:
-        model = Exhibitor
-        fields = ('invoice_details',)
-
-    def __init__(self, exhibitor, *args, **kwargs):
-        super(SelectInvoiceDetailsForm, self).__init__(*args, **kwargs)
-        self.fields['invoice_details'].queryset = InvoiceDetails.objects.filter(company=exhibitor.company)
-
 class ExhibitorProfileForm(forms.ModelForm):
     class Meta:
         model = Exhibitor
@@ -86,7 +74,7 @@ class ExhibitorFormFull(forms.ModelForm):
     class Meta:
         model = Exhibitor
         fields = '__all__'
-        exclude = ('company', 'fair', 'invoice_details', 'pickup_order', 'delivery_order') 
+        exclude = ('company', 'fair', 'pickup_order', 'delivery_order') 
 
 
 
@@ -98,6 +86,6 @@ class ExhibitorFormPartial(ExhibitorFormFull):
     '''
 
     class Meta(ExhibitorFormFull.Meta):
-        exclude = ('company', 'fair', 'hosts', 'contact', 'invoice_details','pickup_order', 'delivery_order')
+        exclude = ('company', 'fair', 'hosts', 'contact', 'pickup_order', 'delivery_order')
 
 

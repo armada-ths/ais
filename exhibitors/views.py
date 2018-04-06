@@ -9,7 +9,7 @@ from django.core.mail import get_connection, EmailMultiAlternatives, send_mail
 from django.contrib.auth.decorators import permission_required
 
 
-from companies.models import Company, Contact
+from companies.models import Company, CompanyContact
 from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
@@ -17,8 +17,6 @@ from banquet.models import BanquetteAttendant
 
 from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial
 from .models import Exhibitor, ExhibitorView
-
-from companies.forms import InvoiceDetailsForm
 
 import logging
 
@@ -78,15 +76,15 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
     if request.user.has_perm('exhibitors.change_exhibitor'):
         # pass the FILES, because the form has a picture
         exhibitor_form = ExhibitorFormFull(request.POST or None, request.FILES or None, instance=exhibitor)
-        invoice_form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details')
+        #invoice_form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details')
     else:
         exhibitor_form = ExhibitorFormPartial(request.POST or None, request.FILES or None, instance=exhibitor)
     company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
 
-    if request.POST and exhibitor_form.is_valid() and company_form.is_valid() and invoice_form.is_valid():
-        invoice_details = invoice_form.save()
+    if request.POST and exhibitor_form.is_valid() and company_form.is_valid():
+        #invoice_details = invoice_form.save()
         exh = exhibitor_form.save(commit=False)
-        exh.invoice_details = invoice_details
+        #exh.invoice_details = invoice_details
         exh.save()
         company_form.save()
         return redirect('exhibitors', fair.year)
@@ -104,7 +102,6 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'company_form': company_form,
         'fair': fair,
         'banquet_attendants': banquet_attendants,
-        'invoice_form': invoice_form
     })
 
 
@@ -117,7 +114,7 @@ def send_emails(request, year, pk, template_name='exhibitors/send_emails.html'):
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     no_contact = False
     try:
-        contact = Contact.objects.get(exhibitor=exhibitor)
+        contact = CompanyContact.objects.get(exhibitor=exhibitor)
     except:
         no_contact=True
     return render(request, template_name, {'fair': fair, 'exhibitor': exhibitor, 'no_contact': no_contact})
@@ -139,7 +136,7 @@ def send_cr_receipts(request, year, pk):
 
     fair = get_object_or_404(Fair, year=year)
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
-    contact =  Contact.objects.get(exhibitor=exhibitor)
+    contact =  CompanyContact.objects.get(exhibitor=exhibitor)
 
     orders =  Order.objects.filter(exhibitor = exhibitor)
     total_price = 0

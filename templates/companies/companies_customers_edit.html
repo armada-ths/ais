@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>{% endblock %}
+
+{% block content %}
+<div class="pull-right">
+	<a href="{% url 'companies_customers_view' fair.year company_customer.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
+	<a href="{% url 'companies_edit' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit company</a>
+	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> List companies at {{ fair }}</a>
+</div>
+
+<h1>{{ company.name }} at {{ fair }}</h1>
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Groups</h3>
+			</div>
+			
+			<div class="panel-body">
+				{% for group in groups_list %}
+					{% if group == 'open' %}<ul>
+					{% elif group == 'open_short' %}<li>
+					{% elif group == 'close' %}</ul></li>
+					{% elif group == 'close_short' %}</li>
+					{% else %}
+						{% if group.selected %} <strong> {% endif %}
+						{% if not group.group.allow_companies and not group.selected %} {{ group.group.name }}
+						{% else %} <a href="{% url 'companies_customers_edit_toggle_group' fair.year company_customer.pk group.group.pk %}">{{ group.group.name }}</a>{% endif %}
+						{% if group.selected %} </strong> {% endif %}
+					{% endif %}
+				{% endfor %}
+				</ul>
+				
+				<p>Click on a group to associate with or remove it from the company.</p>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h5 class="panel-title">Responsibilities</h5>
+			</div>
+			
+			<div class="panel-body">
+				{% if responsibles %}
+					<div class="table-responsive">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Responsibility</th>
+									<th>Assigned people</th>
+									<th></th>
+								</tr>
+							</thead>
+							
+							{% for responsible in responsibles %}
+								<tr>
+									<td>{{ responsible.group }}</td>
+									<td>
+										<ul class="list-unstyled">
+											{% for user in responsible.users_iterable %}
+												<li>{{ user }}</li>
+											{% endfor %}
+										</ul>
+									</td>
+									<td style="text-align: right;">
+										<a href="{% url 'companies_customers_edit_toggle_responsible' fair.year company_customer.pk responsible.group.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+									</td>
+								</tr>
+							{% endfor %}
+						</table>
+					</div>
+				{% else %}
+					<p>No responsibilities specified.</p>
+				{% endif %}
+			</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h5 class="panel-title">{% if responsible %} Change responsibilities {% else %} Assign responsibilities {% endif %}</h5>
+			</div>
+			
+			<div class="panel-body">
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ form_responsible|crispy }}
+					<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> {% if responsible %} Save changes {% else %} Assign responsibilities {% endif %}</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

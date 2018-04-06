@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>{% endblock %}
+
+{% block content %}
+<div class="pull-right">
+	<a href="{% url 'companies_edit' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+	<a href="{% url 'companies_list' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> List companies</a>
+</div>
+
+<h1>{{ company.name }}</h1>
+
+<div class="row">
+	<div class="col-md-5">
+		<ul class="list-unstyled">
+			{% if company.identity_number %} <li><strong>Identity number:</strong>
+				{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
+				{% else %} {{ company.identity_number }} {% endif %}
+			</li>{% endif %}
+			
+			{% if company.website %} <li><strong>Website:</strong> <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></li>{% endif %}
+		</ul>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2 class="panel-title">Linked fairs</h2>
+			</div>
+			
+			<div class="panel-body">
+				{% if company_customers %}
+					<ul>
+						{% for company_customer in company_customers %}
+							<li>
+								<a href="{% url 'companies_customers_view' fair.year company_customer.pk %}">{{ company_customer.fair }}</a>
+								<ul class="list-unstyled">
+									{% for group in company_customer.groups_iterable %}
+										<li>{{ group }}</li>
+									{% endfor %}
+								</ul>
+							</li>
+						{% endfor %}
+					</ul>
+				{% else %}
+					<p>This company is not linked to any fairs.</p>
+				{% endif %}
+			</div>
+		</div>
+		
+		{% for address in company.addresses %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">{{ address.get_type_display }} address</h2>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>{% if address.name %} {{ address.name }} {% else %} {{ company.name }} {% endif %}</strong></li>
+						<li><strong>{{ address.street }}</strong></li>
+						<li><strong>{{ address.zipcode }} {{ address.city }}</strong></li>
+					</ul>
+					
+					<ul class="list-unstyled">
+						{% if address.phone_number %} <li><strong>Phone number:</strong> {{ address.phone_number }}</li> {% endif %}
+						{% if address.email_address %} <li><strong>E-mail address:</strong> <a href="mailto:{{ address.email_address }}" target="_blank">{{ address.email_address }}</a></li>{% endif %}
+						{% if address.reference %} <li><strong>Reference:</strong> {{ address.reference }}</li> {% endif %}</li>
+					</ul>
+				</div>
+			</div>
+		{% endfor %}
+		
+		{% for company_contact in company_contacts %}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">{{ company_contact.name }} ({{ company_contact.title }})</h2>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>E-mail address:</strong> <a href="mailto:{{ company_contact.email_address }}">{{ company_contact.email_address }}</a></li>
+						{% if company_contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> {{ company_contact.mobile_phone_number }}</li>{% endif %}
+						{% if company_contact.work_phone_number %}<li><strong>Work phone number:</strong> {{ company_contact.work_phone_number }}</li>{% endif %}
+						<li><strong>Confirmed:</strong> {% if company_contact.confimed %} Yes {% else %} No {% endif %}</li>
+						<li><strong>Active:</strong> {% if company_contact.active %} Yes {% else %} No {% endif %}</li>
+					</ul>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+	
+	<div class="col-md-7">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2 class="panel-title">History</h2>
+			</div>
+			
+			<div class="panel-body">
+				{% for log_item in company.log_items %}
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h2 class="panel-title">{{ log_item.get_action_display }} at {{ log_item.timestamp }}</h2>
+						</div>
+						
+						<div class="panel-body">
+							<ul class="list-unstyled">
+								<li><strong>Fair:</strong> {{ log_item.fair }}</li>
+							</ul>
+						
+							<pre>{{ log_item.data }}</pre>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

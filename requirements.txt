@@ -11,4 +11,4 @@ Pillow
 raven
 requests
 openpyxl
-
+jsonfield

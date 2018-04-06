@@ -1,79 +1,215 @@
+import re
 from django.db import models
 from django.conf import settings
-from people.models import Programme
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from jsonfield import JSONField
 
-# A 'Contact' is a person working for a 'Company'
-class Contact(models.Model):
-    user = models.OneToOneField(
-            settings.AUTH_USER_MODEL,
-            null = True,
-            blank = True,
-            on_delete=models.CASCADE)
-    belongs_to = models.ForeignKey('Company', null=True, related_name="belongs_to", on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
-    email = models.EmailField(max_length=200)
-    alternative_email = models.EmailField(max_length=200, null=True, blank=True)
-    title = models.CharField(max_length=200)  # work title, such as CEO or HR.
-    cell_phone = models.CharField(max_length=200, blank=True)
-    work_phone = models.CharField(max_length=200)
-    active = models.BooleanField(default=True)  # if the contact is active
-    confirmed = models.BooleanField(default=False)  # (means Armada KAM have confirmed and they are allowed to change company info)
-    phone_switchboard = models.CharField(max_length=200, null=True, blank=True)
-
-    def __str__(self):
-        return self.name
+from fair.models import Fair
+from accounting.models import Revenue, Product
 
 
-# Model for company
+# Groups that company customers can be sorted into
+class Group(models.Model):
+	name = models.CharField(max_length = 100, null = False, blank = False)
+	description = models.TextField(blank = True)
+	fair = models.ForeignKey(Fair, null = False, blank = False, on_delete = models.CASCADE)
+	parent = models.ForeignKey("Group", null = True, blank = True, on_delete = models.CASCADE)
+	allow_companies = models.BooleanField(default = True, null = False, blank = False)
+	allow_registration = models.BooleanField(default = True, null = False, blank = False)
+	allow_responsibilities = models.BooleanField(default = False, null = False, blank = False)
+	allow_comments = models.BooleanField(default = False, null = False, blank = False)
+	
+	def path(self):
+		path = [self]
+		n = self.parent
+		
+		while n is not None:
+			path.append(n)
+			n = n.parent
+		
+		path.reverse()
+		return path
+	
+	class Meta:
+		verbose_name_plural = "Groups"
+		ordering = ["parent__name", "name"]
+	
+	def __str__(self):
+		return self.name if self.parent is None else ("%s – %s" % (self.parent, self.name))
+
+
+# Type of a company, e.g. government agency, company or non-profit organisation
+class CompanyType(models.Model):
+	type = models.CharField(max_length = 100, null = False, blank = False)
+	
+	class Meta:
+		verbose_name_plural = "Company types"
+		ordering = ["type"]
+
+	def __str__(self):
+		return self.type
+
+
+# Represents a company, independent of Fair (see CompanyCustomer below)
 class Company(models.Model):
-    class Meta:
-        verbose_name_plural = 'Companies'
-        ordering = ['name']
+	name = models.CharField(max_length = 100, verbose_name = "Organisation name", unique = True, null = False, blank = False)
+	identity_number = models.CharField(max_length = 100, null = True, blank = True)
+	website = models.CharField(max_length = 300, null = True, blank = True)
+	phone_number = models.CharField(max_length = 200, null = True, blank = True)
+	type = models.ForeignKey(CompanyType, null = False, blank = False, on_delete = models.CASCADE)
+	modified_by = None
+	
+	@property
+	def addresses(self):
+		return CompanyAddress.objects.filter(company = self)
+	
+	@property
+	def log_items(self):
+		return CompanyLog.objects.filter(company = self)
+	
+	@property
+	def identity_number_allabolag(self):
+		if self.identity_number is not None and re.match("^[0-9]{6}-[0-9]{4}$", self.identity_number):
+			return self.identity_number.replace('-', '')
+		
+		else:
+			return None
 
-    name = models.CharField(max_length=100, verbose_name='Organisation name')
-    organisation_number = models.CharField(max_length=100)
-    website = models.CharField(max_length=300, blank=True)
-    phone_number = models.CharField(max_length=300, blank=True)
-    related_programme = models.ManyToManyField(Programme, blank=True)
+	class Meta:
+		verbose_name_plural = "Companies"
+		ordering = ["name"]
 
-    address_street = models.CharField(max_length=200, blank=True)
-    address_zip_code = models.CharField(max_length=200, blank=True)
-    address_city = models.CharField(max_length=200, blank=True)
-    address_country = models.CharField(max_length=200, blank=True)
-
-    additional_address_information = models.CharField(max_length=200, blank=True)
-
-
-    organisation_types = [
-        ('company', 'Company'),
-        ('county_council', 'County/County council'),
-        ('government_agency', 'Government agency'),
-        ('non_profit_organisation', 'Non-profit organisation'),
-        ('union', 'Union'),
-    ]
-
-    organisation_type = models.CharField(choices=organisation_types, null=True, blank=True, max_length=30)
-
-
-    def __str__(self):
-        return self.name
-
-class InvoiceDetails(models.Model):
-    company = models.ForeignKey('Company', on_delete=models.CASCADE, related_name='invoice_details')
-    reference = models.CharField(max_length=200, blank=True)
-    purchase_order_number = models.CharField(max_length=200, blank=True)
-    reference_phone_number = models.CharField(max_length=200, blank=True)
-    organisation_name = models.CharField(max_length=200, blank=True)
-    address = models.CharField(max_length=200, blank=True)
-    address_po_box = models.CharField(max_length=200, blank=True)
-    address_zip_code = models.CharField(max_length=100, blank=True)
-    identification = models.CharField(max_length=200, blank=True)
-    additional_information = models.CharField(max_length=500, blank=True)
-
-    def __str__(self):
-        return str(self.reference) + ', ' + str(self.company)
+	def __str__(self):
+		return self.name
 
 
-# TODO some model to be able to add a company to sales/sponsorship
+class CompanyLog(models.Model):
+	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
+	fair = models.ForeignKey(Fair, null = True, blank = True, on_delete = models.CASCADE)
+	timestamp = models.DateTimeField(null = False, blank = False, auto_now_add = True)
+	data = JSONField()
 
-# TODO some model to be able to comment on a sale/sponsorship
+
+# Type of a company, e.g. government agency, company or non-profit organisation
+class CompanyAddress(models.Model):
+	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
+	
+	types = [
+		("INVOICE", "Invoice"),
+		("TRANSPORT", "Transport"),
+		("OFFICE", "Office")
+	]
+	
+	type = models.CharField(max_length = 200, choices = types, null = False, blank = False)
+	name = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "Name, if different from the organisation name")
+	street = models.CharField(max_length = 200, null = False, blank = False)
+	zipcode = models.CharField(max_length = 200, null = False, blank = False)
+	city = models.CharField(max_length = 200, null = False, blank = False)
+	phone_number = models.CharField(max_length = 200, null = True, blank = True)
+	email_address = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "E-mail address")
+	reference = models.CharField(max_length = 200, null = True, blank = True)
+	
+	class Meta:
+		verbose_name_plural = "Company addresses"
+
+	def __str__(self):
+		return self.street + ', ' + self.zipcode + ' ' + self.city
+
+
+# Connects a Company with a specific Fair, optionally in one or several Group
+class CompanyCustomer(models.Model):
+	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
+	fair = models.ForeignKey("fair.Fair", null = False, blank = False, on_delete = models.CASCADE)
+	groups = models.ManyToManyField(Group)
+	
+	@property
+	def groups_iterable(self):
+		return self.groups.all()
+	
+	@property
+	def responsibles(self):
+		return CompanyCustomerResponsible.objects.filter(company_customer = self)
+	
+	@property
+	def comments(self):
+		return CompanyCustomerComment.objects.filter(company_customer = self)
+	
+	def get_readonly_fields(self, request, obj=None):
+		if obj: # obj is not None, so this is an edit
+			return ["fair",] # Return a list or tuple of readonly fields' names
+		else: # This is an addition
+			return []
+	
+	class Meta:
+		verbose_name_plural = "Company customers"
+		ordering = ["company__name"]
+		unique_together = ("company", "fair",)
+
+	def __str__(self):
+		return "%s at %s" % (self.company, self.fair)
+
+
+class CompanyCustomerComment(models.Model):
+	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE)
+	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
+	groups = models.ManyToManyField(Group, blank = True)
+	comment = models.TextField(null = False, blank = False)
+	timestamp = models.DateTimeField(null = False, blank = False, auto_now_add = True)
+	
+	@property
+	def groups_iterable(self):
+		return self.groups.all()
+	
+	class Meta:
+		ordering = ["-timestamp"]
+	
+	def __str__(self):
+		return self.comment
+
+
+class CompanyCustomerResponsible(models.Model):
+	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE)
+	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
+	users = models.ManyToManyField(User, blank = False)
+	
+	@property
+	def users_iterable(self):
+		return self.users.all()
+	
+	class Meta:
+		verbose_name_plural = "Company customer responsibles"
+		ordering = ["company_customer__company__name", "group__name"]
+		unique_together = ("company_customer", "group",)
+
+	def __str__(self):
+		return "%s for %s" % (self.group, self.company_customer)
+
+
+# A "Contact" is a person working for a "Company"
+class CompanyContact(models.Model):
+	user = models.ForeignKey(User, null = False, blank = False)
+	company = models.ForeignKey(Company, null = False, blank = False)
+	name = models.CharField(max_length = 200, null = False, blank = False, verbose_name = "Full name")
+	email_address = models.EmailField(max_length = 200, null = False, blank = False, verbose_name = "E-mail address")
+	alternative_email_address = models.EmailField(max_length = 200, null = True, blank = True, verbose_name = "Alternative e-mail address")
+	title = models.CharField(max_length = 200, null = False, blank = False)
+	mobile_phone_number = models.CharField(max_length = 200, null = True, blank = True)
+	work_phone_number = models.CharField(max_length = 200, null = True, blank = True)
+	active = models.BooleanField(default = True)
+	confirmed = models.BooleanField(default = False)
+
+	def __str__(self):
+		return self.name
+
+
+@receiver(post_save, sender = Company)
+def update_stock(sender, instance, created, **kwargs):
+	if created:
+		CompanyLog.objects.create(company = instance, data = {"action": "create", "user": instance.modified_by})
+	
+	else:
+		print("company updated by " + str(instance.modified_by))
+	
+	instance.modified_by = None
