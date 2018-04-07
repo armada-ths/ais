@@ -11,12 +11,14 @@ def current_fair():
 	return get_object_or_404(Fair, current=True)
 
 
+@permission_required('companies.base')
 def companies_list(request, template_name = 'companies/companies_list.html'):
 	fair = current_fair()
 	companies = Company.objects.all()
 	return render(request, template_name, {'fair': fair, 'companies': companies})
 
 
+@permission_required('companies.base')
 def companies_view(request, pk, template_name = 'companies/companies_view.html'):
 	fair = current_fair()
 	company = get_object_or_404(Company, pk = pk)
@@ -26,6 +28,7 @@ def companies_view(request, pk, template_name = 'companies/companies_view.html')
 	return render(request, template_name, {'fair': fair, 'company': company, 'company_customers': company_customers, 'company_contacts': company_contacts})
 
 
+@permission_required('companies.base')
 def companies_form(request, pk = None, template_name = 'companies/companies_form.html'):
 	fair = current_fair()
 	
@@ -87,6 +90,7 @@ def tree_to_list(k, groups_tree):
 	return o
 
 
+@permission_required('companies.base')
 def companies_customers_list(request, year, template_name = 'companies/companies_customers_list.html'):
 	fair = get_object_or_404(Fair, year = year)
 	companies_customers = CompanyCustomer.objects.filter(fair = fair)
@@ -102,6 +106,7 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers, 'form': form, 'groups_list': groups_list})
 
 
+@permission_required('companies.base')
 def companies_customers_view(request, year, pk, template_name = 'companies/companies_customers_view.html'):
 	fair = get_object_or_404(Fair, year = year)
 	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
@@ -127,6 +132,7 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'company_contacts': company_contacts, 'form': form})
 
 
+@permission_required('companies.base')
 def companies_customers_edit(request, year, pk, group_pk = None, responsible_group_pk = None, template_name = 'companies/companies_customers_edit.html'):
 	fair = get_object_or_404(Fair, year = year)
 	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
@@ -161,6 +167,7 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'groups_list': groups_list, 'responsibles': responsibles, 'form_responsible': form_responsible, 'responsible': responsible})
 
 
+@permission_required('companies.base')
 def companies_customers_groups(request, year, pk = None, template_name = 'companies/companies_customers_groups.html'):
 	fair = get_object_or_404(Fair, year = year)
 	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair))

@@ -51,9 +51,11 @@
                         <li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
                     {% endblock %}
                     
-                    {% block nav-companies %}
-						<li role="presentation"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>
-					{% endblock %}
+                    {% if perms.companies.base %}
+						{% block nav-companies %}
+							<li role="presentation"><a href="{% url 'companies_customers_list' fair.year %}">Companies</a></li>
+						{% endblock %}
+					{% endif %}
 
                     {% if perms.orders.base %}
                         {% block nav-products %}

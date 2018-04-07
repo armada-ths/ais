@@ -72,7 +72,7 @@ class Company(models.Model):
 	@property
 	def identity_number_allabolag(self):
 		if self.identity_number is not None and re.match("^[0-9]{6}-[0-9]{4}$", self.identity_number):
-			return self.identity_number.replace('-', '')
+			return self.identity_number.replace("-", "")
 		
 		else:
 			return None
@@ -80,6 +80,7 @@ class Company(models.Model):
 	class Meta:
 		verbose_name_plural = "Companies"
 		ordering = ["name"]
+		permissions = (("base", "Companies"),)
 
 	def __str__(self):
 		return self.name
@@ -115,7 +116,7 @@ class CompanyAddress(models.Model):
 		verbose_name_plural = "Company addresses"
 
 	def __str__(self):
-		return self.street + ', ' + self.zipcode + ' ' + self.city
+		return self.street + ", " + self.zipcode + " " + self.city
 
 
 # Connects a Company with a specific Fair, optionally in one or several Group
@@ -137,9 +138,9 @@ class CompanyCustomer(models.Model):
 		return CompanyCustomerComment.objects.filter(company_customer = self)
 	
 	def get_readonly_fields(self, request, obj=None):
-		if obj: # obj is not None, so this is an edit
-			return ["fair",] # Return a list or tuple of readonly fields' names
-		else: # This is an addition
+		if obj:
+			return ["fair",]
+		else:
 			return []
 	
 	class Meta:
