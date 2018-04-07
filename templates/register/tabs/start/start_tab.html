@@ -178,37 +178,51 @@
 
                     <!-- Contact person -->
                     <div id="company-contact-div">
-                        <h3>Contact Person</h3>
-                        <div class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
-                            {{ contact_form | crispy }}
-                        </div>
-                        <ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
-                            <li>
-                                <h5>Name:</h5>
-                                <div class="input-field">{{ contact }}</div>
-                            </li>
-                            <li>
-                                <h5>Title:</h5>
-                                <div class="input-field">{{ contact.title }}</div>
-                            </li>
-                            <li>
-                                <h5>Cell phone number:</h5>
-                                <div class="input-field">{{ contact.mobile_phone }}</div>
-                            </li>
-                            <li>
-                                <h5>Work Phone number:</h5>
-                                <div class="input-field">{{ contact.work_phone }}</div>
-                            </li>
-                            <li>
-                                <h5>E-­mail address:</h5>
-                                <div class="input-field">{{ contact.email }}</div>
-                            </li>
+						<h3>Contact Person</h3>
+						
+						<div class="list-unstyled form-to-edit editable-form hidden" id="contactEditable">
+							{{ contact_form | crispy }}
+						</div>
 
-                            <!-- Change password link -->
-                            <br><a href={% url 'anmalan:change_password' %} class="important-text"> Change Password </a>
-                            <div id="editContactTrigger" class="toggleEdit btn-green btn-edit"> Edit contact person </div>
-                        </ul>
-                    </div>
+						<ul class="list-unstyled form-to-edit no-editable-form visible" id="contactNoEditable">
+							<li>
+								<h5>Name:</h5>
+								<div class="input-field">{{ contact }}</div>
+							</li>
+
+							{% if contact.email_address %}
+								<li>
+									<h5>E-mail address:</h5>
+									<div class="input-field">{{ contact.email_address }}</div>
+								</li>
+							{% endif %}
+
+							{% if contact.title %}
+								<li>
+									<h5>Title:</h5>
+									<div class="input-field">{{ contact.title }}</div>
+								</li>
+							{% endif %}
+
+							{% if contact.mobile_phone_number %}
+								<li>
+									<h5>Mobile phone number:</h5>
+									<div class="input-field">{{ contact.mobile_phone_number }}</div>
+								</li>
+							{% endif %}
+
+							{% if contact.work_phone_number %}
+								<li>
+									<h5>Work phone number:</h5>
+									<div class="input-field">{{ contact.work_phone_number }}</div>
+								</li>
+							{% endif %}
+
+							<!-- Change password link -->
+							<br><a href={% url 'anmalan:change_password' %} class="important-text"> Change Password </a>
+							<div id="editContactTrigger" class="toggleEdit btn-green btn-edit"> Edit contact person </div>
+						</ul>
+					</div>
 
                     {% if signed_up and contact.confirmed %}
                     <div class="row" id="exhibitor-profile-div">
