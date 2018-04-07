@@ -192,25 +192,17 @@
                                 <div class="input-field">{{ contact.title }}</div>
                             </li>
                             <li>
-                                <h5>Phone number:</h5>
+                                <h5>Cell phone number:</h5>
+                                <div class="input-field">{{ contact.mobile_phone }}</div>
+                            </li>
+                            <li>
+                                <h5>Work Phone number:</h5>
                                 <div class="input-field">{{ contact.work_phone }}</div>
                             </li>
                             <li>
-                                <h5>Cell phone number:</h5>
-                                <div class="input-field">{{ contact.cell_phone }}</div>
-                            </li>
-                            <!--<li>
-                                <h5>Phone switchboard:</h5>
-                                <div class="input-field"> {{ form.phone_switchboard }}</div>
-                            </li>-->
-                            <li>
-                                <h5>E­mail:</h5>
+                                <h5>E-­mail address:</h5>
                                 <div class="input-field">{{ contact.email }}</div>
                             </li>
-                            <!--<li>
-                                <h5>Alternative e­mail address:</h5>
-                                <div class="input-field">{{ form.alternative_email }}</div>
-                            </li>-->
 
                             <!-- Change password link -->
                             <br><a href={% url 'anmalan:change_password' %} class="important-text"> Change Password </a>
