@@ -194,7 +194,7 @@ class CompanyContact(models.Model):
 	name = models.CharField(max_length = 200, null = False, blank = False, verbose_name = "Full name")
 	email_address = models.EmailField(max_length = 200, null = False, blank = False, verbose_name = "E-mail address")
 	alternative_email_address = models.EmailField(max_length = 200, null = True, blank = True, verbose_name = "Alternative e-mail address")
-	title = models.CharField(max_length = 200, null = False, blank = False)
+	title = models.CharField(max_length = 200, null = True, blank = True)
 	mobile_phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	work_phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	active = models.BooleanField(default = True)
