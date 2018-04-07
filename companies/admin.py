@@ -19,7 +19,7 @@ class GroupAdmin(admin.ModelAdmin):
 
 @admin.register(CompanyContact)
 class CompanyContactAdmin(admin.ModelAdmin):
-	ordering = ("name",)
+	ordering = ("first_name", "last_name",)
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):

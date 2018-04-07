@@ -191,7 +191,8 @@ class CompanyCustomerResponsible(models.Model):
 class CompanyContact(models.Model):
 	user = models.ForeignKey(User, null = False, blank = False)
 	company = models.ForeignKey(Company, null = False, blank = False)
-	name = models.CharField(max_length = 200, null = False, blank = False, verbose_name = "Full name")
+	first_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "First name")
+	last_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "Last name")
 	email_address = models.EmailField(max_length = 200, null = False, blank = False, verbose_name = "E-mail address")
 	alternative_email_address = models.EmailField(max_length = 200, null = True, blank = True, verbose_name = "Alternative e-mail address")
 	title = models.CharField(max_length = 200, null = True, blank = True)
@@ -201,7 +202,7 @@ class CompanyContact(models.Model):
 	confirmed = models.BooleanField(default = False)
 
 	def __str__(self):
-		return self.name
+		return "%s %s" % (self.first_name, self.last_name)
 
 
 @receiver(post_save, sender = Company)
