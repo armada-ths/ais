@@ -71,7 +71,7 @@
 		{% for company_contact in company_contacts %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h2 class="panel-title">{{ company_contact.name }} ({{ company_contact.title }})</h2>
+					<h2 class="panel-title">{{ company_contact }} {% if company_contact.title %} ({{ company_contact.title }}) {% endif %}</h2>
 				</div>
 				
 				<div class="panel-body">
