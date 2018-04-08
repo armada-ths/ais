@@ -34,7 +34,7 @@ def companies_form(request, pk = None, template_name = 'companies/companies_form
 	
 	company = Company.objects.filter(pk = pk).first()
 	form = CompanyForm(request.POST or None, instance = company, prefix = "form_company")
-	CompanyAddressFormSet = inlineformset_factory(Company, CompanyAddress, form = CompanyAddressForm, min_num = 1, extra = 1)
+	CompanyAddressFormSet = inlineformset_factory(Company, CompanyAddress, form = CompanyAddressForm, min_num = 0, extra = 1)
 	CompanyContactFormSet = inlineformset_factory(Company, CompanyContact, form = CompanyContactForm, min_num = 0, extra = 0, can_delete = False)
 	
 	address_formset = CompanyAddressFormSet(request.POST or None, instance = company, prefix = "form_address") if company else None
