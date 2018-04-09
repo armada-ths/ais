@@ -24,11 +24,11 @@ silent source ais_venv/bin/activate
 silent pip3 install -r requirements.txt
 
 echo "Setting up database..."
-echo "create user ais password 'ais';" | silent sudo -u postgres psql
-silent sudo -u postgres createdb ais
-echo "grant all privileges on database ais to ais;" | silent sudo -u postgres psql
-export PGPASSWORD=ais
-silent psql -h 127.0.0.1 -U ais < /vagrant/scripts/vagrant/ais.sql
+echo "create user ais_dev password 'ais_dev';" | silent sudo -u postgres psql
+silent sudo -u postgres createdb ais_dev
+echo "grant all privileges on database ais_dev to ais_dev;" | silent sudo -u postgres psql
+export PGPASSWORD=ais_dev
+silent psql -h 127.0.0.1 -U ais_dev < /vagrant/scripts/vagrant/ais.sql
 
 echo "Configuring..."
 silent python manage.py migrate --settings local_settings
