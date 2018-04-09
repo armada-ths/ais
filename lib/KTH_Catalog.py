@@ -1,7 +1,7 @@
-import commands, base64
+import subprocess, base64
 
 def lookup_user(kth_id):
-	raw = commands.getoutput("ssh armada@cloud.armada.nu \"ldapsearch -x -h ldap.kth.se -s sub -b 'ou=Addressbook,dc=kth,dc=se' 'ugKthid=" + kth_id + "'\"").split("\n")
+	raw = subprocess.check_output(["ssh", "armada@cloud.armada.nu", "ldapsearch -x -h ldap.kth.se -s sub -b 'ou=Addressbook,dc=kth,dc=se' 'ugKthid=" + kth_id + "'"]).decode("utf-8").split("\n")
 	
 	email = None
 	first_name = None
