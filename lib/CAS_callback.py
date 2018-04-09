@@ -11,9 +11,14 @@ def callback(tree):
 	ldap = lookup_user(kth_id)
 	user, user_created = User.objects.get_or_create(username=kth_id)
 	
-	user.first_name = ldap["first_name"]
-	user.last_name = ldap["last_name"]
-	user.email = ldap["email"]
+	if ldap["first_name"] is not None:
+		user.first_name = ldap["first_name"]
+	
+	if ldap["last_name"] is not None:
+		user.last_name = ldap["last_name"]
+	
+	if ldap["email"] is not None:
+		user.email = ldap["email"]
 	
 	user.save()
 	
