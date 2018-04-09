@@ -5,9 +5,17 @@ import logging
 from django.http import HttpResponseRedirect
 
 def callback(tree):
-    kth_id = tree[0][0].text
-    logging.info("KTH-ID: %s trying to login" %kth_id)
-    ldap = lookup_user(kth_id)
-    user, user_created = User.objects.get_or_create(username=kth_id, first_name = ldap["first_name"], last_name = ldap["last_name"], email = ldap["email"])
-    person = Profile(user=user)
-    person.save()
+	kth_id = tree[0][0].text
+	logging.info("KTH-ID: %s trying to login" %kth_id)
+	
+	ldap = lookup_user(kth_id)
+	user, user_created = User.objects.get_or_create(username=kth_id)
+	
+	user.first_name = ldap["first_name"]
+	user.last_name = ldap["last_name"]
+	user.email = ldap["email"]
+	
+	user.save()
+	
+	person = Profile(user=user)
+	person.save()
