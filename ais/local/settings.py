@@ -15,9 +15,15 @@ DEBUG = True
 # which you can't do in production for security reasons.
 ALLOWED_HOSTS = ['*']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# The URL scheme is slightly different in a development environment
-# since there's no CAS integration.
-ROOT_URLCONF = 'ais.local.urls'
+
+ROOT_URLCONF = 'ais.production.urls'
+
+# Use KTH CAS for authentication
+INSTALLED_APPS += ('cas', 'raven.contrib.django.raven_compat',)
+AUTHENTICATION_BACKENDS += ('cas.backends.CASBackend',)
+CAS_SERVER_URL = 'https://login.kth.se/'
+CAS_AUTO_CREATE_USER = False
+CAS_RESPONSE_CALLBACKS = ('lib.CAS_callback.callback',)
 
 # We don't need performance here so use SQLite for ease of setup.
 DATABASES = {
