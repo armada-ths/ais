@@ -22,5 +22,5 @@ def callback(tree):
 	
 	user.save()
 	
-	person = Profile(user=user)
+	person, person_created = Profile.objects.get_or_create(user = user)
 	person.save()
