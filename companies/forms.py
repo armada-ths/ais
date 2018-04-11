@@ -82,18 +82,6 @@ class BaseCompanyContactFormSet(BaseModelFormSet):
 			pass
 
 
-class CompanyCustomerForm(ModelForm):
-	class Meta:
-		model = CompanyCustomer
-		fields = ("fair", "company",)
-	
-	def __init__(self, fair, companies_customers, *args, **kwargs):
-		super(CompanyCustomerForm, self).__init__(*args, **kwargs)
-		self.initial["fair"] = fair.id
-		self.fields["fair"].disabled = True
-		self.fields["fair"].widget = HiddenInput()
-
-
 class CompanyCustomerResponsibleForm(ModelForm):
 	users = forms.ModelMultipleChoiceField(queryset = User.objects.all(), widget = forms.CheckboxSelectMultiple(), required = True)
 	
@@ -181,3 +169,19 @@ class CreateCompanyContactNoCompanyForm(CreateCompanyContactForm):
 		model = CompanyContact
 		fields = "__all__"
 		exclude = ("user", "active", "confirmed", "company")
+
+
+class CreateCompanyCustomerForm(forms.Form):
+	companies = forms.ModelMultipleChoiceField(
+		queryset = Company.objects.all(),
+		widget = forms.SelectMultiple,
+		required = True,
+		label = "Companies to link"
+	)
+	
+	groups = forms.ModelMultipleChoiceField(
+		queryset = Group.objects.all(),
+		widget = forms.SelectMultiple,
+		required = False,
+		label = "Groups to initially add each company to"
+	)

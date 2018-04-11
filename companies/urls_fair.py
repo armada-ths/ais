@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
 	url(r'^$', views.companies_customers_list, name = 'companies_customers_list'),
+	url(r'^link$', views.companies_customers_link, name = 'companies_customers_link'),
 	url(r'^groups$', views.companies_customers_groups, name = 'companies_customers_groups'),
 	url(r'^groups/new$', views.companies_customers_groups, name = 'companies_customers_groups_new'),
 	url(r'^groups/(?P<pk>\d+)$', views.companies_customers_groups, name = 'companies_customers_groups_edit'),

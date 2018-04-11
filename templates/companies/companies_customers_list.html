@@ -7,6 +7,7 @@
 {% block content %}
 <div class="pull-right">
 	<a href="{% url 'companies_new' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a>
+	<a href="{% url 'companies_customers_link' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Link companies</a>
 	<a href="{% url 'companies_list' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> All companies</a>
 </div>
 
@@ -58,23 +59,6 @@
 	</div>
 	
 	<div class="col-md-4">
-		{% if form %}
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h2 class="panel-title">Link a company with {{ fair }}</h2>
-				</div>
-				
-				<div class="panel-body">
-					<form method="post" enctype="multipart/form-data">
-						{% csrf_token %}
-						{{ form|crispy }}
-						
-						<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Create link</button>
-					</form>
-				</div>
-			</div>
-		{% endif %}
-		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h2 class="panel-title">All groups in {{ fair }}</h2>

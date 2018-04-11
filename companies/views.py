@@ -6,7 +6,7 @@ from django.forms.models import inlineformset_factory
 from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
-from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerForm, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm
+from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm
 
 def current_fair():
 	return get_object_or_404(Fair, current=True)
@@ -97,26 +97,7 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	companies_customers = CompanyCustomer.objects.filter(fair = fair)
 	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair))
 	
-	request.POST.fair = [fair.pk]
-	
-	companies_that_can_be_linked = []
-	
-	for company in Company.objects.all():
-		if len(CompanyCustomer.objects.filter(company = company, fair = fair)) == 0:
-			companies_that_can_be_linked.append(company)
-	
-	if len(companies_that_can_be_linked) == 0:
-		form = None
-	
-	else:
-		form = CompanyCustomerForm(fair, companies_customers, request.POST or None)
-		
-		form.fields["company"].choices = [(company.pk, company.name) for company in companies_that_can_be_linked]
-		
-		if form.is_valid():
-			form.save()
-	
-	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers, 'form': form, 'groups_list': groups_list})
+	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers, 'groups_list': groups_list})
 
 
 @permission_required('companies.base')
@@ -200,3 +181,35 @@ def companies_customers_groups(request, year, pk = None, template_name = 'compan
 		return redirect('companies_customers_groups_edit', fair.year, group.pk)
 	
 	return render(request, template_name, {'fair': fair, 'groups_list': groups_list, 'form': form, 'form_group': group})
+
+
+@permission_required('companies.base')
+def companies_customers_link(request, year, template_name = 'companies/companies_customers_link.html'):
+	fair = get_object_or_404(Fair, year = year)
+	
+	companies_that_can_be_linked = []
+	
+	for company in Company.objects.all():
+		if len(CompanyCustomer.objects.filter(company = company, fair = fair)) == 0:
+			companies_that_can_be_linked.append(company)
+	
+	if len(companies_that_can_be_linked) == 0:
+		form = None
+	
+	else:
+		form = CreateCompanyCustomerForm(request.POST or None)
+		
+		form.fields["companies"].choices = [(company.pk, company.name) for company in companies_that_can_be_linked]
+		form.fields["groups"].choices = [(group.pk, group.name) for group in Group.objects.filter(fair = fair, allow_companies = True)]
+		
+		if request.POST and form.is_valid():
+			groups = form.cleaned_data["groups"]
+			
+			for company in form.cleaned_data["companies"]:
+				company_customer = CompanyCustomer.objects.create(fair = fair, company = company)
+				company_customer.groups = groups;
+				company_customer.save()
+			
+			return redirect('companies_customers_list', fair.year)
+	
+	return render(request, template_name, {'fair': fair, 'form': form})
