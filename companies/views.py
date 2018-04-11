@@ -48,7 +48,7 @@ def companies_form(request, pk = None, template_name = 'companies/companies_form
 			address_formset.save()
 			contact_formset.save()
 		
-		return redirect('companies_edit', company.pk)
+		return redirect('companies_view', company.pk)
 	
 	return render(request, template_name, {'fair': fair, 'form': form, 'company': company, 'address_formset': address_formset, 'contact_formset': contact_formset})
 
