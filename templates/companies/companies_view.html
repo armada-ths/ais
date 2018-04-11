@@ -57,6 +57,7 @@
 						<li><strong>{% if address.name %} {{ address.name }} {% else %} {{ company.name }} {% endif %}</strong></li>
 						<li><strong>{{ address.street }}</strong></li>
 						<li><strong>{{ address.zipcode }} {{ address.city }}</strong></li>
+						{% if address.country != 'SWEDEN' %} <li><strong>{{ address.get_country_display }}</strong></li> {% endif %}
 					</ul>
 					
 					<ul class="list-unstyled">
