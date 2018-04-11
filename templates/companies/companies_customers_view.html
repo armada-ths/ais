@@ -60,6 +60,24 @@
 			</div>
 		</div>
 		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Signed contracts</h3>
+			</div>
+			
+			<div class="panel-body">
+				{% if company_customer.signatures %}
+					<ul>
+						{% for signature in company_customer.signatures %}
+							<li><strong>{{ signature.contract.name }}</strong> by <strong>{{ signature.company_contact }}</strong> on <strong style="white-space; nowrap;">{{ signature.timestamp }}</strong></li>
+						{% endfor %}
+					</ul>
+				{% else %}
+					<p>No contracts signed.</p>
+				{% endif %}
+			</div>
+		</div>
+		
 		{% for address in company.addresses %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
