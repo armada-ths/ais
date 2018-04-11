@@ -108,6 +108,18 @@ class CompanyAddress(models.Model):
 	street = models.CharField(max_length = 200, null = False, blank = False)
 	zipcode = models.CharField(max_length = 200, null = False, blank = False)
 	city = models.CharField(max_length = 200, null = False, blank = False)
+	
+	countries = [
+		("DENMARK", "Denmark"),
+		("FINLAND", "Finland"),
+		("FRANCE", "France"),
+		("GERMANY", "Germany"),
+		("NORWAY", "Norway"),
+		("SWEDEN", "Sweden"),
+		("UNITED_KINGDOM", "United Kingdom"),
+	]
+	
+	country = models.CharField(max_length = 200, choices = countries, default = "SWEDEN", null = False, blank = False)
 	phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	email_address = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "E-mail address")
 	reference = models.CharField(max_length = 200, null = True, blank = True)
