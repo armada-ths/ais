@@ -174,14 +174,14 @@ class CreateCompanyContactNoCompanyForm(CreateCompanyContactForm):
 class CreateCompanyCustomerForm(forms.Form):
 	companies = forms.ModelMultipleChoiceField(
 		queryset = Company.objects.all(),
-		widget = forms.SelectMultiple,
+		widget = forms.SelectMultiple(attrs = {"size": 20}),
 		required = True,
 		label = "Companies to link"
 	)
 	
 	groups = forms.ModelMultipleChoiceField(
 		queryset = Group.objects.all(),
-		widget = forms.SelectMultiple,
+		widget = forms.SelectMultiple(attrs = {"size": 20}),
 		required = False,
 		label = "Groups to initially add each of the above selected companies to"
 	)
