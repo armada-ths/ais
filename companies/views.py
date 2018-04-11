@@ -165,6 +165,8 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 
 	form_responsible.fields["users"].choices = [(user[0].pk, user[0].get_full_name()) for user in users]
 	
+	form_responsible.fields["group"].choices = [(group.pk, group.__str__()) for group in Group.objects.filter(allow_responsibilities = True)]
+	
 	if request.POST and form_responsible.is_valid():
 		form_responsible.save()
 		return redirect('companies_customers_edit', fair.year, company_customer.pk)
