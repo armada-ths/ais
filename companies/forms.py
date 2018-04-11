@@ -183,5 +183,5 @@ class CreateCompanyCustomerForm(forms.Form):
 		queryset = Group.objects.all(),
 		widget = forms.SelectMultiple,
 		required = False,
-		label = "Groups to initially add each company to"
+		label = "Groups to initially add each of the above selected companies to"
 	)

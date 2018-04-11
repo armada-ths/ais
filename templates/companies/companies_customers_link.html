@@ -12,6 +12,8 @@
 <h1>Link companies with {{ fair }}</h1>
 
 {% if form %}
+	<p>This page lets you link a company with a fair. Select at least one company to link. Additionally, you may select a set of groups that all selected companies automatically will be added to.</p>
+	
 	<form method="post" enctype="multipart/form-data">
 		{% csrf_token %}
 		{{ form|crispy }}
