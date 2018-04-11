@@ -95,6 +95,8 @@ class CompanyCustomerForm(ModelForm):
 
 
 class CompanyCustomerResponsibleForm(ModelForm):
+	users = forms.ModelMultipleChoiceField(queryset = User.objects.all(), widget = forms.CheckboxSelectMultiple(), required = True)
+	
 	def __init__(self, company_customer, *args, **kwargs):
 		super(CompanyCustomerResponsibleForm, self).__init__(*args, **kwargs)
 		self.initial["company_customer"] = company_customer.id
