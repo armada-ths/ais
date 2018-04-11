@@ -5,6 +5,7 @@ from django.forms.models import inlineformset_factory
 
 from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact
 from fair.models import Fair
+from recruitment.models import RecruitmentApplication
 from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerForm, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm
 
 def current_fair():
@@ -159,6 +160,10 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 		responsible = None
 	
 	form_responsible = CompanyCustomerResponsibleForm(company_customer, request.POST or None, instance = responsible)
+	
+	users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
+
+	form_responsible.fields["users"].choices = [(user[0].pk, user[0].get_full_name()) for user in users]
 	
 	if request.POST and form_responsible.is_valid():
 		form_responsible.save()
