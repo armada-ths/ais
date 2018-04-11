@@ -200,7 +200,7 @@ def companies_customers_link(request, year, template_name = 'companies/companies
 		form = CreateCompanyCustomerForm(request.POST or None)
 		
 		form.fields["companies"].choices = [(company.pk, company.name) for company in companies_that_can_be_linked]
-		form.fields["groups"].choices = [(group.pk, group.name) for group in Group.objects.filter(fair = fair, allow_companies = True)]
+		form.fields["groups"].choices = [(group.pk, group.__str__) for group in Group.objects.filter(fair = fair, allow_companies = True)]
 		
 		if request.POST and form.is_valid():
 			groups = form.cleaned_data["groups"]
