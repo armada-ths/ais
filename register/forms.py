@@ -48,7 +48,7 @@ class ChangePasswordForm(PasswordChangeForm):
 
 class RegistrationForm(ModelForm):
 	# TODO: this needs to be Fair-specific
-	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_registration = True), widget = forms.CheckboxSelectMultiple(), required = False)
+	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_registration = True), widget = forms.CheckboxSelectMultiple(), required = False, label = "")
 	
 	class Meta:
 		model = CompanyCustomer
