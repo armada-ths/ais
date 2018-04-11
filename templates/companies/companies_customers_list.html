@@ -19,6 +19,7 @@
 				<thead>
 					<tr>
 						<th>Name</th>
+						<th>Contracts</th>
 						<th>Groups</th>
 						<th>Responsibilities</th>
 					</tr>
@@ -27,6 +28,13 @@
 				{% for company_customer in companies_customers %}
 					<tr>
 						<td><a href="/fairs/{{ fair.year }}/companies/{{ company_customer.pk }}">{{ company_customer.company.name }}</a></td>
+						<td>
+							<ul class="list-unstyled">
+								{% for signature in company_customer.signatures %}
+									<li>{{ signature.contract.name }}</li>
+								{% endfor %}
+							</ul>
+						</td>
 						<td>
 							<ul class="list-unstyled">
 								{% for group in company_customer.groups_iterable %}

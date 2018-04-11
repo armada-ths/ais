@@ -51,4 +51,4 @@ class SignupLog(models.Model):
 	type = models.CharField(choices=types, null=True, blank=True, max_length=30)
 
 	def __str__(self):
-		return self.contact.name + " at " + self.contact.belongs_to.name
+		return self.company_contact.company.name + " for " + self.contract.name

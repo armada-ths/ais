@@ -8,6 +8,7 @@ from jsonfield import JSONField
 
 from fair.models import Fair
 from accounting.models import Revenue, Product
+from register.models import SignupLog
 
 
 # Groups that company customers can be sorted into
@@ -149,7 +150,11 @@ class CompanyCustomer(models.Model):
 	def comments(self):
 		return CompanyCustomerComment.objects.filter(company_customer = self)
 	
-	def get_readonly_fields(self, request, obj=None):
+	@property
+	def signatures(self):
+		return SignupLog.objects.filter(company = self.company, contract__fair = self.fair)
+	
+	def get_readonly_fields(self, request, obj = None):
 		if obj:
 			return ["fair",]
 		else:
