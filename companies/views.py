@@ -101,14 +101,14 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	
 	companies_that_can_be_linked = []
 	
+	for company in Company.objects.all():
+		if len(CompanyCustomer.objects.filter(company = company, fair = fair)) == 0:
+			companies_that_can_be_linked.append(company)
+	
 	if len(companies_that_can_be_linked) == 0:
 		form = None
 	
 	else:
-		for company in Company.objects.all():
-			if len(CompanyCustomer.objects.filter(company = company, fair = fair)) == 0:
-				companies_that_can_be_linked.append(company)
-		
 		form = CompanyCustomerForm(fair, companies_customers, request.POST or None)
 		
 		form.fields["company"].choices = [(company.pk, company.name) for company in companies_that_can_be_linked]
