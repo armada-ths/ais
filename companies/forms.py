@@ -1,3 +1,5 @@
+import re
+
 from django.forms import ModelForm, HiddenInput, BaseModelFormSet
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -120,7 +122,51 @@ class CompanyCustomerCommentForm(ModelForm):
 		fields = ("groups", "comment",)
 
 
+def fix_phone_number(n):
+	if n is None:
+		return None
+	
+	n = n.replace(' ', '')
+	n = n.replace('-', '')
+	
+	if n.startswith("00"):
+		n = "+" + n[2:]
+	
+	if n.startswith("0"):
+		n = "+46" + n[1:]
+	
+	return n
+
+
 class CompanyContactForm(ModelForm):
+	def clean(self):
+		super(CompanyContactForm, self).clean()
+		
+		self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
+		self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
+		self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
+		
+		return self.cleaned_data
+	
+	def is_valid(self):
+		valid = super(CompanyContactForm, self).is_valid()
+		
+		if not valid:
+			return valid
+		
+		mobile_phone_number = self.cleaned_data.get("mobile_phone_number")
+		work_phone_number = self.cleaned_data.get("work_phone_number")
+		
+		if mobile_phone_number is not None and not re.match(r'\+[0-9]+$', mobile_phone_number):
+			self.add_error("mobile_phone_number", "Must only contain numbers and a leading plus.")
+			valid = False
+		
+		if work_phone_number is not None and not re.match(r'\+[0-9]+$', work_phone_number):
+			self.add_error("work_phone_number", "Must only contain numbers and a leading plus.")
+			valid = False
+			
+		return valid
+	
 	class Meta:
 		model = CompanyContact
 		fields = "__all__"
@@ -134,6 +180,15 @@ class UserForm(UserCreationForm):
 
 
 class CreateCompanyContactForm(ModelForm):
+	def clean(self):
+		super(CreateCompanyContactForm, self).clean()
+		
+		self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
+		self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
+		self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
+		
+		return self.cleaned_data
+	
 	def __init__(self, *args, **kwargs):
 		super(CreateCompanyContactForm, self).__init__(*args, **kwargs)
 		self.fields["company"].label = "Company"
@@ -150,16 +205,22 @@ class CreateCompanyContactForm(ModelForm):
 			return valid
 		
 		email_address = self.cleaned_data["email_address"].lower()
+		mobile_phone_number = self.cleaned_data.get("mobile_phone_number")
+		work_phone_number = self.cleaned_data.get("work_phone_number")
 		
 		if User.objects.filter(username = email_address).first() != None:
 			self.add_error("email_address", "Account already exists")
 			return False
 		
+		if mobile_phone_number is not None and not re.match(r'\+[0-9]+$', mobile_phone_number):
+			self.add_error("mobile_phone_number", "Must only contain numbers and a leading plus.")
+			valid = False
+		
+		if work_phone_number is not None and not re.match(r'\+[0-9]+$', work_phone_number):
+			self.add_error("work_phone_number", "Must only contain numbers and a leading plus.")
+			valid = False
+		
 		return valid
-
-	def clean(self):
-		self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
-		super(CreateCompanyContactForm, self).clean()
 
 
 class CreateCompanyContactNoCompanyForm(CreateCompanyContactForm):
