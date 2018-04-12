@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
@@ -52,7 +54,8 @@ class Profile(models.Model):
     registration_year = models.IntegerField(null=True, blank=True)
     planned_graduation = models.IntegerField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True)
-    
+    token = models.CharField(max_length = 255, null = True, blank = False, default = uuid.uuid4)
+
     picture_original = models.ImageField(
             upload_to=UploadToDirUUID('profiles', 'picture_original'),
             blank=True,

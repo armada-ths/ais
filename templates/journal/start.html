@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<h1>Journal</h1>
+	{% if profile.token %}
+		<p>Import this link to your calendar to get AIS events in your calendar:</p>
+		<samp>{{ request.scheme }}://{{ request.get_host }}{% url 'journal_ics' request.user.pk profile.token %}</samp>
+	{% else %}
+		<p>You don't have a calendar link. Use the form below to generate one.</p>
+	{% endif %}
+	
+	<h2>Access to your calendar</h2>
+	<p>The link above is <strong>personal</strong> and anyone with the link <strong>may view your events</strong>. Should you need to remove the link or to replace it by a new one, you can do so here.</p>
+	
+	
+	<form method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{ form | crispy }}
+		<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Execute</button>
+	</form>
+{% endblock %}

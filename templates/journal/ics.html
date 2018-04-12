@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+PRODID:{{ profile.token }}
+VERSION:2.0
+CALSCALE:GREGORIAN
+{% for interview in interviews %}BEGIN:VEVENT
+DTSTAMP:20180101T000000Z
+UID:{{ interview.pk }}
+SUMMARY:Interview with {{ interview.user.first_name }} {{ interview.user.last_name }}
+DTSTART:{{ interview.interview_date_iso8601 }}
+DTEND:{{ interview.interview_date_end_iso8601 }}
+LOCATION:{{ interview.location }}
+DESCRIPTION:Interview with {{ interview.user.first_name }} {{ interview.user.last_name }}
+STATUS:CONFIRMED
+SEQUENCE:0
+END:VEVENT
+{% endfor %}END:VCALENDAR

@@ -333,86 +333,91 @@ def remember_last_query_params(url_name, query_params):
 
 @remember_last_query_params('recruitment', [field for field in RecruitmentApplicationSearchForm().fields])
 def recruitment_period(request, year, pk, template_name='recruitment/recruitment_period.html'):
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    
-    fair = get_object_or_404(Fair, year=year)
-    start = time.time()
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
 
-   
-    sort_field = request.GET.get('sort_field')
-    if not sort_field:
-        sort_field = 'submission_date'
-    sort_ascending = request.GET.get('sort_ascending') == 'true'
-
-    order_by_query = ('' if sort_ascending else '-') + sort_field
-
-    application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query, '-submission_date').all().prefetch_related('roleapplication_set')
-
-    # user should be forbidden to look at applications that are not below them in hierari
-    #application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
+	fair = get_object_or_404(Fair, year=year)
+	start = time.time()
 
 
+	sort_field = request.GET.get('sort_field')
+	if not sort_field:
+		sort_field = 'submission_date'
+	sort_ascending = request.GET.get('sort_ascending') == 'true'
 
-    search_form = RecruitmentApplicationSearchForm(request.GET or None)
-    search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
-                                                                       interviewer in recruitment_period.interviewers()]
-    search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
-    search_form.fields['recommended_role'].choices = [('', '---------')] + [(role.pk, role.name) for
-                                                                       role in recruitment_period.recruitable_roles.all()]
+	order_by_query = ('' if sort_ascending else '-') + sort_field
 
-    if search_form.is_valid():
-        application_list = search_form.applications_matching_search(application_list)
-    
-    administrator_access = user_can_access_recruitment_period(request.user, recruitment_period)
+	application_list = recruitment_period.recruitmentapplication_set.order_by(order_by_query, '-submission_date').all().prefetch_related('roleapplication_set')
 
-    number_of_applications_per_page = 25
-    paginator = Paginator(application_list, number_of_applications_per_page)
-    page = request.GET.get('page')
-    try:
-        applications = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        applications = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        applications = paginator.page(paginator.num_pages)
-
-    print('Total time took', time.time() - start)
+	# user should be forbidden to look at applications that are not below them in hierari
+	#application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
 
 
-    class SearchField(object):
 
-        def __init__(self, name, model_field_name):
-            self.name = name
-            self.model_field_name = model_field_name
+	search_form = RecruitmentApplicationSearchForm(request.GET or None)
+	search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
+																		interviewer in recruitment_period.interviewers()]
+	search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
+	search_form.fields['recommended_role'].choices = [('', '---------')] + [(role.pk, role.name) for
+																		role in recruitment_period.recruitable_roles.all()]
+
+	if search_form.is_valid():
+		application_list = search_form.applications_matching_search(application_list)
+
+	administrator_access = user_can_access_recruitment_period(request.user, recruitment_period)
+
+	number_of_applications_per_page = 25
+	paginator = Paginator(application_list, number_of_applications_per_page)
+	page = request.GET.get('page')
+	try:
+		applications = paginator.page(page)
+	except PageNotAnInteger:
+		# If page is not an integer, deliver first page.
+		applications = paginator.page(1)
+	except EmptyPage:
+		# If page is out of range (e.g. 9999), deliver last page of results.
+		applications = paginator.page(paginator.num_pages)
+
+	print('Total time took', time.time() - start)
 
 
-    search_fields = [
-        SearchField('Name', 'user__last_name'),
-        SearchField('Programme', 'user__profile__programme'),
-        SearchField('Registration year', 'user__profile__registration_year'),
-        SearchField('Rating', 'rating'),
-        SearchField('Submitted', 'submission_date'),
-        SearchField('Roles', None),
-        SearchField('Recommended role', 'recommended_role'),
-        SearchField('Interviewer', 'interviewer__last_name'),
-        SearchField('State', None),
-    ]
+	class SearchField(object):
 
-    return render(request, template_name, {
-        'recruitment_period': recruitment_period,
-        'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-        'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | 
-            recruitment_period.recruitmentapplication_set.filter(interviewer2=request.user)| 
-            recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
-        'paginator': paginator,
-        'applications': applications,
-        'now': timezone.now(),
-        'search_form': search_form,
-        'search_fields': search_fields,
-        'fair': fair,
-        'administrator_access': administrator_access,
-    })
+		def __init__(self, name, model_field_name):
+			self.name = name
+			self.model_field_name = model_field_name
+
+
+	search_fields = [
+		SearchField('Name', 'user__last_name'),
+		SearchField('Programme', 'user__profile__programme'),
+		SearchField('Registration year', 'user__profile__registration_year'),
+		SearchField('Rating', 'rating'),
+		SearchField('Submitted', 'submission_date'),
+		SearchField('Roles', None),
+		SearchField('Recommended role', 'recommended_role'),
+		SearchField('Interviewer', 'interviewer__last_name'),
+		SearchField('State', None),
+	]
+
+	profile = Profile.objects.filter(user = request.user).first()
+	token = profile.token if profile is not None else None
+
+	return render(request, template_name, {
+		'recruitment_period': recruitment_period,
+		'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
+		'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | 
+			recruitment_period.recruitmentapplication_set.filter(interviewer2=request.user)| 
+			recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
+		'paginator': paginator,
+		'applications': applications,
+		'now': timezone.now(),
+		'search_form': search_form,
+		'search_fields': search_fields,
+		'fair': fair,
+		'administrator_access': administrator_access,
+		'user': request.user,
+		'token': token
+	})
 
 
 def recruitment_period_delete(request, year, pk):

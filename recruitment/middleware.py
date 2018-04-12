@@ -33,7 +33,7 @@ class LoginRequiredMiddleware:
             '/register/password_reset/', '/register/password_reset/done/',
             '/register/external/signup',
             '/fairs/' + str(current_year) + '/banquet/signup',
-            '/fairs/' + str(current_year) + '/banquet/placement'
+            '/fairs/' + str(current_year) + '/banquet/placement',
         }
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
@@ -43,6 +43,9 @@ class LoginRequiredMiddleware:
         }
 
         if path in url_exceptions:
+            return
+
+        if path.startswith("/journal/ics/"):
             return
 
         for prefix in url_prefix_exceptions:

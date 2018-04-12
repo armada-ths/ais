@@ -269,6 +269,15 @@ class RecruitmentApplication(models.Model):
     superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user', on_delete=models.CASCADE)
     scorecard = models.CharField(null=True, blank=True, max_length=300)
     drive_document = models.CharField(null=True, blank=True, max_length=300)
+    
+    @property
+    def interview_date_iso8601(self):
+        return self.interview_date.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
+    
+    @property
+    def interview_date_end_iso8601(self):
+        end = self.interview_date + datetime.timedelta(minutes = 90)
+        return end.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
 
     statuses = [
         ('accepted', 'Accepted'),
