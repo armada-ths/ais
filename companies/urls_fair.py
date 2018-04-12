@@ -13,5 +13,5 @@ urlpatterns = [
 	url(r'^(?P<pk>\d+)/edit/responsible/(?P<responsible_group_pk>\d+)$', views.companies_customers_edit, name = 'companies_customers_edit_toggle_responsible'),
 	url(r'^(?P<pk>\d+)/edit/responsible/(?P<responsible_group_pk>\d+)/remove$', views.companies_customers_remove, name = 'companies_customers_edit_remove_responsible'),
 	url(r'^(?P<pk>\d+)/comment/(?P<comment_pk>\d+)/edit$', views.companies_customers_comment_edit, name = 'companies_customers_comment_edit'),
-	url(r'^(?P<pk>\d+)/comment/(?P<comment_pk>\d+)/remove$', views.companies_customers_comment_edit, name = 'companies_customers_comment_remove'),
+	url(r'^(?P<pk>\d+)/comment/(?P<comment_pk>\d+)/remove$', views.companies_customers_comment_remove, name = 'companies_customers_comment_remove'),
 ]

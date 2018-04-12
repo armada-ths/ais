@@ -140,8 +140,8 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<div class="pull-right">
-						<a onclick="confirm('Do you want to remove the comment?');" href="{% url 'companies_customers_comment_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-						<a href="{% url 'companies_customers_comment_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+						<a onclick="confirm('Do you want to remove the comment?');" href="{% url 'companies_customers_comment_remove' fair.year company_customer.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+						<a href="{% url 'companies_customers_comment_edit' fair.year company_customer.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
 					</div>
 
 					<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
