@@ -77,9 +77,10 @@
 				
 				<div class="panel-body">
 					<ul class="list-unstyled">
+						<li><strong>Username:</strong> {{ company_contact.user.username }}</li>
 						<li><strong>E-mail address:</strong> <a href="mailto:{{ company_contact.email_address }}">{{ company_contact.email_address }}</a></li>
-						{% if company_contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> {{ company_contact.mobile_phone_number }}</li>{% endif %}
-						{% if company_contact.work_phone_number %}<li><strong>Work phone number:</strong> {{ company_contact.work_phone_number }}</li>{% endif %}
+						{% if company_contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> <a href="tel:{{ company_contact.mobile_phone_number }}">{{ company_contact.mobile_phone_number }}</a></li>{% endif %}
+						{% if company_contact.work_phone_number %}<li><strong>Work phone number:</strong> <a href="tel:{{ company_contact.work_phone_number }}">{{ company_contact.work_phone_number }}</a></li>{% endif %}
 						<li><strong>Confirmed:</strong> {% if company_contact.confirmed %} Yes {% else %} No {% endif %}</li>
 						<li><strong>Active:</strong> {% if company_contact.active %} Yes {% else %} No {% endif %}</li>
 					</ul>
