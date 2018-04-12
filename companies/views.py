@@ -127,6 +127,18 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 
 
 @permission_required('companies.base')
+def companies_customers_remove(request, year, pk, responsible_group_pk, template_name = 'companies/companies_customers_edit.html'):
+	fair = get_object_or_404(Fair, year = year)
+	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
+	responsible_group = get_object_or_404(Group, pk = responsible_group_pk)
+	responsible = get_object_or_404(CompanyCustomerResponsible, company_customer = company_customer, group = responsible_group)
+	
+	responsible.delete()
+	
+	return redirect('companies_customers_edit', fair.year, company_customer.pk)
+
+
+@permission_required('companies.base')
 def companies_customers_edit(request, year, pk, group_pk = None, responsible_group_pk = None, template_name = 'companies/companies_customers_edit.html'):
 	fair = get_object_or_404(Fair, year = year)
 	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
@@ -157,7 +169,6 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 	users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
 
 	form_responsible.fields["users"].choices = [(user[0].pk, user[0].get_full_name()) for user in users]
-	
 	form_responsible.fields["group"].choices = [(group.pk, group.__str__()) for group in Group.objects.filter(allow_responsibilities = True)]
 	
 	if request.POST and form_responsible.is_valid():
