@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
 
-from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact
+from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
 from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm
@@ -192,6 +192,30 @@ def companies_customers_groups(request, year, pk = None, template_name = 'compan
 		return redirect('companies_customers_groups_edit', fair.year, group.pk)
 	
 	return render(request, template_name, {'fair': fair, 'groups_list': groups_list, 'form': form, 'form_group': group})
+
+
+@permission_required('companies.base')
+def companies_customers_comment_edit(request, year, pk, comment_pk, template_name = 'companies/companies_customers_comment_edit.html'):
+	fair = get_object_or_404(Fair, year = year)
+	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
+	comment = get_object_or_404(CompanyCustomerComment, company_customer = company_customer, pk = comment_pk)
+	
+	form = CompanyCustomerCommentForm(request.POST or None, instance = comment)
+	
+	if request.POST and form.is_valid():
+		form.save()
+		return redirect('companies_customers_view', fair.year, company_customer.pk)
+	
+	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'form': form})
+
+
+@permission_required('companies.base')
+def companies_customers_comment_remove(request, year, pk, comment_pk, template_name = 'companies/companies_customers_groups.html'):
+	fair = get_object_or_404(Fair, year = year)
+	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
+	comment = get_object_or_404(CompanyCustomerComment, company_customer = company_customer, pk = comment_pk)
+	
+	return redirect('companies_customers_view', fair.year, company_customer.pk)
 
 
 @permission_required('companies.base')
