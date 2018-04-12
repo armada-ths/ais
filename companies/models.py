@@ -18,7 +18,7 @@ class Group(models.Model):
 	fair = models.ForeignKey(Fair, null = False, blank = False, on_delete = models.CASCADE)
 	parent = models.ForeignKey("Group", null = True, blank = True, on_delete = models.CASCADE)
 	allow_companies = models.BooleanField(default = True, null = False, blank = False)
-	allow_registration = models.BooleanField(default = True, null = False, blank = False)
+	allow_registration = models.BooleanField(default = False, null = False, blank = False)
 	allow_responsibilities = models.BooleanField(default = False, null = False, blank = False)
 	allow_comments = models.BooleanField(default = False, null = False, blank = False)
 	
