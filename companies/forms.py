@@ -83,6 +83,7 @@ class BaseCompanyContactFormSet(BaseModelFormSet):
 
 
 class CompanyCustomerResponsibleForm(ModelForm):
+	group = forms.ModelChoiceField(queryset = Group.objects.all(), widget = forms.RadioSelect(), required = True)
 	users = forms.ModelMultipleChoiceField(queryset = User.objects.all(), widget = forms.CheckboxSelectMultiple(), required = True)
 	
 	def __init__(self, company_customer, *args, **kwargs):
