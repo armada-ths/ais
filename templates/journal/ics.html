@@ -8,7 +8,7 @@ UID:{{ interview.pk }}
 SUMMARY:Interview with {{ interview.user.first_name }} {{ interview.user.last_name }}
 DTSTART:{{ interview.interview_date_iso8601 }}
 DTEND:{{ interview.interview_date_end_iso8601 }}
-LOCATION:{{ interview.location }}
+LOCATION:{{ interview.interview_location }}
 DESCRIPTION:Interview with {{ interview.user.first_name }} {{ interview.user.last_name }}
 STATUS:CONFIRMED
 SEQUENCE:0
