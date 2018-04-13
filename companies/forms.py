@@ -142,10 +142,13 @@ class CompanyContactForm(ModelForm):
 	def clean(self):
 		super(CompanyContactForm, self).clean()
 		
-		self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
-		self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
+		if "mobile_phone_number" in self.cleaned_data:
+			self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
 		
-		if self.cleaned_data["email_address"] is not None:
+		if "work_phone_number" in self.cleaned_data:
+			self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
+		
+		if "email_address" in self.cleaned_data and self.cleaned_data["email_address"] is not None:
 			self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
 		
 		return self.cleaned_data
@@ -185,10 +188,13 @@ class CreateCompanyContactForm(ModelForm):
 	def clean(self):
 		super(CreateCompanyContactForm, self).clean()
 		
-		self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
-		self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
+		if "mobile_phone_number" in self.cleaned_data:
+			self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
 		
-		if self.cleaned_data["email_address"] is not None:
+		if "work_phone_number" in self.cleaned_data:
+			self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
+		
+		if "email_address" in self.cleaned_data and self.cleaned_data["email_address"] is not None:
 			self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
 		
 		return self.cleaned_data
