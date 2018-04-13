@@ -13,3 +13,5 @@ requests
 openpyxl
 jsonfield
 django_dynamic_formsets
+django-markupfield
+markdown

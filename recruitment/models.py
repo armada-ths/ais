@@ -10,6 +10,7 @@ from fair.models import Fair
 from companies.models import Company
 import os.path
 from django.utils import timezone
+from markupfield.fields import MarkupField
 
 from people.models import Programme
 
@@ -125,7 +126,7 @@ class CustomField(models.Model):
         ('image', 'Image')]
 
     extra_field = models.ForeignKey(ExtraField, on_delete=models.CASCADE)
-    question = models.TextField()
+    question = MarkupField(markup_type = "markdown")
     field_type = models.CharField(choices=field_types, default='text_field', max_length=20)
     position = models.IntegerField(default=0)
     required = models.BooleanField(default=False)

@@ -51,7 +51,8 @@ INSTALLED_APPS = (
 	'transportation',
 	'accounting',
 	'dynamic_formsets',
-	'journal'
+	'journal',
+	'markupfield'
 )
 
 
