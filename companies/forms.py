@@ -144,7 +144,9 @@ class CompanyContactForm(ModelForm):
 		
 		self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
 		self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
-		self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
+		
+		if self.cleaned_data["email_address"] is not None:
+			self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
 		
 		return self.cleaned_data
 	
