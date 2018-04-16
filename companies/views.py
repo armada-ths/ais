@@ -95,9 +95,8 @@ def tree_to_list(k, groups_tree):
 def companies_customers_list(request, year, template_name = 'companies/companies_customers_list.html'):
 	fair = get_object_or_404(Fair, year = year)
 	companies_customers = CompanyCustomer.objects.filter(fair = fair)
-	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair))
 	
-	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers, 'groups_list': groups_list})
+	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers})
 
 
 @permission_required('companies.base')

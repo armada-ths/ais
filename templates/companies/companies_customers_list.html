@@ -8,75 +8,51 @@
 <div class="pull-right">
 	<a href="{% url 'companies_new' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a>
 	<a href="{% url 'companies_customers_link' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Link companies</a>
+	<a href="{% url 'companies_customers_groups' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Manage groups</a>
 	<a href="{% url 'companies_list' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> All companies</a>
 </div>
 
 <h1>Companies at {{ fair }}</h1>
 
-<div class="row">
-	<div class="col-md-8">
-			<div class="table-responsive">
-			<table class="table">
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Contracts</th>
-						<th>Groups</th>
-						<th>Responsibilities</th>
-					</tr>
-				</thead>
-				
-				{% for company_customer in companies_customers %}
-					<tr>
-						<td><a href="/fairs/{{ fair.year }}/companies/{{ company_customer.pk }}">{{ company_customer.company.name }}</a></td>
-						<td>
-							<ul class="list-unstyled">
-								{% for signature in company_customer.signatures %}
-									<li>{{ signature.contract.name }}</li>
-								{% endfor %}
-							</ul>
-						</td>
-						<td>
-							<ul class="list-unstyled">
-								{% for group in company_customer.groups_iterable %}
-									<li>{{ group }}</li>
-								{% endfor %}
-							</ul>
-						</td>
-						<td>
-							<ul class="list-unstyled">
-								{% for responsible in company_customer.responsibles %}
-									<li>
-										{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}
-									</li>
-								{% endfor %}
-							</ul>
-						</td>
-					</tr>
-				{% endfor %}
-			</table>
-		</div>
-	</div>
-	
-	<div class="col-md-4">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h2 class="panel-title">All groups in {{ fair }}</h2>
-			</div>
-			
-			<div class="panel-body">
-				{% for group in groups_list %}
-					{% if group == 'open' %}<ul>
-					{% elif group == 'open_short' %}<li>
-					{% elif group == 'close' %}</ul></li>
-					{% elif group == 'close_short' %}</li>
-					{% else %}{{ group.group.name }}{% endif %}
-				{% endfor %}
-				</ul>
-				
-				<a href="{% url 'companies_customers_groups' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Manage groups</a>
-			</div>
-		</div>
-	</div>
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Contracts</th>
+				<th>Groups</th>
+				<th>Responsibilities</th>
+			</tr>
+		</thead>
+		
+		{% for company_customer in companies_customers %}
+			<tr>
+				<td><a href="/fairs/{{ fair.year }}/companies/{{ company_customer.pk }}">{{ company_customer.company.name }}</a></td>
+				<td>
+					<ul class="list-unstyled">
+						{% for signature in company_customer.signatures %}
+							<li>{{ signature.contract.name }}</li>
+						{% endfor %}
+					</ul>
+				</td>
+				<td>
+					<ul class="list-unstyled">
+						{% for group in company_customer.groups_iterable %}
+							<li>{{ group }}</li>
+						{% endfor %}
+					</ul>
+				</td>
+				<td>
+					<ul class="list-unstyled">
+						{% for responsible in company_customer.responsibles %}
+							<li>
+								{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}
+							</li>
+						{% endfor %}
+					</ul>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
 </div>
 {% endblock %}
