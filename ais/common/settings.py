@@ -55,7 +55,6 @@ INSTALLED_APPS = (
 	'markupfield'
 )
 
-
 MIDDLEWARE_CLASSES = (
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
@@ -108,6 +107,8 @@ MEDIA_URL = '/media/'
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Stockholm'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
+USE_L10N = False
+DATE_FORMAT = "d b Y"
+DATETIME_FORMAT = "d b Y, H:i"

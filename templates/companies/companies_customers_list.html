@@ -31,7 +31,7 @@
 				<td>
 					<ul class="list-unstyled">
 						{% for signature in company_customer.signatures %}
-							<li>{{ signature.contract.name }}</li>
+							<li>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
 						{% endfor %}
 					</ul>
 				</td>
