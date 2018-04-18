@@ -6,7 +6,6 @@ from fair.models import Fair
 from django.contrib.auth.decorators import permission_required
 
 # Create your views here.
-@permission_required('products.base')
 def products(request, year, template_name='orders/products.html'):
     if not request.user.has_perm('orders.view_products'):
         raise PermissionDenied
@@ -22,7 +21,6 @@ def products(request, year, template_name='orders/products.html'):
 
 
 # Create your views here.
-@permission_required('products.base')
 def product(request, year, pk, template_name='orders/product.html'):
     if not request.user.has_perm('orders.view_products'):
         raise PermissionDenied
