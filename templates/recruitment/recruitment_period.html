@@ -63,9 +63,8 @@
                     <td>{{ application.interview_date|date:"d M H:i" }}</td>
                     <td>{{ application.interview_location }}</td>
                     <td>
-                        {% if application.interviewer %}
-                            {{ application.interviewer.get_full_name }}
-                        {% endif %}
+                        {% if application.interviewer %}{{ application.interviewer.get_full_name }}{% endif %}
+                        {% if application.interviewer2 %}, {{ application.interviewer2.get_full_name }}{% endif %}
                     </td>
                 </tr>
             {% endfor %}
