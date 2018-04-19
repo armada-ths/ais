@@ -78,6 +78,10 @@
                 {% if application.interviewer %}
                     {{ application.interviewer.get_full_name }}
                 {% endif %}
+                
+                {% if application.interviewer2 %}
+                    <br />{{ application.interviewer2.get_full_name }}
+                {% endif %}
             </td>
 
             <td>

@@ -51,7 +51,7 @@
             {% for application in interviews %}
                 <tr>
                     <td>
-                        {% if request.user == application.interviewer %}
+                        {% if request.user == application.interviewer or request.user == application.interviewer2 %}
                             <a href="{% url 'recruitment_application_interview' fair.year recruitment_period.id application.id %}">
                                 {% include 'recruitment/user_name.html' with user=application.user %}
                             </a>
