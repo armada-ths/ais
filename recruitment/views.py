@@ -667,85 +667,103 @@ def set_image_key_from_request(request, model, model_field, file_directory):
 
 
 def recruitment_application_interview(request, year, recruitment_period_pk, pk, template_name='recruitment/recruitment_application_interview.html'):
-    fair = get_object_or_404(Fair, year=year)
-    application = get_object_or_404(RecruitmentApplication, pk=pk)
-    user = request.user
+	fair = get_object_or_404(Fair, year=year)
+	application = get_object_or_404(RecruitmentApplication, pk=pk)
+	user = request.user
 
-    if not user_can_access_recruitment_period(user, application.recruitment_period):
-        return HttpResponseForbidden()
+	if not user_can_access_recruitment_period(user, application.recruitment_period):
+		return HttpResponseForbidden()
 
-    exhibitors = [participation.company for participation in
-                  Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
+	exhibitors = [participation.company for participation in
+					Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
 
-    InterviewPlanningForm = modelform_factory(
-        RecruitmentApplication,
-        fields=('interviewer', 'interviewer2', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
-                'rating'),
-        widgets={
-            'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
-            'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M', attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}),
-            'scorecard' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
-            'drive_document' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
-        },
-        labels = {
-            'drive_document': _('Interview document'),
-        }
-    )
+	InterviewPlanningForm = modelform_factory(
+		RecruitmentApplication,
+		fields=('interviewer', 'interviewer2', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
+				'rating'),
+		widgets={
+			'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
+			'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M', attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}),
+			'scorecard' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
+			'drive_document' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
+		},
+		labels = {
+			'drive_document': _('Interview document'),
+		}
+	)
 
-    profile_pic_form = None
-    if Profile.objects.filter(user=application.user).first():
-        profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=Profile.objects.get(user=application.user))
+	profile_pic_form = None
+	if Profile.objects.filter(user=application.user).first():
+		profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=Profile.objects.get(user=application.user))
 
-    interviewers = application.recruitment_period.interviewers()
-    interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
-    interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
-    if 'interviewer' in interview_planning_form.fields:
-        interview_planning_form.fields['interviewer'].choices = [('', '---------')] + [
-            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+	interviewers = application.recruitment_period.interviewers()
+	interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
+	interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
+	if 'interviewer' in interview_planning_form.fields:
+		interview_planning_form.fields['interviewer'].choices = [('', '---------')] + [
+			(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
 
-    if 'interviewer2' in interview_planning_form.fields:
-        interview_planning_form.fields['interviewer2'].choices = [('', '---------')] + [
-            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+	if 'interviewer2' in interview_planning_form.fields:
+		interview_planning_form.fields['interviewer2'].choices = [('', '---------')] + [
+			(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
 
 
-    RoleDelegationForm = modelform_factory(
-        RecruitmentApplication,
-        fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
-    )
-    if request.user.has_perm('recruitment.administer_recruitment_applications'):
-        role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
-        role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
-        role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
-            (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
-        role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
-            (exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
-    else:
-        role_delegation_form = None
+	RoleDelegationForm = modelform_factory(
+		RecruitmentApplication,
+		fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
+	)
+	if request.user.has_perm('recruitment.administer_recruitment_applications'):
+		role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
+		role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
+		role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
+			(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+		role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
+			(exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
+	else:
+		role_delegation_form = None
 
-    if request.POST and (
-            application.interviewer == request.user or request.user.has_perm('recruitment.administer_recruitment_applications')):
-        application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
-        if interview_planning_form.is_valid():
-            interview_planning_form.save()
+	if request.POST and (
+			application.interviewer == request.user or request.user.has_perm('recruitment.administer_recruitment_applications')):
+		application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
+		if interview_planning_form.is_valid():
+			interview_planning_form.save()
 
-            if role_delegation_form:
-                if role_delegation_form.is_valid():
-                    role_delegation_form.save()
-                    return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
-            else:
-                return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
+			if role_delegation_form:
+				if role_delegation_form.is_valid():
+					role_delegation_form.save()
+					return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
+			else:
+				return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
 
-    return render(request, template_name, {
-        'profile_pic_form': profile_pic_form,
-        'application': application,
-        'application_questions_with_answers': application.recruitment_period.application_questions.questions_with_answers_for_user(
-            application.user),
-        'interview_questions_with_answers': application.recruitment_period.interview_questions.questions_with_answers_for_user(
-            application.user),
-        'interview_planning_form': interview_planning_form,
-        'role_delegation_form': role_delegation_form,
-        'fair': fair,
-    })
+	if application.interview_date and application.interview_location and application.interviewer and application.interviewer2 and (request.user == application.interviewer or request.user == application.interviewer2):
+		other = application.interviewer if application.interviewer != request.user else application.interviewer2
+		
+		
+		nicetime = timezone.localtime(application.interview_date)
+		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
+		
+		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + application.interview_location + ". We will meet up outside THS Café. If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
+		
+		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + application.interview_location + " och vi träffas utanför THS Café. Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
+	
+	else:
+		sms_english = None
+		sms_swedish = None
+
+
+	return render(request, template_name, {
+		"profile_pic_form": profile_pic_form,
+		"application": application,
+		"application_questions_with_answers": application.recruitment_period.application_questions.questions_with_answers_for_user(
+			application.user),
+		"interview_questions_with_answers": application.recruitment_period.interview_questions.questions_with_answers_for_user(
+			application.user),
+		"interview_planning_form": interview_planning_form,
+		"role_delegation_form": role_delegation_form,
+		"sms_english": sms_english,
+		"sms_swedish": sms_swedish,
+		"fair": fair,
+	})
 
 
 def recruitment_application_delete(request, year, pk):

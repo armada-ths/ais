@@ -60,7 +60,19 @@
             {% include 'recruitment/custom_fields_static.html' with questions_with_answers=application_questions_with_answers %}
         </div>
     </div>
-    <hr>
+    
+    <hr />
+    
+    {% if sms_swedish %}
+		<h3>Send out an SMS</h3>
+		
+		<p>
+			<a href="sms:{{ application.user.phone_number }}?body={{ sms_english }}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> English text</a>
+			<a href="" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> Swedish text</a>
+		</p>
+		
+		<hr />
+    {% endif %}
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
