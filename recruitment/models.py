@@ -256,64 +256,67 @@ class RecruitmentPeriod(models.Model):
 
 
 class RecruitmentApplication(models.Model):
-    recruitment_period = models.ForeignKey(RecruitmentPeriod, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField(null=True, blank=True)
-    interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer', on_delete=models.CASCADE)
-    interviewer2 = models.ForeignKey(User, null=True, blank=True, related_name='interviewer2', on_delete=models.CASCADE)
-    exhibitor = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
-    interview_date = models.DateTimeField(null=True, blank=True)
-    interview_location = models.CharField(null=True, blank=True, max_length=100)
-    submission_date = models.DateTimeField(default=timezone.now, blank=True)
-    recommended_role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
-    delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role', on_delete=models.CASCADE)
-    superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user', on_delete=models.CASCADE)
-    scorecard = models.CharField(null=True, blank=True, max_length=300)
-    drive_document = models.CharField(null=True, blank=True, max_length=300)
-    
-    @property
-    def interview_date_iso8601(self):
-        return self.interview_date.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
-    
-    @property
-    def interview_date_end_iso8601(self):
-        end = self.interview_date + datetime.timedelta(minutes = 90)
-        return end.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
+	recruitment_period = models.ForeignKey(RecruitmentPeriod, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	rating = models.IntegerField(null=True, blank=True)
+	interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer', on_delete=models.CASCADE)
+	interviewer2 = models.ForeignKey(User, null=True, blank=True, related_name='interviewer2', on_delete=models.CASCADE)
+	exhibitor = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
+	interview_date = models.DateTimeField(null=True, blank=True)
+	interview_location = models.CharField(null=True, blank=True, max_length=100)
+	submission_date = models.DateTimeField(default=timezone.now, blank=True)
+	recommended_role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
+	delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role', on_delete=models.CASCADE)
+	superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user', on_delete=models.CASCADE)
+	scorecard = models.CharField(null=True, blank=True, max_length=300)
+	drive_document = models.CharField(null=True, blank=True, max_length=300)
 
-    statuses = [
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected')]
+	@property
+	def interview_date_iso8601(self):
+		return self.interview_date.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
 
-    status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
+	@property
+	def interview_date_end_iso8601(self):
+		end = self.interview_date + datetime.timedelta(minutes = 90)
+		return end.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
 
-    class Meta:
-        permissions = (
-            ('administer_recruitment_applications', 'Administer recruitment applications'),
-            ('view_recruitment_applications', 'View recruitment applications'),
-            ('view_recruitment_interviews', 'View recruitment interviews'),
+	@property
+	def roles(self):
+		return self.roleapplication_set.order_by("order")
 
-        )
+	statuses = [
+		('accepted', 'Accepted'),
+		('rejected', 'Rejected')]
 
-    def state(self):
-        if self.status:
-            return self.status
-        if self.interviewer:
-            if self.interview_date:
-                if self.interview_date > timezone.now():
-                    return 'interview_planned'
-                else:
-                    return 'interview_done'
-            else:
-                return 'interview_delegated'
-        else:
-            return 'new'
+	status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
+
+	class Meta:
+		permissions = (
+			('administer_recruitment_applications', 'Administer recruitment applications'),
+			('view_recruitment_applications', 'View recruitment applications'),
+			('view_recruitment_interviews', 'View recruitment interviews'),
+		)
+
+	def state(self):
+		if self.status:
+			return self.status
+		if self.interviewer:
+			if self.interview_date:
+				if self.interview_date > timezone.now():
+					return 'interview_planned'
+				else:
+					return 'interview_done'
+			else:
+				return 'interview_delegated'
+		else:
+			return 'new'
 
 
-    def roles_string(self):
-        return ' '.join(['%d %s' % (role.order+1, role.role.name) for role in self.roleapplication_set.order_by('order')])
+	def roles_string(self):
+		return ' '.join(['%s %s' % (role.role.organization_group, role.role.name) for role in self.roleapplication_set.order_by('order')])
 
-    def __str__(self):
-        return '%s' % (self.user)
+	def __str__(self):
+		return '%s' % (self.user)
 
 class RecruitmentApplicationComment(models.Model):
     comment = models.TextField(null=True, blank=True)

@@ -72,7 +72,13 @@
 
 
             <td>{{ application.submission_date|date:"d M H:i" }}</td>
-            <td>{{ application.roles_string }}</td>
+            <td>
+				<ol style="margin: 0; padding: 0 0 0 20px;">
+					{% for role in application.roles %}
+						<li>{{ role }}</li>
+					{% endfor %}
+				</ol>
+            </td>
             <td>{{ application.recommended_role }}</td>
             <td>
                 {% if application.interviewer %}
