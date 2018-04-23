@@ -693,8 +693,10 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	)
 
 	profile_pic_form = None
+	profile = Profile.objects.get(user=application.user)
+	
 	if Profile.objects.filter(user=application.user).first():
-		profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=Profile.objects.get(user=application.user))
+		profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=profile)
 
 	interviewers = application.recruitment_period.interviewers()
 	interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
@@ -760,6 +762,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 			application.user),
 		"interview_planning_form": interview_planning_form,
 		"role_delegation_form": role_delegation_form,
+		"profile": profile,
 		"sms_english": sms_english,
 		"sms_swedish": sms_swedish,
 		"fair": fair,

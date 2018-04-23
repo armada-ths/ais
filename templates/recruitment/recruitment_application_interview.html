@@ -67,8 +67,8 @@
 		<h3>Send out an SMS</h3>
 		
 		<p>
-			<a href="sms:{{ application.user.phone_number }}?body={{ sms_english }}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> English text</a>
-			<a href="" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> Swedish text</a>
+			<a href="sms:{{ profile.phone_number }}?body={{ sms_english }}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> English text</a>
+			<a href="sms:{{ profile.phone_number }}?body={{ sms_swedish }}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> Swedish text</a>
 		</p>
 		
 		<hr />
