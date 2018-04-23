@@ -2,7 +2,7 @@ BEGIN:VCALENDAR
 PRODID:{{ profile.token }}
 VERSION:2.0
 CALSCALE:GREGORIAN
-{% for interview in interviews %}BEGIN:VEVENT
+{% for interview in interviews %}{% if interview.interview_date %}BEGIN:VEVENT
 DTSTAMP:20180101T000000Z
 UID:{{ interview.pk }}
 SUMMARY:Interview with {{ interview.user.first_name }} {{ interview.user.last_name }}
@@ -13,4 +13,4 @@ DESCRIPTION:Interview with {{ interview.user.first_name }} {{ interview.user.las
 STATUS:CONFIRMED
 SEQUENCE:0
 END:VEVENT
-{% endfor %}END:VCALENDAR
+{% endif %}{% endfor %}END:VCALENDAR

@@ -1,148 +1,149 @@
 {% extends "base.html" %}
 
 {% block content %}
+<ol class="breadcrumb">
+	<li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+	<li class="active">{{ recruitment_period.name }}</li>
+</ol>
 
-    <ol class="breadcrumb">
-        <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
-        <li class="active">{{ recruitment_period.name }}</li>
-    </ol>
+<div class="jumbotron recruitment-jumbotron">
+	<div class="container recruitment-jumbotron-container">
+		<h1>{{ recruitment_period.name }}</h1>
+		<p>Apply between <strong>{{ recruitment_period.start_date|date:"d M" }}</strong> and
+			<strong>{{ recruitment_period.end_date|date:"d M" }}</strong></p>
 
-    <div class="jumbotron recruitment-jumbotron">
-        <div class="container recruitment-jumbotron-container">
-            <h1>{{ recruitment_period.name }}</h1>
-            <p>Apply between <strong>{{ recruitment_period.start_date|date:"d M" }}</strong> and
-                <strong>{{ recruitment_period.end_date|date:"d M" }}</strong></p>
+		<div>
+			{% if application %}
+				<a href="{% url 'recruitment_application_new' fair.year recruitment_period.id application.id %}">
+					<button class="btn btn-primary btn-lg">View application</button>
+				</a>
+			{% else %}
+				<a href="{% url 'recruitment_application_new' fair.year recruitment_period.id %}">
+					<button class="btn btn-primary btn-lg">Apply</button>
+				</a>
+			{% endif %}
 
-            <div>
-                {% if application %}
-                    <a href="{% url 'recruitment_application_new' fair.year recruitment_period.id application.id %}">
-                        <button class="btn btn-primary btn-lg">View application</button>
-                    </a>
-                {% else %}
-                    <a href="{% url 'recruitment_application_new' fair.year recruitment_period.id %}">
-                        <button class="btn btn-primary btn-lg">Apply</button>
-                    </a>
-                {% endif %}
+			{% if administrator_access %}
+				<a href="{% url 'recruitment_period_edit' fair.year recruitment_period.id %}">
+					<button class="btn btn-default btn-lg">Edit</button>
+				</a>
+			{% endif %}
+		</div>
+	</div>
+</div>
 
-                {% if administrator_access %}
-                    <a href="{% url 'recruitment_period_edit' fair.year recruitment_period.id %}">
-                        <button class="btn btn-default btn-lg">Edit</button>
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+{% if interviews %}
+	<h2>Your interviews ({{ interviews.count }})</h2>
+	<p>Must be done before {{ recruitment_period.interview_end_date|date:"d M" }}</p>
 
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Interview date</th>
+					<th>Interview Location</th>
+					<th>Interviewer</th>
+				</tr>
+			</thead>
+			
+			{% for application in interviews %}
+				<tr>
+					<td>
+						{% if request.user == application.interviewer or request.user == application.interviewer2 %}
+							<a href="{% url 'recruitment_application_interview' fair.year recruitment_period.id application.id %}">
+								{% include 'recruitment/user_name.html' with user=application.user %}
+							</a>
+						{% else %}
+							{% include 'recruitment/user_name.html' with user=application.user %}
+						{% endif %}
+					</td>
 
-    {% if interviews %}
-        <h2>Your interviews ({{ interviews.count }})</h2>
-        <p>Must be done before {{ recruitment_period.interview_end_date|date:"d M" }}</p>
-        
-        <div class="table-responsive">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Interview date</th>
-                <th>Interview Location</th>
-                <th>Interviewer</th>
-            </tr>
-            </thead>
-            {% for application in interviews %}
-                <tr>
-                    <td>
-                        {% if request.user == application.interviewer or request.user == application.interviewer2 %}
-                            <a href="{% url 'recruitment_application_interview' fair.year recruitment_period.id application.id %}">
-                                {% include 'recruitment/user_name.html' with user=application.user %}
-                            </a>
-                        {% else %}
-                            {% include 'recruitment/user_name.html' with user=application.user %}
-                        {% endif %}
-                </td>
+					<td>
+						{% if application.interview_date %}
+							{{ application.interview_date|date:"d M H:i" }}
+						{% endif %}
+					</td>
+					<td>
+						{% if application.interview_location %}
+							{{ application.interview_location }}
+						{% endif %}
+					</td>
+					<td>
+						{% if application.interviewer %}{{ application.interviewer.get_full_name }}{% endif %}{% if application.interviewer2 %}, {{ application.interviewer2.get_full_name }}{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+	
+	<br />
+{% endif %}
 
-                    <td>{{ application.interview_date|date:"d M H:i" }}</td>
-                    <td>{{ application.interview_location }}</td>
-                    <td>
-                        {% if application.interviewer %}{{ application.interviewer.get_full_name }}{% endif %}{% if application.interviewer2 %}, {{ application.interviewer2.get_full_name }}{% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-        </div>
-        <br>
-    {% endif %}
+{% if administrator_access %}
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
+													data-toggle="tab">Applications</a>
+		</li>
+		<li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
+		</li>
+		</li>
+		<li role="presentation"><a href="#interviews" aria-controls="statistics" role="tab" data-toggle="tab">Interviews</a>
+		</li>
+	</ul>
 
+	<!-- Tab panes -->
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="applications">
 
+			{% if recruitment_period.recruitmentapplication_set.all %}
+				<h2>Applications ({{ applications.paginator.count }})</h2>
+				{% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
+			{% else %}
+				<p>No applications</p>
+			{% endif %}
 
-    {% if administrator_access %}
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#applications" aria-controls="applications" role="tab"
-                                                      data-toggle="tab">Applications</a>
-            </li>
-            <li role="presentation"><a href="#statistics" aria-controls="statistics" role="tab" data-toggle="tab">Statistics</a>
-            </li>
-            </li>
-            <li role="presentation"><a href="#interviews" aria-controls="statistics" role="tab" data-toggle="tab">Interviews</a>
-            </li>
-        </ul>
+			<nav aria-label="Page navigation">
 
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="applications">
-
-                {% if recruitment_period.recruitmentapplication_set.all %}
-                    <h2>Applications ({{ applications.paginator.count }})</h2>
-                    {% include 'recruitment/recruitment_application_table.html' with applications=applications show_search_bar=True %}
-                {% else %}
-                    <p>No applications</p>
-                {% endif %}
-
-                <nav aria-label="Page navigation">
-
-                    {% if applications.paginator.num_pages > 1 %}
-                        <ul class="pagination">
-                            <li>
-                                {% if applications.previous_page_number > 0 %}
-                                    <a href="?{{ request.GET.urlencode }}&page={{ applications.previous_page_number }}" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                {% endif %}
-                            </li>
-                            {% for page_number in applications.paginator.page_range %}
-                                <li {% if page_number == applications.number %}class="active"{% endif %}><a
-                                        href="?{{ request.GET.urlencode }}&page={{ page_number }}">{{ page_number }}</a></li>
-                            {% endfor %}
-                            <li>
-                                {% if applications.next_page_number <= applications.paginator.num_pages %}
-                                    <a href="?{{ request.GET.urlencode }}&page={{ applications.next_page_number }}" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                {% endif %}
-                            </li>
-                        </ul>
-                    {% endif %}
-                </nav>
-
-
-            </div>
-            <div role="tabpanel" class="tab-pane" id="statistics">
-                <h2>Statistics</h2>
-                <div id="stats">
-                </div>
-            </div>
-
-            <div role="tabpanel" class="tab-pane" id="interviews">
-                <h2>Interviews</h2>
-                <table class="table" id="interview_table" style="width: 100%"></table>
-            </div>
-        </div>
+				{% if applications.paginator.num_pages > 1 %}
+					<ul class="pagination">
+						<li>
+							{% if applications.previous_page_number > 0 %}
+								<a href="?{{ request.GET.urlencode }}&page={{ applications.previous_page_number }}" aria-label="Previous">
+									<span aria-hidden="true">&laquo;</span>
+								</a>
+							{% endif %}
+						</li>
+						{% for page_number in applications.paginator.page_range %}
+							<li {% if page_number == applications.number %}class="active"{% endif %}><a
+									href="?{{ request.GET.urlencode }}&page={{ page_number }}">{{ page_number }}</a></li>
+						{% endfor %}
+						<li>
+							{% if applications.next_page_number <= applications.paginator.num_pages %}
+								<a href="?{{ request.GET.urlencode }}&page={{ applications.next_page_number }}" aria-label="Next">
+									<span aria-hidden="true">&raquo;</span>
+								</a>
+							{% endif %}
+						</li>
+					</ul>
+				{% endif %}
+			</nav>
 
 
-    {% endif %}
+		</div>
+		<div role="tabpanel" class="tab-pane" id="statistics">
+			<h2>Statistics</h2>
+			<div id="stats">
+			</div>
+		</div>
 
-
-
+		<div role="tabpanel" class="tab-pane" id="interviews">
+			<h2>Interviews</h2>
+			<table class="table" id="interview_table" style="width: 100%"></table>
+		</div>
+	</div>
+{% endif %}
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript">
