@@ -42,8 +42,9 @@
 				<tr>
 					<th>Name</th>
 					<th>Interview date</th>
-					<th>Interview Location</th>
-					<th>Interviewer</th>
+					<th>Interview location</th>
+					<th>Interviewers</th>
+					{% if administrator_access %}<th>State</th>{% endif %}
 				</tr>
 			</thead>
 			
@@ -70,8 +71,31 @@
 						{% endif %}
 					</td>
 					<td>
-						{% if application.interviewer %}{{ application.interviewer.get_full_name }}{% endif %}{% if application.interviewer2 %}, {{ application.interviewer2.get_full_name }}{% endif %}
+						<ul>
+							{% if application.interviewer %}<li>{{ application.interviewer.get_full_name }}</li>{% endif %}
+							{% if application.interviewer2 %}<li>{{ application.interviewer2.get_full_name }}</li>{% endif %}
+						</ul>
 					</td>
+					
+					{% if administrator_access %}
+						<td>
+							{% if application.state == 'accepted' %}
+								<span class="label label-success">{{ application.status.capitalize }}</span>
+							{% elif application.state == 'rejected' %}
+								<span class="label label-danger">{{ application.status.capitalize }}</span>
+							{% elif application.state == 'new' %}
+								<span class="label label-default">New</span>
+							{% elif application.state == 'interview_delegated' %}
+								<span class="label label-warning">Delegated</span>
+							{% elif application.state == 'interview_planned' %}
+								<span class="label label-info">Planned</span>
+							{% elif application.state == 'interview_done' %}
+								<span class="label label-primary">Done</span>
+							{% else %}
+								{{ application.state }}
+							{% endif %}
+						</td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</table>
