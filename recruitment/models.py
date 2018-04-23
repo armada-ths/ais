@@ -313,7 +313,7 @@ class RecruitmentApplication(models.Model):
 
 
 	def roles_string(self):
-		return ' '.join(['%s %s' % (role.role.organization_group, role.role.name) for role in self.roleapplication_set.order_by('order')])
+		return ' '.join(['(%s) %s' % (role.role.organization_group, role.role.name) for role in self.roleapplication_set.order_by('order')])
 
 	def __str__(self):
 		return '%s' % (self.user)
