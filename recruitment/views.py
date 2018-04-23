@@ -107,6 +107,14 @@ def interview_state_counts(request, year, pk):
             application_state = application.state()
             if application_state in interview_state_count_map[application.interviewer]:
                 interview_state_count_map[application.interviewer][application_state] += 1
+                
+        if application.interviewer2:
+            if not application.interviewer2 in interview_state_count_map:
+                interview_state_count_map[application.interviewer2] = dict([(state[0], 0) for state in interview_count_states])
+
+            application_state = application.state()
+            if application_state in interview_state_count_map[application.interviewer2]:
+                interview_state_count_map[application.interviewer2][application_state] += 1
 
 
 
