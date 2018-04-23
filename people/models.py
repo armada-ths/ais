@@ -7,6 +7,7 @@ from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 
 class Programme(models.Model):
     name = models.CharField(max_length=100)
+    shortening = models.CharField(max_length = 100, null = True, blank = True)
 
     class Meta:
         ordering = ['name']

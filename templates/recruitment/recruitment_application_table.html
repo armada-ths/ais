@@ -66,7 +66,10 @@
                 </a>
             </td>
 
-            <td>{{ application.user.profile.programme }}</td>
+            <td>
+				{% if application.user.profile.programme.shortening %} {{ application.user.profile.programme.shortening }}
+				{% else %} {{ application.user.profile.programme }} {% endif %}
+			</td>
             <td>{{ application.user.profile.registration_year }}</td>
             <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
 
