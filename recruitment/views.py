@@ -714,19 +714,17 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 		RecruitmentApplication,
 		fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
 	)
-	if request.user.has_perm('recruitment.administer_recruitment_applications'):
-		role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
-		role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
-		role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
-			(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
-		role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
-			(exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
-	else:
-		role_delegation_form = None
+	
+	role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
+	role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
+	role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
+		(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
+	role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
+		(exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
 
-	if request.POST and (
-			application.interviewer == request.user or request.user.has_perm('recruitment.administer_recruitment_applications')):
+	if request.POST:
 		application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
+		
 		if interview_planning_form.is_valid():
 			interview_planning_form.save()
 
