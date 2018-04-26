@@ -144,7 +144,7 @@ class CompanyCustomer(models.Model):
 	
 	@property
 	def responsibles(self):
-		return CompanyCustomerResponsible.objects.filter(company_customer = self)
+		return CompanyCustomerResponsible.objects.filter(company_customer = self).prefetch_related("users")
 	
 	@property
 	def comments(self):
