@@ -135,7 +135,7 @@ class CompanyAddress(models.Model):
 # Connects a Company with a specific Fair, optionally in one or several Group
 class CompanyCustomer(models.Model):
 	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
-	fair = models.ForeignKey("fair.Fair", null = False, blank = False, on_delete = models.CASCADE)
+	fair = models.ForeignKey("fair.Fair", null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	groups = models.ManyToManyField(Group)
 	
 	@property
@@ -170,7 +170,7 @@ class CompanyCustomer(models.Model):
 
 
 class CompanyCustomerComment(models.Model):
-	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE)
+	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	groups = models.ManyToManyField(Group, blank = True)
 	comment = models.TextField(null = False, blank = False)
@@ -188,7 +188,7 @@ class CompanyCustomerComment(models.Model):
 
 
 class CompanyCustomerResponsible(models.Model):
-	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE)
+	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
 	users = models.ManyToManyField(User, blank = False)
 	
@@ -207,7 +207,7 @@ class CompanyCustomerResponsible(models.Model):
 
 # A "Contact" is a person working for a "Company"
 class CompanyContact(models.Model):
-	user = models.ForeignKey(User, null = False, blank = False)
+	user = models.ForeignKey(User, null = False, blank = False, db_index = True)
 	company = models.ForeignKey(Company, null = False, blank = False)
 	first_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "First name")
 	last_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "Last name")

@@ -94,7 +94,7 @@ def tree_to_list(k, groups_tree):
 @permission_required('companies.base')
 def companies_customers_list(request, year, template_name = 'companies/companies_customers_list.html'):
 	fair = get_object_or_404(Fair, year = year)
-	companies_customers = CompanyCustomer.objects.filter(fair = fair)
+	companies_customers = CompanyCustomer.objects.filter(fair = fair).prefetch_related("groups")
 	
 	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers})
 
