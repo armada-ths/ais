@@ -68,6 +68,8 @@
 -->
 
 <h2>Day to day</h2>
+<p>Click on a person's name to traice their progress.</p>
+
 <div id="chart_div" style="width: 100%;"></div>
 {% endblock %}
 
@@ -91,7 +93,7 @@
 	{
 		var data = new google.visualization.DataTable();
 		
-		data.addColumn('datetime', 'Time of Day');
+		data.addColumn('datetime', 'Number of signatures');
 		
 		{% for contract in contracts %}
 			{% for signature in contract.signatures %}
@@ -130,6 +132,14 @@
 				top: 80,
 				width: "85%",
 				height: "80%"
+			},
+			vAxis:
+			{
+				title: "Number of signatures"
+			},
+			hAxis:
+			{
+				title: "Time"
 			}
 		};
 
