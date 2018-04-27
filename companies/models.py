@@ -22,6 +22,7 @@ class Group(models.Model):
 	allow_registration = models.BooleanField(default = False, null = False, blank = False)
 	allow_responsibilities = models.BooleanField(default = False, null = False, blank = False)
 	allow_comments = models.BooleanField(default = False, null = False, blank = False)
+	allow_statistics = models.BooleanField(default = False, null = False, blank = False)
 	
 	def path(self):
 		path = [self]

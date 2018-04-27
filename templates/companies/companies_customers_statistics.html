@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
+
+{% block content %}
+<div class="pull-right">
+	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> List companies at {{ fair }}</a>
+</div>
+
+<h1>Statistics</h1>
+
+<div class="table-responsive">
+	<table class="table" id="company_table">
+		<thead>
+			<tr>
+				<th>Contract</th>
+				<th>Responsibilities</th>
+				<th>Signatures</th>
+			</tr>
+		</thead>
+		
+		{% for contract in contracts %}
+			{% if contract.signatures %}
+				{% for signature in contract.signatures %}
+					<tr>
+						{% if signature.i == 0 %}<td rowspan="{{ contract.rows }}"><strong>{{ contract.name }}</strong></td>{% endif %}
+						<td>
+							<ul class="list-unstyled">
+								{% for responsibility in signature.responsibilities %}
+									{% if responsibility.group.allow_statistics %}
+										<li>
+											{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}
+										</li>
+									{% endif %}
+								{% endfor %}
+							</ul>
+						</td>
+						<td>{{ signature.count }}</td>
+					</tr>
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td><strong>{{ contract.name }}</strong></td>
+					<td colspan="2">This contract has not been signed by any company.</td>
+				</tr>
+			{% endif %}
+		{% endfor %}
+	</table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<script>
+	$(function()
+	{
+		$('#company_table').DataTable({ 'paging': false });
+	})
+</script>
+{% endblock %}

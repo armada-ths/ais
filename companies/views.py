@@ -7,6 +7,7 @@ from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCu
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
 from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm
+from register.models import SignupContract, SignupLog
 
 def current_fair():
 	return get_object_or_404(Fair, current=True)
@@ -89,6 +90,84 @@ def tree_to_list(k, groups_tree):
 		o = ["open_short", k, "close_short"]
 	
 	return o
+
+
+def has_same_group_and_users(q1, q2):
+	if not q1.group.allow_statistics or not q2.group.allow_statistics:
+		return True
+	
+	if q1.group != q2.group:
+		return False
+	
+	for o1 in q1.users.all():
+		if o1 not in q2.users.all():
+			return False
+	
+	for o2 in q2.users.all():
+		if o2 not in q1.users.all():
+			return False
+	
+	return True
+
+
+def is_equal(q1, q2):
+	for ccr1 in q1:
+		found = False
+		
+		for ccr2 in q2:
+			if has_same_group_and_users(ccr1, ccr2):
+				found = True
+				break
+		
+		if not found:
+			return False
+	
+	for ccr2 in q2:
+		found = False
+		
+		for ccr1 in q1:
+			if has_same_group_and_users(ccr2, ccr1):
+				found = True
+				break
+		
+		if not found:
+			return False
+		
+	return True
+
+
+@permission_required("companies.base")
+def companies_customers_statistics(request, year, template_name = 'companies/companies_customers_statistics.html'):
+	fair = get_object_or_404(Fair, year = year)
+	
+	contracts = []
+	
+	for contract in SignupContract.objects.filter(fair = fair).all():
+		signatures = []
+		i = 0
+		rows = 0
+		
+		for signature in SignupLog.objects.filter(contract = contract):
+			company_customer = CompanyCustomer.objects.filter(company = signature.company, fair = fair).first()
+			responsibilities = list(CompanyCustomerResponsible.objects.filter(company_customer = company_customer))
+			
+			add = True
+			
+			for signature_existing in signatures:
+				if is_equal(signature_existing["responsibilities"], responsibilities):
+					signature_existing["count"] += 1
+					add = False
+					break
+			
+			if add:
+				signatures.append({ "i": i, "responsibilities": responsibilities, "count": 1 })
+				i += 1
+			
+		rows += len(signatures)
+		
+		contracts.append({ "i": i, "name": contract.name, "rows": rows, "signatures": signatures })
+	
+	return render(request, template_name, { "fair": fair, "contracts": contracts })
 
 
 @permission_required('companies.base')
