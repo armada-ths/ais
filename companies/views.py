@@ -6,7 +6,7 @@ from django.forms.models import inlineformset_factory
 from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
-from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm
+from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm, StatisticsForm
 from register.models import SignupContract, SignupLog
 
 def current_fair():
@@ -140,11 +140,15 @@ def is_equal(q1, q2):
 def companies_customers_statistics(request, year, template_name = 'companies/companies_customers_statistics.html'):
 	fair = get_object_or_404(Fair, year = year)
 	
+	form = StatisticsForm(request.POST or None)
+	
 	contracts = []
+	smallest = None
 	
 	for contract in SignupContract.objects.filter(fair = fair).all():
-		signatures_raw = SignupLog.objects.filter(contract = contract)
+		signatures_raw = SignupLog.objects.filter(contract = contract).order_by('timestamp')
 		signatures = []
+		
 		i = 0
 		rows = 0
 		
@@ -152,23 +156,44 @@ def companies_customers_statistics(request, year, template_name = 'companies/com
 			company_customer = CompanyCustomer.objects.filter(company = signature.company, fair = fair).first()
 			responsibilities = list(CompanyCustomerResponsible.objects.filter(company_customer = company_customer))
 			
+			if smallest is None or signature.timestamp < smallest:
+				smallest = signature.timestamp
+			
 			add = True
 			
 			for signature_existing in signatures:
 				if is_equal(signature_existing["responsibilities"], responsibilities):
 					signature_existing["count"] += 1
+					signature_existing["timestamps"].append({ "timestamp": signature.timestamp, "count": signature_existing["count"] })
 					add = False
 					break
 			
 			if add:
-				signatures.append({ "i": i, "responsibilities": responsibilities, "count": 1 })
+				signatures.append({ "i": i, "responsibilities": responsibilities, "count": 1, "timestamps": [{ "timestamp": signature.timestamp, "count": 1 }] })
 				i += 1
 			
 		rows += len(signatures)
 		
-		contracts.append({ "i": i, "name": contract.name, "signatures_count": signatures_raw.count(), "rows": rows, "signatures": signatures })
+		row_length = len(signatures)
+		table = []
+		
+		for j in range(len(signatures)):
+			for timestamp in signatures[j]["timestamps"]:
+				row = {"timestamp": timestamp["timestamp"], "cells": []}
+				
+				for k in range(row_length):
+					row["cells"].append(None)
+				
+				row["cells"][j] = timestamp["count"]
+				table.append(row)
+			
+			j += 1
+		
+		contracts.append({ "i": i, "name": contract.name, "signatures_count": signatures_raw.count(), "rows": rows, "signatures": signatures, "table": table })
 	
-	return render(request, template_name, { "fair": fair, "contracts": contracts })
+	form.fields["date_from"].initial = smallest
+	
+	return render(request, template_name, { "fair": fair, "contracts": contracts, "form": form })
 
 
 @permission_required('companies.base')

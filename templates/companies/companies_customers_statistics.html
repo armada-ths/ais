@@ -59,6 +59,16 @@
 		{% endfor %}
 	</table>
 </div>
+
+<!--
+<form method="post" >
+	{{ form | crispy }}
+	<input class="btn btn-primary" type="submit" value="Submit" />
+</form>
+-->
+
+<h2>Day to day</h2>
+<div id="chart_div" style="width: 100%;"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -70,5 +80,63 @@
 	{
 		$('#company_table').DataTable({ 'paging': false });
 	})
+</script>
+
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+	google.charts.load('current', {'packages':['corechart']});
+	google.charts.setOnLoadCallback(drawChart);
+
+	function drawChart()
+	{
+		var data = new google.visualization.DataTable();
+		
+		data.addColumn('datetime', 'Time of Day');
+		
+		{% for contract in contracts %}
+			{% for signature in contract.signatures %}
+				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
+			{% endfor %}
+		{% endfor %}
+		
+		{% for contract in contracts %}
+			data.addRows([
+			{% for row in contract.table %}
+				[
+					new Date({{ row.timestamp|date:'Y' }}, {{ row.timestamp|date:'m' }}, {{ row.timestamp|date:'d' }}, 0)
+					
+					{% for cell in row.cells %}
+						, {% if cell %} {{ cell }} {% else %} null {% endif %}
+					{% endfor %}
+					],
+				
+			{% endfor %}
+			]);
+		{% endfor %}
+
+		var options =
+		{
+			height: 750,
+			width: 1200,
+			pointSize: 4,
+			legend:
+			{
+				maxLines: 4,
+				position: "top",
+				alignment: "start"
+			},
+			chartArea:
+			{
+				top: 80,
+				width: "85%",
+				height: "80%"
+			}
+		};
+
+		var chart = new google.visualization.LineChart(
+		document.getElementById('chart_div'));
+
+		chart.draw(data, options);
+	}
 </script>
 {% endblock %}

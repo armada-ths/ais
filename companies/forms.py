@@ -1,4 +1,4 @@
-import re
+import re, datetime
 
 from django.forms import ModelForm, HiddenInput, BaseModelFormSet
 from django.contrib.auth.forms import UserCreationForm
@@ -257,3 +257,12 @@ class CreateCompanyCustomerForm(forms.Form):
 		required = False,
 		label = "Groups to initially add each of the above selected companies to"
 	)
+
+
+class DateInput(forms.DateInput):
+	input_type = 'date'
+
+
+class StatisticsForm(forms.Form):
+	date_from = forms.DateField(widget = DateInput(), )
+	date_to = forms.DateField(initial = datetime.date.today, widget = DateInput())
