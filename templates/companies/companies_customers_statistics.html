@@ -103,7 +103,7 @@
 			data.addRows([
 			{% for row in contract.table %}
 				[
-					new Date({{ row.timestamp|date:'Y' }}, {{ row.timestamp|date:'m' }}, {{ row.timestamp|date:'d' }}, 0)
+					new Date({{ row.timestamp|date:'Y' }}, {{ row.timestamp|date:'m'|add:"-1" }}, {{ row.timestamp|date:'d' }}, {{ row.timestamp|date:'H' }}, {{ row.timestamp|date:'i' }}, {{ row.timestamp|date:'s' }})
 					
 					{% for cell in row.cells %}
 						, {% if cell %} {{ cell }} {% else %} null {% endif %}
