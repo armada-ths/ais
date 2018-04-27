@@ -143,11 +143,12 @@ def companies_customers_statistics(request, year, template_name = 'companies/com
 	contracts = []
 	
 	for contract in SignupContract.objects.filter(fair = fair).all():
+		signatures_raw = SignupLog.objects.filter(contract = contract)
 		signatures = []
 		i = 0
 		rows = 0
 		
-		for signature in SignupLog.objects.filter(contract = contract):
+		for signature in signatures_raw:
 			company_customer = CompanyCustomer.objects.filter(company = signature.company, fair = fair).first()
 			responsibilities = list(CompanyCustomerResponsible.objects.filter(company_customer = company_customer))
 			
@@ -165,7 +166,7 @@ def companies_customers_statistics(request, year, template_name = 'companies/com
 			
 		rows += len(signatures)
 		
-		contracts.append({ "i": i, "name": contract.name, "rows": rows, "signatures": signatures })
+		contracts.append({ "i": i, "name": contract.name, "signatures_count": signatures_raw.count(), "rows": rows, "signatures": signatures })
 	
 	return render(request, template_name, { "fair": fair, "contracts": contracts })
 

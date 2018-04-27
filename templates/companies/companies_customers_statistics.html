@@ -25,17 +25,27 @@
 			{% if contract.signatures %}
 				{% for signature in contract.signatures %}
 					<tr>
-						{% if signature.i == 0 %}<td rowspan="{{ contract.rows }}"><strong>{{ contract.name }}</strong></td>{% endif %}
+						{% if signature.i == 0 %}
+							<td rowspan="{{ contract.rows }}">
+								<strong>{{ contract.name }}</strong><br />
+								{% if contract.signatures_count == 1 %} {{ contract.signatures_count }} signature
+								{% else %} {{ contract.signatures_count }} signatures {% endif %}
+							</td>
+						{% endif %}
 						<td>
-							<ul class="list-unstyled">
-								{% for responsibility in signature.responsibilities %}
-									{% if responsibility.group.allow_statistics %}
-										<li>
-											{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}
-										</li>
-									{% endif %}
-								{% endfor %}
-							</ul>
+							{% if signature.responsibilities %}
+								<ul class="list-unstyled">
+									{% for responsibility in signature.responsibilities %}
+										{% if responsibility.group.allow_statistics %}
+											<li>
+												{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}
+											</li>
+										{% endif %}
+									{% endfor %}
+								</ul>
+							{% else %}
+								<i>no responsibilities</i>
+							{% endif %}
 						</td>
 						<td>{{ signature.count }}</td>
 					</tr>
