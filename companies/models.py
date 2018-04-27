@@ -14,6 +14,7 @@ from register.models import SignupLog
 # Groups that company customers can be sorted into
 class Group(models.Model):
 	name = models.CharField(max_length = 100, null = False, blank = False)
+	name_full = models.CharField(max_length = 100, null = False, blank = False, editable = False)
 	description = models.TextField(blank = True)
 	fair = models.ForeignKey(Fair, null = False, blank = False, on_delete = models.CASCADE)
 	parent = models.ForeignKey("Group", null = True, blank = True, on_delete = models.CASCADE)
@@ -33,12 +34,19 @@ class Group(models.Model):
 		path.reverse()
 		return path
 	
+	def save(self, *args, **kwargs):
+		self.name_full = self.string_path()
+		super(Group, self).save(*args, **kwargs)
+	
 	class Meta:
 		verbose_name_plural = "Groups"
 		ordering = ["parent__name", "name"]
 	
+	def string_path(self):
+		return self.name if self.parent is None else ("%s – %s" % (self.parent.string_path(), self.name))
+
 	def __str__(self):
-		return self.name if self.parent is None else ("%s – %s" % (self.parent, self.name))
+		return self.name_full
 
 
 # Type of a company, e.g. government agency, company or non-profit organisation
@@ -144,7 +152,7 @@ class CompanyCustomer(models.Model):
 	
 	@property
 	def responsibles(self):
-		return CompanyCustomerResponsible.objects.filter(company_customer = self).prefetch_related("users")
+		return CompanyCustomerResponsible.objects.select_related("group").filter(company_customer = self).prefetch_related("users")
 	
 	@property
 	def comments(self):
@@ -152,7 +160,7 @@ class CompanyCustomer(models.Model):
 	
 	@property
 	def signatures(self):
-		return SignupLog.objects.filter(company = self.company, contract__fair = self.fair)
+		return SignupLog.objects.select_related("contract").filter(company = self.company, contract__fair = self.fair)
 	
 	def get_readonly_fields(self, request, obj = None):
 		if obj:

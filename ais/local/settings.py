@@ -16,7 +16,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-ROOT_URLCONF = 'ais.production.urls'
+ROOT_URLCONF = 'ais.local.urls'
 
 # Use KTH CAS for authentication
 INSTALLED_APPS += ('cas', 'raven.contrib.django.raven_compat',)

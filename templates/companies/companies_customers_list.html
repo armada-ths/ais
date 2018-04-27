@@ -25,26 +25,26 @@
 			</tr>
 		</thead>
 		
-		{% for company_customer in companies_customers %}
+		{% for companies_customer in companies_customers %}
 			<tr>
-				<td><a href="/fairs/{{ fair.year }}/companies/{{ company_customer.pk }}">{{ company_customer.company.name }}</a></td>
+				<td><a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.name }}</a></td>
 				<td>
 					<ul class="list-unstyled">
-						{% for signature in company_customer.signatures %}
+						{% for signature in companies_customer.signatures %}
 							<li>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
 						{% endfor %}
 					</ul>
 				</td>
 				<td>
 					<ul class="list-unstyled">
-						{% for group in company_customer.groups_iterable %}
-							<li>{{ group }}</li>
-						{% endfor %}
+					{% for group in companies_customer.groups %}
+						<li>{{ group }}</li>
+					{% endfor %}
 					</ul>
 				</td>
 				<td>
 					<ul class="list-unstyled">
-						{% for responsible in company_customer.responsibles %}
+						{% for responsible in companies_customer.responsibles %}
 							<li>
 								{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}
 							</li>

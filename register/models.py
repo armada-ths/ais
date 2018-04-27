@@ -40,7 +40,7 @@ class SignupContract(models.Model):
 class SignupLog(models.Model):
 	contract = models.ForeignKey('SignupContract', on_delete=models.CASCADE)
 	timestamp = models.DateTimeField(auto_now_add=True)
-	company = models.ForeignKey('companies.Company', null= True, on_delete=models.CASCADE)
+	company = models.ForeignKey('companies.Company', null= True, on_delete=models.CASCADE, related_name = "signature")
 	company_contact = models.ForeignKey('companies.CompanyContact', on_delete = models.CASCADE, null = True, blank = True)
     
 	types = [

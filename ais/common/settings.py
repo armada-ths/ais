@@ -52,7 +52,7 @@ INSTALLED_APPS = (
 	'accounting',
 	'dynamic_formsets',
 	'journal',
-	'markupfield'
+	'markupfield',
 )
 
 MIDDLEWARE_CLASSES = (
