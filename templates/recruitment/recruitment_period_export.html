@@ -1,0 +1,30 @@
+{% block content %}
+	<style type="text/css">
+		.pagebreak { page-break-before: always; }
+		
+		body
+		{
+			text-align: center;
+		}
+		
+		ol
+		{
+			margin: 0 auto;
+			text-align: left;
+			width: 300px;
+		}
+	</style>
+	
+	{% for application in applications %}
+		<h1>{{ application.user }}</h1>
+		<img src="/media/{{ application.profile.picture_original }}" style="max-width: 100%; max-height: 400px;" />
+		
+		<ol>
+			{% for role in application.roles %}
+				<li>{{ role }}</li>
+			{% endfor %}
+		</ol>
+		
+		<div class="pagebreak"> </div>
+	{% endfor %}
+{% endblock %}

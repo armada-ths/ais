@@ -12,7 +12,7 @@ import os.path
 from django.utils import timezone
 from markupfield.fields import MarkupField
 
-from people.models import Programme
+from people.models import Programme, Profile
 
 
 class ExtraField(models.Model):
@@ -274,6 +274,10 @@ class RecruitmentApplication(models.Model):
 	@property
 	def interview_date_iso8601(self):
 		return self.interview_date.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
+	
+	@property
+	def profile(self):
+		return Profile.objects.filter(user = self.user).first()
 
 	@property
 	def interview_date_end_iso8601(self):

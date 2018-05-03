@@ -428,6 +428,16 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 	})
 
 
+def recruitment_period_export(request, year, pk, template_name='recruitment/recruitment_period_export.html'):
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	applications = RecruitmentApplication.objects.filter(recruitment_period = recruitment_period).prefetch_related("user")
+	
+	return render(request, template_name,
+	{
+		'applications': applications
+	})
+
+
 def recruitment_period_delete(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     
