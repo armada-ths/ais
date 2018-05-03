@@ -18,6 +18,8 @@
 	{% for application in applications %}
 		<h1>{{ application.user }}</h1>
 		<img src="/media/{{ application.profile.picture_original }}" style="max-width: 100%; max-height: 400px;" />
+		{% if application.rating %}<h2>{{ application.rating }} / 5</h2>
+		{% else %} <h2>no rating</h2> {% endif %}
 		
 		<ol>
 			{% for role in application.roles %}
