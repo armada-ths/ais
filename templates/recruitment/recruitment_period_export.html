@@ -5,11 +5,12 @@
 		body
 		{
 			text-align: center;
+			font-size: 20pt;
 		}
 		
-		ol
+		ol, ul
 		{
-			margin: 0 auto;
+			margin: 50px auto 0;
 			text-align: left;
 			width: 300px;
 		}
@@ -17,9 +18,14 @@
 	
 	{% for application in applications %}
 		<h1>{{ application.user }}</h1>
-		<img src="/media/{{ application.profile.picture_original }}" style="max-width: 100%; max-height: 400px;" />
-		{% if application.rating %}<h2>{{ application.rating }} / 5</h2>
-		{% else %} <h2>no rating</h2> {% endif %}
+		<img src="/media/{{ application.profile.picture_original }}" style="max-width: 100%; max-height: 600px;" />
+		{% if application.rating %}<h1>{{ application.rating }}</h1>
+		{% else %} <h1>no rating</h1> {% endif %}
+		
+		<ul>
+			{% if application.interviewer %}<li>{{ application.interviewer }}</li>{% endif %}
+			{% if application.interviewer2 %}<li>{{ application.interviewer2 }}</li>{% endif %}
+		</ul>
 		
 		<ol>
 			{% for role in application.roles %}
