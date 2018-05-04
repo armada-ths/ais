@@ -96,7 +96,7 @@
             <td>
                 {% if application.state == 'accepted' %}
                     <span class="label label-success">{{ application.status.capitalize }}</span>
-                {% elif application.state == 'rejected' %}
+                {% elif application.state == 'rejected' or application.state == 'withdrawn' %}
                     <span class="label label-danger">{{ application.status.capitalize }}</span>
                 {% elif application.state == 'new' %}
                     <span class="label label-default">New</span>

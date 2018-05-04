@@ -290,7 +290,8 @@ class RecruitmentApplication(models.Model):
 
 	statuses = [
 		('accepted', 'Accepted'),
-		('rejected', 'Rejected')]
+		('rejected', 'Rejected'),
+		('withdrawn', 'Withdrawn')]
 
 	status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
 
