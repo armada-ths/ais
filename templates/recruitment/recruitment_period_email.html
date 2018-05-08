@@ -1,18 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<style type="text/css">
-		textarea
-		{
-			height: 200px;
-			width: 100%;
-			box-sizing: border-box;
-			font-size: 12pt;
-		}
-	</style>
-	
-	{% for category in categories %}
-		<h2>{% if category.name %}{{ category.name }}{% else %}<span style="font-style: italic;">no status</span>{% endif %}</h2>
-		<textarea>{% for user in category.users %}{% if user.i != 1 %}, {% endif %}{{ user.name }} <{{ user.email_address }}>{% endfor %}</textarea>
-	{% endfor %}
+<ol class="breadcrumb">
+	<li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+	<li><a href="{% url 'recruitment_period' fair.year recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+	<li class="active">E-mail addresses</li>
+</ol>
+
+<style type="text/css">
+	textarea
+	{
+		height: 200px;
+		width: 100%;
+		box-sizing: border-box;
+		font-size: 12pt;
+	}
+</style>
+
+<h1>E-mail addresses</h1>
+<p>Make sure to use blind carbon copies (BCC) when sending e-mail messages to the people below.</p>
+
+{% for category in categories %}
+	<h2>{% if category.name %}{{ category.name }}{% else %}<span style="font-style: italic;">no status</span>{% endif %}</h2>
+	<textarea>{% for user in category.users %}{% if user.i != 1 %}, {% endif %}{{ user.name }} <{{ user.email_address }}>{% endfor %}</textarea>
+{% endfor %}
 {% endblock %}

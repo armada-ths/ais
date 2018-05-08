@@ -466,6 +466,7 @@ def recruitment_period_email(request, year, pk, template_name='recruitment/recru
 	return render(request, template_name,
 	{
 		"fair": fair,
+		"recruitment_period": recruitment_period,
 		"categories": categories
 	})
 
