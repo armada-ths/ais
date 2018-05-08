@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<style type="text/css">
+		textarea
+		{
+			height: 200px;
+			width: 100%;
+			box-sizing: border-box;
+			font-size: 12pt;
+		}
+	</style>
+	
+	{% for category in categories %}
+		<h2>{% if category.name %}{{ category.name }}{% else %}<span style="font-style: italic;">no status</span>{% endif %}</h2>
+		<textarea>{% for user in category.users %}{% if user.i != 1 %}, {% endif %}{{ user.name }} <{{ user.email_address }}>{% endfor %}</textarea>
+	{% endfor %}
+{% endblock %}

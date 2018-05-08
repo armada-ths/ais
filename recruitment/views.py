@@ -438,6 +438,38 @@ def recruitment_period_export(request, year, pk, template_name='recruitment/recr
 	})
 
 
+def recruitment_period_email(request, year, pk, template_name='recruitment/recruitment_period_email.html'):
+	fair = get_object_or_404(Fair, year=year)
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	applications = RecruitmentApplication.objects.filter(recruitment_period = recruitment_period).prefetch_related("user")
+	
+	categories = []
+	
+	for application in applications:
+		category_current = None
+		
+		for category in categories:
+			if category["name"] == application.status:
+				category_current = category
+				break
+		
+		if category_current is None:
+			category_current = {"name": application.status, "users": []}
+			categories.append(category_current)
+		
+		category_current["users"].append({
+			"i": len(category_current["users"]) + 1,
+			"name": application.user.first_name + " " + application.user.last_name,
+			"email_address": application.user.email
+		})
+	
+	return render(request, template_name,
+	{
+		"fair": fair,
+		"categories": categories
+	})
+
+
 def recruitment_period_delete(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     
