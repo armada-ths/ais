@@ -123,12 +123,7 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
     exhibitor.save()
     return exhibitor
 
-def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving):
-	company_customer = CompanyCustomer.objects.filter(fair = fair, company = company).first()
-	
-	if company_customer is None:
-		company_customer = CompanyCustomer.objects.create(company = contact.company, fair = fair)
-	
+def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving, company_customer):
 	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company_customer)
 
 	if not signed_up and form.is_valid():
@@ -337,132 +332,133 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
 
 
 def home(request, template_name='register/registration.html'):
-    """
-    If there is no logged in company user that is associated with a contact object, 
-    they will be logged out and redirected to the index page.
+	"""
+	If there is no logged in company user that is associated with a contact object, 
+	they will be logged out and redirected to the index page.
 
-    This view controls what stage the registration is in. 
-    There are five different stages:
-    1. Before any registration is open, this is just when a new fair has been created and the registration period has not started yet.
-    2. The preliminary registration period has started. 
-    3. The preliminary registration period has ended and the complete registration has not opened yet. Note that it is possible to have overlapping
-        preliminary and complete registration periods. Then this stage would not exist.
-    4. The  complete registration has opened.
-    5. The complete registration has closed.
+	This view controls what stage the registration is in. 
+	There are five different stages:
+	1. Before any registration is open, this is just when a new fair has been created and the registration period has not started yet.
+	2. The preliminary registration period has started. 
+	3. The preliminary registration period has ended and the complete registration has not opened yet. Note that it is possible to have overlapping
+	preliminary and complete registration periods. Then this stage would not exist.
+	4. The  complete registration has opened.
+	5. The complete registration has closed.
 
-    Depending on what stage is present, this view routes to different other views and builds up the data object to send to the templates.
+	Depending on what stage is present, this view routes to different other views and builds up the data object to send to the templates.
 
-    This view also creates forms and variables that are common for all stages.
-    """
-    if request.user.is_authenticated():
-        if CompanyContact.objects.filter(user=request.user).first() is None:
-            return redirect('anmalan:logout')
-        else:
-            forms = [] # this is a list of all forms that is used to collect all errors on start page
-            ## Find what contact is signing in and the company
-            fair = Fair.objects.get(current = True)
-            pre_preliminary = fair.registration_start_date > timezone.now()
-            registration_open = fair.registration_start_date <= timezone.now() and fair.registration_end_date > timezone.now()
-            registration_closed = fair.registration_end_date < timezone.now()
-            complete_registration_open = fair.complete_registration_start_date < timezone.now() and fair.complete_registration_close_date > timezone.now()
-            complete_registration_closed = fair.complete_registration_close_date < timezone.now()
+	This view also creates forms and variables that are common for all stages.
+	"""
+	if request.user.is_authenticated():
+		if CompanyContact.objects.filter(user = request.user).first() is None:
+			return redirect('anmalan:logout')
+		else:
+			forms = [] # this is a list of all forms that is used to collect all errors on start page
+			## Find what contact is signing in and the company
+			fair = Fair.objects.get(current = True)
+			pre_preliminary = fair.registration_start_date > timezone.now()
+			registration_open = fair.registration_start_date <= timezone.now() and fair.registration_end_date > timezone.now()
+			registration_closed = fair.registration_end_date < timezone.now()
+			complete_registration_open = fair.complete_registration_start_date < timezone.now() and fair.complete_registration_close_date > timezone.now()
+			complete_registration_closed = fair.complete_registration_close_date < timezone.now()
+			
+			contact = CompanyContact.objects.get(user=request.user)
+			company = contact.company
+			
+			company_customer = CompanyCustomer.objects.filter(fair = fair, company = contact.company).first()
+			
+			if company_customer is None:
+				company_customer = CompanyCustomer.objects.create(company = contact.company, fair = fair)
+			
+			contract = SignupContract.objects.filter(fair=fair, current=True).first()
+			
+			for group in company_customer.groups.all():
+				if group.contract is not None:
+					contract = group.contract
+					break
+			
+			exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
+			signed_up = SignupLog.objects.filter(company = company, contract = contract).first() != None
 
-            contract = SignupContract.objects.filter(fair=fair, current=True).first()
-            contact = CompanyContact.objects.get(user=request.user)
-            company = contact.company
-            exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
-            signed_up = SignupLog.objects.filter(company = company, contract = contract).first() != None
+			contact_form = CompanyContactForm(request.POST or None, instance = contact, prefix = 'contact_info')
+			del contact_form.fields["active"]
+			del contact_form.fields["confirmed"]
+			forms.append(contact_form)
+			
+			#invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
+			#forms.append(invoice_details_form)
+			
+			company_form = CompanyForm(request.POST or None, instance = company, prefix = 'company_info')
+			forms.append(company_form)
+			
+			#profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
+			#forms.append(profile_form)
+			
+			current_matching_survey = Survey.objects.filter(fair=fair).first()
+			survey_form = None
+			
+			if current_matching_survey:
+				survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
+				forms.append(survey_form)
 
-            contact_form = CompanyContactForm(request.POST or None, instance = contact, prefix = 'contact_info')
-            del contact_form.fields["active"]
-            del contact_form.fields["confirmed"]
-            forms.append(contact_form)
-            
-            #invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
-            #forms.append(invoice_details_form)
-            
-            company_form = CompanyForm(request.POST or None, instance = company, prefix = 'company_info')
-            forms.append(company_form)
-            
-            #profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
-            #forms.append(profile_form)
-            
-            current_matching_survey = Survey.objects.filter(fair=fair).first()
-            survey_form = None
-            if current_matching_survey:
-                survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
-                forms.append(survey_form)
+			if request.POST:
+				if company_form.is_valid(company):
+					company_form.save()
+				
+				if contact_form.is_valid():
+					contact_form.save()
 
-            if request.POST:
-                if company_form.is_valid(company):
-                    company_form.save()
-                
-                if contact_form.is_valid():
-                    contact_form.save()
+				if signed_up and contact.confirmed:
+				# Only check survey form if there is a survey form
+					if survey_form and  survey_form.is_valid():
+						survey_form.save()
 
-                if signed_up and contact.confirmed:
-                    # Only check survey form if there is a survey form
-                    if survey_form and  survey_form.is_valid():
-                        survey_form.save()
-                    
-                    #if profile_form.is_valid():
-                    #    profile_form.save()
-                    
-                    #if invoice_details_form.is_valid():
-                    #    invoice_details = invoice_details_form.save()
-                    #    exhibitor.invoice_details = invoice_details
-                    #    exhibitor.save(update_fields=['invoice_details'])
+			#needs to start check if complete is opened as that should override preliminary
+			# There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
+			kwargs = dict(common_forms=forms, company_form=company_form, profile_form=None, survey_form=survey_form, contact_form=contact_form,  contact=contact, company=company, exhibitor=exhibitor, fair=fair, signed_up=signed_up)
 
-            #needs to start check if complete is opened as that should override preliminary
-            # There is a risk of having overlapping preliminary and complete registration dates. Therefore we need to check this.
-            kwargs = dict(common_forms=forms, company_form=company_form, profile_form=None, 
-                        survey_form=survey_form, contact_form=contact_form, 
-                        contact=contact, company=company, exhibitor=exhibitor, fair=fair, signed_up=signed_up)
+			if complete_registration_open:
+				if signed_up:
+					#return view of complete registration
+					res = complete_registration(request,fair, company, contact, contract, exhibitor, signed_up)
+				
+				if type(res) == tuple:
+					(template, kwargs_a) = res
+					kwargs.update(kwargs_a)
+					return render(request, template, kwargs)
+				else:
+					return res
 
-            if complete_registration_open:
-                if signed_up:
-                    #return view of complete registration
-                    res = complete_registration(request,fair, company, contact, contract, exhibitor, signed_up)
-                    if(type(res) == tuple):
-                        (template, kwargs_a) = res
-                        kwargs.update(kwargs_a)
-                        return render(request, template, kwargs)
-                    else:
-                        return res
+			if registration_open:
+				res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, 'save' not in request.POST, company_customer)
+				
+				if type(res) == tuple:
+					(template, kwargs_a) = res
+					kwargs.update(kwargs_a)
+					return render(request, template, kwargs)
+				
+				else:
+					# here we trust that preliminary registration returns some HTTP response
+					return res
 
-            if registration_open:
-                res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, 'save' not in request.POST)
-                
-                if(type(res) == tuple):
-                    (template, kwargs_a) = res
-                    kwargs.update(kwargs_a)
-                    return render(request, template, kwargs)
-                
-                else:
-                    # here we trust that preliminary registration returns some HTTP response
-                    return res
+			if registration_closed and not signed_up:
+				kwargs.update(dict(registration_closed=registration_closed, signed_up=signed_up))
+				return render(request, template_name, kwargs)
+				
+			if pre_preliminary:
+				# this should be basically nothing. Just return with variable, or return a specific template
+				kwargs.update(dict(pre_preliminary = pre_preliminary))
+				return render(request, template_name, kwargs)
 
-            if registration_closed and not signed_up:
-                kwargs.update(dict(registration_closed=registration_closed, signed_up=signed_up))
-                return render(request, template_name, kwargs)
-                
-            if pre_preliminary:
-                # this should be basically nothing. Just return with variable, or return a specific template
-                kwargs.update(dict(pre_preliminary = pre_preliminary))
-                return render(request, template_name, kwargs)
+			else:
+				#complete_registration_closed is closed
+				if signed_up:
+					product_list, total_price = get_product_list_and_price(exhibitor)
+					kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up, product_list=product_list, total_price=total_price))
+					return render(request, template_name, kwargs)
+				
+				else:
+					kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up))
+					return render(request, template_name, kwargs)
 
-            else:
-                #complete_registration_closed is closed
-                if signed_up:
-                    product_list, total_price = get_product_list_and_price(exhibitor)
-                    kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up,
-                                        product_list=product_list, total_price=total_price))
-                    return render(request, template_name, kwargs)
-                else:
-                    kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up))
-                    return render(request, template_name, kwargs)
-
-    return redirect('anmalan:index')
-
-
-
+	return redirect('anmalan:index')

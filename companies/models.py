@@ -8,7 +8,7 @@ from jsonfield import JSONField
 
 from fair.models import Fair
 from accounting.models import Revenue, Product
-from register.models import SignupLog
+from register.models import SignupLog, SignupContract
 
 
 # Groups that company customers can be sorted into
@@ -18,6 +18,7 @@ class Group(models.Model):
 	description = models.TextField(blank = True)
 	fair = models.ForeignKey(Fair, null = False, blank = False, on_delete = models.CASCADE)
 	parent = models.ForeignKey("Group", null = True, blank = True, on_delete = models.CASCADE)
+	contract = models.ForeignKey(SignupContract, null = True, blank = True)
 	allow_companies = models.BooleanField(default = True, null = False, blank = False)
 	allow_registration = models.BooleanField(default = False, null = False, blank = False)
 	allow_responsibilities = models.BooleanField(default = False, null = False, blank = False)
