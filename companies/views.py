@@ -12,6 +12,7 @@ from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseComp
 from register.models import SignupContract, SignupLog
 from people.models import Profile
 from django.http import HttpResponse
+from django.conf import settings
 
 def current_fair():
 	return get_object_or_404(Fair, current=True)
@@ -43,7 +44,7 @@ def companies_slack_call(request, year):
 	if phone_number.startswith("+"):
 		phone_number = "00" + phone_number[1:]
 	
-	sc = SlackClient(SLACK_KEY)
+	sc = SlackClient(settings.SLACK_KEY)
 	
 	sc.api_call(
 		"chat.postMessage",
