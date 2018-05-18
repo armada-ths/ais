@@ -1,3 +1,5 @@
+from slackclient import SlackClient
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
@@ -8,6 +10,8 @@ from fair.models import Fair
 from recruitment.models import RecruitmentApplication
 from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm, StatisticsForm
 from register.models import SignupContract, SignupLog
+from people.models import Profile
+from django.http import HttpResponse
 
 def current_fair():
 	return get_object_or_404(Fair, current=True)
@@ -28,6 +32,26 @@ def companies_view(request, pk, template_name = 'companies/companies_view.html')
 	company_contacts = CompanyContact.objects.filter(company = company)
 	
 	return render(request, template_name, {'fair': fair, 'company': company, 'company_customers': company_customers, 'company_contacts': company_contacts})
+
+
+@permission_required('companies.base')
+def companies_slack_call(request, year):
+	profile = get_object_or_404(Profile, user = request.user)
+	
+	phone_number = request.GET["phone_number"]
+	
+	if phone_number.startswith("+"):
+		phone_number = "00" + phone_number[1:]
+	
+	sc = SlackClient(SLACK_KEY)
+	
+	sc.api_call(
+		"chat.postMessage",
+		channel = profile.slack_id,
+		text = "tel://" + phone_number
+	)
+	
+	return HttpResponse('')
 
 
 @permission_required('companies.base')
@@ -219,6 +243,7 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 	fair = get_object_or_404(Fair, year = year)
 	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
 	company_contacts = CompanyContact.objects.filter(company = company_customer.company)
+	profile = get_object_or_404(Profile, user = request.user)
 	
 	initially_selected = []
 	
@@ -237,7 +262,7 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 		
 		form = CompanyCustomerCommentForm()
 	
-	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'company_contacts': company_contacts, 'form': form})
+	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'company_contacts': company_contacts, 'form': form, 'profile': profile})
 
 
 @permission_required('companies.base')

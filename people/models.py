@@ -56,6 +56,7 @@ class Profile(models.Model):
     planned_graduation = models.IntegerField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True)
     token = models.CharField(max_length = 255, null = True, blank = False, default = uuid.uuid4)
+    slack_id = models.CharField(max_length = 255, null = True, blank = True)
 
     picture_original = models.ImageField(
             upload_to=UploadToDirUUID('profiles', 'picture_original'),
