@@ -40,9 +40,7 @@ def companies_slack_call(request, year):
 	profile = get_object_or_404(Profile, user = request.user)
 	
 	phone_number = request.GET["phone_number"].strip()
-	
-	if phone_number.startswith("+"):
-		phone_number = "00" + phone_number[1:]
+	phone_number = phone_number.replace("+", "00")
 	
 	sc = SlackClient(settings.SLACK_KEY)
 	
