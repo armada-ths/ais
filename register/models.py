@@ -52,3 +52,6 @@ class SignupLog(models.Model):
 
 	def __str__(self):
 		return self.company_contact.company.name + " for " + self.contract.name
+	
+	class Meta:
+		ordering = ["-timestamp",]

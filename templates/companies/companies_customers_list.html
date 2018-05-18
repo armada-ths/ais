@@ -32,7 +32,7 @@
 				<td>
 					<ul class="list-unstyled">
 						{% for signature in companies_customer.signatures %}
-							<li>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
+							<li><span style="display: none;">{{ signature.timestamp|date:"U" }}</span>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
 						{% endfor %}
 					</ul>
 				</td>
