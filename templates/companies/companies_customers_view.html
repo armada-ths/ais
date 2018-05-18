@@ -159,7 +159,7 @@
 <script>
 	var slack_call = function(phone_number)
 	{
-		$.get('{% url 'companies_slack_call' fair.year %}?phone_number=' + phone_number, function(data)
+		$.get('{% url 'companies_slack_call' fair.year %}?phone_number=' + encodeURIComponent(phone_number), function(data)
 		{
 			alert(data);
 		});
