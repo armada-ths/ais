@@ -329,6 +329,8 @@ def companies_customers_comment_remove(request, year, pk, comment_pk, template_n
 	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
 	comment = get_object_or_404(CompanyCustomerComment, company_customer = company_customer, pk = comment_pk)
 	
+	comment.delete()
+	
 	return redirect('companies_customers_view', fair.year, company_customer.pk)
 
 
