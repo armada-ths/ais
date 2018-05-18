@@ -39,7 +39,7 @@ def companies_view(request, pk, template_name = 'companies/companies_view.html')
 def companies_slack_call(request, year):
 	profile = get_object_or_404(Profile, user = request.user)
 	
-	phone_number = request.GET["phone_number"].trim()
+	phone_number = request.GET["phone_number"].strip()
 	
 	if phone_number.startswith("+"):
 		phone_number = "00" + phone_number[1:]
