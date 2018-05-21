@@ -11,7 +11,7 @@
 </p>
 
 <div class="row">
-	<div class="col-md-5">
+	<div class="col-md-4">
 		<ul class="list-unstyled">
 			{% if company.identity_number %} <li><strong>Identity number:</strong>
 				{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
@@ -31,7 +31,10 @@
 					<ul>
 						{% for company_customer in company_customers %}
 							<li>
-								<a href="{% url 'companies_customers_view' fair.year company_customer.pk %}">{{ company_customer.fair }}</a>
+								<a href="{% url 'companies_customers_view' company_customer.fair.year company_customer.pk %}">{{ company_customer.fair }}</a>
+								
+								{% if company_customer.exhibitor %}<span class="label label-success">Participated</span>{% endif %}
+								
 								<ul class="list-unstyled">
 									{% for group in company_customer.groups_iterable %}
 										<li>{{ group }}</li>
@@ -89,7 +92,7 @@
 		{% endfor %}
 	</div>
 	
-	<div class="col-md-7">
+	<div class="col-md-8">
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h2 class="panel-title">History</h2>

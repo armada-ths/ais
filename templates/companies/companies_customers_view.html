@@ -14,7 +14,7 @@
 </p>
 
 <div class="row">
-	<div class="col-md-5">
+	<div class="col-md-4">
 		<ul class="list-unstyled">
 			{% if company.identity_number %} <li><strong>Identity number:</strong>
 				{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
@@ -35,7 +35,10 @@
 						{% for other_company_customer in company_customers %}
 							<li>
 								{% if company_customer == other_company_customer %}<strong>{{ other_company_customer.fair }}</strong>
-								{% else %}<a href="{% url 'companies_customers_view' fair.year company_customer.pk %}">{{ other_company_customer.fair }}</a>{% endif %}
+								{% else %}<a href="{% url 'companies_customers_view' other_company_customer.fair.year other_company_customer.pk %}">{{ other_company_customer.fair }}</a>{% endif %}
+								
+								{% if other_company_customer.exhibitor %}<span class="label label-success">Participated</span>{% endif %}
+								
 								<ul class="list-unstyled">
 									{% for group in other_company_customer.groups_iterable %}
 										<li>{{ group }}</li>
@@ -93,9 +96,9 @@
 		{% endfor %}
 	</div>
 	
-	<div class="col-md-7">
+	<div class="col-md-8">
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-5">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title">Responsibilities</h3>
@@ -103,7 +106,7 @@
 					
 					<div class="panel-body">
 						{% if company_customer.responsibles %}
-							<ul>
+							<ul class="list-unstyled">
 								{% for responsible in company_customer.responsibles %}
 									<li>{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}</li>
 								{% endfor %}
@@ -115,7 +118,7 @@
 				</div>
 			</div>
 			
-			<div class="col-md-6">
+			<div class="col-md-7">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title">Signed contracts</h3>
@@ -123,7 +126,7 @@
 					
 					<div class="panel-body">
 						{% if company_customer.signatures %}
-							<ul>
+							<ul class="list-unstyled">
 								{% for signature in company_customer.signatures %}
 									<li><strong>{{ signature.contract.name }}</strong> by <strong>{{ signature.company_contact }}</strong> on <strong style="white-space; nowrap;">{{ signature.timestamp }}</strong></li>
 								{% endfor %}

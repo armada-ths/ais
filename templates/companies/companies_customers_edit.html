@@ -10,7 +10,7 @@
 <p>
 	<a href="{% url 'companies_customers_view' fair.year company_customer.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
 	<a href="{% url 'companies_edit' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit company</a>
-	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> List companies at {{ fair }}</a>
+	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies at {{ fair }}</a>
 </p>
 
 <div class="row">
