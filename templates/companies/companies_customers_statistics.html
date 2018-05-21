@@ -70,7 +70,11 @@
 <h2>Day to day</h2>
 <p>Click on a person's name to traice their progress.</p>
 
-<div id="chart_div" style="width: 100%;"></div>
+{% for contract in contracts %}
+	<hr />
+	<h3>{{ contract.name }}</h3>
+	<div id="chart_div_{{ contract.i }}" style="margin-top: -30px; width: 100%;"></div>
+{% endfor %}
 {% endblock %}
 
 {% block scripts %}
@@ -85,23 +89,21 @@
 </script>
 
 <script src="https://www.gstatic.com/charts/loader.js"></script>
-<script>
-	google.charts.load('current', {'packages':['corechart']});
-	google.charts.setOnLoadCallback(drawChart);
+{% for contract in contracts %}
+	<script>
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawChart);
 
-	function drawChart()
-	{
-		var data = new google.visualization.DataTable();
-		
-		data.addColumn('datetime', 'Number of signatures');
-		
-		{% for contract in contracts %}
+		function drawChart()
+		{
+			var data = new google.visualization.DataTable();
+			
+			data.addColumn('datetime', 'Number of signatures');
+			
 			{% for signature in contract.signatures %}
 				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
 			{% endfor %}
-		{% endfor %}
 		
-		{% for contract in contracts %}
 			data.addRows([
 			{% for row in contract.table %}
 				[
@@ -114,39 +116,40 @@
 				
 			{% endfor %}
 			]);
-		{% endfor %}
 
-		var options =
-		{
-			width: '100%',
-			height: 500,
-			pointSize: 4,
-			legend:
+			var options =
 			{
-				maxLines: 4,
-				position: "top",
-				alignment: "start"
-			},
-			chartArea:
-			{
-				top: 80,
-				width: "85%",
-				height: "80%"
-			},
-			vAxis:
-			{
-				title: "Number of signatures"
-			},
-			hAxis:
-			{
-				title: "Time"
-			}
-		};
+				width: '100%',
+				height: 500,
+				pointSize: 4,
+				backgroundColor: 'transparent',
+				legend:
+				{
+					maxLines: 4,
+					position: "top",
+					alignment: "start"
+				},
+				chartArea:
+				{
+					top: 80,
+					width: "85%",
+					height: "80%"
+				},
+				vAxis:
+				{
+					title: "Number of signatures"
+				},
+				hAxis:
+				{
+					title: "Time"
+				}
+			};
 
-		var chart = new google.visualization.LineChart(
-		document.getElementById('chart_div'));
+			var chart = new google.visualization.LineChart(
+			document.getElementById('chart_div_{{ contract.i }}'));
 
-		chart.draw(data, options);
-	}
-</script>
+			chart.draw(data, options);
+		}
+	</script>
+{% endfor %}
 {% endblock %}
