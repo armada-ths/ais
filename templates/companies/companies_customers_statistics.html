@@ -5,11 +5,11 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<div class="pull-right">
-	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> List companies at {{ fair }}</a>
-</div>
-
 <h1>Statistics</h1>
+
+<p>
+	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> List companies at {{ fair }}</a>
+</p>
 
 <div class="table-responsive">
 	<table class="table" id="company_table">

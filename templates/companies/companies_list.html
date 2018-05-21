@@ -3,11 +3,11 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<div class="pull-right">
-	<a href="{% url 'companies_new' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a>
-</div>
-
 <h1>Companies</h1>
+
+<p>
+	<a href="{% url 'companies_new' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a>
+</p>
 
 <div class="table-responsive">
 	<table class="table">

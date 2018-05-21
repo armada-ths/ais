@@ -3,12 +3,12 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<div class="pull-right">
+<h1>{{ company.name }}</h1>
+
+<p>
 	<a href="{% url 'companies_edit' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</a>
 	<a href="{% url 'companies_list' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> List companies</a>
-</div>
-
-<h1>{{ company.name }}</h1>
+</p>
 
 <div class="row">
 	<div class="col-md-5">

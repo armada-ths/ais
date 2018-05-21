@@ -5,11 +5,11 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<div class="pull-right">
-	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies at {{ fair }}</a>
-</div>
-
 <h1>Link companies with {{ fair }}</h1>
+
+<p>
+	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies at {{ fair }}</a>
+</p>
 
 {% if form %}
 	<p>This page lets you link a company with a fair. Select at least one company to link. Additionally, you may select a set of groups that all selected companies automatically will be added to.</p>

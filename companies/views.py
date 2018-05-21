@@ -242,6 +242,7 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 	fair = get_object_or_404(Fair, year = year)
 	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
 	company_contacts = CompanyContact.objects.filter(company = company_customer.company)
+	company_customers = CompanyCustomer.objects.filter(company = company_customer.company)
 	profile = get_object_or_404(Profile, user = request.user)
 	
 	initially_selected = []
@@ -261,7 +262,7 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 		
 		form = CompanyCustomerCommentForm()
 	
-	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'company_contacts': company_contacts, 'form': form, 'profile': profile})
+	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company_customers': company_customers, 'company': company_customer.company, 'company_contacts': company_contacts, 'form': form, 'profile': profile})
 
 
 @permission_required('companies.base')

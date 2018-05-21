@@ -5,13 +5,13 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<div class="pull-right">
+<h1>{{ company.name }} at {{ fair }}</h1>
+
+<p>
 	<a href="{% url 'companies_customers_edit' fair.year company_customer.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> Groups and responsibilities</a>
 	<a href="{% url 'companies_edit' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit company</a>
 	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies at {{ fair }}</a>
-</div>
-
-<h1>{{ company.name }} at {{ fair }}</h1>
+</p>
 
 <div class="row">
 	<div class="col-md-5">
@@ -26,54 +26,26 @@
 		
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h3 class="panel-title">Groups</h3>
+				<h2 class="panel-title">Linked fairs</h2>
 			</div>
 			
 			<div class="panel-body">
-				{% if company_customer.groups_iterable %}
+				{% if company_customers %}
 					<ul>
-						{% for group in company_customer.groups_iterable %}
-							<li>{{ group }}</li>
+						{% for other_company_customer in company_customers %}
+							<li>
+								{% if company_customer == other_company_customer %}<strong>{{ other_company_customer.fair }}</strong>
+								{% else %}<a href="{% url 'companies_customers_view' fair.year company_customer.pk %}">{{ other_company_customer.fair }}</a>{% endif %}
+								<ul class="list-unstyled">
+									{% for group in other_company_customer.groups_iterable %}
+										<li>{{ group }}</li>
+									{% endfor %}
+								</ul>
+							</li>
 						{% endfor %}
 					</ul>
 				{% else %}
-					<p>No groups specified.</p>
-				{% endif %}
-			</div>
-		</div>
-		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">Responsibilities</h3>
-			</div>
-			
-			<div class="panel-body">
-				{% if company_customer.responsibles %}
-					<ul>
-						{% for responsible in company_customer.responsibles %}
-							<li>{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}</li>
-						{% endfor %}
-					</ul>
-				{% else %}
-					<p>No responsibilities specified.</p>
-				{% endif %}
-			</div>
-		</div>
-		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h3 class="panel-title">Signed contracts</h3>
-			</div>
-			
-			<div class="panel-body">
-				{% if company_customer.signatures %}
-					<ul>
-						{% for signature in company_customer.signatures %}
-							<li><strong>{{ signature.contract.name }}</strong> by <strong>{{ signature.company_contact }}</strong> on <strong style="white-space; nowrap;">{{ signature.timestamp }}</strong></li>
-						{% endfor %}
-					</ul>
-				{% else %}
-					<p>No contracts signed.</p>
+					<p>This company is not linked to any fairs.</p>
 				{% endif %}
 			</div>
 		</div>
@@ -122,6 +94,48 @@
 	</div>
 	
 	<div class="col-md-7">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Responsibilities</h3>
+					</div>
+					
+					<div class="panel-body">
+						{% if company_customer.responsibles %}
+							<ul>
+								{% for responsible in company_customer.responsibles %}
+									<li>{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}</li>
+								{% endfor %}
+							</ul>
+						{% else %}
+							<p>No responsibilities specified.</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-md-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">Signed contracts</h3>
+					</div>
+					
+					<div class="panel-body">
+						{% if company_customer.signatures %}
+							<ul>
+								{% for signature in company_customer.signatures %}
+									<li><strong>{{ signature.contract.name }}</strong> by <strong>{{ signature.company_contact }}</strong> on <strong style="white-space; nowrap;">{{ signature.timestamp }}</strong></li>
+								{% endfor %}
+							</ul>
+						{% else %}
+							<p>No contracts signed.</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h2 class="panel-title">Write comment</h2>
