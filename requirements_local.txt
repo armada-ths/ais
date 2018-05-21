@@ -3,3 +3,4 @@ django-crispy-forms
 Pillow
 requests
 jsonfield
+slackclient
