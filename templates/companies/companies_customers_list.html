@@ -21,6 +21,7 @@
 			<tr>
 				<th>Name</th>
 				<th>Contracts</th>
+				<th>Status</th>
 				<th>Groups</th>
 				<th>Responsibilities</th>
 			</tr>
@@ -29,6 +30,7 @@
 		{% for companies_customer in companies_customers %}
 			<tr>
 				<td><a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.name }}</a></td>
+				
 				<td>
 					<ul class="list-unstyled">
 						{% for signature in companies_customer.signatures %}
@@ -36,6 +38,11 @@
 						{% endfor %}
 					</ul>
 				</td>
+				
+				<td>
+					{{ companies_customer.status.name }}
+				</td>
+				
 				<td>
 					<ul class="list-unstyled">
 					{% for group in companies_customer.groups %}
@@ -43,6 +50,7 @@
 					{% endfor %}
 					</ul>
 				</td>
+				
 				<td>
 					<ul class="list-unstyled">
 						{% for responsible in companies_customer.responsibles %}

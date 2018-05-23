@@ -37,7 +37,7 @@
 								{% if company_customer == other_company_customer %}<strong>{{ other_company_customer.fair }}</strong>
 								{% else %}<a href="{% url 'companies_customers_view' other_company_customer.fair.year other_company_customer.pk %}">{{ other_company_customer.fair }}</a>{% endif %}
 								
-								{% if other_company_customer.exhibitor %}<span class="label label-success">Participated</span>{% endif %}
+								{% if other_company_customer.status %}<span class="label label-success">{{ other_company_customer.status.name }}</span>{% endif %}
 								
 								<ul class="list-unstyled">
 									{% for group in other_company_customer.groups_iterable %}

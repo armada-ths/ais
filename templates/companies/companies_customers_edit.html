@@ -36,6 +36,12 @@
 				</ul>
 				
 				<p>Click on a group to associate with or remove it from the company.</p>
+				
+				<form method="post">
+					{% csrf_token %}
+					{{ form_status | crispy }}
+					<input class="btn btn-primary" type="submit" name="save_status" value="Set status" />
+				</form>
 			</div>
 		</div>
 	</div>
@@ -61,6 +67,7 @@
 							{% for responsible in responsibles %}
 								<tr>
 									<td>{{ responsible.group }}</td>
+									
 									<td>
 										<ul class="list-unstyled">
 											{% for user in responsible.users_iterable %}
@@ -68,6 +75,7 @@
 											{% endfor %}
 										</ul>
 									</td>
+									
 									<td style="text-align: right;">
 										<a href="{% url 'companies_customers_edit_remove_responsible' fair.year company_customer.pk responsible.group.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
 										<a href="{% url 'companies_customers_edit_toggle_responsible' fair.year company_customer.pk responsible.group.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
@@ -90,8 +98,8 @@
 			<div class="panel-body">
 				<form method="post" enctype="multipart/form-data">
 					{% csrf_token %}
-					{{ form_responsible|crispy }}
-					<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> {% if responsible %} Save changes {% else %} Assign responsibilities {% endif %}</button>
+					{{ form_responsible | crispy }}
+					<input class="btn btn-primary" type="submit" name="save_responsibilities" value="{% if responsible %}Save changes{% else %}Assign responsibilities{% endif %}" />
 				</form>
 			</div>
 		</div>

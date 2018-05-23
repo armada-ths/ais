@@ -33,7 +33,7 @@
 							<li>
 								<a href="{% url 'companies_customers_view' company_customer.fair.year company_customer.pk %}">{{ company_customer.fair }}</a>
 								
-								{% if company_customer.exhibitor %}<span class="label label-success">Participated</span>{% endif %}
+								{% if company_customer.status %}<span class="label label-success">{{ company_customer.status.name }}</span>{% endif %}
 								
 								<ul class="list-unstyled">
 									{% for group in company_customer.groups_iterable %}

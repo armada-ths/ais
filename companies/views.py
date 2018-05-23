@@ -8,7 +8,7 @@ from django.forms.models import inlineformset_factory
 from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
-from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm, StatisticsForm
+from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm, StatisticsForm, CompanyCustomerStatusForm
 from register.models import SignupContract, SignupLog
 from people.models import Profile
 from django.http import HttpResponse
@@ -222,7 +222,7 @@ def companies_customers_statistics(request, year, template_name = 'companies/com
 @permission_required('companies.base')
 def companies_customers_list(request, year, template_name = 'companies/companies_customers_list.html'):
 	fair = get_object_or_404(Fair, year = year)
-	companies_customers = CompanyCustomer.objects.select_related("company").filter(fair = fair).prefetch_related("groups")
+	companies_customers = CompanyCustomer.objects.select_related("company").filter(fair = fair).prefetch_related("groups").prefetch_related("status")
 	
 	c = []
 	
@@ -232,7 +232,7 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 		for group in companies_customer.groups.all():
 			groups.append(group)
 		
-		c.append({ "name": companies_customer.company.name, "pk": companies_customer.pk, "groups": groups, "responsibles": companies_customer.responsibles, "signatures": companies_customer.signatures })
+		c.append({ "name": companies_customer.company.name, "status": companies_customer.status, "pk": companies_customer.pk, "groups": groups, "responsibles": companies_customer.responsibles, "signatures": companies_customer.signatures })
 	
 	return render(request, template_name, {'fair': fair, 'companies_customers': c})
 
@@ -303,18 +303,27 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 	else:
 		responsible = None
 	
-	form_responsible = CompanyCustomerResponsibleForm(company_customer, request.POST or None, instance = responsible)
+	form_responsible = CompanyCustomerResponsibleForm(company_customer, request.POST if request.POST.get('save_responsibilities') else None, instance = responsible)
 	
 	users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
 
 	form_responsible.fields["users"].choices = [(user[0].pk, user[0].get_full_name()) for user in users]
 	form_responsible.fields["group"].choices = [(group.pk, group.__str__()) for group in Group.objects.filter(allow_responsibilities = True)]
 	
-	if request.POST and form_responsible.is_valid():
+	if request.POST and request.POST.get('save_responsibilities') and form_responsible.is_valid():
 		form_responsible.save()
 		return redirect('companies_customers_edit', fair.year, company_customer.pk)
 	
-	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'groups_list': groups_list, 'responsibles': responsibles, 'form_responsible': form_responsible, 'responsible': responsible})
+
+	form_status = CompanyCustomerStatusForm(request.POST if request.POST.get('save_status') else None, initial = {"status": company_customer.status})
+	
+	form_status.fields["status"].choices = [('', '---------')] + [(group.pk, group.__str__) for group in Group.objects.filter(fair = fair, allow_status = True)]
+	
+	if request.POST and request.POST.get('save_status') and form_status.is_valid():
+		company_customer.status = form_status.cleaned_data["status"]
+		company_customer.save()
+	
+	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'groups_list': groups_list, 'responsibles': responsibles, 'form_responsible': form_responsible, 'responsible': responsible, 'form_status': form_status})
 
 
 @permission_required('companies.base')

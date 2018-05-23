@@ -259,6 +259,10 @@ class CreateCompanyCustomerForm(forms.Form):
 	)
 
 
+class CompanyCustomerStatusForm(forms.Form):
+	status = forms.ModelChoiceField(queryset = Group.objects.all(), required = False, label = "Status")
+
+
 class DateInput(forms.DateInput):
 	input_type = 'date'
 

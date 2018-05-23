@@ -25,6 +25,7 @@ class Group(models.Model):
 	allow_responsibilities = models.BooleanField(default = False, null = False, blank = False)
 	allow_comments = models.BooleanField(default = False, null = False, blank = False)
 	allow_statistics = models.BooleanField(default = False, null = False, blank = False)
+	allow_status = models.BooleanField(default = False, null = False, blank = False)
 	
 	def path(self):
 		path = [self]
@@ -147,6 +148,7 @@ class CompanyAddress(models.Model):
 class CompanyCustomer(models.Model):
 	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
 	fair = models.ForeignKey("fair.Fair", null = False, blank = False, on_delete = models.CASCADE, db_index = True)
+	status = models.ForeignKey(Group, null = True, blank = True, related_name = "status")
 	groups = models.ManyToManyField(Group)
 	
 	@property
