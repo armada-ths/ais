@@ -260,7 +260,7 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 		comment.save()
 		form.save()
 		
-		form = CompanyCustomerCommentForm()
+		form = CompanyCustomerCommentForm(initial = {"groups": initially_selected})
 	
 	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company_customers': company_customers, 'company': company_customer.company, 'company_contacts': company_contacts, 'form': form, 'profile': profile})
 
