@@ -6,12 +6,15 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-{% if company %}<h1>Edit company</h1>
-{% else %}<h1>New company</h1>{% endif %}
-
-<p>
-	<a href="{% url 'companies_view' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Overview</a>
-</p>
+{% if company %}
+	<h1>Edit company</h1>
+	
+	<p>
+		<a href="{% url 'companies_view' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Overview</a>
+	</p>
+{% else %}
+	<h1>New company</h1>
+{% endif %}
 
 <form method="post" enctype="multipart/form-data">
 	{% csrf_token %}
