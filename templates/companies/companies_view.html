@@ -79,15 +79,18 @@
 				</div>
 				
 				<div class="panel-body">
+					<p>{% if company_contact.user %} {% if company_contact.confirmed %}<span class="label label-success">Confirmed</span>{% else %}<span class="label label-danger">Not confirmed</span>{% endif %} {% if company_contact.active %}<span class="label label-success">Active</span>{% else %}<span class="label label-danger">Not active</span>{% endif %}{% endif %}</p>
+					
 					<ul class="list-unstyled">
-						<li><strong>Username:</strong> {{ company_contact.user.username }}</li>
+						{% if company_contact.user %}
+							<li><strong>Username:</strong> {{ company_contact.user.username }}</li>
+							<li><strong>Registered:</strong> {{ company_contact.user.date_joined }}</li>
+							<li><strong>Last login:</strong> {{ company_contact.user.last_login }}</li>
+						{% endif %}
+						
 						<li><strong>E-mail address:</strong> <a href="mailto:{{ company_contact.email_address }}">{{ company_contact.email_address }}</a></li>
 						{% if company_contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> <a href="tel:{{ company_contact.mobile_phone_number }}">{{ company_contact.mobile_phone_number }}</a></li>{% endif %}
 						{% if company_contact.work_phone_number %}<li><strong>Work phone number:</strong> <a href="tel:{{ company_contact.work_phone_number }}">{{ company_contact.work_phone_number }}</a></li>{% endif %}
-						<li><strong>Confirmed:</strong> {% if company_contact.confirmed %} Yes {% else %} No {% endif %}</li>
-						<li><strong>Active:</strong> {% if company_contact.active %} Yes {% else %} No {% endif %}</li>
-						<li><strong>Registered:</strong> {{ company_contact.user.date_joined }}</li>
-						<li><strong>Last login:</strong> {{ company_contact.user.last_login }}</li>
 					</ul>
 				</div>
 			</div>

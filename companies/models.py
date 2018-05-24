@@ -224,7 +224,7 @@ class CompanyCustomerResponsible(models.Model):
 
 # A "Contact" is a person working for a "Company"
 class CompanyContact(models.Model):
-	user = models.ForeignKey(User, null = False, blank = False, db_index = True)
+	user = models.ForeignKey(User, null = True, blank = True, db_index = True)
 	company = models.ForeignKey(Company, null = False, blank = False)
 	first_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "First name")
 	last_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "Last name")
