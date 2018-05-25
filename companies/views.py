@@ -228,7 +228,7 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	c = []
 	
 	for companies_customer in companies_customers:
-		c.append({ "name": companies_customer.company.name, "status": companies_customer.status, "pk": companies_customer.pk, "groups": companies_customer.groups_string_list, "responsibles": companies_customer.responsibles_string_list, "signatures": companies_customer.signatures })
+		c.append({ "name": companies_customer.company.name, "status": companies_customer.status, "pk": companies_customer.pk, "groups": companies_customer.groups_iterable, "responsibles": companies_customer.responsibles, "signatures": companies_customer.signatures })
 	
 	return render(request, template_name, {'fair': fair, 'companies_customers': c})
 
