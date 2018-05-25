@@ -224,15 +224,17 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	fair = get_object_or_404(Fair, year = year)
 	companies_customers = CompanyCustomer.objects.select_related("company").select_related("status").filter(fair = fair).prefetch_related('groups')
 	
-	responsibles_list = CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users')
+	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users'))
 	responsibles = {}
 	
 	for responsible in responsibles_list:
+		o = {'group': responsible.group.name, 'users': responsible.users.all()}
+		
 		if responsible.company_customer not in responsibles:
-			responsibles[responsible.company_customer] = [responsible]
+			responsibles[responsible.company_customer] = [o]
 		
 		else:
-			responsibles[responsible.company_customer].append(responsible)
+			responsibles[responsible.company_customer].append(o)
 	
 	signatures_list = []
 	signatures = {}
@@ -242,10 +244,10 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	
 	for signature in signatures_list:
 		if signature.company not in signatures:
-			signatures[signature.company_id] = [signature.company]
+			signatures[signature.company_id] = [signature]
 		
 		else:
-			signatures[signature.company_id].append(signature.company)
+			signatures[signature.company_id].append(signature)
 	
 	companies_customers_modified = []
 	
@@ -255,8 +257,8 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 			'name': companies_customer.company.name,
 			'status': companies_customer.status.name if companies_customer.status is not None else None,
 			'groups': companies_customer.groups.all(),
-			'responsibles': responsibles[companies_customer],
-			'signatures': signatures[companies_customer.company_id]
+			'responsibles': responsibles[companies_customer] if companies_customer in responsibles else None,
+			'signatures': signatures[companies_customer.company_id] if companies_customer.company_id in signatures else None
 		})
 	
 	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers_modified})
