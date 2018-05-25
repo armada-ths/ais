@@ -222,9 +222,31 @@ def companies_customers_statistics(request, year, template_name = 'companies/com
 @permission_required('companies.base')
 def companies_customers_list(request, year, template_name = 'companies/companies_customers_list.html'):
 	fair = get_object_or_404(Fair, year = year)
-	companies_customers = CompanyCustomer.objects.select_related("company").filter(fair = fair).prefetch_related("groups").prefetch_related("status")
+	companies_customers = CompanyCustomer.objects.select_related("company").select_related("status").filter(fair = fair).prefetch_related('groups')
 	
-	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers})
+	responsibles = CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users')
+	
+	companies_customers_modified = []
+	
+	for companies_customer in companies_customers:
+		responsibles_local = []
+		
+		for responsible in responsibles:
+			if companies_customer == responsible.company_customer:
+				responsibles_local.append({
+					'group': responsible.group,
+					'users': responsible.users.all()
+				})
+		
+		companies_customers_modified.append({
+			'pk': companies_customer.pk,
+			'name': companies_customer.company.name,
+			'status': companies_customer.status.name if companies_customer.status is not None else None,
+			'groups': companies_customer.groups.all(),
+			'responsibles': responsibles_local
+		})
+	
+	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers_modified})
 
 
 @permission_required('companies.base')

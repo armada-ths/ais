@@ -30,7 +30,7 @@
 		
 		{% for companies_customer in companies_customers %}
 			<tr>
-				<td><a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.company.name }}</a></td>
+				<td><a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.name }}</a></td>
 				
 				<td>
 					<ul class="list-unstyled">
@@ -41,12 +41,12 @@
 				</td>
 				
 				<td>
-					{{ companies_customer.status.name }}
+					{{ companies_customer.status }}
 				</td>
 				
 				<td>
 					<ul class="list-unstyled">
-						{% for group in companies_customer.groups_iterable %}
+						{% for group in companies_customer.groups %}
 							<li>{{ group }}</li>
 						{% endfor %}
 					</ul>
@@ -56,7 +56,7 @@
 					<ul class="list-unstyled">
 						{% for responsible in companies_customer.responsibles %}
 							<li>
-								{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}
+								{{ responsible.group }} – {{ responsible.users | join:", " }}
 							</li>
 						{% endfor %}
 					</ul>
