@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
 	url(r'^$', views.companies_customers_list, name = 'companies_customers_list'),
+	url(r'^mine$', views.companies_customers_list_mine, name = 'companies_customers_list_mine'),
 	url(r'^slack_call$', views.companies_slack_call, name = 'companies_slack_call'),
 	url(r'^statistics$', views.companies_customers_statistics, name = 'companies_customers_statistics'),
 	url(r'^link$', views.companies_customers_link, name = 'companies_customers_link'),
