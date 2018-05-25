@@ -13,6 +13,8 @@ from ais.secrets import *
 # to point to AIS (which would be a security concern).
 ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 
+DEBUG = False
+
 # The URL scheme is slightly different in a production environment
 # since we need to accomodate the CAS integration.
 ROOT_URLCONF = 'ais.production.urls'
