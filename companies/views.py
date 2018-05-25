@@ -255,7 +255,7 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 		companies_customers_modified.append({
 			'pk': companies_customer.pk,
 			'name': companies_customer.company.name,
-			'status': companies_customer.status.name if companies_customer.status is not None else None,
+			'status': companies_customer.status,
 			'groups': companies_customer.groups.all(),
 			'responsibles': responsibles[companies_customer] if companies_customer in responsibles else None,
 			'signatures': signatures[companies_customer.company_id] if companies_customer.company_id in signatures else None

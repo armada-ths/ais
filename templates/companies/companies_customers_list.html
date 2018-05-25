@@ -22,7 +22,6 @@
 			<tr>
 				<th>Name</th>
 				<th>Contracts</th>
-				<th>Status</th>
 				<th>Groups</th>
 				<th>Responsibilities</th>
 			</tr>
@@ -30,7 +29,18 @@
 		
 		{% for companies_customer in companies_customers %}
 			<tr>
-				<td><a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.name }}</a></td>
+				<td>
+					<a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.name }}</a>
+					
+					{% if companies_customer.status %}
+						{% if companies_customer.status.color == 'BLUE' %}<span class="label label-primary">
+						{% elif companies_customer.status.color == 'GREEN' %}<span class="label label-success">
+						{% elif companies_customer.status.color == 'RED' %}<span class="label label-danger">
+						{% elif companies_customer.status.color == 'YELLOW' %}<span class="label label-warning">
+						{% else %}<span class="label label-default">{% endif %}
+						{{ companies_customer.status.name }}</span>
+					{% endif %}
+				</td>
 				
 				<td>
 					<ul class="list-unstyled">
@@ -38,10 +48,6 @@
 							<li><span style="display: none;">{{ signature.timestamp|date:"U" }}</span>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
 						{% endfor %}
 					</ul>
-				</td>
-				
-				<td>
-					{% if companies_customer.status %}{{ companies_customer.status }}{% endif %}
 				</td>
 				
 				<td>

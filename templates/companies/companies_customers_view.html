@@ -37,7 +37,14 @@
 								{% if company_customer == other_company_customer %}<strong>{{ other_company_customer.fair }}</strong>
 								{% else %}<a href="{% url 'companies_customers_view' other_company_customer.fair.year other_company_customer.pk %}">{{ other_company_customer.fair }}</a>{% endif %}
 								
-								{% if other_company_customer.status %}<span class="label label-success">{{ other_company_customer.status.name }}</span>{% endif %}
+								{% if other_company_customer.status %}
+									{% if other_company_customer.status.color == 'BLUE' %}<span class="label label-primary">
+									{% elif other_company_customer.status.color == 'GREEN' %}<span class="label label-success">
+									{% elif other_company_customer.status.color == 'RED' %}<span class="label label-danger">
+									{% elif other_company_customer.status.color == 'YELLOW' %}<span class="label label-warning">
+									{% else %}<span class="label label-default">{% endif %}
+									{{ other_company_customer.status.name }}</span>
+								{% endif %}
 								
 								<ul class="list-unstyled">
 									{% for group in other_company_customer.groups_iterable %}

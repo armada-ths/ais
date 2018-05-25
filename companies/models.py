@@ -20,6 +20,15 @@ class Group(models.Model):
 	fair = models.ForeignKey(Fair, null = False, blank = False, on_delete = models.CASCADE)
 	parent = models.ForeignKey("Group", null = True, blank = True, on_delete = models.CASCADE)
 	contract = models.ForeignKey(SignupContract, null = True, blank = True)
+	
+	colors = [
+		("BLUE", "Blue"),
+		("GREEN", "Green"),
+		("RED", "Red"),
+		("YELLOW", "Yellow"),
+	]
+	
+	color = models.CharField(max_length = 200, choices = colors, null = True, blank = True)
 	allow_companies = models.BooleanField(default = True, null = False, blank = False)
 	allow_registration = models.BooleanField(default = False, null = False, blank = False)
 	allow_responsibilities = models.BooleanField(default = False, null = False, blank = False)
