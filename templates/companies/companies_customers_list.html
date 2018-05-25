@@ -55,7 +55,7 @@
 					<ul class="list-unstyled">
 						{% for responsible in companies_customer.responsibles %}
 							<li>
-								{{ responsible.group }} – {{ responsible.users_iterable | join:", " }}
+								{{ responsible }}
 							</li>
 						{% endfor %}
 					</ul>

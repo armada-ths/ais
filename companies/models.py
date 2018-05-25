@@ -153,15 +153,43 @@ class CompanyCustomer(models.Model):
 	groups = models.ManyToManyField(Group)
 	
 	@property
-	def groups_iterable(self):
+	def groups_string_list(self):
 		k = 'company_customer_groups_' + str(self.pk)
+		l = cache.get(k)
+		
+		if l is None:
+			l = []
+			
+			for group in self.groups.all():
+				l.append(group.name_full)
+		
+			cache.set(k, l, 36000)
+		
+		return l
+	
+	@property
+	def responsibles_string_list(self):
+		k = 'company_customer_responsibles_' + str(self.pk)
 		c = cache.get(k)
 		
 		if c is None:
-			c = self.groups.all()
-			cache.set(k, c, 36000)
+			l = []
+			
+			for responsible in CompanyCustomerResponsible.objects.select_related("group").filter(company_customer = self).prefetch_related("users"):
+				us = []
+				
+				for u in responsible.users_iterable:
+					us.append(u.first_name + ' ' + u.last_name)
+				
+				l.append(responsible.group.name + ' – ' + ', '.join(us))
+			
+			cache.set(k, l, 36000)
 		
-		return c
+		return l
+	
+	@property
+	def groups_iterable(self):
+		return self.groups.all()
 	
 	@property
 	def responsibles(self):
