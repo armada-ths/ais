@@ -225,6 +225,7 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	companies_customers = CompanyCustomer.objects.select_related("company").select_related("status").filter(fair = fair).prefetch_related('groups')
 	
 	responsibles = CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users')
+	signatures = SignupLog.objects.select_related('contract').select_related('company').all()
 	
 	companies_customers_modified = []
 	
@@ -238,12 +239,19 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 					'users': responsible.users.all()
 				})
 		
+		signatures_local = []
+		
+		for signature in signatures:
+			if companies_customer.company == signature.company:
+				signatures_local.append(signature)
+		
 		companies_customers_modified.append({
 			'pk': companies_customer.pk,
 			'name': companies_customer.company.name,
 			'status': companies_customer.status.name if companies_customer.status is not None else None,
 			'groups': companies_customer.groups.all(),
-			'responsibles': responsibles_local
+			'responsibles': responsibles_local,
+			'signatures': signatures_local
 		})
 	
 	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers_modified})
