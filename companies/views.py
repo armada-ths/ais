@@ -233,7 +233,7 @@ def companies_customers_list_mine(request, year, template_name = 'companies/comp
 	
 	companies_customers = []
 	
-	for responsible in CompanyCustomerResponsible.objects.filter(company_customer__fair = fair):
+	for responsible in CompanyCustomerResponsible.objects.select_related('company_customer').filter(company_customer__fair = fair):
 		if responsible.company_customer not in companies_customers and request.user in responsible.users.all():
 			companies_customers.append(responsible.company_customer)
 	
