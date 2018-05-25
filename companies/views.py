@@ -225,7 +225,11 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	companies_customers = CompanyCustomer.objects.select_related("company").select_related("status").filter(fair = fair).prefetch_related('groups')
 	
 	responsibles = CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users')
-	signatures = SignupLog.objects.select_related('contract').select_related('company').all()
+	
+	signatures = []
+	
+	for contract in SignupContract.objects.filter(fair = fair):
+		signatures = signatures + list(SignupLog.objects.select_related('contract').select_related('company').filter(contract = contract))
 	
 	companies_customers_modified = []
 	
