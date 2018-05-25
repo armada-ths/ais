@@ -170,9 +170,9 @@ class CompanyCustomer(models.Model):
 	@property
 	def responsibles_string_list(self):
 		k = 'company_customer_responsibles_' + str(self.pk)
-		l = cache.get(k)
+		c = cache.get(k)
 		
-		if l is None:
+		if c is None:
 			l = []
 			
 			for responsible in CompanyCustomerResponsible.objects.select_related("group").filter(company_customer = self).prefetch_related("users"):
