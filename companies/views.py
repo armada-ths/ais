@@ -224,38 +224,39 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	fair = get_object_or_404(Fair, year = year)
 	companies_customers = CompanyCustomer.objects.select_related("company").select_related("status").filter(fair = fair).prefetch_related('groups')
 	
-	responsibles = CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users')
+	responsibles_list = CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users')
+	responsibles = {}
 	
-	signatures = []
+	for responsible in responsibles_list:
+		if responsible.company_customer not in responsibles:
+			responsibles[responsible.company_customer] = [responsible]
+		
+		else:
+			responsibles[responsible.company_customer].append(responsible)
+	
+	signatures_list = []
+	signatures = {}
 	
 	for contract in SignupContract.objects.filter(fair = fair):
-		signatures = signatures + list(SignupLog.objects.select_related('contract').select_related('company').filter(contract = contract))
+		signatures_list = signatures_list + list(SignupLog.objects.select_related('contract').filter(contract = contract))
+	
+	for signature in signatures_list:
+		if signature.company not in signatures:
+			signatures[signature.company_id] = [signature.company]
+		
+		else:
+			signatures[signature.company_id].append(signature.company)
 	
 	companies_customers_modified = []
 	
 	for companies_customer in companies_customers:
-		responsibles_local = []
-		
-		for responsible in responsibles:
-			if companies_customer == responsible.company_customer:
-				responsibles_local.append({
-					'group': responsible.group,
-					'users': responsible.users.all()
-				})
-		
-		signatures_local = []
-		
-		for signature in signatures:
-			if companies_customer.company == signature.company:
-				signatures_local.append(signature)
-		
 		companies_customers_modified.append({
 			'pk': companies_customer.pk,
 			'name': companies_customer.company.name,
 			'status': companies_customer.status.name if companies_customer.status is not None else None,
 			'groups': companies_customer.groups.all(),
-			'responsibles': responsibles_local,
-			'signatures': signatures_local
+			'responsibles': responsibles[companies_customer],
+			'signatures': signatures[companies_customer.company_id]
 		})
 	
 	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers_modified})
