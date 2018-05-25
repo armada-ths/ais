@@ -41,24 +41,28 @@
 				</td>
 				
 				<td>
-					{{ companies_customer.status }}
+					{% if companies_customer.status %}{{ companies_customer.status }}{% endif %}
 				</td>
 				
 				<td>
 					<ul class="list-unstyled">
-						{% for group in companies_customer.groups %}
-							<li>{{ group }}</li>
-						{% endfor %}
+						{% if companies_customer.groups %}
+							{% for group in companies_customer.groups %}
+								<li>{{ group }}</li>
+							{% endfor %}
+						{% endif %}
 					</ul>
 				</td>
 				
 				<td>
 					<ul class="list-unstyled">
-						{% for responsible in companies_customer.responsibles %}
-							<li>
-								{{ responsible.group }} – {{ responsible.users | join:", " }}
-							</li>
-						{% endfor %}
+						{% if companies_customer.responsibles %}
+							{% for responsible in companies_customer.responsibles %}
+								<li>
+									{{ responsible.group }} – {{ responsible.users | join:", " }}
+								</li>
+							{% endfor %}
+						{% endif %}
 					</ul>
 				</td>
 			</tr>
