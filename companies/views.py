@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
+from django.core.cache import cache
 
 from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
@@ -227,12 +228,7 @@ def companies_customers_list(request, year, template_name = 'companies/companies
 	c = []
 	
 	for companies_customer in companies_customers:
-		groups = []
-		
-		for group in companies_customer.groups.all():
-			groups.append(group)
-		
-		c.append({ "name": companies_customer.company.name, "status": companies_customer.status, "pk": companies_customer.pk, "groups": groups, "responsibles": companies_customer.responsibles, "signatures": companies_customer.signatures })
+		c.append({ "name": companies_customer.company.name, "status": companies_customer.status, "pk": companies_customer.pk, "groups": companies_customer.groups_iterable, "responsibles": companies_customer.responsibles, "signatures": companies_customer.signatures })
 	
 	return render(request, template_name, {'fair': fair, 'companies_customers': c})
 
@@ -274,6 +270,8 @@ def companies_customers_remove(request, year, pk, responsible_group_pk, template
 	
 	responsible.delete()
 	
+	cache.delete('company_customer_responsibles_' + str(company_customer.pk))
+	
 	return redirect('companies_customers_edit', fair.year, company_customer.pk)
 
 
@@ -302,6 +300,8 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 	
 	else:
 		responsible = None
+	
+	cache.delete('company_customer_groups_' + str(company_customer.pk))
 	
 	form_responsible = CompanyCustomerResponsibleForm(company_customer, request.POST if request.POST.get('save_responsibilities') else None, instance = responsible)
 	
