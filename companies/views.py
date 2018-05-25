@@ -305,9 +305,11 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 	
 	form_responsible = CompanyCustomerResponsibleForm(company_customer, request.POST if request.POST.get('save_responsibilities') else None, instance = responsible)
 	
-	users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
+	users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
+	
+	users = [user for user in users if (responsible is not None and user in responsible.users.all()) or user.has_perm('companies.base')]
 
-	form_responsible.fields["users"].choices = [(user[0].pk, user[0].get_full_name()) for user in users]
+	form_responsible.fields["users"].choices = [(user.pk, user.get_full_name()) for user in users]
 	form_responsible.fields["group"].choices = [(group.pk, group.__str__()) for group in Group.objects.filter(allow_responsibilities = True)]
 	
 	if request.POST and request.POST.get('save_responsibilities') and form_responsible.is_valid():
