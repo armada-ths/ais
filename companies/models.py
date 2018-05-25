@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from jsonfield import JSONField
-from django.core.cache import cache
 
 from fair.models import Fair
 from accounting.models import Revenue, Product
@@ -154,25 +153,11 @@ class CompanyCustomer(models.Model):
 	
 	@property
 	def groups_iterable(self):
-		k = 'company_customer_groups_' + str(self.pk)
-		c = cache.get(k)
-		
-		if c is None:
-			c = self.groups.all()
-			cache.set(k, c, 36000)
-		
-		return c
+		return self.groups.all()
 	
 	@property
 	def responsibles(self):
-		k = 'company_customer_responsibles_' + str(self.pk)
-		c = cache.get(k)
-		
-		if c is None:
-			c = CompanyCustomerResponsible.objects.select_related("group").filter(company_customer = self).prefetch_related("users")
-			cache.set(k, c, 36000)
-		
-		return c
+		return CompanyCustomerResponsible.objects.select_related("group").filter(company_customer = self).prefetch_related("users")
 	
 	@property
 	def comments(self):
