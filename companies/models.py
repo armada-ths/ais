@@ -255,6 +255,6 @@ def update_stock(sender, instance, created, **kwargs):
 		CompanyLog.objects.create(company = instance, data = {"action": "create", "user": instance.modified_by})
 	
 	else:
-		print("company updated by " + str(instance.modified_by))
+		pass
 	
 	instance.modified_by = None

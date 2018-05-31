@@ -127,10 +127,7 @@ def preliminary_registration(request, fair, company, contact, contract, exhibito
 	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company_customer)
 
 	if not signed_up and form.is_valid():
-		print("form.cleaned_data[\"groups\"] = " + str(form.cleaned_data["groups"]))
-		print("company_customer.groups.all() = " + str(company_customer.groups.all()))
 		form.cleaned_data["groups"] = company_customer.groups.union(form.cleaned_data["groups"])
-		print("form.cleaned_data[\"groups\"] = " + str(form.cleaned_data["groups"]))
 		form.save()
 		SignupLog.objects.create(company_contact = contact, contract = contract, company = contact.company)
 

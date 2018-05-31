@@ -235,9 +235,7 @@ def recruitment_period_graphs(request, year, pk):
                     custom_field_counts.append(argument_per_date_count)
 
         except (ValueError, ObjectDoesNotExist):
-            print('Custom field error: %s' % custom_field.question)
-
-    print('Counting applications took', time.time() - start)
+            pass
 
     def user_has_programme(user):
         try:
@@ -251,8 +249,6 @@ def recruitment_period_graphs(request, year, pk):
         ['bar'],
         [application.user.profile.programme.name for application in application_list.prefetch_related('user', 'user__profile', 'user__profile__programme') if user_has_programme(application.user) and application.user.profile.programme]
     )
-
-    print('Counting programmes took', time.time() - start)
 
     value_counters = [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count] + custom_field_counts
 
@@ -384,8 +380,6 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 	except EmptyPage:
 		# If page is out of range (e.g. 9999), deliver last page of results.
 		applications = paginator.page(paginator.num_pages)
-
-	print('Total time took', time.time() - start)
 
 
 	class SearchField(object):
@@ -819,9 +813,6 @@ def recruitment_application_delete(request, year, pk):
 def user_can_access_recruitment_period(user, recruitment_period):
     if user.is_superuser:
         return True
-    
-    print(user.groups.all())
-    print(recruitment_period.allowed_groups.all())
     
     if len(user.groups.all().intersection(recruitment_period.allowed_groups.all())) != 0:
         return True

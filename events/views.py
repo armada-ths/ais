@@ -62,8 +62,6 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
     form = AttendenceForm(
         request.POST or None, questions_answers=questions_answers)
     user_form = UserForm(request.POST or None, instance=request.user)
-    print('Form is valid', form.is_valid())
-    print('registration_open(event)', registration_open(event))
     if form.is_valid() and registration_open(event) and user_form.is_valid():
         if not ea:
             status = 'A'
@@ -74,7 +72,6 @@ def event_attend_form(request, year, pk, template_name='events/event_attend.html
             if event.send_submission_mail:
                 send_mail_on_submission(request.user, event)
         for (question, id, answer) in form.get_answers():
-            print(question, id, answer)
             EventAnswer.objects.update_or_create(
                 question_id=id, attendence=ea, defaults={'answer': answer})
 

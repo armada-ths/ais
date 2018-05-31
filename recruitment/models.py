@@ -76,9 +76,7 @@ class ExtraField(models.Model):
 
     def handle_answers_from_request(self, request, user):
         extra_field = self
-        print('handle_answers_from_request')
         for custom_field in extra_field.customfield_set.all():
-            print(custom_field)
             key = custom_field.form_key
             if custom_field.field_type == 'file' or custom_field.field_type == 'image':
                 if key in request.FILES:
@@ -179,7 +177,6 @@ class Role(models.Model):
     def add_user_to_groups(self, user):
         role = self
         while role != None:
-            print(role)
             role.group.user_set.add(user)
             role = role.parent_role
             if role == self:
