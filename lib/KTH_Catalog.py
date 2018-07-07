@@ -1,7 +1,12 @@
 import subprocess, base64
 
 def lookup_user(kth_id):
-	raw = subprocess.check_output(["ssh", "armada@cloud.armada.nu", "ldapsearch -x -h ldap.kth.se -s sub -b 'ou=Addressbook,dc=kth,dc=se' 'ugKthid=" + kth_id + "'"]).decode("utf-8").split("\n")
+	try:
+		raw = subprocess.check_output(["ssh", "armada@cloud.armada.nu", "ldapsearch -x -h ldap.kth.se -s sub -b 'ou=Addressbook,dc=kth,dc=se' 'ugKthid=" + kth_id + "'"], timeout = 3).decode("utf-8").split("\n")
+	
+	except:
+		print('failed to connect to LDAP')
+		return None
 	
 	email = None
 	first_name = None
