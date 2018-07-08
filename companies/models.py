@@ -196,7 +196,8 @@ class CompanyCustomer(models.Model):
 
 
 class CompanyCustomerComment(models.Model):
-	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
+	company_customer = models.ForeignKey(CompanyCustomer, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
+	company = models.ForeignKey(Company, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	groups = models.ManyToManyField(Group, blank = True)
 	comment = models.TextField(null = False, blank = False)
@@ -214,7 +215,8 @@ class CompanyCustomerComment(models.Model):
 
 
 class CompanyCustomerResponsible(models.Model):
-	company_customer = models.ForeignKey(CompanyCustomer, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
+	company_customer = models.ForeignKey(CompanyCustomer, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
+	company = models.ForeignKey(Company, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
 	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
 	users = models.ManyToManyField(User, blank = False)
 	
