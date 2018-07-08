@@ -141,7 +141,7 @@ def is_equal(q1, q2):
 	return True
 
 
-@permission_required("companies.base")
+@permission_required('companies.base')
 def statistics(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
@@ -158,8 +158,7 @@ def statistics(request, year):
 		rows = 0
 		
 		for signature in signatures_raw:
-			company_customer = CompanyCustomer.objects.filter(company = signature.company, fair = fair).first()
-			responsibilities = list(CompanyCustomerResponsible.objects.filter(company_customer = company_customer))
+			responsibilities = list(CompanyCustomerResponsible.objects.filter(company = signature.company))
 			
 			if smallest is None or signature.timestamp < smallest:
 				smallest = signature.timestamp
@@ -167,14 +166,30 @@ def statistics(request, year):
 			add = True
 			
 			for signature_existing in signatures:
-				if is_equal(signature_existing["responsibilities"], responsibilities):
-					signature_existing["count"] += 1
-					signature_existing["timestamps"].append({ "timestamp": signature.timestamp, "count": signature_existing["count"] })
+				if is_equal(signature_existing['responsibilities'], responsibilities):
+					signature_existing['count'] += 1
+					signature_existing['timestamps'].append(
+					{
+						'timestamp': signature.timestamp,
+						'count': signature_existing['count']
+					})
+					
 					add = False
 					break
 			
 			if add:
-				signatures.append({ "i": i, "responsibilities": responsibilities, "count": 1, "timestamps": [{ "timestamp": signature.timestamp, "count": 1 }] })
+				signatures.append(
+				{
+					'i': i,
+					'responsibilities': responsibilities,
+					'count': 1,
+					'timestamps': [
+					{
+						'timestamp': signature.timestamp,
+						'count': 1
+					}]
+				})
+						
 				i += 1
 			
 		rows += len(signatures)
@@ -183,22 +198,38 @@ def statistics(request, year):
 		table = []
 		
 		for j in range(len(signatures)):
-			for timestamp in signatures[j]["timestamps"]:
-				row = {"timestamp": timestamp["timestamp"], "cells": []}
+			for timestamp in signatures[j]['timestamps']:
+				row = {
+					'timestamp': timestamp['timestamp'],
+					'cells': []
+				}
 				
 				for k in range(row_length):
-					row["cells"].append(None)
+					row['cells'].append(None)
 				
-				row["cells"][j] = timestamp["count"]
+				row['cells'][j] = timestamp['count']
 				table.append(row)
 			
 			j += 1
 		
-		contracts.append({ "i": i, "name": contract.name, "signatures_count": signatures_raw.count(), "rows": rows, "signatures": signatures, "table": table })
+		contracts.append(
+		{
+			'i': len(contracts),
+			'name': contract.name,
+			'signatures_count': signatures_raw.count(),
+			'rows': rows,
+			'signatures': signatures,
+			'table': table
+		})
 	
-	form.fields["date_from"].initial = smallest
+	form.fields['date_from'].initial = smallest
 	
-	return render(request, 'companies/companies_customers_statistics.html', { "fair": fair, "contracts": contracts, "form": form })
+	return render(request, 'companies/statistics.html',
+	{
+		'fair': fair,
+		'contracts': contracts,
+		'form': form
+	})
 
 
 @permission_required('companies.base')
@@ -244,19 +275,6 @@ def companies_list(request, year):
 		})
 	
 	return render(request, 'companies/companies_list.html', {'fair': fair, 'companies_customers': companies_customers_modified})
-
-
-@permission_required('companies.base')
-def companies_customers_list_mine(request, year, template_name = 'companies/companies_customers_list_mine.html'):
-	fair = get_object_or_404(Fair, year = year)
-	
-	companies_customers = []
-	
-	for responsible in CompanyCustomerResponsible.objects.select_related('company_customer').filter(company_customer__fair = fair):
-		if responsible.company_customer not in companies_customers and request.user in responsible.users.all():
-			companies_customers.append(responsible.company_customer)
-	
-	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers})
 
 
 @permission_required('companies.base')
@@ -379,7 +397,7 @@ def groups(request, year, pk = None):
 	
 	if request.POST and form.is_valid(group):
 		group = form.save()
-		return redirect('groups_edit', fair.year, group.pk)
+		return redirect('groups_list', fair.year)
 	
 	return render(request, 'companies/groups.html', {'fair': fair, 'groups_list': groups_list, 'form': form, 'form_group': group})
 

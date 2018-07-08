@@ -2,13 +2,13 @@
 
 {% load crispy_forms_tags %}
 
-{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
 <h1>Statistics</h1>
 
 <p>
-	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> List companies at {{ fair }}</a>
+	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies</a>
 </p>
 
 <div class="table-responsive">
