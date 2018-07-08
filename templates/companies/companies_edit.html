@@ -2,15 +2,14 @@
 
 {% load crispy_forms_tags %}
 
-{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<h1>{{ company.name }} at {{ fair }}</h1>
+<h1>{{ company.name }}</h1>
 
 <p>
-	<a href="{% url 'companies_customers_view' fair.year company_customer.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
-	<a href="{% url 'companies_edit' company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit company</a>
-	<a href="{% url 'companies_customers_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies at {{ fair }}</a>
+	<a href="{% url 'companies_view' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
+	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies</a>
 </p>
 
 <div class="row">
@@ -29,7 +28,7 @@
 					{% else %}
 						{% if group.selected %} <strong> {% endif %}
 						{% if not group.group.allow_companies and not group.selected %} {{ group.group.name }}
-						{% else %} <a href="{% url 'companies_customers_edit_toggle_group' fair.year company_customer.pk group.group.pk %}">{{ group.group.name }}</a>{% endif %}
+						{% else %} <a href="{% url 'companies_edit_groups' fair.year company.pk group.group.pk %}">{{ group.group.name }}</a>{% endif %}
 						{% if group.selected %} </strong> {% endif %}
 					{% endif %}
 				{% endfor %}
@@ -77,8 +76,8 @@
 									</td>
 									
 									<td style="text-align: right;">
-										<a href="{% url 'companies_customers_edit_remove_responsible' fair.year company_customer.pk responsible.group.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-										<a href="{% url 'companies_customers_edit_toggle_responsible' fair.year company_customer.pk responsible.group.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+										<a href="{% url 'companies_edit_responsibles_remove' fair.year company.pk responsible.group.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+										<a href="{% url 'companies_edit_responsibles_edit' fair.year company.pk responsible.group.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
 									</td>
 								</tr>
 							{% endfor %}

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
 
-from companies.models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
+from companies.models import Company, CompanyAddress, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
 from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm, StatisticsForm, CompanyCustomerStatusForm
@@ -16,24 +16,6 @@ from django.conf import settings
 
 def current_fair():
 	return get_object_or_404(Fair, current=True)
-
-
-@permission_required('companies.base')
-def companies_list(request, template_name = 'companies/companies_list.html'):
-	fair = current_fair()
-	companies = Company.objects.all()
-	return render(request, template_name, {'fair': fair, 'companies': companies})
-
-
-@permission_required('companies.base')
-def companies_view(request, pk, template_name = 'companies/companies_view.html'):
-	fair = current_fair()
-	company = get_object_or_404(Company, pk = pk)
-	company_customers = CompanyCustomer.objects.filter(company = company)
-	company_contacts = CompanyContact.objects.filter(company = company)
-	
-	return render(request, template_name, {'fair': fair, 'company': company, 'company_customers': company_customers, 'company_contacts': company_contacts})
-
 
 @permission_required('companies.base')
 def companies_slack_call(request, year):
@@ -160,7 +142,7 @@ def is_equal(q1, q2):
 
 
 @permission_required("companies.base")
-def companies_customers_statistics(request, year, template_name = 'companies/companies_customers_statistics.html'):
+def statistics(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
 	form = StatisticsForm(request.POST or None)
@@ -216,52 +198,52 @@ def companies_customers_statistics(request, year, template_name = 'companies/com
 	
 	form.fields["date_from"].initial = smallest
 	
-	return render(request, template_name, { "fair": fair, "contracts": contracts, "form": form })
+	return render(request, 'companies/companies_customers_statistics.html', { "fair": fair, "contracts": contracts, "form": form })
 
 
 @permission_required('companies.base')
-def companies_customers_list(request, year, template_name = 'companies/companies_customers_list.html'):
+def companies_list(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	companies_customers = CompanyCustomer.objects.select_related("company").select_related("status").filter(fair = fair).prefetch_related('groups')
+	companies = Company.objects.prefetch_related('groups')
 	
-	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company_customer').select_related('group').all().prefetch_related('users'))
+	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company').select_related('group').all().prefetch_related('users'))
 	responsibles = {}
 	
 	for responsible in responsibles_list:
 		o = {'group': responsible.group.name, 'users': responsible.users.all()}
 		
-		if responsible.company_customer not in responsibles:
-			responsibles[responsible.company_customer] = [o]
+		if responsible.company not in responsibles:
+			responsibles[responsible.company] = [o]
 		
 		else:
-			responsibles[responsible.company_customer].append(o)
+			responsibles[responsible.company].append(o)
 	
 	signatures_list = []
 	signatures = {}
 	
 	for contract in SignupContract.objects.filter(fair = fair):
-		signatures_list = signatures_list + list(SignupLog.objects.select_related('contract').filter(contract = contract))
+		signatures_list = signatures_list + list(SignupLog.objects.select_related('company').select_related('contract').filter(contract = contract))
 	
 	for signature in signatures_list:
 		if signature.company not in signatures:
-			signatures[signature.company_id] = [signature]
+			signatures[signature.company] = [signature]
 		
 		else:
-			signatures[signature.company_id].append(signature)
+			signatures[signature.company].append(signature)
 	
 	companies_customers_modified = []
 	
-	for companies_customer in companies_customers:
+	for company in companies:
 		companies_customers_modified.append({
-			'pk': companies_customer.pk,
-			'name': companies_customer.company.name,
-			'status': companies_customer.status,
-			'groups': companies_customer.groups.all(),
-			'responsibles': responsibles[companies_customer] if companies_customer in responsibles else None,
-			'signatures': signatures[companies_customer.company_id] if companies_customer.company_id in signatures else None
+			'pk': company.pk,
+			'name': company.name,
+			'status': None, # TODO: fix status!
+			'groups': company.groups.all(),
+			'responsibles': responsibles[company] if company in responsibles else None,
+			'signatures': signatures[company] if company in signatures else None
 		})
 	
-	return render(request, template_name, {'fair': fair, 'companies_customers': companies_customers_modified})
+	return render(request, 'companies/companies_list.html', {'fair': fair, 'companies_customers': companies_customers_modified})
 
 
 @permission_required('companies.base')
@@ -278,16 +260,13 @@ def companies_customers_list_mine(request, year, template_name = 'companies/comp
 
 
 @permission_required('companies.base')
-def companies_customers_view(request, year, pk, template_name = 'companies/companies_customers_view.html'):
+def companies_view(request, year, pk):
 	fair = get_object_or_404(Fair, year = year)
-	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
-	company_contacts = CompanyContact.objects.filter(company = company_customer.company)
-	company_customers = CompanyCustomer.objects.filter(company = company_customer.company)
-	profile = get_object_or_404(Profile, user = request.user)
+	company = get_object_or_404(Company, pk = pk)
 	
 	initially_selected = []
 	
-	for responsible in CompanyCustomerResponsible.objects.filter(company_customer = company_customer):
+	for responsible in CompanyCustomerResponsible.objects.filter(company = company):
 		if request.user in responsible.users.all():
 			initially_selected.append(responsible.group)
 	
@@ -295,55 +274,67 @@ def companies_customers_view(request, year, pk, template_name = 'companies/compa
 	
 	if request.POST and form.is_valid():
 		comment = form.save(commit = False)
-		comment.company_customer = company_customer
+		comment.company = company
 		comment.user = request.user
 		comment.save()
 		form.save()
 		
 		form = CompanyCustomerCommentForm(initial = {"groups": initially_selected})
 	
-	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company_customers': company_customers, 'company': company_customer.company, 'company_contacts': company_contacts, 'form': form, 'profile': profile})
+	return render(request, 'companies/companies_view.html',
+	{
+		'fair': fair,
+		'fairs': Fair.objects.all(),
+		'company': company,
+		'groups': company.groups.all(),
+		'comments': CompanyCustomerComment.objects.filter(company = company),
+		'contacts': CompanyContact.objects.filter(company = company),
+		'signatures': SignupLog.objects.select_related('contract').filter(company = company, contract__fair = fair),
+		'responsibles': CompanyCustomerResponsible.objects.select_related('group').filter(company = company, group__fair = fair),
+		'profile': get_object_or_404(Profile, user = request.user),
+		'form': form
+	})
 
 
 @permission_required('companies.base')
-def companies_customers_remove(request, year, pk, responsible_group_pk, template_name = 'companies/companies_customers_edit.html'):
+def companies_edit_responsibles_remove(request, year, pk, responsible_group_pk):
 	fair = get_object_or_404(Fair, year = year)
-	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
-	responsible_group = get_object_or_404(Group, pk = responsible_group_pk)
-	responsible = get_object_or_404(CompanyCustomerResponsible, company_customer = company_customer, group = responsible_group)
+	company = get_object_or_404(Company, pk = pk)
+	responsible_group = get_object_or_404(Group, pk = responsible_group_pk, fair = fair)
+	responsible = get_object_or_404(CompanyCustomerResponsible, company = company, group = responsible_group)
 	
 	responsible.delete()
 	
-	return redirect('companies_customers_edit', fair.year, company_customer.pk)
+	return redirect('companies_edit', fair.year, company.pk)
 
 
 @permission_required('companies.base')
-def companies_customers_edit(request, year, pk, group_pk = None, responsible_group_pk = None, template_name = 'companies/companies_customers_edit.html'):
+def companies_edit(request, year, pk, group_pk = None, responsible_group_pk = None):
 	fair = get_object_or_404(Fair, year = year)
-	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
-	responsibles = CompanyCustomerResponsible.objects.filter(company_customer = company_customer)
+	company = get_object_or_404(Company, pk = pk)
+	responsibles = CompanyCustomerResponsible.objects.select_related('group').filter(company = company, group__fair = fair)
 	
 	if group_pk is not None:
-		group_toggle = get_object_or_404(Group, pk = group_pk)
+		group_toggle = get_object_or_404(Group, pk = group_pk, fair = fair)
 		
-		if group_toggle in company_customer.groups.all():
-			company_customer.groups.remove(group_toggle)
+		if group_toggle in company.groups.all():
+			company.groups.remove(group_toggle)
 		
 		elif group_toggle.allow_companies:
-			company_customer.groups.add(group_toggle)
+			company.groups.add(group_toggle)
 		
-		company_customer.save()
+		company.save()
 	
-	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair), company_customer.groups.all())
+	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair), company.groups.all())
 	
 	if responsible_group_pk is not None:
-		responsible_group = get_object_or_404(Group, pk = responsible_group_pk)
-		responsible = get_object_or_404(CompanyCustomerResponsible, company_customer = company_customer, group = responsible_group)
+		responsible_group = get_object_or_404(Group, pk = responsible_group_pk, fair = fair)
+		responsible = get_object_or_404(CompanyCustomerResponsible, company = company, group = responsible_group)
 	
 	else:
 		responsible = None
 	
-	form_responsible = CompanyCustomerResponsibleForm(company_customer, request.POST if request.POST.get('save_responsibilities') else None, instance = responsible)
+	form_responsible = CompanyCustomerResponsibleForm(company, request.POST if request.POST.get('save_responsibilities') else None, instance = responsible)
 	
 	users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
 	
@@ -354,22 +345,31 @@ def companies_customers_edit(request, year, pk, group_pk = None, responsible_gro
 	
 	if request.POST and request.POST.get('save_responsibilities') and form_responsible.is_valid():
 		form_responsible.save()
-		return redirect('companies_customers_edit', fair.year, company_customer.pk)
+		return redirect('companies_edit', fair.year, company.pk)
 	
 
-	form_status = CompanyCustomerStatusForm(request.POST if request.POST.get('save_status') else None, initial = {"status": company_customer.status})
+	form_status = CompanyCustomerStatusForm(request.POST if request.POST.get('save_status') else None, initial = {"status": None}) # TODO: fix
 	
 	form_status.fields["status"].choices = [('', '---------')] + [(group.pk, group.__str__) for group in Group.objects.filter(fair = fair, allow_status = True)]
 	
 	if request.POST and request.POST.get('save_status') and form_status.is_valid():
-		company_customer.status = form_status.cleaned_data["status"]
-		company_customer.save()
+		company.status = form_status.cleaned_data["status"]
+		company.save()
 	
-	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'company': company_customer.company, 'groups_list': groups_list, 'responsibles': responsibles, 'form_responsible': form_responsible, 'responsible': responsible, 'form_status': form_status})
+	return render(request, 'companies/companies_edit.html',
+	{
+		'fair': fair,
+		'company': company,
+		'groups_list': groups_list,
+		'responsibles': responsibles,
+		'responsible': responsible,
+		'form_responsible': form_responsible,
+		'form_status': form_status
+	})
 
 
 @permission_required('companies.base')
-def companies_customers_groups(request, year, pk = None, template_name = 'companies/companies_customers_groups.html'):
+def groups(request, year, pk = None):
 	fair = get_object_or_404(Fair, year = year)
 	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair))
 	
@@ -379,64 +379,37 @@ def companies_customers_groups(request, year, pk = None, template_name = 'compan
 	
 	if request.POST and form.is_valid(group):
 		group = form.save()
-		return redirect('companies_customers_groups_edit', fair.year, group.pk)
+		return redirect('groups_edit', fair.year, group.pk)
 	
-	return render(request, template_name, {'fair': fair, 'groups_list': groups_list, 'form': form, 'form_group': group})
+	return render(request, 'companies/groups.html', {'fair': fair, 'groups_list': groups_list, 'form': form, 'form_group': group})
 
 
 @permission_required('companies.base')
-def companies_customers_comment_edit(request, year, pk, comment_pk, template_name = 'companies/companies_customers_comment_edit.html'):
+def companies_comments_edit(request, year, pk, comment_pk):
 	fair = get_object_or_404(Fair, year = year)
-	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
-	comment = get_object_or_404(CompanyCustomerComment, company_customer = company_customer, pk = comment_pk)
+	company = get_object_or_404(Company, pk = pk)
+	comment = get_object_or_404(CompanyCustomerComment, company = company, pk = comment_pk)
 	
 	form = CompanyCustomerCommentForm(request.POST or None, instance = comment)
 	
 	if request.POST and form.is_valid():
 		form.save()
-		return redirect('companies_customers_view', fair.year, company_customer.pk)
+		return redirect('companies_view', fair.year, company.pk)
 	
-	return render(request, template_name, {'fair': fair, 'company_customer': company_customer, 'form': form})
+	return render(request, 'companies/companies_comments_edit.html',
+	{
+		'fair': fair,
+		'company': company,
+		'form': form
+	})
 
 
 @permission_required('companies.base')
-def companies_customers_comment_remove(request, year, pk, comment_pk, template_name = 'companies/companies_customers_groups.html'):
+def companies_comments_remove(request, year, pk, comment_pk):
 	fair = get_object_or_404(Fair, year = year)
-	company_customer = get_object_or_404(CompanyCustomer, pk = pk)
-	comment = get_object_or_404(CompanyCustomerComment, company_customer = company_customer, pk = comment_pk)
+	company = get_object_or_404(Company, pk = pk)
+	comment = get_object_or_404(CompanyCustomerComment, company = company, pk = comment_pk)
 	
 	comment.delete()
 	
-	return redirect('companies_customers_view', fair.year, company_customer.pk)
-
-
-@permission_required('companies.base')
-def companies_customers_link(request, year, template_name = 'companies/companies_customers_link.html'):
-	fair = get_object_or_404(Fair, year = year)
-	
-	companies_that_can_be_linked = []
-	
-	for company in Company.objects.all():
-		if len(CompanyCustomer.objects.filter(company = company, fair = fair)) == 0:
-			companies_that_can_be_linked.append(company)
-	
-	if len(companies_that_can_be_linked) == 0:
-		form = None
-	
-	else:
-		form = CreateCompanyCustomerForm(request.POST or None)
-		
-		form.fields["companies"].choices = [(company.pk, company.name) for company in companies_that_can_be_linked]
-		form.fields["groups"].choices = [(group.pk, group.__str__) for group in Group.objects.filter(fair = fair, allow_companies = True)]
-		
-		if request.POST and form.is_valid():
-			groups = form.cleaned_data["groups"]
-			
-			for company in form.cleaned_data["companies"]:
-				company_customer = CompanyCustomer.objects.create(fair = fair, company = company)
-				company_customer.groups = groups;
-				company_customer.save()
-			
-			return redirect('companies_customers_list', fair.year)
-	
-	return render(request, template_name, {'fair': fair, 'form': form})
+	return redirect('companies_view', fair.year, company.pk)

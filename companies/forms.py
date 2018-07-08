@@ -88,11 +88,11 @@ class CompanyCustomerResponsibleForm(ModelForm):
 	group = forms.ModelChoiceField(queryset = Group.objects.all(), widget = forms.RadioSelect(), required = True)
 	users = forms.ModelMultipleChoiceField(queryset = User.objects.all(), widget = forms.CheckboxSelectMultiple(), required = True)
 	
-	def __init__(self, company_customer, *args, **kwargs):
+	def __init__(self, company, *args, **kwargs):
 		super(CompanyCustomerResponsibleForm, self).__init__(*args, **kwargs)
-		self.initial["company_customer"] = company_customer.id
-		self.fields["company_customer"].disabled = True
-		self.fields["company_customer"].widget = HiddenInput()
+		self.initial["company"] = company.id
+		self.fields["company"].disabled = True
+		self.fields["company"].widget = HiddenInput()
 	
 	class Meta:
 		model = CompanyCustomerResponsible

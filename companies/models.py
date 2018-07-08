@@ -81,6 +81,7 @@ class Company(models.Model):
 	website = models.CharField(max_length = 300, null = True, blank = True)
 	phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	type = models.ForeignKey(CompanyType, null = False, blank = False, on_delete = models.CASCADE)
+	groups = models.ManyToManyField(Group)
 	modified_by = None
 	
 	@property
@@ -224,11 +225,11 @@ class CompanyCustomerResponsible(models.Model):
 	
 	class Meta:
 		verbose_name_plural = "Company customer responsibles"
-		ordering = ["company_customer__company__name", "group__name"]
+		ordering = ["company__name", "group__name"]
 		unique_together = ("company", "group",)
 
 	def __str__(self):
-		return "%s for %s" % (self.group, self.company_customer)
+		return "%s for %s" % (self.group, self.company)
 
 
 # A "Contact" is a person working for a "Company"

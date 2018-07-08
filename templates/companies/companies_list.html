@@ -1,36 +1,87 @@
 {% extends "base.html" %}
 
-{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_customers_list' fair.year %}">CRM</a></li>{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
 <h1>Companies</h1>
 
 <p>
 	<a href="{% url 'companies_new' %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New company</a>
+	<a href="{% url 'groups_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Groups</a>
+	<a href="{% url 'statistics' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Statistics</a>
 </p>
 
 <div class="table-responsive">
-	<table class="table">
+	<table class="table" id="company_table">
 		<thead>
 			<tr>
 				<th>Name</th>
-				<th>Identity number</th>
-				<th>Website</th>
+				<th>Contracts</th>
+				<th>Groups</th>
+				<th>Responsibilities</th>
 			</tr>
 		</thead>
 		
-		{% for company in companies %}
+		{% for companies_customer in companies_customers %}
 			<tr>
-				<td><a href="{% url 'companies_view' company.pk %}">{{ company.name }}</a></td>
 				<td>
-					{% if company.identity_number %}
-						{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
-						{% else %} {{ company.identity_number }} {% endif %}
+					<a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.name }}</a>
+					
+					{% if companies_customer.status %}
+						{% if companies_customer.status.color == 'BLUE' %}<span class="label label-primary">
+						{% elif companies_customer.status.color == 'GREEN' %}<span class="label label-success">
+						{% elif companies_customer.status.color == 'RED' %}<span class="label label-danger">
+						{% elif companies_customer.status.color == 'YELLOW' %}<span class="label label-warning">
+						{% else %}<span class="label label-default">{% endif %}
+						{{ companies_customer.status.name }}</span>
 					{% endif %}
 				</td>
-				<td>{% if company.website %} <a href="{{ company.website }}" target="_blank">{{ company.website }}</a> {% endif %}</td>
+				
+				<td>
+					<ul class="list-unstyled">
+						{% for signature in companies_customer.signatures %}
+							<li><span style="display: none;">{{ signature.timestamp|date:"U" }}</span>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
+						{% endfor %}
+					</ul>
+				</td>
+				
+				<td>
+					<ul class="list-unstyled">
+						{% if companies_customer.groups %}
+							{% for group in companies_customer.groups %}
+								<li>{{ group }}</li>
+							{% endfor %}
+						{% endif %}
+					</ul>
+				</td>
+				
+				<td>
+					<ul class="list-unstyled">
+						{% if companies_customer.responsibles %}
+							{% for responsible in companies_customer.responsibles %}
+								<li>
+									{{ responsible.group }} – {{ responsible.users | join:", " }}
+								</li>
+							{% endfor %}
+						{% endif %}
+					</ul>
+				</td>
 			</tr>
 		{% endfor %}
 	</table>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<script>
+	$(function()
+	{
+		$('#company_table').DataTable({ 'paging': false });
+	})
+</script>
 {% endblock %}
