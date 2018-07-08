@@ -8,9 +8,6 @@ class CompanyAddressInline(admin.StackedInline):
 class CompanyLogInline(admin.StackedInline):
 	model = CompanyLog
 
-class CompanyCustomerResponsibleInline(admin.StackedInline):
-	model = CompanyCustomerResponsible
-
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
 	ordering = ("fair__year", "parent__name", "name",)
@@ -40,4 +37,3 @@ class CompanyCustomerAdmin(admin.ModelAdmin):
 	ordering = ("fair__year", "company__name",)
 	list_display = ("fair", "company",)
 	list_filter = ("fair__year",)
-	inlines = [CompanyCustomerResponsibleInline]

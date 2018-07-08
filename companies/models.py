@@ -196,8 +196,7 @@ class CompanyCustomer(models.Model):
 
 
 class CompanyCustomerComment(models.Model):
-	company_customer = models.ForeignKey(CompanyCustomer, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
-	company = models.ForeignKey(Company, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
+	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	user = models.ForeignKey(User, null = False, blank = False, on_delete = models.CASCADE)
 	groups = models.ManyToManyField(Group, blank = True)
 	comment = models.TextField(null = False, blank = False)
@@ -215,8 +214,7 @@ class CompanyCustomerComment(models.Model):
 
 
 class CompanyCustomerResponsible(models.Model):
-	company_customer = models.ForeignKey(CompanyCustomer, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
-	company = models.ForeignKey(Company, null = True, blank = True, on_delete = models.CASCADE, db_index = True)
+	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
 	users = models.ManyToManyField(User, blank = False)
 	
@@ -227,7 +225,7 @@ class CompanyCustomerResponsible(models.Model):
 	class Meta:
 		verbose_name_plural = "Company customer responsibles"
 		ordering = ["company_customer__company__name", "group__name"]
-		unique_together = ("company_customer", "group",)
+		unique_together = ("company", "group",)
 
 	def __str__(self):
 		return "%s for %s" % (self.group, self.company_customer)
