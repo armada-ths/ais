@@ -17,7 +17,7 @@ from matching.models import Survey
 from .models import SignupContract, SignupLog
 
 from .forms import RegistrationForm, ChangePasswordForm
-from orders.forms import SelectStandAreaForm, get_order_forms, ElectricityOrderForm
+from orders.forms import get_order_forms, ElectricityOrderForm
 from exhibitors.forms import ExhibitorProfileForm, TransportationForm
 from matching.forms import ResponseForm
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
