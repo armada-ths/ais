@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block nav-exhibitors %}
+<li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+{% endblock %}
+
+{% block content %}
+<h1>Create exhibitors</h1>
+
+{% if form %}
+	<p>This page lets you create exhibitors based on the companies from the initial registration. Use CTRL or CMD to select multiple companies.</p>
+	
+	<form method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{ form|crispy }}
+		
+		<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Create exhibitors</button>
+	</form>
+{% else %}
+	<p>All companies from the initial registration are already marked as exhibitors.</p>
+{% endif %}
+{% endblock %}

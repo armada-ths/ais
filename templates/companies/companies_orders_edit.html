@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
+
+{% block content %}
+<h1>Edit order for {{ company.name }} at {{ fair }}</h1>
+
+<p>
+	<a href="{% url 'companies_view' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
+</p>
+
+<p>This order is based on <span style="font-weight: bold;">{{ product.name }}</span> in <span style="font-weight: bold;">{{ product.revenue }}</span>.</p>
+
+<form method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	
+	{{ form_order | crispy }}
+	<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save changes</button>
+</form>
+{% endblock %}

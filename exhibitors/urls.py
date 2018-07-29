@@ -9,6 +9,7 @@ urlpatterns = [
 	url(r'^(?P<pk>\d+)/$', views.exhibitor, name='exhibitor'),
 
     url(r'view$', views.edit_view, name='edit_view'),
+    url(r'create$', views.create, name = 'create'),
 
 	url(r'^(?P<pk>\d+)/emails_confirmation/$', views.emails_confirmation, name='emails_confirmation'),
 	url(r'^(?P<pk>\d+)/send_cr_receipts$', views.send_cr_receipts, name='send_cr_receipts'),

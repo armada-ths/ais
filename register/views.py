@@ -8,7 +8,7 @@ from django.conf import settings
 import requests as r
 import json
 
-from companies.models import Company, CompanyCustomer, CompanyContact
+from companies.models import Company, CompanyContact
 from orders.models import Product, Order, ProductType, ElectricityOrder
 from exhibitors.models import Exhibitor, TransportationAlternative
 from fair.models import Fair
@@ -123,11 +123,11 @@ def create_new_exhibitor_from_old(old_exhibitor, contact, fair):
     exhibitor.save()
     return exhibitor
 
-def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving, company_customer):
-	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company_customer)
+def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving):
+	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company)
 
 	if not signed_up and form.is_valid():
-		form.cleaned_data["groups"] = company_customer.groups.union(form.cleaned_data["groups"])
+		form.cleaned_data["groups"] = company.groups.filter(fair = fair).union(form.cleaned_data["groups"])
 		form.save()
 		SignupLog.objects.create(company_contact = contact, contract = contract, company = contact.company)
 
@@ -362,19 +362,14 @@ def home(request, template_name='register/registration.html'):
 			contact = CompanyContact.objects.get(user=request.user)
 			company = contact.company
 			
-			company_customer = CompanyCustomer.objects.filter(fair = fair, company = contact.company).first()
+			contract = SignupContract.objects.filter(fair = fair, current = True).first()
 			
-			if company_customer is None:
-				company_customer = CompanyCustomer.objects.create(company = contact.company, fair = fair)
-			
-			contract = SignupContract.objects.filter(fair=fair, current=True).first()
-			
-			for group in company_customer.groups.all():
+			for group in company.groups.filter(fair = fair):
 				if group.contract is not None:
 					contract = group.contract
 					break
 			
-			exhibitor = Exhibitor.objects.filter(company=company, fair=fair).first()
+			exhibitor = Exhibitor.objects.filter(company = company, fair = fair).first()
 			signed_up = SignupLog.objects.filter(company = company, contract = contract).first() != None
 
 			contact_form = CompanyContactForm(request.POST or None, instance = contact, prefix = 'contact_info')
@@ -427,7 +422,7 @@ def home(request, template_name='register/registration.html'):
 					return res
 
 			if registration_open:
-				res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, 'save' not in request.POST, company_customer)
+				res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, 'save' not in request.POST)
 				
 				if type(res) == tuple:
 					(template, kwargs_a) = res
