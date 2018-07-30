@@ -19,7 +19,7 @@
 			</div>
 
 			<div class="form-container login-form">
-				<p> Sign in with your details for Armada 2018. </p>
+				<p>Sign in with your credentials to access THS Armada.</p>
 				<form method="post">
 					{% csrf_token %} {{ form|crispy }}
 					<input type="hidden" name="next" value='/register/home'/>

@@ -4,6 +4,8 @@ from django.forms import ModelForm, HiddenInput, BaseModelFormSet
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+
+from accounting.models import Product, Order
 from .models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, CompanyContact, CompanyCustomerComment, Group
 
 
@@ -243,22 +245,6 @@ class CreateCompanyContactNoCompanyForm(CreateCompanyContactForm):
 		exclude = ("user", "active", "confirmed", "company")
 
 
-class CreateCompanyCustomerForm(forms.Form):
-	companies = forms.ModelMultipleChoiceField(
-		queryset = Company.objects.all(),
-		widget = forms.SelectMultiple(attrs = {"size": 20}),
-		required = True,
-		label = "Companies to link"
-	)
-	
-	groups = forms.ModelMultipleChoiceField(
-		queryset = Group.objects.all(),
-		widget = forms.SelectMultiple(attrs = {"size": 20}),
-		required = False,
-		label = "Groups to initially add each of the above selected companies to"
-	)
-
-
 class CompanyCustomerStatusForm(forms.Form):
 	status = forms.ModelChoiceField(queryset = Group.objects.all(), required = False, label = "Status")
 
@@ -270,3 +256,53 @@ class DateInput(forms.DateInput):
 class StatisticsForm(forms.Form):
 	date_from = forms.DateField(widget = DateInput(), )
 	date_to = forms.DateField(initial = datetime.date.today, widget = DateInput())
+
+
+class CompanyNewOrderForm(ModelForm):
+	class Meta:
+		model = Order
+		fields = ('product', 'quantity')
+	
+	def is_valid(self):
+		valid = super(CompanyNewOrderForm, self).is_valid()
+		
+		if not valid:
+			return valid
+		
+		product = self.cleaned_data['product']
+		quantity = self.cleaned_data['quantity']
+		
+		if quantity < 1:
+			self.add_error('quantity', 'Must be a positive integer.')
+			return False
+		
+		if product.max_quantity is not None and quantity > product.max_quantity:
+			self.add_error('quantity', 'Must not exceed ' + str(product.max_quantity) + '.')
+			return False
+		
+		return valid
+
+
+class CompanyEditOrderForm(ModelForm):
+	class Meta:
+		model = Order
+		fields = '__all__'
+		exclude = ('product', 'purchasing_company', 'purchasing_user')
+	
+	def is_valid(self):
+		valid = super(CompanyEditOrderForm, self).is_valid()
+		
+		if not valid:
+			return valid
+		
+		quantity = self.cleaned_data['quantity']
+		
+		if quantity < 1:
+			self.add_error('quantity', 'Must be a positive integer.')
+			return False
+		
+		if self.instance.product.max_quantity is not None and quantity > self.instance.product.max_quantity:
+			self.add_error('quantity', 'Must not exceed ' + str(product.max_quantity) + '.')
+			return False
+		
+		return valid

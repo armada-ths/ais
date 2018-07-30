@@ -149,13 +149,55 @@
 		
 		<div class="panel panel-default">
 			<div class="panel-heading">
+				<h2 class="panel-title">Orders</h2>
+			</div>
+			
+			<div class="panel-body">
+				{% if orders %}
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Product</th>
+								<th>Quantity</th>
+								<th>Unit price</th>
+								<th></th>
+							</tr>
+						</thead>
+						
+						{% for order in orders %}
+							<tr>
+								<td>
+									{% if order.name %} {{ order.name }} {% else %} {{ order.product.name }} {% endif %}
+									{% if order.comment %}
+										<br /><span style="font-style: italic;">{{ order.comment }}</span>
+									{% endif %}
+								</td>
+								<td>{{ order.quantity }}</td>
+								<td>{% if order.unit_price %} {{ order.unit_price }} {% else %} {{ order.product.unit_price }} {% endif %}</td>
+								<td>
+									<a onclick="confirm('Do you want to remove the order?');" href="{% url 'companies_orders_remove' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+									<a href="{% url 'companies_orders_edit' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+								</td>
+							</tr>
+						{% endfor %}
+					</table>
+				{% else %}
+					<p>The company has no orders for {{ fair }}.</p>
+				{% endif %}
+				
+				<a href="{% url 'companies_orders_new' fair.year company.pk %}" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New order</a>
+			</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
 				<h2 class="panel-title">Write comment</h2>
 			</div>
 			
 			<div class="panel-body">
 				<form method="post" enctype="multipart/form-data">
 					{% csrf_token %}
-					{{ form | crispy }}
+					{{ form_comment | crispy }}
 					<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save comment</button>
 				</form>
 			</div>

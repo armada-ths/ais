@@ -7,6 +7,7 @@
 {% block content %}
     <h1>Exhibitors ({{ exhibitors|length }})</h1>
     {% if request.user %}<a href="{% url 'edit_view' fair.year %}" class="btn btn-success">Edit view</a>{% endif %}
+    <a href="{% url 'create' fair.year %}" class="btn btn-success">Create exhibitor</a>
     <div class="table-responsive">
     <table class="table" id="exhibitor_table">
         <thead>

@@ -8,6 +8,13 @@ class SignupContract(models.Model):
 	contract = models.FileField(upload_to = 'contracts/%Y%m%d/')
 	fair = models.ForeignKey('fair.Fair', on_delete = models.CASCADE)
 	current = models.BooleanField(default = False);
+	
+	types = [
+		("INITIAL", "Initial"),
+		("COMPLETE", "Complete")
+	]
+	
+	type = models.CharField(max_length = 200, choices = types, null = False, blank = False)
 
 	_loaded_values = None
 

@@ -24,24 +24,24 @@
 			</tr>
 		</thead>
 		
-		{% for companies_customer in companies_customers %}
+		{% for company in companies %}
 			<tr>
 				<td>
-					<a href="/fairs/{{ fair.year }}/companies/{{ companies_customer.pk }}">{{ companies_customer.name }}</a>
+					<a href="/fairs/{{ fair.year }}/companies/{{ company.pk }}">{{ company.name }}</a>
 					
-					{% if companies_customer.status %}
-						{% if companies_customer.status.color == 'BLUE' %}<span class="label label-primary">
-						{% elif companies_customer.status.color == 'GREEN' %}<span class="label label-success">
-						{% elif companies_customer.status.color == 'RED' %}<span class="label label-danger">
-						{% elif companies_customer.status.color == 'YELLOW' %}<span class="label label-warning">
+					{% if company.status %}
+						{% if company.status.color == 'BLUE' %}<span class="label label-primary">
+						{% elif company.status.color == 'GREEN' %}<span class="label label-success">
+						{% elif company.status.color == 'RED' %}<span class="label label-danger">
+						{% elif company.status.color == 'YELLOW' %}<span class="label label-warning">
 						{% else %}<span class="label label-default">{% endif %}
-						{{ companies_customer.status.name }}</span>
+						{{ company.status.name }}</span>
 					{% endif %}
 				</td>
 				
 				<td>
 					<ul class="list-unstyled">
-						{% for signature in companies_customer.signatures %}
+						{% for signature in company.signatures %}
 							<li><span style="display: none;">{{ signature.timestamp|date:"U" }}</span>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
 						{% endfor %}
 					</ul>
@@ -49,8 +49,8 @@
 				
 				<td>
 					<ul class="list-unstyled">
-						{% if companies_customer.groups %}
-							{% for group in companies_customer.groups %}
+						{% if company.groups %}
+							{% for group in company.groups %}
 								<li>{{ group }}</li>
 							{% endfor %}
 						{% endif %}
@@ -59,8 +59,8 @@
 				
 				<td>
 					<ul class="list-unstyled">
-						{% if companies_customer.responsibles %}
-							{% for responsible in companies_customer.responsibles %}
+						{% if company.responsibles %}
+							{% for responsible in company.responsibles %}
 								<li>
 									{{ responsible.group }} – {{ responsible.users | join:", " }}
 								</li>
