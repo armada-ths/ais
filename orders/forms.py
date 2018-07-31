@@ -1,12 +1,8 @@
 from django.forms import Select,  Form, ModelChoiceField, HiddenInput
 from django import forms
 
-from fair.models import Fair
-from orders.models import Product, Order, ProductType, StandArea, ElectricityOrder
+from orders.models import Product, Order, ElectricityOrder
 
-
-class SelectStandAreaForm(Form):
-    stand_area = forms.ModelChoiceField(queryset=StandArea.objects.filter(fair=Fair.objects.filter(current=True).first()))
 
 class ElectricityOrderForm(forms.ModelForm):
     class Meta:
