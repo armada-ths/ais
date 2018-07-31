@@ -14,8 +14,9 @@ from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
 from banquet.models import BanquetteAttendant
+from register.models import SignupLog
 
-from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial
+from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorCreateForm
 from .models import Exhibitor, ExhibitorView
 
 import logging
@@ -56,6 +57,45 @@ def edit_view(request, year, template_name='exhibitors/edit_view.html'):
         'form': form,
         'fair': get_object_or_404(Fair, year=year, current=True)
     })
+
+
+@permission_required('exhibitors.base')
+def create(request, year):
+	fair = get_object_or_404(Fair, year = year, current = True)
+	exhibitors = Exhibitor.objects.filter(fair = fair)
+	companies_already_added = []
+	
+	for exhibitor in exhibitors:
+		companies_already_added.append(exhibitor.company)
+	
+	signatures = SignupLog.objects.filter(contract__fair = fair)
+	companies = []
+	
+	for signature in signatures:
+		if signature.company not in companies and signature.company not in companies_already_added:
+			companies.append(signature.company)
+	
+	if len(companies) != 0:
+		form = ExhibitorCreateForm(request.POST or None)
+		
+		companies.sort(key = lambda x: x.name)
+		form.fields['companies'].choices = [(company.pk, company.name) for company in companies]
+		
+		if request.POST and form.is_valid():
+			for company in form.cleaned_data['companies']:
+				if company in companies:
+					exhibitor = Exhibitor.objects.create(fair = fair, company = company)
+					exhibitor.save()
+			
+			return redirect('exhibitors', year)
+	
+	else:
+		form = None
+	
+	return render(request, 'exhibitors/create.html', {
+		'fair': fair,
+		'form': form
+	})
 
 
 

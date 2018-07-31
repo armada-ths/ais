@@ -2,6 +2,7 @@ from django import forms
 
 import inspect
 
+from companies.models import Company
 from .models import ExhibitorView, Exhibitor, TransportationAlternative
 
 class TransportationForm(forms.ModelForm):
@@ -88,4 +89,10 @@ class ExhibitorFormPartial(ExhibitorFormFull):
     class Meta(ExhibitorFormFull.Meta):
         exclude = ('company', 'fair', 'hosts', 'contact', 'pickup_order', 'delivery_order')
 
-
+class ExhibitorCreateForm(forms.Form):
+	companies = forms.ModelMultipleChoiceField(
+		queryset = Company.objects.all(),
+		widget = forms.SelectMultiple(attrs = {"size": 20}),
+		required = True,
+		label = "Companies from the initial registration"
+	)

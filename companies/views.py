@@ -4,15 +4,16 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
+from django.http import HttpResponse
+from django.conf import settings
 
 from companies.models import Company, CompanyAddress, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
-from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, CreateCompanyCustomerForm, StatisticsForm, CompanyCustomerStatusForm
+from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, StatisticsForm, CompanyCustomerStatusForm, CompanyNewOrderForm, CompanyEditOrderForm
 from register.models import SignupContract, SignupLog
+from accounting.models import Revenue, Order, Product
 from people.models import Profile
-from django.http import HttpResponse
-from django.conf import settings
 
 def current_fair():
 	return get_object_or_404(Fair, current=True)
@@ -237,7 +238,7 @@ def companies_list(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	companies = Company.objects.prefetch_related('groups')
 	
-	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company').select_related('group').all().prefetch_related('users'))
+	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company').select_related('group').filter(group__fair = fair).prefetch_related('users'))
 	responsibles = {}
 	
 	for responsible in responsibles_list:
@@ -262,19 +263,23 @@ def companies_list(request, year):
 		else:
 			signatures[signature.company].append(signature)
 	
-	companies_customers_modified = []
+	companies_modified = []
 	
 	for company in companies:
-		companies_customers_modified.append({
+		companies_modified.append({
 			'pk': company.pk,
 			'name': company.name,
 			'status': None, # TODO: fix status!
-			'groups': company.groups.all(),
+			'groups': company.groups.filter(fair = fair),
 			'responsibles': responsibles[company] if company in responsibles else None,
 			'signatures': signatures[company] if company in signatures else None
 		})
 	
-	return render(request, 'companies/companies_list.html', {'fair': fair, 'companies_customers': companies_customers_modified})
+	return render(request, 'companies/companies_list.html',
+	{
+		'fair': fair,
+		'companies': companies_modified
+	})
 
 
 @permission_required('companies.base')
@@ -288,16 +293,16 @@ def companies_view(request, year, pk):
 		if request.user in responsible.users.all():
 			initially_selected.append(responsible.group)
 	
-	form = CompanyCustomerCommentForm(request.POST or None, initial = {"groups": initially_selected})
+	form_comment = CompanyCustomerCommentForm(request.POST if request.POST.get('save_comment') else None, initial = {"groups": initially_selected})
 	
-	if request.POST and form.is_valid():
-		comment = form.save(commit = False)
+	if request.POST and request.POST.get('save_comment') and form_comment.is_valid():
+		comment = form_comment.save(commit = False)
 		comment.company = company
 		comment.user = request.user
 		comment.save()
-		form.save()
+		form_comment.save()
 		
-		form = CompanyCustomerCommentForm(initial = {"groups": initially_selected})
+		form_comment = CompanyCustomerCommentForm(initial = {"groups": initially_selected})
 	
 	return render(request, 'companies/companies_view.html',
 	{
@@ -310,7 +315,8 @@ def companies_view(request, year, pk):
 		'signatures': SignupLog.objects.select_related('contract').filter(company = company, contract__fair = fair),
 		'responsibles': CompanyCustomerResponsible.objects.select_related('group').filter(company = company, group__fair = fair),
 		'profile': get_object_or_404(Profile, user = request.user),
-		'form': form
+		'form_comment': form_comment,
+		'orders': Order.objects.filter(purchasing_company = company, product__revenue__fair = fair)
 	})
 
 
@@ -429,5 +435,81 @@ def companies_comments_remove(request, year, pk, comment_pk):
 	comment = get_object_or_404(CompanyCustomerComment, company = company, pk = comment_pk)
 	
 	comment.delete()
+	
+	return redirect('companies_view', fair.year, company.pk)
+
+
+@permission_required('companies.base')
+def companies_orders_new(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	company = get_object_or_404(Company, pk = pk)
+	
+	form_order = CompanyNewOrderForm(request.POST or None)
+	
+	revenues_list = []
+	revenues = Revenue.objects.filter(fair = fair)
+	
+	for revenue in revenues:
+		revenue_list = [revenue.name, []]
+		
+		products = Product.objects.filter(revenue = revenue)
+		
+		for product in products:
+			revenue_list[1].append([product.pk, product.name])
+		
+		if len(revenue_list[1]) != 0:
+			revenues_list.append(revenue_list)
+	
+	form_order.fields['product'].choices = revenues_list
+	
+	if request.POST and form_order.is_valid():
+		order = form_order.save(commit = False)
+		order.purchasing_company = company
+		order.save()
+		
+		return redirect('companies_orders_edit', fair.year, company.pk, order.pk)
+	
+	return render(request, 'companies/companies_orders_new.html',
+	{
+		'fair': fair,
+		'company': company,
+		'form_order': form_order,
+		'revenues': revenues_list
+	})
+
+
+@permission_required('companies.base')
+def companies_orders_edit(request, year, pk, order_pk):
+	fair = get_object_or_404(Fair, year = year)
+	company = get_object_or_404(Company, pk = pk)
+	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company)
+	
+	form_order = CompanyEditOrderForm(request.POST or None, instance = order)
+	
+	form_order.fields['name'].widget.attrs['placeholder'] = order.product.name
+	form_order.fields['quantity'].widget.attrs['max'] = order.product.max_quantity
+	form_order.fields['unit_price'].widget.attrs['placeholder'] = order.product.unit_price
+	
+	if request.POST and form_order.is_valid():
+		form_order.save()
+		
+		return redirect('companies_view', fair.year, company.pk)
+	
+	return render(request, 'companies/companies_orders_edit.html',
+	{
+		'fair': fair,
+		'company': company,
+		'form_order': form_order,
+		'product': order.product
+	})
+
+
+@permission_required('companies.base')
+def companies_orders_remove(request, year, pk, order_pk):
+	fair = get_object_or_404(Fair, year = year)
+	company = get_object_or_404(Company, pk = pk)
+	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company)
+	
+	order.delete()
 	
 	return redirect('companies_view', fair.year, company.pk)

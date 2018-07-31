@@ -14,6 +14,9 @@ urlpatterns = [
 	url(r'^(?P<pk>\d+)/edit/groups/(?P<group_pk>\d+)$', views.companies_edit, name = 'companies_edit_groups'),
 	url(r'^(?P<pk>\d+)/edit/responsibles/(?P<responsible_group_pk>\d+)$', views.companies_edit, name = 'companies_edit_responsibles_edit'),
 	url(r'^(?P<pk>\d+)/edit/responsibles/(?P<responsible_group_pk>\d+)/remove$', views.companies_edit_responsibles_remove, name = 'companies_edit_responsibles_remove'),
+	url(r'^(?P<pk>\d+)/orders/new$', views.companies_orders_new, name = 'companies_orders_new'),
+	url(r'^(?P<pk>\d+)/orders/(?P<order_pk>\d+)$', views.companies_orders_edit, name = 'companies_orders_edit'),
+	url(r'^(?P<pk>\d+)/orders/(?P<order_pk>\d+)/remove$', views.companies_orders_remove, name = 'companies_orders_remove'),
 	url(r'^(?P<pk>\d+)/comments/(?P<comment_pk>\d+)/edit$', views.companies_comments_edit, name = 'companies_comments_edit'),
 	url(r'^(?P<pk>\d+)/comments/(?P<comment_pk>\d+)/remove$', views.companies_comments_remove, name = 'companies_comments_remove'),
 ]
