@@ -14,7 +14,8 @@ class SignupContract(models.Model):
 		("COMPLETE", "Complete")
 	]
 	
-	type = models.CharField(max_length = 200, choices = types, null = False, blank = False)
+	type = models.CharField(max_length = 200, choices = types, null = False, blank = False,
+							default=types[0])
 
 	_loaded_values = None
 

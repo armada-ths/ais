@@ -29,10 +29,10 @@ CAS_RESPONSE_CALLBACKS = ('lib.CAS_callback.callback',)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'ais_dev',
-            'USER': 'ais_dev',
-            'PASSWORD': 'ais_dev',
-            'HOST': '127.0.0.1',
+        'NAME': 'ais_dev',
+        'USER': 'ais_dev',
+        'PASSWORD': 'ais_dev',
+        'HOST': '127.0.0.1',
     }
 }
 
