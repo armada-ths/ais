@@ -22,7 +22,7 @@
 				<p>Sign in with your credentials to access THS Armada.</p>
 				<form method="post">
 					{% csrf_token %} {{ form|crispy }}
-					<input type="hidden" name="next" value='/register/home'/>
+					<input type="hidden" name="next" value='/register'/>
 					<button class="btn-signin btn-green">Sign in</button>
 				</form>
 				<a href="{% url 'anmalan:password_reset' %}" class="forgot-password">Forgot password</a>

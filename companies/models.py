@@ -129,7 +129,7 @@ class CompanyAddress(models.Model):
 	type = models.CharField(max_length = 200, choices = types, null = False, blank = False)
 	name = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "Name, if different from the organisation name")
 	street = models.CharField(max_length = 200, null = False, blank = False)
-	zipcode = models.CharField(max_length = 200, null = False, blank = False)
+	zipcode = models.CharField(max_length = 200, null = False, blank = False, verbose_name = 'Zip code')
 	city = models.CharField(max_length = 200, null = False, blank = False)
 	
 	countries = [
@@ -145,7 +145,7 @@ class CompanyAddress(models.Model):
 	country = models.CharField(max_length = 200, choices = countries, default = "SWEDEN", null = False, blank = False)
 	phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	email_address = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "E-mail address")
-	reference = models.CharField(max_length = 200, null = True, blank = True)
+	reference = models.CharField(max_length = 200, null = True, blank = True, verbose_name = 'Your reference')
 	
 	class Meta:
 		verbose_name_plural = "Company addresses"

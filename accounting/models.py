@@ -32,6 +32,7 @@ class Product(models.Model):
 	unit_price = models.PositiveIntegerField(blank = False)
 	revenue = models.ForeignKey(Revenue, blank = False, on_delete = models.CASCADE)
 	category = models.ForeignKey(Category, blank = True, null = True, on_delete = models.CASCADE)
+	description = models.TextField(blank = True)
 	allow_companies = models.BooleanField(default = True)
 	
 	class Meta:

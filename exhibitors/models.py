@@ -45,6 +45,9 @@ class Exhibitor(models.Model):
     about_text = models.TextField(blank=True)
     facts_text = models.TextField(blank=True)
     accept_terms = models.BooleanField(default=False)
+    electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
+    electricity_socket_count = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Number of sockets')
+    electricity_equipment = models.TextField(blank = True, null = True, verbose_name = 'Description of equipment')
 
     # For the logistics team
     comment = models.TextField(blank=True)

@@ -4,11 +4,14 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
-
+from django.core.mail import send_mail
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import get_template
+from django.forms.models import inlineformset_factory
 import requests as r
 import json
 
-from companies.models import Company, CompanyContact
+from companies.models import Company, CompanyContact, CompanyAddress
 from orders.models import Product, Order, ProductType, ElectricityOrder
 from exhibitors.models import Exhibitor, TransportationAlternative
 from fair.models import Fair
@@ -16,30 +19,121 @@ from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
-from .forms import RegistrationForm, ChangePasswordForm
+from .forms import CompleteCompanyDetailsForm, CompleteExhibitionDetailsForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
 from orders.forms import get_order_forms, ElectricityOrderForm
 from exhibitors.forms import ExhibitorProfileForm, TransportationForm
 from matching.forms import ResponseForm
-from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
+from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm, CompanyAddressForm
 from transportation.forms import PickupForm, DeliveryForm
+from accounting.models import Product, Order
 
 
 from .help.methods import get_time_flag
 
-from django.core.mail import send_mail
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import get_template
+
+def choose_company(request):
+	if not request.user.is_authenticated(): return redirect('anmalan:login')
+	
+	company_contacts = CompanyContact.objects.filter(user = request.user).exclude(company = None)
+	
+	if len(company_contacts) == 1: return redirect('anmalan:form', company_contacts.first().pk)
+	
+	return render(request, 'register/choose_company.html',
+	{
+		'company_contacts': company_contacts
+	});
 
 
-def index(request, template_name='register/index.html'):
-    if request.user.is_authenticated():
-        if CompanyContact.objects.filter(user=request.user).first() is not None:
-            return redirect('anmalan:home')
-        else:
-            return redirect('anmalan:logout')
-    timeFlag, [time_end, time_diff] = get_time_flag()
-    fair = Fair.objects.filter(current=True).first()
-    return render(request, template_name, {'fair': fair, 'timeFlag': timeFlag, 'time_end': time_end, 'time_diff': time_diff})
+def form(request, company_contact_pk):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	contact = get_object_or_404(CompanyContact, pk = company_contact_pk)
+	fair = Fair.objects.filter(current = True).first()
+	
+	if timezone.now() < fair.registration_start_date: return render(request, 'register/errors/before_initial.html')
+	
+	# show IR form if IR has opened and CR has not opened (=> we could be between IR and CR)
+	if timezone.now() >= fair.registration_start_date and timezone.now() < fair.complete_registration_start_date: form_initial(request, contact, fair)
+	
+	# we're in or after CR! perhaps the company did not complete their IR?
+	signature = SignupLog.objects.filter(company = contact.company, contract__fair = fair, contract__type = 'INITIAL')
+	if len(signature) == 0: return render(request, 'register/errors/after_initial_no_signature.html')
+	
+	# ...or perhaps they weren't selected to participate in this year's fair?
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = contact.company).first()
+	if exhibitor is None: return render(request, 'register/errors/after_initial_no_exhibitor.html')
+	
+	return form_complete(request, contact, fair, exhibitor)
+
+
+def form_initial(request, company_contact, fair):
+	return render(request, 'register/forms/initial.html',
+	{
+		'fair': fair,
+		'company_contact': company_contact,
+		'is_editable': timezone.now() >= fair.registration_start_date and timezone.now() <= fair.registration_end_date
+	})
+
+
+def form_complete(request, company_contact, fair, exhibitor):
+	contract = SignupContract.objects.filter(fair = fair, type = 'COMPLETE').first()
+	signature = SignupLog.objects.filter(company = company_contact.company, contract__fair = fair, contract__type = 'COMPLETE').first()
+	
+	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company_contact.company)
+	
+	CompanyAddressFormSet = inlineformset_factory(Company, CompanyAddress, form = CompanyAddressForm, min_num = 1, extra = 0, can_delete = False)
+	
+	formset_company_address = CompanyAddressFormSet(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company_contact.company, prefix = 'form_address')
+	
+	form_exhibition_details = CompleteExhibitionDetailsForm(request.POST if request.POST and request.POST.get('save_exhibition_details') else None, instance = exhibitor)
+	
+	form_final_submission = CompleteFinalSubmissionForm(request.POST if request.POST and request.POST.get('save_final_submission') else None)
+	
+	if request.POST:
+		if request.POST.get('save_company_details') and form_company_details.is_valid(company_contact.company) and formset_company_address.is_valid():
+			form_company_details.save()
+			formset_company_address.save()
+		
+		elif request.POST.get('save_exhibition_details') and form_exhibition_details.is_valid():
+			form_exhibition_details.save()
+		
+		elif request.POST.get('save_final_submission') and form_final_submission.is_valid() and signature is None:
+			exhibitor.accept_terms = True
+			exhibitor.save()
+			
+			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company_contact.company)
+	
+	orders = []
+	orders_total = 0
+	
+	for order in Order.objects.filter(product__revenue__fair = fair, purchasing_company = company_contact.company):
+		unit_price = order.product.unit_price if order.unit_price is None else order.unit_price
+		
+		orders_total += order.quantity * unit_price
+		
+		orders.append(
+		{
+			'name': order.product.name if order.name is None else order.name,
+			'description': order.product.description,
+			'quantity': order.quantity,
+			'unit_price': unit_price
+		})
+	
+	return render(request, 'register/forms/complete.html',
+	{
+		'fair': fair,
+		'contract': contract,
+		'company_contact': company_contact,
+		'form_company_details': form_company_details,
+		'formset_company_address': formset_company_address,
+		'form_exhibition_details': form_exhibition_details,
+		'orders': orders,
+		'orders_total': orders_total,
+		'form_final_submission': form_final_submission,
+		'signature': signature,
+		'is_editable': timezone.now() >= fair.complete_registration_start_date and timezone.now() <= fair.complete_registration_close_date
+	})
+
 
 def signup(request, template_name='register/create_user.html'):
 	contact_form = CreateCompanyContactForm(request.POST or None, prefix='contact')
@@ -55,7 +149,7 @@ def signup(request, template_name='register/create_user.html'):
 		contact.save()
 		user = authenticate(username=contact_form.cleaned_data['email_address'], password=user_form.cleaned_data['password1'],)
 		login(request, user)
-		return redirect('anmalan:home')
+		return redirect('anmalan:choose_company')
 	
 	return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
 
@@ -77,7 +171,7 @@ def create_company(request, template_name='register/company_form.html'):
 		contact.save()
 		user = authenticate(username=contact_form.cleaned_data['email_address'], password=user_form.cleaned_data['password1'],)
 		login(request, user)
-		return redirect('anmalan:home')
+		return redirect('anmalan:choose_company')
 	return render(request, template_name, dict(form=form, contact_form=contact_form, user_form=user_form))
 
 
@@ -99,7 +193,7 @@ def change_password(request, template_name='register/change_password.html'):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            return redirect('anmalan:home')
+            return redirect('anmalan:choose_company')
         else:
             return redirect('anmalan:change_password')
     else:
@@ -131,7 +225,7 @@ def preliminary_registration(request, fair, company, contact, contract, exhibito
 		form.save()
 		SignupLog.objects.create(company_contact = contact, contract = contract, company = contact.company)
 
-		return redirect('anmalan:home')
+		return redirect('anmalan:choose_company')
 
 	return ('register/registration.html', dict(registration_open = True, signed_up = signed_up, contact = contact, company=company, exhibitor = exhibitor, fair=fair, form = form, contract_url = contract.contract.url if contract else None ))
 

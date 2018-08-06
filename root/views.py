@@ -16,8 +16,8 @@ def login_redirect(request):
 	if request.user.is_authenticated():
 		contact  = CompanyContact.objects.filter(user = request.user).first()
 
-		if not contact is None:
-			return redirect('anmalan:home')
+		if contact is not None:
+			return redirect('anmalan:choose_company')
 	
 		return redirect('home', 2018)
 

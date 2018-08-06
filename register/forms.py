@@ -5,8 +5,43 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from companies.models import Group, Company
+from exhibitors.models import Exhibitor
 
 from fair.models import Fair
+
+class CompleteCompanyDetailsForm(ModelForm):
+	class Meta:
+		model = Company
+		fields = ['name', 'identity_number']
+
+	def is_valid(self, company):
+		valid = super(CompleteCompanyDetailsForm, self).is_valid()
+		
+		if not valid:
+			return valid
+		
+		identity_number = self.cleaned_data.get('identity_number')
+		
+		if identity_number is not None and Company.objects.filter(identity_number = identity_number).exclude(pk = (company.pk if company else None)).exists():
+			self.add_error('identity_number', 'The identity number is used by another company.')
+			valid = False
+			
+		return valid
+
+class CompleteExhibitionDetailsForm(ModelForm):
+	class Meta:
+		model = Exhibitor
+		fields = ['electricity_total_power', 'electricity_socket_count', 'electricity_equipment']
+
+class CompleteFinalSubmissionForm(Form):
+	authorized = BooleanField(required = True)
+	authorized.label = 'I am authorized to register my company for THS Armada 2018 and sign this contract'
+	
+	contract = BooleanField(required = True)
+	contract.label = 'I have read the contract and, on behalf on my company, I agree to the terms'
+	
+	gdpr = BooleanField(required = True)
+	gdpr.label = 'In this placeholder, we need Lovisa to specify our GDPR policy'
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):

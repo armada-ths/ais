@@ -1,0 +1,10 @@
+{% block content %}
+	<h1>Choose company</h1>
+	<p>Your account is associated with multiple companies. Choose which one you would like to represent.</p>
+	
+	<ul>
+		{% for company_contact in company_contacts %}
+			<li><a href="{% url 'anmalan:form' company_contact.pk %}">{{ company_contact.company.name }}</a></li>
+		{% endfor %}
+	</ul>
+{% endblock %}

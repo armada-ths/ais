@@ -19,3 +19,8 @@ class ProductAdmin(admin.ModelAdmin):
 	ordering = ('revenue', 'category', 'name',)
 	list_display = ('name', 'revenue', 'category',)
 	list_filter = ('revenue', 'category', 'revenue__fair__year',)
+
+@admin.register(Order)
+class ProductAdmin(admin.ModelAdmin):
+	list_display = ('name',)
+	list_filter = ('purchasing_company__name',)
