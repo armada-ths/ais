@@ -175,7 +175,7 @@
 						{{ form_company_address | crispy }}
 					{% endfor %}
 					
-					<input type="submit" name="save_company_details" value="Save changes" />
+					<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save changes" />
 				</form>
 			</div>
 		</div>
@@ -238,7 +238,7 @@
 					
 					{{ form_exhibition_details | crispy }}
 					
-					<input type="submit" name="save_exhibition_details" value="Save changes" />
+					<input type="submit" name="save_exhibition_details" class="btn btn-armada-green" value="Save changes" />
 				</form>
 			</div>
 		</div>
@@ -301,21 +301,21 @@
 				{% if signature %}
 					<p>The contract has been signed.</p>
 					
-					<p><a class="btn btn-default" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+					<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
 					
 					<p><span style="font-weight: 700;">Signed by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
 					<span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
 				{% else %}
 					<p>Please make sure that the information above is correct. In addition, please read the contract below.</p>
 					
-					<p><a class="btn btn-default" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+					<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
 					
 					<form method="post" enctype="multipart/form-data">
 						{% csrf_token %}
 						
 						{{ form_final_submission | crispy }}
 						
-						<input type="submit" name="save_final_submission" value="Sign the contract" />
+						<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract" />
 					</form>
 				{% endif %}
 			</div>
