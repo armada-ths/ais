@@ -6,7 +6,7 @@ from .forms import LoginForm, ResetPasswordForm, SetNewPasswordForm
 app_name = 'anmalan'
 urlpatterns = [
     url(r'^$', views.choose_company, name = 'choose_company'),
-    url(r'^(?P<company_contact_pk>[0-9]+)$', views.form, name = 'form'),
+    url(r'^(?P<company_pk>[0-9]+)$', views.form, name = 'form'),
     url(r'^submitted/$', views.submission_view, name='submitted'),
     url(r'^signup', views.signup, name='create_company_user'),
     url(r'^new_company', views.create_company, name='create_company'),

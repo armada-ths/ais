@@ -13,67 +13,67 @@
 			margin: 15px auto;
 			max-width: 1000px;
 		}
-		
+
 		h3
 		{
 			margin: 30px 0 0;
 			padding: 0;
 		}
-		
+
 		#contact_cards
 		{
 			text-align: center;
 		}
-		
+
 		#contact_cards .contact_card
 		{
 			display: inline-block;
 			text-align: left;
 			padding: 10px;
 		}
-		
+
 		.expandable
 		{
 			border-top: 1px dotted #ffffff;
 			padding: 15px;
 		}
-		
+
 		.expandable h2
 		{
 			margin: 10px 0;
 			padding: 0;
 		}
-		
+
 		.expandable:not(.always_opened) h2
 		{
 			cursor: pointer;
 		}
-		
+
 		.expandable:not(.always_opened) h2:before
 		{
 			content: '↓';
 		}
-		
+
 		.expandable.active:not(.always_opened) h2:before
 		{
 			content: '↑';
 		}
-		
+
 		.expandable:not(.always_opened) .expandable_content
 		{
 			display: none;
 		}
-		
+
 		.expandable_content
 		{
 			overflow: hidden;
 		}
-		
+
 		.order
 		{
 			padding-bottom: 20px;
 		}
-		
+
 		.btn
 		{
 			color: #000000 !important;
@@ -86,14 +86,14 @@
 			{
 				var s = window.location.hash.substring(1).split(/,/g);
 				var expandables = $('.expandable');
-				
+
 				for (var i = 0; i < s.length; i++)
 				{
 					$(expandables[parseInt(s[i])]).addClass('active');
 					$(expandables[parseInt(s[i])]).children('.expandable_content').show();
 				}
 			}
-			
+
 			$('.expandable:not(.always_opened) h2').click(function()
 			{
 				if ($(this).parent().hasClass('active'))
@@ -101,23 +101,23 @@
 					$(this).parent().removeClass('active');
 					$(this).parent().children('.expandable_content').slideUp(50);
 				}
-				
+
 				else
 				{
 					$(this).parent().addClass('active');
 					$(this).parent().children('.expandable_content').slideDown(50);
 				}
-				
+
 				var anchor = '';
 				var expandables = $('.expandable');
-				
+
 				for (var i = 0; i < expandables.length; i++)
 				{
 					if ($(expandables[i]).hasClass('active')) { anchor += ',' + i; }
 				}
-				
+
 				if (anchor.length !== 0) { anchor = anchor.substring(1); }
-				
+
 				document.location = '#' + anchor;
 			});
 		});
@@ -126,34 +126,34 @@
 
 <body>
 	<div id="complete_registration">
-		<h1>Complete registration for {{ company_contact.company.name }}</h1>
-		
+		<h1>Complete registration for {{ company.name }}</h1>
+
 		<p>Make sure the form is completed and sent in before the last date of registration. You can save your progress by pushing the submit button at the bottom of each section. This way, you can return and continue if you do not have time to do it all at once. Your registration is completed when you have pushed the submit button in the last section. When you have submitted the application you will receive a confirmation email as soon as the application has been approved.</p>
 
 		<p>Please note that <span style="font-weight: 700;">the complete registration is binding</span> and you will be liable for all additional services chosen, provided that Armada is be able to supply your organisation with your choices.</p>
-		
+
 		<h4 style="text-align: center;">Registration closes: <span style="font-weight: 700;">{{ fair.complete_registration_close_date }}</span></h4>
-		
+
 		<div id="contact_cards">
 			<div class="contact_card">
 				<span style="font-weight: 700;">Daniel Gröttheim</span><br />
 				Head of Business Relations and Events<br />
 				<a href="mailto:daniel.grottheim@armada.nu">daniel.grottheim@armada.nu</a>
 			</div>
-			
+
 			<div class="contact_card">
 				<span style="font-weight: 700;">Anna Zakipour</span><br />
 				Head of Sales<br />
 				<a href="mailto:anna.zakipour@armada.nu">anna.zakipour@armada.nu</a><br />
 				<a href="tel:+46735820222">+4673-582 02 22</a>
 			</div>
-			
+
 			<div class="contact_card">
 				<span style="font-weight: 700;">Filip Matz</span><br />
 				Head of Sales<br />
 				<a href="mailto:filip.matz@armada.nu">filip.matz@armada.nu</a><br /><a href="tel:+46705371055">+4670-537 10 55</a>
 			</div>
-			
+
 			<div class="contact_card">
 				<span style="font-weight: 700;">Jacob Johnsson</span><br />
 				Head of Sales<br />
@@ -161,99 +161,99 @@
 				<a href="tel:+46761482018">+4676-148 20 18</a>
 			</div>
 		</div>
-		
+
 		<div class="expandable" style="margin-top: 10px; border-top: none;">
 			<h2>Company details</h2>
-			
+
 			<div class="expandable_content">
 				<p>Make sure that there is at least one complete address to which THS Armada can send the final invoice. Provide an e-mail address to get the invoice sent by e-mail.</p>
-				
+
 				<form method="post" enctype="multipart/form-data">
 					{% csrf_token %}
 					{{ form_company_details | crispy }}
-					
+
 					{{ formset_company_address.management_form }}
-					
+
 					{% for form_company_address in formset_company_address %}
 						<h3>Address</h3>
 						{{ form_company_address | crispy }}
 					{% endfor %}
-					
+
 					<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save changes" />
 				</form>
 			</div>
 		</div>
-		
+
 		<div class="expandable">
 			<h2>Exhibition details</h2>
-			
+
 			<div class="expandable_content">
 				<p>Estimate your need of total continuous power requirements during the fair. If possible, please provide the actual power consumption figures from the equipment you plan to bring.</p>
-				
+
 				<h3>Typical power requirements of commonly used devices</h3>
-				
+
 				<table>
 					<thead>
 						<tr>
 							<th>Item</th>
 							<th style="width: 30%; text-align: right; white-space: nowrap;">Power consumption (W)</th>
 					</thead>
-					
+
 					<tbody>
 						<tr>
 							<td>Mobile phone charger</td>
 							<td style="text-align: right;">12</td>
 						</tr>
-						
+
 						<tr>
 							<td>Tablet phone charger</td>
 							<td style="text-align: right;">12</td>
 						</tr>
-						
+
 						<tr>
 							<td>Laptop charger</td>
 							<td style="text-align: right;">80</td>
 						</tr>
-						
+
 						<tr>
 							<td>PC (demos, VR etc.)</td>
 							<td style="text-align: right;">500-1200</td>
 						</tr>
-						
+
 						<tr>
 							<td>TV</td>
 							<td style="text-align: right;">100</td>
 						</tr>
-						
+
 						<tr>
 							<td>Halogen stand spotlight</td>
 							<td style="text-align: right;">200</td>
 						</tr>
-						
+
 						<tr>
 							<td>LED stand spotlight</td>
 							<td style="text-align: right;">20</td>
 						</tr>
 					</tbody>
 				</table>
-				
+
 				<form method="post" enctype="multipart/form-data">
 					{% csrf_token %}
-					
+
 					{{ form_exhibition_details | crispy }}
-					
+
 					<input type="submit" name="save_exhibition_details" class="btn btn-armada-green" value="Save changes" />
 				</form>
 			</div>
 		</div>
-		
+
 		<!--
 		<div class="expandable">
 			<h2>Catalogue and student matching</h2>
-			
+
 			<div class="expandable_content">
 				<p>This information is used in the catalogue on the website and in the app, as well as for letting relevant students match with your company. Only the fields marked with asterisks (*) are required, but we encourage you to fill out as many as possible to increase the likelihood of receiving relevant matches.</p>
-				
+
 				<pre>
 					Ladda upp företagets logotyp (en kvadratisk och en i valfria dimensioner)
 					Välja vilka jobbtyper de erbjuder (sommarjobb, kexjobb, ejxobb, heltidsjobb, deltidsjobb, traineeprogram, utlandspositioner)
@@ -266,61 +266,65 @@
 			</div>
 		</div>
 		-->
-		
+
 		<div class="expandable">
 			<h2>Products</h2>
-			
+
 			<div class="expandable_content">
 				<p>Please contact one of our representatives if you have questions about the products in the table below.</p>
-				
+
 				{% for order in orders %}
 					<div class="order">
 						<h3>{{ order.name }} — {% if order.quantity != 1 %}{{ order.quantity }} × {% endif %}SEK {{ order.unit_price }}</h3>
 						<p>{{ order.description | linebreaks }}</p>
 					</div>
 				{% endfor %}
-				
+
 				<h4>Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total }}</span></h4>
 			</div>
 		</div>
-		
+
 		<div class="expandable">
 			<h2>Sture</h2>
-			
+
 			<div class="expandable_content">
 				<img style="float: right; width: 200px; margin-left: 15px;" src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
-				
+
 				<p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
-				
+
 				<p>Aligned with THS Armada's focus on environmental sustainability, we are very proud to collaborate with Sture, a company that has received a gold rating from Svensk miljöbas thanks to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
-				
+
 				<p>For more information, please visit <a target="_blank" href="http://www.sture.se/">Sture's homepage</a>. To facilitate the ordering process, please send an e-mail to <a href="mailto:mats.svensson@sture.se">mats.svensson@sture.se</a> and state your request.</p>
 			</div>
 		</div>
-		
+
 		<div class="expandable always_opened">
 			<h2>Final submission</h2>
-			
+
 			<div class="expandable_content">
 				{% if signature %}
 					<p>The contract has been signed.</p>
-					
+
 					<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
-					
+
 					<p><span style="font-weight: 700;">Signed by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
 					<span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
 				{% else %}
 					<p>Please make sure that the information above is correct. In addition, please read the contract below.</p>
-					
+
 					<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
-					
-					<form method="post" enctype="multipart/form-data">
-						{% csrf_token %}
-						
-						{{ form_final_submission | crispy }}
-						
-						<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract" />
-					</form>
+
+					{% if company_contact %}
+						<form method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+
+							{{ form_final_submission | crispy }}
+
+							<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract" />
+						</form>
+					{% else %}
+						<p style="font-style: italic;">Since you are logged in as an Armada representative, you cannot sign the contract.</p>
+					{% endif %}
 				{% endif %}
 			</div>
 		</div>
