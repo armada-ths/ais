@@ -61,7 +61,7 @@ def form(request, company_pk):
 	if timezone.now() < fair.registration_start_date: return render(request, 'register/errors/before_initial.html')
 
 	# show IR form if IR has opened and CR has not opened (=> we could be between IR and CR)
-	if timezone.now() >= fair.registration_start_date and timezone.now() < fair.complete_registration_start_date: form_initial(request, company, company_contact, fair)
+	if timezone.now() >= fair.registration_start_date and timezone.now() < fair.complete_registration_start_date: return form_initial(request, company, company_contact, fair)
 
 	# we're in or after CR! perhaps the company did not complete their IR?
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL')
