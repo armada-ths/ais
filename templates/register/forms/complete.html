@@ -76,6 +76,8 @@
 			background: #353535;
 			padding: 20px;
 			margin-bottom: 10px;
+			overflow: hidden;
+			padding-bottom: 10px;
 		}
 		
 		.product h3
@@ -88,6 +90,7 @@
 		{
 			padding: 0;
 			overflow: hidden;
+			float: right;
 		}
 		
 		.product form h3
@@ -391,9 +394,6 @@
 					
 					{% for product in registration_section.products %}
 						<div class="product">
-							<h3>{{ product.name }}</h3>
-							<p>{{ product.description | linebreaks }}</p>
-							
 							<form method="post" enctype="multipart/form-data">
 								{% csrf_token %}
 								
@@ -407,8 +407,12 @@
 									{{ product.form }}
 								{% endif %}
 								
-								<h3>SEK {{ product.unit_price }}</h3>
+								<h3>SEK {{ product.unit_price }}{% if product.max_quantity != 1 %} <span style="margin-left: 10px;">×</span>{% endif %}</h3>
 							</form>
+							
+							{% if product.category %}<h4>{{ product.category }}</h4>{% endif %}
+							<h3>{{ product.name }}</h3>
+							<p>{{ product.description | linebreaks }}</p>
 						</div>
 					{% endfor %}
 				</div>

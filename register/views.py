@@ -115,30 +115,37 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 				form_product = CompleteProductBooleanForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id), initial = {'checkbox': True if quantity_initial == 1 else False})
 			
 			else:
-				form_product = CompleteProductQuantityForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id), initial = {'quantity': quantity_initial})
+				form_product = CompleteProductQuantityForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id))
 				form_product.fields['quantity'].choices = [(i, i) for i in range(0, (product_raw.max_quantity + 1) if product_raw.max_quantity is not None else 21)]
+				form_product.fields['quantity'].initial = quantity_initial
 			
 			if request.POST and request.POST.get('save_product_' + str(product_raw.id)) and form_product.is_valid():
-				quantity = (1 if form_product.cleaned_data['checkbox'] else 0) if product_raw.max_quantity == 1 else form_product.cleaned_data['quantity']
-				
-				print(str(product_raw) + ':' + str(quantity))
+				quantity = (1 if form_product.cleaned_data['checkbox'] else 0) if product_raw.max_quantity == 1 else int(form_product.cleaned_data['quantity'])
 				
 				if quantity == 0:
 					for order in Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None):
-						order.remove()
+						order.delete()
 				
 				else:
-					order = Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None).first()
+					order = Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None)
 					
-					if order: order.quantity += quantity
-					else: order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
+					if len(order) == 1:
+						order = order.first()
+						order.quantity = quantity
+						order.save()
 					
+					elif len(order) > 1:
+						for o in order:
+							o.delete()
+					
+					order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
 					order.save()
 			
 			product = {
 				'id': product_raw.id,
 				'name': product_raw.name,
 				'description': product_raw.description,
+				'category': product_raw.category.name if product_raw.category else None,
 				'unit_price': product_raw.unit_price,
 				'max_quantity': product_raw.max_quantity,
 				'form': form_product

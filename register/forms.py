@@ -126,7 +126,7 @@ class CompleteProductQuantityForm(Form):
 
 
 class CompleteProductBooleanForm(Form):
-	checkbox = BooleanField(label = '')
+	checkbox = BooleanField(label = '', required = False)
 
 
 class CompleteFinalSubmissionForm(Form):
