@@ -1,4 +1,4 @@
-{% load staticfiles %}{% load crispy_forms_tags %}<!DOCTYPE html>
+{% load staticfiles %}{% load crispy_forms_tags %}{% load humanize %}<!DOCTYPE html>
 
 <html lang="en">
 
@@ -408,7 +408,7 @@
 									{{ product.form }}
 								{% endif %}
 								
-								<h3>SEK {{ product.unit_price }}{% if product.max_quantity != 1 %} <span style="margin-left: 10px;">×</span>{% endif %}</h3>
+								<h3>SEK {{ product.unit_price | intcomma }}{% if product.max_quantity != 1 %} <span style="margin-left: 10px;">×</span>{% endif %}</h3>
 							</form>
 							
 							{% if product.category %}<h4>{{ product.category }}</h4>{% endif %}
@@ -436,17 +436,17 @@
 					{% for order in orders %}
 						<tr>
 							<td>
-								{{ order.name }}
+								{% if order.category %}{{ order.category }} – {% endif %}{{ order.name }}
 								{% if order.description %}<div style="margin-left: 15px;">{{ order.description | linebreaks }}</div>{% endif %}
 							</td>
 							<td style="text-align: right;">{{ order.quantity }}</td>
-							<td style="text-align: right;">{{ order.unit_price }}</td>
+							<td style="text-align: right;">{{ order.unit_price | intcomma }}</td>
 						</tr>
 					{% endfor %}
 				</tbody>
 			</table>
 			
-			<h4 style="text-align: right;">Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total }}</span></h4>
+			<h4 style="text-align: right;">Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total | intcomma }}</span></h4>
 			
 			<div class="expandable_content">
 				{% if signature %}
