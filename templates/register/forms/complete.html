@@ -181,6 +181,7 @@
 		table tr td
 		{
 			padding: 5px;
+			vertical-align: top;
 		}
 		
 		table tr
@@ -390,7 +391,7 @@
 				<h2>{{ registration_section.name }}</h2>
 				
 				<div class="expandable_content">
-					{% if registration_section.description %}<p>{{ registration_section.description }}</p>{% endif %}
+					{% if registration_section.description %}<p>{{ registration_section.description | linebreaks }}</p>{% endif %}
 					
 					{% for product in registration_section.products %}
 						<div class="product">
@@ -426,15 +427,18 @@
 				<thead>
 					<tr>
 						<th>Product</th>
-						<th style="width: 25%; text-align: right; white-space: nowrap;">Quantity</th>
-						<th style="width: 25%; text-align: right; white-space: nowrap;">Unit price (SEK)</th>
+						<th style="width: 15%; text-align: right; white-space: nowrap;">Quantity</th>
+						<th style="width: 20%; text-align: right; white-space: nowrap;">Unit price (SEK)</th>
 					</tr>
 				</thead>
 				
 				<tbody>
 					{% for order in orders %}
 						<tr>
-							<td>{{ order.name }}</td>
+							<td>
+								{{ order.name }}
+								{% if order.description %}<div style="margin-left: 15px;">{{ order.description | linebreaks }}</div>{% endif %}
+							</td>
 							<td style="text-align: right;">{{ order.quantity }}</td>
 							<td style="text-align: right;">{{ order.unit_price }}</td>
 						</tr>
