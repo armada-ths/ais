@@ -184,6 +184,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		
 		orders.append(
 		{
+			'category': order.product.category.name if order.product.category else None,
 			'name': order.product.name if order.name is None else order.name,
 			'description': order.product.description if order.product.registration_section is None else None,
 			'quantity': order.quantity,
