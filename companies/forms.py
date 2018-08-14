@@ -125,17 +125,13 @@ class CompanyCustomerCommentForm(ModelForm):
 
 
 def fix_phone_number(n):
-	if n is None:
-		return None
+	if n is None: return None
 	
 	n = n.replace(' ', '')
 	n = n.replace('-', '')
 	
-	if n.startswith("00"):
-		n = "+" + n[2:]
-	
-	if n.startswith("0"):
-		n = "+46" + n[1:]
+	if n.startswith("00"): n = "+" + n[2:]
+	if n.startswith("0"): n = "+46" + n[1:]
 	
 	return n
 

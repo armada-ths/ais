@@ -11,7 +11,7 @@ from django.forms.models import inlineformset_factory
 import requests as r
 import json
 
-from companies.models import Company, CompanyContact, CompanyAddress
+from companies.models import Company, CompanyContact
 from orders.models import Product, Order, ProductType, ElectricityOrder
 from exhibitors.models import Exhibitor, TransportationAlternative
 from fair.models import Fair
@@ -19,11 +19,11 @@ from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
-from .forms import CompleteCompanyDetailsForm, CompleteExhibitionDetailsForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
 from orders.forms import get_order_forms, ElectricityOrderForm
 from exhibitors.forms import ExhibitorProfileForm, TransportationForm
 from matching.forms import ResponseForm
-from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm, CompanyAddressForm
+from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from transportation.forms import PickupForm, DeliveryForm
 from accounting.models import Product, Order
 
@@ -81,21 +81,24 @@ def form_complete(request, company_contact, fair, exhibitor):
 	
 	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company_contact.company)
 	
-	CompanyAddressFormSet = inlineformset_factory(Company, CompanyAddress, form = CompanyAddressForm, min_num = 1, extra = 0, can_delete = False)
+	form_logistics_details = CompleteLogisticsDetailsForm(request.POST if request.POST and request.POST.get('save_logistics_details') else None, instance = exhibitor)
 	
-	formset_company_address = CompanyAddressFormSet(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company_contact.company, prefix = 'form_address')
-	
-	form_exhibition_details = CompleteExhibitionDetailsForm(request.POST if request.POST and request.POST.get('save_exhibition_details') else None, instance = exhibitor)
+	form_catalogue_details = CompleteCatalogueDetailsForm(request.POST if request.POST.get('save_catalogue_details') else None, request.FILES if request.POST.get('save_catalogue_details') else None, instance = exhibitor)
 	
 	form_final_submission = CompleteFinalSubmissionForm(request.POST if request.POST and request.POST.get('save_final_submission') else None)
 	
 	if request.POST:
-		if request.POST.get('save_company_details') and form_company_details.is_valid(company_contact.company) and formset_company_address.is_valid():
+		if request.POST.get('save_company_details') and form_company_details.is_valid(company_contact.company):
 			form_company_details.save()
-			formset_company_address.save()
+			form_company_details = CompleteCompanyDetailsForm(instance = company_contact.company)
 		
-		elif request.POST.get('save_exhibition_details') and form_exhibition_details.is_valid():
-			form_exhibition_details.save()
+		elif request.POST.get('save_logistics_details') and form_logistics_details.is_valid():
+			form_logistics_details.save()
+			form_logistics_details = CompleteLogisticsDetailsForm(instance = exhibitor)
+		
+		elif request.POST.get('save_catalogue_details') and form_catalogue_details.is_valid():
+			form_catalogue_details.save()
+			form_catalogue_details = CompleteCatalogueDetailsForm(instance = exhibitor)
 		
 		elif request.POST.get('save_final_submission') and form_final_submission.is_valid() and signature is None:
 			exhibitor.accept_terms = True
@@ -125,8 +128,8 @@ def form_complete(request, company_contact, fair, exhibitor):
 		'contract': contract,
 		'company_contact': company_contact,
 		'form_company_details': form_company_details,
-		'formset_company_address': formset_company_address,
-		'form_exhibition_details': form_exhibition_details,
+		'form_logistics_details': form_logistics_details,
+		'form_catalogue_details': form_catalogue_details,
 		'orders': orders,
 		'orders_total': orders_total,
 		'form_final_submission': form_final_submission,

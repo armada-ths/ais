@@ -1,24 +1,40 @@
+import re
+
 from django.forms import TextInput, Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import mark_safe, format_html
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
+
 from companies.models import Group, Company
 from exhibitors.models import Exhibitor
-
 from fair.models import Fair
+
+def fix_phone_number(n):
+	if n is None: return None
+	
+	n = n.replace(' ', '')
+	n = n.replace('-', '')
+	
+	if n.startswith("00"): n = "+" + n[2:]
+	if n.startswith("0"): n = "+46" + n[1:]
+	
+	return n
 
 class CompleteCompanyDetailsForm(ModelForm):
 	class Meta:
 		model = Company
-		fields = ['name', 'identity_number']
+		fields = ['name', 'identity_number', 'invoice_co', 'invoice_street', 'invoice_zipcode', 'invoice_city', 'invoice_country', 'invoice_reference']
+		
+		help_texts = {
+			'invoice_reference': 'Name of your reference, your Purchase Order Number or equivalent. Optional, but ask your accounting department if you\'re unsure.'
+		}
 
 	def is_valid(self, company):
 		valid = super(CompleteCompanyDetailsForm, self).is_valid()
 		
-		if not valid:
-			return valid
+		if not valid: return valid
 		
 		identity_number = self.cleaned_data.get('identity_number')
 		
@@ -28,10 +44,77 @@ class CompleteCompanyDetailsForm(ModelForm):
 			
 		return valid
 
-class CompleteExhibitionDetailsForm(ModelForm):
+class CompleteLogisticsDetailsForm(ModelForm):
 	class Meta:
 		model = Exhibitor
-		fields = ['electricity_total_power', 'electricity_socket_count', 'electricity_equipment']
+		fields = ['booth_height', 'electricity_total_power', 'electricity_socket_count', 'electricity_equipment', 'placement_wish', 'placement_comment']
+		
+		widgets = {
+			'electricity_equipment': forms.Textarea(attrs = {'rows': 5}),
+			'placement_wish': forms.RadioSelect,
+			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your with of placement, but we cannot give any guarantees.'})
+		}
+
+class CompleteCatalogueDetailsForm(ModelForm):
+	class Meta:
+		model = Exhibitor
+		fields = ['catalogue_about', 'catalogue_purpose', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_benefits', 'catalogue_average_age', 'catalogue_founded']
+		
+		help_texts = {
+			'catalogue_logo_squared': 'Allowed formats are JPEG, PNG and SVG.',
+			'catalogue_logo_freesize': 'Allowed formats are JPEG, PNG and SVG.',
+			'catalogue_average_age': 'Leave the field empty if you\'re unsure.'
+		}
+		
+		labels = {
+			'catalogue_about': 'Text about your organisation',
+			'catalogue_purpose': 'Your organisation\'s purpose',
+			'catalogue_logo_squared': 'Upload your company\'s squared logotype.',
+			'catalogue_logo_freesize': 'Upload your company\'s logotype in any dimensions, in addition to the squared logotype.',
+			'catalogue_industries': 'Which industries does your company work in?',
+			'catalogue_values': 'Select up to three values that apply to the company.',
+			'catalogue_employments': 'What kind of employments does your company offer?',
+			'catalogue_locations': 'Where does your company operate?',
+			'catalogue_benefits': 'Which benefits does your company offers its employees?',
+			'catalogue_founded': 'Which year was the company founded?'
+		}
+		
+		widgets = {
+			'catalogue_about': forms.Textarea(attrs = {'rows': 3, 'placeholder': 'Concrete information about what your organisation does.'}),
+			'catalogue_purpose': forms.Textarea(attrs = {'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
+			'catalogue_industries': forms.CheckboxSelectMultiple,
+			'catalogue_values': forms.CheckboxSelectMultiple,
+			'catalogue_employments': forms.CheckboxSelectMultiple,
+			'catalogue_locations': forms.CheckboxSelectMultiple,
+			'catalogue_benefits': forms.CheckboxSelectMultiple
+		}
+	
+	def clean(self):
+		super(CompleteCatalogueDetailsForm, self).clean()
+		
+		if 'catalogue_contact_email_address' in self.cleaned_data and self.cleaned_data['catalogue_contact_email_address'] is not None:
+			self.cleaned_data['catalogue_contact_email_address'] = self.cleaned_data['catalogue_contact_email_address'].lower()
+		
+		if 'catalogue_contact_phone_number' in self.cleaned_data:
+			self.cleaned_data['catalogue_contact_phone_number'] = fix_phone_number(self.cleaned_data['catalogue_contact_phone_number'])
+		
+		return self.cleaned_data
+
+	def is_valid(self):
+		valid = super(CompleteCatalogueDetailsForm, self).is_valid()
+		
+		if not valid: return valid
+		
+		catalogue_contact_phone_number = self.cleaned_data.get('catalogue_contact_phone_number')
+		catalogue_logo_squared = self.cleaned_data.get('catalogue_logo_squared')
+		
+		if catalogue_contact_phone_number is not None and not re.match(r'\+[0-9]+$', catalogue_contact_phone_number):
+			self.add_error('catalogue_contact_phone_number', 'Must only contain numbers and a leading plus.')
+			valid = False
+		
+		if catalogue_logo_squared is not None: print(catalogue_logo_squared)
+		
+		return valid
 
 class CompleteFinalSubmissionForm(Form):
 	authorized = BooleanField(required = True)

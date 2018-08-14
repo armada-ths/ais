@@ -76,12 +76,29 @@ class CompanyType(models.Model):
 
 # Represents a company, independent of Fair (see CompanyCustomer below)
 class Company(models.Model):
-	name = models.CharField(max_length = 100, verbose_name = "Organisation name", unique = True, null = False, blank = False)
+	name = models.CharField(max_length = 100, verbose_name = 'Organisation name', unique = True, null = False, blank = False)
 	identity_number = models.CharField(max_length = 100, null = True, blank = True)
 	website = models.CharField(max_length = 300, null = True, blank = True)
 	phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	type = models.ForeignKey(CompanyType, null = False, blank = False, on_delete = models.CASCADE)
 	groups = models.ManyToManyField(Group)
+	invoice_co = models.CharField(max_length = 300, null = True, blank = True, verbose_name = 'Invoice c/o')
+	invoice_street = models.CharField(max_length = 300, null = True, blank = True)
+	invoice_city = models.CharField(max_length = 300, null = True, blank = True)
+	invoice_zipcode = models.CharField(max_length = 300, null = True, blank = True)
+	
+	countries = [
+		('DENMARK', 'Denmark'),
+		('FINLAND', 'Finland'),
+		('FRANCE', 'France'),
+		('GERMANY', 'Germany'),
+		('NORWAY', 'Norway'),
+		('SWEDEN', 'Sweden'),
+		('UNITED_KINGDOM', 'United Kingdom'),
+	]
+	
+	invoice_country = models.CharField(max_length = 200, choices = countries, default = 'SWEDEN', null = False, blank = False)
+	invoice_reference = models.CharField(max_length = 300, null = True, blank = True)
 	modified_by = None
 	
 	@property

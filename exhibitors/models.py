@@ -31,81 +31,115 @@ class TransportationAlternative(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
+class CatalogueIndustry(models.Model):
+	industry = models.CharField(blank = False, max_length = 255)
+	def __str__(self): return self.industry
+
+
+class CatalogueValue(models.Model):
+	value = models.CharField(blank = False, max_length = 255)
+	def __str__(self): return self.value
+
+
+class CatalogueEmployment(models.Model):
+	employment = models.CharField(blank = False, max_length = 255)
+	def __str__(self): return self.employment
+
+
+class CatalogueLocation(models.Model):
+	location = models.CharField(blank = False, max_length = 255)
+	def __str__(self): return self.location
+
+
+class CatalogueBenefit(models.Model):
+	benefit = models.CharField(blank = False, max_length = 255)
+	def __str__(self): return self.benefit
+
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
-    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
-    fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
-    hosts = models.ManyToManyField(User, blank=True)
-    contact = models.ForeignKey('companies.CompanyContact', null=True, blank=True, on_delete=models.CASCADE)
-    location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.CASCADE)
-    booth_number = models.IntegerField(blank=True, null=True)
-    fair_location = models.OneToOneField('locations.Location', blank=True, null=True, on_delete=models.CASCADE)
-    about_text = models.TextField(blank=True)
-    facts_text = models.TextField(blank=True)
-    accept_terms = models.BooleanField(default=False)
-    electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
-    electricity_socket_count = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Number of sockets')
-    electricity_equipment = models.TextField(blank = True, null = True, verbose_name = 'Description of equipment')
-
-    # For the logistics team
-    comment = models.TextField(blank=True)
-
-    statuses = [
-        ('accepted', 'Accepted'),
-        ('registered', 'Registered'),
-        ('complete_registration', 'Completed Registration'),
-        ('complete_registration_submit', 'CR - Submitted'),
-        ('complete_registration_start', 'CR - In Progress'),
-        ('complete_registration_terms', 'CR - Accepted Terms'),
-        ('contacted_by_host', 'Contacted by host'),
-        ('confirmed', 'Confirmed'),
-        ('checked_in', 'Checked in'),
-        ('checked_out', 'Checked out'),
-        ('withdrawn', 'Withdrawn'),
-    ]
-
-    status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
-
-    logo = models.ImageField(
-        upload_to=UploadToDirUUID('exhibitors', 'logo_original'),
-        blank=True,
-    )
-    location_at_fair = models.ImageField(
-        upload_to=UploadToDirUUID('exhibitors', 'location_at_fair'),
-        blank=True
-    )
-
-    inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
-            null=True, blank=True, related_name='inbound_transportation',
-            verbose_name='Transportation to the fair')
-    outbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, 
-            null=True, blank=True, related_name='outbound_transportation',
-            verbose_name='Transportation from the fair')
-    pickup_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
-            null=True, blank=True, related_name='pickup_order')
-    delivery_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL,
-            null=True, blank=True, related_name='delivery_order')
-
-    tags = models.ManyToManyField('fair.Tag', blank=True)
-
-    job_types = models.ManyToManyField(JobType, blank=True)
-
-    def total_cost(self):
-        return sum([order.price() for order in self.order_set.all()])
-
-    def superiors(self):
-        accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in
-                                 self.hosts.all()]
-        return [application.superior_user for application in accepted_applications if application and application.superior_user]
-
-    def __str__(self):
-        return '%s at %s' % (self.company.name, self.fair.name)
-
-
-    class Meta:
-        permissions = (('base', 'Exhibitors'),)
+	company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
+	fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
+	hosts = models.ManyToManyField(User, blank=True)
+	contact = models.ForeignKey('companies.CompanyContact', null=True, blank=True, on_delete=models.CASCADE)
+	location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.CASCADE)
+	booth_number = models.IntegerField(blank=True, null=True)
+	fair_location = models.OneToOneField('locations.Location', blank=True, null=True, on_delete=models.CASCADE)
+	about_text = models.TextField(blank=True)
+	facts_text = models.TextField(blank=True)
+	accept_terms = models.BooleanField(default=False)
+	booth_height = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Height of the booth (cm)')
+	electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
+	electricity_socket_count = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Number of sockets')
+	electricity_equipment = models.TextField(blank = True, null = True, verbose_name = 'Description of equipment')
+	catalogue_about = models.TextField(blank = True, null = True)
+	catalogue_purpose = models.TextField(blank = True, null = True)
+	catalogue_logo_squared = models.ImageField(upload_to = UploadToDirUUID('exhibitors', 'catalogue_logo_squared'), blank = True)
+	catalogue_logo_freesize = models.ImageField(upload_to = UploadToDirUUID('exhibitors', 'catalogue_logo_freesize'), blank = True)
+	catalogue_contact_name = models.CharField(blank = True, null = True, max_length = 255, verbose_name = 'Contact person\'s name')
+	catalogue_contact_email_address = models.CharField(blank = True, null = True, max_length = 255, verbose_name = 'Contact person\'s e-mail address')
+	catalogue_contact_phone_number = models.CharField(blank = True, null = True, max_length = 255, verbose_name = 'Contact person\'s phone number')
+	catalogue_industries = models.ManyToManyField(CatalogueIndustry, blank = True)
+	catalogue_values = models.ManyToManyField(CatalogueValue, blank = True)
+	catalogue_employments = models.ManyToManyField(CatalogueEmployment, blank = True)
+	catalogue_locations = models.ManyToManyField(CatalogueLocation, blank = True)
+	catalogue_benefits = models.ManyToManyField(CatalogueBenefit, blank = True)
+	catalogue_average_age = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Average age of employees')
+	catalogue_founded = models.PositiveIntegerField(blank = True, null = True)
+	
+	placement_wishes = [
+		('MIXED', 'Mixed with companies from other industries'),
+		('SIMILAR', 'Next to similar companies'),
+	]
+	
+	placement_wish = models.CharField(choices = placement_wishes, blank = True, null = True, max_length = 255)
+	placement_comment = models.TextField(blank = True, null = True, verbose_name = 'Additional wishes regarding placement at the fair')
+	
+	# For the logistics team
+	comment = models.TextField(blank=True)
+	
+	statuses = [
+		('accepted', 'Accepted'),
+		('registered', 'Registered'),
+		('complete_registration', 'Completed Registration'),
+		('complete_registration_submit', 'CR - Submitted'),
+		('complete_registration_start', 'CR - In Progress'),
+		('complete_registration_terms', 'CR - Accepted Terms'),
+		('contacted_by_host', 'Contacted by host'),
+		('confirmed', 'Confirmed'),
+		('checked_in', 'Checked in'),
+		('checked_out', 'Checked out'),
+		('withdrawn', 'Withdrawn'),
+	]
+	
+	status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
+	logo = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'logo_original'), blank=True)
+	location_at_fair = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'location_at_fair'), blank=True)
+	
+	inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, null=True, blank=True, related_name='inbound_transportation', verbose_name='Transportation to the fair')
+	outbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, null=True, blank=True, related_name='outbound_transportation', verbose_name='Transportation from the fair')
+	pickup_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL, null=True, blank=True, related_name='pickup_order')
+	delivery_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL, null=True, blank=True, related_name='delivery_order')
+	
+	tags = models.ManyToManyField('fair.Tag', blank=True)
+	
+	job_types = models.ManyToManyField(JobType, blank=True)
+	
+	def total_cost(self):
+		return sum([order.price() for order in self.order_set.all()])
+	
+	def superiors(self):
+		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in
+									self.hosts.all()]
+		return [application.superior_user for application in accepted_applications if application and application.superior_user]
+	
+	def __str__(self):
+		return '%s at %s' % (self.company.name, self.fair.name)
+	
+	class Meta:
+		permissions = (('base', 'Exhibitors'),)
 
 
 class ExhibitorView(models.Model):
