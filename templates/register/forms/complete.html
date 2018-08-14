@@ -29,7 +29,9 @@
 		{
 			display: inline-block;
 			text-align: left;
-			padding: 10px 30px;
+			padding: 15px;
+			margin: 7px 5px;
+			background: #353535;
 		}
 		
 		.expandable
@@ -69,9 +71,88 @@
 			overflow: hidden;
 		}
 		
-		.order
+		.product
 		{
-			padding-bottom: 20px;
+			background: #353535;
+			padding: 20px;
+			margin-bottom: 10px;
+		}
+		
+		.product h3
+		{
+			margin: 0;
+			padding: 0;
+		}
+		
+		.product form
+		{
+			padding: 0;
+			overflow: hidden;
+		}
+		
+		.product form h3
+		{
+			display: inline-block;
+			float: right;
+			margin-top: 3px;
+			margin-right: 20px;
+		}
+		
+		.product form label
+		{
+			display: inline-block;
+			float: right;
+		}
+		
+		.product form input[type='checkbox']
+		{
+			position: absolute; 
+			overflow: hidden;
+			clip: rect(0 0 0 0); 
+			height: 1px; 
+			width: 1px; 
+			margin: -1px; 
+			padding: 0;
+			border: 0;
+		}
+		
+		.product form input[type='checkbox'] + label
+		{
+			padding-left: 23px;
+			display: inline-block;
+			line-height: 17px;
+			margin-top: 8px;
+			background-repeat: no-repeat;
+			background-position: 0 0;
+			font-size: 15px;
+			vertical-align: middle;
+			cursor: pointer;
+			float: right;
+		}
+		
+		.product form input[type='checkbox']:checked + label
+		{
+			background-position: 0 -17px;
+		}
+		
+		.product form input[type='checkbox'] + label
+		{
+			background-image: url('//static.kottnet.net/images//checkbox.png');
+		}
+		
+		.product form input, .product form select
+		{
+			float: right;
+		}
+		
+		.product form input[type='submit']
+		{
+			margin-left: 20px;
+		}
+		
+		.product form select
+		{
+			margin: 0;
 		}
 		
 		.btn
@@ -83,9 +164,10 @@
 		{
 			width: 100%;
 			border-collapse: collapse;
-			border: none;
+			border: 1px solid #444444;
 			box-sizing: border-box;
 			margin-bottom: 20px;
+			background: #353535;
 		}
 		
 		table tr th
@@ -100,7 +182,7 @@
 		
 		table tr
 		{
-			border-bottom: 1px dotted #aaaaaa;
+			border-bottom: 1px dotted #888888;
 		}
 	</style>
 	<script>
@@ -300,25 +382,41 @@
 			</div>
 		</div>
 		
-		<div class="expandable">
-			<h2>Products</h2>
-			
-			<div class="expandable_content">
-				<p>Please contact one of our representatives if you have questions about the products in the table below.</p>
+		{% for registration_section in registration_sections %}
+			<div class="expandable">
+				<h2>{{ registration_section.name }}</h2>
 				
-				{% for order in orders %}
-					<div class="order">
-						<h3>{{ order.name }} — {% if order.quantity != 1 %}{{ order.quantity }} × {% endif %}SEK {{ order.unit_price }}</h3>
-						<p>{{ order.description | linebreaks }}</p>
-					</div>
-				{% endfor %}
-				
-				<h4>Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total }}</span></h4>
+				<div class="expandable_content">
+					{% if registration_section.description %}<p>{{ registration_section.description }}</p>{% endif %}
+					
+					{% for product in registration_section.products %}
+						<div class="product">
+							<h3>{{ product.name }}</h3>
+							<p>{{ product.description | linebreaks }}</p>
+							
+							<form method="post" enctype="multipart/form-data">
+								{% csrf_token %}
+								
+								<input type="submit" name="save_product_{{ product.id }}" class="btn btn-armada-green" value="Save" />
+								
+								{% if product.max_quantity == 1 %}
+									{{ product.form.checkbox.errors }}
+									{{ product.form.checkbox }}
+									<label for="{{ product.form.checkbox.id_for_label }}">Yes, please</label>
+								{% else %}
+									{{ product.form }}
+								{% endif %}
+								
+								<h3>SEK {{ product.unit_price }}</h3>
+							</form>
+						</div>
+					{% endfor %}
+				</div>
 			</div>
-		</div>
+		{% endfor %}
 		
 		<div class="expandable always_opened">
-			<h2>Final submission</h2>
+			<h2 style="color: #00d791;">Final submission</h2>
 			
 			<table>
 				<thead>

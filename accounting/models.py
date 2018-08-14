@@ -27,6 +27,7 @@ class Category(models.Model):
 
 class RegistrationSection(models.Model):
 	name = models.CharField(max_length = 100, blank = False)
+	description = models.TextField(blank = True, null = True)
 	
 	class Meta:
 		verbose_name_plural = 'Registration sections'

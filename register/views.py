@@ -19,13 +19,13 @@ from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
-from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
 from orders.forms import get_order_forms, ElectricityOrderForm
 from exhibitors.forms import ExhibitorProfileForm, TransportationForm
 from matching.forms import ResponseForm
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from transportation.forms import PickupForm, DeliveryForm
-from accounting.models import Product, Order
+from accounting.models import Product, Order, RegistrationSection
 
 
 from .help.methods import get_time_flag
@@ -89,12 +89,64 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	signature = SignupLog.objects.filter(company = company_contact.company, contract__fair = fair, contract__type = 'COMPLETE').first()
 	
 	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company_contact.company)
-	
 	form_logistics_details = CompleteLogisticsDetailsForm(request.POST if request.POST and request.POST.get('save_logistics_details') else None, instance = exhibitor)
-	
 	form_catalogue_details = CompleteCatalogueDetailsForm(request.POST if request.POST.get('save_catalogue_details') else None, request.FILES if request.POST.get('save_catalogue_details') else None, instance = exhibitor)
-	
 	form_final_submission = CompleteFinalSubmissionForm(request.POST if request.POST and request.POST.get('save_final_submission') else None)
+	
+	orders = Order.objects.filter(purchasing_company = company, unit_price = None, name = None)
+	
+	registration_sections = []
+	
+	for registration_section_raw in RegistrationSection.objects.all():
+		registration_section = {
+			'name': registration_section_raw.name,
+			'description': registration_section_raw.description,
+			'products': []
+		}
+		
+		for product_raw in Product.objects.select_related('category').filter(revenue__fair = fair, registration_section = registration_section_raw):
+			quantity_initial = 0
+			
+			for order in orders:
+				if order.product == product_raw:
+					quantity_initial += order.quantity
+			
+			if product_raw.max_quantity == 1:
+				form_product = CompleteProductBooleanForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id), initial = {'checkbox': True if quantity_initial == 1 else False})
+			
+			else:
+				form_product = CompleteProductQuantityForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id), initial = {'quantity': quantity_initial})
+				form_product.fields['quantity'].choices = [(i, i) for i in range(0, (product_raw.max_quantity + 1) if product_raw.max_quantity is not None else 21)]
+			
+			if request.POST and request.POST.get('save_product_' + str(product_raw.id)) and form_product.is_valid():
+				quantity = (1 if form_product.cleaned_data['checkbox'] else 0) if product_raw.max_quantity == 1 else form_product.cleaned_data['quantity']
+				
+				print(str(product_raw) + ':' + str(quantity))
+				
+				if quantity == 0:
+					for order in Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None):
+						order.remove()
+				
+				else:
+					order = Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None).first()
+					
+					if order: order.quantity += quantity
+					else: order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
+					
+					order.save()
+			
+			product = {
+				'id': product_raw.id,
+				'name': product_raw.name,
+				'description': product_raw.description,
+				'unit_price': product_raw.unit_price,
+				'max_quantity': product_raw.max_quantity,
+				'form': form_product
+			}
+			
+			registration_section['products'].append(product)
+		
+		registration_sections.append(registration_section)
 	
 	if request.POST:
 		if request.POST.get('save_company_details') and form_company_details.is_valid(company_contact.company):
@@ -140,6 +192,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		'form_company_details': form_company_details,
 		'form_logistics_details': form_logistics_details,
 		'form_catalogue_details': form_catalogue_details,
+		'registration_sections': registration_sections,
 		'orders': orders,
 		'orders_total': orders_total,
 		'form_final_submission': form_final_submission,

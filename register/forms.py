@@ -11,6 +11,7 @@ from companies.models import Group, Company
 from exhibitors.models import Exhibitor
 from fair.models import Fair
 
+
 def fix_phone_number(n):
 	if n is None: return None
 	
@@ -21,6 +22,7 @@ def fix_phone_number(n):
 	if n.startswith("0"): n = "+46" + n[1:]
 	
 	return n
+
 
 class CompleteCompanyDetailsForm(ModelForm):
 	class Meta:
@@ -44,6 +46,7 @@ class CompleteCompanyDetailsForm(ModelForm):
 			
 		return valid
 
+
 class CompleteLogisticsDetailsForm(ModelForm):
 	class Meta:
 		model = Exhibitor
@@ -54,6 +57,7 @@ class CompleteLogisticsDetailsForm(ModelForm):
 			'placement_wish': forms.RadioSelect,
 			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your with of placement, but we cannot give any guarantees.'})
 		}
+
 
 class CompleteCatalogueDetailsForm(ModelForm):
 	class Meta:
@@ -115,6 +119,15 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		if catalogue_logo_squared is not None: print(catalogue_logo_squared)
 		
 		return valid
+
+
+class CompleteProductQuantityForm(Form):
+	quantity = ChoiceField(choices = [], label = '', required = True)
+
+
+class CompleteProductBooleanForm(Form):
+	checkbox = BooleanField(label = '')
+
 
 class CompleteFinalSubmissionForm(Form):
 	authorized = BooleanField(required = True)
