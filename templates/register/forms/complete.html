@@ -150,10 +150,10 @@
 
 <body>
 	<div id="complete_registration">
-		<h1>Complete registration for {{ company_contact.company.name }}</h1>
+		<h1>Complete registration for {{ company.name }}</h1>
 		
 		<p>Make sure the form is completed and sent in before the last date of registration. You can save your progress by pushing the submit button at the bottom of each section. This way, you can return and continue if you do not have time to do it all at once. Your registration is completed when you have pushed the submit button in the last section. When you have submitted the application you will receive a confirmation email as soon as the application has been approved.</p>
-
+		
 		<p>Please note that <span style="font-weight: 700;">the complete registration is binding</span> and you will be liable for all additional services chosen, provided that Armada is be able to supply your organisation with your choices.</p>
 		
 		<h4 style="text-align: center;">Registration closes: <span style="font-weight: 700;">{{ fair.complete_registration_close_date }}</span></h4>
@@ -165,7 +165,7 @@
 				<a href="mailto:daniel.grottheim@armada.nu">a@armada.nu</a><br />
 				<a href="tel:+46707909844">+4670-790 98 44</a>
 			</div>
-			
+
 			<div class="contact_card">
 				<span style="font-weight: 700;">Daniel Gröttheim</span><br />
 				Head of Business Relations and Events<br />
@@ -181,13 +181,13 @@
 				<a href="mailto:anna.zakipour@armada.nu">anna.zakipour@armada.nu</a><br />
 				<a href="tel:+46735820222">+4673-582 02 22</a>
 			</div>
-			
+
 			<div class="contact_card">
 				<span style="font-weight: 700;">Filip Matz</span><br />
 				Head of Sales<br />
 				<a href="mailto:filip.matz@armada.nu">filip.matz@armada.nu</a><br /><a href="tel:+46705371055">+4670-537 10 55</a>
 			</div>
-			
+
 			<div class="contact_card">
 				<span style="font-weight: 700;">Jacob Johnsson</span><br />
 				Head of Sales<br />
@@ -195,13 +195,13 @@
 				<a href="tel:+46761482018">+4676-148 20 18</a>
 			</div>
 		</div>
-		
+
 		<div class="expandable" style="margin-top: 10px; border-top: none;">
 			<h2>Company details</h2>
-			
+
 			<div class="expandable_content">
 				<p>Make sure that there is at least one complete address to which THS Armada can send the final invoice. Provide an e-mail address to get the invoice sent by e-mail.</p>
-				
+
 				<form method="post" enctype="multipart/form-data">
 					{% csrf_token %}
 					{{ form_company_details | crispy }}
@@ -313,7 +313,7 @@
 					</div>
 				{% endfor %}
 				
-				
+				<h4>Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total }}</span></h4>
 			</div>
 		</div>
 		
@@ -351,17 +351,21 @@
 					<p><span style="font-weight: 700;">Signed by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
 					<span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
 				{% else %}
-					<p>Please make sure that the information above is correct and please read the contract below.</p>
+					<p>Please make sure that the information above is correct. In addition, please read the contract below.</p>
 					
 					<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
 					
-					<form method="post" enctype="multipart/form-data">
-						{% csrf_token %}
-						
-						{{ form_final_submission | crispy }}
-						
-						<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract" />
-					</form>
+					{% if company_contact %}
+						<form method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+							
+							{{ form_final_submission | crispy }}
+							
+							<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract" />
+						</form>
+					{% else %}
+						<p style="font-style: italic;">Since you are logged in as an Armada representative, you cannot sign the contract.</p>
+					{% endif %}
 				{% endif %}
 			</div>
 		</div>

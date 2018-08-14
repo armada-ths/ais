@@ -33,49 +33,58 @@ from .help.methods import get_time_flag
 
 def choose_company(request):
 	if not request.user.is_authenticated(): return redirect('anmalan:login')
-	
+
 	company_contacts = CompanyContact.objects.filter(user = request.user).exclude(company = None)
-	
-	if len(company_contacts) == 1: return redirect('anmalan:form', company_contacts.first().pk)
-	
+
+	if len(company_contacts) == 1: return redirect('anmalan:form', company_contacts.first().company.pk)
+
 	return render(request, 'register/choose_company.html',
 	{
 		'company_contacts': company_contacts
 	});
 
 
-def form(request, company_contact_pk):
+def form(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
-	
-	contact = get_object_or_404(CompanyContact, pk = company_contact_pk)
+
+	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
-	
+
+	if request.user.has_perm('companies.base'):
+		company_contact = None
+
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+
+		if not company_contact: return redirect('anmalan:choose_company')
+
 	if timezone.now() < fair.registration_start_date: return render(request, 'register/errors/before_initial.html')
-	
+
 	# show IR form if IR has opened and CR has not opened (=> we could be between IR and CR)
-	if timezone.now() >= fair.registration_start_date and timezone.now() < fair.complete_registration_start_date: form_initial(request, contact, fair)
-	
+	if timezone.now() >= fair.registration_start_date and timezone.now() < fair.complete_registration_start_date: return form_initial(request, company, company_contact, fair)
+
 	# we're in or after CR! perhaps the company did not complete their IR?
-	signature = SignupLog.objects.filter(company = contact.company, contract__fair = fair, contract__type = 'INITIAL')
+	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL')
 	if len(signature) == 0: return render(request, 'register/errors/after_initial_no_signature.html')
-	
+
 	# ...or perhaps they weren't selected to participate in this year's fair?
-	exhibitor = Exhibitor.objects.filter(fair = fair, company = contact.company).first()
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
 	if exhibitor is None: return render(request, 'register/errors/after_initial_no_exhibitor.html')
-	
-	return form_complete(request, contact, fair, exhibitor)
+
+	return form_complete(request, company, company_contact, fair, exhibitor)
 
 
-def form_initial(request, company_contact, fair):
+def form_initial(request, company, company_contact, fair):
 	return render(request, 'register/forms/initial.html',
 	{
 		'fair': fair,
+		'company': company,
 		'company_contact': company_contact,
 		'is_editable': timezone.now() >= fair.registration_start_date and timezone.now() <= fair.registration_end_date
 	})
 
 
-def form_complete(request, company_contact, fair, exhibitor):
+def form_complete(request, company, company_contact, fair, exhibitor):
 	contract = SignupContract.objects.filter(fair = fair, type = 'COMPLETE').first()
 	signature = SignupLog.objects.filter(company = company_contact.company, contract__fair = fair, contract__type = 'COMPLETE').first()
 	
@@ -104,12 +113,12 @@ def form_complete(request, company_contact, fair, exhibitor):
 			exhibitor.accept_terms = True
 			exhibitor.save()
 			
-			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company_contact.company)
+			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company)
 	
 	orders = []
 	orders_total = 0
 	
-	for order in Order.objects.filter(product__revenue__fair = fair, purchasing_company = company_contact.company):
+	for order in Order.objects.filter(product__revenue__fair = fair, purchasing_company = company):
 		unit_price = order.product.unit_price if order.unit_price is None else order.unit_price
 		
 		orders_total += order.quantity * unit_price
@@ -126,6 +135,7 @@ def form_complete(request, company_contact, fair, exhibitor):
 	{
 		'fair': fair,
 		'contract': contract,
+		'company': company,
 		'company_contact': company_contact,
 		'form_company_details': form_company_details,
 		'form_logistics_details': form_logistics_details,
@@ -153,7 +163,7 @@ def signup(request, template_name='register/create_user.html'):
 		user = authenticate(username=contact_form.cleaned_data['email_address'], password=user_form.cleaned_data['password1'],)
 		login(request, user)
 		return redirect('anmalan:choose_company')
-	
+
 	return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
 
 def create_company(request, template_name='register/company_form.html'):
@@ -234,7 +244,7 @@ def preliminary_registration(request, fair, company, contact, contract, exhibito
 
 
 def get_product_list_and_price(exhibitor):
-    """ 
+    """
     Get a list of all products that the exhibitor has ordered and the total price of them.
     returns a tuple: product_list, total_price
     """
@@ -244,8 +254,8 @@ def get_product_list_and_price(exhibitor):
     return product_list, total_price
 
 def create_orders_for_included_products(fair, exhibitor):
-    """ 
-    Some products are marked as included for everyone. 
+    """
+    Some products are marked as included for everyone.
     If these products are not added to exhibitor, they will be added
     """
     included_products = Product.objects.filter(included_for_all=True, fair=fair)
@@ -257,7 +267,7 @@ def create_orders_for_included_products(fair, exhibitor):
             Order.objects.create(exhibitor=exhibitor, product=product, amount=1)
 
 def get_product_type_order_forms(request, exhibitor, forms):
-    """ 
+    """
     Get a list of order forms, grouped by their product category
     """
     product_type_order_forms = []
@@ -270,7 +280,7 @@ def get_product_type_order_forms(request, exhibitor, forms):
     return product_type_order_forms
 
 
-def save_complete_registration(product_type_ordor_forms, electricity_order, transportation_form, 
+def save_complete_registration(product_type_ordor_forms, electricity_order, transportation_form,
         inbound_transportation_order_form, outbound_transportation_order_form):
     """ Validate and try to save all the provided forms """
 
@@ -279,7 +289,7 @@ def save_complete_registration(product_type_ordor_forms, electricity_order, tran
         for order_form in order_forms:
             if order_form.is_valid():
                 order_form.save()
-    
+
     if electricity_order.is_valid():
         electricity_order.save()
 
@@ -355,7 +365,7 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
     ===============
     The complete registration is where already signed up companies with contacts
     can make their final selection of products and send in important info such as
-    invoice address ('faktura' in SWE). 
+    invoice address ('faktura' in SWE).
 
     Extra Info
      ----------------
@@ -371,7 +381,7 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
     ######### Create required forms ##########
     forms = [] # this is a list of all forms that is used to collect all errors on start page
     product_type_order_forms = get_product_type_order_forms(request, exhibitor, forms)
-    electricity_order = ElectricityOrderForm(exhibitor, request.POST or None, 
+    electricity_order = ElectricityOrderForm(exhibitor, request.POST or None,
             instance = ElectricityOrder.objects.filter(exhibitor=exhibitor).first(), prefix='electricity')
     forms.append(electricity_order)
     transportation_form = TransportationForm(request.POST or None, instance=exhibitor, prefix='transportation_alternatives')
@@ -427,13 +437,13 @@ def complete_registration(request,fair, company, contact, contract, exhibitor, s
 
 def home(request, template_name='register/registration.html'):
 	"""
-	If there is no logged in company user that is associated with a contact object, 
+	If there is no logged in company user that is associated with a contact object,
 	they will be logged out and redirected to the index page.
 
-	This view controls what stage the registration is in. 
+	This view controls what stage the registration is in.
 	There are five different stages:
 	1. Before any registration is open, this is just when a new fair has been created and the registration period has not started yet.
-	2. The preliminary registration period has started. 
+	2. The preliminary registration period has started.
 	3. The preliminary registration period has ended and the complete registration has not opened yet. Note that it is possible to have overlapping
 	preliminary and complete registration periods. Then this stage would not exist.
 	4. The  complete registration has opened.
@@ -455,17 +465,17 @@ def home(request, template_name='register/registration.html'):
 			registration_closed = fair.registration_end_date < timezone.now()
 			complete_registration_open = fair.complete_registration_start_date < timezone.now() and fair.complete_registration_close_date > timezone.now()
 			complete_registration_closed = fair.complete_registration_close_date < timezone.now()
-			
+
 			contact = CompanyContact.objects.get(user=request.user)
 			company = contact.company
-			
+
 			contract = SignupContract.objects.filter(fair = fair, current = True).first()
-			
+
 			for group in company.groups.filter(fair = fair):
 				if group.contract is not None:
 					contract = group.contract
 					break
-			
+
 			exhibitor = Exhibitor.objects.filter(company = company, fair = fair).first()
 			signed_up = SignupLog.objects.filter(company = company, contract = contract).first() != None
 
@@ -473,19 +483,19 @@ def home(request, template_name='register/registration.html'):
 			del contact_form.fields["active"]
 			del contact_form.fields["confirmed"]
 			forms.append(contact_form)
-			
+
 			#invoice_details_form = InvoiceDetailsForm(company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details') if exhibitor else None
 			#forms.append(invoice_details_form)
-			
+
 			company_form = CompanyForm(request.POST or None, instance = company, prefix = 'company_info')
 			forms.append(company_form)
-			
+
 			#profile_form = ExhibitorProfileForm(request.POST or None, request.FILES or None,  prefix='exhibitor_profile', instance=exhibitor)
 			#forms.append(profile_form)
-			
+
 			current_matching_survey = Survey.objects.filter(fair=fair).first()
 			survey_form = None
-			
+
 			if current_matching_survey:
 				survey_form = ResponseForm(current_matching_survey, exhibitor, request.POST or None, prefix='matching')
 				forms.append(survey_form)
@@ -493,7 +503,7 @@ def home(request, template_name='register/registration.html'):
 			if request.POST:
 				if company_form.is_valid(company):
 					company_form.save()
-				
+
 				if contact_form.is_valid():
 					contact_form.save()
 
@@ -510,7 +520,7 @@ def home(request, template_name='register/registration.html'):
 				if signed_up:
 					#return view of complete registration
 					res = complete_registration(request,fair, company, contact, contract, exhibitor, signed_up)
-				
+
 				if type(res) == tuple:
 					(template, kwargs_a) = res
 					kwargs.update(kwargs_a)
@@ -520,12 +530,12 @@ def home(request, template_name='register/registration.html'):
 
 			if registration_open:
 				res = preliminary_registration(request,fair, company, contact, contract, exhibitor, signed_up, 'save' not in request.POST)
-				
+
 				if type(res) == tuple:
 					(template, kwargs_a) = res
 					kwargs.update(kwargs_a)
 					return render(request, template, kwargs)
-				
+
 				else:
 					# here we trust that preliminary registration returns some HTTP response
 					return res
@@ -533,7 +543,7 @@ def home(request, template_name='register/registration.html'):
 			if registration_closed and not signed_up:
 				kwargs.update(dict(registration_closed=registration_closed, signed_up=signed_up))
 				return render(request, template_name, kwargs)
-				
+
 			if pre_preliminary:
 				# this should be basically nothing. Just return with variable, or return a specific template
 				kwargs.update(dict(pre_preliminary = pre_preliminary))
@@ -545,7 +555,7 @@ def home(request, template_name='register/registration.html'):
 					product_list, total_price = get_product_list_and_price(exhibitor)
 					kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up, product_list=product_list, total_price=total_price))
 					return render(request, template_name, kwargs)
-				
+
 				else:
 					kwargs.update(dict(complete_registration_closed=complete_registration_closed, signed_up=signed_up))
 					return render(request, template_name, kwargs)
