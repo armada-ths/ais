@@ -29,7 +29,7 @@
 		{
 			display: inline-block;
 			text-align: left;
-			padding: 15px;
+			padding: 10px;
 			margin: 7px 5px;
 			background: #353535;
 		}
@@ -44,6 +44,16 @@
 		{
 			margin: 10px 0;
 			padding: 0;
+		}
+		
+		.expandable:not(.always_opened):not(.active)
+		{
+			padding: 5px 15px;
+		}
+		
+		.expandable:not(.always_opened):not(.active) h2
+		{
+			font-size: 20pt;
 		}
 		
 		.expandable:not(.always_opened) h2
@@ -209,13 +219,16 @@
 				if ($(this).parent().hasClass('active'))
 				{
 					$(this).parent().removeClass('active');
-					$(this).parent().children('.expandable_content').slideUp(50);
+					$(this).parent().children('.expandable_content').hide(50);
 				}
 				
 				else
 				{
+					$(this).parent().parent().find('.expandable:not(.always_opened)').removeClass('active');
+					$(this).parent().parent().find('.expandable:not(.always_opened) .expandable_content').hide(50);
+					
 					$(this).parent().addClass('active');
-					$(this).parent().children('.expandable_content').slideDown(50);
+					$(this).parent().children('.expandable_content').show(50);
 				}
 				
 				var anchor = '';
@@ -258,8 +271,6 @@
 				<a href="mailto:daniel.grottheim@armada.nu">daniel.grottheim@armada.nu</a><br />
 				<a href="tel:+46761355991">+4676-135 59 91</a>
 			</div>
-			
-			<br />
 			
 			<div class="contact_card">
 				<span style="font-weight: 700;">Anna Zakipour</span><br />
