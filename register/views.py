@@ -127,17 +127,17 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 						order.delete()
 				
 				else:
-					order = Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None)
+					order_all = Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None)
 					
-					if len(order) == 1:
-						order = order.first()
+					if len(order_all) == 1:
+						order = order_all.first()
 						order.quantity = quantity
 					
-					elif len(order) > 1:
+					elif len(order_all) > 1:
 						for o in order:
 							o.delete()
 					
-					if len(order) != 1: order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
+					if len(order_all) != 1: order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
 					
 					order.save()
 			
