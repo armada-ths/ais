@@ -86,9 +86,9 @@ def form_initial(request, company, company_contact, fair):
 
 def form_complete(request, company, company_contact, fair, exhibitor):
 	contract = SignupContract.objects.filter(fair = fair, type = 'COMPLETE').first()
-	signature = SignupLog.objects.filter(company = company_contact.company, contract__fair = fair, contract__type = 'COMPLETE').first()
+	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'COMPLETE').first()
 	
-	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company_contact.company)
+	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company)
 	form_logistics_details = CompleteLogisticsDetailsForm(request.POST if request.POST and request.POST.get('save_logistics_details') else None, instance = exhibitor)
 	form_catalogue_details = CompleteCatalogueDetailsForm(request.POST if request.POST.get('save_catalogue_details') else None, request.FILES if request.POST.get('save_catalogue_details') else None, instance = exhibitor)
 	form_final_submission = CompleteFinalSubmissionForm(request.POST if request.POST and request.POST.get('save_final_submission') else None)
@@ -156,9 +156,9 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		registration_sections.append(registration_section)
 	
 	if request.POST:
-		if request.POST.get('save_company_details') and form_company_details.is_valid(company_contact.company):
+		if request.POST.get('save_company_details') and form_company_details.is_valid(company):
 			form_company_details.save()
-			form_company_details = CompleteCompanyDetailsForm(instance = company_contact.company)
+			form_company_details = CompleteCompanyDetailsForm(instance = company)
 		
 		elif request.POST.get('save_logistics_details') and form_logistics_details.is_valid():
 			form_logistics_details.save()
