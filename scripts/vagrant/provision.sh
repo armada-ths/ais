@@ -35,14 +35,11 @@ echo "CREATE USER ais_dev PASSWORD 'ais_dev';" | silent sudo -u postgres psql
 echo "ALTER USER ais_dev CREATEDB;" | silent sudo -u postgres psql
 silent sudo -u postgres createdb ais_dev
 echo "GRANT ALL PRIVILEGES ON DATABASE ais_dev TO ais_dev;" | silent sudo -u postgres psql
-# export PGPASSWORD=ais_dev
-# silent psql -h 127.0.0.1 -U ais_dev < /vagrant/scripts/vagrant/ais.sql
 
 echo "Configuring..."
 silent python manage.py migrate --settings local_settings
 silent python manage.py makemigrations --settings local_settings
 silent python manage.py migrate --settings local_settings
-#echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', '', 'admin')" | silent python manage.py shell --settings local_settings
 
 echo "Sprinkling magic..."
 echo "cd /vagrant" >> ~/.bashrc
