@@ -10,9 +10,10 @@ class Revenue(models.Model):
     
 	class Meta:
 		verbose_name_plural = 'Revenues'
-		ordering = ['name']
+		ordering = ['fair__year', 'name']
+		unique_together = ['name', 'fair']
 
-	def __str__(self): return self.name
+	def __str__(self): return '%s – %s' % (self.name, self.description)
 
 class Category(models.Model):
 	name = models.CharField(max_length = 100, blank = False)
@@ -66,7 +67,7 @@ class Order(models.Model):
 		ordering = ['name']
 
 	def __str__(self):
-		return '%s – %s' % (self.name if len(self.name) != 0 else product.name, purchasing_company.name if purchasing_company is not None else purchasing_user)
+		return '%s – %s' % (self.name if self.name is not None else self.product.name, self.purchasing_company.name if self.purchasing_company is not None else self.purchasing_user)
 
 # Something that could be sold to CompanyCustomer associated with a Fair
 class Invoice(models.Model):

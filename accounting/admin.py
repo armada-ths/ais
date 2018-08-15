@@ -5,7 +5,7 @@ from .models import *
 @admin.register(Revenue)
 class RevenueAdmin(admin.ModelAdmin):
 	ordering = ['name']
-	list_display = ['fair', 'name']
+	list_display = ['name', 'description', 'fair']
 	list_filter = ['fair__year']
 
 @admin.register(Category)
