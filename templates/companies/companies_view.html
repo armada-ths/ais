@@ -10,7 +10,7 @@
 <p>
 	<a href="{% url 'companies_view' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
 	<a href="{% url 'companies_edit' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Groups and responsibilities</a>
-	<a href="{% url 'companies_details' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company details</a>
+	<a href="{% url 'companies_details' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Edit details</a>
 </p>
 
 <div class="row">
@@ -63,10 +63,12 @@
 			
 			<div class="panel-body">
 				<ul class="list-unstyled">
-					{% if company.invoice_street and company.invoice_zipcode and company.invoice_city %}
-						<li><strong>{% if company.invoice_name %} {{ company.invoice_name }} {% else %} {{ company.name }} {% endif %}</strong></li>
-						<li><strong>{{ company.invoice_street }}</strong></li>
-						<li><strong>{{ company.invoice_zipcode }} {{ company.invoice_city }}</strong></li>
+					{% if has_invoice_address %}
+						<li><strong>{% if company.invoice_name %} {{ company.invoice_name }} {% else %} <span style="font-style: italic;">(using THS' name)</span> {% endif %}</strong></li>
+						{% if company.invoice_address_line_1 %} <li>{{ company.invoice_address_line_1 }}</li> {% endif %}
+						{% if company.invoice_address_line_2 %} <li>{{ company.invoice_address_line_2 }}</li> {% endif %}
+						{% if company.invoice_address_line_3 %} <li>{{ company.invoice_address_line_3 }}</li> {% endif %}
+						<li>{{ company.invoice_zipcode }} {{ company.invoice_city }}</li>
 						{% if company.invoice_country != 'SWEDEN' %} <li><strong>{{ company.get_invoice_country_display }}</strong></li> {% endif %}
 					{% else %}
 						<span style="font-style: italic;">No complete invoice address provided.</span>

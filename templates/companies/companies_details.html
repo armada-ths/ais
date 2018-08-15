@@ -5,12 +5,12 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<h1>{{ company.name }} – Company details</h1>
+<h1>{{ company.name }} – Edit details</h1>
 
 <p>
 	<a href="{% url 'companies_view' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
 	<a href="{% url 'companies_edit' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Groups and responsibilities</a>
-	<a href="{% url 'companies_details' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company details</a>
+	<a href="{% url 'companies_details' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Edit details</a>
 </p>
 
 <form method="post" enctype="multipart/form-data">

@@ -292,6 +292,7 @@ def companies_view(request, year, pk):
 		'responsibles': CompanyCustomerResponsible.objects.select_related('group').filter(company = company, group__fair = fair),
 		'profile': get_object_or_404(Profile, user = request.user),
 		'form_comment': form_comment,
+		'has_invoice_address': company.has_invoice_address,
 		'orders': Order.objects.filter(purchasing_company = company, product__revenue__fair = fair)
 	})
 
