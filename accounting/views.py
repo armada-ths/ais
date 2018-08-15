@@ -14,7 +14,7 @@ def accounting(request, year):
 	companies = []
 	
 	for order in orders:
-		if order.purchasing_company not in companies and order.purchasing_company.has_invoice_address():
+		if order.purchasing_company not in companies and order.purchasing_company.has_invoice_address() and order.purchasing_company.ths_customer_id is not None:
 			companies.append(order.purchasing_company)
 	
 	form_generate_company_invoices = GenerateCompanyInvoicesForm(request.POST if request.POST else None, initial = {'text': fair.name})
@@ -48,7 +48,7 @@ def accounting(request, year):
 			fields_invoice = [''] * 47
 			
 			fields_invoice[1] = 'Kundfaktura'
-			fields_invoice[5] = invoice['company'].ths_customer_id if invoice['company'].ths_customer_id is not None else '0000'
+			fields_invoice[5] = invoice['company'].ths_customer_id
 			fields_invoice[13] = form_generate_company_invoices.cleaned_data['our_reference']
 			fields_invoice[15] = 'Faktura ARMADA'
 			fields_invoice[16] = form_generate_company_invoices.cleaned_data['text']
