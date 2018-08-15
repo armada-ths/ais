@@ -14,7 +14,7 @@ def accounting(request, year):
 	companies = []
 	
 	for order in orders:
-		if order.purchasing_company not in companies and order.purchasing_company.invoice_street is not None and order.purchasing_company.invoice_zipcode is not None and order.purchasing_company.invoice_city is not None and order.purchasing_company.invoice_country is not None:
+		if order.purchasing_company not in companies and order.purchasing_company.has_invoice_address():
 			companies.append(order.purchasing_company)
 	
 	form_generate_company_invoices = GenerateCompanyInvoicesForm(request.POST if request.POST else None, initial = {'text': fair.name})
@@ -52,10 +52,14 @@ def accounting(request, year):
 			fields_invoice[13] = form_generate_company_invoices.cleaned_data['our_reference']
 			fields_invoice[15] = 'Faktura ARMADA'
 			fields_invoice[16] = form_generate_company_invoices.cleaned_data['text']
-			if invoice['company'].invoice_reference is not None and len(invoice['company'].invoice_reference) > 30: fields_invoice[16] = '<CR><CR>' + invoice['company'].invoice_reference
+			if invoice['company'].invoice_reference is not None and len(invoice['company'].invoice_reference) > 30: fields_invoice[16] += '<CR>Reference: ' + invoice['company'].invoice_reference
+			if invoice['company'].invoice_email_address is not None: fields_invoice[16] += '<CR>E-mail address: ' + invoice['company'].invoice_email_address
 			if invoice['company'].invoice_reference is not None and len(invoice['company'].invoice_reference) <= 30: fields_invoice[17] = invoice['company'].invoice_reference
-			fields_invoice[26] = invoice['company'].invoice_street + '<CR>' + invoice['company'].invoice_zipcode + ' ' + invoice['company'].invoice_city
-			if invoice['company'].invoice_country != 'SWEDEN': fields_invoice[26] += '<CR>' + invoice['company'].invoice_country
+			if invoice['company'].invoice_address_line_1 is not None: fields_invoice[26] += invoice['company'].invoice_address_line_1 + '<CR>'
+			if invoice['company'].invoice_address_line_2 is not None: fields_invoice[26] += invoice['company'].invoice_address_line_2 + '<CR>'
+			if invoice['company'].invoice_address_line_3 is not None: fields_invoice[26] += invoice['company'].invoice_address_line_3 + '<CR>'
+			fields_invoice[26] += invoice['company'].invoice_zipcode + ' ' + invoice['company'].invoice_city
+			if invoice['company'].invoice_country != 'SWEDEN': fields_invoice[26] += '<CR>' + invoice['company'].get_invoice_country_display()
 			if invoice['company'].invoice_name is not None: fields_invoice[27] = invoice['company'].invoice_name
 			
 			del fields_invoice[0]

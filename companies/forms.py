@@ -12,7 +12,7 @@ from .models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerRes
 class CompanyForm(ModelForm):
 	class Meta:
 		model = Company
-		fields = ['name', 'identity_number', 'website', 'type', 'ths_customer_id', 'invoice_name', 'invoice_co', 'invoice_street', 'invoice_zipcode', 'invoice_city', 'invoice_country', 'invoice_reference']
+		fields = ['name', 'identity_number', 'website', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zipcode', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
 
 
 class CompanyAddressForm(ModelForm):

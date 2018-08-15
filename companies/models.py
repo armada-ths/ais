@@ -83,8 +83,9 @@ class Company(models.Model):
 	groups = models.ManyToManyField(Group)
 	ths_customer_id = models.CharField(max_length = 100, verbose_name = 'THS Customer ID', null = True, blank = True)
 	invoice_name = models.CharField(max_length = 100, verbose_name = 'Legal organization name', null = True, blank = True)
-	invoice_co = models.CharField(max_length = 300, null = True, blank = True, verbose_name = 'Invoice c/o')
-	invoice_street = models.CharField(max_length = 300, null = True, blank = True)
+	invoice_address_line_1 = models.CharField(max_length = 300, null = True, blank = True)
+	invoice_address_line_2 = models.CharField(max_length = 300, null = True, blank = True)
+	invoice_address_line_3 = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_city = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_zipcode = models.CharField(max_length = 300, null = True, blank = True)
 	
@@ -100,7 +101,11 @@ class Company(models.Model):
 	
 	invoice_country = models.CharField(max_length = 200, choices = countries, default = 'SWEDEN', null = True, blank = True)
 	invoice_reference = models.CharField(max_length = 300, null = True, blank = True)
+	invoice_email_address = models.CharField(max_length = 300, null = True, blank = True)
 	modified_by = None
+	
+	def has_invoice_address(self):
+		return (self.invoice_address_line_1 is not None or self.invoice_address_line_3 is not None or self.invoice_address_line_3 is not None) and self.invoice_zipcode is not None and self.invoice_city is not None and self.invoice_country is not None
 	
 	@property
 	def addresses(self):
