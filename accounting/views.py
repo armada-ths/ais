@@ -54,9 +54,9 @@ def accounting(request, year):
 			fields_invoice[16] = form_generate_company_invoices.cleaned_data['text']
 			if invoice['company'].invoice_reference is not None and len(invoice['company'].invoice_reference) > 30: fields_invoice[16] = '<CR><CR>' + invoice['company'].invoice_reference
 			if invoice['company'].invoice_reference is not None and len(invoice['company'].invoice_reference) <= 30: fields_invoice[17] = invoice['company'].invoice_reference
-			fields_invoice[26] = invoice['company'].invoice_street + '<CR>' + invoice['company'].invoice_zipcode + ' ' + invoice['company'].invoice_city + '<CR>'
+			fields_invoice[26] = invoice['company'].invoice_street + '<CR>' + invoice['company'].invoice_zipcode + ' ' + invoice['company'].invoice_city
 			if invoice['company'].invoice_country != 'SWEDEN': fields_invoice[26] += '<CR>' + invoice['company'].invoice_country
-			fields_invoice[27] = invoice['company'].invoice_name if invoice['company'].invoice_name is not None else invoice['company'].name
+			if invoice['company'].invoice_name is not None: fields_invoice[27] = invoice['company'].invoice_name
 			
 			del fields_invoice[0]
 			
