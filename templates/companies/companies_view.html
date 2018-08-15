@@ -8,8 +8,9 @@
 <h1>{{ company.name }}</h1>
 
 <p>
-	<a href="{% url 'companies_edit' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-tasks"></span> Edit company</a>
-	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies</a>
+	<a href="{% url 'companies_view' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
+	<a href="{% url 'companies_edit' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Groups and responsibilities</a>
+	<a href="{% url 'companies_details' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company details</a>
 </p>
 
 <div class="row">
@@ -19,22 +20,22 @@
 				{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
 				{% else %} {{ company.identity_number }} {% endif %}
 			</li>{% endif %}
-
+			
 			{% if company.website %} <li><strong>Website:</strong> <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></li>{% endif %}
 		</ul>
-
+		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h2 class="panel-title">Linked fairs</h2>
 			</div>
-
+			
 			<div class="panel-body">
 				<ul>
 					{% for other_fair in fairs %}
 						<li>
 							{% if fair == other_fair %}<strong>{{ other_fair }}</strong>
 							{% else %}<a href="{% url 'companies_view' other_fair.year company.pk %}">{{ other_fair }}</a>{% endif %}
-
+							
 							{% if other_fair.status %}
 								{% if other_fair.status.color == 'BLUE' %}<span class="label label-primary">
 								{% elif other_fair.status.color == 'GREEN' %}<span class="label label-success">
@@ -43,7 +44,7 @@
 								{% else %}<span class="label label-default">{% endif %}
 								{{ other_fair.status.name }}</span>
 							{% endif %}
-
+							
 							<ul class="list-unstyled">
 								{% for group in groups %}
 									{% if group.fair == other_fair %}<li>{{ group }}</li>{% endif %}
@@ -54,47 +55,43 @@
 				</ul>
 			</div>
 		</div>
-
-		{% for address in company.addresses %}
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">{{ address.get_type_display }} address</h3>
-				</div>
-
-				<div class="panel-body">
-					<ul class="list-unstyled">
-						<li><strong>{% if address.name %} {{ address.name }} {% else %} {{ company.name }} {% endif %}</strong></li>
-						<li><strong>{{ address.street }}</strong></li>
-						<li><strong>{{ address.zipcode }} {{ address.city }}</strong></li>
-						{% if address.country != 'SWEDEN' %} <li><strong>{{ address.get_country_display }}</strong></li> {% endif %}
-					</ul>
-
-					<ul class="list-unstyled">
-						{% if address.phone_number %} <li><strong>Phone number:</strong> {{ address.phone_number }}</li> {% endif %}
-						{% if address.email_address %} <li><strong>E-mail address:</strong> <a href="mailto:{{ address.email_address }}" target="_blank">{{ address.email_address }}</a></li>{% endif %}
-						{% if address.reference %} <li><strong>Reference:</strong> {{ address.reference }}</li> {% endif %}</li>
-					</ul>
-				</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Invoice address</h3>
 			</div>
-		{% endfor %}
-
+			
+			<div class="panel-body">
+				<ul class="list-unstyled">
+					<li><strong>{% if company.invoice_name %} {{ company.invoice_name }} {% else %} {{ company.name }} {% endif %}</strong></li>
+					<li><strong>{{ company.invoice_street }}</strong></li>
+					<li><strong>{{ company.invoice_zipcode }} {{ company.invoice_city }}</strong></li>
+					{% if company.invoice_country != 'SWEDEN' %} <li><strong>{{ company.get_invoice_country_display }}</strong></li> {% endif %}
+				</ul>
+				
+				<ul class="list-unstyled">
+					{% if company.invoice_reference %} <li><strong>Reference:</strong> {{ company.invoice_reference }}</li> {% endif %}</li>
+					{% if company.ths_customer_id %} <li><strong>THS Customer ID:</strong> {{ company.ths_customer_id }}</li> {% endif %}</li>
+				</ul>
+			</div>
+		</div>
+		
 		{% for contact in contacts %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h2 class="panel-title">{{ contact }} {% if contact.title %} ({{ contact.title }}) {% endif %}</h2>
 				</div>
-
+				
 				<div class="panel-body">
 					<ul class="list-unstyled">
 						<p>{% if contact.user %} {% if contact.confirmed %}<span class="label label-success">Confirmed</span>{% else %}<span class="label label-danger">Not confirmed</span>{% endif %} {% if contact.active %}<span class="label label-success">Active</span>{% else %}<span class="label label-danger">Not active</span>{% endif %}{% endif %}</p>
-
-
+						
 						{% if contact.user %}
 							<li><strong>Username:</strong> {{ contact.user.username }}</li>
 							<li><strong>Registered:</strong> {{ contact.user.date_joined }}</li>
 							<li><strong>Last login:</strong> {{ contact.user.last_login }}</li>
 						{% endif %}
-
+						
 						<li><strong>E-mail address:</strong> <a href="mailto:{{ contact.email_address }}">{{ contact.email_address }}</a></li>
 						{% if contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> <a href="tel:{{ contact.mobile_phone_number }}">{{ contact.mobile_phone_number }}</a>{% if profile.slack_id %} (<a onclick="slack_call('{{ contact.mobile_phone_number }}');">Slack</a>){% endif %}</li>{% endif %}
 						{% if contact.work_phone_number %}<li><strong>Work phone number:</strong> <a href="tel:{{ contact.work_phone_number }}">{{ contact.work_phone_number }}</a>{% if profile.slack_id %} (<a onclick="slack_call('{{ contact.work_phone_number }}');">Slack</a>){% endif %}</li>{% endif %}
@@ -103,7 +100,7 @@
 			</div>
 		{% endfor %}
 	</div>
-
+	
 	<div class="col-md-8">
 		<div class="row">
 			<div class="col-md-5">
@@ -111,7 +108,7 @@
 					<div class="panel-heading">
 						<h3 class="panel-title">Responsibilities</h3>
 					</div>
-
+					
 					<div class="panel-body">
 						{% if responsibles %}
 							<ul class="list-unstyled">
@@ -125,13 +122,13 @@
 					</div>
 				</div>
 			</div>
-
+			
 			<div class="col-md-7">
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title">Signed contracts</h3>
 					</div>
-
+					
 					<div class="panel-body">
 						{% if signatures %}
 							<ul class="list-unstyled">
@@ -148,12 +145,12 @@
 				</div>
 			</div>
 		</div>
-
+		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h2 class="panel-title">Orders</h2>
 			</div>
-
+			
 			<div class="panel-body">
 				{% if orders %}
 					<table class="table">
@@ -165,7 +162,7 @@
 								<th></th>
 							</tr>
 						</thead>
-
+						
 						{% for order in orders %}
 							<tr>
 								<td>
@@ -186,16 +183,16 @@
 				{% else %}
 					<p>The company has no orders for {{ fair }}.</p>
 				{% endif %}
-
+				
 				<a href="{% url 'companies_orders_new' fair.year company.pk %}" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New order</a>
 			</div>
 		</div>
-
+		
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<h2 class="panel-title">Write comment</h2>
 			</div>
-
+			
 			<div class="panel-body">
 				<form method="post" enctype="multipart/form-data">
 					{% csrf_token %}
@@ -204,7 +201,7 @@
 				</form>
 			</div>
 		</div>
-
+		
 		{% for comment in comments %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -212,11 +209,11 @@
 						<a onclick="confirm('Do you want to remove the comment?');" href="{% url 'companies_comments_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
 						<a href="{% url 'companies_comments_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
 					</div>
-
+					
 					<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
 					{{ comment.groups_iterable | join:", " }}
 				</div>
-
+				
 				<div class="panel-body">
 					<p>{{ comment.comment }}</p>
 				</div>

@@ -12,21 +12,7 @@ from .models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerRes
 class CompanyForm(ModelForm):
 	class Meta:
 		model = Company
-		fields = "__all__"
-
-	def is_valid(self, company):
-		valid = super(CompanyForm, self).is_valid()
-		
-		if not valid:
-			return valid
-		
-		identity_number = self.cleaned_data.get("identity_number")
-		
-		if identity_number is not None and Company.objects.filter(identity_number = identity_number).exclude(pk = (company.pk if company else None)).exists():
-			self.add_error("identity_number", "The identity number is used by another company.")
-			valid = False
-			
-		return valid
+		fields = ['name', 'identity_number', 'website', 'type', 'ths_customer_id', 'invoice_name', 'invoice_co', 'invoice_street', 'invoice_zipcode', 'invoice_city', 'invoice_country', 'invoice_reference']
 
 
 class CompanyAddressForm(ModelForm):

@@ -79,7 +79,6 @@ class Company(models.Model):
 	name = models.CharField(max_length = 100, verbose_name = 'Organisation name', unique = True, null = False, blank = False)
 	identity_number = models.CharField(max_length = 100, null = True, blank = True)
 	website = models.CharField(max_length = 300, null = True, blank = True)
-	phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	type = models.ForeignKey(CompanyType, null = False, blank = False, on_delete = models.CASCADE)
 	groups = models.ManyToManyField(Group)
 	ths_customer_id = models.CharField(max_length = 100, verbose_name = 'THS Customer ID', null = True, blank = True)

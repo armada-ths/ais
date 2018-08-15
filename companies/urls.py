@@ -10,6 +10,7 @@ urlpatterns = [
 	url(r'^groups/new$', views.groups, name = 'groups_new'),
 	url(r'^groups/(?P<pk>\d+)$', views.groups, name = 'groups_edit'),
 	url(r'^(?P<pk>\d+)$', views.companies_view, name = 'companies_view'),
+	url(r'^(?P<pk>\d+)/details$', views.companies_details, name = 'companies_details'),
 	url(r'^(?P<pk>\d+)/edit$', views.companies_edit, name = 'companies_edit'),
 	url(r'^(?P<pk>\d+)/edit/groups/(?P<group_pk>\d+)$', views.companies_edit, name = 'companies_edit_groups'),
 	url(r'^(?P<pk>\d+)/edit/responsibles/(?P<responsible_group_pk>\d+)$', views.companies_edit, name = 'companies_edit_responsibles_edit'),

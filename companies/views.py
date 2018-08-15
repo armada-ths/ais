@@ -36,30 +36,6 @@ def companies_slack_call(request, year):
 	return HttpResponse('')
 
 
-@permission_required('companies.base')
-def companies_form(request, pk = None, template_name = 'companies/companies_form.html'):
-	fair = current_fair()
-	
-	company = Company.objects.filter(pk = pk).first()
-	form = CompanyForm(request.POST or None, instance = company, prefix = "form_company")
-	CompanyAddressFormSet = inlineformset_factory(Company, CompanyAddress, form = CompanyAddressForm, min_num = 0, extra = 1)
-	CompanyContactFormSet = inlineformset_factory(Company, CompanyContact, form = CompanyContactForm, min_num = 0, extra = 0, can_delete = False)
-	
-	address_formset = CompanyAddressFormSet(request.POST or None, instance = company, prefix = "form_address") if company else None
-	contact_formset = CompanyContactFormSet(request.POST or None, instance = company, prefix = "form_contact") if company else None
-	
-	if request.method == "POST" and form.is_valid(company) and (address_formset is None or (address_formset.is_valid() and contact_formset.is_valid())):
-		company = form.save()
-		
-		if address_formset:
-			address_formset.save()
-			contact_formset.save()
-		
-		return redirect('companies_view', company.pk)
-	
-	return render(request, template_name, {'fair': fair, 'form': form, 'company': company, 'address_formset': address_formset, 'contact_formset': contact_formset})
-
-
 def groups_to_tree_list(groups, selected = None):
 	groups_tree = {"selected": None, "children": {}}
 	
@@ -330,6 +306,25 @@ def companies_edit_responsibles_remove(request, year, pk, responsible_group_pk):
 	responsible.delete()
 	
 	return redirect('companies_edit', fair.year, company.pk)
+
+
+@permission_required('companies.base')
+def companies_details(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	company = get_object_or_404(Company, pk = pk)
+	
+	form_company_details = CompanyForm(request.POST if request.POST else None, instance = company)
+	
+	if request.POST and form_company_details.is_valid():
+		form_company_details.save()
+		return redirect('companies_view', fair.year, company.pk)
+	
+	return render(request, 'companies/companies_details.html',
+	{
+		'fair': fair,
+		'company': company,
+		'form_company_details': form_company_details
+	})
 
 
 @permission_required('companies.base')

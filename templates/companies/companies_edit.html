@@ -5,11 +5,12 @@
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
-<h1>{{ company.name }}</h1>
+<h1>{{ company.name }} – Group and responsibilities</h1>
 
 <p>
 	<a href="{% url 'companies_view' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company overview</a>
-	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> All companies</a>
+	<a href="{% url 'companies_edit' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Groups and responsibilities</a>
+	<a href="{% url 'companies_details' fair.year company.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company details</a>
 </p>
 
 <div class="row">
@@ -99,6 +100,20 @@
 					{% csrf_token %}
 					{{ form_responsible | crispy }}
 					<input class="btn btn-primary" type="submit" name="save_responsibilities" value="{% if responsible %}Save changes{% else %}Assign responsibilities{% endif %}" />
+				</form>
+			</div>
+		</div>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h5 class="panel-title">Company details</h5>
+			</div>
+			
+			<div class="panel-body">
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ form_company_details | crispy }}
+					<input class="btn btn-primary" type="submit" name="save_company_details" value="Save company details" />
 				</form>
 			</div>
 		</div>

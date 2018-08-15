@@ -27,9 +27,10 @@ def fix_phone_number(n):
 class CompleteCompanyDetailsForm(ModelForm):
 	class Meta:
 		model = Company
-		fields = ['name', 'identity_number', 'invoice_co', 'invoice_street', 'invoice_zipcode', 'invoice_city', 'invoice_country', 'invoice_reference']
+		fields = ['name', 'identity_number', 'invoice_name', 'invoice_co', 'invoice_street', 'invoice_zipcode', 'invoice_city', 'invoice_country', 'invoice_reference']
 		
 		help_texts = {
+			'invoice_name': 'This should be your company\'s complete legal name, e.g. Example Inc. or Aktiebolaget Exempel.',
 			'invoice_reference': 'Name of your reference, your Purchase Order Number or equivalent. Optional, but ask your accounting department if you\'re unsure.'
 		}
 

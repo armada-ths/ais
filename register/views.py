@@ -174,6 +174,8 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			
 			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company)
 	
+	form_company_details.fields['invoice_name'].widget.attrs['placeholder'] = company.name
+	
 	orders = []
 	orders_total = 0
 	
@@ -232,7 +234,7 @@ def create_company(request, template_name='register/company_form.html'):
 	contact_form = CreateCompanyContactNoCompanyForm(request.POST or None, prefix='contact')
 	user_form = UserForm(request.POST or None, prefix='user')
 
-	if contact_form.is_valid() and user_form.is_valid() and form.is_valid(None):
+	if contact_form.is_valid() and user_form.is_valid() and form.is_valid():
 		company = form.save()
 		user = user_form.save(commit=False)
 		contact = contact_form.save(commit=False)
