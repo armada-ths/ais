@@ -40,6 +40,8 @@ class Product(models.Model):
 	max_quantity = models.PositiveIntegerField(blank = True, null = True)
 	unit_price = models.PositiveIntegerField(blank = False)
 	revenue = models.ForeignKey(Revenue, blank = False, on_delete = models.CASCADE)
+	cost_center = models.PositiveIntegerField(blank = False, null = False)
+	result_center = models.PositiveIntegerField(blank = False, null = False)
 	category = models.ForeignKey(Category, blank = True, null = True, on_delete = models.CASCADE)
 	description = models.TextField(blank = True)
 	registration_section = models.ForeignKey(RegistrationSection, blank = True, null = True, on_delete = models.CASCADE)

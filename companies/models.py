@@ -82,6 +82,8 @@ class Company(models.Model):
 	phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	type = models.ForeignKey(CompanyType, null = False, blank = False, on_delete = models.CASCADE)
 	groups = models.ManyToManyField(Group)
+	ths_customer_id = models.CharField(max_length = 100, verbose_name = 'THS Customer ID', null = True, blank = True)
+	invoice_name = models.CharField(max_length = 100, verbose_name = 'Legal organization name', null = True, blank = True)
 	invoice_co = models.CharField(max_length = 300, null = True, blank = True, verbose_name = 'Invoice c/o')
 	invoice_street = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_city = models.CharField(max_length = 300, null = True, blank = True)
