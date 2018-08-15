@@ -136,8 +136,8 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 					elif len(order) > 1:
 						for o in order:
 							o.delete()
-						
-						order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
+					
+					if len(order) != 1: order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
 					
 					order.save()
 			
