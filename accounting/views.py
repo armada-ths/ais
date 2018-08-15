@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required
+from django.http import HttpResponse
 
 from fair.models import Fair
 
@@ -21,8 +22,6 @@ def accounting(request, year):
 	
 	companies.sort(key = lambda x: x.name)
 	form_generate_company_invoices.fields['companies'].choices = [(company.pk, company.name) for company in companies]
-	
-	txt = None
 	
 	if request.POST and form_generate_company_invoices.is_valid():
 		invoices = []
@@ -88,11 +87,14 @@ def accounting(request, year):
 				txt += txt_order + '\r\n'
 			txt += 'Kundfaktura-slut\r\n'
 		
-		form_generate_company_invoices = None
+		response = HttpResponse(txt, content_type = 'text/plain')
+		response['Content-Length'] = len(txt)
+		response['Content-Disposition'] = 'attachment; filename="fakturaunderlag.txt"'
+		
+		return response
 	
 	return render(request, 'accounting/accounting.html',
 	{
 		'fair': fair,
-		'form_generate_company_invoices': form_generate_company_invoices,
-		'txt': txt
+		'form_generate_company_invoices': form_generate_company_invoices
 	})
