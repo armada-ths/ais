@@ -6,7 +6,7 @@ from .models import Order
 
 class GenerateCompanyInvoicesForm(Form):
 	text = CharField(required = True, label = 'Text to print on all invoices')
-	our_reference = CharField(required = True, initial = 'THS Armada Project Leader')
+	our_reference = CharField(required = True, initial = 'THS Armada Project Manager')
 	
 	companies = ModelMultipleChoiceField(
 		queryset = Company.objects.all(),
