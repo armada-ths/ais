@@ -41,8 +41,8 @@ class Product(models.Model):
 	max_quantity = models.PositiveIntegerField(blank = True, null = True)
 	unit_price = models.IntegerField(blank = False)
 	revenue = models.ForeignKey(Revenue, blank = False, on_delete = models.CASCADE)
-	cost_center = models.PositiveIntegerField(blank = False, null = False)
 	result_center = models.PositiveIntegerField(blank = False, null = False)
+	cost_unit = models.PositiveIntegerField(blank = False, null = False)
 	category = models.ForeignKey(Category, blank = True, null = True, on_delete = models.CASCADE)
 	description = models.TextField(blank = True)
 	registration_section = models.ForeignKey(RegistrationSection, blank = True, null = True, on_delete = models.CASCADE)
@@ -50,6 +50,7 @@ class Product(models.Model):
 	class Meta:
 		verbose_name_plural = 'Products'
 		ordering = ['name']
+		permissions = [('base', 'Accounting')]
 
 	def __str__(self): return '%s – %s' % (self.revenue, self.name)
 

@@ -98,7 +98,7 @@ class Company(models.Model):
 		('UNITED_KINGDOM', 'United Kingdom'),
 	]
 	
-	invoice_country = models.CharField(max_length = 200, choices = countries, default = 'SWEDEN', null = False, blank = False)
+	invoice_country = models.CharField(max_length = 200, choices = countries, default = 'SWEDEN', null = True, blank = True)
 	invoice_reference = models.CharField(max_length = 300, null = True, blank = True)
 	modified_by = None
 	

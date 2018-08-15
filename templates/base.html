@@ -65,6 +65,12 @@
 						<li role="presentation"><a href="{% url 'products' fair.year %}">Products</a></li>
 					{% endblock %}
 				{% endif %}
+
+				{% if perms.accounting.base %}
+					{% block nav-accounting %}
+						<li role="presentation"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>
+					{% endblock %}
+				{% endif %}
 			</ul>
 			
 			<p class="navbar-text navbar-right">

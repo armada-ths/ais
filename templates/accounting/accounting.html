@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
+
+{% block content %}
+<h1>Accounting</h1>
+
+{% if form_generate_company_invoices %}
+	<form method="post">
+		{% csrf_token %}
+		{{ form_generate_company_invoices | crispy }}
+		<input class="btn btn-primary" type="submit" value="Generate invoice file" />
+	</form>
+{% else %}
+	<pre>{{ txt }}</pre>
+{% endif %}
+{% endblock %}
