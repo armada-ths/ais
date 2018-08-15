@@ -175,7 +175,7 @@
 									{% endif %}
 								</td>
 								<td>{{ order.quantity }}</td>
-								<td>{% if order.unit_price %} {{ order.unit_price }} {% else %} {{ order.product.unit_price }} {% endif %}</td>
+								<td>{% if order.unit_price is not None %} {{ order.unit_price }} {% else %} {{ order.product.unit_price }} {% endif %}</td>
 								<td>
 									<a onclick="confirm('Do you want to remove the order?');" href="{% url 'companies_orders_remove' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
 									<a href="{% url 'companies_orders_edit' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-edit"></span></a>

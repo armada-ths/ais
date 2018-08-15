@@ -39,7 +39,7 @@ class RegistrationSection(models.Model):
 class Product(models.Model):
 	name = models.CharField(max_length = 100, blank = False)
 	max_quantity = models.PositiveIntegerField(blank = True, null = True)
-	unit_price = models.PositiveIntegerField(blank = False)
+	unit_price = models.IntegerField(blank = False)
 	revenue = models.ForeignKey(Revenue, blank = False, on_delete = models.CASCADE)
 	cost_center = models.PositiveIntegerField(blank = False, null = False)
 	result_center = models.PositiveIntegerField(blank = False, null = False)
@@ -59,7 +59,7 @@ class Order(models.Model):
 	purchasing_user = models.ForeignKey(User, blank = True, null = True, on_delete = models.CASCADE)
 	name = models.CharField(max_length = 100, blank = True, null = True)
 	quantity = models.PositiveIntegerField(blank = False)
-	unit_price = models.PositiveIntegerField(blank = True, null = True)
+	unit_price = models.IntegerField(blank = True, null = True)
 	comment = models.TextField(blank = True)
 	
 	class Meta:
