@@ -24,6 +24,12 @@ silent source ais_venv/bin/activate
 silent pip3 install -r requirements.txt
 
 echo "Setting up database..."
+
+# We would like to be able to access the database without having to sign in
+silent sudo sed -i 's/peer/trust/' /etc/postgresql/*/main/pg_hba.conf
+silent sudo sed -i 's/md5/trust/' /etc/postgresql/*/main/pg_hba.conf
+silent sudo service postgresql reload
+
 echo "CREATE USER ais_dev PASSWORD 'ais_dev';" | silent sudo -u postgres psql
 # Allow ais_dev to create databases in order to create test databases
 echo "ALTER USER ais_dev CREATEDB;" | silent sudo -u postgres psql
