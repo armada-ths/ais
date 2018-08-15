@@ -63,10 +63,14 @@
 			
 			<div class="panel-body">
 				<ul class="list-unstyled">
-					<li><strong>{% if company.invoice_name %} {{ company.invoice_name }} {% else %} {{ company.name }} {% endif %}</strong></li>
-					<li><strong>{{ company.invoice_street }}</strong></li>
-					<li><strong>{{ company.invoice_zipcode }} {{ company.invoice_city }}</strong></li>
-					{% if company.invoice_country != 'SWEDEN' %} <li><strong>{{ company.get_invoice_country_display }}</strong></li> {% endif %}
+					{% if company.invoice_street and company.invoice_zipcode and company.invoice_city %}
+						<li><strong>{% if company.invoice_name %} {{ company.invoice_name }} {% else %} {{ company.name }} {% endif %}</strong></li>
+						<li><strong>{{ company.invoice_street }}</strong></li>
+						<li><strong>{{ company.invoice_zipcode }} {{ company.invoice_city }}</strong></li>
+						{% if company.invoice_country != 'SWEDEN' %} <li><strong>{{ company.get_invoice_country_display }}</strong></li> {% endif %}
+					{% else %}
+						<span style="font-style: italic;">No complete invoice address provided.</span>
+					{% endif %}
 				</ul>
 				
 				<ul class="list-unstyled">
