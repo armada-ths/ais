@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from .models import Exhibitor, WorkField, JobType, \
-    Continent, Value, CatalogInfo, Location, TransportationAlternative
+from .models import *
 from lib.util import image_preview
 
 import csv
@@ -81,9 +80,8 @@ class ExhibitorAdmin(admin.ModelAdmin):
     actions = [export_exhibitor_as_csv]
 
 
-admin.site.register(WorkField)
-admin.site.register(JobType)
-admin.site.register(Continent)
-admin.site.register(Value)
-admin.site.register(Location)
-admin.site.register(TransportationAlternative)
+admin.site.register(CatalogueIndustry)
+admin.site.register(CatalogueValue)
+admin.site.register(CatalogueEmployment)
+admin.site.register(CatalogueLocation)
+admin.site.register(CatalogueBenefit)

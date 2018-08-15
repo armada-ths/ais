@@ -6,9 +6,9 @@ from .models import SignupContract, SignupLog
 # Overrides admin register to add custom actions
 @admin.register(SignupLog)
 class SignupLogAdmin(admin.ModelAdmin):
-    search_fields = ('company__name', 'timestamp')
-    ordering = ('-timestamp',)
-    list_filter = ('type', )
+	search_fields = ['company__name', 'timestamp', 'contract__fair']
+	ordering = ['-timestamp']
+	list_filter = ['type', 'contract__fair', 'contract']
 
 # Register your models here.
 admin.site.register(SignupContract)
