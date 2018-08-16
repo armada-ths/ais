@@ -69,7 +69,7 @@ def invoice_companies(request, year):
 			if invoice['company'].invoice_address_line_1 is not None: fields_invoice[26] += invoice['company'].invoice_address_line_1 + '<CR>'
 			if invoice['company'].invoice_address_line_2 is not None: fields_invoice[26] += invoice['company'].invoice_address_line_2 + '<CR>'
 			if invoice['company'].invoice_address_line_3 is not None: fields_invoice[26] += invoice['company'].invoice_address_line_3 + '<CR>'
-			fields_invoice[26] += invoice['company'].invoice_zipcode + ' ' + invoice['company'].invoice_city
+			fields_invoice[26] += invoice['company'].invoice_zip_code + ' ' + invoice['company'].invoice_city
 			if invoice['company'].invoice_country != 'SWEDEN': fields_invoice[26] += '<CR>' + invoice['company'].get_invoice_country_display()
 			if invoice['company'].invoice_name is not None: fields_invoice[27] = invoice['company'].invoice_name
 			
