@@ -87,7 +87,7 @@ class Company(models.Model):
 	invoice_address_line_2 = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_address_line_3 = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_city = models.CharField(max_length = 300, null = True, blank = True)
-	invoice_zipcode = models.CharField(max_length = 300, null = True, blank = True)
+	invoice_zip_code = models.CharField(max_length = 300, null = True, blank = True)
 	
 	countries = [
 		('DENMARK', 'Denmark'),
@@ -105,7 +105,7 @@ class Company(models.Model):
 	modified_by = None
 	
 	def has_invoice_address(self):
-		return (self.invoice_address_line_1 is not None or self.invoice_address_line_2 is not None or self.invoice_address_line_3 is not None) and self.invoice_zipcode is not None and self.invoice_city is not None and self.invoice_country is not None
+		return (self.invoice_address_line_1 is not None or self.invoice_address_line_2 is not None or self.invoice_address_line_3 is not None) and self.invoice_zip_code is not None and self.invoice_city is not None and self.invoice_country is not None
 	
 	@property
 	def addresses(self):

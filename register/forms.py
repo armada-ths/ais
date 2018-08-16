@@ -27,13 +27,24 @@ def fix_phone_number(n):
 class CompleteCompanyDetailsForm(ModelForm):
 	class Meta:
 		model = Company
-		fields = ['name', 'identity_number', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zipcode', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
+		fields = ['name', 'identity_number', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
 		
 		help_texts = {
 			'invoice_name': 'This should be your company\'s complete legal name, e.g. Example Inc. or Aktiebolaget Exempel.',
 			'invoice_reference': 'Name of your reference, your Purchase Order Number or equivalent. Optional, but ask your accounting department if you\'re unsure.',
 			'invoice_email_address': 'If you enter an e-mail address here, the invoice will be sent only through e-mail. Leave the field blank to receive the invoice by regular mail.'
 		}
+	
+	def clean(self):
+		super(CompleteCompanyDetailsForm, self).clean()
+		
+		if 'invoice_zip_code' in self.cleaned_data and self.cleaned_data['invoice_zip_code'] is not None and re.match(r'[0-9]{5}$', self.cleaned_data['invoice_zip_code']):
+			self.cleaned_data['invoice_zip_code'] = self.cleaned_data['invoice_zip_code'][0:3] + ' ' + self.cleaned_data['invoice_zip_code'][3:5]
+		
+		if 'invoice_email_address' in self.cleaned_data and self.cleaned_data['invoice_email_address'] is not None:
+			self.cleaned_data['invoice_email_address'] = self.cleaned_data['invoice_email_address'].lower()
+		
+		return self.cleaned_data
 
 	def is_valid(self, company):
 		valid = super(CompleteCompanyDetailsForm, self).is_valid()
@@ -41,11 +52,21 @@ class CompleteCompanyDetailsForm(ModelForm):
 		if not valid: return valid
 		
 		identity_number = self.cleaned_data.get('identity_number')
+		invoice_zip_code = self.cleaned_data.get('invoice_zip_code')
+		invoice_country = self.cleaned_data.get('invoice_country')
 		
 		if identity_number is not None and Company.objects.filter(identity_number = identity_number).exclude(pk = (company.pk if company else None)).exists():
 			self.add_error('identity_number', 'The identity number is used by another company.')
 			valid = False
-			
+		
+		if invoice_zip_code is not None and invoice_country is not None and invoice_country == 'SWEDEN' and not re.match(r'[0-9]{3} [0-9]{2}$', invoice_zip_code):
+			self.add_error('invoice_zip_code', 'Invalid Swedish zip code.')
+			valid = False
+		
+		if invoice_zip_code is not None and invoice_country is not None and invoice_country == 'NORWAY' and not re.match(r'[0-9]{4}$', invoice_zip_code):
+			self.add_error('invoice_zip_code', 'Invalid Norwegian zip code.')
+			valid = False
+		
 		return valid
 
 
