@@ -269,16 +269,16 @@ def companies_view(request, year, pk):
 		if request.user in responsible.users.all():
 			initially_selected.append(responsible.group)
 	
-	form_comment = CompanyCustomerCommentForm(request.POST if request.POST.get('save_comment') else None, initial = {"groups": initially_selected})
+	form_comment = CompanyCustomerCommentForm(request.POST if request.POST else None, initial = {'groups': initially_selected})
 	
-	if request.POST and request.POST.get('save_comment') and form_comment.is_valid():
+	if request.POST and form_comment.is_valid():
 		comment = form_comment.save(commit = False)
 		comment.company = company
 		comment.user = request.user
 		comment.save()
 		form_comment.save()
 		
-		form_comment = CompanyCustomerCommentForm(initial = {"groups": initially_selected})
+		form_comment = CompanyCustomerCommentForm(initial = {'groups': initially_selected})
 	
 	return render(request, 'companies/companies_view.html',
 	{
