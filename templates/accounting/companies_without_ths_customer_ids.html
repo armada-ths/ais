@@ -20,7 +20,8 @@
 		{{ formset.management_form }}
 		
 		{% for form in formset %}
-			<h2>{{ form.instance.name }}</h2>
+			<h2><a target="_blank" href="{% url 'companies_view' fair.year form.instance.pk %}">{{ form.instance.name }}</a></h2>
+			{% if form.instance.has_invoice_address %}<p>{% if form.instance.invoice_address_line_1 %}{{ form.instance.invoice_address_line_1 }}, {% endif %}{% if form.instance.invoice_address_line_2 %}{{ form.instance.invoice_address_line_2 }}, {% endif %}{% if form.instance.invoice_address_line_3 %}{{ form.instance.invoice_address_line_3 }}, {% endif %}{{ form.instance.invoice_zip_code }} {{ form.instance.invoice_city }}{% if form.instance.invoice_country != 'SWEDEN' %}, {{ form.instance.get_invoice_country_display }}{% endif %}</p>{% endif %}<p></p>
 			{{ form | crispy }}
 		{% endfor %}
 		

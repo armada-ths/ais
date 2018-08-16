@@ -68,7 +68,7 @@
 						{% if company.invoice_address_line_1 %} <li>{{ company.invoice_address_line_1 }}</li> {% endif %}
 						{% if company.invoice_address_line_2 %} <li>{{ company.invoice_address_line_2 }}</li> {% endif %}
 						{% if company.invoice_address_line_3 %} <li>{{ company.invoice_address_line_3 }}</li> {% endif %}
-						<li>{{ company.invoice_zipcode }} {{ company.invoice_city }}</li>
+						<li>{{ company.invoice_zip_code }} {{ company.invoice_city }}</li>
 						{% if company.invoice_country != 'SWEDEN' %} <li>{{ company.get_invoice_country_display }}</li> {% endif %}
 					{% else %}
 						<span style="font-style: italic;">No complete invoice address provided.</span>
