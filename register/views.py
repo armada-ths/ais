@@ -155,6 +155,11 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		
 		registration_sections.append(registration_section)
 	
+	if signature:
+		form_catalogue_details.fields['catalogue_about'].required = True
+		form_catalogue_details.fields['catalogue_purpose'].required = True
+		form_catalogue_details.fields['catalogue_logo_squared'].required = True
+	
 	if request.POST:
 		if request.POST.get('save_company_details') and form_company_details.is_valid(company):
 			form_company_details.save()
@@ -202,6 +207,10 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if not exhibitor.catalogue_about: errors.append('Short text about the company')
 	if not exhibitor.catalogue_purpose: errors.append('Text about the purpose of the company')
 	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
+	
+	if signature:
+		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
+		for field in form_logistics_details.fields: form_logistics_details.fields[field].disabled = True
 	
 	return render(request, 'register/forms/complete.html',
 	{
