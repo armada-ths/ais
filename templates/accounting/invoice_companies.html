@@ -12,6 +12,10 @@
 	<a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer ID's</a>
 </p>
 
+{% if missing_ths_customer_ids != 0 %}
+	<p style="color: red;"><span style="font-weight: bold;">Please note:</span> {% if missing_ths_customer_ids == 1 %}There is currently 1 company{% else %}There are currently {{ missing_ths_customer_ids }} companies{% endif %} with pending orders, but without THS customer ID's. They cannot be invoices until they have THS customer ID's.</p>
+{% endif %}
+
 <form method="post">
 	{% csrf_token %}
 	{{ form_generate_company_invoices | crispy }}

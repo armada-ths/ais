@@ -108,6 +108,7 @@ def invoice_companies(request, year):
 	return render(request, 'accounting/invoice_companies.html',
 	{
 		'fair': fair,
+		'missing_ths_customer_ids': companies_with_orders(fair).count(),
 		'form_generate_company_invoices': form_generate_company_invoices
 	})
 
@@ -115,8 +116,23 @@ def invoice_companies(request, year):
 @permission_required('accounting.base')
 def companies_without_ths_customer_ids(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	orders = Order.objects.filter(product__revenue__fair = fair).exclude(purchasing_company = None).exclude(unit_price = 0)
 	
+	CompanyCustomerIdFormSet = modelformset_factory(Company, fields = ['invoice_name', 'ths_customer_id'], extra = 0)
+	formset = CompanyCustomerIdFormSet(request.POST if request.POST else None, queryset = companies_with_orders(fair))
+	
+	if request.POST and formset.is_valid():
+		formset.save()
+		formset = CompanyCustomerIdFormSet(queryset = companies_with_orders(fair))
+	
+	return render(request, 'accounting/companies_without_ths_customer_ids.html',
+	{
+		'fair': fair,
+		'formset': formset
+	})
+
+
+def companies_with_orders(fair):
+	orders = Order.objects.filter(product__revenue__fair = fair).exclude(purchasing_company = None).exclude(unit_price = 0)
 	companies_with_orders = []
 	
 	for order in orders:
@@ -124,15 +140,4 @@ def companies_without_ths_customer_ids(request, year):
 	
 	companies = Company.objects.filter(ths_customer_id = None, id__in = companies_with_orders)
 	
-	for order in orders:
-		if order.purchasing_company not in companies and order.purchasing_company.ths_customer_id is None:
-			companies.append(order.purchasing_company)
-	
-	CompanyCustomerIdFormSet = modelformset_factory(Company, fields = ['invoice_name', 'ths_customer_id'], extra = 0)
-	formset = CompanyCustomerIdFormSet(queryset = companies)
-	
-	return render(request, 'accounting/companies_without_ths_customer_ids.html',
-	{
-		'fair': fair,
-		'formset': formset
-	})
+	return companies
