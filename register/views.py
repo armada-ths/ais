@@ -161,7 +161,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		form_catalogue_details.fields['catalogue_logo_squared'].required = True
 	
 	if request.POST:
-		if request.POST.get('save_company_details') and form_company_details.is_valid(company):
+		if request.POST.get('save_company_details') and form_company_details.is_valid():
 			form_company_details.save()
 			form_company_details = CompleteCompanyDetailsForm(instance = company)
 		
@@ -584,7 +584,7 @@ def home(request, template_name='register/registration.html'):
 				forms.append(survey_form)
 
 			if request.POST:
-				if company_form.is_valid(company):
+				if company_form.is_valid():
 					company_form.save()
 
 				if contact_form.is_valid():

@@ -45,19 +45,14 @@ class CompleteCompanyDetailsForm(ModelForm):
 			self.cleaned_data['invoice_email_address'] = self.cleaned_data['invoice_email_address'].lower()
 		
 		return self.cleaned_data
-
-	def is_valid(self, company):
+	
+	def is_valid(self):
 		valid = super(CompleteCompanyDetailsForm, self).is_valid()
 		
 		if not valid: return valid
 		
-		identity_number = self.cleaned_data.get('identity_number')
 		invoice_zip_code = self.cleaned_data.get('invoice_zip_code')
 		invoice_country = self.cleaned_data.get('invoice_country')
-		
-		if identity_number is not None and Company.objects.filter(identity_number = identity_number).exclude(pk = (company.pk if company else None)).exists():
-			self.add_error('identity_number', 'The identity number is used by another company.')
-			valid = False
 		
 		if invoice_zip_code is not None and invoice_country is not None and invoice_country == 'SWEDEN' and not re.match(r'[0-9]{3} [0-9]{2}$', invoice_zip_code):
 			self.add_error('invoice_zip_code', 'Invalid Swedish zip code.')
