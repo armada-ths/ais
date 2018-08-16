@@ -1,4 +1,4 @@
-from django.forms import Form, CharField, ModelMultipleChoiceField, SelectMultiple
+from django.forms import Form, CharField, ModelMultipleChoiceField, SelectMultiple, ModelForm, BaseFormSet
 
 from companies.models import Company
 
@@ -14,3 +14,13 @@ class GenerateCompanyInvoicesForm(Form):
 		required = True,
 		label = 'Companies to invoice'
 	)
+
+
+class CompanyCustomerIdForm(ModelForm):
+	class Meta:
+		model = Company
+		fields = ['ths_customer_id']
+
+
+class BaseCompanyCustomerIdFormSet(BaseFormSet):
+	pass

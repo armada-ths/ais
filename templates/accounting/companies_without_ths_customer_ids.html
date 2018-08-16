@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
+
+{% block content %}
+<h1>Companies without THS customer ID's</h1>
+
+<p>
+	<a class="btn btn-default" type="button" href="{% url 'invoice_companies' fair.year %}">Invoice companies</a>
+	<a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer ID's</a>
+</p>
+
+{% if formset %}
+	<p>The following companies have pending orders to be invoiced, but lack THS customer ID's in the system. In order to export invoices for these companies, they need to have a THS customer ID.</p>
+
+	<form method="post">
+		{% csrf_token %}
+		{{ formset.management_form }}
+		
+		{% for form in formset %}
+			<h2>{{ form.instance.name }}</h2>
+			{{ form | crispy }}
+		{% endfor %}
+		
+		<input class="btn btn-primary" type="submit" value="Save all changes" />
+	</form>
+{% else %}
+	<p>There are no companies with pending orders that lack THS customer ID's.</p>
+{% endif %}
+{% endblock %}

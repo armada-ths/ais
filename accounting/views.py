@@ -1,14 +1,26 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
+from django.forms import modelformset_factory
 
 from fair.models import Fair
+from companies.models import Company
 
 from .models import Order
-from .forms import GenerateCompanyInvoicesForm
+from .forms import GenerateCompanyInvoicesForm, BaseCompanyCustomerIdFormSet, CompanyCustomerIdForm
 
 @permission_required('accounting.base')
 def accounting(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	return render(request, 'accounting/accounting.html',
+	{
+		'fair': fair
+	})
+
+
+@permission_required('accounting.base')
+def invoice_companies(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	orders = Order.objects.filter(product__revenue__fair = fair).exclude(purchasing_company = None).exclude(unit_price = 0)
 	
@@ -93,8 +105,34 @@ def accounting(request, year):
 		
 		return response
 	
-	return render(request, 'accounting/accounting.html',
+	return render(request, 'accounting/invoice_companies.html',
 	{
 		'fair': fair,
 		'form_generate_company_invoices': form_generate_company_invoices
+	})
+
+
+@permission_required('accounting.base')
+def companies_without_ths_customer_ids(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	orders = Order.objects.filter(product__revenue__fair = fair).exclude(purchasing_company = None).exclude(unit_price = 0)
+	
+	companies_with_orders = []
+	
+	for order in orders:
+		if order.purchasing_company.pk not in companies_with_orders: companies_with_orders.append(order.purchasing_company.pk)
+	
+	companies = Company.objects.filter(ths_customer_id = None, id__in = companies_with_orders)
+	
+	for order in orders:
+		if order.purchasing_company not in companies and order.purchasing_company.ths_customer_id is None:
+			companies.append(order.purchasing_company)
+	
+	CompanyCustomerIdFormSet = modelformset_factory(Company, fields = ['invoice_name', 'ths_customer_id'], extra = 0)
+	formset = CompanyCustomerIdFormSet(queryset = companies)
+	
+	return render(request, 'accounting/companies_without_ths_customer_ids.html',
+	{
+		'fair': fair,
+		'formset': formset
 	})

@@ -5,10 +5,16 @@
 {% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
 
 {% block content %}
-<h1>Accounting</h1>
+<h1>Invoice companies</h1>
 
 <p>
 	<a class="btn btn-default" type="button" href="{% url 'invoice_companies' fair.year %}">Invoice companies</a>
 	<a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer ID's</a>
 </p>
+
+<form method="post">
+	{% csrf_token %}
+	{{ form_generate_company_invoices | crispy }}
+	<input class="btn btn-primary" type="submit" value="Generate invoice file" />
+</form>
 {% endblock %}
