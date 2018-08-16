@@ -158,7 +158,7 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		
 		if catalogue_logo_squared is not None: print(catalogue_logo_squared)
 		
-		if catalogue_founded is not None and catalogue_founded < 1600 or catalogue_founded > datetime.datetime.now().year:
+		if catalogue_founded is not None and (catalogue_founded < 1600 or catalogue_founded > datetime.datetime.now().year):
 			self.add_error('catalogue_founded', 'The year is invalid.')
 			valid = False
 		
