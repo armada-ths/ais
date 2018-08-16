@@ -193,6 +193,16 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			'unit_price': unit_price
 		})
 	
+	errors = []
+	
+	if not company.has_invoice_address(): errors.append('Invoice address')
+	if not exhibitor.booth_height: errors.append('Height of booth (cm)')
+	if exhibitor.electricity_total_power is None: errors.append('Total power needed (W)')
+	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets required')
+	if not exhibitor.catalogue_about: errors.append('Short text about the company')
+	if not exhibitor.catalogue_purpose: errors.append('Text about the purpose of the company')
+	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
+	
 	return render(request, 'register/forms/complete.html',
 	{
 		'fair': fair,
@@ -205,6 +215,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		'registration_sections': registration_sections,
 		'orders': orders,
 		'orders_total': orders_total,
+		'errors': errors,
 		'form_final_submission': form_final_submission,
 		'signature': signature,
 		'is_editable': timezone.now() >= fair.complete_registration_start_date and timezone.now() <= fair.complete_registration_close_date

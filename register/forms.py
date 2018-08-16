@@ -1,4 +1,4 @@
-import re
+import re, datetime
 
 from django.forms import TextInput, Select, RadioSelect, ModelForm, Form, BooleanField, ModelMultipleChoiceField, CheckboxSelectMultiple, ValidationError, IntegerField, CharField, ChoiceField
 from django.utils.translation import gettext_lazy as _
@@ -60,6 +60,19 @@ class CompleteLogisticsDetailsForm(ModelForm):
 			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your with of placement, but we cannot give any guarantees.'})
 		}
 
+	def is_valid(self):
+		valid = super(CompleteLogisticsDetailsForm, self).is_valid()
+		
+		if not valid: return valid
+		
+		booth_height = self.cleaned_data.get('booth_height')
+		
+		if booth_height is not None and (booth_height < 10 or booth_height > 1000):
+			self.add_error('booth_height', 'The boot height must be between 10 and 1000 cm.')
+			valid = False
+		
+		return valid
+
 
 class CompleteCatalogueDetailsForm(ModelForm):
 	class Meta:
@@ -67,9 +80,12 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		fields = ['catalogue_about', 'catalogue_purpose', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_benefits', 'catalogue_average_age', 'catalogue_founded']
 		
 		help_texts = {
-			'catalogue_logo_squared': 'Allowed formats are JPEG, PNG and SVG.',
-			'catalogue_logo_freesize': 'Allowed formats are JPEG, PNG and SVG.',
-			'catalogue_average_age': 'Leave the field empty if you\'re unsure.'
+			'catalogue_logo_squared': 'Allowed formats are JPEG and PNG.',
+			'catalogue_logo_freesize': 'Allowed formats are JPEG and PNG.',
+			'catalogue_average_age': 'Leave the field empty if you\'re unsure.',
+			'catalogue_about': 'Keep it concise – no more than 600 characters.',
+			'catalogue_purpose': 'Keep it concise – no more than 600 characters.',
+			'catalogue_contact_name': 'This is the person that students will be referred to if they wish to get in touch with you outside of the career fair.'
 		}
 		
 		labels = {
@@ -86,8 +102,8 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		}
 		
 		widgets = {
-			'catalogue_about': forms.Textarea(attrs = {'rows': 3, 'placeholder': 'Concrete information about what your organisation does.'}),
-			'catalogue_purpose': forms.Textarea(attrs = {'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
+			'catalogue_about': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'Concrete information about what your organisation does.'}),
+			'catalogue_purpose': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
 			'catalogue_industries': forms.CheckboxSelectMultiple,
 			'catalogue_values': forms.CheckboxSelectMultiple,
 			'catalogue_employments': forms.CheckboxSelectMultiple,
@@ -113,12 +129,17 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		
 		catalogue_contact_phone_number = self.cleaned_data.get('catalogue_contact_phone_number')
 		catalogue_logo_squared = self.cleaned_data.get('catalogue_logo_squared')
+		catalogue_founded = self.cleaned_data.get('catalogue_founded')
 		
 		if catalogue_contact_phone_number is not None and not re.match(r'\+[0-9]+$', catalogue_contact_phone_number):
 			self.add_error('catalogue_contact_phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
 		
 		if catalogue_logo_squared is not None: print(catalogue_logo_squared)
+		
+		if catalogue_founded is not None and catalogue_founded < 1600 or catalogue_founded > datetime.datetime.now().year:
+			self.add_error('catalogue_founded', 'The year is invalid.')
+			valid = False
 		
 		return valid
 

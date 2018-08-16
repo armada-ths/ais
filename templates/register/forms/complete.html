@@ -212,6 +212,8 @@
 					$(expandables[parseInt(s[i])]).addClass('active');
 					$(expandables[parseInt(s[i])]).children('.expandable_content').show();
 				}
+				
+				if ($('.form-group.has-error').length !== 0) { $('html, body').scrollTop($('.form-group.has-error').offset().top - 300); }
 			}
 			
 			$('.expandable:not(.always_opened) h2').click(function()
@@ -433,6 +435,7 @@
 		
 		<div class="expandable always_opened">
 			<h2 style="color: #00d791;">Final submission</h2>
+			<p>The table below summarizes your choices.</p>
 			
 			<table>
 				<thead>
@@ -460,6 +463,8 @@
 			<h4 style="text-align: right;">Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total | intcomma }}</span></h4>
 			
 			<div class="expandable_content">
+				<h3>Contract</h3>
+				
 				{% if signature %}
 					<p>The contract has been signed.</p>
 					
@@ -467,6 +472,14 @@
 					
 					<p><span style="font-weight: 700;">Signed by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
 					<span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
+				{% elif errors %}
+					<p>In order to sign the contract and complete your registration, the following data needs to be provided.</p>
+					
+					<ul>
+						{% for error in errors %}
+							<li>{{ error }}</li>
+						{% endfor %}
+					</ul>
 				{% else %}
 					<p>Please make sure that the information above is correct. In addition, please read the contract below.</p>
 					
