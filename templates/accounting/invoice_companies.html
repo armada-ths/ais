@@ -13,7 +13,7 @@
 </p>
 
 {% if missing_ths_customer_ids != 0 %}
-	<p style="color: red;"><span style="font-weight: bold;">Please note:</span> {% if missing_ths_customer_ids == 1 %}There is currently 1 company{% else %}There are currently {{ missing_ths_customer_ids }} companies{% endif %} with pending orders, but without THS customer ID's. They cannot be invoices until they have THS customer ID's.</p>
+	<p style="color: red;"><span style="font-weight: bold;">Please note:</span> {% if missing_ths_customer_ids == 1 %}There is currently 1 company{% else %}There are currently {{ missing_ths_customer_ids }} companies{% endif %} with pending orders, but without THS customer ID's. They cannot be invoiced until they have THS customer ID's.</p>
 {% endif %}
 
 <form method="post">

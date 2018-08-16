@@ -62,7 +62,7 @@ class Group(models.Model):
 		return self.name_full
 
 
-# Type of a company, e.g. government agency, company or non-profit organisation
+# Type of a company, e.g. government agency, company or non-profit organization
 class CompanyType(models.Model):
 	type = models.CharField(max_length = 100, null = False, blank = False)
 	
@@ -76,7 +76,7 @@ class CompanyType(models.Model):
 
 # Represents a company, independent of Fair (see CompanyCustomer below)
 class Company(models.Model):
-	name = models.CharField(max_length = 100, verbose_name = 'Organisation name', unique = True, null = False, blank = False)
+	name = models.CharField(max_length = 100, verbose_name = 'Organization name', unique = True, null = False, blank = False)
 	identity_number = models.CharField(max_length = 100, null = True, blank = True)
 	website = models.CharField(max_length = 300, null = True, blank = True)
 	type = models.ForeignKey(CompanyType, null = False, blank = False, on_delete = models.CASCADE)
@@ -139,7 +139,7 @@ class CompanyLog(models.Model):
 	data = JSONField()
 
 
-# Type of a company, e.g. government agency, company or non-profit organisation
+# Type of a company, e.g. government agency, company or non-profit organization
 class CompanyAddress(models.Model):
 	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
 	
@@ -150,7 +150,7 @@ class CompanyAddress(models.Model):
 	]
 	
 	type = models.CharField(max_length = 200, choices = types, null = False, blank = False)
-	name = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "Name, if different from the organisation name")
+	name = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "Name, if different from the organization name")
 	street = models.CharField(max_length = 200, null = False, blank = False)
 	zipcode = models.CharField(max_length = 200, null = False, blank = False, verbose_name = 'Zip code')
 	city = models.CharField(max_length = 200, null = False, blank = False)
