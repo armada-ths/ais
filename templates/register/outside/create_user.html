@@ -37,7 +37,7 @@
 						{% csrf_token %} {{ contact_form | crispy }} {{ user_form | crispy }}
 						<p align="left">* Required fields</p>
 						<button type="submit" class="btn btn-success">Submit</button>
-						<a href="{% url 'anmalan:index' %}"><button type="button" class="btn btn-default">Back</button></a>
+						<a href="{% url 'anmalan:choose_company' %}"><button type="button" class="btn btn-default">Back</button></a>
 					</form>
 				</div>
 			</div>

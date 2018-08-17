@@ -19,7 +19,7 @@ from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
-from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
 from orders.forms import get_order_forms, ElectricityOrderForm
 from exhibitors.forms import ExhibitorProfileForm, TransportationForm
 from matching.forms import ResponseForm
@@ -32,13 +32,15 @@ from .help.methods import get_time_flag
 
 
 def choose_company(request):
-	if not request.user.is_authenticated(): return redirect('anmalan:login')
+	if not request.user.is_authenticated():
+		fair = Fair.objects.filter(current = True).first()
+		return render(request, 'register/outside/login_or_register.html')
 	
 	company_contacts = CompanyContact.objects.filter(user = request.user).exclude(company = None)
 	
 	if len(company_contacts) == 1: return redirect('anmalan:form', company_contacts.first().company.pk)
 	
-	return render(request, 'register/choose_company.html', {'company_contacts': company_contacts});
+	return render(request, 'register/choose_company.html', {'company_contacts': company_contacts})
 
 
 def form(request, company_pk):
@@ -228,7 +230,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	})
 
 
-def signup(request, template_name='register/create_user.html'):
+def create_user(request, template_name='register/outside/create_user.html'):
 	contact_form = CreateCompanyContactForm(request.POST or None, prefix='contact')
 	user_form = UserForm(request.POST or None, prefix='user')
 	
@@ -243,11 +245,12 @@ def signup(request, template_name='register/create_user.html'):
 		user = authenticate(username=contact_form.cleaned_data['email_address'], password=user_form.cleaned_data['password1'],)
 		login(request, user)
 		return redirect('anmalan:choose_company')
-
+	
 	return render(request, template_name, dict(contact_form=contact_form, user_form=user_form))
 
-def create_company(request, template_name='register/company_form.html'):
-	form = CompanyForm(request.POST or None)
+
+def create_company(request, template_name='register/outside/create_company.html'):
+	form = NewCompanyForm(request.POST or None)
 	contact_form = CreateCompanyContactNoCompanyForm(request.POST or None, prefix='contact')
 	user_form = UserForm(request.POST or None, prefix='user')
 	

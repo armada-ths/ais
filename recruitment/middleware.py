@@ -29,7 +29,7 @@ class LoginRequiredMiddleware:
         current_year = datetime.datetime.now().year
         url_exceptions = {
             '/',
-            '/register/', '/register/signup', '/register/new_company',
+            '/register/', '/register/user', '/register/company',
             '/register/password_reset/', '/register/password_reset/done/',
             '/register/external/signup',
             '/fairs/' + str(current_year) + '/banquet/signup',
