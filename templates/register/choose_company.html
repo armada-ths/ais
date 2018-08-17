@@ -1,10 +1,38 @@
-{% block content %}
-	<h1>Choose company</h1>
-	<p>Your account is associated with multiple companies. Choose which one you would like to represent.</p>
+{% load staticfiles %}<!DOCTYPE html>
 
-	<ul>
-		{% for company_contact in company_contacts %}
-			<li><a href="{% url 'anmalan:form' company_contact.company.pk %}">{{ company_contact.company.name }}</a></li>
-		{% endfor %}
-	</ul>
-{% endblock %}
+<html lang="en">
+
+<head>
+	<title>THS Armada</title>
+	<script src="{% static 'js/jquery.js' %}" charset="utf-8"></script>
+	{% include "header.html" %} {% block head-extra %}{% endblock %}
+	<link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
+	<style type="text/css">
+		#narrow_content
+		{
+			margin: 15px auto;
+			padding: 10px 15px;
+			max-width: 700px;
+			background: #353535;
+			border: 1px dotted #333333;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="narrow_content">
+		{% if company_contacts %}
+			<h1>Choose company</h1>
+			<p>Your account is associated with multiple companies. Choose which one you would like to represent.</p>
+			
+			<ul>
+				{% for company_contact in company_contacts %}
+					<li><a href="{% url 'anmalan:form' company_contact.company.pk %}">{{ company_contact.company.name }}</a></li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<h1>No companies linked</h1>
+			<p>Your account is not linked with any companies.</p>
+		{% endif %}
+	</div>
+</body>

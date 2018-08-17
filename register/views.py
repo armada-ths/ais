@@ -33,44 +33,41 @@ from .help.methods import get_time_flag
 
 def choose_company(request):
 	if not request.user.is_authenticated(): return redirect('anmalan:login')
-
+	
 	company_contacts = CompanyContact.objects.filter(user = request.user).exclude(company = None)
-
+	
 	if len(company_contacts) == 1: return redirect('anmalan:form', company_contacts.first().company.pk)
-
-	return render(request, 'register/choose_company.html',
-	{
-		'company_contacts': company_contacts
-	});
+	
+	return render(request, 'register/choose_company.html', {'company_contacts': company_contacts});
 
 
 def form(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
-
+	
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
-
+	
 	if request.user.has_perm('companies.base'):
 		company_contact = None
-
+	
 	else:
 		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
-
+		
 		if not company_contact: return redirect('anmalan:choose_company')
-
+	
 	if timezone.now() < fair.registration_start_date: return render(request, 'register/errors/before_initial.html')
-
+	
 	# show IR form if IR has opened and CR has not opened (=> we could be between IR and CR)
 	if timezone.now() >= fair.registration_start_date and timezone.now() < fair.complete_registration_start_date: return form_initial(request, company, company_contact, fair)
-
+	
 	# we're in or after CR! perhaps the company did not complete their IR?
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL')
 	if len(signature) == 0: return render(request, 'register/errors/after_initial_no_signature.html')
-
+	
 	# ...or perhaps they weren't selected to participate in this year's fair?
 	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
 	if exhibitor is None: return render(request, 'register/errors/after_initial_no_exhibitor.html')
-
+	
 	return form_complete(request, company, company_contact, fair, exhibitor)
 
 
@@ -234,7 +231,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 def signup(request, template_name='register/create_user.html'):
 	contact_form = CreateCompanyContactForm(request.POST or None, prefix='contact')
 	user_form = UserForm(request.POST or None, prefix='user')
-
+	
 	if request.POST and contact_form.is_valid() and user_form.is_valid():
 		user = user_form.save(commit=False)
 		contact = contact_form.save(commit=False)
@@ -253,7 +250,7 @@ def create_company(request, template_name='register/company_form.html'):
 	form = CompanyForm(request.POST or None)
 	contact_form = CreateCompanyContactNoCompanyForm(request.POST or None, prefix='contact')
 	user_form = UserForm(request.POST or None, prefix='user')
-
+	
 	if contact_form.is_valid() and user_form.is_valid() and form.is_valid():
 		company = form.save()
 		user = user_form.save(commit=False)
@@ -272,27 +269,28 @@ def create_company(request, template_name='register/company_form.html'):
 
 
 def change_password(request, template_name='register/change_password.html'):
-    if request.method == 'POST':
-        form = ChangePasswordForm(data=request.POST, user=request.user)
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, form.user)
-            return redirect('anmalan:choose_company')
-        else:
-            return redirect('anmalan:change_password')
-    else:
-        form = ChangePasswordForm(user=request.user)
-    return render(request, template_name, {'form':form})
+	if request.method == 'POST':
+		form = ChangePasswordForm(data=request.POST, user=request.user)
+		if form.is_valid():
+			form.save()
+			update_session_auth_hash(request, form.user)
+			return redirect('anmalan:choose_company')
+		else:
+			return redirect('anmalan:change_password')
+	else:
+		form = ChangePasswordForm(user=request.user)
+	
+	return render(request, template_name, {'form':form})
 
 
 def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving):
 	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company)
-
+	
 	if not signed_up and form.is_valid():
 		form.cleaned_data["groups"] = company.groups.filter(fair = fair).union(form.cleaned_data["groups"])
 		form.save()
 		SignupLog.objects.create(company_contact = contact, contract = contract, company = contact.company)
-
+		
 		return redirect('anmalan:choose_company')
-
+	
 	return ('register/registration.html', dict(registration_open = True, signed_up = signed_up, contact = contact, company=company, exhibitor = exhibitor, fair=fair, form = form, contract_url = contract.contract.url if contract else None ))
