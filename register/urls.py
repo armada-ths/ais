@@ -7,14 +7,8 @@ app_name = 'anmalan'
 urlpatterns = [
     url(r'^$', views.choose_company, name = 'choose_company'),
     url(r'^(?P<company_pk>[0-9]+)$', views.form, name = 'form'),
-    url(r'^submitted/$', views.submission_view, name='submitted'),
     url(r'^signup', views.signup, name='create_company_user'),
     url(r'^new_company', views.create_company, name='create_company'),
-
-    # signup for externals
-    #url(r'^external/signup$', views.external_signup, name='external/signup'),
-    # login for externals
-    #url(r'^external/login$', views.external_login, name='external_login'),
 
     url(
         r'^login/$',
