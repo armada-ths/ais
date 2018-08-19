@@ -27,8 +27,8 @@ class RecruitmentApplicationAdmin(admin.ModelAdmin):
 
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
-	list_display = ['name', 'recruitment_period']
-	list_filter = ['recruitment_period']
+	list_display = ['name', 'organization_group', 'recruitment_period']
+	list_filter = ['recruitment_period', 'organization_group']
 
 admin.site.register(RecruitmentPeriod)
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)

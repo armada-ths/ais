@@ -224,7 +224,7 @@ class Role(models.Model):
 				break
 	
 	class Meta:
-		ordering = ['recruitment_period', 'name']
+		ordering = ['recruitment_period', 'organization_group', 'name']
 		permissions = (
 			('administer_roles', 'Administer roles'),
 		)
