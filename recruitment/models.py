@@ -170,9 +170,7 @@ class RecruitmentPeriod(models.Model):
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
     eligible_roles = models.IntegerField(default=3)
     recruitable_roles = models.ManyToManyField('recruitment.Role')
-    allowed_groups = models.ManyToManyField(
-        Group, blank=False,
-        help_text="Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.")
+    allowed_groups = models.ManyToManyField(Group, blank = True, help_text = 'Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.')
 
     class Meta:
         permissions = (
