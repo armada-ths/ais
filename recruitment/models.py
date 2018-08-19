@@ -210,12 +210,9 @@ class Role(models.Model):
 	organization_group = models.CharField(max_length=100, default='', null=True)
 	recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
 	
-	def save(self, *args, **kwargs):
-		if not self.group:
-			self.group = Group.objects.get_or_create(name=self.name)[0]
-		super(Role, self).save(*args, **kwargs)
-	
 	def add_user_to_groups(self, user):
+		if self.group is None: return
+		
 		role = self
 		while role != None:
 			role.group.user_set.add(user)
