@@ -159,53 +159,6 @@ class CustomFieldAnswer(models.Model):
 
     def __str__(self):
         return '%s - %s - %s' % (self.user.get_full_name(), self.custom_field, self.answer)
-  
-
-class Role(models.Model):
-    name = models.CharField(max_length=100)
-    parent_role = models.ForeignKey('Role', null=True, blank=True, on_delete=models.CASCADE)
-    description = models.TextField(default="", blank=True)
-    group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
-    organization_group = models.CharField(max_length=100, default='', null=True)
-
-    def save(self, *args, **kwargs):
-        if not self.group:
-            self.group = Group.objects.get_or_create(name=self.name)[0]
-        super(Role, self).save(*args, **kwargs)
-
-
-    def add_user_to_groups(self, user):
-        role = self
-        while role != None:
-            role.group.user_set.add(user)
-            role = role.parent_role
-            if role == self:
-                break
-
-    class Meta:
-        ordering = ['name']
-        permissions = (
-            ('administer_roles', 'Administer roles'),
-        )
-
-
-    def has_parent(self, other):
-        role = self.parent_role
-        while role != None:
-            if role == other:
-                return True
-            role = role.parent_role
-            if role == self:
-                return False
-        return False
-
-
-    def __str__(self):
-        return self.name
-
-    def users(self):
-        return [application.user for application in RecruitmentApplication.objects.filter(delegated_role=self, status='accepted')]
-
 
 class RecruitmentPeriod(models.Model):
     name = models.CharField(max_length=30)
@@ -216,7 +169,7 @@ class RecruitmentPeriod(models.Model):
     interview_questions = models.ForeignKey(ExtraField, blank=True, null=True, on_delete=models.CASCADE)
     application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
     eligible_roles = models.IntegerField(default=3)
-    recruitable_roles = models.ManyToManyField(Role)
+    recruitable_roles = models.ManyToManyField('recruitment.Role')
     allowed_groups = models.ManyToManyField(
         Group, blank=False,
         help_text="Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.")
@@ -250,7 +203,48 @@ class RecruitmentPeriod(models.Model):
     def __str__(self):
         return '%s: %s' % (self.fair.name, self.name)
 
-
+class Role(models.Model):
+	name = models.CharField(max_length = 100)
+	parent_role = models.ForeignKey('Role', null=True, blank=True, on_delete=models.CASCADE)
+	description = models.TextField(default="", blank=True)
+	group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
+	organization_group = models.CharField(max_length=100, default='', null=True)
+	recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
+	
+	def save(self, *args, **kwargs):
+		if not self.group:
+			self.group = Group.objects.get_or_create(name=self.name)[0]
+		super(Role, self).save(*args, **kwargs)
+	
+	def add_user_to_groups(self, user):
+		role = self
+		while role != None:
+			role.group.user_set.add(user)
+			role = role.parent_role
+			if role == self:
+				break
+	
+	class Meta:
+		ordering = ['recruitment_period', 'name']
+		permissions = (
+			('administer_roles', 'Administer roles'),
+		)
+	
+	def has_parent(self, other):
+		role = self.parent_role
+		while role != None:
+			if role == other:
+				return True
+			role = role.parent_role
+			if role == self:
+				return False
+		return False
+	
+	def __str__(self):
+		return self.recruitment_period.name + ' – ' + self.name
+	
+	def users(self):
+		return [application.user for application in RecruitmentApplication.objects.filter(delegated_role=self, status='accepted')]
 
 class RecruitmentApplication(models.Model):
 	recruitment_period = models.ForeignKey(RecruitmentPeriod, on_delete=models.CASCADE)
