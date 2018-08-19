@@ -200,7 +200,7 @@ class RecruitmentPeriod(models.Model):
 			('accepted', 'Accepted'), ('rejected', 'Rejected')]
 
 	def __str__(self):
-		return '%s: %s' % (self.fair.name, self.name)
+		return str(self.fair.year) + ' – ' + self.name
 
 class Role(models.Model):
 	name = models.CharField(max_length = 100)
