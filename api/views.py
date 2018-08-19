@@ -351,7 +351,7 @@ def recruitment(request):
                 organization_group = 'Other'
             role = OrderedDict([
                     ('name', role.name),
-                    ('parent', role.parent_role.name),
+                    ('parent', role.parent_role.name if role.parent_role else None),
                     ('description', role.description),
                     ])
             if organization_group in roles_info:
