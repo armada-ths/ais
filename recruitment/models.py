@@ -161,45 +161,46 @@ class CustomFieldAnswer(models.Model):
         return '%s - %s - %s' % (self.user.get_full_name(), self.custom_field, self.answer)
 
 class RecruitmentPeriod(models.Model):
-    name = models.CharField(max_length=30)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    interview_end_date = models.DateTimeField()
-    fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
-    interview_questions = models.ForeignKey(ExtraField, blank=True, null=True, on_delete=models.CASCADE)
-    application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
-    eligible_roles = models.IntegerField(default=3)
-    recruitable_roles = models.ManyToManyField('recruitment.Role')
-    allowed_groups = models.ManyToManyField(Group, blank = True, help_text = 'Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.')
+	name = models.CharField(max_length=30)
+	start_date = models.DateTimeField()
+	end_date = models.DateTimeField()
+	interview_end_date = models.DateTimeField()
+	fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
+	interview_questions = models.ForeignKey(ExtraField, blank=True, null=True, on_delete=models.CASCADE)
+	application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
+	eligible_roles = models.IntegerField(default=3)
+	recruitable_roles = models.ManyToManyField('recruitment.Role')
+	allowed_groups = models.ManyToManyField(Group, blank = True, help_text = 'Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.')
 
-    class Meta:
-        permissions = (
-            ('administer_recruitment', 'Administer recruitment'),
-        )
+	class Meta:
+		ordering = ['fair', 'name']
+		permissions = (
+			('administer_recruitment', 'Administer recruitment'),
+		)
 
-    def is_past(self):
-        return self.end_date < timezone.now()
+	def is_past(self):
+		return self.end_date < timezone.now()
 
-    def is_future(self):
-        return self.start_date > timezone.now()
+	def is_future(self):
+		return self.start_date > timezone.now()
 
-    def save(self, *args, **kwargs):
-        if not self.interview_questions:
-            self.interview_questions = ExtraField.objects.create()
-        if not self.application_questions:
-            self.application_questions = ExtraField.objects.create()
-        super(RecruitmentPeriod, self).save(*args, **kwargs)
+	def save(self, *args, **kwargs):
+		if not self.interview_questions:
+			self.interview_questions = ExtraField.objects.create()
+		if not self.application_questions:
+			self.application_questions = ExtraField.objects.create()
+		super(RecruitmentPeriod, self).save(*args, **kwargs)
 
-    def interviewers(self):
-        return [application.user for application in RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=self.fair, recruitment_period__start_date__lte=self.start_date).prefetch_related('user').order_by('user__first_name', 'user__last_name')]
+	def interviewers(self):
+		return [application.user for application in RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=self.fair, recruitment_period__start_date__lte=self.start_date).prefetch_related('user').order_by('user__first_name', 'user__last_name')]
 
-    def state_choices(self):
-        return [('new', 'New'), ('interview_delegated', 'Delegated'),
-         ('interview_planned', 'Planned'), ('interview_done', 'Done'),
-         ('accepted', 'Accepted'), ('rejected', 'Rejected')]
+	def state_choices(self):
+		return [('new', 'New'), ('interview_delegated', 'Delegated'),
+			('interview_planned', 'Planned'), ('interview_done', 'Done'),
+			('accepted', 'Accepted'), ('rejected', 'Rejected')]
 
-    def __str__(self):
-        return '%s: %s' % (self.fair.name, self.name)
+	def __str__(self):
+		return '%s: %s' % (self.fair.name, self.name)
 
 class Role(models.Model):
 	name = models.CharField(max_length = 100)
