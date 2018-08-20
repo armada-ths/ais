@@ -155,6 +155,9 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		registration_sections.append(registration_section)
 	
 	if signature:
+		form_logistics_details.fields['booth_height'].required = True
+		form_logistics_details.fields['electricity_total_power'].required = True
+		form_logistics_details.fields['electricity_socket_count'].required = True
 		form_catalogue_details.fields['catalogue_about'].required = True
 		form_catalogue_details.fields['catalogue_purpose'].required = True
 		form_catalogue_details.fields['catalogue_logo_squared'].required = True
@@ -209,7 +212,6 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	
 	if signature:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
-		for field in form_logistics_details.fields: form_logistics_details.fields[field].disabled = True
 	
 	return render(request, 'register/forms/complete.html',
 	{
