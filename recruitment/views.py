@@ -751,6 +751,8 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	
 	interviewers_by_language = [x for x in interviewers_by_language if len(x[1]) > 0]
 	
+	interviewers_by_language.insert(0, ('', '---------'))
+	
 	if 'interviewer' in interview_planning_form.fields: interview_planning_form.fields['interviewer'].choices = interviewers_by_language
 	if 'interviewer2' in interview_planning_form.fields: interview_planning_form.fields['interviewer2'].choices = interviewers_by_language
 
