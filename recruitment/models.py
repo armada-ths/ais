@@ -259,12 +259,10 @@ class RecruitmentApplication(models.Model):
 	drive_document = models.CharField(null=True, blank=True, max_length=300)
 
 	@property
-	def interview_date_iso8601(self):
-		return self.interview_date.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
+	def interview_date_iso8601(self): return self.interview_date.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
 	
 	@property
-	def profile(self):
-		return Profile.objects.filter(user = self.user).first()
+	def profile(self): return Profile.objects.filter(user = self.user).first()
 
 	@property
 	def interview_date_end_iso8601(self):
@@ -272,8 +270,7 @@ class RecruitmentApplication(models.Model):
 		return end.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
 
 	@property
-	def roles(self):
-		return self.roleapplication_set.order_by("order")
+	def roles(self): return self.roleapplication_set.order_by("order")
 
 	statuses = [
 		('accepted', 'Accepted'),
@@ -311,10 +308,10 @@ class RecruitmentApplication(models.Model):
 		return '%s' % (self.user)
 
 class RecruitmentApplicationComment(models.Model):
-    comment = models.TextField(null=True, blank=True)
-    recruitment_application = models.ForeignKey(RecruitmentApplication, on_delete=models.CASCADE)
-    created_date = models.DateTimeField(default=timezone.now, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+	comment = models.TextField(null=True, blank=True)
+	recruitment_application = models.ForeignKey(RecruitmentApplication, on_delete=models.CASCADE)
+	created_date = models.DateTimeField(default=timezone.now, blank=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class RoleApplication(models.Model):
     class Meta:

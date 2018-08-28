@@ -6,6 +6,7 @@ from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 
 class Language(models.Model):
 	name = models.CharField(max_length = 100)
+	short = models.CharField(max_length = 100)
 
 	class Meta: ordering = ['name']
 

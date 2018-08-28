@@ -1,5 +1,1 @@
-{% if user.get_full_name %}
-    {{ user.get_full_name }}
-{% else %}
-    {{ user }}
-{% endif %}
+{% if user.profile.preferred_language %}{{ user.profile.preferred_language.short }} {% endif %}{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %}

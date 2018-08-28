@@ -78,11 +78,11 @@
             <td>
 				<ol style="margin: 0; padding: 0 0 0 20px;">
 					{% for role in application.roles %}
-						<li>{{ role }}</li>
+						<li>{{ role.role.name }}</li>
 					{% endfor %}
 				</ol>
             </td>
-            <td>{{ application.recommended_role }}</td>
+            <td>{{ application.recommended_role.name }}</td>
             <td>
                 {% if application.interviewer %}
                     {{ application.interviewer.get_full_name }}
