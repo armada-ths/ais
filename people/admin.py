@@ -2,7 +2,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
 from django.contrib import admin
-from .models import Profile, Programme
+from .models import Language, Programme, Profile
 
 """
 class ProfileInline(admin.StackedInline):
@@ -28,4 +28,5 @@ admin.site.register(User, CustomUserAdmin)
 class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('user__first_name', 'user__last_name',)
 
+admin.site.register(Language)
 admin.site.register(Programme)

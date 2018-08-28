@@ -1,3 +1,5 @@
+import re
+
 from django.forms import ModelForm
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
@@ -11,8 +13,7 @@ from exhibitors.models import Exhibitor
 from fair.models import Fair
 from lib.image import UploadToDirUUID
 
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
 
 
 class RecruitmentPeriodForm(ModelForm):
@@ -131,32 +132,63 @@ class RolesForm(ModelForm):
             'description': forms.Textarea(),
         }
 
+def fix_phone_number(n):
+	if n is None: return None
+	
+	n = n.replace(' ', '')
+	n = n.replace('-', '')
+	
+	if n.startswith("00"): n = "+" + n[2:]
+	if n.startswith("0"): n = "+46" + n[1:]
+	
+	return n
+
 class ProfileForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(ProfileForm, self).__init__(*args, **kwargs)
-
-        self.fields['registration_year'].required = True
-        self.fields['programme'].required = True
-        self.fields['phone_number'].required = True
-        self.fields['picture_original'].required = True
-
-    class Meta:
-        model = Profile
-        fields = ('registration_year', 'programme', 'phone_number', 'linkedin_url', 'picture_original')
-
-        labels = {
-            'linkedin_url': 'Link to your LinkedIn profile',
-            'picture_original': 'A picture of yourself'
-        }
-
-        widgets = {
-            'registration_year': forms.Select(
-                choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)],
-                attrs={'required': True}),
-            'programme': forms.Select(
-                attrs={'required': True}),
-            'phone_number': forms.TextInput(attrs={'required': True})
-        }
+	def clean(self):
+		super(ProfileForm, self).clean()
+		
+		if 'phone_number' in self.cleaned_data:
+			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+		
+		return self.cleaned_data
+	
+	def is_valid(self):
+		valid = super(ProfileForm, self).is_valid()
+		
+		if not valid: return valid
+		
+		phone_number = self.cleaned_data.get('phone_number')
+		
+		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
+			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
+			valid = False
+			
+		return valid
+	
+	def __init__(self, *args, **kwargs):
+		super(ProfileForm, self).__init__(*args, **kwargs)
+		
+		self.fields['registration_year'].required = True
+		self.fields['programme'].required = True
+		self.fields['phone_number'].required = True
+		self.fields['picture_original'].required = True
+		self.fields['preferred_language'].required = True
+	
+	class Meta:
+		model = Profile
+		fields = ['registration_year', 'programme', 'phone_number', 'linkedin_url', 'picture_original', 'preferred_language']
+		
+		labels = {
+			'linkedin_url': 'Link to your LinkedIn profile',
+			'picture_original': 'A picture of yourself',
+			'preferred_language': 'What language would you prefer to be interviewed in?'
+		}
+		
+		widgets = {
+			'registration_year': forms.Select(choices = [('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)], attrs = {'required': True}),
+			'programme': forms.Select(attrs={'required': True}),
+			'phone_number': forms.TextInput(attrs={'required': True})
+		}
 
 
 class RoleApplicationForm(forms.Form):

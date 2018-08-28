@@ -19,15 +19,14 @@ from fair.models import Fair
 from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, \
-    create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
+from people.models import Language, Profile
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
 
 
 from django.forms import modelform_factory
 from django import forms
 from .forms import RoleApplicationForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, \
     RolesForm, ProfileForm, ProfilePictureForm
-from accounts.forms import UserForm
 
 
 def import_members(request):
@@ -594,8 +593,6 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
     role_form = RoleApplicationForm(request.POST or None)
 
-    user_form = UserForm(request.POST or None, instance=user)
-
     for i in range(1, 4):
         key = 'role%d' % i
         role_form.fields[key].queryset = recruitment_period.recruitable_roles
@@ -610,7 +607,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, user)
 
-        if role_form.is_valid() and profile_form.is_valid() and user_form.is_valid():
+        if role_form.is_valid() and profile_form.is_valid():
 
             if not recruitment_application:
                 recruitment_application = RecruitmentApplication()
@@ -636,7 +633,6 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
                         data=json.dumps({'text': ' {!s} {!s} just applied for {!s}!'.format(user.first_name, user.last_name, role_form.cleaned_data["role1"])}))
 
             profile_form.save()
-            user_form.save()
             return redirect('recruitment_period', fair.year, recruitment_period.pk)
 
     return render(request, template_name, {
@@ -644,7 +640,6 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
             recruitment_application.user if recruitment_application else None),
         'recruitment_period': recruitment_period,
         'profile_form': profile_form,
-        'user_form': user_form,
         'profile': profile,
         'role_form': role_form,
         'new_application': pk == None,
@@ -738,14 +733,25 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	interviewers = application.recruitment_period.interviewers()
 	interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
 	interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
-	if 'interviewer' in interview_planning_form.fields:
-		interview_planning_form.fields['interviewer'].choices = [('', '---------')] + [
-			(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
-
-	if 'interviewer2' in interview_planning_form.fields:
-		interview_planning_form.fields['interviewer2'].choices = [('', '---------')] + [
-			(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
-
+	
+	languages = Language.objects.all()
+	interviewers_by_language = [(None, [])]
+	
+	for language in languages: interviewers_by_language.insert(0, (language, []))
+	
+	for interviewer in interviewers:
+		profile = Profile.objects.filter(user = interviewer).first()
+		
+		for language in interviewers_by_language:
+			if language[0] == profile.preferred_language:
+				language[1].append((interviewer.pk, interviewer.get_full_name()))
+				break
+	
+	interviewers_by_language = [x for x in interviewers_by_language if len(x[1]) > 0]
+	interviewers_by_language[len(interviewers_by_language) - 1] = ('No preferred language', interviewers_by_language[len(interviewers_by_language) - 1][1])
+	
+	if 'interviewer' in interview_planning_form.fields: interview_planning_form.fields['interviewer'].choices = interviewers_by_language
+	if 'interviewer2' in interview_planning_form.fields: interview_planning_form.fields['interviewer2'].choices = interviewers_by_language
 
 	RoleDelegationForm = modelform_factory(
 		RecruitmentApplication,
