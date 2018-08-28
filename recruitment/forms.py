@@ -13,25 +13,27 @@ from exhibitors.models import Exhibitor
 from fair.models import Fair
 from lib.image import UploadToDirUUID
 
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer
 
 
 class RecruitmentPeriodForm(ModelForm):
-    class Meta:
-        model = RecruitmentPeriod
-        fields = '__all__'
-        exclude = ('recruitable_roles', 'image', 'interview_questions', 'application_questions', 'fair')
-
-        widgets = {
-            "start_date": forms.TextInput(attrs={'class': 'datepicker'}),
-            "end_date": forms.TextInput(attrs={'class': 'datepicker'}),
-            "interview_end_date": forms.TextInput(attrs={'class': 'datepicker'}),
-        }
-        labels = {
-            'start_date': 'Start date (Format: 2016-12-24 13:37)',
-            'end_date': 'End date (Format: 2016-12-24 13:37)',
-            'interview_end_date': 'Interview end date (Format: 2016-12-24 13:37)',
-        }
+	class Meta:
+		model = RecruitmentPeriod
+		fields = '__all__'
+		exclude = ['image', 'interview_questions', 'application_questions', 'fair']
+		
+		widgets = {
+			'start_date': forms.TextInput(attrs={'class': 'datepicker'}),
+			'end_date': forms.TextInput(attrs={'class': 'datepicker'}),
+			'interview_end_date': forms.TextInput(attrs={'class': 'datepicker'}),
+			'allowed_groups': forms.CheckboxSelectMultiple
+		}
+		
+		labels = {
+			'start_date': 'Start date (Format: 2016-12-24 13:37)',
+			'end_date': 'End date (Format: 2016-12-24 13:37)',
+			'interview_end_date': 'Interview end date (Format: 2016-12-24 13:37)',
+		}
 
 class RecruitmentApplicationSearchForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
@@ -192,10 +194,9 @@ class ProfileForm(ModelForm):
 
 
 class RoleApplicationForm(forms.Form):
-    role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.all(),
-                                   widget=forms.Select(attrs={'required': True}))
-    role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.all(), required=False)
-    role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.all(), required=False)
+    role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.none(), widget=forms.Select(attrs={'required': True}))
+    role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.none(), required=False)
+    role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.none(), required=False)
 
 
 class ProfilePictureForm(ModelForm):

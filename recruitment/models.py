@@ -169,7 +169,6 @@ class RecruitmentPeriod(models.Model):
 	interview_questions = models.ForeignKey(ExtraField, blank=True, null=True, on_delete=models.CASCADE)
 	application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
 	eligible_roles = models.IntegerField(default=3)
-	recruitable_roles = models.ManyToManyField('recruitment.Role')
 	allowed_groups = models.ManyToManyField(Group, blank = True, help_text = 'Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.')
 
 	class Meta:
@@ -177,6 +176,9 @@ class RecruitmentPeriod(models.Model):
 		permissions = (
 			('administer_recruitment', 'Administer recruitment'),
 		)
+	
+	@property
+	def recruitable_roles(self): return Role.objects.filter(recruitment_period = self)
 
 	def is_past(self):
 		return self.end_date < timezone.now()

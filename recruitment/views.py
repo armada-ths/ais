@@ -20,20 +20,12 @@ from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, create_project_group, Programme, CustomFieldArgument, CustomFieldAnswer
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer
 
 
 from django.forms import modelform_factory
 from django import forms
-from .forms import RoleApplicationForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, \
-    RolesForm, ProfileForm, ProfilePictureForm
-
-
-def import_members(request):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden()
-    create_project_group()
-    return redirect('recruitment')
+from .forms import RoleApplicationForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, RolesForm, ProfileForm, ProfilePictureForm
 
 def assign_roles(request, year):
     if not request.user.has_perm('recruitment.administer_roles'):
@@ -474,42 +466,33 @@ def recruitment_period_delete(request, year, pk):
     return redirect('recruitment', year)
 
 
-def recruitment_period_edit(request, year, pk=None, template_name='recruitment/recruitment_period_new.html'):
-    recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
-    
-    if not user_can_access_recruitment_period(request.user, recruitment_period):
-        return HttpResponseForbidden()
-    
-    fair = get_object_or_404(Fair, year=year)
-    form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
-
-    if request.POST:
-        if form.is_valid():
-            recruitment_period = form.save(commit=False)
-            recruitment_period.fair = fair
-            recruitment_period.save()
-            recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
-            recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
-            for role in Role.objects.all():
-                role_key = 'role_%d' % role.id
-                if role_key in request.POST:
-                    if not role in recruitment_period.recruitable_roles.all():
-                        recruitment_period.recruitable_roles.add(role)
-                else:
-                    recruitment_period.recruitable_roles.remove(role)
-            recruitment_period.save()
-            return redirect('recruitment_period', year=year, pk=recruitment_period.id)
-
-    return render(request, template_name, {
-        'form': form,
-        'roles': [{'parent_role': role,
-                   'child_roles': [child_role for child_role in Role.objects.all() if child_role.has_parent(role)]} for
-                  role in Role.objects.filter(parent_role=None)],
-        'recruitment_period': recruitment_period,
-        'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
-        'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
-        'fair': fair
-    })
+def recruitment_period_edit(request, year, pk = None):
+	recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
+	
+	if not user_can_access_recruitment_period(request.user, recruitment_period): return HttpResponseForbidden()
+	
+	fair = get_object_or_404(Fair, year=year)
+	form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
+	
+	if request.POST:
+		if form.is_valid():
+			recruitment_period = form.save(commit=False)
+			recruitment_period.fair = fair
+			recruitment_period.save()
+			recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
+			recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
+			
+			recruitment_period.save()
+			
+			return redirect('recruitment_period', year=year, pk=recruitment_period.id)
+	
+	return render(request, 'recruitment/recruitment_period_new.html', {
+		'form': form,
+		'recruitment_period': recruitment_period,
+		'interview_questions': [] if not recruitment_period else recruitment_period.interview_questions.customfield_set.all(),
+		'application_questions': [] if not recruitment_period else recruitment_period.application_questions.customfield_set.all(),
+		'fair': fair
+	})
 
 
 
