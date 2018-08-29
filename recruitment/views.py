@@ -61,9 +61,7 @@ def recruitment(request, year, template_name='recruitment/recruitment.html'):
     return render(request, template_name, {
         'recruitment_periods': recruitment_periods,
         'fair': fair,
-        'roles': [{'parent_role': role,
-                   'child_roles': [child_role for child_role in roles if child_role.has_parent(role)]} for
-                  role in Role.objects.filter(parent_role=None)],
+        'roles': Role.objects.filter(recruitment_period__fair = fair)
     })
 
 
