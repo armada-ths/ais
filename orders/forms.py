@@ -5,17 +5,17 @@ from orders.models import Product, Order, ElectricityOrder
 
 
 class ElectricityOrderForm(forms.ModelForm):
-    class Meta:
-        model = ElectricityOrder
-        fields = '__all__'
-
-    def __init__(self, exhibitor, *args, **kwargs):
-        instance = kwargs.get('instance')
-        super(ElectricityOrderForm, self).__init__(*args, **kwargs)
-        if instance == None:
-            self.fields['exhibitor'].initial = exhibitor.pk
-        self.fields['exhibitor'].disabled = True #make sure exhibitor field is not editable
-        self.fields['exhibitor'].widget= HiddenInput()
+     class Meta:
+         model = ElectricityOrder
+         fields = '__all__'
+ 
+     def __init__(self, exhibitor, *args, **kwargs):
+         instance = kwargs.get('instance')
+         super(ElectricityOrderForm, self).__init__(*args, **kwargs)
+         if instance == None:
+             self.fields['exhibitor'].initial = exhibitor.pk
+         self.fields['exhibitor'].disabled = True #make sure exhibitor field is not editable
+         self.fields['exhibitor'].widget= HiddenInput()
 
 
 class OrderForm(forms.ModelForm):

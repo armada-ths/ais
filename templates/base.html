@@ -48,21 +48,9 @@
 					{% endblock %}
 				{% endif %}
 				
-				{% if perms.people.base %}
-					{% block nav-people %}
-						<li role="presentation"><a href="{% url 'people' fair.year %}">People</a></li>
-					{% endblock %}
-				{% endif %}
-
 				{% if perms.companies.base %}
 					{% block nav-companies %}
 						<li role="presentation"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>
-					{% endblock %}
-				{% endif %}
-
-				{% if perms.orders.base %}
-					{% block nav-products %}
-						<li role="presentation"><a href="{% url 'products' fair.year %}">Products</a></li>
 					{% endblock %}
 				{% endif %}
 
