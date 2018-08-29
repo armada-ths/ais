@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
+
+{% block content %}
+<h1>Invoice companies</h1>
+
+<p>
+	<a class="btn btn-default" type="button" href="{% url 'invoice_companies' fair.year %}">Invoice companies</a>
+	<a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer ID's</a>
+	<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
+</p>
+
+<h1>Product summary</h1>
+<p>The following tables summarize all orders for all products at this fair.</p>
+
+{% for product in products %}
+	<h2>{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</h2>
+	<p><span style="font-weight: bold;">Unit price:</span> SEK {{ product.unit_price }}</p>
+	
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Company</th>
+					<th style="width: 25%; text-align: right;">Quantity</th>
+					<th style="width: 25%; text-align: right;">Custom unit price (SEK)</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% if product.orders %}
+					{% for order in product.orders %}
+						<tr>
+							<td>
+								<a href="{% url 'companies_orders_edit' fair.year order.purchasing_company.pk order.pk %}">{{ order.purchasing_company.name }}</a>
+								{% if order.name %}
+									<br />
+									<span style="font-style: italic;">{{ order.name }}</span>
+								{% endif %}
+							</td>
+							<td style="text-align: right;">{% if order.quantity %}{{ order.quantity }}{% endif %}</td>
+							<td style="text-align: right; font-style: italic;">{% if order.unit_price %}{{ order.unit_price }}{% endif %}</td>
+						</tr>
+					{% endfor %}
+				{% else %}
+					<tr>
+						<td colspan="3" style="text-align: center;">No orders for this product.</td>
+					</tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+{% endfor %}
+{% endblock %}

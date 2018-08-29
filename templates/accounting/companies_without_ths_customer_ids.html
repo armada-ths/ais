@@ -10,6 +10,7 @@
 <p>
 	<a class="btn btn-default" type="button" href="{% url 'invoice_companies' fair.year %}">Invoice companies</a>
 	<a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer ID's</a>
+	<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
 </p>
 
 {% if formset %}

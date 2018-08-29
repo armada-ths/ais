@@ -6,7 +6,7 @@ from django.forms import modelformset_factory
 from fair.models import Fair
 from companies.models import Company
 
-from .models import Order
+from .models import Order, Product
 from .forms import GenerateCompanyInvoicesForm, BaseCompanyCustomerIdFormSet, CompanyCustomerIdForm
 
 @permission_required('accounting.base')
@@ -128,6 +128,27 @@ def companies_without_ths_customer_ids(request, year):
 	{
 		'fair': fair,
 		'formset': formset
+	})
+
+
+@permission_required('accounting.base')
+def product_summary(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	products = []
+	
+	for product in Product.objects.filter(revenue__fair = fair):
+		products.append({
+			'name': product.name,
+			'category': product.category.name if product.category else None,
+			'unit_price': product.unit_price,
+			'orders': Order.objects.filter(product = product).order_by('purchasing_company')
+		})
+	
+	return render(request, 'accounting/product_summary.html',
+	{
+		'fair': fair,
+		'products': products
 	})
 
 
