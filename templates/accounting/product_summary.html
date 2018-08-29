@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
 
@@ -18,15 +19,15 @@
 
 {% for product in products %}
 	<h2>{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</h2>
-	<p><span style="font-weight: bold;">Unit price:</span> SEK {{ product.unit_price }}</p>
 	
 	<div class="table-responsive">
 		<table class="table">
 			<thead>
 				<tr>
 					<th>Company</th>
-					<th style="width: 25%; text-align: right;">Quantity</th>
-					<th style="width: 25%; text-align: right;">Custom unit price (SEK)</th>
+					<th style="width: 20%; text-align: right;">Quantity</th>
+					<th style="width: 20%; text-align: right;">Unit price (SEK)</th>
+					<th style="width: 20%; text-align: right;">Price (SEK)</th>
 				</tr>
 			</thead>
 			
@@ -36,15 +37,28 @@
 						<tr>
 							<td>
 								<a href="{% url 'companies_orders_edit' fair.year order.purchasing_company.pk order.pk %}">{{ order.purchasing_company.name }}</a>
+								
 								{% if order.name %}
+									<span style="font-style: italic;">({{ order.name }})</span>
+								{% endif %}
+								
+								{% if order.comment %}
 									<br />
-									<span style="font-style: italic;">{{ order.name }}</span>
+									<span style="font-style: italic;">{{ order.comment }}</span>
 								{% endif %}
 							</td>
-							<td style="text-align: right;">{% if order.quantity %}{{ order.quantity }}{% endif %}</td>
-							<td style="text-align: right; font-style: italic;">{% if order.unit_price %}{{ order.unit_price }}{% endif %}</td>
+							<td style="text-align: right;">{{ order.quantity }}</td>
+							<td style="text-align: right;">{% if order.unit_price is not None %}<span style="color: #000000;">{{ order.unit_price | intcomma }}</span>{% else %}<span style="color: #999999;">{{ product.unit_price | intcomma }}</span>{% endif %}</td>
+							<td style="text-align: right;">{{ order.price | intcomma }}</td>
 						</tr>
 					{% endfor %}
+					
+					<tr>
+						<td></td>
+						<td style="text-align: right; font-weight: 700;">{{ product.total_quantity }}</td>
+						<td></td>
+						<td style="text-align: right; font-weight: 700;">{{ product.total_price | intcomma }}</td>
+					</tr>
 				{% else %}
 					<tr>
 						<td colspan="3" style="text-align: center;">No orders for this product.</td>

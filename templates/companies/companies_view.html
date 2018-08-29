@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
@@ -164,8 +165,8 @@
 						<thead>
 							<tr>
 								<th>Product</th>
-								<th>Quantity</th>
-								<th>Unit price</th>
+								<th style="text-align: right;">Quantity</th>
+								<th style="text-align: right;">Unit price</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -178,8 +179,8 @@
 										<br /><span style="font-style: italic;">{{ order.comment }}</span>
 									{% endif %}
 								</td>
-								<td>{{ order.quantity }}</td>
-								<td>{% if order.unit_price is not None %} {{ order.unit_price }} {% else %} {{ order.product.unit_price }} {% endif %}</td>
+								<td style="text-align: right;">{{ order.quantity }}</td>
+								<td style="text-align: right;">{% if order.unit_price is not None %}<span style="color: #000000;">{{ order.unit_price | intcomma }}</span>{% else %}<span style="color: #999999;">{{ order.product.unit_price | intcomma }}</span>{% endif %}</td>
 								<td>
 									<a onclick="confirm('Do you want to remove the order?');" href="{% url 'companies_orders_remove' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
 									<a href="{% url 'companies_orders_edit' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-edit"></span></a>

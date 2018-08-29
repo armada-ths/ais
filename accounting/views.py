@@ -137,13 +137,33 @@ def product_summary(request, year):
 	
 	products = []
 	
-	for product in Product.objects.filter(revenue__fair = fair):
-		products.append({
-			'name': product.name,
-			'category': product.category.name if product.category else None,
-			'unit_price': product.unit_price,
-			'orders': Order.objects.filter(product = product).order_by('purchasing_company')
-		})
+	for product_raw in Product.objects.filter(revenue__fair = fair):
+		product = {
+			'name': product_raw.name,
+			'category': product_raw.category.name if product_raw.category else None,
+			'unit_price': product_raw.unit_price,
+			'orders': [],
+			'total_quantity': 0,
+			'total_price': 0
+		}
+		
+		for order_raw in Order.objects.filter(product = product_raw).order_by('purchasing_company'):
+			price = (order_raw.unit_price if order_raw.unit_price is not None else product_raw.unit_price) * order_raw.quantity
+			
+			product['orders'].append({
+				'pk': order_raw.id,
+				'purchasing_company': order_raw.purchasing_company,
+				'name': order_raw.name,
+				'quantity': order_raw.quantity,
+				'unit_price': order_raw.unit_price,
+				'price': price,
+				'comment': order_raw.comment
+			})
+			
+			product['total_quantity'] += order_raw.quantity
+			product['total_price'] += price
+		
+		products.append(product)
 	
 	return render(request, 'accounting/product_summary.html',
 	{
