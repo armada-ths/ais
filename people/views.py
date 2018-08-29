@@ -14,13 +14,6 @@ from .models import Profile
 from .forms import ProfileForm
 
 
-@permission_required('people.base')
-def list_people(request, year):
-    fair = get_object_or_404(Fair, year=year)
-    users = User.objects.filter(is_superuser=False)
-    return TemplateResponse(request, 'people_list.html', {'users': users, 'fair': fair})
-
-
 def view_person(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     user = get_object_or_404(User, pk=pk)
@@ -30,7 +23,11 @@ def view_person(request, year, pk):
         if not profile:
             profile = Profile.objects.create(user=user)
 
-        application = RecruitmentApplication.objects.filter(user=user, status='accepted', recruitment_period__fair__current=True).last()
+        application = RecruitmentApplication.objects.filter(
+                user=user,
+                status='accepted',
+                recruitment_period__fair__current=True
+            ).last()
         return TemplateResponse(request, 'view_person.html', {
             'person': profile,
             'role': application.delegated_role if application else "",
