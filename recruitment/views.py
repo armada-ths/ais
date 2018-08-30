@@ -20,7 +20,7 @@ from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
-from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer
+from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer, Location, Slot
 
 
 from django.forms import modelform_factory
@@ -692,11 +692,10 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
 	InterviewPlanningForm = modelform_factory(
 		RecruitmentApplication,
-		fields=('interviewer', 'interviewer2', 'interview_date', 'interview_location', 'recommended_role', 'scorecard', 'drive_document',
+		fields=('interviewer', 'interviewer2', 'slot', 'recommended_role', 'scorecard', 'drive_document',
 				'rating'),
 		widgets={
 			'rating': forms.Select(choices=[('', '---------')] + [(i, i) for i in range(1, 6)]),
-			'interview_date': forms.DateTimeInput(format='%Y-%m-%d %H:%M', attrs = {'placeholder' : 'YYYY-MM-DD hh:mm'}),
 			'scorecard' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
 			'drive_document' : forms.TextInput(attrs = {'placeholder' : 'Link to existing document'}),
 		},
@@ -714,6 +713,25 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	interviewers = application.recruitment_period.interviewers()
 	interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
 	interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
+	
+	used_slots = []
+	
+	for application in RecruitmentApplication.objects.select_related('slot').exclude(slot = None).exclude(pk = application.pk):
+		used_slots.append(application.slot)
+	
+	locations = [('', '---------')]
+	
+	for location in Location.objects.all():
+		slots = []
+		
+		for slot in Slot.objects.filter(location = location):
+			if slot not in used_slots and slot.start >= application.recruitment_period.start_date and slot.start <= application.recruitment_period.interview_end_date:
+				slots.append((slot.pk, slot.__str__))
+		
+		if len(slots) != 0:
+			locations.append((location.name, slots))
+	
+	interview_planning_form.fields['slot'].choices = locations
 	
 	languages = Language.objects.all()
 	interviewers_by_language = [(None, [])]
@@ -762,16 +780,15 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 			else:
 				return redirect('recruitment_period', fair.year, application.recruitment_period.pk)
 
-	if application.interview_date and application.interview_location and application.interviewer and application.interviewer2 and (request.user == application.interviewer or request.user == application.interviewer2):
+	if application.slot and application.interviewer and application.interviewer2 and (request.user == application.interviewer or request.user == application.interviewer2):
 		other = application.interviewer if application.interviewer != request.user else application.interviewer2
 		
-		
-		nicetime = timezone.localtime(application.interview_date)
+		nicetime = timezone.localtime(slot.start)
 		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
 		
-		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + application.interview_location + ". We will meet up outside THS Café. If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
+		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + slot.location + ". We will meet up outside THS Café. If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
 		
-		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + application.interview_location + " och vi träffas utanför THS Café. Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
+		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + slot.location + " och vi träffas utanför THS Café. Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
 	
 	else:
 		sms_english = None

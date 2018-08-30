@@ -2,13 +2,13 @@ BEGIN:VCALENDAR
 PRODID:{{ profile.token }}
 VERSION:2.0
 CALSCALE:GREGORIAN
-{% for interview in interviews %}{% if interview.interview_date %}BEGIN:VEVENT
+{% for interview in interviews %}{% if interview.slot %}BEGIN:VEVENT
 DTSTAMP:20180101T000000Z
 UID:{{ interview.pk }}
 SUMMARY:Interview with {{ interview.user.first_name }} {{ interview.user.last_name }}
-DTSTART:{{ interview.interview_date_iso8601 }}
-DTEND:{{ interview.interview_date_end_iso8601 }}
-LOCATION:{{ interview.interview_location }}
+DTSTART:{{ interview.slot.start_iso8601 }}
+DTEND:{{ interview.slot.end_iso8601 }}
+LOCATION:{{ interview.slot.location }}
 DESCRIPTION:Interview with {{ interview.user.first_name }} {{ interview.user.last_name }}
 STATUS:CONFIRMED
 SEQUENCE:0

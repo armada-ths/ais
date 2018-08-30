@@ -14,6 +14,34 @@ from markupfield.fields import MarkupField
 
 from people.models import Programme, Profile
 
+class Location(models.Model):
+	name = models.CharField(blank = False, null = False, max_length = 100)
+	
+	class Meta:
+		ordering = ['name']
+	
+	def __str__(self): return self.name
+
+class Slot(models.Model):
+	location = models.ForeignKey(Location, blank = False, null = False, on_delete = models.CASCADE)
+	start = models.DateTimeField(blank = False, null = False)
+	length = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Length (minutes)')
+	
+	class Meta:
+		ordering = ['start', 'location']
+	
+	@property
+	def start_iso8601(self): return self.start.isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
+	
+	@property
+	def end_iso8601(self): return (self.start + datetime.timedelta(minutes = self.length)).isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
+	
+	def __str__(self):
+		nice_start = timezone.localtime(self.start)
+		nice_end = timezone.localtime(self.start)
+		nice_end += datetime.timedelta(minutes = self.length)
+		
+		return nice_start.strftime('%Y-%m-%d %H:%M') + ' – ' + nice_end.strftime('%Y-%m-%d %H:%M')
 
 class ExtraField(models.Model):
     def __str__(self):
@@ -251,25 +279,16 @@ class RecruitmentApplication(models.Model):
 	interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer', on_delete=models.CASCADE)
 	interviewer2 = models.ForeignKey(User, null=True, blank=True, related_name='interviewer2', on_delete=models.CASCADE)
 	exhibitor = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
-	interview_date = models.DateTimeField(null=True, blank=True)
-	interview_location = models.CharField(null=True, blank=True, max_length=100)
+	slot = models.ForeignKey(Slot, null = True, blank = True, on_delete = models.CASCADE, verbose_name = 'Time and location')
 	submission_date = models.DateTimeField(default=timezone.now, blank=True)
 	recommended_role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
 	delegated_role = models.ForeignKey(Role, null=True, blank=True, related_name='delegated_role', on_delete=models.CASCADE)
 	superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user', on_delete=models.CASCADE)
 	scorecard = models.CharField(null=True, blank=True, max_length=300)
 	drive_document = models.CharField(null=True, blank=True, max_length=300)
-
-	@property
-	def interview_date_iso8601(self): return self.interview_date.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
 	
 	@property
 	def profile(self): return Profile.objects.filter(user = self.user).first()
-
-	@property
-	def interview_date_end_iso8601(self):
-		end = self.interview_date + datetime.timedelta(minutes = 90)
-		return end.isoformat().replace("-", "").replace(":", "").replace("+0000", "Z")
 
 	@property
 	def roles(self): return self.roleapplication_set.order_by("order")
@@ -292,8 +311,8 @@ class RecruitmentApplication(models.Model):
 		if self.status:
 			return self.status
 		if self.interviewer:
-			if self.interview_date:
-				if self.interview_date > timezone.now():
+			if self.slot:
+				if self.slot.start > timezone.now():
 					return 'interview_planned'
 				else:
 					return 'interview_done'

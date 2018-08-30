@@ -30,8 +30,14 @@ class RoleAdmin(admin.ModelAdmin):
 	list_display = ['name', 'organization_group', 'recruitment_period']
 	list_filter = ['recruitment_period', 'organization_group']
 
+@admin.register(Slot)
+class SlotAdmin(admin.ModelAdmin):
+	list_display = ['__str__', 'location']
+	list_filter = ['location']
+
 admin.site.register(RecruitmentPeriod)
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)
 admin.site.register(CustomField, CustomFieldAdmin)
 admin.site.register(CustomFieldAnswer)
 admin.site.register(CustomFieldArgument)
+admin.site.register(Location)

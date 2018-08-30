@@ -41,7 +41,7 @@
                 <p><a href="mailto:{{ application.user.email }}">{{ application.user.email }}</a></p>
 
                 <label>Phone number</label>
-                <p>{{ application.user.profile.phone_number }}</p>
+                <p><a href="tel:{{ application.user.profile.phone_number }}">{{ application.user.profile.phone_number }}</a></p>
 
                 <label>Preferred language</label>
                 <p>{{ application.user.profile.preferred_language }}</p>
@@ -56,8 +56,7 @@
                 <label>Roles</label>
                 <ol>
                     {% for role in application.roleapplication_set.all %}
-                        <li data-toggle="tooltip" data-placement="left"
-                            title="{{ role.role.description }}">{{ role }}</li>
+                        <li data-toggle="tooltip" data-placement="left" title="{{ role.role.description }}">{{ role.role.name }}</li>
                     {% endfor %}
                 </ol>
             {% include 'recruitment/custom_fields_static.html' with questions_with_answers=application_questions_with_answers %}
