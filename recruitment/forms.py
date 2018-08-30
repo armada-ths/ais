@@ -25,14 +25,12 @@ class RecruitmentPeriodForm(ModelForm):
 		widgets = {
 			'start_date': forms.TextInput(attrs={'class': 'datepicker'}),
 			'end_date': forms.TextInput(attrs={'class': 'datepicker'}),
-			'interview_end_date': forms.TextInput(attrs={'class': 'datepicker'}),
 			'allowed_groups': forms.CheckboxSelectMultiple
 		}
 		
 		labels = {
 			'start_date': 'Start date (Format: 2016-12-24 13:37)',
-			'end_date': 'End date (Format: 2016-12-24 13:37)',
-			'interview_end_date': 'Interview end date (Format: 2016-12-24 13:37)',
+			'end_date': 'End date (Format: 2016-12-24 13:37)'
 		}
 
 class RecruitmentApplicationSearchForm(forms.Form):
