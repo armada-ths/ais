@@ -30,6 +30,10 @@
 				<a href="{% url 'recruitment_period_email' fair.year recruitment_period.id %}">
 					<button class="btn btn-default btn-lg">E-mail addresses</button>
 				</a>
+				
+				<a href="{% url 'recruitment_period_locations' fair.year recruitment_period.id %}">
+					<button class="btn btn-default btn-lg">Locations</button>
+				</a>
 			{% endif %}
 		</div>
 	</div>

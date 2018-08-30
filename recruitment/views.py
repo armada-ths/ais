@@ -453,6 +453,81 @@ def recruitment_period_email(request, year, pk, template_name='recruitment/recru
 	})
 
 
+def recruitment_period_locations(request, year, pk):
+	fair = get_object_or_404(Fair, year=year)
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	applications = RecruitmentApplication.objects.select_related('slot').filter(recruitment_period = recruitment_period).exclude(slot = None)
+	
+	used_slots = {}
+	
+	for application in applications:
+		used_slots[application.slot] = application
+	
+	locations = {}
+	slots = Slot.objects.select_related('location').filter(recruitment_period = recruitment_period)
+	
+	for location in Location.objects.all():
+		locations[location] = []
+	
+	for slot in slots:
+		locations[slot.location].append({
+			'slot': slot,
+			'interview': used_slots[slot] if slot in used_slots else None
+		})
+	
+	locations_list = []
+	
+	for location in locations:
+		location_modified = {
+			'name': location.name,
+			'slots': locations[location]
+		}
+		
+		date_modified_previous = None
+		
+		for i in range(len(location_modified['slots'])):
+			date = timezone.localtime(location_modified['slots'][i]['slot'].start)
+			
+			time_start = date.strftime('%H:%M')
+			
+			time_end = date + datetime.timedelta(minutes = slot.length)
+			time_end = time_end.strftime('%H:%M')
+			
+			date_modified = date.strftime('%Y-%m-%d')
+			
+			location_modified['slots'][i] = {
+				'date': date_modified if date_modified_previous != date_modified else None,
+				'rowspawn': None,
+				'time_start': time_start,
+				'time_end': time_end,
+				'interview': location_modified['slots'][i]['interview']
+			}
+			
+			date_modified_previous = date_modified
+		
+		c = 1
+		
+		for i in reversed(range(len(location_modified['slots']))):
+			if location_modified['slots'][i]['date'] is not None:
+				if c > 1: location_modified['slots'][i]['rowspan'] = c
+				c = 1
+			
+			else:
+				c += 1
+		
+		if c > 1:
+			location_modified['slots'][0]['rowspan'] = c
+		
+		locations_list.append(location_modified)
+	
+	return render(request, 'recruitment/recruitment_period_locations.html',
+	{
+		'fair': fair,
+		'recruitment_period': recruitment_period,
+		'locations': locations_list
+	})
+
+
 def recruitment_period_delete(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
     

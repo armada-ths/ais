@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ol class="breadcrumb">
+	<li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+	<li><a href="{% url 'recruitment_period' fair.year recruitment_period.id %}">{{ recruitment_period.name }}</a></li>
+	<li class="active">Locations</li>
+</ol>
+
+<style type="text/css">
+	textarea
+	{
+		height: 200px;
+		width: 100%;
+		box-sizing: border-box;
+		font-size: 12pt;
+	}
+</style>
+
+<h1>Locations</h1>
+<p>The following tables summarize all scheduled interviews.</p>
+
+{% for location in locations %}
+	<h2>{{ location.name }}</h2>
+	
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width: 20%;">Date</th>
+					<th style="width: 20%;">Time</th>
+					<th>Interview</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% for slot in location.slots %}
+					<tr>
+						{% if slot.date %}<td style="font-weight: 700;" rowspan="{{ slot.rowspan }}">{{ slot.date }}</td>{% endif %}
+						<td>{{ slot.time_start }}-{{ slot.time_end }}</td>
+						<td>{% if slot.interview %}<a href="{% url 'recruitment_application_interview' fair.year slot.interview.recruitment_period.pk slot.interview.pk %}">{{ slot.interview.user }}</a> by <a href="{% url 'view_person' fair.year slot.interview.interviewer.pk %}">{{ slot.interview.interviewer }}</a>{% if slot.interview.interviewer2 %} and <a href="{% url 'view_person' fair.year slot.interview.interviewer2.pk %}">{{ slot.interview.interviewer2 }}</a>{% endif %}{% endif %}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endfor %}
+{% endblock %}
