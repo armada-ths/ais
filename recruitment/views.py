@@ -1,3 +1,6 @@
+import datetime, json
+import requests as r
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
@@ -12,16 +15,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-import json
-import requests as r
-
 from fair.models import Fair
 from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer, Location, Slot
-
 
 from django.forms import modelform_factory
 from django import forms
@@ -719,19 +718,40 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	for application in RecruitmentApplication.objects.select_related('slot').exclude(slot = None).exclude(pk = application.pk):
 		used_slots.append(application.slot)
 	
-	locations = [('', '---------')]
+	slots_by_day = [('', '---------')]
+	all_slots = Slot.objects.filter(recruitment_period = application.recruitment_period)
 	
-	for location in Location.objects.all():
-		slots = []
+	for slot in all_slots:
+		found = False
 		
-		for slot in Slot.objects.filter(location = location):
-			if slot not in used_slots and slot.start >= application.recruitment_period.start_date and slot.start <= application.recruitment_period.interview_end_date:
-				slots.append((slot.pk, slot.__str__))
+		slot_yyyymmdd = timezone.localtime(slot.start)
+		slot_yyyymmdd = slot_yyyymmdd.strftime('%Y-%m-%d')
 		
-		if len(slots) != 0:
-			locations.append((location.name, slots))
+		for slot_by_day in slots_by_day:
+			if slot_by_day[0] == slot_yyyymmdd:
+				found = True
+				break
+		
+		if not found:
+			slots_by_day.append((slot_yyyymmdd, []))
 	
-	interview_planning_form.fields['slot'].choices = locations
+	for slot in all_slots:
+		if slot in used_slots: continue
+		
+		slot_start = timezone.localtime(slot.start)
+		slot_yyyymmdd = slot_start.strftime('%Y-%m-%d')
+		
+		for slot_by_day in slots_by_day:
+			if slot_by_day[0] == slot_yyyymmdd:
+				slot_hhmm_start = slot_start.strftime('%H:%M')
+				
+				slot_hhmm_end = slot_start + datetime.timedelta(minutes = slot.length)
+				slot_hhmm_end = slot_hhmm_end.strftime('%H:%M')
+				
+				slot_by_day[1].append((slot.pk, slot_hhmm_start + '-' + slot_hhmm_end + ' | ' + str(slot.location)))
+				break
+	
+	interview_planning_form.fields['slot'].choices = slots_by_day
 	
 	languages = Language.objects.all()
 	interviewers_by_language = [(None, [])]

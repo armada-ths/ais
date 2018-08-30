@@ -32,8 +32,8 @@ class RoleAdmin(admin.ModelAdmin):
 
 @admin.register(Slot)
 class SlotAdmin(admin.ModelAdmin):
-	list_display = ['__str__', 'location']
-	list_filter = ['location']
+	list_display = ['__str__', 'location', 'recruitment_period']
+	list_filter = ['location', 'recruitment_period']
 
 admin.site.register(RecruitmentPeriod)
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)
