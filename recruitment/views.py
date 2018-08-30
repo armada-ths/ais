@@ -476,12 +476,16 @@ def recruitment_period_locations(request, year, pk):
 		})
 	
 	locations_list = []
+	j = 0
 	
 	for location in locations:
 		location_modified = {
+			'i': j,
 			'name': location.name,
 			'slots': locations[location]
 		}
+		
+		j += 1
 		
 		date_modified_previous = None
 		

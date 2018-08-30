@@ -20,7 +20,14 @@
 <h1>Locations</h1>
 <p>The following tables summarize all scheduled interviews.</p>
 
+<ul>
+	{% for location in locations %}
+		<li><a href="#l{{ location.i }}">{{ location.name }}</a></li>
+	{% endfor %}
+</ul>
+
 {% for location in locations %}
+	<a id="l{{ location.i }}"></a>
 	<h2>{{ location.name }}</h2>
 	
 	<div class="table-responsive">
