@@ -885,9 +885,17 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 		nicetime = timezone.localtime(slot.start)
 		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
 		
-		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + slot.location + ". We will meet up outside THS Café. If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
+		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + slot.location + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
 		
-		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + slot.location + " och vi träffas utanför THS Café. Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
+		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + slot.location + ". Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
+	
+	elif application.slot and application.interviewer and request.user == application.interviewer:
+		nicetime = timezone.localtime(slot.start)
+		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
+		
+		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + str(slot.location) + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. I am looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
+		
+		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + str(slot.location) + ". Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. Jag ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
 	
 	else:
 		sms_english = None
