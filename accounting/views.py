@@ -136,9 +136,11 @@ def product_summary(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
 	products = []
+	j = 1
 	
 	for product_raw in Product.objects.filter(revenue__fair = fair):
 		product = {
+			'i': j,
 			'name': product_raw.name,
 			'category': product_raw.category.name if product_raw.category else None,
 			'unit_price': product_raw.unit_price,
@@ -146,6 +148,8 @@ def product_summary(request, year):
 			'total_quantity': 0,
 			'total_price': 0
 		}
+		
+		j += 1
 		
 		for order_raw in Order.objects.filter(product = product_raw).order_by('purchasing_company'):
 			price = (order_raw.unit_price if order_raw.unit_price is not None else product_raw.unit_price) * order_raw.quantity

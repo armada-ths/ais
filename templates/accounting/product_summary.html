@@ -6,7 +6,7 @@
 {% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
 
 {% block content %}
-<h1>Invoice companies</h1>
+<h1>Product summary</h1>
 
 <p>
 	<a class="btn btn-default" type="button" href="{% url 'invoice_companies' fair.year %}">Invoice companies</a>
@@ -14,11 +14,16 @@
 	<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
 </p>
 
-<h1>Product summary</h1>
 <p>The following tables summarize all orders for all products at this fair.</p>
 
+<ul>
+	{% for product in products %}
+		<li><a href="#l{{ product.i }}">{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</a></li>
+	{% endfor %}
+</ul>
+
 {% for product in products %}
-	<h2>{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</h2>
+	<h2 id="l{{ product.i }}">{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</h2>
 	
 	<div class="table-responsive">
 		<table class="table">
