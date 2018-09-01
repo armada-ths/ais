@@ -794,8 +794,8 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	
 	used_slots = []
 	
-	for application in RecruitmentApplication.objects.select_related('slot').exclude(slot = None).exclude(pk = application.pk):
-		used_slots.append(application.slot)
+	for a in RecruitmentApplication.objects.select_related('slot').exclude(slot = None).exclude(pk = application.pk):
+		used_slots.append(a.slot)
 	
 	slots_by_day = [('', '---------')]
 	all_slots = Slot.objects.filter(recruitment_period = application.recruitment_period)
