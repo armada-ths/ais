@@ -1,5 +1,4 @@
 from django import template
-from events.models import EventAttendence
 from lib.util import before, after, has_common_element
 
 register = template.Library()
