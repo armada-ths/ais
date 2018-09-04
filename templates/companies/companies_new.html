@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
+
+{% block content %}
+<h1>New company</h1>
+
+<p>
+	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Companies</a>
+	<a href="{% url 'groups_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Groups</a>
+	<a href="{% url 'statistics' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Statistics</a>
+</p>
+
+<form method="post">
+	{% csrf_token %}
+	{{ form | crispy }}
+	<input class="btn btn-primary" type="submit" value="Save new company" />
+</form>
+{% endblock %}

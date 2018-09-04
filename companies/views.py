@@ -259,6 +259,23 @@ def companies_list(request, year):
 
 
 @permission_required('companies.base')
+def companies_new(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	form = CompanyForm(request.POST or None)
+	
+	if request.POST and form.is_valid():
+		company = form.save()
+		return redirect('companies_view', fair.year, company.pk)
+	
+	return render(request, 'companies/companies_new.html',
+	{
+		'fair': fair,
+		'form': form
+	})
+
+
+@permission_required('companies.base')
 def companies_view(request, year, pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
