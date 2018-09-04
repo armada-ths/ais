@@ -14,7 +14,6 @@ from django.views.decorators.cache import cache_page
 import api.serializers as serializers, api.deserializers as deserializers
 
 from banquet.models import BanquetteAttendant
-from events.models import Event
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
@@ -46,10 +45,7 @@ def events(request):
     '''
     Returns all events for this years fair
     '''
-    fair = Fair.objects.get(current=True)
-    events = Event.objects.filter(published=True, fair=fair)
-    data = [serializers.event(request, event) for event in events]
-    return JsonResponse(data, safe=False)
+    return JsonResponse([], safe=False)
 
 
 

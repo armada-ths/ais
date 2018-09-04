@@ -1,5 +1,4 @@
 from recruitment.models import RecruitmentPeriod, Role
-from events.models import Event
 from django.forms import modelform_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from banquet.models import BanquetteAttendant
@@ -36,7 +35,6 @@ def index(request, year=None):
                           for
                           role in Role.objects.filter(parent_role=None)],
             },
-            "events": Event.objects.filter(fair=fair).order_by("-event_start"),
             "is_attending_banquette": BanquetteAttendant.objects.filter(fair=fair, user=request.user).exists(),
             "fair": fair
         })
