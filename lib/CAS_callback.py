@@ -19,7 +19,7 @@ def callback(tree):
 		if ldap["last_name"] is not None:
 			user.last_name = ldap["last_name"]
 		
-		if ldap["email"] is not None:
+		if ldap["email"] is not None and (user.email is None or user.email.endswidth('@kth.se')):
 			user.email = ldap["email"]
 		
 		user.save()
