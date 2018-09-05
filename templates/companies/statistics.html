@@ -95,7 +95,7 @@
 	<script>
 		google.charts.load('current', {'packages':['corechart']});
 		google.charts.setOnLoadCallback(drawChart);
-
+		
 		function drawChart()
 		{
 			var data = new google.visualization.DataTable();
@@ -105,7 +105,7 @@
 			{% for signature in contract.signatures %}
 				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
 			{% endfor %}
-		
+			
 			data.addRows([
 			{% for row in contract.table %}
 				[
@@ -146,10 +146,10 @@
 					title: "Time"
 				}
 			};
-
+			
 			var chart = new google.visualization.LineChart(
 			document.getElementById('chart_div_{{ contract.i }}'));
-
+			
 			chart.draw(data, options);
 		}
 	</script>

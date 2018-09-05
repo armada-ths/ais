@@ -24,7 +24,7 @@ from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, 
 
 from django.forms import modelform_factory
 from django import forms
-from .forms import RoleApplicationForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, RolesForm, ProfileForm, ProfilePictureForm
+from .forms import RoleApplicationForm, CompareForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, RolesForm, ProfileForm, ProfilePictureForm
 
 def assign_roles(request, year):
     if not request.user.has_perm('recruitment.administer_roles'):
@@ -62,6 +62,77 @@ def recruitment(request, year, template_name='recruitment/recruitment.html'):
         'fair': fair,
         'roles': Role.objects.filter(recruitment_period__fair = fair)
     })
+
+
+def recruitment_statistics(request, year):
+	fair = get_object_or_404(Fair, year=year)
+	
+	form = CompareForm(request.POST or None)
+	
+	recruitment_periods = []
+	
+	if request.POST and form.is_valid():
+		for recruitment_period in form.cleaned_data['recruitment_periods']:
+			i = 1
+			applications = []
+			
+			for application in RecruitmentApplication.objects.filter(recruitment_period = recruitment_period):
+				if application.submission_date > recruitment_period.end_date and not form.cleaned_data['include_late']: continue
+				
+				applications.append({
+					'i': i,
+					'difference': (application.submission_date - recruitment_period.start_date).total_seconds() / 86400
+				})
+				
+				i += 1
+			
+			recruitment_periods.append({
+				'name': recruitment_period.name,
+				'applications': applications
+			})
+	
+		table_map = {}
+		i = 0
+		
+		for recruitment_period in recruitment_periods:
+			j = 1
+			
+			for application in recruitment_period['applications']:
+				current_row = None
+				
+				for row in table_map:
+					if row == application['difference']:
+						current_row = table_map[row]
+						break
+				
+				if current_row is None:
+					current_row = [None for x in range(len(recruitment_periods))]
+					
+					table_map[application['difference']] = current_row
+				
+				current_row[i] = j
+				
+				j += 1
+			i += 1
+		
+		table = []
+		
+		for row in table_map:
+			table.append({
+				'difference': row,
+				'cells': table_map[row]
+			})
+	
+	else:
+		table = None
+	
+	
+	return render(request, 'recruitment/statistics.html', {
+		'fair': fair,
+		'form': form,
+		'recruitment_periods': form.cleaned_data['recruitment_periods'] if table else None,
+		'table': table
+	})
 
 
 

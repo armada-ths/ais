@@ -33,6 +33,12 @@ class RecruitmentPeriodForm(ModelForm):
 			'end_date': 'End date (Format: 2016-12-24 13:37)'
 		}
 
+
+class CompareForm(forms.Form):
+	recruitment_periods = forms.ModelMultipleChoiceField(queryset = RecruitmentPeriod.objects.all(), widget = forms.CheckboxSelectMultiple(), required = True, label = 'Recruitment periods to compare')
+	include_late = forms.BooleanField(required = False, label = 'Include late applications, submitted after the end date')
+
+
 class RecruitmentApplicationSearchForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)

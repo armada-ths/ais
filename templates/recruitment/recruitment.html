@@ -58,13 +58,9 @@
                     <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
                         period
                     </button>
-                </a></p>
-
-
-
-
-            {% endif %}
-            {% if perms.recruitment.administer_recruitment %}
+                </a>
+                <a class="btn btn-default" href="{% url "recruitment_statistics" fair.year %}">Statistics</a>
+                </p>
                 <form action="{% url "assign_roles" fair.year %}" method="POST">
                     {% csrf_token %}
                     <button class="btn btn-default">Assign roles</button>

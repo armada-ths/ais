@@ -170,7 +170,7 @@ class RecruitmentPeriod(models.Model):
 	allowed_groups = models.ManyToManyField(Group, blank = True, help_text = 'Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.')
 
 	class Meta:
-		ordering = ['fair', 'name']
+		ordering = ['fair', 'start_date', 'name']
 		permissions = (
 			('administer_recruitment', 'Administer recruitment'),
 		)
@@ -301,6 +301,7 @@ class RecruitmentApplication(models.Model):
 	status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
 
 	class Meta:
+		ordering = ['submission_date']
 		permissions = (
 			('administer_recruitment_applications', 'Administer recruitment applications'),
 			('view_recruitment_applications', 'View recruitment applications'),
