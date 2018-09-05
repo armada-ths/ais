@@ -50,9 +50,9 @@ def recruitment(request, year, template_name='recruitment/recruitment.html'):
     fair = get_object_or_404(Fair, year=year)
 
     recruitment_periods = RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date')
-    
+
     roles = []
-    
+
     for period in recruitment_periods:
         for role in period.recruitable_roles.all():
             roles.append(role)
@@ -166,7 +166,7 @@ def interview_state_counts(request, year, pk):
             application_state = application.state()
             if application_state in interview_state_count_map[application.interviewer]:
                 interview_state_count_map[application.interviewer][application_state] += 1
-                
+
         if application.interviewer2:
             if not application.interviewer2 in interview_state_count_map:
                 interview_state_count_map[application.interviewer2] = dict([(state[0], 0) for state in interview_count_states])
@@ -466,8 +466,8 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 	return render(request, template_name, {
 		'recruitment_period': recruitment_period,
 		'application': recruitment_period.recruitmentapplication_set.filter(user=request.user).first(),
-		'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) | 
-			recruitment_period.recruitmentapplication_set.filter(interviewer2=request.user)| 
+		'interviews': (recruitment_period.recruitmentapplication_set.filter(interviewer=request.user) |
+			recruitment_period.recruitmentapplication_set.filter(interviewer2=request.user)|
 			recruitment_period.recruitmentapplication_set.filter(user=request.user)).all(),
 		'paginator': paginator,
 		'applications': applications,
@@ -484,7 +484,7 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 def recruitment_period_export(request, year, pk, template_name='recruitment/recruitment_period_export.html'):
 	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
 	applications = RecruitmentApplication.objects.filter(recruitment_period = recruitment_period).prefetch_related("user")
-	
+
 	return render(request, template_name,
 	{
 		'applications': applications
@@ -495,27 +495,27 @@ def recruitment_period_email(request, year, pk, template_name='recruitment/recru
 	fair = get_object_or_404(Fair, year=year)
 	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
 	applications = RecruitmentApplication.objects.filter(recruitment_period = recruitment_period).prefetch_related("user")
-	
+
 	categories = []
-	
+
 	for application in applications:
 		category_current = None
-		
+
 		for category in categories:
 			if category["name"] == application.status:
 				category_current = category
 				break
-		
+
 		if category_current is None:
 			category_current = {"name": application.status, "users": []}
 			categories.append(category_current)
-		
+
 		category_current["users"].append({
 			"i": len(category_current["users"]) + 1,
 			"name": application.user.first_name + " " + application.user.last_name,
 			"email_address": application.user.email
 		})
-	
+
 	return render(request, template_name,
 	{
 		"fair": fair,
@@ -528,48 +528,48 @@ def recruitment_period_locations(request, year, pk):
 	fair = get_object_or_404(Fair, year=year)
 	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
 	applications = RecruitmentApplication.objects.select_related('slot').filter(recruitment_period = recruitment_period).exclude(slot = None)
-	
+
 	used_slots = {}
-	
+
 	for application in applications:
 		used_slots[application.slot] = application
-	
+
 	locations = {}
 	slots = Slot.objects.select_related('location').filter(recruitment_period = recruitment_period)
-	
+
 	for location in Location.objects.all():
 		locations[location] = []
-	
+
 	for slot in slots:
 		locations[slot.location].append({
 			'slot': slot,
 			'interview': used_slots[slot] if slot in used_slots else None
 		})
-	
+
 	locations_list = []
 	j = 0
-	
+
 	for location in locations:
 		location_modified = {
 			'i': j,
 			'name': location.name,
 			'slots': locations[location]
 		}
-		
+
 		j += 1
-		
+
 		date_modified_previous = None
-		
+
 		for i in range(len(location_modified['slots'])):
 			date = timezone.localtime(location_modified['slots'][i]['slot'].start)
-			
+
 			time_start = date.strftime('%H:%M')
-			
+
 			time_end = date + datetime.timedelta(minutes = slot.length)
 			time_end = time_end.strftime('%H:%M')
-			
+
 			date_modified = date.strftime('%Y-%m-%d')
-			
+
 			location_modified['slots'][i] = {
 				'date': date_modified if date_modified_previous != date_modified else None,
 				'rowspawn': None,
@@ -577,24 +577,24 @@ def recruitment_period_locations(request, year, pk):
 				'time_end': time_end,
 				'interview': location_modified['slots'][i]['interview']
 			}
-			
+
 			date_modified_previous = date_modified
-		
+
 		c = 1
-		
+
 		for i in reversed(range(len(location_modified['slots']))):
 			if location_modified['slots'][i]['date'] is not None:
 				if c > 1: location_modified['slots'][i]['rowspan'] = c
 				c = 1
-			
+
 			else:
 				c += 1
-		
+
 		if c > 1:
 			location_modified['slots'][0]['rowspan'] = c
-		
+
 		locations_list.append(location_modified)
-	
+
 	return render(request, 'recruitment/recruitment_period_locations.html',
 	{
 		'fair': fair,
@@ -605,22 +605,22 @@ def recruitment_period_locations(request, year, pk):
 
 def recruitment_period_delete(request, year, pk):
     recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    
+
     if not user_can_access_recruitment_period(request.user, recruitment_period):
         return HttpResponseForbidden()
-    
+
     recruitment_period.delete()
     return redirect('recruitment', year)
 
 
 def recruitment_period_edit(request, year, pk = None):
 	recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
-	
+
 	if not user_can_access_recruitment_period(request.user, recruitment_period): return HttpResponseForbidden()
-	
+
 	fair = get_object_or_404(Fair, year=year)
 	form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)
-	
+
 	if request.POST:
 		if form.is_valid():
 			recruitment_period = form.save(commit=False)
@@ -628,11 +628,11 @@ def recruitment_period_edit(request, year, pk = None):
 			recruitment_period.save()
 			recruitment_period.interview_questions.handle_questions_from_request(request, 'interview_questions')
 			recruitment_period.application_questions.handle_questions_from_request(request, 'application_questions')
-			
+
 			recruitment_period.save()
-			
+
 			return redirect('recruitment_period', year=year, pk=recruitment_period.id)
-	
+
 	return render(request, 'recruitment/recruitment_period_new.html', {
 		'form': form,
 		'recruitment_period': recruitment_period,
@@ -855,14 +855,14 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
 	profile_pic_form = None
 	profile = Profile.objects.get(user=application.user)
-	
+
 	if Profile.objects.filter(user=application.user).first():
 		profile_pic_form = ProfilePictureForm(request.POST or None, request.FILES or None, instance=profile)
 
 	interviewers = application.recruitment_period.interviewers()
 	interview_planning_form = InterviewPlanningForm(request.POST or None, instance=application)
 	interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
-	
+
 	used_slots = []
 	
 	for a in RecruitmentApplication.objects.select_related('slot').exclude(slot = None).exclude(pk = application.pk):
@@ -870,58 +870,58 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	
 	slots_by_day = [('', '---------')]
 	all_slots = Slot.objects.filter(recruitment_period = application.recruitment_period)
-	
+
 	for slot in all_slots:
 		found = False
-		
+
 		slot_yyyymmdd = timezone.localtime(slot.start)
 		slot_yyyymmdd = slot_yyyymmdd.strftime('%Y-%m-%d')
-		
+
 		for slot_by_day in slots_by_day:
 			if slot_by_day[0] == slot_yyyymmdd:
 				found = True
 				break
-		
+
 		if not found:
 			slots_by_day.append((slot_yyyymmdd, []))
-	
+
 	for slot in all_slots:
 		if slot in used_slots: continue
-		
+
 		slot_start = timezone.localtime(slot.start)
 		slot_yyyymmdd = slot_start.strftime('%Y-%m-%d')
-		
+
 		for slot_by_day in slots_by_day:
 			if slot_by_day[0] == slot_yyyymmdd:
 				slot_hhmm_start = slot_start.strftime('%H:%M')
-				
+
 				slot_hhmm_end = slot_start + datetime.timedelta(minutes = slot.length)
 				slot_hhmm_end = slot_hhmm_end.strftime('%H:%M')
-				
+
 				slot_by_day[1].append((slot.pk, slot_hhmm_start + '-' + slot_hhmm_end + ' | ' + str(slot.location)))
 				break
-	
+
 	interview_planning_form.fields['slot'].choices = slots_by_day
-	
+
 	languages = Language.objects.all()
 	interviewers_by_language = [(None, [])]
-	
+
 	for language in languages: interviewers_by_language.insert(0, (language, []))
-	
+
 	for interviewer in interviewers:
 		profile = Profile.objects.filter(user = interviewer).first()
-		
+
 		for language in interviewers_by_language:
 			if language[0] == profile.preferred_language:
 				language[1].append((interviewer.pk, interviewer.get_full_name()))
 				break
-	
+
 	interviewers_by_language[len(interviewers_by_language) - 1] = ('No preferred language', interviewers_by_language[len(interviewers_by_language) - 1][1])
-	
+
 	interviewers_by_language = [x for x in interviewers_by_language if len(x[1]) > 0]
-	
+
 	interviewers_by_language.insert(0, ('', '---------'))
-	
+
 	if 'interviewer' in interview_planning_form.fields: interview_planning_form.fields['interviewer'].choices = interviewers_by_language
 	if 'interviewer2' in interview_planning_form.fields: interview_planning_form.fields['interviewer2'].choices = interviewers_by_language
 
@@ -929,7 +929,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 		RecruitmentApplication,
 		fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
 	)
-	
+
 	role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
 	role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
 	role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
@@ -939,7 +939,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
 	if request.POST:
 		application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)
-		
+
 		if interview_planning_form.is_valid():
 			interview_planning_form.save()
 
@@ -952,22 +952,22 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
 	if application.slot and application.interviewer and application.interviewer2 and (request.user == application.interviewer or request.user == application.interviewer2):
 		other = application.interviewer if application.interviewer != request.user else application.interviewer2
-		
+
 		nicetime = timezone.localtime(slot.start)
 		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
-		
+
 		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + slot.location + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
-		
+
 		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + slot.location + ". Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
-	
+
 	elif application.slot and application.interviewer and request.user == application.interviewer:
 		nicetime = timezone.localtime(slot.start)
 		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
-		
+
 		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + str(slot.location) + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. I am looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
-		
+
 		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + str(slot.location) + ". Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. Jag ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
-	
+
 	else:
 		sms_english = None
 		sms_swedish = None
@@ -998,12 +998,24 @@ def recruitment_application_delete(request, year, pk):
 def user_can_access_recruitment_period(user, recruitment_period):
     if user.is_superuser:
         return True
-    
+
     if len(user.groups.all().intersection(recruitment_period.allowed_groups.all())) != 0:
         return True
-    
+
     #for group in user.groups.all():
     #    if group in recruitment_period.allowed_groups.all():
     #        return True
-    
+
     return False
+
+def contact(request, year):
+    fair = get_object_or_404(Fair, year=year)
+    # we don't have a poistion hierachy
+    # instead we sort by recruitment_period__start_date
+    users = RecruitmentApplication.objects.filter(
+        status='accepted', recruitment_period__fair__current=True
+        ).order_by('-delegated_role__organization_group', 'recruitment_period__start_date')
+    return render(request, 'recruitment/contact.html', {
+        'fair': fair,
+        'users': users,
+    })
