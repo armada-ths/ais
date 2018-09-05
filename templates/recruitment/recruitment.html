@@ -60,6 +60,7 @@
                     </button>
                 </a>
                 <a class="btn btn-default" href="{% url "recruitment_statistics" fair.year %}">Statistics</a>
+                <a class="btn btn-default" href="{% url "contact" fair.year %}">Contact list</a>
                 </p>
                 <form action="{% url "assign_roles" fair.year %}" method="POST">
                     {% csrf_token %}
