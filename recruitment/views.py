@@ -989,6 +989,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	})
 
 
+@permission_required('recruitment.delete_recruitmentapplication')
 def recruitment_application_delete(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)

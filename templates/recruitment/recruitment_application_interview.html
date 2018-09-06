@@ -100,9 +100,7 @@
 
         <button type="submit" class="btn btn-primary">Save</button>
         
-        <a class="btn btn-danger"
-            href="{% url 'recruitment_application_delete' fair.year application.recruitment_period.id application.id %}"
-            onclick="return confirm('Are you sure you wan\'t to delete?')">Delete</a>
+        {% if perms.recruitment.delete_recruitmentapplication %}<a class="btn btn-danger" href="{% url 'recruitment_application_delete' fair.year application.recruitment_period.id application.id %}" onclick="return confirm('Are you sure you want to delete?')">Delete</a>{% endif %}
     </form>
 
     <h3>Comments</h3>
