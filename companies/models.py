@@ -95,6 +95,7 @@ class Company(models.Model):
 		('FRANCE', 'France'),
 		('GERMANY', 'Germany'),
 		('NORWAY', 'Norway'),
+		('POLAND', 'Poland'),
 		('SWEDEN', 'Sweden'),
 		('UNITED_KINGDOM', 'United Kingdom'),
 	]
