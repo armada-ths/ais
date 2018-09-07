@@ -34,21 +34,14 @@
 				<ul>
 					{% for other_fair in fairs %}
 						<li>
-							{% if fair == other_fair %}<strong>{{ other_fair }}</strong>
-							{% else %}<a href="{% url 'companies_view' other_fair.year company.pk %}">{{ other_fair }}</a>{% endif %}
+							{% if fair == other_fair %}<strong>{{ other_fair.fair }}</strong>
+							{% else %}<a href="{% url 'companies_view' other_fair.fair.year company.pk %}">{{ other_fair.fair }}</a>{% endif %}
 							
-							{% if other_fair.status %}
-								{% if other_fair.status.color == 'BLUE' %}<span class="label label-primary">
-								{% elif other_fair.status.color == 'GREEN' %}<span class="label label-success">
-								{% elif other_fair.status.color == 'RED' %}<span class="label label-danger">
-								{% elif other_fair.status.color == 'YELLOW' %}<span class="label label-warning">
-								{% else %}<span class="label label-default">{% endif %}
-								{{ other_fair.status.name }}</span>
-							{% endif %}
+							{% if other_fair.exhibitor %}<span class="label label-success">Exhibitor</span>{% endif %}
 							
 							<ul class="list-unstyled">
 								{% for group in groups %}
-									{% if group.fair == other_fair %}<li>{{ group }}</li>{% endif %}
+									{% if group.fair == other_fair.fair %}<li>{{ group }}</li>{% endif %}
 								{% endfor %}
 							</ul>
 						</li>

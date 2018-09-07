@@ -14,6 +14,7 @@ from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseComp
 from register.models import SignupContract, SignupLog
 from accounting.models import Revenue, Order, Product
 from people.models import Profile
+from exhibitors.models import Exhibitor
 
 def current_fair():
 	return get_object_or_404(Fair, current=True)
@@ -239,6 +240,8 @@ def companies_list(request, year):
 		else:
 			signatures[signature.company].append(signature)
 	
+	exhibitors = [x.company for x in Exhibitor.objects.select_related('company').filter(fair = fair)]
+	
 	companies_modified = []
 	
 	for company in companies:
@@ -248,7 +251,8 @@ def companies_list(request, year):
 			'status': None, # TODO: fix status!
 			'groups': company.groups.filter(fair = fair),
 			'responsibles': responsibles[company] if company in responsibles else None,
-			'signatures': signatures[company] if company in signatures else None
+			'signatures': signatures[company] if company in signatures else None,
+			'exhibitor': company in exhibitors
 		})
 	
 	return render(request, 'companies/companies_list.html',
@@ -297,10 +301,18 @@ def companies_view(request, year, pk):
 		
 		form_comment = CompanyCustomerCommentForm(initial = {'groups': initially_selected})
 	
+	fairs = []
+	
+	for fair in Fair.objects.all():
+		fairs.append({
+			'fair': fair,
+			'exhibitor': Exhibitor.objects.filter(fair = fair, company = company).count() == 1
+		})
+	
 	return render(request, 'companies/companies_view.html',
 	{
 		'fair': fair,
-		'fairs': Fair.objects.all(),
+		'fairs': fairs,
 		'company': company,
 		'groups': company.groups.all(),
 		'comments': CompanyCustomerComment.objects.filter(company = company),

@@ -33,6 +33,8 @@
 				<td>
 					<a href="/fairs/{{ fair.year }}/companies/{{ company.pk }}">{{ company.name }}</a>
 					
+					{% if company.exhibitor %}<span class="label label-success">Exhibitor</span>{% endif %}
+					
 					{% if company.status %}
 						{% if company.status.color == 'BLUE' %}<span class="label label-primary">
 						{% elif company.status.color == 'GREEN' %}<span class="label label-success">
