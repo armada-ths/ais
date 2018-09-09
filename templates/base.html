@@ -3,78 +3,80 @@
 <html lang="en">
 
 <head>
-	{% include "header.html" %}
-	{% block head-extra %}{% endblock %}
+  {% include "header.html" %}
+  {% block head-extra %}{% endblock %}
 </head>
 
 <body>
 {% block header %}{% endblock %}
 
 {% block navigation %}
-<div role="navigation" class="navbar navbar-inverse">
-	<div class="container">
-		<div class="navbar-header">
-			<a href="{% url 'home' fair.year %}" class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px" /></a>
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-					data-target="#navHeaderCollapse" aria-expanded="false">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="collapse navbar-collapse" id="navHeaderCollapse">
-			<ul class="nav navbar-nav">
-				{% block nav-recruitment %}
-					<li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
-				{% endblock %}
-				
-				{% block nav-people %}
-					<li role="presentation"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>
-				{% endblock %}
-				
-				{% if perms.events.base %}
-					{% block nav-events %}
-						<li role="presentation"><a href="{% url 'events:list' fair.year %}">Events</a></li>
+	<div role="navigation" class="navbar navbar-inverse">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="{% url 'home' fair.year %}" class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px" /></a>
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+						data-target="#navHeaderCollapse" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div class="collapse navbar-collapse" id="navHeaderCollapse">
+				<ul class="nav navbar-nav">
+					{% block nav-recruitment %}
+						<li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
 					{% endblock %}
-				{% endif %}
-				
-				{% if perms.exhibitors.base %}
-					{% block nav-exhibitors %}
-						<li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+					
+					{% block nav-people %}
+						<li role="presentation"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>
 					{% endblock %}
-				{% endif %}
+					
+					{% if perms.events.base %}
+						{% block nav-events %}
+							<li role="presentation"><a href="{% url 'events:list_events' fair.year %}">Events</a></li>
+						{% endblock %}
+					{% endif %}
+					
+					{% if perms.exhibitors.base %}
+						{% block nav-exhibitors %}
+							<li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+						{% endblock %}
+					{% endif %}
+					
+					{% if perms.companies.base %}
+						{% block nav-companies %}
+							<li role="presentation"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>
+						{% endblock %}
+					{% endif %}
+					
+					{% if perms.accounting.base %}
+						{% block nav-accounting %}
+							<li role="presentation"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>
+						{% endblock %}
+					{% endif %}
+				</ul>
 				
-				{% if perms.companies.base %}
-					{% block nav-companies %}
-						<li role="presentation"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>
-					{% endblock %}
-				{% endif %}
-				
-				{% if perms.accounting.base %}
-					{% block nav-accounting %}
-						<li role="presentation"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>
-					{% endblock %}
-				{% endif %}
-			</ul>
-			
-			<p class="navbar-text navbar-right">
-				<strong><a href="{% url 'people:profile' fair.year request.user.pk %}" style="color: lightgray">{{ user }}</a></strong> (<a href="/accounts/logout" class="navbar-link">sign out</a>)
-			</p>
+				<p class="navbar-text navbar-right">
+					<strong><a href="{% url 'people:profile' fair.year request.user.pk %}" style="color: lightgray">{{ user }}</a></strong> (<a href="/accounts/logout" class="navbar-link">sign out</a>)
+				</p>
+			</div>
 		</div>
 	</div>
-</div>
 {% endblock %}
 
 <div class="container">
-	{% block content %}{% endblock %}
+  {% block content %}{% endblock %}
 </div>
 
 {% block footer %}{% endblock %}
 <div class="container">
-	<hr />
-	
-	<p class="text-muted">Questions or feedback? Visit <a href="https://thsarmadapg2018.slack.com/messages/C9EMUTN67/details/" target="_blank">#it-serious on Slack</a> or send an electronic letter to <a href="mailto:support@armada.nu">support@armada.nu</a>.</p>
+  <hr/>
+
+  <p class="text-muted">Questions or feedback? Visit <a href="https://thsarmadapg2018.slack.com/messages/C9EMUTN67/details/"
+                                                        target="_blank">#it-serious on Slack</a> or send an electronic letter to <a
+      href="mailto:support@armada.nu">support@armada.nu</a>.</p>
 </div>
 
 <link rel="stylesheet" href="{% static 'bootstrap/css/datepicker.css' %}">
@@ -82,71 +84,68 @@
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap-datepicker.js' %}"></script>
 <script>
-	$(document).ready(function()
-	{
-		$('.datepicker123').datepicker(
-		{
-			weekStart: 1,
-			format: 'yyyy-mm-dd hh:ss'
-		});
-	});
+  $(document).ready(function () {
+    $('.datepicker123').datepicker(
+        {
+          weekStart: 1,
+          format: 'yyyy-mm-dd hh:ss'
+        });
+  });
 </script>
 
 <script>
-	var forms = document.forms
-	var formIndex;
+  var forms = document.forms
+  var formIndex;
 
-	for (formIndex = 0; formIndex < forms.length; formIndex++)
-	{
-		form = forms[formIndex]
-		
-		form.onsubmit = function ()
-		{
-			var tags = ['input', 'select', 'textarea']
-			var tagIndex = 0;
-			
-			for (tagIndex = 0; tagIndex < tags.length; tagIndex++)
-			{
-				var inputs = form.getElementsByTagName(tags[tagIndex])
-				var inputIndex;
-				
-				for (inputIndex = 0; inputIndex < inputs.length; inputIndex++)
-				{
-					var input = inputs[inputIndex]
-					
-					if (input.required)
-					{
-						var otherInputs = document.getElementsByName(input.name)
-						var j;
-						var checked = false;
-						
-						for (j = 0; j < otherInputs.length; j++)
-						{
-							var otherInput = otherInputs[j]
-							
-							if (otherInput.type === 'checkbox' || otherInput.type === 'radio') { checked = checked || otherInput.checked }
-							else { checked = otherInput.value !== '' && otherInput.value !== undefined }
-						}
-						
-						if (!checked)
-						{
-							var labels = document.getElementsByTagName('label')
-							var j;
-							
-							for (j = 0; j < labels.length; j++)
-							{
-								var label = labels[j]
-								if (label.getAttribute('for') === input.id) { alert('You missed filling out: ' + label.innerText) }
-							}
-							
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		}
-	}
+  for (formIndex = 0; formIndex < forms.length; formIndex++) {
+    form = forms[formIndex]
+
+    form.onsubmit = function () {
+      var tags = ['input', 'select', 'textarea']
+      var tagIndex = 0;
+
+      for (tagIndex = 0; tagIndex < tags.length; tagIndex++) {
+        var inputs = form.getElementsByTagName(tags[tagIndex])
+        var inputIndex;
+
+        for (inputIndex = 0; inputIndex < inputs.length; inputIndex++) {
+          var input = inputs[inputIndex]
+
+          if (input.required) {
+            var otherInputs = document.getElementsByName(input.name)
+            var j;
+            var checked = false;
+
+            for (j = 0; j < otherInputs.length; j++) {
+              var otherInput = otherInputs[j]
+
+              if (otherInput.type === 'checkbox' || otherInput.type === 'radio') {
+                checked = checked || otherInput.checked
+              }
+              else {
+                checked = otherInput.value !== '' && otherInput.value !== undefined
+              }
+            }
+
+            if (!checked) {
+              var labels = document.getElementsByTagName('label')
+              var j;
+
+              for (j = 0; j < labels.length; j++) {
+                var label = labels[j]
+                if (label.getAttribute('for') === input.id) {
+                  alert('You missed filling out: ' + label.innerText)
+                }
+              }
+
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    }
+  }
 </script>
 
 {% block scripts %}{% endblock scripts %}
