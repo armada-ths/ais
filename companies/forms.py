@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 
+from register.models import SignupContract
 from accounting.models import Product, Order
 from .models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, CompanyContact, CompanyCustomerComment, Group
 
@@ -288,3 +289,16 @@ class CompanyEditOrderForm(ModelForm):
 			return False
 		
 		return valid
+
+
+class CompanySearchForm(forms.Form):
+	exhibitors_choices = [
+		('BOTH', 'Show both exhibitors and non-exhibitors'),
+		('NO', 'Show only non-exhibitors'),
+		('YES', 'Show only exhibitors')
+	]
+	
+	exhibitors = forms.ChoiceField(choices = exhibitors_choices, widget = forms.RadioSelect(), initial = 'BOTH', required = True)
+	contracts_positive = forms.ModelMultipleChoiceField(queryset = SignupContract.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies who have signed any of these', required = False)
+	contracts_negative = forms.ModelMultipleChoiceField(queryset = SignupContract.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies who have NOT signed any of these', required = False)
+	users = forms.ModelMultipleChoiceField(queryset = User.objects.all(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies for which any of the following people are responsible', required = False)

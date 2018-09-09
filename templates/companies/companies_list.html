@@ -17,6 +17,48 @@
 	<a href="{% url 'statistics' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Statistics</a>
 </p>
 
+<style type="text/css">
+	.form_no_ul ul
+	{
+		margin: 0;
+		padding: 0;
+		margin: 0 0 20px 15px;
+	}
+	
+	.form_no_ul ul li
+	{
+		list-style-type: none;
+	}
+	
+	.form_no_ul ul li label
+	{
+		font-weight: 400;
+	}
+</style>
+
+<form method="post" class="form_no_ul" enctype="multipart/form-data">
+	{% csrf_token %}
+	
+	<div class="row">
+		<div class="col-md-6">
+			{{ form.exhibitors }}
+			
+			<label for="{{ form.users.id_for_label }}">{{ form.users.label }}</label>
+			{{ form.users }}
+		</div>
+		
+		<div class="col-md-6">
+			<label for="{{ form.contracts_positive.id_for_label }}">{{ form.contracts_positive.label }}</label>
+			{{ form.contracts_positive }}
+			
+			<label for="{{ form.contracts_negative.id_for_label }}">{{ form.contracts_negative.label }}</label>
+			{{ form.contracts_negative }}
+		</div>
+	</div>
+	
+	<input class="btn btn-primary" type="submit" value="Refine search" />
+</form>
+
 <div class="table-responsive">
 	<table class="table" id="company_table">
 		<thead>

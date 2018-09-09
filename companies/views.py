@@ -10,7 +10,7 @@ from django.conf import settings
 from companies.models import Company, CompanyAddress, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
-from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, StatisticsForm, CompanyCustomerStatusForm, CompanyNewOrderForm, CompanyEditOrderForm
+from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, StatisticsForm, CompanyCustomerStatusForm, CompanyNewOrderForm, CompanyEditOrderForm, CompanySearchForm
 from register.models import SignupContract, SignupLog
 from accounting.models import Revenue, Order, Product
 from people.models import Profile
@@ -213,19 +213,43 @@ def statistics(request, year):
 @permission_required('companies.base')
 def companies_list(request, year):
 	fair = get_object_or_404(Fair, year = year)
+	
+	form = CompanySearchForm(request.POST or None)
+	
+	all_users = []
+	
+	contracts = SignupContract.objects.filter(fair = fair)
+	
+	form.fields['contracts_positive'].queryset = contracts
+	form.fields['contracts_negative'].queryset = contracts
+	
+	has_filtering = request.POST and form.is_valid()
+	
 	companies = Company.objects.prefetch_related('groups')
 	
 	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company').select_related('group').filter(group__fair = fair).prefetch_related('users'))
 	responsibles = {}
 	
 	for responsible in responsibles_list:
-		o = {'group': responsible.group.name, 'users': responsible.users.all()}
+		users = responsible.users.all()
+		
+		for user in users:
+			if user not in all_users: all_users.append(user)
+		
+		o = {
+			'group': responsible.group.name,
+			'users': users
+		}
 		
 		if responsible.company not in responsibles:
 			responsibles[responsible.company] = [o]
 		
 		else:
 			responsibles[responsible.company].append(o)
+	
+	all_users.sort(key = lambda x: x.get_full_name())
+	
+	form.fields['users'].choices = [(user.pk, user.get_full_name()) for user in all_users]
 	
 	signatures_list = []
 	signatures = {}
@@ -245,6 +269,32 @@ def companies_list(request, year):
 	companies_modified = []
 	
 	for company in companies:
+		exhibitor = company in exhibitors
+		
+		if has_filtering:
+			if not exhibitor and form.cleaned_data['exhibitors'] == 'YES': continue
+			if exhibitor and form.cleaned_data['exhibitors'] == 'NO': continue
+			
+			if len(form.cleaned_data['contracts_positive']) != 0:
+				if company not in signatures: continue
+				
+				if len([signature for signature in signatures[company] if signature.contract in form.cleaned_data['contracts_positive']]) == 0: continue
+			
+			if len(form.cleaned_data['contracts_negative']) > 0:
+				if company in signatures and len([signature for signature in signatures[company] if signature.contract in form.cleaned_data['contracts_negative']]) != 0: continue
+			
+			if len(form.cleaned_data['users']) != 0:
+				if company not in responsibles: continue
+				
+				found = False
+				
+				for r in responsibles[company]:
+					if len([u for u in r['users'] if u in form.cleaned_data['users']]) != 0:
+						found = True
+						break
+				
+				if not found: continue
+		
 		companies_modified.append({
 			'pk': company.pk,
 			'name': company.name,
@@ -252,13 +302,14 @@ def companies_list(request, year):
 			'groups': company.groups.filter(fair = fair),
 			'responsibles': responsibles[company] if company in responsibles else None,
 			'signatures': signatures[company] if company in signatures else None,
-			'exhibitor': company in exhibitors
+			'exhibitor': exhibitor
 		})
 	
 	return render(request, 'companies/companies_list.html',
 	{
 		'fair': fair,
-		'companies': companies_modified
+		'companies': companies_modified,
+		'form': form
 	})
 
 
