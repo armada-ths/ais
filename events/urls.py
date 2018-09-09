@@ -5,5 +5,5 @@ from events import views
 app_name = 'events'
 
 urlpatterns = [
-	url(r'^$', views.list, name = 'list')
+    url(r'^$', views.list_events, name='list_events')
 ]
