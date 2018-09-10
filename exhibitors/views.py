@@ -13,7 +13,6 @@ from companies.models import Company, CompanyContact
 from django.urls import reverse
 from fair.models import Fair
 from orders.models import Product, Order
-from banquet.models import BanquetteAttendant
 from register.models import SignupLog
 
 from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorCreateForm
@@ -106,8 +105,6 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
 
     fair = get_object_or_404(Fair, year=year)
 
-    banquet_attendants = BanquetteAttendant.objects.filter(fair=fair, exhibitor=exhibitor)
-
     CompanyForm = modelform_factory(
         Company,
         fields='__all__'
@@ -140,8 +137,7 @@ def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
         'exhibitor': exhibitor,
         'exhibitor_form': exhibitor_form,
         'company_form': company_form,
-        'fair': fair,
-        'banquet_attendants': banquet_attendants,
+        'fair': fair
     })
 
 

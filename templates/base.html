@@ -29,22 +29,16 @@
 				{% block nav-recruitment %}
 					<li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
 				{% endblock %}
-
+				
 				{% if perms.events.base %}
 					{% block nav-events %}
 						<li role="presentation"><a href="{% url 'events:list' fair.year %}">Events</a></li>
 					{% endblock %}
 				{% endif %}
-
+				
 				{% if perms.exhibitors.base %}
 					{% block nav-exhibitors %}
 						<li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
-					{% endblock %}
-				{% endif %}
-
-				{% if perms.banquet.base %}
-					{% block nav-banquet %}
-						<li role="presentation"><a href="{% url 'banquet' fair.year %}">Banquet</a></li>
 					{% endblock %}
 				{% endif %}
 				
@@ -53,7 +47,7 @@
 						<li role="presentation"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>
 					{% endblock %}
 				{% endif %}
-
+				
 				{% if perms.accounting.base %}
 					{% block nav-accounting %}
 						<li role="presentation"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>

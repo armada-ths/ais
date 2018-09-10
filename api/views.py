@@ -13,7 +13,6 @@ from django.views.decorators.cache import cache_page
 
 import api.serializers as serializers, api.deserializers as deserializers
 
-from banquet.models import BanquetteAttendant
 from exhibitors.models import Exhibitor, CatalogInfo
 from fair.models import Partner, Fair
 from django.utils import timezone
@@ -100,38 +99,6 @@ def status(request):
         ('commit', git_hash),
         ('python_version', python_version),
     ])
-    return JsonResponse(data, safe=False)
-
-@cache_page(60 * 5)
-def banquet_placement(request):
-    '''
-    Returns all banquet attendance for current fair.
-    The field job_title depends on weather a attendant is a user or exhibitor.
-    '''
-
-    fair = get_object_or_404(Fair, current = True)
-
-    banquet_attendees = BanquetteAttendant.objects.filter(fair=fair)
-
-    recruitment_applications = RecruitmentApplication.objects.filter(status='accepted')
-    data = []
-    for attendence in banquet_attendees:
-        if attendence.user:
-            recruitment_application = recruitment_applications.filter(user=attendence.user).first()
-            if recruitment_application:
-                attendence.job_title = 'Armada: ' + recruitment_application.delegated_role.name
-            try:
-                if not attendence.linkedin_url & attendence.user.profile.linkedin_url:
-                    attendence.linkedin_url = attendence.user.profile.linkedin_url
-            except:
-                pass
-        if attendence.exhibitor:
-            job_title = attendence.job_title
-            attendence.job_title = attendence.exhibitor.company.name
-            if job_title:
-                attendence.job_title += ': ' + job_title
-
-        data.append(serializers.banquet_placement(request, attendence))
     return JsonResponse(data, safe=False)
 
 

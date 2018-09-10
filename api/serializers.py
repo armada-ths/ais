@@ -154,22 +154,6 @@ def organization_group(request, group):
     ])
 
 
-def banquet_placement(request, attendence):
-    try:
-      table = attendence.table.name
-    except AttributeError:
-      table = None
-    return OrderedDict([
-        ('id', attendence.pk),
-        ('first_name', attendence.first_name),
-        ('last_name', attendence.last_name),
-        ('linkedin_url', attendence.linkedin_url or ""),
-        ('table', table or ""),
-        ('seat', attendence.seat_number or ""),
-        ('job_title', attendence.job_title)
-    ])
-
-
 def serialize_slider(question):
     '''
     Serialize a SLIDER question.
