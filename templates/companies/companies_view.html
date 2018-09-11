@@ -80,7 +80,8 @@
 		{% for contact in contacts %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h2 class="panel-title">{{ contact }} {% if contact.title %} ({{ contact.title }}) {% endif %}</h2>
+					<h2 class="panel-title">{{ contact }}</h2>
+					{% if contact.title %}{{ contact.title }}{% endif %}
 				</div>
 				
 				<div class="panel-body">

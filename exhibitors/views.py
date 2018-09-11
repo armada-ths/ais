@@ -12,10 +12,10 @@ from django.contrib.auth.decorators import permission_required
 from companies.models import Company, CompanyContact
 from django.urls import reverse
 from fair.models import Fair
-from orders.models import Product, Order
+from accounting.models import Product, Order
 from register.models import SignupLog
 
-from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorCreateForm
+from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorCreateForm, TransportForm
 from .models import Exhibitor, ExhibitorView
 
 import logging
@@ -98,50 +98,71 @@ def create(request, year):
 
 
 
-def exhibitor(request, year, pk, template_name='exhibitors/exhibitor.html'):
-    exhibitor = get_object_or_404(Exhibitor, pk=pk)
-    if not user_can_modify_exhibitor(request.user, exhibitor):
-        return HttpResponseForbidden()
+def exhibitor(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	exhibitor = get_object_or_404(Exhibitor, pk = pk)
+	
+	if not user_can_modify_exhibitor(request.user, exhibitor): return HttpResponseForbidden()
+	
+	CompanyForm = modelform_factory(Company, fields = '__all__')
+	
+	if request.user.has_perm('exhibitors.change_exhibitor'):
+		# pass the FILES, because the form has a picture
+		exhibitor_form = ExhibitorFormFull(request.POST or None, request.FILES or None, instance=exhibitor)
+	else:
+		exhibitor_form = ExhibitorFormPartial(request.POST or None, request.FILES or None, instance=exhibitor)
+	company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
+	
+	if request.POST and exhibitor_form.is_valid() and company_form.is_valid():
+		exh = exhibitor_form.save(commit=False)
+		exh.save()
+		company_form.save()
+		
+		return redirect('exhibitors', fair.year)
+	
+	users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
+	
+	if request.user.has_perm('exhibitors.change_exhibitor'): exhibitor_form.fields['hosts'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
+	
+	orders = []
+	
+	for order in Order.objects.filter(purchasing_company = exhibitor.company, product__revenue__fair = fair):
+		orders.append({
+			'name': order.name if order.name is not None else order.product.name,
+			'comment': order.comment,
+			'unit_price': order.unit_price if order.unit_price is not None else order.product.unit_price,
+			'quantity': order.quantity
+		})
+	
+	return render(request, 'exhibitors/exhibitor.html', {
+		'fair': fair,
+		'exhibitor': exhibitor,
+		'exhibitor_form': exhibitor_form,
+		'company_form': company_form,
+		'contacts': CompanyContact.objects.filter(company = exhibitor.company, active = True),
+		'orders': orders
+	})
 
-    fair = get_object_or_404(Fair, year=year)
 
-    CompanyForm = modelform_factory(
-        Company,
-        fields='__all__'
-    )
-
-    if request.user.has_perm('exhibitors.change_exhibitor'):
-        # pass the FILES, because the form has a picture
-        exhibitor_form = ExhibitorFormFull(request.POST or None, request.FILES or None, instance=exhibitor)
-        #invoice_form = InvoiceDetailsForm(exhibitor.company, request.POST or None, instance=exhibitor.invoice_details, prefix='invoice_details')
-    else:
-        exhibitor_form = ExhibitorFormPartial(request.POST or None, request.FILES or None, instance=exhibitor)
-    company_form = CompanyForm(request.POST or None, instance=exhibitor.company)
-
-    if request.POST and exhibitor_form.is_valid() and company_form.is_valid():
-        #invoice_details = invoice_form.save()
-        exh = exhibitor_form.save(commit=False)
-        #exh.invoice_details = invoice_details
-        exh.save()
-        company_form.save()
-        return redirect('exhibitors', fair.year)
-
-    users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in
-             RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
-
-    if request.user.has_perm('exhibitors.change_exhibitor'):
-        exhibitor_form.fields['hosts'].choices = [('', '---------')] + [
-            (user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
-
-    return render(request, template_name, {
-        'exhibitor': exhibitor,
-        'exhibitor_form': exhibitor_form,
-        'company_form': company_form,
-        'fair': fair
-    })
+@permission_required('exhibitors.transport')
+def exhibitor_transport(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	exhibitor = get_object_or_404(Exhibitor, pk = pk)
+	
+	form = TransportForm(request.POST or None, instance = exhibitor)
+	
+	if request.POST and form.is_valid():
+		form.save()
+		return redirect('exhibitor', fair.year, exhibitor.pk)
+	
+	return render(request, 'exhibitors/exhibitor_transport.html', {
+		'fair': fair,
+		'exhibitor': exhibitor,
+		'form': form
+	})
 
 
-#Where the user can chose to send email to an exhibiors with their orders
+#Where the user can chose to send email to an exhibitor with their orders
 def send_emails(request, year, pk, template_name='exhibitors/send_emails.html'):
     if not request.user.is_staff:
         return HttpResponseForbidden()
@@ -174,19 +195,10 @@ def send_cr_receipts(request, year, pk):
     exhibitor = get_object_or_404(Exhibitor, pk=pk)
     contact =  CompanyContact.objects.get(exhibitor=exhibitor)
 
-    orders =  Order.objects.filter(exhibitor = exhibitor)
     total_price = 0
 
     orders_info = []
     #Go thrue orders and get the total price for everything and place the important info as a dictionary in the list orders_info
-    for o in orders:
-        product = o.product
-        price = product.price
-        amount = o.amount
-        total_price += price*amount
-
-        order = {'product' : product.name, 'price' : product.price*amount, 'amount' : o.amount}
-        orders_info.append(order)
 
 
     send_mail(

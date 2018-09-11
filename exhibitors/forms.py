@@ -3,17 +3,8 @@ from django import forms
 import inspect
 
 from companies.models import Company
-from .models import ExhibitorView, Exhibitor, TransportationAlternative
+from .models import ExhibitorView, Exhibitor
 
-class TransportationForm(forms.ModelForm):
-    class Meta:
-        model = Exhibitor
-        fields = ('inbound_transportation', 'outbound_transportation')
-
-    def __init__(self, *args, **kwargs):
-        super(TransportationForm, self).__init__(*args, **kwargs)
-        self.fields['inbound_transportation'].queryset = TransportationAlternative.objects.filter(inbound=True)
-        self.fields['outbound_transportation'].queryset = TransportationAlternative.objects.filter(inbound=False)
 class ExhibitorProfileForm(forms.ModelForm):
     class Meta:
         model = Exhibitor
@@ -54,15 +45,8 @@ class ExhibitorViewForm(forms.Form):
 
 
 # Fields for ordering
-exhibitor_fields = [
-    'hosts', 'contact', 'fair_location',  'about_text', 'facts_text',
-    'comment', 'status', 'logo', 'location_at_fair',
-    'tags', 'job_types'
-]
-
-stand_fields = [
-    'location', 'booth_number'
-]
+exhibitor_fields = ['hosts', 'contact', 'fair_location',  'about_text', 'facts_text', 'comment', 'logo', 'location_at_fair', 'tags', 'job_types']
+stand_fields = ['location', 'booth_number']
 
 
 class ExhibitorFormFull(forms.ModelForm):
@@ -96,3 +80,9 @@ class ExhibitorCreateForm(forms.Form):
 		required = True,
 		label = "Companies from the initial registration"
 	)
+
+
+class TransportForm(forms.ModelForm):
+	class Meta:
+		model = Exhibitor
+		fields = ['transport_to', 'transport_from', 'transport_comment']

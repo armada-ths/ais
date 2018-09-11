@@ -5,7 +5,8 @@ from companies.models import CompanyContact
 
 urlpatterns = [
     url(r'^$', views.exhibitors, name='exhibitors'),
-	url(r'^(?P<pk>\d+)/$', views.exhibitor, name='exhibitor'),
+	url(r'^(?P<pk>\d+)$', views.exhibitor, name = 'exhibitor'),
+	url(r'^(?P<pk>\d+)/transport$', views.exhibitor_transport, name = 'exhibitor_transport'),
 
     url(r'view$', views.edit_view, name='edit_view'),
     url(r'create$', views.create, name = 'create'),
@@ -18,5 +19,5 @@ urlpatterns = [
 	url(r'^(?P<exhibitor_pk>\d+)/order/(?P<instance_pk>\d+)$', views.related_object_form(Order, 'Order', 'order_delete'), name='order'),
 	url(r'^(?P<exhibitor_pk>\d+)/order/(?P<instance_pk>\d+)/delete$', views.related_object_delete(Order), name='order_delete'),
 
-	url(r'^(?P<exhibitor_pk>\d+)/contact/(?P<instance_pk>\d+)$', views.related_object_form(CompanyContact, 'Contact', None), name='contact'),
+	url(r'^(?P<exhibitor_pk>\d+)/contact/(?P<instance_pk>\d+)$', views.related_object_form(CompanyContact, 'Contact', None), name='contact')
 ]

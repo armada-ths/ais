@@ -13,7 +13,7 @@ import json
 
 from companies.models import Company, CompanyContact
 from orders.models import Product, Order, ProductType, ElectricityOrder
-from exhibitors.models import Exhibitor, TransportationAlternative
+from exhibitors.models import Exhibitor
 from fair.models import Fair
 from matching.models import Survey
 
@@ -21,7 +21,7 @@ from .models import SignupContract, SignupLog
 
 from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
 from orders.forms import get_order_forms, ElectricityOrderForm
-from exhibitors.forms import ExhibitorProfileForm, TransportationForm
+from exhibitors.forms import ExhibitorProfileForm
 from matching.forms import ResponseForm
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from transportation.forms import PickupForm, DeliveryForm

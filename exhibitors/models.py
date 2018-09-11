@@ -19,19 +19,6 @@ class JobType(models.Model):
     def __str__(self):
         return self.name
 
-class TransportationAlternative(models.Model):
-    name = models.CharField(max_length=150)
-    types = [
-            ('3rd_party', 'Third party'),
-            ('self', 'By Customer'),
-            ('internal', 'Fair arranger')
-            ]
-    transportation_type = models.CharField(choices=types, null=True, blank=True, max_length=30)
-    inbound = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
-
 
 class CatalogueIndustry(models.Model):
 	industry = models.CharField(blank = False, max_length = 255)
@@ -100,46 +87,35 @@ class Exhibitor(models.Model):
 	# For the logistics team
 	comment = models.TextField(blank=True)
 	
-	statuses = [
-		('accepted', 'Accepted'),
-		('registered', 'Registered'),
-		('complete_registration', 'Completed Registration'),
-		('complete_registration_submit', 'CR - Submitted'),
-		('complete_registration_start', 'CR - In Progress'),
-		('complete_registration_terms', 'CR - Accepted Terms'),
-		('contacted_by_host', 'Contacted by host'),
-		('confirmed', 'Confirmed'),
-		('checked_in', 'Checked in'),
-		('checked_out', 'Checked out'),
-		('withdrawn', 'Withdrawn'),
-	]
-	
-	status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
 	logo = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'logo_original'), blank=True)
 	location_at_fair = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'location_at_fair'), blank=True)
 	
-	inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, null=True, blank=True, related_name='inbound_transportation', verbose_name='Transportation to the fair')
-	outbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, null=True, blank=True, related_name='outbound_transportation', verbose_name='Transportation from the fair')
-	pickup_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL, null=True, blank=True, related_name='pickup_order')
-	delivery_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL, null=True, blank=True, related_name='delivery_order')
+	transport_statuses = [
+		('NOT_BOOKED', 'Not booked'),
+		('BOOKED', 'Booked'),
+		('NOT_APPLICABLE', 'Not applicable')
+	]
+	
+	transport_to = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
+	transport_from = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
+	transport_comment = models.TextField(blank = True, null = True)
 	
 	tags = models.ManyToManyField('fair.Tag', blank=True)
 	
 	job_types = models.ManyToManyField(JobType, blank=True)
 	
-	def total_cost(self):
-		return sum([order.price() for order in self.order_set.all()])
-	
 	def superiors(self):
-		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in
-									self.hosts.all()]
+		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.hosts.all()]
 		return [application.superior_user for application in accepted_applications if application and application.superior_user]
 	
 	def __str__(self):
 		return '%s at %s' % (self.company.name, self.fair.name)
 	
 	class Meta:
-		permissions = (('base', 'Exhibitors'),)
+		permissions = [
+			('base', 'Exhibitors'),
+			('transport', 'Modify exhibitor transport details')
+		]
 
 
 class ExhibitorView(models.Model):
@@ -155,7 +131,7 @@ class ExhibitorView(models.Model):
 
     def create(self):
         # A set of field names from Exhibitor model, that are shown by default
-        default = {'location', 'hosts', 'status'}
+        default = {'location', 'hosts'}
 
         for field in default:
             self.choices = self.choices + ' ' + field

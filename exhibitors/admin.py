@@ -75,7 +75,7 @@ class ExhibitorAdmin(admin.ModelAdmin):
     # order by fair in first hand
     ordering = ('-fair__year', 'company',)
     # filters to filter search query
-    list_filter = ('status', 'fair',)
+    list_filter = ['fair']
 
     actions = [export_exhibitor_as_csv]
 

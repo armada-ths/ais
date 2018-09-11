@@ -110,5 +110,5 @@ USE_I18N = True
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
 USE_L10N = False
-DATE_FORMAT = "M d, Y"
-DATETIME_FORMAT = "M d, Y, H:i"
+DATE_FORMAT = "M j, Y"
+DATETIME_FORMAT = "M j, Y, H:i"
