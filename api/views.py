@@ -32,7 +32,7 @@ def exhibitors(request):
     Does not return anything for those exhibitors that are without catalog info.
     '''
     fair = Fair.objects.get(current=True)
-    exhibitors = Exhibitor.objects.filter(fair=fair).exclude(status='withdrawn')
+    exhibitors = Exhibitor.objects.filter(fair = fair)
 
     data = [serializers.exhibitor(request, exhibitor, exhibitor.company)
             for exhibitor in exhibitors]
