@@ -58,6 +58,8 @@ def exhibitor(request, exhibitor, company):
 	
 	tags = tags_mappings(exhibitor.tags.all())
 	
+	img_placeholder = request.GET.get('img_placeholder') == 'true'
+	
 	return OrderedDict([
 		('id', exhibitor.pk),
 		('fair', exhibitor.fair.name),
@@ -66,8 +68,8 @@ def exhibitor(request, exhibitor, company):
 		('company_website', company.website),
 		('about', exhibitor.catalogue_about),
 		('purpose', exhibitor.catalogue_purpose),
-		('logo_squared', (exhibitor.catalogue_logo_squared.url) if exhibitor.catalogue_logo_squared else None),
-		('logo_freesize', (exhibitor.catalogue_logo_freesize.url) if exhibitor.catalogue_logo_freesize else None),
+		('logo_squared', (exhibitor.catalogue_logo_squared.url) if exhibitor.catalogue_logo_squared else (MISSING_IMAGE if img_placeholder else None)),
+		('logo_freesize', (exhibitor.catalogue_logo_freesize.url) if exhibitor.catalogue_logo_freesize else (MISSING_IMAGE if img_placeholder else None)),
 		('contact_name', exhibitor.catalogue_contact_name),
 		('contact_email_address', exhibitor.catalogue_contact_email_address),
 		('contact_phone_number', exhibitor.catalogue_contact_phone_number),
