@@ -624,7 +624,7 @@ def contracts_export(request, year):
 			if signature is not None:
 				line.append(signature.contract.name)
 				line.append(str(signature.timestamp))
-				line.append(signature.company_contact.first_name + ' ' + signature.company_contact.last_name)
+				line.append((signature.company_contact.first_name + ' ' + signature.company_contact.last_name) if signature.company_contact.first_name is not None and signature.company_contact.last_name is not None else '')
 				line.append(signature.company_contact.email_address if signature.company_contact.email_address is not None else '')
 				line.append(signature.company_contact.mobile_phone_number if signature.company_contact.mobile_phone_number is not None else '')
 				line.append(signature.company_contact.work_phone_number if signature.company_contact.work_phone_number is not None else '')
