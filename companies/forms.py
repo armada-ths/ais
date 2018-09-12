@@ -302,3 +302,22 @@ class CompanySearchForm(forms.Form):
 	contracts_positive = forms.ModelMultipleChoiceField(queryset = SignupContract.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies who have signed any of these', required = False)
 	contracts_negative = forms.ModelMultipleChoiceField(queryset = SignupContract.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies who have NOT signed any of these', required = False)
 	users = forms.ModelMultipleChoiceField(queryset = User.objects.all(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies for which any of the following people are responsible', required = False)
+
+
+class ContractExportForm(forms.Form):
+	contract = forms.ModelChoiceField(queryset = SignupContract.objects.none(), widget = forms.RadioSelect(), required = True, label = 'Contract to export signatures for')
+	
+	exhibitors_choices = [
+		('BOTH', 'Show both exhibitors and non-exhibitors'),
+		('NO', 'Show only non-exhibitors'),
+		('YES', 'Show only exhibitors')
+	]
+	
+	exhibitors = forms.ChoiceField(choices = exhibitors_choices, widget = forms.RadioSelect(), initial = 'BOTH', required = True)
+	
+	companies_choices = [
+		('BOTH', 'Show both companies with signatures and those without'),
+		('YES', 'Show only companies with signatures')
+	]
+	
+	companies = forms.ChoiceField(choices = companies_choices, widget = forms.RadioSelect(), initial = 'BOTH', required = True)

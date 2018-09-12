@@ -1,4 +1,5 @@
 from slackclient import SlackClient
+import csv
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
@@ -10,7 +11,7 @@ from django.conf import settings
 from companies.models import Company, CompanyAddress, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
-from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, StatisticsForm, CompanyCustomerStatusForm, CompanyNewOrderForm, CompanyEditOrderForm, CompanySearchForm
+from .forms import CompanyForm, CompanyContactForm, CompanyAddressForm, BaseCompanyAddressFormSet, BaseCompanyContactFormSet, CompanyCustomerResponsibleForm, GroupForm, CompanyCustomerCommentForm, StatisticsForm, CompanyCustomerStatusForm, CompanyNewOrderForm, CompanyEditOrderForm, CompanySearchForm, ContractExportForm
 from register.models import SignupContract, SignupLog
 from accounting.models import Revenue, Order, Product
 from people.models import Profile
@@ -589,3 +590,60 @@ def companies_orders_remove(request, year, pk, order_pk):
 	order.delete()
 	
 	return redirect('companies_view', fair.year, company.pk)
+
+
+@permission_required('companies.base')
+def contracts_export(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	form = ContractExportForm(request.POST or None)
+	form.fields['contract'].queryset = SignupContract.objects.filter(fair = fair)
+	
+	if request.POST and form.is_valid():
+		signatures = SignupLog.objects.select_related('company').select_related('company_contact').filter(contract = form.cleaned_data['contract'])
+		lines = []
+		
+		for company in Company.objects.all():
+			if form.cleaned_data['exhibitors'] != 'BOTH':
+				is_exhibitor = Exhibitor.objects.filter(fair = fair, company = company).count()
+				
+				if is_exhibitor and form.cleaned_data['exhibitors'] == 'NO': continue
+				if not is_exhibitor and form.cleaned_data['exhibitors'] == 'YES': continue
+			
+			signature = None
+			
+			for signature_candidate in signatures:
+				if signature_candidate.company == company:
+					signature = signature_candidate
+					break
+			
+			if signature is None and form.cleaned_data['companies'] == 'YES': continue
+			
+			line = [company.name]
+			
+			if signature is not None:
+				line.append(signature.contract.name)
+				line.append(str(signature.timestamp))
+				line.append(signature.company_contact.first_name + ' ' + signature.company_contact.last_name)
+				line.append(signature.company_contact.email_address if signature.company_contact.email_address is not None else '')
+				line.append(signature.company_contact.mobile_phone_number if signature.company_contact.mobile_phone_number is not None else '')
+				line.append(signature.company_contact.work_phone_number if signature.company_contact.work_phone_number is not None else '')
+			
+			lines.append(line)
+		
+		csv = '"company","contract", "signature date","company representative","e-mail address","mobile phone number","work phone number"\n'
+		
+		for line in lines:
+			csv += ','.join(['"' + column.replace('"', '\\"') + '"' for column in line]) + '\n'
+		
+		response = HttpResponse(csv, content_type = 'text/csv; charset=utf-8')
+		response['Content-Length'] = len(csv)
+		response['Content-Disposition'] = 'attachment; filename="exported signatures.csv"'
+		
+		return response
+	
+	return render(request, 'companies/contracts_export.html',
+	{
+		'fair': fair,
+		'form': form
+	})

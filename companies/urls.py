@@ -9,6 +9,7 @@ urlpatterns = [
 	url(r'^groups$', views.groups, name = 'groups_list'),
 	url(r'^groups/new$', views.groups, name = 'groups_new'),
 	url(r'^groups/(?P<pk>\d+)$', views.groups, name = 'groups_edit'),
+	url(r'^contracts/export$', views.contracts_export, name = 'contracts_export'),
 	url(r'^(?P<pk>\d+)$', views.companies_view, name = 'companies_view'),
 	url(r'^(?P<pk>\d+)/details$', views.companies_details, name = 'companies_details'),
 	url(r'^(?P<pk>\d+)/edit$', views.companies_edit, name = 'companies_edit'),
