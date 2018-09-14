@@ -909,10 +909,10 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	for language in languages: interviewers_by_language.insert(0, (language, []))
 
 	for interviewer in interviewers:
-		profile = Profile.objects.filter(user = interviewer).first()
+		p = Profile.objects.filter(user = interviewer).first()
 
 		for language in interviewers_by_language:
-			if language[0] == profile.preferred_language:
+			if language[0] == p.preferred_language:
 				language[1].append((interviewer.pk, interviewer.get_full_name()))
 				break
 
