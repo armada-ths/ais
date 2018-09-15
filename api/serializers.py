@@ -44,20 +44,6 @@ def names(objects):
 
 
 def exhibitor(request, exhibitor, company):
-	#All nestled objects needs id in order to work in Android
-	hosts = [OrderedDict([
-		('id', host.pk),
-		('name', host.first_name + host.last_name),
-		('email', host.email),
-	]) for host in exhibitor.hosts.all()]
-	
-	try:
-		location = exhibitor.location.name
-	except AttributeError:
-		location = None
-	
-	tags = tags_mappings(exhibitor.tags.all())
-	
 	img_placeholder = request.GET.get('img_placeholder') == 'true'
 	
 	return OrderedDict([
@@ -80,7 +66,10 @@ def exhibitor(request, exhibitor, company):
 		('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
 		('average_age', exhibitor.catalogue_average_age),
 		('founded', exhibitor.catalogue_founded),
-	] + tags)
+		('groups', []),
+		('hosts', []),
+		('fair_locations', [])
+	])
 
 
 def event(request, event):
