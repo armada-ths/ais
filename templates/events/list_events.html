@@ -7,7 +7,7 @@
 {% block content %}
   <h1>Events</h1>
   <div>
-    <button class="btn btn-default">New event</button>
+    <a href="{% url 'events:event_new' fair.year %}" class="btn btn-default">New event</a>
   </div>
 
   {% if events %}
@@ -28,7 +28,7 @@
           <td>{{ event.num_participants }}</td>
           <td>
             {% if event.is_past %}
-              <span class="label label-default">Done</span>
+              <span class="label label-default">Completed</span>
             {% elif event.is_future %}
               <span class="label label-success">Planned</span>
             {% else %}
