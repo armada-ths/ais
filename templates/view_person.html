@@ -46,7 +46,7 @@
   <div class="panel-body">
     <ul class="list-unstyled">
     <li>Drivers license: {{ person.drivers_license }}</li>
-    <li>Allergy: {{ person.allergy }}</li>
+    <li>Dietary restrictions: {% if person.no_dietary_restrictions %} None {% else %}{% if person.dietary_restrictions.all %} {{ person.dietary_restrictions.all | join:', ' }} {% else %} Unknown {% endif %}{% endif %}</li>
     <li>Programme: {{ person.programme }}</li>
     <li>Registration year: {{ person.registration_year }}</li>
     <li>Planned graduation: {{ person.planned_graduation }}</li>

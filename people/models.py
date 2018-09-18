@@ -20,6 +20,15 @@ class Programme(models.Model):
 
 	def __str__(self): return '%s' % (self.name)
 
+
+class DietaryRestriction(models.Model):
+	name = models.CharField(max_length = 255)
+	
+	class Meta: ordering = ['name']
+	
+	def __str__(self): return self.name
+
+
 class Profile(models.Model):
 	SHIRT_SIZES = (
 		('WXS', 'Woman X-Small'),
@@ -46,7 +55,8 @@ class Profile(models.Model):
 	shirt_size = models.CharField(max_length=3, choices=SHIRT_SIZES, blank=True)
 	phone_number = models.CharField(max_length=15, null=True, blank=True)
 	drivers_license = models.CharField(max_length=10, null=True, blank=True)
-	allergy = models.CharField(max_length=30, null=True, blank=True)
+	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
+	no_dietary_restrictions = models.BooleanField(null = False, blank = False) # required if no dietary_restrictions are selected
 	programme = models.ForeignKey(Programme, null=True, blank=True, on_delete=models.CASCADE)
 	registration_year = models.IntegerField(null=True, blank=True)
 	planned_graduation = models.IntegerField(null=True, blank=True)
