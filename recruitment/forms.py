@@ -68,7 +68,7 @@ class RecruitmentApplicationSearchForm(forms.Form):
     )
 
     rating = forms.ChoiceField(
-        choices=[('', '-------')] + [(i, i) for i in range(1, 6)],
+        choices=[('', '-------'), (1, 1), (2, 2), (3, 3), (5, 5)],
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=False
     )
