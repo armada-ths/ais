@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from events.forms import EventForm, TeamForm, SignupForm
+from events.forms import EventForm, TeamForm
 from events.models import Event, Team, Participant
 from fair.models import Fair
 
@@ -67,18 +67,11 @@ def event_signup(request, year, event_pk):
     payment_url = reverse('events:stripe_endpoint', args=[year, event_pk])
     participant = Participant.objects.filter(user_s=request.user).first()
 
-    form = SignupForm(request.POST or None)
-
-    if request.POST and form.is_valid():
-        form.save()
-        return redirect('home', fair.year)
-
     return render(request, 'events/event_signup.html', {
         'fair': fair,
         'event': event,
         'payment_url': payment_url,
         'participant': participant,
-        'form': form
     })
 
 
