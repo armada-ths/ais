@@ -1,0 +1,51 @@
+{% if events %}
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Date</th>
+      {% if perms.events.base %}
+        <th class="text-center">Participants</th> {% endif %}
+      <th>Signup</th>
+      {% if perms.events.base %}
+        <th>Published</th> {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for event in events %}
+      <tr>
+        <td>
+          {% if perms.events.change_event %}
+            <a href="{% url 'events:event_edit' fair.year event.id %}">{{ event.name }}</a>
+          {% elif event.open_for_signup %}
+            <a href="{% url 'events:event_signup' fair.year event.id %}">{{ event.name }}</a>
+          {% else %}
+            {{ event.name }}
+          {% endif %}
+        </td>
+        <td>{{ event.date_start|date:"d M H:i" }} - {{ event.date_end|date:"d M H:i" }}</td>
+        {% if perms.events.base %}
+          <td class="text-center">{{ event.num_participants }}</td> {% endif %}
+        <td>
+          {% if event.open_for_signup %}
+            <span class="label label-success">Open</span>
+          {% else %}
+            <span class="label label-default">Closed</span>
+          {% endif %}
+        </td>
+        {% if perms.events.base %}
+          <td>
+            {% if event.published %}
+              <span class="label label-success">Yes</span>
+            {% else %}
+              <span class="label label-default">No</span>
+            {% endif %}
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-center">No events... yet!</p>
+{% endif %}

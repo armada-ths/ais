@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <h1>{{ event.name }}</h1>
+  <ul class="nav nav-tabs nav-tabs-margin" role="tablist">
+    <li role="presentation" class="active"><a href="#details" aria-controls="details" role="tab"
+                                              data-toggle="tab">Details</a>
+    </li>
+    <li role="presentation"><a href="#participants" aria-controls="participants" role="tab" data-toggle="tab">Participants
+      ({{ event.participant_set.count }})</a>
+    </li>
+    <li role="presentation"><a href="#teams" aria-controls="teams" role="tab" data-toggle="tab">Teams
+      ({{ event.team_set.count }})</a>
+    </li>
+
+  </ul>
+
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="details">
+      <form method="post">
+        {% csrf_token %}
+        {{ form | crispy }}
+        <input class="btn btn-primary" type="submit" value="Submit"/>
+      </form>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="participants">
+      {% include 'events/participant_list.html' with participants=event.participant_set.all %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="teams">
+      <div>
+        <a href="{% url 'events:team_new' fair.year event.id %}" class="btn btn-default">New team</a>
+      </div>
+      {% include 'events/team_list.html' with teams=event.team_set.all event=event %}
+    </div>
+  </div>
+
+
+{% endblock %}

@@ -1,32 +1,44 @@
-from recruitment.models import RecruitmentPeriod, Role
+from django.db.models import Count
 from django.forms import modelform_factory
 from django.shortcuts import render, redirect, get_object_or_404
-from banquet.models import BanquetteAttendant
 from django.urls import reverse
-from people.models import Profile
-from fair.models import Fair
+
+from banquet.models import BanquetteAttendant
 from companies.models import CompanyContact
+from events.models import Event
+from fair.models import Fair
+from recruitment.models import RecruitmentPeriod, Role
+
 
 def login_redirect(request):
-	next = request.GET.get('next')
-	if next and next[-1] == '/':
-		next = next[:-1]
+    next = request.GET.get('next')
+    if next and next[-1] == '/':
+        next = next[:-1]
 
-	if request.user.is_authenticated():
-		contact  = CompanyContact.objects.filter(user = request.user).first()
+    if request.user.is_authenticated():
+        contact = CompanyContact.objects.filter(user=request.user).first()
 
-		if contact is not None:
-			return redirect('anmalan:choose_company')
-	
-		return redirect('home', 2018)
+        if contact is not None:
+            return redirect('anmalan:choose_company')
 
-	return render(request, 'login.html', { 'next': next })
+        return redirect('home', 2018)
+
+    return render(request, 'login.html', {'next': next})
+
 
 def index(request, year=None):
     fair = Fair.objects.filter(current=True).first()
     if fair is None:
         fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
+
+        if request.user.has_perm('events.base'):
+            events = Event.objects.filter(fair=fair).annotate(num_participants=Count('participant'))
+        else:
+            events = Event.objects.filter(fair=fair, published=True)
+
+        is_attending_banquette = BanquetteAttendant.objects.filter(fair=fair, user=request.user).exists()
+
         return render(request, "root/home.html", {
             "recruitment": {
                 'recruitment_periods': RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date'),
@@ -35,7 +47,8 @@ def index(request, year=None):
                           for
                           role in Role.objects.filter(parent_role=None)],
             },
-            "is_attending_banquette": BanquetteAttendant.objects.filter(fair=fair, user=request.user).exists(),
+            "is_attending_banquette": is_attending_banquette,
+            'events': events,
             "fair": fair
         })
 
@@ -49,7 +62,9 @@ def banquette_signup(request, year, template_name='exhibitors/related_object_for
     fair = get_object_or_404(Fair, year=year)
     if request.user.is_authenticated():
         instance = BanquetteAttendant.objects.filter(fair=fair, user=request.user).first()
-        FormFactory = modelform_factory(BanquetteAttendant, exclude=('user', 'exhibitor', 'first_name', 'last_name', 'email', 'student_ticket', 'table_name', 'seat_number', 'ignore_from_placement'))
+        FormFactory = modelform_factory(BanquetteAttendant, exclude=(
+            'user', 'exhibitor', 'first_name', 'last_name', 'email', 'student_ticket', 'table_name', 'seat_number',
+            'ignore_from_placement'))
         form = FormFactory(request.POST or None, instance=instance)
         if form.is_valid():
             instance = form.save()
@@ -65,6 +80,7 @@ def banquette_signup(request, year, template_name='exhibitors/related_object_for
                        'delete_url': delete_url, 'fair': fair})
 
     return render(request, 'login.html', {'next': next, 'fair': fair})
+
 
 def banquet_attendants(request, year, template_name='banquet/banquet_attendants.html'):
     fair = get_object_or_404(Fair, year=year)

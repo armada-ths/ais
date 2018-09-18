@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.utils import timezone
 
 from accounting.models import Product
@@ -15,6 +15,7 @@ class Event(models.Model):
     location = models.CharField(max_length=75, blank=True, null=True)
     signup_cr = models.BooleanField(blank=False, null=False, verbose_name='Let company representatives sign up')
     signup_s = models.BooleanField(blank=False, null=False, verbose_name='Let students sign up')
+    open_for_signup = models.BooleanField(blank=False, null=False, verbose_name='Event is currently open for sign up')
     company_product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE,
                                         verbose_name='Product to link the event with')
     teams_create_cr = models.BooleanField(blank=False, null=False, verbose_name='Let company representatives create teams')
@@ -31,6 +32,9 @@ class Event(models.Model):
 
     class Meta:
         ordering = ['date_start', 'name']
+
+    def __str__(self):
+        return self.name
 
     @property
     def is_future(self):
@@ -60,11 +64,23 @@ class Team(models.Model):
 
 class Participant(models.Model):
     event = models.ForeignKey(Event, blank=False, null=True, on_delete=models.CASCADE)
-    name = models.TextField(blank=True, null=True)  # None for students, required for company representatives
-    email_address = models.TextField(blank=True, null=True)  # None for students, required for company representatives
-    phone_number = models.TextField(blank=True, null=True)  # None for students, required for company representatives
+    name = models.CharField(blank=True, null=True, max_length=255)  # None for students, required for company representatives
+    email_address = models.CharField(blank=True, null=True, max_length=255)  # None for students, required for company representatives
+    phone_number = models.CharField(blank=True, null=True, max_length=255)  # None for students, required for company representatives
     user_cr = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='user_cr')  # either this one...
     user_s = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='user_s')  # ...or this one
+    stripe_charge_id = models.CharField(max_length=50, blank=True, null=True)  # None for company representatives, filled in if the
+    # student has payed using Stripe
+    fee_payed_s = models.BooleanField(default=False)
+    attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
+
+    def __str__(self):
+        if self.user_s:
+            return self.user_s.first_name
+        elif self.user_cr:
+            return self.user_cr.first_name
+        else:
+            return self.name
 
 
 class TeamMember(models.Model):
@@ -76,3 +92,9 @@ class TeamInvitation(models.Model):
     team = models.ForeignKey(Team, blank=False, null=False, on_delete=models.CASCADE)
     invitee = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
+
+
+class SignupQuestion(models.Model):
+    required = models.BooleanField(blank=False, null=False)
+    type = models.CharField(blank=False, null=False, max_length=255)
+    question = models.TextField(blank=False, null=False)

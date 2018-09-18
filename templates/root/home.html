@@ -1,58 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
 
-<img src="/static/images/armada_navigating.png" class="home-image">
+  <img src="/static/images/armada_navigating.png" class="home-image">
 
-<div class="row">
+  <div class="row">
     <div class="col-md-12">
 
-        <h2>Events</h2>
-        <p>This section is under construction.</p>
+      <h2>Events</h2>
+      {% include 'events/event_table.html' with events=events %}
 
-        <h2>Recruitment</h2>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="col-md-4">Name</th>
-                        <th class="col-md-2">Date</th>
-                        {% if perms.recruitment.view_recruitment_applications %}
-                            <th class="col-md-4">Applications</th>
-                        {% else %}
-                            <th class="col-md-4"></th>
-                        {% endif %}
-                        <th class="col-md-2">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for period in recruitment.recruitment_periods %}
-                    <tr>
-                        <td class="col-md-4"><a href="{% url 'recruitment_period' fair.year period.id %}">{{ period.name }}</a></td>
-                        <td class="col-md-2">{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
-                        {% if perms.recruitment.view_recruitment_applications %}
-                            <td class="col-md-4">{{ period.recruitmentapplication_set.count }}</td>
-                        {% else %}
-                            <td class="col-md-4"></td>
-                        {% endif %}
-                        <td class="col-md-2">
-                            {% if period.is_past %}
-                                <span class="label label-default">Closed</span>
-                            {% elif period.is_future %}
-                                <span class="label label-default">Not opened yet</span>
-                            {% else %}
-                                <span class="label label-success">Open</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td>No recruitment period for the moment.</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+      <h2>Recruitment</h2>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th class="col-md-4">Name</th>
+            <th class="col-md-2">Date</th>
+            {% if perms.recruitment.view_recruitment_applications %}
+              <th class="col-md-4">Applications</th>
+            {% else %}
+              <th class="col-md-4"></th>
+            {% endif %}
+            <th class="col-md-2">Status</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for period in recruitment.recruitment_periods %}
+            <tr>
+              <td class="col-md-4"><a href="{% url 'recruitment_period' fair.year period.id %}">{{ period.name }}</a></td>
+              <td class="col-md-2">{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
+              {% if perms.recruitment.view_recruitment_applications %}
+                <td class="col-md-4">{{ period.recruitmentapplication_set.count }}</td>
+              {% else %}
+                <td class="col-md-4"></td>
+              {% endif %}
+              <td class="col-md-2">
+                {% if period.is_past %}
+                  <span class="label label-default">Closed</span>
+                {% elif period.is_future %}
+                  <span class="label label-default">Not opened yet</span>
+                {% else %}
+                  <span class="label label-success">Open</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td>No recruitment period for the moment.</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-</div>
+  </div>
 
 {% endblock %}

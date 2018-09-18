@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block nav-events %}
+  <li role="presentation" class="active"><a href="{% url 'events:event_list' fair.year %}">Events</a></li>
+{% endblock %}
+
+{% block content %}
+  <h1>Events</h1>
+  <div>
+    <a href="{% url 'events:event_new' fair.year %}" class="btn btn-default">New event</a>
+  </div>
+
+  {% include 'events/event_table.html' with events=events %}
+
+{% endblock %}

@@ -32,7 +32,7 @@
 
           {% if perms.events.base %}
             {% block nav-events %}
-              <li role="presentation"><a href="{% url 'events:list_events' fair.year %}">Events</a></li>
+              <li role="presentation"><a href="{% url 'events:event_list' fair.year %}">Events</a></li>
             {% endblock %}
           {% endif %}
 
