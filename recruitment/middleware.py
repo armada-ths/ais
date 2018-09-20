@@ -25,14 +25,14 @@ class LoginRequiredMiddleware:
  'django.core.context_processors.auth'."
         # PLACEHOLDER until proper authenitaction is in place
         path = request.path_info
-        
+
         current_year = datetime.datetime.now().year
         url_exceptions = {
             '/',
             '/register/', '/register/user', '/register/company',
             '/register/password_reset/', '/register/password_reset/done/',
             '/register/external/signup',
-            '/fairs/' + str(current_year) + '/banquet/signup',
+            '/fairs/' + str(current_year) + '/banquet/invite/',
             '/fairs/' + str(current_year) + '/banquet/placement',
         }
 
