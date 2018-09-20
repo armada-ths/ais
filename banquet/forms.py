@@ -13,9 +13,9 @@ class InternalParticipantForm(forms.ModelForm):
         exclude = ['banquet','company','user']
 
         widgets = {
-            'name': forms.TextInput(attrs={'disabled': True}),
-            'email_address': forms.TextInput(attrs={'disabled': True}),
-            'phone_number': forms.TextInput(attrs={'disabled': True}),
+            'name' : forms.TextInput(attrs={'readonly':'readonly'}),
+            'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
+            'phone_number' : forms.TextInput(attrs={'readonly':'readonly'}),
         }
 
 class ExternalParticipantForm(forms.ModelForm):

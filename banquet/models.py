@@ -21,8 +21,7 @@ class DietaryPreference(models.Model):
 	preference = models.CharField(max_length = 75, blank = False, null = False)
 
 	def __str__(self):
-		return self.preference
-
+                return self.preference
 
 class Participant(models.Model):
 	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
@@ -33,6 +32,11 @@ class Participant(models.Model):
 	phone_number = models.CharField(max_length = 75, blank = True, null = True)  # None if a user is provided, required for others
 	dietary_preferences = models.ManyToManyField(DietaryPreference)
 	alcohol = models.BooleanField(default=True)
+
+	def __str__(self):
+                if self.company:
+                    return self.company.name + " : " + self.name
+                return self.name
 
 class Invitation(models.Model):
 	token = models.CharField(max_length = 128, unique = True, blank = False, null = False)

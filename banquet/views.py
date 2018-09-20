@@ -62,7 +62,7 @@ class InviteMixin(object):
 
 class InternalInviteView(InviteMixin, CreateView):
     """
-    Invite view for students and invitees (excl. companies)
+    Invite view for already registered students
     """
     # Form: Participant
     form_class = InternalParticipantForm
