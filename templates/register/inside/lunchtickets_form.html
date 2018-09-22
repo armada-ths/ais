@@ -8,7 +8,7 @@
 
 {% block content %}
 	{% if form %}
-		<h1>Edit lunch ticket</h1>
+		<h1>{% if form.instance.pk is not None %}Edit lunch ticket{% else %}Create new lunch ticket{% endif %}</h1>
 		
 		<form method="post" enctype="multipart/form-data">
 			{% csrf_token %}
