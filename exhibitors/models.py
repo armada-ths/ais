@@ -1,23 +1,9 @@
 from django.db import models
-from lib.image import UploadToDirUUID, UploadToDir, update_image_field
+from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
+
 from recruitment.models import RecruitmentApplication
 from fair.models import Fair
-from transportation.models import TransportationOrder
-
-class Location(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
-
-# Job type that an exhibitor offers
-class JobType(models.Model):
-    name = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.name
 
 
 class CatalogueIndustry(models.Model):
@@ -49,14 +35,8 @@ class CatalogueBenefit(models.Model):
 class Exhibitor(models.Model):
 	company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
 	fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
-	hosts = models.ManyToManyField(User, blank=True)
+	hosts = models.ManyToManyField(User, blank = True)
 	contact = models.ForeignKey('companies.CompanyContact', null=True, blank=True, on_delete=models.CASCADE)
-	location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.CASCADE)
-	booth_number = models.IntegerField(blank=True, null=True)
-	fair_location = models.OneToOneField('locations.Location', blank=True, null=True, on_delete=models.CASCADE)
-	about_text = models.TextField(blank=True)
-	facts_text = models.TextField(blank=True)
-	accept_terms = models.BooleanField(default=False)
 	booth_height = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Height of the booth (cm)')
 	electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
 	electricity_socket_count = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Number of sockets')
@@ -100,10 +80,6 @@ class Exhibitor(models.Model):
 	transport_from = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
 	transport_comment = models.TextField(blank = True, null = True)
 	
-	tags = models.ManyToManyField('fair.Tag', blank=True)
-	
-	job_types = models.ManyToManyField(JobType, blank=True)
-	
 	def superiors(self):
 		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.hosts.all()]
 		return [application.superior_user for application in accepted_applications if application and application.superior_user]
@@ -131,7 +107,7 @@ class ExhibitorView(models.Model):
 
     def create(self):
         # A set of field names from Exhibitor model, that are shown by default
-        default = {'location', 'hosts'}
+        default = {'hosts'}
 
         for field in default:
             self.choices = self.choices + ' ' + field

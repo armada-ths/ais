@@ -1,3 +1,6 @@
+import requests as r
+import json
+
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse
@@ -8,25 +11,15 @@ from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
-import requests as r
-import json
 
 from companies.models import Company, CompanyContact
-from orders.models import Product, Order, ProductType, ElectricityOrder
 from exhibitors.models import Exhibitor
 from fair.models import Fair
-from matching.models import Survey
-
-from .models import SignupContract, SignupLog
-
-from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm
-from orders.forms import get_order_forms, ElectricityOrderForm
-from exhibitors.forms import ExhibitorProfileForm
-from matching.forms import ResponseForm
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
-from transportation.forms import PickupForm, DeliveryForm
 from accounting.models import Product, Order, RegistrationSection
 
+from .models import SignupContract, SignupLog
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm
 
 from .help.methods import get_time_flag
 
