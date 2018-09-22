@@ -251,7 +251,7 @@ class TransportForm(Form):
 class LunchTicketForm(ModelForm):
 	class Meta:
 		model = LunchTicket
-		fields = ['comment', 'day', 'dietary_restrictions']
+		fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
 		
 		widgets = {
 			'day': forms.RadioSelect(),
@@ -259,5 +259,6 @@ class LunchTicketForm(ModelForm):
 		}
 		
 		help_texts = {
+			'email_address': 'The lunch ticket will be sent to this e-mail address in advance of the career fair.',
 			'comment': 'The comment is for your use only. It could, for instance, contain the name of the person who is going to use the ticket.'
 		}

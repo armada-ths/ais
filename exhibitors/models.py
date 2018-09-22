@@ -106,10 +106,14 @@ class LunchTicketDay(models.Model):
 
 
 class LunchTicket(models.Model):
+	email_address = models.EmailField(blank = False, null = False, max_length = 255, verbose_name = 'E-mail address')
+	comment = models.CharField(blank = True, null = True, max_length = 255)
 	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
 	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
-	comment = models.CharField(blank = True, null = True, max_length = 255)
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
+	
+	class Meta:
+		ordering = ['pk']
 
 
 class LunchTicketScan(models.Model):
