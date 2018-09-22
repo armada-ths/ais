@@ -359,7 +359,7 @@ def transport(request, company_pk):
 				'Transport request from ' + company.name,
 				'\n'.join(body),
 				'info@armada.nu',
-				['m@rtinpo.la'],
+				['armada@ryskaposten.se'],
 				['support@armada.nu'],
 				cc = [form.cleaned_data['contact_email_address']],
 				reply_to = [form.cleaned_data['contact_email_address']]
