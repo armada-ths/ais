@@ -18,8 +18,8 @@ BASE_DIR = path.join(path.dirname(path.abspath(__file__)), '../../')
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'system@armada.nu'
-DEFAULT_TO_EMAIL = 'system@armada.nu'
+DEFAULT_FROM_EMAIL = 'info@armada.nu'
+DEFAULT_TO_EMAIL = 'info@armada.nu'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

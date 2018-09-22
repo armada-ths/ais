@@ -238,3 +238,11 @@ class RegistrationForm(ModelForm):
 	
 	authorized_accepted = BooleanField(required = True)
 	authorized_accepted.label = "I am authorized to register my company for Armada 2018 and sign this contract*"
+
+
+class TransportForm(Form):
+	contact_name = forms.CharField(max_length = 100, label = 'Contact person\'s name', help_text = 'The person at your company who is responsible for the parcels to and from the fair.')
+	contact_email_address = forms.CharField(max_length = 100, label = 'Contact person\'s e-mail address', help_text = 'This is the e-mail address to which Ryska posten will respond.')
+	contact_phone_number = forms.CharField(max_length = 100, label = 'Contact person\'s phone number')
+	description_of_parcels = forms.CharField(widget = forms.Textarea, help_text = 'Describe your parcels as detailed as possible; how many, their sizes, their weights etc. The description can be either in English or in Swedish.')
+	address_details = forms.CharField(widget = forms.Textarea, help_text = 'Physical addresses that Ryska posten should collected from and deliver the parcels to.')

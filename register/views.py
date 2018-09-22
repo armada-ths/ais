@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
@@ -19,7 +19,7 @@ from matching.models import Survey
 
 from .models import SignupContract, SignupLog
 
-from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm
 from orders.forms import get_order_forms, ElectricityOrderForm
 from exhibitors.forms import ExhibitorProfileForm
 from matching.forms import ResponseForm
@@ -324,17 +324,58 @@ def transport(request, company_pk):
 	
 	if request.user.has_perm('companies.base'):
 		company_contact = None
+		initial = {}
 	
 	else:
 		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
 		
 		if not company_contact: return redirect('anmalan:choose_company')
+		
+		initial = {
+			'contact_name': (company_contact.first_name + ' ' + company_contact.last_name) if (company_contact.first_name and company_contact.last_name) else None,
+			'contact_email_address': company_contact.user.email,
+			'contact_phone_number': company_contact.mobile_phone_number if company_contact.mobile_phone_number is not None else company_contact.work_phone_number
+		}
+	
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
+	
+	if exhibitor:
+		form = TransportForm(request.POST or None, initial = initial)
+		
+		if request.POST and form.is_valid():
+			body = [
+				'Company name: ' + company.name + ' (' + str(company.pk) + ')',
+				'Contact person: ' + form.cleaned_data['contact_name'],
+				'Phone number: ' + form.cleaned_data['contact_phone_number'],
+				'',
+				'Description of parcels:',
+				form.cleaned_data['description_of_parcels'],
+				'',
+				'Address details:',
+				form.cleaned_data['address_details']
+			]
+			
+			email = EmailMessage(
+				'Transport request from ' + company.name,
+				'\n'.join(body),
+				'info@armada.nu',
+				['m@rtinpo.la'],
+				['support@armada.nu'],
+				cc = [form.cleaned_data['contact_email_address']],
+				reply_to = [form.cleaned_data['contact_email_address']]
+			)
+			
+			email.send()
+			
+			form = None
 	
 	return render(request, 'register/inside/transport.html',
 	{
 		'fair': fair,
 		'company': company,
-		'company_contact': company_contact
+		'company_contact': company_contact,
+		'exhibitor': exhibitor,
+		'form': form if exhibitor is not None else None
 	})
 
 
