@@ -479,11 +479,14 @@ def banquet(request, company_pk):
 		
 		if not company_contact: return redirect('anmalan:choose_company')
 	
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
+	
 	return render(request, 'register/inside/banquet.html',
 	{
 		'fair': fair,
 		'company': company,
-		'company_contact': company_contact
+		'company_contact': company_contact,
+		'exhibitor': exhibitor
 	})
 
 
@@ -501,9 +504,12 @@ def events(request, company_pk):
 		
 		if not company_contact: return redirect('anmalan:choose_company')
 	
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
+	
 	return render(request, 'register/inside/events.html',
 	{
 		'fair': fair,
 		'company': company,
-		'company_contact': company_contact
+		'company_contact': company_contact,
+		'exhibitor': exhibitor
 	})
