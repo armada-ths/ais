@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 from recruitment.models import RecruitmentApplication
 from fair.models import Fair
+from people.models import DietaryRestriction
 
 
 class CatalogueIndustry(models.Model):
@@ -108,6 +109,7 @@ class LunchTicket(models.Model):
 	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
 	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
 	comment = models.CharField(blank = True, null = True, max_length = 255)
+	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 
 
 class LunchTicketScan(models.Model):
