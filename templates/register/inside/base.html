@@ -52,6 +52,23 @@
 				text-decoration: none;
 				color: #00d791;
 			}
+			
+			.information_label
+			{
+				color: #00d791;
+				font-weight: 700;
+			}
+			
+			.no-bullets
+			{
+				margin-left: 0;
+				padding-left: 0;
+			}
+			
+			.no-bullets li
+			{
+				list-style-type: none;
+			}
 		</style>
 		{% include "header.html" %}{% block head-extra %}{% endblock %}
 		<link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen" />
@@ -61,8 +78,10 @@
 		<ul id="menu">
 			{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}">{{ company.name }}</a></li>{% endblock %}
 			{% if company.name == 'Kottnet' %}
-				{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
-				{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
+				{% if exhibitor is not None %}
+					{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
+					{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
+				{% endif %}
 				{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
 				{% block nav-events %}<li><a href="{% url 'anmalan:events' company.pk %}">Events</a></li>{% endblock %}
 			{% endif %}

@@ -13,13 +13,13 @@ from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
 
 from companies.models import Company, CompanyContact
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, LunchTicket, LunchTicketDay
 from fair.models import Fair
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from accounting.models import Product, Order, RegistrationSection
 
 from .models import SignupContract, SignupLog
-from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm
 
 from .help.methods import get_time_flag
 
@@ -227,6 +227,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		'contract': contract,
 		'company': company,
 		'company_contact': company_contact,
+		'exhibitor': exhibitor,
 		'form_company_details': form_company_details,
 		'form_logistics_details': form_logistics_details,
 		'form_catalogue_details': form_catalogue_details,
@@ -330,37 +331,36 @@ def transport(request, company_pk):
 			'contact_phone_number': company_contact.mobile_phone_number if company_contact.mobile_phone_number is not None else company_contact.work_phone_number
 		}
 	
-	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
 	
-	if exhibitor:
-		form = TransportForm(request.POST or None, initial = initial)
+	form = TransportForm(request.POST or None, initial = initial)
+	
+	if request.POST and form.is_valid():
+		body = [
+			'Company name: ' + company.name + ' (' + str(company.pk) + ')',
+			'Contact person: ' + form.cleaned_data['contact_name'],
+			'Phone number: ' + form.cleaned_data['contact_phone_number'],
+			'',
+			'Description of parcels:',
+			form.cleaned_data['description_of_parcels'],
+			'',
+			'Address details:',
+			form.cleaned_data['address_details']
+		]
 		
-		if request.POST and form.is_valid():
-			body = [
-				'Company name: ' + company.name + ' (' + str(company.pk) + ')',
-				'Contact person: ' + form.cleaned_data['contact_name'],
-				'Phone number: ' + form.cleaned_data['contact_phone_number'],
-				'',
-				'Description of parcels:',
-				form.cleaned_data['description_of_parcels'],
-				'',
-				'Address details:',
-				form.cleaned_data['address_details']
-			]
-			
-			email = EmailMessage(
-				'Transport request from ' + company.name,
-				'\n'.join(body),
-				'info@armada.nu',
-				['armada@ryskaposten.se'],
-				['support@armada.nu'],
-				cc = [form.cleaned_data['contact_email_address']],
-				reply_to = [form.cleaned_data['contact_email_address']]
-			)
-			
-			email.send()
-			
-			form = None
+		email = EmailMessage(
+			'Transport request from ' + company.name,
+			'\n'.join(body),
+			'info@armada.nu',
+			['armada@ryskaposten.se'],
+			['support@armada.nu'],
+			cc = [form.cleaned_data['contact_email_address']],
+			reply_to = [form.cleaned_data['contact_email_address']]
+		)
+		
+		email.send()
+		
+		form = None
 	
 	return render(request, 'register/inside/transport.html',
 	{
@@ -368,7 +368,7 @@ def transport(request, company_pk):
 		'company': company,
 		'company_contact': company_contact,
 		'exhibitor': exhibitor,
-		'form': form if exhibitor is not None else None
+		'form': form
 	})
 
 
@@ -386,11 +386,82 @@ def lunchtickets(request, company_pk):
 		
 		if not company_contact: return redirect('anmalan:choose_company')
 	
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
+
+	count_ordered = 0
+	
+	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
+		count_ordered += order.quantity
+	
+	days = []
+	count_created = 0
+	
+	for day in LunchTicketDay.objects.filter(fair = fair):
+		lunch_tickets = LunchTicket.objects.filter(exhibitor = exhibitor, day = day)
+		count_created += len(lunch_tickets)
+		
+		days.append({
+			'name': day.name,
+			'lunch_tickets': lunch_tickets
+		})
+	
 	return render(request, 'register/inside/lunchtickets.html',
 	{
 		'fair': fair,
 		'company': company,
-		'company_contact': company_contact
+		'company_contact': company_contact,
+		'exhibitor': exhibitor,
+		'days': days,
+		'can_create': count_ordered > count_created,
+		'count_ordered': count_ordered,
+		'count_created': count_created
+	})
+
+
+def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	company = get_object_or_404(Company, pk = company_pk)
+	fair = Fair.objects.filter(current = True).first()
+	
+	if request.user.has_perm('companies.base'):
+		company_contact = None
+	
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+		
+		if not company_contact: return redirect('anmalan:choose_company')
+	
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
+	
+	lunch_ticket = get_object_or_404(LunchTicket, pk = lunch_ticket_pk, exhibitor = exhibitor) if lunch_ticket_pk is not None else None
+	
+	count_ordered = 0
+	
+	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
+		count_ordered += order.quantity
+	
+	count_created = LunchTicket.objects.filter(exhibitor = exhibitor).count()
+	
+	if lunch_ticket is not None or count_ordered > count_created:
+		form = LunchTicketForm(request.POST or None, instance = lunch_ticket, initial = {'exhibitor': exhibitor})
+		
+		if request.POST and form.is_valid():
+			form.instance.exhibitor = exhibitor
+			form.save()
+			
+			return redirect('anmalan:lunchtickets', exhibitor.company.pk)
+	
+	else:
+		form = None
+	
+	return render(request, 'register/inside/lunchtickets_form.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+		'exhibitor': exhibitor,
+		'form': form
 	})
 
 

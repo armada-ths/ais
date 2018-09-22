@@ -2,7 +2,6 @@ from django.db import models
 from datetime import date
 from lib.image import UploadToDirUUID
 
-
 def current_fair():
     """
     This function is used by other apps to get the current fair object
@@ -27,6 +26,8 @@ class Fair(models.Model):
     complete_registration_close_date = models.DateTimeField(null=True, blank=True)
 
     current = models.BooleanField(default=False)
+    
+    product_lunch_ticket = models.ForeignKey('accounting.Product', blank = True, null = True)
 
     def is_member_of_fair(self, user):
         if user.is_superuser:

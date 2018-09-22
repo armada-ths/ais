@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.models import User
 
 from companies.models import Group, Company
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, LunchTicket
 from fair.models import Fair
 
 
@@ -246,3 +246,18 @@ class TransportForm(Form):
 	contact_phone_number = forms.CharField(max_length = 100, label = 'Contact person\'s phone number')
 	description_of_parcels = forms.CharField(widget = forms.Textarea, help_text = 'Describe your parcels as detailed as possible; how many, their sizes, their weights etc. The description can be either in English or in Swedish.')
 	address_details = forms.CharField(widget = forms.Textarea, help_text = 'Physical addresses that Ryska posten should collected from and deliver the parcels to.')
+
+
+class LunchTicketForm(ModelForm):
+	class Meta:
+		model = LunchTicket
+		fields = ['comment', 'day', 'dietary_restrictions']
+		
+		widgets = {
+			'day': forms.RadioSelect(),
+			'dietary_restrictions': forms.CheckboxSelectMultiple()
+		}
+		
+		help_texts = {
+			'comment': 'The comment is for your use only. It could, for instance, contain the name of the person who is going to use the ticket.'
+		}
