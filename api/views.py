@@ -13,7 +13,7 @@ from django.views.decorators.cache import cache_page
 
 import api.serializers as serializers, api.deserializers as deserializers
 
-from exhibitors.models import Exhibitor, CatalogInfo
+from exhibitors.models import Exhibitor
 from fair.models import Partner, Fair
 from django.utils import timezone
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
