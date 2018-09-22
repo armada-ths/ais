@@ -94,6 +94,28 @@ class Exhibitor(models.Model):
 		]
 
 
+class LunchTicketDay(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	name = models.CharField(blank = False, null = False, max_length = 255)
+	
+	class Meta:
+		ordering = ['fair', 'name']
+	
+	def __str__(self): return self.name + ' at ' + self.fair.name
+
+
+class LunchTicket(models.Model):
+	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
+	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
+	comment = models.CharField(blank = True, null = True, max_length = 255)
+
+
+class LunchTicketScan(models.Model):
+	lunch_ticket = models.ForeignKey(LunchTicket, on_delete = models.CASCADE)
+	user = models.ForeignKey(User, on_delete = models.CASCADE)
+	timestamp = models.DateTimeField(auto_now_add = True, blank = False, null = False)
+
+
 class ExhibitorView(models.Model):
     '''
     A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
