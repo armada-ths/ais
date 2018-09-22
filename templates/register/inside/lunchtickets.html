@@ -1,0 +1,22 @@
+{% extends "register/inside/base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}" class="active">Lunch tickets</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Lunch tickets</h1>
+	
+	
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		
+	</style>
+	<script>
+		
+	</script>
+{% endblock %}
