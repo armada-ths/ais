@@ -5,11 +5,6 @@ import inspect
 from companies.models import Company
 from .models import ExhibitorView, Exhibitor
 
-class ExhibitorProfileForm(forms.ModelForm):
-    class Meta:
-        model = Exhibitor
-        fields = ('logo', 'about_text','job_types')
-
 class ExhibitorViewForm(forms.Form):
     instance = None
 
@@ -45,7 +40,7 @@ class ExhibitorViewForm(forms.Form):
 
 
 # Fields for ordering
-exhibitor_fields = ['hosts', 'contact', 'fair_location',  'about_text', 'facts_text', 'comment', 'logo', 'location_at_fair', 'tags', 'job_types']
+exhibitor_fields = ['hosts']
 stand_fields = ['location', 'booth_number']
 
 

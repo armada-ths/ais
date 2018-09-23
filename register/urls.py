@@ -7,7 +7,13 @@ app_name = 'anmalan'
 
 urlpatterns = [
 	url(r'^$', views.choose_company, name = 'choose_company'),
-	url(r'^(?P<company_pk>[0-9]+)$', views.form, name = 'form'),
+	url(r'^(?P<company_pk>[0-9]+)/registration$', views.form, name = 'registration'),
+	url(r'^(?P<company_pk>[0-9]+)/transport$', views.transport, name = 'transport'),
+	url(r'^(?P<company_pk>[0-9]+)/lunchtickets$', views.lunchtickets, name = 'lunchtickets'),
+	url(r'^(?P<company_pk>[0-9]+)/lunchtickets/new$', views.lunchtickets_form, name = 'lunchtickets_new'),
+	url(r'^(?P<company_pk>[0-9]+)/lunchtickets/(?P<lunch_ticket_pk>[0-9]+)$', views.lunchtickets_form, name = 'lunchtickets_edit'),
+	url(r'^(?P<company_pk>[0-9]+)/banquet$', views.banquet, name = 'banquet'),
+	url(r'^(?P<company_pk>[0-9]+)/events$', views.events, name = 'events'),
 	url(r'^user', views.create_user, name = 'create_user'),
 	url(r'^company', views.create_company, name = 'create_company'),
 	url(r'^login/$', login, name='login', kwargs={'template_name': 'register/login.html', 'authentication_form': LoginForm }),

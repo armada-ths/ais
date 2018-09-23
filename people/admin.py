@@ -2,7 +2,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
 from django.contrib import admin
-from .models import Language, Programme, Profile
+from .models import Language, Programme, Profile, DietaryRestriction
 
 """
 class ProfileInline(admin.StackedInline):
@@ -30,3 +30,4 @@ class ProfileAdmin(admin.ModelAdmin):
 
 admin.site.register(Language)
 admin.site.register(Programme)
+admin.site.register(DietaryRestriction)

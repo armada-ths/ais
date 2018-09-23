@@ -1,0 +1,50 @@
+{% extends "register/inside/base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}" class="active">Lunch tickets</a></li>{% endblock %}
+
+{% block content %}
+	{% if form %}
+		<h1>{% if form.instance.pk is not None %}Edit lunch ticket{% else %}Create new lunch ticket{% endif %}</h1>
+		
+		<form method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			
+			{{ form | crispy }}
+			
+			<input type="submit" class="btn btn-armada-green" value="Save lunch ticket" />
+		</form>
+	{% else %}
+		<h1>No lunch tickets</h1>
+		<p>If you need to order additional lunch tickets, please contact a THS Armada representative.</p>
+	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		form
+		{
+			padding: 0;
+		}
+		
+		.lunch_ticket
+		{
+			background: #353535;
+			padding: 20px;
+			margin-bottom: 10px;
+			overflow: hidden;
+			padding-bottom: 10px;
+		}
+		
+		h2
+		{
+			margin: 30px 0 0;
+			padding: 0;
+			color: #00d791;
+		}
+	</style>
+	</style>
+{% endblock %}

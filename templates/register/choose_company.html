@@ -27,7 +27,7 @@
 			
 			<ul>
 				{% for company_contact in company_contacts %}
-					<li><a href="{% url 'anmalan:form' company_contact.company.pk %}">{{ company_contact.company.name }}</a></li>
+					<li><a href="{% url 'anmalan:registration' company_contact.company.pk %}">{{ company_contact.company.name }}</a></li>
 				{% endfor %}
 			</ul>
 		{% else %}

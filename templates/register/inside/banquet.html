@@ -1,0 +1,22 @@
+{% extends "register/inside/base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}" class="active">Banquet</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Banquet</h1>
+	
+	
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		
+	</style>
+	<script>
+		
+	</script>
+{% endblock %}

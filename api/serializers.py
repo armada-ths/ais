@@ -48,7 +48,6 @@ def exhibitor(request, exhibitor, company):
 	
 	return OrderedDict([
 		('id', exhibitor.pk),
-		('fair', exhibitor.fair.name),
 		('name', company.name),
 		('type', company.type.type),
 		('company_website', company.website),

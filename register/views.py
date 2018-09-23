@@ -1,32 +1,25 @@
+import requests as r
+import json
+
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
-import requests as r
-import json
 
 from companies.models import Company, CompanyContact
-from orders.models import Product, Order, ProductType, ElectricityOrder
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, LunchTicket, LunchTicketDay
 from fair.models import Fair
-from matching.models import Survey
-
-from .models import SignupContract, SignupLog
-
-from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm
-from orders.forms import get_order_forms, ElectricityOrderForm
-from exhibitors.forms import ExhibitorProfileForm
-from matching.forms import ResponseForm
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
-from transportation.forms import PickupForm, DeliveryForm
 from accounting.models import Product, Order, RegistrationSection
 
+from .models import SignupContract, SignupLog
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm
 
 from .help.methods import get_time_flag
 
@@ -38,7 +31,7 @@ def choose_company(request):
 	
 	company_contacts = CompanyContact.objects.filter(user = request.user).exclude(company = None)
 	
-	if len(company_contacts) == 1: return redirect('anmalan:form', company_contacts.first().company.pk)
+	if len(company_contacts) == 1: return redirect('anmalan:registration', company_contacts.first().company.pk)
 	
 	return render(request, 'register/choose_company.html', {'company_contacts': company_contacts})
 
@@ -57,24 +50,39 @@ def form(request, company_pk):
 		
 		if not company_contact: return redirect('anmalan:choose_company')
 	
-	if timezone.now() < fair.registration_start_date: return render(request, 'register/errors/before_initial.html')
+	if timezone.now() < fair.registration_start_date: return render(request, 'register/inside/error_before_initial.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+	})
 	
 	# show IR form if IR has opened and CR has not opened (=> we could be between IR and CR)
 	if timezone.now() >= fair.registration_start_date and timezone.now() < fair.complete_registration_start_date: return form_initial(request, company, company_contact, fair)
 	
 	# we're in or after CR! perhaps the company did not complete their IR?
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL')
-	if len(signature) == 0: return render(request, 'register/errors/after_initial_no_signature.html')
+	if len(signature) == 0: return render(request, 'register/inside/error_after_initial_no_signature.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+	})
 	
 	# ...or perhaps they weren't selected to participate in this year's fair?
 	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
-	if exhibitor is None: return render(request, 'register/errors/after_initial_no_exhibitor.html')
+	if exhibitor is None: return render(request, 'register/inside/error_after_initial_no_exhibitor.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+	})
 	
 	return form_complete(request, company, company_contact, fair, exhibitor)
 
 
 def form_initial(request, company, company_contact, fair):
-	return render(request, 'register/forms/initial.html',
+	return render(request, 'register/inside/registration_initial.html',
 	{
 		'fair': fair,
 		'company': company,
@@ -213,12 +221,13 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if signature:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
 	
-	return render(request, 'register/forms/complete.html',
+	return render(request, 'register/inside/registration_complete.html',
 	{
 		'fair': fair,
 		'contract': contract,
 		'company': company,
 		'company_contact': company_contact,
+		'exhibitor': exhibitor,
 		'form_company_details': form_company_details,
 		'form_logistics_details': form_logistics_details,
 		'form_catalogue_details': form_catalogue_details,
@@ -285,7 +294,7 @@ def change_password(request, template_name='register/change_password.html'):
 	else:
 		form = ChangePasswordForm(user=request.user)
 	
-	return render(request, template_name, {'form':form})
+	return render(request, template_name, {'registration': form})
 
 
 def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving):
@@ -299,3 +308,208 @@ def preliminary_registration(request, fair, company, contact, contract, exhibito
 		return redirect('anmalan:choose_company')
 	
 	return ('register/registration.html', dict(registration_open = True, signed_up = signed_up, contact = contact, company=company, exhibitor = exhibitor, fair=fair, form = form, contract_url = contract.contract.url if contract else None ))
+
+
+def transport(request, company_pk):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	company = get_object_or_404(Company, pk = company_pk)
+	fair = Fair.objects.filter(current = True).first()
+	
+	if request.user.has_perm('companies.base'):
+		company_contact = None
+		initial = {}
+	
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+		
+		if not company_contact: return redirect('anmalan:choose_company')
+		
+		initial = {
+			'contact_name': (company_contact.first_name + ' ' + company_contact.last_name) if (company_contact.first_name and company_contact.last_name) else None,
+			'contact_email_address': company_contact.user.email,
+			'contact_phone_number': company_contact.mobile_phone_number if company_contact.mobile_phone_number is not None else company_contact.work_phone_number
+		}
+	
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
+	
+	form = TransportForm(request.POST or None, initial = initial)
+	
+	if request.POST and form.is_valid():
+		body = [
+			'Company name: ' + company.name + ' (' + str(company.pk) + ')',
+			'Contact person: ' + form.cleaned_data['contact_name'],
+			'Phone number: ' + form.cleaned_data['contact_phone_number'],
+			'',
+			'Description of parcels:',
+			form.cleaned_data['description_of_parcels'],
+			'',
+			'Address details:',
+			form.cleaned_data['address_details']
+		]
+		
+		email = EmailMessage(
+			'Transport request from ' + company.name,
+			'\n'.join(body),
+			'info@armada.nu',
+			['armada@ryskaposten.se'],
+			['support@armada.nu'],
+			cc = [form.cleaned_data['contact_email_address']],
+			reply_to = [form.cleaned_data['contact_email_address']]
+		)
+		
+		email.send()
+		
+		form = None
+	
+	return render(request, 'register/inside/transport.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+		'exhibitor': exhibitor,
+		'form': form
+	})
+
+
+def lunchtickets(request, company_pk):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	company = get_object_or_404(Company, pk = company_pk)
+	fair = Fair.objects.filter(current = True).first()
+	
+	if request.user.has_perm('companies.base'):
+		company_contact = None
+	
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+		
+		if not company_contact: return redirect('anmalan:choose_company')
+	
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
+
+	count_ordered = 0
+	
+	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
+		count_ordered += order.quantity
+	
+	days = []
+	count_created = 0
+	
+	for day in LunchTicketDay.objects.filter(fair = fair):
+		lunch_tickets = LunchTicket.objects.filter(exhibitor = exhibitor, day = day)
+		count_created += len(lunch_tickets)
+		
+		days.append({
+			'name': day.name,
+			'lunch_tickets': lunch_tickets
+		})
+	
+	return render(request, 'register/inside/lunchtickets.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+		'exhibitor': exhibitor,
+		'days': days,
+		'can_create': count_ordered > count_created,
+		'count_ordered': count_ordered,
+		'count_created': count_created
+	})
+
+
+def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	company = get_object_or_404(Company, pk = company_pk)
+	fair = Fair.objects.filter(current = True).first()
+	
+	if request.user.has_perm('companies.base'):
+		company_contact = None
+	
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+		
+		if not company_contact: return redirect('anmalan:choose_company')
+	
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
+	
+	lunch_ticket = get_object_or_404(LunchTicket, pk = lunch_ticket_pk, exhibitor = exhibitor) if lunch_ticket_pk is not None else None
+	
+	count_ordered = 0
+	
+	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
+		count_ordered += order.quantity
+	
+	count_created = LunchTicket.objects.filter(exhibitor = exhibitor).count()
+	
+	if lunch_ticket is not None or count_ordered > count_created:
+		form = LunchTicketForm(request.POST or None, instance = lunch_ticket, initial = {'exhibitor': exhibitor})
+		
+		if request.POST and form.is_valid():
+			form.instance.exhibitor = exhibitor
+			form.save()
+			
+			return redirect('anmalan:lunchtickets', exhibitor.company.pk)
+	
+	else:
+		form = None
+	
+	return render(request, 'register/inside/lunchtickets_form.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+		'exhibitor': exhibitor,
+		'form': form
+	})
+
+
+def banquet(request, company_pk):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	company = get_object_or_404(Company, pk = company_pk)
+	fair = Fair.objects.filter(current = True).first()
+	
+	if request.user.has_perm('companies.base'):
+		company_contact = None
+	
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+		
+		if not company_contact: return redirect('anmalan:choose_company')
+	
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
+	
+	return render(request, 'register/inside/banquet.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+		'exhibitor': exhibitor
+	})
+
+
+def events(request, company_pk):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	company = get_object_or_404(Company, pk = company_pk)
+	fair = Fair.objects.filter(current = True).first()
+	
+	if request.user.has_perm('companies.base'):
+		company_contact = None
+	
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+		
+		if not company_contact: return redirect('anmalan:choose_company')
+	
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
+	
+	return render(request, 'register/inside/events.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+		'exhibitor': exhibitor
+	})
