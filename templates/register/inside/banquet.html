@@ -4,12 +4,21 @@
 {% load crispy_forms_tags %}
 {% load humanize %}
 
+
 {% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}" class="active">Banquet</a></li>{% endblock %}
 
 {% block content %}
 	<h1>Banquet</h1>
-	
-	
+    <p>Fill out the banquet participants contact info as well as their dietary preferences</p>
+	    <form method="post">
+            {{ form.management_form }}
+            <table>
+            {% for sub_form in form %}
+				{% csrf_token %} {{ sub_form | crispy }}
+            {% endfor %}
+            </table>
+	        <button type="submit" class="btn btn-success">Submit</button>
+		</form>
 {% endblock %}
 
 {% block scripts %}

@@ -25,4 +25,3 @@ class ExternalParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
         exclude = ['banquet','company','user']
-
