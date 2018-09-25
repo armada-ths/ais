@@ -28,8 +28,7 @@
     "clean-webpack-plugin": "^0.1.19",
     "webpack": "^4.19.1",
     "webpack-bundle-tracker": "^0.3.0",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.8"
+    "webpack-cli": "^3.1.0"
   },
   "dependencies": {
     "@material-ui/core": "^3.1.0",
