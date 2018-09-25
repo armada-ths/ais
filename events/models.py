@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
@@ -95,6 +96,22 @@ class TeamInvitation(models.Model):
 
 
 class SignupQuestion(models.Model):
-    required = models.BooleanField(blank=False, null=False)
-    type = models.CharField(blank=False, null=False, max_length=255)
+    QUESTION_TYPES = (
+        ('text_field', 'Short Text'),
+        ('text_area', 'Long Text'),
+        ('radio', 'Single Choice'),
+        ('checkbox', 'Multiple Choice')
+    )
+
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    type = models.CharField(blank=False, null=False, choices=QUESTION_TYPES, max_length=20)
     question = models.TextField(blank=False, null=False)
+    required = models.BooleanField(blank=False, null=False)
+    options = ArrayField(models.TextField(blank=False, null=False), default=[])
+
+
+class SignupQuestionAnswer(models.Model):
+    signup_question = models.ForeignKey(SignupQuestion, blank=False, null=False, on_delete=models.CASCADE)
+    participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
+    answer = models.TextField()  # Used for 'text_field' and 'text_area'
+    answer_options = ArrayField(models.TextField(blank=False, null=False), default=[])  # Used for 'radio' and 'checkbox

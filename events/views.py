@@ -1,3 +1,5 @@
+import json
+
 import stripe
 from django.contrib.auth.decorators import permission_required, login_required
 from django.db.models import Count
@@ -7,8 +9,29 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from events.forms import EventForm, TeamForm
-from events.models import Event, Team, Participant
+from events.models import Event, Team, Participant, SignupQuestion
 from fair.models import Fair
+
+
+def save_questions(questions_data, event):
+    questions = []
+
+    for question in questions_data:
+        pk = question.pop('id', None)
+
+        defaults = {
+            'event': event,
+            'type': question['type'],
+            'question': question['question'],
+            'required': question['required'],
+            'options': question['options'],
+        }
+
+        q, _created = SignupQuestion.objects.update_or_create(pk=pk, defaults=defaults)
+        questions.append(q)
+
+    # This should work to override the questions with only the once that were sent, but it doesn't.
+    event.signupquestion_set.set(questions)
 
 
 @permission_required('events.base')
@@ -26,15 +49,23 @@ def event_list(request, year):
 def event_new(request, year):
     fair = get_object_or_404(Fair, year=year)
 
+    react_props = {
+        'question_types': dict(SignupQuestion.QUESTION_TYPES)
+    }
+
     form = EventForm(request.POST or None)
 
     if request.POST and form.is_valid():
-        form.save()
-        return redirect('events:event_list', fair.year)
+        event = form.save()
+        questions_data = json.loads(request.POST['questions'])
+
+        save_questions(questions_data, event)
+        return HttpResponse(status=200)
 
     return render(request, 'events/event_new.html', {
         'fair': fair,
-        'form': form
+        'form': form,
+        'react_props': react_props
     })
 
 
@@ -43,16 +74,26 @@ def event_edit(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=pk)
 
+    react_props = {
+        'questions': list(event.signupquestion_set.values()),
+        'question_types': dict(SignupQuestion.QUESTION_TYPES)
+    }
+
     form = EventForm(request.POST or None, instance=event)
 
     if request.POST and form.is_valid():
         form.save()
-        return redirect('events:event_list', fair.year)
+
+        questions_data = json.loads(request.POST['questions'])
+
+        save_questions(questions_data, event)
+        return HttpResponse(status=204)
 
     return render(request, 'events/event_edit.html', {
         'fair': fair,
         'event': event,
-        'form': form
+        'form': form,
+        'react_props': json.dumps(react_props)
     })
 
 
@@ -65,6 +106,8 @@ def event_signup(request, year, event_pk):
         raise Http404
 
     payment_url = reverse('events:stripe_endpoint', args=[year, event_pk])
+
+    # Will be populated if user has started signup before
     participant = Participant.objects.filter(user_s=request.user).first()
 
     return render(request, 'events/event_signup.html', {

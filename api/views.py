@@ -1,25 +1,27 @@
+import json
+import platform
+import subprocess
 from collections import OrderedDict
 from datetime import datetime
 
-import platform, subprocess, json
-
 from django.contrib.auth.models import Group
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
-from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
 
-import api.serializers as serializers, api.deserializers as deserializers
+import api.deserializers as deserializers
+import api.serializers as serializers
+from banquet.models import BanquetteAttendant
 
 from exhibitors.models import Exhibitor
 from fair.models import Partner, Fair
-from django.utils import timezone
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
-from recruitment.models import RecruitmentPeriod, RecruitmentApplication, Role
+from recruitment.models import RecruitmentPeriod, RecruitmentApplication
 from student_profiles.models import StudentProfile, MatchingResult
+
 
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
@@ -36,16 +38,8 @@ def exhibitors(request):
 
     data = [serializers.exhibitor(request, exhibitor, exhibitor.company)
             for exhibitor in exhibitors]
-    #data.sort(key=lambda x: x['company_name'].lower())
+    # data.sort(key=lambda x: x['company_name'].lower())
     return JsonResponse(data, safe=False)
-
-@cache_page(60 * 5)
-def events(request):
-    '''
-    Returns all events for this years fair
-    '''
-    return JsonResponse([], safe=False)
-
 
 
 @cache_page(60 * 5)
@@ -56,6 +50,7 @@ def news(request):
     news = NewsArticle.public_articles.all()
     data = [serializers.newsarticle(request, article) for article in news]
     return JsonResponse(data, safe=False)
+
 
 @cache_page(60 * 5)
 def partners(request):
@@ -68,6 +63,7 @@ def partners(request):
     ).order_by('-main_partner')
     data = [serializers.partner(request, partner) for partner in partners]
     return JsonResponse(data, safe=False)
+
 
 @cache_page(60 * 5)
 def organization(request):
@@ -99,6 +95,39 @@ def status(request):
         ('commit', git_hash),
         ('python_version', python_version),
     ])
+    return JsonResponse(data, safe=False)
+
+
+@cache_page(60 * 5)
+def banquet_placement(request):
+    '''
+    Returns all banquet attendance for current fair.
+    The field job_title depends on weather a attendant is a user or exhibitor.
+    '''
+
+    fair = get_object_or_404(Fair, current=True)
+
+    banquet_attendees = BanquetteAttendant.objects.filter(fair=fair)
+
+    recruitment_applications = RecruitmentApplication.objects.filter(status='accepted')
+    data = []
+    for attendence in banquet_attendees:
+        if attendence.user:
+            recruitment_application = recruitment_applications.filter(user=attendence.user).first()
+            if recruitment_application:
+                attendence.job_title = 'Armada: ' + recruitment_application.delegated_role.name
+            try:
+                if not attendence.linkedin_url & attendence.user.profile.linkedin_url:
+                    attendence.linkedin_url = attendence.user.profile.linkedin_url
+            except:
+                pass
+        if attendence.exhibitor:
+            job_title = attendence.job_title
+            attendence.job_title = attendence.exhibitor.company.name
+            if job_title:
+                attendence.job_title += ': ' + job_title
+
+        data.append(serializers.banquet_placement(request, attendence))
     return JsonResponse(data, safe=False)
 
 
@@ -177,6 +206,7 @@ def questions_GET(request):
     ])
     return JsonResponse(data, safe=False)
 
+
 def matching_result(request):
     '''
     ais.armada.nu/api/matching_result?student_id=STUDENT_PROFILE_PK
@@ -201,6 +231,7 @@ def matching_result(request):
         data = [serializers.matching_result(matching) for matching in matches]
 
     return JsonResponse(data, safe=False)
+
 
 def intChoices(objectType, data, student, survey, function):
     '''
@@ -302,21 +333,22 @@ def recruitment(request):
     '''
     fair = Fair.objects.get(current=True)
     recruitments = RecruitmentPeriod.objects.filter(fair=fair)
-    recruitments = list(filter(lambda rec: (rec.start_date < timezone.now()) & (rec.end_date > timezone.now()), recruitments)) #Make sure only current recruitments are shown
+    recruitments = list(filter(lambda rec: (rec.start_date < timezone.now()) & (rec.end_date > timezone.now()),
+                               recruitments))  # Make sure only current recruitments are shown
     data = []
     for recruitment in recruitments:
         roles_info = dict()
         roles = recruitment.recruitable_roles.all()
-        #Adds all roles available for this recruitment
+        # Adds all roles available for this recruitment
         for role in roles:
             organization_group = role.organization_group
-            if organization_group == None or organization_group =='':
+            if organization_group == None or organization_group == '':
                 organization_group = 'Other'
             role = OrderedDict([
-                    ('name', role.name),
-                    ('parent', role.parent_role.name if role.parent_role else None),
-                    ('description', role.description),
-                    ])
+                ('name', role.name),
+                ('parent', role.parent_role.name if role.parent_role else None),
+                ('description', role.description),
+            ])
             if organization_group in roles_info:
                 roles_info[organization_group].append(role)
             else:
@@ -328,6 +360,6 @@ def recruitment(request):
             ('start_date', recruitment.start_date),
             ('end_date', recruitment.end_date),
             ('groups', roles_info),
-            ]))
+        ]))
 
     return JsonResponse(data, safe=False)
