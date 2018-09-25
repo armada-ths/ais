@@ -1,0 +1,14 @@
+{% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
+
+<form id="event-form" method="post">
+  {% csrf_token %}
+  {{ form | crispy }}
+</form>
+<script>
+  window.reactProps = {{ react_props|safe }};
+</script>
+<div id="react">
+</div>
+
+{% render_bundle 'event_form' %}

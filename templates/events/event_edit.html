@@ -17,11 +17,7 @@
 
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="details">
-      <form method="post">
-        {% csrf_token %}
-        {{ form | crispy }}
-        <input class="btn btn-primary" type="submit" value="Submit"/>
-      </form>
+      {% include 'events/event_form.html' with form=form questions=questions question_types=question_types %}
     </div>
     <div role="tabpanel" class="tab-pane" id="participants">
       {% include 'events/participant_list.html' with participants=event.participant_set.all %}

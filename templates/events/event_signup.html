@@ -1,15 +1,9 @@
-{% extends "base.html" %}
-{% block content %}
-  <h1>{{ event.name }}</h1>
-  <p>{{ event.description }}</p>
-  {% if event.fee_s > 0 %}
-    <span>This event has a fee of {{ event.fee_s }} SEK.</span>
+{% load render_bundle from webpack_loader %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    {% if participant.fee_payed_s %}
-      You have already payed!
-    {% else %}
-      {% include 'stripe_form.html' with payment_url=payment_url amount=event.fee_s description=event.name %}
-    {% endif %}
+<div id="react"></div>
 
-  {% endif %}
-{% endblock %}
+<script src="https://js.stripe.com/v3/"></script>
+{% render_bundle 'signup' %}
+

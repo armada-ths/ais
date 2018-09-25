@@ -1,10 +1,11 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
+
 from . import views
 
 urlpatterns = [
     url(r'^$', views.root),
     url(r'^banquet_placement/$', views.banquet_placement),
-    url(r'^events/', views.events),
+    url(r'^events/', include('events.api_urls')),
     url(r'^exhibitors/', views.exhibitors),
     url(r'^news/', views.news),
     url(r'^organization/', views.organization),
