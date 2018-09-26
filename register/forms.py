@@ -74,7 +74,7 @@ class CompleteLogisticsDetailsForm(ModelForm):
 		widgets = {
 			'electricity_equipment': forms.Textarea(attrs = {'rows': 5}),
 			'placement_wish': forms.RadioSelect,
-			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your with of placement, but we cannot give any guarantees.'})
+			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your wish of placement, but we cannot give any guarantees.'})
 		}
 
 	def is_valid(self):
