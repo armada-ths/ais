@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from events import serializers
 from events.forms import EventForm, TeamForm
 from events.models import Event, Team, Participant, SignupQuestion
 from fair.models import Fair
@@ -75,7 +76,7 @@ def event_edit(request, year, pk):
     event = get_object_or_404(Event, pk=pk)
 
     react_props = {
-        'questions': list(event.signupquestion_set.values()),
+        'questions': [serializers.signup_question(question) for question in event.signupquestion_set.all()],
         'question_types': dict(SignupQuestion.QUESTION_TYPES)
     }
 
@@ -107,6 +108,10 @@ def event_signup(request, year, event_pk):
 
     payment_url = reverse('events:stripe_endpoint', args=[year, event_pk])
 
+    react_props = {
+        'event': serializers.event(event, request)
+    }
+
     # Will be populated if user has started signup before
     participant = Participant.objects.filter(user_s=request.user).first()
 
@@ -115,6 +120,7 @@ def event_signup(request, year, event_pk):
         'event': event,
         'payment_url': payment_url,
         'participant': participant,
+        'react_props': json.dumps(react_props)
     })
 
 

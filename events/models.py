@@ -99,8 +99,8 @@ class SignupQuestion(models.Model):
     QUESTION_TYPES = (
         ('text_field', 'Short Text'),
         ('text_area', 'Long Text'),
-        ('radio', 'Single Choice'),
-        ('checkbox', 'Multiple Choice')
+        ('single_choice', 'Single Choice'),
+        ('multiple_choice', 'Multiple Choice')
     )
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -114,4 +114,4 @@ class SignupQuestionAnswer(models.Model):
     signup_question = models.ForeignKey(SignupQuestion, blank=False, null=False, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
     answer = models.TextField()  # Used for 'text_field' and 'text_area'
-    answer_options = ArrayField(models.TextField(blank=False, null=False), default=[])  # Used for 'radio' and 'checkbox
+    answer_options = ArrayField(models.TextField(blank=False, null=False), default=[])  # Used for 'single_choice' and 'multiple_choice'
