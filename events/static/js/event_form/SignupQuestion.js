@@ -37,7 +37,7 @@ class SignupQuestion extends Component {
 
     const typeOptions = map(questionTypes, (label, value) => <option key={value} value={value}>{label}</option>);
 
-    const showQuestionOptions = (type === 'radio' || type === 'checkbox');
+    const showQuestionOptions = (type === 'single_choice' || type === 'multiple_choice');
 
     return (
         <div className="row">

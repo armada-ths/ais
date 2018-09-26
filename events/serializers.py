@@ -1,5 +1,9 @@
 from django.urls import reverse
 
+"""
+Responsible for serializing Event modules into JSON objects
+"""
+
 
 def event(event, request):
     signup_location = reverse('events:event_signup', args=[event.fair.year, event.pk])

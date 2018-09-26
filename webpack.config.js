@@ -1,14 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleTracker = require('webpack-bundle-tracker');
 
 const config = {
   context: __dirname,
 
   entry: {
-    signup: './events/static/js/signup.js',
-    event_form: './events/static/js/event_form.js'
+    event_form: './events/static/js/event_form/index.js',
+    signup: './events/static/js/signup/index.js'
   },
 
   output: {

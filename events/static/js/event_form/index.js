@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import ReactDOM from 'react-dom';
-import SignupQuestion from './components/SignupQuestion';
+import SignupQuestion from './SignupQuestion';
 import uniqueId from 'lodash/uniqueId';
 import axios from 'axios';
 
