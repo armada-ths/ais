@@ -11,5 +11,4 @@ urlpatterns = [
     url(r'^(?P<event_pk>\d+)/teams$', views.team_new, name='team_new'),
     url(r'^(?P<event_pk>\d+)/teams/(?P<team_pk>\d+)$', views.team_edit, name='team_edit'),
     url(r'^(?P<event_pk>\d+)/signup$', views.event_signup, name='event_signup'),
-    url(r'^(?P<event_pk>\d+)/payment$', views.stripe_endpoint, name='stripe_endpoint'),
 ]
