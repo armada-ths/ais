@@ -17,7 +17,8 @@ const config = {
   },
 
   watchOptions: {
-    poll: 300,
+    poll: 500,
+    ignored: /node_modules/
   },
 
   plugins: [
