@@ -2,21 +2,25 @@ import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import Paper from "@material-ui/core/es/Paper/Paper";
 import Typography from "@material-ui/core/es/Typography/Typography";
-import Question from "./Question";
 import Button from "@material-ui/core/es/Button/Button";
 import Grid from "@material-ui/core/es/Grid/Grid";
 import axios from 'axios';
-
+import Cookie from 'js-cookie';
 import forEach from 'lodash/forEach';
 import isEmpty from 'lodash/isEmpty';
 import find from 'lodash/find';
+
+import Question from "./Question";
+import Stripe from './Stripe';
 
 const styles = theme => ({
   root: {
     maxWidth: 960,
     margin: 'auto',
-    marginTop: theme.spacing.unit * 2,
     padding: theme.spacing.unit * 2,
+    [theme.breakpoints.down('xs')]: {
+      padding: 0
+    }
   },
   paper: {
     padding: theme.spacing.unit * 4,
@@ -48,6 +52,7 @@ class Form extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleStripeToken = this.handleStripeToken.bind(this);
     this.validate = this.validate.bind(this);
   }
 
@@ -61,10 +66,43 @@ class Form extends Component {
     }));
   }
 
-  validate() {
-    const {answers} = this.state;
-    const {signup_questions} = this.props.event;
+  handleSubmit() {
+    const errors = this.validate(this.state);
+    this.setState({
+      errors
+    });
+
+    if (isEmpty(errors)) {
+      axios.post('')
+    }
+  }
+
+  handleStripeToken(token) {
+    const paymentUrl = window.reactProps.payment_url;
+
+    axios.post(paymentUrl, {
+      token: token['id']
+    }, {
+      withCredentials: true,
+      headers: {
+        "X-CSRFToken": Cookie.get('csrftoken')
+      }
+    }).then(response => {
+      const errors = {...this.state, payed: true};
+      this.setState({
+        errors,
+        payed: true
+      });
+    });
+  }
+
+  validate({answers, payed}) {
+    const {signup_questions, fee} = this.props.event;
     let errors = {};
+
+    if (fee > 0 && !payed) {
+      errors['payment'] = true;
+    }
 
     forEach(answers, (answer, id) => {
       const question = find(signup_questions, {id: parseInt(id)});
@@ -75,17 +113,6 @@ class Form extends Component {
     });
 
     return errors;
-  }
-
-  handleSubmit() {
-    const errors = this.validate();
-    this.setState({
-      errors
-    });
-
-    if (isEmpty(errors)) {
-      axios.post('')
-    }
   }
 
   render() {
@@ -104,7 +131,7 @@ class Form extends Component {
                   {event.description}
                 </Typography>
                 <Grid container spacing={16}>
-                  <Grid item>
+                  <Grid item sm={6}>
                     <Typography variant="caption" gutterBottom>
                       Location
                     </Typography>
@@ -112,12 +139,23 @@ class Form extends Component {
                       {event.location}
                     </Typography>
                   </Grid>
-                  <Grid item>
+                  <Grid item sm={6}>
                     <Typography variant="caption" gutterBottom>
-                      More info
+                      More information
                     </Typography>
-                    <Typography component="a" target="_blank" rel="noopener noreferrer" href={event.external_event_link} color="primary">
+                    <Typography component="a" target="_blank" rel="noopener noreferrer" href={event.external_event_link} color="primary"
+                                gutterBottom>
                       {event.external_event_link}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item sm={12}>
+                    <Typography variant="caption" color={errors['payment'] && 'error'} gutterBottom>
+                      Payment
+                    </Typography>
+                    <Typography>
+                      This event has a fee of {event.fee} SEK to sign up.
+                      <Stripe handleToken={this.handleStripeToken} description={event.name} amount={event.fee}/>
                     </Typography>
                   </Grid>
                 </Grid>
@@ -132,7 +170,7 @@ class Form extends Component {
                 </Grid>
               </Grid>
               <Grid item>
-                <Button onClick={this.handleSubmit} className={classes.signup} variant="contained" color="primary">Signup</Button>
+                <Button onClick={this.handleSubmit} className={classes.signup} variant="contained" color="primary">Sign Up</Button>
               </Grid>
             </Grid>
           </Paper>

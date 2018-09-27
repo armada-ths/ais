@@ -6,5 +6,6 @@ app_name = 'events_api'
 
 urlpatterns = [
     url(r'^$', api.index, name='index'),
-    url(r'^(?P<pk>\d+)$', api.show, name='show'),
+    url(r'^(?P<event_pk>\d+)$', api.show, name='show'),
+    url(r'^(?P<event_pk>\d+)/payment$', api.payment, name='payment'),
 ]
