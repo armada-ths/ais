@@ -104,14 +104,17 @@ def event_signup(request, year, event_pk):
         raise Http404
 
     payment_url = reverse('events_api:payment', args=[event_pk])
-
-    react_props = {
-        'event': serializers.event(event, request),
-        'payment_url': payment_url
-    }
+    signup_url = reverse('events_api:signup', args=[event_pk])
 
     # Will be populated if user has started signup before
     participant = Participant.objects.filter(user_s=request.user).first()
+
+    react_props = {
+        'event': serializers.event(event, request),
+        'payment_url': payment_url,
+        'signup_url': signup_url,
+        'fee_payed': participant is not None and participant.fee_payed_s
+    }
 
     return render(request, 'events/event_signup.html', {
         'event': event,

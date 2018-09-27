@@ -114,4 +114,3 @@ class SignupQuestionAnswer(models.Model):
     signup_question = models.ForeignKey(SignupQuestion, blank=False, null=False, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
     answer = models.TextField()  # Used for 'text_field' and 'text_area'
-    answer_options = ArrayField(models.TextField(blank=False, null=False), default=[])  # Used for 'single_choice' and 'multiple_choice'

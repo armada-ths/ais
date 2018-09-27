@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import Paper from "@material-ui/core/es/Paper/Paper";
 import Typography from "@material-ui/core/es/Typography/Typography";
@@ -9,9 +9,10 @@ import Cookie from 'js-cookie';
 import forEach from 'lodash/forEach';
 import isEmpty from 'lodash/isEmpty';
 import find from 'lodash/find';
+import mapValues from 'lodash/mapValues';
 
 import Question from "./Question";
-import Stripe from './Stripe';
+import Stripe from "./Stripe";
 
 const styles = theme => ({
   root: {
@@ -45,7 +46,7 @@ class Form extends Component {
     });
 
     this.state = {
-      payed: false,
+      payed: props.feePayed,
       errors: {},
       answers
     };
@@ -68,22 +69,29 @@ class Form extends Component {
 
   handleSubmit() {
     const errors = this.validate(this.state);
+    const {signupUrl} = this.props;
+
+    const answers = mapValues(this.state.answers, answer => Array.isArray(answer) ? answer.join(',') : answer);
+
     this.setState({
       errors
     });
 
     if (isEmpty(errors)) {
-      axios.post('')
+      axios.post(signupUrl, {answers}, {
+        headers: {
+          "X-CSRFToken": Cookie.get('csrftoken')
+        }
+      })
     }
   }
 
   handleStripeToken(token) {
-    const paymentUrl = window.reactProps.payment_url;
+    const {paymentUrl} = this.props;
 
     axios.post(paymentUrl, {
       token: token['id']
     }, {
-      withCredentials: true,
       headers: {
         "X-CSRFToken": Cookie.get('csrftoken')
       }
@@ -117,7 +125,7 @@ class Form extends Component {
 
   render() {
     const {classes, event} = this.props;
-    const {answers, errors} = this.state;
+    const {answers, errors, payed} = this.state;
 
     return (
         <div className={classes.root}>
@@ -149,15 +157,23 @@ class Form extends Component {
                     </Typography>
                   </Grid>
 
-                  <Grid item sm={12}>
-                    <Typography variant="caption" color={errors['payment'] && 'error'} gutterBottom>
-                      Payment
-                    </Typography>
-                    <Typography>
-                      This event has a fee of {event.fee} SEK to sign up.
-                      <Stripe handleToken={this.handleStripeToken} description={event.name} amount={event.fee}/>
-                    </Typography>
-                  </Grid>
+                  {event.fee > 0 && (
+                      <Grid item sm={12}>
+                        <Typography variant="caption" color={errors['payment'] && 'error'} gutterBottom>
+                          Payment
+                        </Typography>
+                        <Typography>
+                          {payed ? (
+                              'The event fee has been payed!  🎉'
+                          ) : (
+                              <Fragment>
+                                This event has a fee of {event.fee} SEK to sign up.
+                                <Stripe handleToken={this.handleStripeToken} description={event.name} amount={event.fee}/>
+                              </Fragment>
+                          )}
+                        </Typography>
+                      </Grid>
+                  )}
                 </Grid>
 
                 <Grid container spacing={16}>

@@ -6,15 +6,15 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 
 from events import serializers
-from events.models import Event, Participant
+from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer
 from fair.models import Fair
 
 
 @require_GET
 def index(request):
-    '''
+    """
     Returns all published events for this years fair
-    '''
+    """
 
     fair = Fair.objects.get(current=True)
     events = Event.objects.filter(fair=fair, published=True).prefetch_related('signupquestion_set')
@@ -26,9 +26,9 @@ def index(request):
 
 @require_GET
 def show(request, event_pk):
-    '''
+    """
     Returns a single published event
-    '''
+    """
 
     event = Event.objects.get(pk=event_pk)
 
@@ -38,7 +38,45 @@ def show(request, event_pk):
 
 
 @require_POST
+def signup(request, event_pk):
+    """
+    Endpoint to signup to events
+    """
+
+    event = get_object_or_404(Event, pk=event_pk)
+    if not request.user:
+        return JsonResponse({'message': 'Authentication required.'}, status=403)
+
+    participant, _created = Participant.objects.get_or_create(
+        user_s=request.user,
+        event=event
+    )
+
+    if event.fee_s > 0 and not participant.fee_payed_s:
+        return JsonResponse({'message': 'Fee has not been payed'}, status=400)
+
+    data = json.loads(request.body)
+    answers = data['answers']
+
+    questions = SignupQuestion.objects.filter(event=event).all()
+
+    for question in questions:
+        SignupQuestionAnswer.objects.update_or_create(
+            participant=participant,
+            signup_question=question,
+            defaults={'answer': answers[str(question.pk)]})
+
+    # Check that all required questions have been answered
+
+    return HttpResponse(status=200)
+
+
+@require_POST
 def payment(request, event_pk):
+    """
+    Endpoint to process Stripe card tokens
+    """
+
     event = get_object_or_404(Event, pk=event_pk)
 
     if not request.user:
