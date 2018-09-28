@@ -17,13 +17,19 @@ const theme = createMuiTheme({
 class App extends Component {
   render() {
 
-    const {event, payment_url, signup_url, fee_payed} = window.reactProps;
+    const {event, payment_url, signup_url, user} = window.reactProps;
 
     return (
         <Fragment>
           <CssBaseline/>
           <MuiThemeProvider theme={theme}>
-            <Form event={event} paymentUrl={payment_url} signupUrl={signup_url} feePayed={fee_payed}/>
+            <span>{user.signup_complete ? 'Yes' : 'No'}</span>
+            <Form
+                event={event}
+                feePayed={user.fee_payed}
+                paymentUrl={payment_url}
+                signupUrl={signup_url}
+            />
           </MuiThemeProvider>
         </Fragment>
     )

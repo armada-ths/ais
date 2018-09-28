@@ -33,3 +33,14 @@ def signup_question(signup_question):
     }
 
     return data
+
+
+def team(team):
+    data = {
+        'name': team.name,
+        'capacity': team.max_capacity,
+        'leader': team.leader.get_full_name() if team.leader is not None else None,
+        'members': [member.participant.__str__() for member in team.teammember_set.all()]
+    }
+
+    return data

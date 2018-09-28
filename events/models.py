@@ -62,6 +62,9 @@ class Team(models.Model):
                                         verbose_name='Allow company representatives to join the team')
     allow_join_s = models.BooleanField(default=True, blank=False, null=False, verbose_name='Allow students to join the team')
 
+    def __str__(self):
+        return self.name
+
 
 class Participant(models.Model):
     event = models.ForeignKey(Event, blank=False, null=True, on_delete=models.CASCADE)
@@ -74,12 +77,13 @@ class Participant(models.Model):
     # student has payed using Stripe
     fee_payed_s = models.BooleanField(default=False)
     attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
+    signup_complete = models.BooleanField(blank=False, null=False, default=False, verbose_name='The participant has completed signup')
 
     def __str__(self):
         if self.user_s:
-            return self.user_s.first_name
+            return self.user_s.get_full_name()
         elif self.user_cr:
-            return self.user_cr.first_name
+            return self.user_cr.get_full_name()
         else:
             return self.name
 
@@ -87,6 +91,9 @@ class Participant(models.Model):
 class TeamMember(models.Model):
     team = models.ForeignKey(Team, blank=False, null=False, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.participant.__str__() + self.team.__str__()
 
 
 class TeamInvitation(models.Model):

@@ -66,7 +66,10 @@ def signup(request, event_pk):
             signup_question=question,
             defaults={'answer': answers[str(question.pk)]})
 
-    # Check that all required questions have been answered
+    # TODO Check that all required questions have been answered
+
+    participant.signup_complete = True
+    participant.save()
 
     return HttpResponse(status=200)
 

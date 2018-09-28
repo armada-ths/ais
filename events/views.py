@@ -109,11 +109,17 @@ def event_signup(request, year, event_pk):
     # Will be populated if user has started signup before
     participant = Participant.objects.filter(user_s=request.user).first()
 
+    open_student_teams = Team.objects.filter(event=event, allow_join_s=True)
+
     react_props = {
         'event': serializers.event(event, request),
+        'teams': [serializers.team(team) for team in open_student_teams],
         'payment_url': payment_url,
         'signup_url': signup_url,
-        'fee_payed': participant is not None and participant.fee_payed_s
+        'user': {
+            'fee_payed': participant is not None and participant.fee_payed_s,
+            'signup_complete': participant is not None and participant.signup_complete
+        }
     }
 
     return render(request, 'events/event_signup.html', {
