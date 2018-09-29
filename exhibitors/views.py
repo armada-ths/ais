@@ -9,20 +9,20 @@ from django.core.mail import get_connection, EmailMultiAlternatives, send_mail
 from django.contrib.auth.decorators import permission_required
 
 
-from companies.models import Company, CompanyContact
+from companies.models import Company, CompanyContact, CompanyCustomerComment, CompanyCustomerResponsible
 from django.urls import reverse
 from fair.models import Fair
 from accounting.models import Product, Order
 from register.models import SignupLog
 
-from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorCreateForm, TransportForm
+from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorCreateForm, TransportForm, CommentForm
 from .models import Exhibitor, ExhibitorView
 
 import logging
 
 def user_can_modify_exhibitor(user, exhibitor):
     return user.has_perm(
-        'exhibitors.change_exhibitor') or user in exhibitor.hosts.all() or user in exhibitor.superiors()
+        'exhibitors.change_exhibitor') or user in exhibitor.contact_persons.all() or user in exhibitor.superiors()
 
 @permission_required('exhibitors.base')
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
@@ -37,7 +37,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     fields.remove('')
 
     return render(request, template_name, {
-        'exhibitors': Exhibitor.objects.prefetch_related('hosts').filter(fair=fair).order_by('company__name'),
+        'exhibitors': Exhibitor.objects.prefetch_related('contact_persons').filter(fair=fair).order_by('company__name'),
         'fields' : fields,
         'fair': fair
     })
@@ -122,7 +122,7 @@ def exhibitor(request, year, pk):
 	
 	users = [(recruitment_application.user, recruitment_application.delegated_role) for recruitment_application in RecruitmentApplication.objects.filter(status='accepted').order_by('user__first_name', 'user__last_name')]
 	
-	if request.user.has_perm('exhibitors.change_exhibitor'): exhibitor_form.fields['hosts'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
+	if request.user.has_perm('exhibitors.change_exhibitor'): exhibitor_form.fields['contact_persons'].choices = [('', '---------')] + [(user[0].pk, user[0].get_full_name() + ' - ' + user[1].name) for user in users]
 	
 	orders = []
 	
@@ -134,13 +134,39 @@ def exhibitor(request, year, pk):
 			'quantity': order.quantity
 		})
 	
+	form_comment = CommentForm(request.POST or None)
+	
+	if request.POST and form_comment.is_valid():
+		comment = form_comment.save(commit = False)
+		comment.company = exhibitor.company
+		comment.user = request.user
+		comment.show_in_exhibitors = True
+		comment.save()
+		form_comment.save()
+		
+		form_comment = CommentForm()
+	
+	contact_persons = []
+	
+	for contact_person in exhibitor.contact_persons.all():
+		application = RecruitmentApplication.objects.filter(recruitment_period__fair = fair, user = contact_person, status = 'accepted').first()
+		
+		contact_persons.append({
+			'user': contact_person,
+			'role': application.delegated_role if application is not None else None
+		})
+	
 	return render(request, 'exhibitors/exhibitor.html', {
 		'fair': fair,
 		'exhibitor': exhibitor,
 		'exhibitor_form': exhibitor_form,
 		'company_form': company_form,
 		'contacts': CompanyContact.objects.filter(company = exhibitor.company, active = True),
-		'orders': orders
+		'orders': orders,
+		'comments': CompanyCustomerComment.objects.filter(company = exhibitor.company, show_in_exhibitors = True),
+		'form_comment': form_comment,
+		'responsibles': CompanyCustomerResponsible.objects.select_related('group').filter(company = exhibitor.company, group__fair = fair),
+		'contact_persons': contact_persons
 	})
 
 

@@ -108,7 +108,7 @@ class CompanyCustomerCommentForm(ModelForm):
 	
 	class Meta:
 		model = CompanyCustomerComment
-		fields = ("groups", "comment",)
+		fields = ['groups', 'comment', 'show_in_exhibitors']
 
 
 def fix_phone_number(n):
@@ -127,40 +127,39 @@ class CompanyContactForm(ModelForm):
 	def clean(self):
 		super(CompanyContactForm, self).clean()
 		
-		if "mobile_phone_number" in self.cleaned_data:
-			self.cleaned_data["mobile_phone_number"] = fix_phone_number(self.cleaned_data["mobile_phone_number"])
+		if 'mobile_phone_number' in self.cleaned_data:
+			self.cleaned_data['mobile_phone_number'] = fix_phone_number(self.cleaned_data['mobile_phone_number'])
 		
-		if "work_phone_number" in self.cleaned_data:
-			self.cleaned_data["work_phone_number"] = fix_phone_number(self.cleaned_data["work_phone_number"])
+		if 'work_phone_number' in self.cleaned_data:
+			self.cleaned_data['work_phone_number'] = fix_phone_number(self.cleaned_data['work_phone_number'])
 		
-		if "email_address" in self.cleaned_data and self.cleaned_data["email_address"] is not None:
-			self.cleaned_data["email_address"] = self.cleaned_data["email_address"].lower()
+		if 'email_address' in self.cleaned_data and self.cleaned_data['email_address'] is not None:
+			self.cleaned_data['email_address'] = self.cleaned_data['email_address'].lower()
 		
 		return self.cleaned_data
 	
 	def is_valid(self):
 		valid = super(CompanyContactForm, self).is_valid()
 		
-		if not valid:
-			return valid
+		if not valid: return valid
 		
-		mobile_phone_number = self.cleaned_data.get("mobile_phone_number")
-		work_phone_number = self.cleaned_data.get("work_phone_number")
+		mobile_phone_number = self.cleaned_data.get('mobile_phone_number')
+		work_phone_number = self.cleaned_data.get('work_phone_number')
 		
 		if mobile_phone_number is not None and not re.match(r'\+[0-9]+$', mobile_phone_number):
-			self.add_error("mobile_phone_number", "Must only contain numbers and a leading plus.")
+			self.add_error('mobile_phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
 		
 		if work_phone_number is not None and not re.match(r'\+[0-9]+$', work_phone_number):
-			self.add_error("work_phone_number", "Must only contain numbers and a leading plus.")
+			self.add_error('work_phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
 			
 		return valid
 	
 	class Meta:
 		model = CompanyContact
-		fields = "__all__"
-		exclude = ("user", "company",)
+		fields = '__all__'
+		exclude = ['user', 'company']
 
 
 class UserForm(UserCreationForm):

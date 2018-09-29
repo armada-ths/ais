@@ -21,4 +21,5 @@ urlpatterns = [
 	url(r'^(?P<pk>\d+)/orders/(?P<order_pk>\d+)/remove$', views.companies_orders_remove, name = 'companies_orders_remove'),
 	url(r'^(?P<pk>\d+)/comments/(?P<comment_pk>\d+)/edit$', views.companies_comments_edit, name = 'companies_comments_edit'),
 	url(r'^(?P<pk>\d+)/comments/(?P<comment_pk>\d+)/remove$', views.companies_comments_remove, name = 'companies_comments_remove'),
+	url(r'^(?P<pk>\d+)/contacts/(?P<contact_pk>\d+)/edit$', views.companies_contacts_edit, name = 'companies_contacts_edit')
 ]

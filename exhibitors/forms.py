@@ -2,7 +2,7 @@ from django import forms
 
 import inspect
 
-from companies.models import Company
+from companies.models import Company, CompanyCustomerComment
 from .models import ExhibitorView, Exhibitor
 
 class ExhibitorViewForm(forms.Form):
@@ -81,3 +81,9 @@ class TransportForm(forms.ModelForm):
 	class Meta:
 		model = Exhibitor
 		fields = ['transport_to', 'transport_from', 'transport_comment']
+
+
+class CommentForm(forms.ModelForm):
+	class Meta:
+		model = CompanyCustomerComment
+		fields = ['comment']

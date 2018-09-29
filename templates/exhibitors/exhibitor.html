@@ -44,13 +44,53 @@
 		</div>
 		
 		<div class="col-md-8">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h2 class="panel-title">Exhibitor details</h2>
+			<div class="row">
+				<div class="col-md-5">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">Responsibilities</h3>
+						</div>
+						
+						<div class="panel-body">
+							{% if responsibles %}
+								<ul class="list-unstyled">
+									{% for responsible in responsibles %}
+										<li>
+											{{ responsible.group }} –
+											{% for user in responsible.users.all %}
+												<a href="{% url 'view_person' fair.year user.profile.pk %}">{{ user }}</a>
+											{% endfor %}
+										</li>
+									{% endfor %}
+								</ul>
+							{% else %}
+								<p>No responsibilities specified.</p>
+							{% endif %}
+						</div>
+					</div>
 				</div>
 				
-				<div class="panel-body">
-					<p>This section is under construction. Here, you will soon see information about the company's participation in the career fair.</p>
+				<div class="col-md-7">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">Contact persons</h3>
+						</div>
+						
+						<div class="panel-body">
+							{% if contact_persons %}
+								<ul class="list-unstyled">
+									{% for contact_person in contact_persons %}
+										<li>
+											<a href="{% url 'view_person' fair.year contact_person.user.profile.pk %}">{{ contact_person.user }}</a>
+											{% if contact_person.role %} ({{ contact_person.role }}){% endif %}
+										</li>
+									{% endfor %}
+								</ul>
+							{% else %}
+								<p>No contact persons specified.</p>
+							{% endif %}
+						</div>
+					</div>
 				</div>
 			</div>
 			
@@ -89,6 +129,38 @@
 					{% endif %}
 				</div>
 			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Write comment</h2>
+				</div>
+				
+				<div class="panel-body">
+					<form method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+						{{ form_comment | crispy }}
+						<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save comment</button>
+					</form>
+				</div>
+			</div>
+			
+			{% for comment in comments %}
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<div class="pull-right">
+							<a onclick="confirm('Do you want to remove the comment?');" href=" url 'companies_comments_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+							<a href=" url 'companies_comments_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+						</div>
+						
+						<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
+						{{ comment.groups.all | join:", " }}
+					</div>
+					
+					<div class="panel-body">
+						<p>{{ comment.comment | linebreaks }}</p>
+					</div>
+				</div>
+			{% endfor %}
 		</div>
 	</div>
 {% endblock %}

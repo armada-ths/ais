@@ -36,7 +36,7 @@ class CatalogueBenefit(models.Model):
 class Exhibitor(models.Model):
 	company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
 	fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
-	hosts = models.ManyToManyField(User, blank = True)
+	contact_persons = models.ManyToManyField(User, blank = True)
 	contact = models.ForeignKey('companies.CompanyContact', null=True, blank=True, on_delete=models.CASCADE)
 	booth_height = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Height of the booth (cm)')
 	electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
@@ -82,7 +82,7 @@ class Exhibitor(models.Model):
 	transport_comment = models.TextField(blank = True, null = True)
 	
 	def superiors(self):
-		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.hosts.all()]
+		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.contact_persons.all()]
 		return [application.superior_user for application in accepted_applications if application and application.superior_user]
 	
 	def __str__(self):
@@ -135,7 +135,7 @@ class ExhibitorView(models.Model):
 
     def create(self):
         # A set of field names from Exhibitor model, that are shown by default
-        default = {'hosts'}
+        default = {'contact_persons'}
 
         for field in default:
             self.choices = self.choices + ' ' + field
