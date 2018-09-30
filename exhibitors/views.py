@@ -34,13 +34,12 @@ def possible_contact_persons(fair):
 
 @permission_required('exhibitors.base')
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
-	fair = get_object_or_404(Fair, year=year)
+	fair = get_object_or_404(Fair, year = year)
+	view = ExhibitorView.objects.filter(user = request.user).first()
 	
-	view = ExhibitorView.objects.filter(user=request.user).first()
+	if not view: view = ExhibitorView(user = request.user).create()
 	
-	if not view: view = ExhibitorView(user=request.user).create()
-	
-	exhibitors = Exhibitor.objects.prefetch_related('contact_persons').filter(fair=fair).order_by('company__name')
+	exhibitors = Exhibitor.objects.prefetch_related('contact_persons').filter(fair = fair).order_by('company__name')
 	
 	form = ExhibitorSearchForm(request.POST or None)
 	
@@ -57,6 +56,8 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 		
 		exhibitors = exhibitors_filtered
 	
+	if not request.user.has_perm('exhibitors.view_all'): exhibitors = [exhibitor for exhibitor in exhibitors if request.user in exhibitor.contact_persons.all()]
+	
 	return render(request, template_name, {
 		'fair': fair,
 		'exhibitors': exhibitors,
@@ -67,8 +68,8 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 
 @permission_required('exhibitors.base')
 def edit_view(request, year, template_name='exhibitors/edit_view.html'):
-	view = ExhibitorView.objects.filter(user=request.user).first()
-	form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
+	view = ExhibitorView.objects.filter(user = request.user).first()
+	form = ExhibitorViewForm(request.POST or None, instance=view, user = request.user)
 
 	if form.is_valid():
 		form.save()
@@ -76,7 +77,7 @@ def edit_view(request, year, template_name='exhibitors/edit_view.html'):
 
 	return render(request, template_name, {
 		'form': form,
-		'fair': get_object_or_404(Fair, year=year, current=True)
+		'fair': get_object_or_404(Fair, year = year)
 	})
 
 
@@ -124,7 +125,7 @@ def exhibitor(request, year, pk):
 	fair = get_object_or_404(Fair, year = year)
 	exhibitor = get_object_or_404(Exhibitor, pk = pk)
 	
-	if not request.user.has_perm('exhibitors.view_all') and user not in exhibitor.contact_persons: return HttpResponseForbidden()
+	if not request.user.has_perm('exhibitors.view_all') and request.user not in exhibitor.contact_persons.all(): return HttpResponseForbidden()
 	
 	orders = []
 	
