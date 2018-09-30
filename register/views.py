@@ -2,7 +2,7 @@ import requests as r
 import json
 
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -11,6 +11,7 @@ from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import get_template
 from django.forms.models import inlineformset_factory
+from django import forms
 from django.forms import modelformset_factory
 from django.views.generic import FormView
 
@@ -20,7 +21,7 @@ from fair.models import Fair
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from accounting.models import Product, Order, RegistrationSection
 
-from banquet.models import Participant, DietaryPreference, Banquet
+from banquet.models import Participant, Banquet
 from .models import SignupContract, SignupLog
 from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm
 
@@ -469,24 +470,12 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 
 class BanquetInviteView(FormView):
     """
-    Invite view for already registered students
+    Invite view for companies.
+    Uses a formset.
+    Is basically a update view but with extra forms for every banquet ticket not filled
     """
-    # Form: Participant
     template_name = 'register/inside/banquet.html'
-    success_url = '/'
-
-    def get_form_class(self):
-        ticket_amount =Order.objects.values_list('quantity', flat=True).get(purchasing_company = self.company, product_id=1)
-        old_tickets = Participant.objects.filter(company = self.company).count()
-        #new_tickets = ticket_amount - old_tickets
-        new_tickets = ticket_amount - old_tickets
-        form_class = modelformset_factory(Participant, exclude=['company','banquet', 'user'], extra=new_tickets)
-        return form_class
-
-    def get_form_kwargs(self):
-        kwargs = super(BanquetInviteView, self).get_form_kwargs()
-        kwargs["queryset"] = Participant.objects.filter(company = self.company)
-        return kwargs
+    success_url = reverse_lazy('registration')
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated(): return redirect('anmalan:logout')
@@ -503,26 +492,76 @@ class BanquetInviteView(FormView):
                     ).first()
 
                 if not company_contact: return redirect('anmalan:choose_company')
-
         self.exhibitor = Exhibitor.objects.filter(fair = self.fair, company = self.company).first()
+        self.banquet = Banquet.objects.get(fair=self.fair)
         return super(BanquetInviteView, self).dispatch(request, *args, **kwargs)
+
+    def get_form_class(self):
+        """
+        Added this method to obtain blank forms for every banquet ticket not filled
+        """
+        # What is the total amount of tickets the company has?
+        ticket_amount = 0
+        orders = (Order.objects
+                       .filter(
+                           purchasing_company = self.exhibitor.company,
+                           product = self.banquet.product
+                       )
+                  )
+        for order in orders:
+            ticket_amount += order.quantity
+        # TODO: multiple order handling?
+        # ticket_amount = (Order.objects
+        #                       .values_list('quantity', flat=True)
+        #                       .get(purchasing_company = self.company, product_id=1)
+        #                 )
+        # how many existing tickets do we have?
+        existing_tickets = Participant.objects.filter(
+            banquet = self.banquet, company = self.company
+        ).count()
+        extra_tickets = ticket_amount - existing_tickets
+        # company, banquet sent in form_valid()
+        form_class = modelformset_factory(
+            Participant,
+            exclude=['company','banquet', 'user'],
+            extra=extra_tickets,
+            widgets={
+                'alcohol' : forms.RadioSelect(),
+                'dietary_restrictions' : forms.CheckboxSelectMultiple()
+            }
+        )
+        return form_class
+
+    def get_form_kwargs(self):
+        """
+        Here we define where to find the preexisting tickets by setting the queryset
+        """
+        kwargs = super(BanquetInviteView, self).get_form_kwargs()
+        kwargs["queryset"] = Participant.objects.filter(company = self.company)
+        return kwargs
+
 
     def get_context_data(self, **kwargs):
         """
         Adding company, exhibitor, etc.. to our context for consistency with other templates
         could just change in template instead
+
+        Note: our formset is defined as form in context
         """
         context = super(BanquetInviteView, self).get_context_data(**kwargs)
         context['fair'] = self.fair
+        context['exhibitor'] = self.exhibitor
         context['company'] = self.company
         context['company_contact'] = self.company_contact
         return context
 
     def form_valid(self, form):
-        print(form[0])
+        """
+        Send our changed forms
+        """
         for sub_form in form:
             if sub_form.has_changed():
-                sub_form.instance.banquet = Banquet.objects.get(fair=self.fair)
+                sub_form.instance.banquet = self.banquet
                 sub_form.instance.company = self.company
                 sub_form.save()
         return super(BanquetInviteView, self).form_valid(form)

@@ -4,6 +4,7 @@ import requests as r
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -25,7 +26,7 @@ from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
 
-from .models import Banquet, DietaryPreference, Participant, Invitation
+from .models import Banquet, Participant, Invitation
 from .forms import InternalParticipantForm, ExternalParticipantForm
 
 class InviteMixin(object):
@@ -90,84 +91,4 @@ class ExternalInviteView(InviteMixin, CreateView):
     form_class = ExternalParticipantForm
     template_name = 'banquet/invite.html'
     success_url = '/'
-# class ExternalInviteView(InviteMixin, CreateView):
-#     """
-#     Invite view for students and invitees (excl. companies)
-#     """
-#     # Form: Participant
-#     form_class = ParticipantForm
-#     template_name = 'banquet/invite.html'
-#     success_url = '/'
-#
-#
-#     def get_context_data(self, **kwargs):
-#         """
-#         Adding fair,year to our context for consistency with other templates
-#         """
-#         context = super(InviteView, self).get_context_data(**kwargs)
-#         context['year'] = self.year
-#         context['fair'] = self.fair
-#         return context
-#
-#     def get_form(self, form_class):
-#         form = super(InviteView, self).get_form(form_class)
-#         if not user.is_anonymous():
-#             form.fields['name'].widget.attrs['readonly'] = True
-#             form.fields['email_address'].widget.attrs['readonly'] = True
-#             form.fields['phone_number'].widget.attrs['readonly'] = True
-#         return form
-#
-#     def get_initial(self):
-#         """
-#         Returns the initial data to use for forms on this view.
-#         """
-#         initial = super(InviteView, self).get_initial()
-#         if not user.is_anonymous():
-#             user_profile = Profile.objects.get(user=user)
-#             # kinda ugly, prob better to modify model
-#             initial['name'] = user.get_full_name()
-#             initial['email_address'] = user.email
-#             initial['phone_number'] = user_profile.phone_number
-#
-#         return initial
 
-# class InviteView(InviteMixin, CreateView):
-#     """
-#     Invite view for students and invitees (excl. companies)
-#     """
-#     # Form: Participant
-#     form_class = ParticipantForm
-#     template_name = 'banquet/invite.html'
-#     success_url = '/'
-#
-#
-#     def get_context_data(self, **kwargs):
-#         """
-#         Adding fair,year to our context for consistency with other templates
-#         """
-#         context = super(InviteView, self).get_context_data(**kwargs)
-#         context['year'] = self.year
-#         context['fair'] = self.fair
-#         return context
-#
-#     def get_form(self, form_class):
-#         form = super(InviteView, self).get_form(form_class)
-#         if not user.is_anonymous():
-#             form.fields['name'].widget.attrs['readonly'] = True
-#             form.fields['email_address'].widget.attrs['readonly'] = True
-#             form.fields['phone_number'].widget.attrs['readonly'] = True
-#         return form
-#
-#     def get_initial(self):
-#         """
-#         Returns the initial data to use for forms on this view.
-#         """
-#         initial = super(InviteView, self).get_initial()
-#         if not user.is_anonymous():
-#             user_profile = Profile.objects.get(user=user)
-#             # kinda ugly, prob better to modify model
-#             initial['name'] = user.get_full_name()
-#             initial['email_address'] = user.email
-#             initial['phone_number'] = user_profile.phone_number
-#
-#         return initial

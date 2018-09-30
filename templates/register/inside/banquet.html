@@ -14,10 +14,11 @@
             {{ form.management_form }}
             <table>
             {% for sub_form in form %}
+            <h3> Participant {{ forloop.counter }} </h3> 
 				{% csrf_token %} {{ sub_form | crispy }}
             {% endfor %}
             </table>
-	        <button type="submit" class="btn btn-success">Submit</button>
+            <button type="submit" class="btn btn-success">Submit Participants Info</button>
 		</form>
 {% endblock %}
 
