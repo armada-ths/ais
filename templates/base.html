@@ -36,6 +36,12 @@
 					{% endblock %}
 				{% endif %}
 				
+				{% if perms.banquet.base %}
+					{% block nav-banquet %}
+					<li role="presentation"><a href="{% url 'invite_list' fair.year %}">Banquet</a></li>
+					{% endblock %}
+				{% endif %}
+
 				{% if perms.exhibitors.base %}
 					{% block nav-exhibitors %}
 						<li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>

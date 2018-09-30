@@ -1,5 +1,5 @@
 from django import forms
-from .models import Participant
+from .models import Participant, Invitation
 from django.forms import modelformset_factory
 
 class InternalParticipantForm(forms.ModelForm):
@@ -31,3 +31,11 @@ class ExternalParticipantForm(forms.ModelForm):
             'dietary_restrictions' : forms.CheckboxSelectMultiple(),
             'alcohol' : forms.RadioSelect()
         }
+
+class SendInvitationForm(forms.ModelForm):
+    """
+    Banquet administrator sends out invite
+    """
+    class Meta:
+        model = Invitation
+        exclude = ['banquet', 'participant', 'denied','token']

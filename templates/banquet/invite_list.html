@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block nav-banquet %}
+<li role="presentation" class="active"><a href="{% url 'invite_list' fair.year %}">Banquet</a></li>
+{% endblock %}
+{% block content %}
+
+
+    <div class="jumbotron recruitment-jumbotron">
+        <div class="container recruitment-jumbotron-container">
+		<h1>{{year}}<br/>Banquet</h1>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+		<h2>External Invites</h2>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>E-mail Address</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    {% for invite in object_list %}
+                        <tr>
+                            <td>{{ invite.name }}</td>
+                            <td>{{ invite.email_address}}</td>
+                            <td>
+                                {% if invite.denied %}
+                                    <span class="label label-danger">Denied</span>
+                                {% elif invite.participant.%}
+                                    <span class="label label-success">Processed</span>
+                                {% else %}
+                                    <span class="label label-info">Sent</span>
+
+                                {% endif %}
+			    </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+		<!--{% if perms.recruitment.administer_recruitment %}-->
+                <p><a href="{% url "send_invite" fair.year %}">
+                    <button class="btn btn-primary">
+			    <span class="glyphicon glyphicon-plus"></span>
+			    New Invitation
+                    </button>
+                </a>
+		<!--<a class="btn btn-default" href="{% url "contact" fair.year %}">Contact list</a>-->
+                </p>
+		<!--{% endif %}-->
+        </div>
+    </div>
+{% endblock %}
+

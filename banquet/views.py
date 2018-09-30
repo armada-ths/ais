@@ -18,20 +18,22 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms import modelform_factory
 
 from django import forms
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 
 from fair.models import Fair
 from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
+from django.urls import reverse_lazy
 
 from .models import Banquet, Participant, Invitation
-from .forms import InternalParticipantForm, ExternalParticipantForm
+from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm
 
-class InviteMixin(object):
+class GeneralMixin(object):
     """
-    Shared functions of invite pages
+    Shared functions of Banquet pages
+    We will always need to add use some parameters e.g. year banquet
     """
     def dispatch(self, request, *args, **kwargs):
         """
@@ -40,28 +42,34 @@ class InviteMixin(object):
         self.user = self.request.user
         self.year = self.kwargs['year']
         self.fair = get_object_or_404(Fair, year=self.year)
-        return super(InviteMixin, self).dispatch(request, *args, **kwargs)
+        # TODO: Allow for multiple banquets in a year
+        self.banquet = Banquet.objects.get(fair=self.fair)
+        return super(GeneralMixin, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
         Adding fair,year to our context for consistency with other templates
         """
-        context = super(InviteMixin, self).get_context_data(**kwargs)
+        context = super(GeneralMixin, self).get_context_data(**kwargs)
         context['year'] = self.year
         context['fair'] = self.fair
         return context
 
+class InviteCreateFormMixin(GeneralMixin,object):
+    """
+    Shared form_valid for invite createViews
+    """
     def form_valid(self, form):
         """
         Modified so form doesn't need to have banquet and user,
         instead sent with the form on succesfull form
         """
-        form.instance.banquet = Banquet.objects.get(fair=self.fair)
         form.instance.user = self.user
+        form.instance.banquet = self.banquet
 
-        return super(InviteMixin, self).form_valid(form)
+        return super(InviteCreateFormMixin, self).form_valid(form)
 
-class InternalInviteView(InviteMixin, CreateView):
+class InternalInviteView(InviteCreateFormMixin, CreateView):
     """
     Invite view for already registered students
     """
@@ -83,7 +91,7 @@ class InternalInviteView(InviteMixin, CreateView):
 
         return initial
 
-class ExternalInviteView(InviteMixin, CreateView):
+class ExternalInviteView(InviteCreateFormMixin, CreateView):
     """
     Invite view for students and invitees (excl. companies)
     """
@@ -92,3 +100,19 @@ class ExternalInviteView(InviteMixin, CreateView):
     template_name = 'banquet/invite.html'
     success_url = '/'
 
+class SendInviteCreateView(InviteCreateFormMixin, CreateView):
+    """
+    Banquet group can set who to invite
+    """
+    form_class = SendInvitationForm
+    template_name = 'banquet/send_invite.html'
+    success_url = reverse_lazy('invite_list')
+
+class SentInvitationsListView(GeneralMixin, ListView):
+    """
+    List who's been invited
+    """
+    template_name = 'banquet/invite_list.html'
+
+    def get_queryset(self):
+        return Invitation.objects.filter(banquet=self.banquet)
