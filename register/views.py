@@ -469,102 +469,101 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 	})
 
 class BanquetInviteView(FormView):
-    """
-    Invite view for companies.
-    Uses a formset.
-    Is basically a update view but with extra forms for every banquet ticket not filled
-    """
-    template_name = 'register/inside/banquet.html'
-    success_url = reverse_lazy('registration')
+	"""
+	Invite view for companies.
+	Uses a formset.
+	Is basically a update view but with extra forms for every banquet ticket not filled
+	"""
+	template_name = 'register/inside/banquet.html'
+	success_url = reverse_lazy('registration')
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	def dispatch(self, request, *args, **kwargs):
+		if not request.user.is_authenticated(): return redirect('anmalan:logout')
 
-        self.company_pk = self.kwargs['company_pk']
-        self.company = get_object_or_404(Company, pk=self.company_pk)
-        self.fair = Fair.objects.filter(current=True).first()
+		self.company_pk = self.kwargs['company_pk']
+		self.company = get_object_or_404(Company, pk=self.company_pk)
+		self.fair = Fair.objects.filter(current=True).first()
 
-        if request.user.has_perm('companies.base'):
-                self.company_contact = None
-        else:
-                self.company_contact = CompanyContact.objects.filter(
-                        user = request.user, company = self.company
-                    ).first()
+		if request.user.has_perm('companies.base'):
+			self.company_contact = None
+		else:
+			self.company_contact = CompanyContact.objects.filter(
+				user = request.user, company = self.company
+			).first()
+			if not company_contact: return redirect('anmalan:choose_company')
+		self.exhibitor = Exhibitor.objects.filter(
+			fair = self.fair,
+			company = self.company
+		).first()
+		self.banquet = Banquet.objects.get(fair=self.fair)
+		return super(BanquetInviteView, self).dispatch(request, *args, **kwargs)
 
-                if not company_contact: return redirect('anmalan:choose_company')
-        self.exhibitor = Exhibitor.objects.filter(fair = self.fair, company = self.company).first()
-        self.banquet = Banquet.objects.get(fair=self.fair)
-        return super(BanquetInviteView, self).dispatch(request, *args, **kwargs)
+	def get_form_class(self):
+		"""
+		Added this method to obtain blank forms for every banquet ticket not filled
+		"""
+		# What is the total amount of tickets the company has?
+		ticket_amount = 0
+		orders = (Order.objects.filter(
+					purchasing_company = self.exhibitor.company,
+					product = self.banquet.product
+				)
+	    	)
+		for order in orders:
+			ticket_amount += order.quantity
 
-    def get_form_class(self):
-        """
-        Added this method to obtain blank forms for every banquet ticket not filled
-        """
-        # What is the total amount of tickets the company has?
-        ticket_amount = 0
-        orders = (Order.objects
-                       .filter(
-                           purchasing_company = self.exhibitor.company,
-                           product = self.banquet.product
-                       )
-                  )
-        for order in orders:
-            ticket_amount += order.quantity
-        # TODO: multiple order handling?
-        # ticket_amount = (Order.objects
-        #                       .values_list('quantity', flat=True)
-        #                       .get(purchasing_company = self.company, product_id=1)
-        #                 )
-        # how many existing tickets do we have?
-        existing_tickets = Participant.objects.filter(
-            banquet = self.banquet, company = self.company
-        ).count()
-        extra_tickets = ticket_amount - existing_tickets
-        # company, banquet sent in form_valid()
-        form_class = modelformset_factory(
-            Participant,
-            exclude=['company','banquet', 'user'],
-            extra=extra_tickets,
-            widgets={
-                'alcohol' : forms.RadioSelect(),
-                'dietary_restrictions' : forms.CheckboxSelectMultiple()
-            }
-        )
-        return form_class
+		existing_tickets = Participant.objects.filter(
+			banquet = self.banquet,
+			company = self.company
+		).count()
+		extra_tickets = ticket_amount - existing_tickets
+		# company, banquet sent in form_valid()
+		form_class = modelformset_factory(
+				Participant,
+				exclude=['company','banquet', 'user'],
+				extra=extra_tickets,
+				widgets={
+					'alcohol' : forms.RadioSelect(),
+					'dietary_restrictions' : forms.CheckboxSelectMultiple()
+				}
+		)
+		return form_class
 
-    def get_form_kwargs(self):
-        """
-        Here we define where to find the preexisting tickets by setting the queryset
-        """
-        kwargs = super(BanquetInviteView, self).get_form_kwargs()
-        kwargs["queryset"] = Participant.objects.filter(company = self.company)
-        return kwargs
+	def get_form_kwargs(self):
+		"""
+		Here we define where to find the preexisting tickets by setting the queryset
+		"""
+		kwargs = super(BanquetInviteView, self).get_form_kwargs()
+		kwargs["queryset"] = Participant.objects.filter(
+			banquet = self.banquet,
+			company = self.company
+		)
+		return kwargs
 
 
-    def get_context_data(self, **kwargs):
-        """
-        Adding company, exhibitor, etc.. to our context for consistency with other templates
-        could just change in template instead
+	def get_context_data(self, **kwargs):
+		"""
+		Adding company, exhibitor, etc.. to our context for consistency with other templates
+		could just change in template instead
+		Note: our formset is defined as form in context
+		"""
+		context = super(BanquetInviteView, self).get_context_data(**kwargs)
+		context['fair'] = self.fair
+		context['exhibitor'] = self.exhibitor
+		context['company'] = self.company
+		context['company_contact'] = self.company_contact
+		return context
 
-        Note: our formset is defined as form in context
-        """
-        context = super(BanquetInviteView, self).get_context_data(**kwargs)
-        context['fair'] = self.fair
-        context['exhibitor'] = self.exhibitor
-        context['company'] = self.company
-        context['company_contact'] = self.company_contact
-        return context
-
-    def form_valid(self, form):
-        """
-        Send our changed forms
-        """
-        for sub_form in form:
-            if sub_form.has_changed():
-                sub_form.instance.banquet = self.banquet
-                sub_form.instance.company = self.company
-                sub_form.save()
-        return super(BanquetInviteView, self).form_valid(form)
+	def form_valid(self, form):
+		"""
+		Send our changed forms
+		"""
+		for sub_form in form:
+			if sub_form.has_changed():
+				sub_form.instance.banquet = self.banquet
+				sub_form.instance.company = self.company
+				sub_form.save()
+		return super(BanquetInviteView, self).form_valid(form)
 
 def events(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')

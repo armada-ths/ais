@@ -16,6 +16,8 @@ class InternalParticipantForm(forms.ModelForm):
             'name' : forms.TextInput(attrs={'readonly':'readonly'}),
             'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
             'phone_number' : forms.TextInput(attrs={'readonly':'readonly'}),
+            'dietary_restrictions' : forms.CheckboxSelectMultiple(),
+            'alcohol' : forms.RadioSelect()
         }
 
 class ExternalParticipantForm(forms.ModelForm):
@@ -25,3 +27,7 @@ class ExternalParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
         exclude = ['banquet','company','user']
+        widgets = {
+            'dietary_restrictions' : forms.CheckboxSelectMultiple(),
+            'alcohol' : forms.RadioSelect()
+        }
