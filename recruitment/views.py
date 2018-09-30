@@ -18,7 +18,6 @@ from django.utils.translation import ugettext_lazy as _
 from fair.models import Fair
 from people.models import Profile
 from companies.models import Company
-from exhibitors.models import Exhibitor
 from people.models import Language, Profile
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer, Location, Slot
 
@@ -836,9 +835,6 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	if not user_can_access_recruitment_period(user, application.recruitment_period):
 		return HttpResponseForbidden()
 
-	exhibitors = [participation.company for participation in
-					Exhibitor.objects.filter(fair=application.recruitment_period.fair)]
-
 	InterviewPlanningForm = modelform_factory(
 		RecruitmentApplication,
 		fields=('interviewer', 'interviewer2', 'slot', 'recommended_role', 'scorecard', 'drive_document',
@@ -925,17 +921,12 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	if 'interviewer' in interview_planning_form.fields: interview_planning_form.fields['interviewer'].choices = interviewers_by_language
 	if 'interviewer2' in interview_planning_form.fields: interview_planning_form.fields['interviewer2'].choices = interviewers_by_language
 
-	RoleDelegationForm = modelform_factory(
-		RecruitmentApplication,
-		fields=('delegated_role', 'exhibitor', 'superior_user', 'status'),
-	)
+	RoleDelegationForm = modelform_factory(RecruitmentApplication, fields = ['delegated_role', 'superior_user', 'status'])
 
 	role_delegation_form = RoleDelegationForm(request.POST or None, instance=application)
 	role_delegation_form.fields['delegated_role'].queryset = application.recruitment_period.recruitable_roles
 	role_delegation_form.fields['superior_user'].choices = [('', '---------')] + [
 		(interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers]
-	role_delegation_form.fields['exhibitor'].choices = [('', '---------')] + [
-		(exhibitor.pk, exhibitor.name) for exhibitor in exhibitors]
 
 	if request.POST:
 		application.recruitment_period.interview_questions.handle_answers_from_request(request, application.user)

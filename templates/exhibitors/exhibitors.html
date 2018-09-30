@@ -1,52 +1,95 @@
 {% extends "base.html" %}
+
 {% load exhibitor_model %}
 {% load crispy_forms_tags %}
+
 {% block nav-exhibitors %}
-    <li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+	<li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
 {% endblock %}
+
 {% block content %}
-    <h1>Exhibitors ({{ exhibitors|length }})</h1>
-    {% if request.user %}<a href="{% url 'edit_view' fair.year %}" class="btn btn-success">Edit view</a>{% endif %}
-    <a href="{% url 'create' fair.year %}" class="btn btn-success">Create exhibitor</a>
-    <div class="table-responsive">
-    <table class="table" id="exhibitor_table">
-        <thead>
-        <tr>
-            <th>Exhibitor</th>
-            {% for field in fields %}
-                <th>{% get_field_name field %}</th>
-            {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-        {% for exhibitor in exhibitors %}
-            <tr>
-                {% if perms.exhibitors.change_exhibitor or request.user in exhibitor.hosts.all or request.user in exhibitor.superiors %}
-                <td><a href="{% url "exhibitor" fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></td>
-                {% else %}
-                    <td>{{ exhibitor.company }}</td>
-                {% endif %}
-                {% for field in fields %}
-                    <td>{{ exhibitor|get_value:field }}</td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    
-    </div>
+	<h1>Exhibitors ({{ exhibitors|length }})</h1>
+	
+	<p>
+		<a href="{% url 'edit_view' fair.year %}" class="btn btn-default">Edit view</a>
+		{% if perms.exhibitors.create %}<a href="{% url 'create' fair.year %}" class="btn btn-default">Create exhibitor</a>{% endif %}
+	</p>
+	
+	<form method="post">
+		{% csrf_token %}
+		{{ form | crispy }}
+		<input class="btn btn-primary" type="submit" value="Refine search" />
+	</form>
+	
+	<div class="table-responsive">
+		<table class="table" id="exhibitor_table">
+			<thead>
+			<tr>
+				<th>Exhibitor</th>
+				
+				{% for field in fields %}
+					<th>{% get_field_name field %}</th>
+				{% endfor %}
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% for exhibitor in exhibitors %}
+					<tr>
+						<td><a href="{% url 'exhibitor' fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></td>
+						
+						{% for field in fields %}
+							{% if field == 'contact_persons' %}
+								<td>
+									<ul class="list-unstyled">
+										{% for contact_person in exhibitor.contact_persons.all %}
+											<li><a href="{% url 'view_person' fair.year contact_person.profile.pk %}">{{ contact_person }}</a></li>
+										{% endfor %}
+									</ul>
+								</td>
+							{% elif field == 'transport_to' %}
+								{% if exhibitor.transport_to == 'NOT_BOOKED' %}<td class="bg-danger">
+								{% else %}<td>{% endif %}
+									{{ exhibitor.get_transport_to_display }}
+								</td>
+							{% elif field == 'transport_from' %}
+								{% if exhibitor.transport_from == 'NOT_BOOKED' %}<td class="bg-danger">
+								{% else %}<td>{% endif %}
+									{{ exhibitor.get_transport_from_display }}
+								</td>
+							{% elif field == 'count_lunch_tickets' %}
+								{% if exhibitor.count_lunch_tickets.created == exhibitor.count_lunch_tickets.ordered %}<td>
+								{% elif exhibitor.count_lunch_tickets.ordered > exhibitor.count_lunch_tickets.created %}<td class="bg-danger">
+								{% else %}<td class="bg-info">{% endif %}
+									{{ exhibitor.count_lunch_tickets.created }} / {{ exhibitor.count_lunch_tickets.ordered }}
+								</td>
+							{% elif field == 'count_banquet_tickets' %}
+								{% if exhibitor.count_banquet_tickets.created == exhibitor.count_banquet_tickets.ordered %}<td>
+								{% elif exhibitor.count_banquet_tickets.ordered > exhibitor.count_banquet_tickets.created %}<td class="bg-danger">
+								{% else %}<td class="bg-info">{% endif %}
+									{{ exhibitor.count_banquet_tickets.created }} / {{ exhibitor.count_banquet_tickets.ordered }}
+								</td>
+							{% else %}
+								<td>
+									{{ exhibitor | get_value:field }}
+								</td>
+							{% endif %}
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
 {% endblock %}
 {% block scripts %}
-    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
-    <link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
-    <script>
-        $(document).ready(function () {
-            $('#exhibitor_table').DataTable({
-                'paging': false
-            })
-        })
-    </script>
-
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+	<script>
+		$(function()
+		{
+			$('#exhibitor_table').DataTable({ 'paging': false })
+		});
+	</script>
 {% endblock %}
 

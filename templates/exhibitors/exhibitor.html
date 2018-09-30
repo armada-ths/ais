@@ -14,11 +14,46 @@
 	<h1>{{ exhibitor.company }}</h1>
 	
 	<p>
-		{% if perms.exhibitors.transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
 	</p>
 	
 	<div class="row">
 		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Responsibilities within {{ fair }}</h3>
+				</div>
+				
+				<div class="panel-body">
+					{% if contact_persons %}
+						{% for contact_person in contact_persons %}
+							<p>
+								<a href="{% url 'view_person' fair.year contact_person.user.profile.pk %}">{{ contact_person.user }}</a>
+								{% if contact_person.role %}<br />{{ contact_person.role }}{% endif %}
+							</p>
+						{% endfor %}
+					{% else %}
+						<p>No responsibilities specified.</p>
+					{% endif %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Transport details</h3>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><span style="font-weight: 700;">To the fair:</span> {{ exhibitor.get_transport_to_display }}</li>
+						<li><span style="font-weight: 700;">From the fair:</span> {{ exhibitor.get_transport_from_display }}</li>
+					</ul>
+					
+					{% if exhibitor.transport_comment %}<p>{{ exhibitor.transport_comment }}</p>{% endif %}
+				</div>
+			</div>
+			
 			{% for contact in contacts %}
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -44,16 +79,6 @@
 		</div>
 		
 		<div class="col-md-8">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h2 class="panel-title">Exhibitor details</h2>
-				</div>
-				
-				<div class="panel-body">
-					<p>This section is under construction. Here, you will soon see information about the company's participation in the career fair.</p>
-				</div>
-			</div>
-			
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h2 class="panel-title">Orders</h2>
@@ -89,6 +114,113 @@
 					{% endif %}
 				</div>
 			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Lunch tickets</h2>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>Ordered lunch tickets:</strong> {{ lunch_tickets_count_ordered }}</li>
+						<li><strong>Created lunch tickets:</strong> {{ lunch_tickets_count_created }}</li>
+					</ul>
+					
+					{% for lunch_tickets_day in lunch_tickets_days %}
+						{% if lunch_tickets_day.lunch_tickets %}
+							<h3>{{ lunch_tickets_day.name }}</h3>
+							
+							<table class="table">
+								<thead>
+									<tr>
+										<th style="width: 40%;">E-mail address</th>
+										<th>Dietary restrictions</th>
+									</tr>
+								</thead>
+								
+								{% for lunch_ticket in lunch_tickets_day.lunch_tickets %}
+									<tr>
+										<td>
+											{{ lunch_ticket.email_address }}
+											{% if lunch_ticket.comment %}<br /><span style="font-style: italic;">{{ lunch_ticket.comment }}</span>{% endif %}
+										</td>
+										<td>{{ lunch_ticket.dietary_restrictions.all | join:', ' }}</td>
+									</tr>
+								{% endfor %}
+							</table>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Banquet tickets</h2>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>Ordered banquet tickets:</strong> {{ banquet_tickets_count_ordered }}</li>
+						<li><strong>Created banquet tickets:</strong> {{ banquet_tickets_count_created }}</li>
+					</ul>
+					
+					{% for banquet in banquets %}
+						{% if banquet_tickets.banquet_tickets %}
+							<h3>{{ banquet }}</h3>
+							
+							<table class="table">
+								<thead>
+									<tr>
+										<th style="width: 40%;">Name</th>
+										<th style="width: 30%;">E-mail address</th>
+										<th>Phone number</th>
+									</tr>
+								</thead>
+								
+								{% for banquet_ticket in banquet.banquet_tickets %}
+									<tr>
+										<td>{{ banquet_ticket.name }}</td>
+										<td>{{ banquet_ticket.email_address }}</td>
+										<td>{{ banquet_ticket.phone_number }}</td>
+									</tr>
+								{% endfor %}
+							</table>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Write comment</h2>
+				</div>
+				
+				<div class="panel-body">
+					<form method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+						{{ form_comment | crispy }}
+						<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save comment</button>
+					</form>
+				</div>
+			</div>
+			
+			{% for comment in comments %}
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<div class="pull-right">
+							<a onclick="confirm('Do you want to remove the comment?');" href=" url 'companies_comments_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+							<a href=" url 'companies_comments_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+						</div>
+						
+						<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
+						{{ comment.groups.all | join:", " }}
+					</div>
+					
+					<div class="panel-body">
+						<p>{{ comment.comment | linebreaks }}</p>
+					</div>
+				</div>
+			{% endfor %}
 		</div>
 	</div>
 {% endblock %}

@@ -1,17 +1,14 @@
 import re
-
 from django.forms import ModelForm
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.contrib.auth.models import User
-
 import django.forms as forms
+from lib.image import UploadToDirUUID
 
 from people.models import Profile
 from companies.models import Company
-from exhibitors.models import Exhibitor
 from fair.models import Fair
-from lib.image import UploadToDirUUID
 
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer
 

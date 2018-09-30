@@ -41,7 +41,7 @@
 									{% for responsibility in signature.responsibilities %}
 										{% if responsibility.group.allow_statistics %}
 											<li>
-												{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}
+												{{ responsibility.group }} – {{ responsibility.users.all | join:", " }}
 											</li>
 										{% endif %}
 									{% endfor %}
@@ -97,7 +97,7 @@
 			data.addColumn('datetime', 'Number of signatures');
 			
 			{% for signature in contract.signatures %}
-				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
+				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users.all | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
 			{% endfor %}
 			
 			data.addRows([
