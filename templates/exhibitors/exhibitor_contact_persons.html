@@ -19,6 +19,8 @@
 		<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>
 	</p>
 	
+	<p>Use CTRL or CMD to select multiple contact persons. Be careful not to accidentally remove anyone.</p>
+	
 	<form method="post" enctype="multipart/form-data">
 		{% csrf_token %}
 		{{ form | crispy }}

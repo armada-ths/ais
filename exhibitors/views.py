@@ -17,7 +17,7 @@ from .models import Exhibitor, ExhibitorView, LunchTicketDay, LunchTicket
 def possible_contact_persons(fair):
 	contact_persons = []
 	
-	for application in RecruitmentApplication.objects.filter(recruitment_period__fair = fair, status = 'accepted', delegated_role__allow_exhibitor_contact_person = True):
+	for application in RecruitmentApplication.objects.filter(recruitment_period__fair = fair, status = 'accepted', delegated_role__allow_exhibitor_contact_person = True).order_by('recruitment_period', 'user__first_name', 'user__last_name'):
 		user = (application.user.pk, application.user)
 		added = False
 		

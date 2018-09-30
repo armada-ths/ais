@@ -296,7 +296,7 @@ class RecruitmentApplication(models.Model):
 	status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
 
 	class Meta:
-		ordering = ['submission_date', 'user']
+		ordering = ['submission_date']
 		permissions = (
 			('administer_recruitment_applications', 'Administer recruitment applications'),
 			('view_recruitment_applications', 'View recruitment applications'),
