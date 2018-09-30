@@ -234,6 +234,7 @@ class Role(models.Model):
 	group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
 	organization_group = models.CharField(max_length=100, default='', null=True)
 	recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
+	allow_exhibitor_contact_person = models.BooleanField(null = False, blank = False, default = False, verbose_name = 'People with this role can be contact persons for exhibitors')
 	
 	def add_user_to_groups(self, user):
 		if self.group is None: return

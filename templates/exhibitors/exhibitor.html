@@ -14,7 +14,8 @@
 	<h1>{{ exhibitor.company }}</h1>
 	
 	<p>
-		{% if perms.exhibitors.transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
 	</p>
 	
 	<div class="row">

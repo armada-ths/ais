@@ -9,14 +9,14 @@
 	<ol class="breadcrumb">
 		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
 		<li><a href="{% url 'exhibitor' fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></li>
-		<li class="active">Transport</li>
+		<li class="active">Contact persons</li>
 	</ol>
 	
-	<h1>Transport for {{ exhibitor.company }}</h1>
+	<h1>Contact persons for {{ exhibitor.company }}</h1>
 	
 	<p>
-		<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>
-		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
+		{% if perms.exhibitors.transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>
 	</p>
 	
 	<form method="post" enctype="multipart/form-data">

@@ -100,7 +100,7 @@ class Exhibitor(models.Model):
 			('view_all', 'Always view all exhibitors'),
 			('create', 'Create new exhibitors'),
 			('modify_contact_persons', 'Modify contact persons'),
-			('transport', 'Modify exhibitor transport details')
+			('modify_transport', 'Modify transport details')
 		]
 
 

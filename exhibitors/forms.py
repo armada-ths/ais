@@ -1,5 +1,4 @@
 from django import forms
-
 import inspect
 
 from companies.models import Company, CompanyCustomerComment
@@ -39,41 +38,12 @@ class ExhibitorViewForm(forms.Form):
         return self.instance
 
 
-# Fields for ordering
-exhibitor_fields = ['hosts']
-stand_fields = ['location', 'booth_number']
-
-
-class ExhibitorFormFull(forms.ModelForm):
-    '''
-    The full version of the exhibitor form.
-    '''
-
-    field_order = exhibitor_fields + stand_fields 
-
-    class Meta:
-        model = Exhibitor
-        fields = '__all__'
-        exclude = ('company', 'fair', 'pickup_order', 'delivery_order') 
-
-
-
-class ExhibitorFormPartial(ExhibitorFormFull):
-    '''
-    A basic version of exhibitor form (shown to users with partial permissions)
-
-    Is a child of ExhibitorFormFull
-    '''
-
-    class Meta(ExhibitorFormFull.Meta):
-        exclude = ('company', 'fair', 'hosts', 'contact', 'pickup_order', 'delivery_order')
-
 class ExhibitorCreateForm(forms.Form):
 	companies = forms.ModelMultipleChoiceField(
 		queryset = Company.objects.all(),
-		widget = forms.SelectMultiple(attrs = {"size": 20}),
+		widget = forms.SelectMultiple(attrs = {'size': 20}),
 		required = True,
-		label = "Companies from the initial registration"
+		label = 'Companies from the initial registration'
 	)
 
 
@@ -81,6 +51,16 @@ class TransportForm(forms.ModelForm):
 	class Meta:
 		model = Exhibitor
 		fields = ['transport_to', 'transport_from', 'transport_comment']
+
+
+class ContactPersonForm(forms.ModelForm):
+	class Meta:
+		model = Exhibitor
+		fields = ['contact_persons']
+		
+		widgets = {
+			'contact_persons': forms.SelectMultiple(attrs = {'size': 30})
+		}
 
 
 class CommentForm(forms.ModelForm):
