@@ -2,50 +2,82 @@ from django.http import HttpResponseForbidden
 from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
+from django.urls import reverse
 
 from companies.models import Company, CompanyContact, CompanyCustomerComment, CompanyCustomerResponsible
-from django.urls import reverse
 from fair.models import Fair
 from accounting.models import Product, Order
 from register.models import SignupLog
 from banquet.models import Banquet, Participant
 
-from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, ContactPersonForm, CommentForm
+from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, ContactPersonForm, CommentForm, ExhibitorSearchForm
 from .models import Exhibitor, ExhibitorView, LunchTicketDay, LunchTicket
+
+
+def possible_contact_persons(fair):
+	contact_persons = []
+	
+	for application in RecruitmentApplication.objects.filter(recruitment_period__fair = fair, status = 'accepted', delegated_role__allow_exhibitor_contact_person = True):
+		user = (application.user.pk, application.user)
+		added = False
+		
+		for contact_person in contact_persons:
+			if contact_person[0] == application.delegated_role:
+				contact_person[1].append(user)
+				added = True
+				break
+		
+		if not added: contact_persons.append((application.delegated_role, [user]))
+	
+	return contact_persons
 
 
 @permission_required('exhibitors.base')
 def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
-    if not request.user.has_perm('exhibitors.base'):
-        return HttpResponseForbidden()
-    fair = get_object_or_404(Fair, year=year)
-
-
-    view = ExhibitorView.objects.filter(user=request.user).first()
-    if not view: view = ExhibitorView(user=request.user).create()
-    fields = view.choices.split(' ')
-    fields.remove('')
-
-    return render(request, template_name, {
-        'exhibitors': Exhibitor.objects.prefetch_related('contact_persons').filter(fair=fair).order_by('company__name'),
-        'fields' : fields,
-        'fair': fair
-    })
+	fair = get_object_or_404(Fair, year=year)
+	
+	view = ExhibitorView.objects.filter(user=request.user).first()
+	
+	if not view: view = ExhibitorView(user=request.user).create()
+	
+	exhibitors = Exhibitor.objects.prefetch_related('contact_persons').filter(fair=fair).order_by('company__name')
+	
+	form = ExhibitorSearchForm(request.POST or None)
+	
+	form.fields['contact_persons'].choices = possible_contact_persons(fair)
+	
+	if request.POST and form.is_valid():
+		exhibitors_filtered = []
+		
+		for exhibitor in exhibitors:
+			for contact_person in form.cleaned_data['contact_persons']:
+				if contact_person in exhibitor.contact_persons.all():
+					exhibitors_filtered.append(exhibitor)
+					break
+		
+		exhibitors = exhibitors_filtered
+	
+	return render(request, template_name, {
+		'fair': fair,
+		'exhibitors': exhibitors,
+		'fields': [] if len(view.choices) == 0 else view.choices.split(' '),
+		'form': form
+	})
 
 
 @permission_required('exhibitors.base')
 def edit_view(request, year, template_name='exhibitors/edit_view.html'):
-    view = ExhibitorView.objects.filter(user=request.user).first()
-    form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
+	view = ExhibitorView.objects.filter(user=request.user).first()
+	form = ExhibitorViewForm(request.POST or None, instance=view, user=request.user)
 
-    if form.is_valid():
-        form.save()
-        return redirect('exhibitors', year)
+	if form.is_valid():
+		form.save()
+		return redirect('exhibitors', year)
 
-    return render(request, template_name, {
-        'form': form,
-        'fair': get_object_or_404(Fair, year=year, current=True)
-    })
+	return render(request, template_name, {
+		'form': form,
+		'fair': get_object_or_404(Fair, year=year, current=True)
+	})
 
 
 @permission_required('exhibitors.base')
@@ -218,21 +250,8 @@ def exhibitor_contact_persons(request, year, pk):
 	exhibitor = get_object_or_404(Exhibitor, pk = pk)
 	
 	form = ContactPersonForm(request.POST or None, instance = exhibitor)
-	contact_persons = []
 	
-	for application in RecruitmentApplication.objects.filter(recruitment_period__fair = fair, status = 'accepted', delegated_role__allow_exhibitor_contact_person = True):
-		user = (application.user.pk, application.user)
-		added = False
-		
-		for contact_person in contact_persons:
-			if contact_person[0] == application.delegated_role:
-				contact_person[1].append(user)
-				added = True
-				break
-		
-		if not added: contact_persons.append((application.delegated_role, [user]))
-	
-	form.fields['contact_persons'].choices = contact_persons
+	form.fields['contact_persons'].choices = possible_contact_persons(fair)
 	
 	if request.POST and form.is_valid():
 		form.save()

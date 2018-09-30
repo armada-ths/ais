@@ -2,6 +2,8 @@ from django.db import models
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
 
+from accounting.models import Order
+from banquet.models import Banquet, Participant
 from recruitment.models import RecruitmentApplication
 from fair.models import Fair
 from people.models import DietaryRestriction
@@ -70,12 +72,6 @@ class Exhibitor(models.Model):
 	placement_wish = models.CharField(choices = placement_wishes, blank = True, null = True, max_length = 255)
 	placement_comment = models.TextField(blank = True, null = True, verbose_name = 'Additional wishes regarding placement at the fair')
 	
-	# For the logistics team
-	comment = models.TextField(blank=True)
-	
-	logo = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'logo_original'), blank=True)
-	location_at_fair = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'location_at_fair'), blank=True)
-	
 	transport_statuses = [
 		('NOT_BOOKED', 'Not booked'),
 		('BOOKED', 'Booked'),
@@ -86,12 +82,38 @@ class Exhibitor(models.Model):
 	transport_from = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
 	transport_comment = models.TextField(blank = True, null = True)
 	
-	def superiors(self):
-		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in self.contact_persons.all()]
-		return [application.superior_user for application in accepted_applications if application and application.superior_user]
+	@property
+	def count_lunch_tickets(self):
+		count_ordered = 0
+		
+		for order in Order.objects.filter(purchasing_company = self.company, product = self.fair.product_lunch_ticket):
+			count_ordered += order.quantity
+		
+		count_created = LunchTicket.objects.filter(exhibitor = self).count()
+		
+		return {
+			'ordered': count_ordered,
+			'created': count_created
+		}
 	
-	def __str__(self):
-		return '%s at %s' % (self.company.name, self.fair.name)
+	@property
+	def count_banquet_tickets(self):
+		count_ordered = 0
+		count_created = 0
+		
+		for banquet in Banquet.objects.filter(fair = self.fair):
+			if banquet.product is not None:
+				for order in Order.objects.filter(purchasing_company = self.company, product = banquet.product):
+					count_ordered += order.quantity
+			
+			count_created += Participant.objects.filter(banquet = banquet, company = self.company).count()
+		
+		return {
+			'ordered': count_ordered,
+			'created': count_created
+		}
+	
+	def __str__(self): return '%s at %s' % (self.company.name, self.fair.name)
 	
 	class Meta:
 		default_permissions = []
@@ -140,19 +162,26 @@ class ExhibitorView(models.Model):
 	'''
 	A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
 	'''
-	# A set of field names from Exhibitor model, that are not supposed to be selectable
-	ignore = {'user', 'id', 'pk', 'logo'}
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	# The idea is to store field name for fields that a user selected to view (shouldn't be too many)
-	# and make this procedural, so if the Exhibitor model changes, no large changes to this model would be necessary
+	selectable_fields = {
+		'contact_persons': 'Contact persons',
+		'transport_to': 'Transport to the fair',
+		'transport_from': 'Transport from the fair',
+		'transport_comment': 'Transport comment',
+		'placement_wish': 'Placement wish',
+		'placement_comment': 'Placement comment',
+		'electricity_total_power': 'Total power (W)',
+		'electricity_socket_count': 'Socket count',
+		'electricity_equipment': 'Electricity equipment',
+		'booth_height': 'Booth height (cm)',
+		'count_lunch_tickets': 'Lunch tickets',
+		'count_banquet_tickets': 'Banquet tickets'
+	}
+	
+	user = models.ForeignKey(User, on_delete = models.CASCADE)
 	choices = models.TextField()
 
 	def create(self):
-		# A set of field names from Exhibitor model, that are shown by default
-		default = {'contact_persons'}
-
-		for field in default:
-			self.choices = self.choices + ' ' + field
+		self.choices = 'contact_persons transport_from transport_to lunch_tickets banquet_tickets'
 		self.save()
 		
 		return self
