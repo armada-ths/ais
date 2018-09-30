@@ -186,10 +186,6 @@ class CompanyCustomer(models.Model):
 	groups = models.ManyToManyField(Group)
 	
 	@property
-	def groups_iterable(self):
-		return self.groups.all()
-	
-	@property
 	def responsibles(self):
 		return CompanyCustomerResponsible.objects.select_related("group").filter(company_customer = self).prefetch_related("users")
 	
@@ -226,10 +222,7 @@ class CompanyCustomerComment(models.Model):
 	groups = models.ManyToManyField(Group, blank = True)
 	comment = models.TextField(null = False, blank = False)
 	timestamp = models.DateTimeField(null = False, blank = False, auto_now_add = True)
-	
-	@property
-	def groups_iterable(self):
-		return self.groups.all()
+	show_in_exhibitors = models.BooleanField(null = False, blank = False, default = False)
 	
 	class Meta:
 		ordering = ["-timestamp"]
@@ -242,10 +235,6 @@ class CompanyCustomerResponsible(models.Model):
 	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
 	users = models.ManyToManyField(User, blank = False)
-	
-	@property
-	def users_iterable(self):
-		return self.users.all()
 	
 	class Meta:
 		verbose_name_plural = "Company customer responsibles"
@@ -272,6 +261,9 @@ class CompanyContact(models.Model):
 
 	def __str__(self):
 		return "%s %s" % (self.first_name, self.last_name)
+	
+	class Meta:
+		ordering = ['-active', 'first_name']
 
 
 @receiver(post_save, sender = Company)

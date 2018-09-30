@@ -647,3 +647,22 @@ def contracts_export(request, year):
 		'fair': fair,
 		'form': form
 	})
+
+
+def companies_contacts_edit(request, year, pk, contact_pk):
+	fair = get_object_or_404(Fair, year = year)
+	company = get_object_or_404(Company, pk = pk)
+	contact = get_object_or_404(CompanyContact, company = company, pk = contact_pk)
+	
+	form = CompanyContactForm(request.POST or None, instance = contact)
+	
+	if request.POST and form.is_valid():
+		form.save()
+		return redirect('companies_view', fair.year, company.pk)
+	
+	return render(request, 'companies/companies_contacts_edit.html',
+	{
+		'fair': fair,
+		'company': company,
+		'form': form
+	})
