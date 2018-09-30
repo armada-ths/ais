@@ -261,6 +261,9 @@ class CompanyContact(models.Model):
 
 	def __str__(self):
 		return "%s %s" % (self.first_name, self.last_name)
+	
+	class Meta:
+		ordering = ['-active', 'first_name']
 
 
 @receiver(post_save, sender = Company)
