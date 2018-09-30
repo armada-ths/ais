@@ -8,15 +8,15 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import get_connection, EmailMultiAlternatives, send_mail
 from django.contrib.auth.decorators import permission_required
 
-
 from companies.models import Company, CompanyContact, CompanyCustomerComment, CompanyCustomerResponsible
 from django.urls import reverse
 from fair.models import Fair
 from accounting.models import Product, Order
 from register.models import SignupLog
+from banquet.models import Banquet, Participant
 
 from .forms import ExhibitorViewForm, ExhibitorFormFull, ExhibitorFormPartial, ExhibitorCreateForm, TransportForm, CommentForm
-from .models import Exhibitor, ExhibitorView
+from .models import Exhibitor, ExhibitorView, LunchTicketDay, LunchTicket
 
 import logging
 
@@ -156,6 +156,57 @@ def exhibitor(request, year, pk):
 			'role': application.delegated_role if application is not None else None
 		})
 	
+	for responsible in CompanyCustomerResponsible.objects.select_related('group').filter(company = exhibitor.company, group__fair = fair):
+		for user in responsible.users.all():
+			application = RecruitmentApplication.objects.filter(recruitment_period__fair = fair, user = user, status = 'accepted').first()
+			
+			already_found = False
+			
+			for contact_person in contact_persons:
+				if contact_person['user'] == user:
+					already_found = True
+					break
+			
+			if not already_found:
+				contact_persons.append({
+					'user': user,
+					'role': application.delegated_role if application is not None else None
+				})
+	
+	lunch_tickets_count_ordered = 0
+	
+	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
+		lunch_tickets_count_ordered += order.quantity
+	
+	lunch_tickets_days = []
+	lunch_tickets_count_created = 0
+	
+	for day in LunchTicketDay.objects.filter(fair = fair):
+		lunch_tickets = LunchTicket.objects.filter(exhibitor = exhibitor, day = day)
+		lunch_tickets_count_created += len(lunch_tickets)
+		
+		lunch_tickets_days.append({
+			'name': day.name,
+			'lunch_tickets': lunch_tickets
+		})
+	
+	banquets = []
+	banquet_tickets_count_ordered = 0
+	banquet_tickets_count_created = 0
+	
+	for banquet in Banquet.objects.filter(fair = fair):
+		if banquet.product is not None:
+			for order in Order.objects.filter(purchasing_company = exhibitor.company, product = banquet.product):
+				banquet_tickets_count_created += order.quantity
+		
+		banquet_tickets = Participant.objects.filter(banquet = banquet, company = exhibitor.company)
+		banquet_tickets_count_created += len(banquet_tickets)
+		
+		banquets.append({
+			'banquet': banquet,
+			'banquet_tickets': banquet_tickets
+		})
+	
 	return render(request, 'exhibitors/exhibitor.html', {
 		'fair': fair,
 		'exhibitor': exhibitor,
@@ -165,8 +216,13 @@ def exhibitor(request, year, pk):
 		'orders': orders,
 		'comments': CompanyCustomerComment.objects.filter(company = exhibitor.company, show_in_exhibitors = True),
 		'form_comment': form_comment,
-		'responsibles': CompanyCustomerResponsible.objects.select_related('group').filter(company = exhibitor.company, group__fair = fair),
-		'contact_persons': contact_persons
+		'contact_persons': contact_persons,
+		'lunch_tickets_count_ordered': lunch_tickets_count_ordered,
+		'lunch_tickets_count_created': lunch_tickets_count_created,
+		'lunch_tickets_days': lunch_tickets_days,
+		'banquet_tickets_count_ordered': banquet_tickets_count_ordered,
+		'banquet_tickets_count_created': banquet_tickets_count_ordered,
+		'banquets': banquets
 	})
 
 

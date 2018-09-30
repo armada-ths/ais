@@ -10,26 +10,31 @@ from people.models import DietaryRestriction
 class CatalogueIndustry(models.Model):
 	industry = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.industry
+	class Meta: default_permissions = []
 
 
 class CatalogueValue(models.Model):
 	value = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.value
+	class Meta: default_permissions = []
 
 
 class CatalogueEmployment(models.Model):
 	employment = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.employment
+	class Meta: default_permissions = []
 
 
 class CatalogueLocation(models.Model):
 	location = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.location
+	class Meta: default_permissions = []
 
 
 class CatalogueBenefit(models.Model):
 	benefit = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.benefit
+	class Meta: default_permissions = []
 
 
 # A company (or organisation) participating in a fair
@@ -89,8 +94,12 @@ class Exhibitor(models.Model):
 		return '%s at %s' % (self.company.name, self.fair.name)
 	
 	class Meta:
+		default_permissions = []
 		permissions = [
-			('base', 'Exhibitors'),
+			('base', 'View the Exhibitors tab'),
+			('view_all', 'Always view all exhibitors'),
+			('create', 'Create new exhibitors'),
+			('modify_contact_persons', 'Modify contact persons'),
 			('transport', 'Modify exhibitor transport details')
 		]
 
@@ -100,6 +109,7 @@ class LunchTicketDay(models.Model):
 	name = models.CharField(blank = False, null = False, max_length = 255)
 	
 	class Meta:
+		default_permissions = []
 		ordering = ['fair', 'name']
 	
 	def __str__(self): return self.name + ' at ' + self.fair.name
@@ -113,6 +123,7 @@ class LunchTicket(models.Model):
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	
 	class Meta:
+		default_permissions = []
 		ordering = ['pk']
 
 
@@ -120,24 +131,31 @@ class LunchTicketScan(models.Model):
 	lunch_ticket = models.ForeignKey(LunchTicket, on_delete = models.CASCADE)
 	user = models.ForeignKey(User, on_delete = models.CASCADE)
 	timestamp = models.DateTimeField(auto_now_add = True, blank = False, null = False)
+	
+	class Meta:
+		default_permissions = []
 
 
 class ExhibitorView(models.Model):
-    '''
-    A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
-    '''
-    # A set of field names from Exhibitor model, that are not supposed to be selectable
-    ignore = {'user', 'id', 'pk', 'logo'}
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # The idea is to store field name for fields that a user selected to view (shouldn't be too many)
-    # and make this procedural, so if the Exhibitor model changes, no large changes to this model would be necessary
-    choices = models.TextField()
+	'''
+	A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
+	'''
+	# A set of field names from Exhibitor model, that are not supposed to be selectable
+	ignore = {'user', 'id', 'pk', 'logo'}
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	# The idea is to store field name for fields that a user selected to view (shouldn't be too many)
+	# and make this procedural, so if the Exhibitor model changes, no large changes to this model would be necessary
+	choices = models.TextField()
 
-    def create(self):
-        # A set of field names from Exhibitor model, that are shown by default
-        default = {'contact_persons'}
+	def create(self):
+		# A set of field names from Exhibitor model, that are shown by default
+		default = {'contact_persons'}
 
-        for field in default:
-            self.choices = self.choices + ' ' + field
-        self.save()
-        return self
+		for field in default:
+			self.choices = self.choices + ' ' + field
+		self.save()
+		
+		return self
+	
+	class Meta:
+		default_permissions = []
