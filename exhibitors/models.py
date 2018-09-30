@@ -181,7 +181,7 @@ class ExhibitorView(models.Model):
 	choices = models.TextField()
 
 	def create(self):
-		self.choices = 'contact_persons transport_from transport_to lunch_tickets banquet_tickets'
+		self.choices = 'contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets'
 		self.save()
 		
 		return self
