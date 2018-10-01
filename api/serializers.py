@@ -65,8 +65,7 @@ def exhibitor(request, exhibitor, company):
 		('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
 		('average_age', exhibitor.catalogue_average_age),
 		('founded', exhibitor.catalogue_founded),
-		('groups', []),
-		('hosts', []),
+		('groups', [{'id': group.pk, 'name': group.name} for group in company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
 		('fair_locations', [])
 	])
 
