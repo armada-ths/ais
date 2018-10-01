@@ -64,6 +64,7 @@ class Profile(models.Model):
 	token = models.CharField(max_length = 255, null = True, blank = False, default = uuid.uuid4)
 	slack_id = models.CharField(max_length = 255, null = True, blank = True)
 	preferred_language = models.ForeignKey(Language, null = True, blank = True, on_delete = models.CASCADE)
+	kth_synchronize = models.BooleanField(null = False, blank = False, default = True, verbose_name = 'Synchronize account data with KTH')
 	
 	picture_original = models.ImageField(upload_to=UploadToDirUUID('profiles', 'picture_original'), blank = True)
 	picture = models.ImageField(upload_to=UploadToDir('profiles', 'picture'), blank = True)
