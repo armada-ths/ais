@@ -53,6 +53,16 @@
 				color: #00d791;
 			}
 			
+			a.btn, a:visited.btn, a:active.btn
+			{
+				color: #000000 !important;
+			}
+			
+			a:hover.btn
+			{
+				color: #ffffff !important;
+			}
+			
 			.information_label
 			{
 				color: #00d791;
@@ -77,11 +87,12 @@
 	<body>
 		<ul id="menu">
 			{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}">{{ company.name }}</a></li>{% endblock %}
+			{% if exhibitor is not None %}
+				{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
+				{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
+			{% endif %}
+			
 			{% if company.name == 'Kottnet' %}
-				{% if exhibitor is not None %}
-					{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
-					{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
-				{% endif %}
 				{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
 				{% block nav-events %}<li><a href="{% url 'anmalan:events' company.pk %}">Events</a></li>{% endblock %}
 			{% endif %}
