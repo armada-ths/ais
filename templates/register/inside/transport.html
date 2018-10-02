@@ -8,6 +8,9 @@
 
 {% block content %}
 	<h1>Transport</h1>
+	<p>As part of the Base kit, you can choose to use our transport service Armada Transport in order to get your items delivered to and from the career fair. Regardless of whether or not you want to use Armada Transport, or if you have any transport related questions, please get in touch with our partner Ryska posten.</p>
+	
+	<p>Ryska posten can be reached by e-mail on <a href="mailto:armada@ryskaposten.se">armada@ryskaposten.se</a>.</p>
 	
 	{% if form %}
 		<h3>Current status</h3>
@@ -18,6 +21,7 @@
 		
 		{% if exhibitor.transport_comment %}<p>{{ exhibitor.transport_comment }}</p>{% endif %}
 		
+		<!--
 		<h3>Initialize an arrangement</h3>
 		<p>Transport to and from the career fair is handled by our partner Ryska posten. Please fill out the form below to initialize an arrangement.</p>
 		
@@ -27,6 +31,7 @@
 			
 			<input type="submit" class="btn btn-armada-green" value="Send request" />
 		</form>
+		-->
 	{% else %}
 		<p><span style="font-weight: bold;">Thank you for your request!</span> A copy of what you entered has been sent to the provided e-mail address. Ryska posten will follow up by e-mail or by phone to complete the arrangement.</p>
 	{% endif %}

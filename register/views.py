@@ -335,7 +335,7 @@ def transport(request, company_pk):
 	
 	form = TransportForm(request.POST or None, initial = initial)
 	
-	if request.POST and form.is_valid():
+	if request.POST and form.is_valid() and True == False: # TODO: not used in 2018, but perhaps in 2019?
 		body = [
 			'Company name: ' + company.name + ' (' + str(company.pk) + ')',
 			'Contact person: ' + form.cleaned_data['contact_name'],
