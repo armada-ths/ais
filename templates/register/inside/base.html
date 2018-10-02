@@ -115,9 +115,8 @@
 				{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
 				{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
 			{% endif %}
-			
+			{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
 			{% if company.name == 'Kottnet' %}
-				{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
 				{% block nav-events %}<li><a href="{% url 'anmalan:events' company.pk %}">Events</a></li>{% endblock %}
 			{% endif %}
 		</ul>

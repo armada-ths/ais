@@ -10,16 +10,18 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import get_template
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, HiddenInput
 
 from companies.models import Company, CompanyContact
 from exhibitors.models import Exhibitor, LunchTicket, LunchTicketDay
 from fair.models import Fair
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from accounting.models import Product, Order, RegistrationSection
+from banquet.models import Participant as BanquetParticipant
+from banquet.models import Banquet
 
 from .models import SignupContract, SignupLog
-from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm
+from .forms import CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm, BanquetParticipantForm
 
 from .help.methods import get_time_flag
 
@@ -494,12 +496,102 @@ def banquet(request, company_pk):
 	
 	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
 	
+	count_ordered = 0
+	
+	for banquet in Banquet.objects.filter(fair = fair).exclude(product = None):
+		for order in Order.objects.filter(purchasing_company = company, product = banquet.product):
+			count_ordered += order.quantity
+	
+	banquets = []
+	count_created = 0
+	
+	for banquet in Banquet.objects.filter(fair = fair):
+		banquet_tickets = BanquetParticipant.objects.filter(company = company, banquet = banquet)
+		count_created += len(banquet_tickets)
+		
+		banquets.append({
+			'name': banquet.name,
+			'banquet_tickets': banquet_tickets
+		})
+	
 	return render(request, 'register/inside/banquet.html',
 	{
 		'fair': fair,
 		'company': company,
 		'company_contact': company_contact,
-		'exhibitor': exhibitor
+		'exhibitor': exhibitor,
+		'banquets': banquets,
+		'can_create': count_ordered > count_created,
+		'count_ordered': count_ordered,
+		'count_created': count_created
+	})
+
+
+def banquet_form(request, company_pk, banquet_participant_pk = None):
+	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	
+	company = get_object_or_404(Company, pk = company_pk)
+	fair = Fair.objects.filter(current = True).first()
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
+	
+	if request.user.has_perm('companies.base') or (exhibitor is not None and (request.user.has_perm('exhibitors.view_all') or request.user in exhibitor.contact_persons.all())):
+		company_contact = None
+	
+	else:
+		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
+		
+		if not company_contact: return redirect('anmalan:choose_company')
+	
+	is_editable = company_contact is not None or request.user.has_perm('companies.base')
+	
+	banquet_participant = get_object_or_404(BanquetParticipant, pk = banquet_participant_pk, company = company) if banquet_participant_pk is not None else None
+	
+	banquets = []
+	
+	for banquet in Banquet.objects.filter(fair = fair).exclude(product = None):
+		count_ordered = 0
+		count_created = BanquetParticipant.objects.filter(company = company, banquet = banquet).count()
+		
+		for order in Order.objects.filter(purchasing_company = company, product = banquet.product):
+			count_ordered += order.quantity
+		
+		if count_ordered > count_created: banquets.append(banquet)
+	
+	if banquet_participant is not None or len(banquets) > 0:
+		if banquet_participant is not None and banquet_participant.banquet not in banquets: banquets.append(banquet_participant.banquet)
+		
+		form = BanquetParticipantForm(request.POST or None, instance = banquet_participant, initial = {'company': company, 'banquet': banquets[0]})
+		
+		form.fields['banquet'].choices = [(banquet.pk, banquet.name) for banquet in banquets]
+		
+		# not required by the model since student participants shouldn't have them, but company representatives always need to
+		form.fields['name'].required = True
+		form.fields['email_address'].required = True
+		form.fields['phone_number'].required = True
+		
+		if len(banquets) == 1:
+			form.fields['banquet'].widget = HiddenInput()
+		
+		if not is_editable:
+			for field in form.fields: form.fields[field].disabled = True
+		
+		if request.POST and form.is_valid() and is_editable:
+			form.instance.company = company
+			form.save()
+			
+			return redirect('anmalan:banquet', company.pk)
+	
+	else:
+		form = None
+	
+	return render(request, 'register/inside/banquet_form.html',
+	{
+		'fair': fair,
+		'company': company,
+		'company_contact': company_contact,
+		'exhibitor': exhibitor,
+		'form': form,
+		'is_editable': is_editable
 	})
 
 

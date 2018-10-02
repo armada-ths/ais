@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from companies.models import Company
+from people.models import DietaryRestriction
 from accounting.models import Product
 from fair.models import Fair
 
@@ -12,6 +13,8 @@ class Banquet(models.Model):
 	date = models.DateTimeField()
 	location = models.CharField(max_length = 75, blank = True, null = True)
 	product = models.ForeignKey(Product, null = True, blank = True, on_delete = models.CASCADE, verbose_name = 'Product to link the banquet with')
+	
+	def __str__(self): return self.name
 
 
 class DietaryPreference(models.Model):
@@ -19,14 +22,21 @@ class DietaryPreference(models.Model):
 	preference = models.CharField(max_length = 75, blank = False, null = False)
 
 
+# For alcohol
+BOOL_CHOICES = [(True, 'Yes'), (False, 'No')]
+
+
 class Participant(models.Model):
 	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
 	company = models.ForeignKey(Company, blank = True, null = True, on_delete = models.CASCADE)
 	user = models.ForeignKey(User, blank = True, null = True, on_delete = models.CASCADE)
 	name = models.CharField(max_length = 75, blank = True, null = True)          # None if a user is provided, required for others
-	email_address = models.CharField(max_length = 75, blank = True, null = True) # None if a user is provided, required for others
+	email_address = models.EmailField(max_length = 75, blank = True, null = True, verbose_name = 'E-mail address') # None if a user is provided, required for others
 	phone_number = models.CharField(max_length = 75, blank = True, null = True)  # None if a user is provided, required for others
-	dietary_preferences = models.ManyToManyField(DietaryPreference)
+	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
+	alcohol = models.BooleanField(choices = BOOL_CHOICES, default = True)
+
+	def __str__(self): return (self.company.name + ' : ' + self.name) if self.company else self.name
 
 
 class Invitation(models.Model):

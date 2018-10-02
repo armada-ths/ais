@@ -8,15 +8,62 @@
 
 {% block content %}
 	<h1>Banquet</h1>
+	<p>Here, you can view and edit the participants for the banquet that you have purchased.</p>
 	
+	<ul class="no-bullets">
+		<li><span class="information_label">Ordered banquet tickets:</span> {{ count_ordered }}</li>
+		<li><span class="information_label">Created banquet tickets:</span> {{ count_created }}</li>
+	</ul>
 	
+	{% if can_create %}
+		<h3>Create new banquet ticket</h3>
+		<p>You have ordered more banquet tickets than you have created.</p>
+		<p><a class="btn btn-armada-green" href="{% url 'anmalan:banquet_new' company.pk %}">Create new banquet ticket</a></p>
+	{% endif %}
+	
+	{% for banquet in banquets %}
+		<h3>{{ banquet.name }}</h3>
+		
+		{% if banquet.banquet_tickets %}
+			{% for banquet_ticket in banquet.banquet_tickets %}
+				<div class="banquet_ticket">
+					<a class="btn btn-armada-green" style="float: right;" href="{% url 'anmalan:banquet_edit' company.pk banquet_ticket.pk %}">Edit</a>
+					
+					<ul class="no-bullets">
+						<li><span class="information_label">Name:</span> {{ banquet_ticket.name }}</li>
+						<li><span class="information_label">E-mail address:</span> {{ banquet_ticket.email_address }}</li>
+						<li><span class="information_label">Phone number:</span> {{ banquet_ticket.phone_number }}</li>
+						<li><span class="information_label">Dietary restrictions:</span> {% if banquet_ticket.dietary_restrictions.all %}{{ banquet_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">(no dietary restrictions)</span>{% endif %}</li>
+					</ul>
+				</div>
+			{% endfor %}
+		{% else %}
+			<p>No banquet tickets have been created for this banquet.</p>
+		{% endif %}
+	{% endfor %}
 {% endblock %}
 
 {% block scripts %}
 	<style type="text/css">
+		form
+		{
+			padding: 0;
+		}
 		
+		.banquet_ticket
+		{
+			background: #353535;
+			padding: 20px;
+			margin-bottom: 10px;
+			overflow: hidden;
+			padding-bottom: 10px;
+		}
+		
+		h3
+		{
+			margin: 30px 0 0;
+			padding: 0;
+			color: #00d791;
+		}
 	</style>
-	<script>
-		
-	</script>
 {% endblock %}

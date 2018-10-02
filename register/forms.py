@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 
 from companies.models import Group, Company
 from exhibitors.models import Exhibitor, LunchTicket
+from banquet.models import Participant as BanquetParticipant
 from fair.models import Fair
 
 
@@ -261,4 +262,18 @@ class LunchTicketForm(ModelForm):
 		help_texts = {
 			'email_address': 'The lunch ticket will be sent to this e-mail address in advance of the career fair.',
 			'comment': 'The comment is for your use only. It could, for instance, contain the name of the person who is going to use the ticket.'
+		}
+
+
+class BanquetParticipantForm(ModelForm):
+	class Meta:
+		model = BanquetParticipant
+		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions']
+		
+		widgets = {
+			'dietary_restrictions': forms.CheckboxSelectMultiple()
+		}
+		
+		help_texts = {
+			'email_address': 'The banquet ticket will be sent to this e-mail address.',
 		}
