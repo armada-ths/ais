@@ -9,6 +9,7 @@ from jsonfield import JSONField
 from fair.models import Fair
 from accounting.models import Revenue, Product
 from register.models import SignupLog, SignupContract
+from people.models import Language
 import exhibitors
 
 
@@ -257,6 +258,7 @@ class CompanyContact(models.Model):
 	title = models.CharField(max_length = 200, null = True, blank = True)
 	mobile_phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	work_phone_number = models.CharField(max_length = 200, null = True, blank = True)
+	preferred_language = models.ForeignKey(Language, null = True, blank = True, on_delete = models.CASCADE)
 	active = models.BooleanField(default = True)
 	confirmed = models.BooleanField(default = False)
 

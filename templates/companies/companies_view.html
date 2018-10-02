@@ -81,7 +81,7 @@
 			<div class="panel panel-default"{% if not contact.active %} style="opacity: 0.7;"{% endif %}>
 				<div class="panel-heading">
 					<a class="pull-right" href="{% url 'companies_contacts_edit' fair.year company.pk contact.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
-					<h2 class="panel-title">{{ contact }}</h2>
+					<h2 class="panel-title">{% if contact.preferred_language %}{{ contact.preferred_language.short }} {% endif %}{{ contact }}</h2>
 					{% if contact.title %}{{ contact.title }}{% endif %}
 				</div>
 				

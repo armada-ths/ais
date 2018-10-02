@@ -58,7 +58,7 @@
 			{% for contact in contacts %}
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h2 class="panel-title">{{ contact }}</h2>
+						<h2 class="panel-title">{% if contact.preferred_language %}{{ contact.preferred_language.short }} {% endif %}{{ contact }}</h2>
 						{% if contact.title %}{{ contact.title }}{% endif %}
 					</div>
 					
