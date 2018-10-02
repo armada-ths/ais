@@ -58,8 +58,7 @@ def recruitment(request, year, template_name='recruitment/recruitment.html'):
 
     return render(request, template_name, {
         'recruitment_periods': recruitment_periods,
-        'fair': fair,
-        'roles': Role.objects.filter(recruitment_period__fair = fair)
+        'fair': fair
     })
 
 
@@ -1009,5 +1008,5 @@ def contact(request, year):
         ).order_by('-delegated_role__organization_group', 'recruitment_period__start_date')
     return render(request, 'recruitment/contact.html', {
         'fair': fair,
-        'users': users,
+        'users': users
     })
