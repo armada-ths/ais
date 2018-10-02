@@ -15,7 +15,7 @@
 			
 			{{ form | crispy }}
 			
-			<input type="submit" class="btn btn-armada-green" value="Save lunch ticket" />
+			<input type="submit" class="btn btn-armada-green" value="Save lunch ticket"{% if not is_editable %} disabled{% endif %} />
 		</form>
 	{% else %}
 		<h1>No lunch tickets</h1>

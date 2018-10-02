@@ -41,8 +41,9 @@ def form(request, company_pk):
 	
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
 	
-	if request.user.has_perm('companies.base'):
+	if request.user.has_perm('companies.base') or (exhibitor is not None and (request.user.has_perm('exhibitors.view_all') or request.user in exhibitor.contact_persons.all())):
 		company_contact = None
 	
 	else:
@@ -70,7 +71,6 @@ def form(request, company_pk):
 	})
 	
 	# ...or perhaps they weren't selected to participate in this year's fair?
-	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
 	if exhibitor is None: return render(request, 'register/inside/error_after_initial_no_exhibitor.html',
 	{
 		'fair': fair,
@@ -102,6 +102,11 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	
 	orders = Order.objects.filter(purchasing_company = company, unit_price = None, name = None)
 	
+	is_editable = timezone.now() >= fair.complete_registration_start_date and timezone.now() <= fair.complete_registration_close_date
+	
+	# hosts can never edit the form
+	if company_contact is None and not request.user.has_perm('companies.base'): is_editable = False
+	
 	registration_sections = []
 	
 	for registration_section_raw in RegistrationSection.objects.all():
@@ -120,13 +125,16 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			
 			if product_raw.max_quantity == 1:
 				form_product = CompleteProductBooleanForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id), initial = {'checkbox': True if quantity_initial == 1 else False})
+				if not is_editable: form_product.fields['checkbox'].disabled = True
 			
 			else:
 				form_product = CompleteProductQuantityForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id))
 				form_product.fields['quantity'].choices = [(i, i) for i in range(0, (product_raw.max_quantity + 1) if product_raw.max_quantity is not None else 21)]
 				form_product.fields['quantity'].initial = quantity_initial
+				
+				if not is_editable: form_product.fields['quantity'].disabled = True
 			
-			if request.POST and request.POST.get('save_product_' + str(product_raw.id)) and form_product.is_valid():
+			if request.POST and request.POST.get('save_product_' + str(product_raw.id)) and form_product.is_valid() and is_editable:
 				quantity = (1 if form_product.cleaned_data['checkbox'] else 0) if product_raw.max_quantity == 1 else int(form_product.cleaned_data['quantity'])
 				
 				if quantity == 0:
@@ -171,22 +179,19 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		form_catalogue_details.fields['catalogue_logo_squared'].required = True
 	
 	if request.POST:
-		if request.POST.get('save_company_details') and form_company_details.is_valid():
+		if request.POST.get('save_company_details') and form_company_details.is_valid() and is_editable:
 			form_company_details.save()
 			form_company_details = CompleteCompanyDetailsForm(instance = company)
 		
-		elif request.POST.get('save_logistics_details') and form_logistics_details.is_valid():
+		elif request.POST.get('save_logistics_details') and form_logistics_details.is_valid() and is_editable:
 			form_logistics_details.save()
 			form_logistics_details = CompleteLogisticsDetailsForm(instance = exhibitor)
 		
-		elif request.POST.get('save_catalogue_details') and form_catalogue_details.is_valid():
+		elif request.POST.get('save_catalogue_details') and form_catalogue_details.is_valid() and is_editable:
 			form_catalogue_details.save()
 			form_catalogue_details = CompleteCatalogueDetailsForm(instance = exhibitor)
 		
 		elif request.POST.get('save_final_submission') and form_final_submission.is_valid() and signature is None:
-			exhibitor.accept_terms = True
-			exhibitor.save()
-			
 			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company)
 	
 	form_company_details.fields['invoice_name'].widget.attrs['placeholder'] = company.name
@@ -221,6 +226,11 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if signature:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
 	
+	if not is_editable:
+		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
+		for field in form_logistics_details.fields: form_logistics_details.fields[field].disabled = True
+		for field in form_catalogue_details.fields: form_catalogue_details.fields[field].disabled = True
+	
 	return render(request, 'register/inside/registration_complete.html',
 	{
 		'fair': fair,
@@ -237,7 +247,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		'errors': errors,
 		'form_final_submission': form_final_submission,
 		'signature': signature,
-		'is_editable': timezone.now() >= fair.complete_registration_start_date and timezone.now() <= fair.complete_registration_close_date
+		'is_editable': is_editable
 	})
 
 
@@ -315,8 +325,9 @@ def transport(request, company_pk):
 	
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
 	
-	if request.user.has_perm('companies.base'):
+	if request.user.has_perm('companies.base') or (exhibitor is not None and (request.user.has_perm('exhibitors.view_all') or request.user in exhibitor.contact_persons.all())):
 		company_contact = None
 		initial = {}
 	
@@ -330,8 +341,6 @@ def transport(request, company_pk):
 			'contact_email_address': company_contact.user.email,
 			'contact_phone_number': company_contact.mobile_phone_number if company_contact.mobile_phone_number is not None else company_contact.work_phone_number
 		}
-	
-	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
 	
 	form = TransportForm(request.POST or None, initial = initial)
 	
@@ -377,16 +386,15 @@ def lunchtickets(request, company_pk):
 	
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
 	
-	if request.user.has_perm('companies.base'):
+	if request.user.has_perm('companies.base') or (exhibitor is not None and (request.user.has_perm('exhibitors.view_all') or request.user in exhibitor.contact_persons.all())):
 		company_contact = None
 	
 	else:
 		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
 		
 		if not company_contact: return redirect('anmalan:choose_company')
-	
-	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
 
 	count_ordered = 0
 	
@@ -423,8 +431,9 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 	
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
+	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
 	
-	if request.user.has_perm('companies.base'):
+	if request.user.has_perm('companies.base') or (exhibitor is not None and (request.user.has_perm('exhibitors.view_all') or request.user in exhibitor.contact_persons.all())):
 		company_contact = None
 	
 	else:
@@ -432,7 +441,7 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 		
 		if not company_contact: return redirect('anmalan:choose_company')
 	
-	exhibitor = get_object_or_404(Exhibitor, fair = fair, company = company)
+	is_editable = company_contact is not None or request.user.has_perm('companies.base')
 	
 	lunch_ticket = get_object_or_404(LunchTicket, pk = lunch_ticket_pk, exhibitor = exhibitor) if lunch_ticket_pk is not None else None
 	
@@ -446,7 +455,10 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 	if lunch_ticket is not None or count_ordered > count_created:
 		form = LunchTicketForm(request.POST or None, instance = lunch_ticket, initial = {'exhibitor': exhibitor})
 		
-		if request.POST and form.is_valid():
+		if not is_editable:
+			for field in form.fields: form.fields[field].disabled = True
+		
+		if request.POST and form.is_valid() and is_editable:
 			form.instance.exhibitor = exhibitor
 			form.save()
 			
@@ -461,7 +473,8 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 		'company': company,
 		'company_contact': company_contact,
 		'exhibitor': exhibitor,
-		'form': form
+		'form': form,
+		'is_editable': is_editable
 	})
 
 

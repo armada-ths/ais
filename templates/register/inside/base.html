@@ -79,6 +79,30 @@
 			{
 				list-style-type: none;
 			}
+			
+			input[disabled]:not([type='submit']), select[disabled], textarea[disabled]
+			{
+				background: transparent !important;
+				color: #ffffff !important;
+				border: 1px dotted #666666;
+				cursor: not-allowed !important;
+			}
+			
+			input[disabled][type='submit']
+			{
+				background: #eeeeee !important;
+				color: #000000 !important;
+			}
+			
+			input[disabled][type='submit']:hover
+			{
+				color: #000000 !important;
+			}
+			
+			input[disabled][type='checkbox'] + label
+			{
+				cursor: not-allowed !important;
+			}
 		</style>
 		{% include "header.html" %}{% block head-extra %}{% endblock %}
 		<link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen" />

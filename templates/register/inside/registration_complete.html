@@ -61,7 +61,7 @@
 				{% csrf_token %}
 				{{ form_company_details | crispy }}
 				
-				<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save changes" />
+				<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
 			</form>
 		</div>
 	</div>
@@ -125,7 +125,7 @@
 				
 				{{ form_logistics_details | crispy }}
 				
-				<input type="submit" name="save_logistics_details" class="btn btn-armada-green" value="Save changes" />
+				<input type="submit" name="save_logistics_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
 			</form>
 			
 			<h3>Is your booth ready?</h3>
@@ -150,7 +150,7 @@
 				{% csrf_token %}
 				{{ form_catalogue_details | crispy }}
 				
-				<input type="submit" name="save_catalogue_details" class="btn btn-armada-green" value="Save changes" />
+				<input type="submit" name="save_catalogue_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
 			</form>
 		</div>
 	</div>
@@ -167,7 +167,7 @@
 						<form method="post" enctype="multipart/form-data">
 							{% csrf_token %}
 							
-							<input type="submit" name="save_product_{{ product.id }}" class="btn btn-armada-green" value="Save" />
+							<input type="submit" name="save_product_{{ product.id }}" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
 							
 							{% if product.max_quantity == 1 %}
 								{{ product.form.checkbox.errors }}
@@ -439,18 +439,6 @@
 		table tr
 		{
 			border-bottom: 1px dotted #888888;
-		}
-		
-		input[disabled], select[disabled], textarea[disabled]
-		{
-			background: transparent !important;
-			color: #ffffff !important;
-			border: 1px solid transparent;
-		}
-		
-		textarea[disabled]
-		{
-			border: 1px dotted #444444 !important;
 		}
 	</style>
 	<script>
