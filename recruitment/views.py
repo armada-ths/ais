@@ -1005,7 +1005,7 @@ def contact(request, year):
     # instead we sort by recruitment_period__start_date
     users = RecruitmentApplication.objects.filter(
         status='accepted', recruitment_period__fair__current=True
-        ).order_by('-delegated_role__organization_group', 'recruitment_period__start_date')
+        ).order_by('-delegated_role__organization_group', 'recruitment_period__start_date', 'delegated_role', 'user')
     return render(request, 'recruitment/contact.html', {
         'fair': fair,
         'users': users
