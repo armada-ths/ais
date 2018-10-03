@@ -4,7 +4,7 @@
 
 {% block content %}
 	{% regroup users by delegated_role.organization_group as organizations %}
-	<h1>Contact list</h1>
+	<h1>Contacts</h1>
 	
 	{% for organization in organizations %}
 		<h2>{{ organization.grouper }}</h2>
