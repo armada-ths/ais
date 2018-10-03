@@ -48,6 +48,15 @@ class Fair(models.Model):
     def __str__(self):
         return '%s' % self.name
 
+class OrganizationGroup(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	name = models.CharField(max_length = 255)
+	
+	def __str__(self): return self.name
+	
+	class Meta:
+		ordering = ['fair', 'name']
+
 
 class Partner(models.Model):
     name = models.CharField(max_length=50)

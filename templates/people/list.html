@@ -7,7 +7,7 @@
 	<h1>Contacts</h1>
 	
 	{% for organization in organizations %}
-		<h2>{{ organization.grouper }}</h2>
+		{% if organization.grouper %}<h2>{{ organization.grouper }}</h2>{% endif %}
 		
 		<table class="table table-striped">
 			<tr>

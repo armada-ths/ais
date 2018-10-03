@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 from markupfield.fields import MarkupField
 
-from fair.models import Fair
+from fair.models import Fair, OrganizationGroup
 from people.models import Programme, Profile
 
 class ExtraField(models.Model):
@@ -232,9 +232,9 @@ class Role(models.Model):
 	parent_role = models.ForeignKey('Role', null=True, blank=True, on_delete=models.CASCADE)
 	description = models.TextField(default="", blank=True)
 	group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
-	organization_group = models.CharField(max_length=100, default='', null=True)
 	recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
 	allow_exhibitor_contact_person = models.BooleanField(null = False, blank = False, default = False, verbose_name = 'People with this role can be contact persons for exhibitors')
+	organization_group = models.ForeignKey(OrganizationGroup, null = True, blank = True, on_delete = models.CASCADE)
 	
 	def add_user_to_groups(self, user):
 		if self.group is None: return
