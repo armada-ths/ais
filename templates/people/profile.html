@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contact list</a></li>{% endblock %}
+{% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>{% endblock %}
 
 {% block content %}
 	<h1>{{ profile.user }}{% if role %} <small>{{ role }}</small>{% endif %}</h1>
