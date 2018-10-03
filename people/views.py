@@ -35,10 +35,14 @@ def profile(request, year, pk):
 		if not profile: profile = Profile.objects.create(user = user, no_dietary_restrictions = False)
 		
 		application = RecruitmentApplication.objects.filter(user = user, status = 'accepted', recruitment_period__fair = fair).first()
+		
+		roles = RecruitmentApplication.objects.filter(user = user, status = 'accepted').order_by('recruitment_period__fair').all()
+		
 		return TemplateResponse(request, 'people/profile.html', {
 			'fair': fair,
 			'profile': profile,
 			'role': application.delegated_role if application else None,
+			'roles': roles
 		})
 	
 	else:
