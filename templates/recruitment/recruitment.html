@@ -11,15 +11,13 @@
 	
 	<h1>Recruitment periods</h1>
 	
-	<p>
-		<a class="btn btn-default" href="{% url "contact" fair.year %}">Contact list</a>
-		
-		{% if perms.recruitment.administer_recruitment %}
+	{% if perms.recruitment.administer_recruitment %}
+		<p>
 			<a class="btn btn-default" href="{% url "recruitment_period_new" fair.year %}">New recruitment period</a>
 			<a class="btn btn-default" href="{% url "recruitment_statistics" fair.year %}">Statistics</a>
 			<a class="btn btn-default" href="{% url "assign_roles" fair.year %}">Assign roles</a>
-		{% endif %}
-	</p>
+		</p>
+	{% endif %}
 	
 	{% if recruitment_periods %}
 		<div class="table-responsive">

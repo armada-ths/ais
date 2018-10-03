@@ -30,7 +30,7 @@
 					{% if contact_persons %}
 						{% for contact_person in contact_persons %}
 							<p>
-								<a href="{% url 'view_person' fair.year contact_person.user.profile.pk %}">{{ contact_person.user }}</a>
+								<a href="{% url 'people:profile' fair.year contact_person.user.profile.pk %}">{{ contact_person.user }}</a>
 								{% if contact_person.role %}<br />{{ contact_person.role }}{% endif %}
 							</p>
 						{% endfor %}

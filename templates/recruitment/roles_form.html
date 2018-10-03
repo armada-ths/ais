@@ -38,7 +38,7 @@
                 <ul class="list-unstyled">
                     {% for user in role.users %}
                         <li>
-                            <a href="{% url 'view_person' fair.year user.id %}">{% include 'recruitment/user_name.html' with user=user %}</a>
+                            <a href="{% url 'people:profile' fair.year user.id %}">{% include 'recruitment/user_name.html' with user=user %}</a>
                         </li>
                     {% endfor %}
                 </ul>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contact list</a></li>{% endblock %}
+
+{% block content %}
+	<div class="page-header">
+		<h1>{% include 'recruitment/user_name.html' with user=profile %}{% if role %} <small>{{ role }}</small>{% endif %}</h1>
+		{% if profile.user == request.user %}
+			<a href="{% url "people:edit" fair.year %}">Edit</a>
+		{% endif %}
+	</div>
+
+	{% if profile.picture_original %}
+		<img src="/media/{{ profile.picture_original }}" style="max-width: 100%; max-height: 400px;" alt="Profile picture" />
+	{% endif %}
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Basic information</h3>
+		</div>
+		
+		<div class="panel-body">
+			<ul class="list-unstyled">
+				<li><span style="font-weight: 700;">E-mail address:</span> <a href="mailto:{{ profile.user.email }}">{{ profile.user.email }}</a></li>
+				<li><span style="font-weight: 700;">Phone number:</span> {% if profile.phone_number %}<a href="tel:{{ profile.phone_number }}">{{ profile.phone_number }}</a>{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+				<li><span style="font-weight: 700;">Birth date:</span> {% if profile.birth_date %}{{ profile.birth_date }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+				<li><span style="font-weight: 700;">Gender:</span> {% if profile.gender %}{{ profile.get_gender_display }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h3 class="panel-title">Other information</h3>
+		</div>
+		
+		<div class="panel-body">
+			<ul class="list-unstyled">
+				<li><span style="font-weight: 700;">Driver's license:</span> {% if profile.drivers_license %}{{ profile.drivers_license }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+				<li><span style="font-weight: 700;">Dietary restrictions:</span> {% if profile.no_dietary_restrictions %} None {% else %}{% if profile.dietary_restrictions.all %} {{ profile.dietary_restrictions.all | join:', ' }} {% else %} <span style="font-style: italic;">not given</span> {% endif %}{% endif %}</li>
+				<li><span style="font-weight: 700;">Program:</span> {% if profile.programme %}{{ profile.programme }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+				<li><span style="font-weight: 700;">Registration year:</span> {% if profile.registration_year %}{{ profile.registration_year }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+				<li><span style="font-weight: 700;">Planned graduation:</span> {% if profile.planned_graduation %}{{ profile.planned_graduation }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+				<li><span style="font-weight: 700;">Shirt size:</span> {% if profile.shirt_size %}{{ profile.get_shirt_size_display }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+			</ul>
+		</div>
+	</div>
+{% endblock %}

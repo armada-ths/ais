@@ -1,12 +1,9 @@
 {% extends "base.html" %}
+
+{% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contact list</a></li>{% endblock %}
+
 {% block content %}
 	{% regroup users by delegated_role.organization_group as organizations %}
-	
-	<ol class="breadcrumb">
-		<li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
-		<li class="active">Contact list</li>
-	</ol>
-	
 	<h1>Contact list</h1>
 	
 	{% for organization in organizations %}
@@ -22,7 +19,7 @@
 			
 			{% for user in organization.list %}
 				<tr>
-					<td><a href="{% url 'view_person' fair.year user.profile.pk %}">{{ user }}</a></td>
+					<td><a href="{% url 'people:profile' fair.year user.profile.pk %}">{{ user }}</a></td>
 					<td>{{ user.delegated_role }}</td>
 					<td class="text-right">{% if user.profile.phone_number %}<a href="tel:{{ user.profile.phone_number }}">{{ user.profile.phone_number }}</a>{% endif %}</td>
 					<td class="text-right"><a href="mailto:{{ user.user.email }}">{{ user.user.email }}</a></td>

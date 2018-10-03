@@ -47,7 +47,7 @@
 								<td>
 									<ul class="list-unstyled">
 										{% for contact_person in exhibitor.contact_persons.all %}
-											<li><a href="{% url 'view_person' fair.year contact_person.profile.pk %}">{{ contact_person }}</a></li>
+											<li><a href="{% url 'people:profile' fair.year contact_person.profile.pk %}">{{ contact_person }}</a></li>
 										{% endfor %}
 									</ul>
 								</td>

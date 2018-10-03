@@ -119,7 +119,7 @@
 									<li>
 										{{ responsible.group }} –
 										{% for user in responsible.users.all %}
-											<a href="{% url 'view_person' fair.year user.profile.pk %}">{{ user }}</a>
+											<a href="{% url 'people:profile' fair.year user.profile.pk %}">{{ user }}</a>
 										{% endfor %}
 									</li>
 								{% endfor %}
@@ -218,7 +218,7 @@
 						<a href="{% url 'companies_comments_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
 					</div>
 					
-					<h2 class="panel-title"><a href="{% url 'view_person' fair.year comment.user.profile.pk %}">{{ comment.user }}</a> at {{ comment.timestamp }}</h2>
+					<h2 class="panel-title"><a href="{% url 'people:profile' fair.year comment.user.profile.pk %}">{{ comment.user }}</a> at {{ comment.timestamp }}</h2>
 					{{ comment.groups.all | join:", " }}
 				</div>
 				

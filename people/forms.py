@@ -26,16 +26,16 @@ class ProfileForm(ModelForm):
 	class Meta:
 		model = Profile
 		fields = '__all__'
-		exclude = {"user", "picture", "token"}
+		exclude = ['user', 'picture', 'token', 'kth_synchronize']
 
 		widgets = {
 			'registration_year': forms.Select(choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)]),
 			'birth_date': forms.DateInput(),
 			'planned_graduation': forms.Select(choices=[('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 10)]),
-			'dietary_restrictions': forms.CheckboxSelectMultiple()
+			'dietary_restrictions': forms.CheckboxSelectMultiple(),
+			'birth_date': forms.DateInput(attrs = {'type': 'date', 'placeholder': 'YYYY-MM-DD'})
 		}
 		
 		labels= {
-			'birth_date': 'Birth date (format: 2016-12-24)',
 			'picture_original': 'Picture of you',
 		}

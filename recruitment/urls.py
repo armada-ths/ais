@@ -30,8 +30,5 @@ urlpatterns = [
 
 
     url(r'^(\d+)/application/(?P<pk>\d+)/comment$', views.recruitment_application_comment_new,
-        name='recruitment_application_comment_new'),
-
-    url(r'^contact$', views.contact, name='contact'),
-
+        name='recruitment_application_comment_new')
 ]

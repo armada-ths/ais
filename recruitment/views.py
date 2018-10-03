@@ -998,15 +998,3 @@ def user_can_access_recruitment_period(user, recruitment_period):
     #        return True
 
     return False
-
-def contact(request, year):
-    fair = get_object_or_404(Fair, year=year)
-    # we don't have a poistion hierachy
-    # instead we sort by recruitment_period__start_date
-    users = RecruitmentApplication.objects.filter(
-        status='accepted', recruitment_period__fair__current=True
-        ).order_by('-delegated_role__organization_group', 'recruitment_period__start_date', 'delegated_role', 'user')
-    return render(request, 'recruitment/contact.html', {
-        'fair': fair,
-        'users': users
-    })

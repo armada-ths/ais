@@ -30,6 +30,10 @@
 					<li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
 				{% endblock %}
 				
+				{% block nav-people %}
+					<li role="presentation"><a href="{% url 'people:list' fair.year %}">Contact list</a></li>
+				{% endblock %}
+				
 				{% if perms.events.base %}
 					{% block nav-events %}
 						<li role="presentation"><a href="{% url 'events:list' fair.year %}">Events</a></li>
@@ -56,7 +60,7 @@
 			</ul>
 			
 			<p class="navbar-text navbar-right">
-				<strong><a href="{% url 'view_person' fair.year request.user.pk %}" style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong> (<a href="/accounts/logout" class="navbar-link">sign out</a>)
+				<strong><a href="{% url 'people:profile' fair.year request.user.pk %}" style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong> (<a href="/accounts/logout" class="navbar-link">sign out</a>)
 			</p>
 		</div>
 	</div>

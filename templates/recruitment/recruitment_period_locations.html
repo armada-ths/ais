@@ -44,7 +44,7 @@
 					<tr>
 						{% if slot.date %}<td style="font-weight: 700;" rowspan="{{ slot.rowspan }}">{{ slot.date }}</td>{% endif %}
 						<td>{{ slot.time_start }}-{{ slot.time_end }}</td>
-						<td>{% if slot.interview %}<a href="{% url 'recruitment_application_interview' fair.year slot.interview.recruitment_period.pk slot.interview.pk %}">{{ slot.interview.user }}</a> by <a href="{% url 'view_person' fair.year slot.interview.interviewer.pk %}">{{ slot.interview.interviewer }}</a>{% if slot.interview.interviewer2 %} and <a href="{% url 'view_person' fair.year slot.interview.interviewer2.pk %}">{{ slot.interview.interviewer2 }}</a>{% endif %}{% endif %}</td>
+						<td>{% if slot.interview %}<a href="{% url 'recruitment_application_interview' fair.year slot.interview.recruitment_period.pk slot.interview.pk %}">{{ slot.interview.user }}</a> by <a href="{% url 'people:profile' fair.year slot.interview.interviewer.pk %}">{{ slot.interview.interviewer }}</a>{% if slot.interview.interviewer2 %} and <a href="{% url 'people:profile' fair.year slot.interview.interviewer2.pk %}">{{ slot.interview.interviewer2 }}</a>{% endif %}{% endif %}</td>
 					</tr>
 				{% endfor %}
 			</tbody>
