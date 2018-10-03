@@ -3,11 +3,10 @@
 {% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>{% endblock %}
 
 {% block content %}
-	{% regroup users by delegated_role.organization_group as organizations %}
 	<h1>Contacts</h1>
 	
-	{% for organization in organizations %}
-		{% if organization.grouper %}<h2>{{ organization.grouper }}</h2>{% endif %}
+	{% for organization_group in organization_groups %}
+		{% if organization_group.name %}<h2>{{ organization_group.name }}</h2>{% endif %}
 		
 		<table class="table table-striped">
 			<tr>
@@ -17,7 +16,7 @@
 				<th class="text-uppercase text-right" style="width: 25%">E-mail address</th>
 			</tr>
 			
-			{% for user in organization.list %}
+			{% for user in organization_group.users %}
 				<tr>
 					<td><a href="{% url 'people:profile' fair.year user.profile.pk %}">{{ user }}</a></td>
 					<td>{{ user.delegated_role }}</td>
