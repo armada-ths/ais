@@ -19,7 +19,7 @@ def list(request, year):
 	
 	organization_groups = []
 	
-	users = RecruitmentApplication.objects.filter(delegated_role__organization_group = None, status = 'accepted', recruitment_period__fair = fair).order_by('recruitment_period__start_date', 'delegated_role', 'user')
+	users = RecruitmentApplication.objects.filter(delegated_role__organization_group = None, status = 'accepted', recruitment_period__fair = fair).order_by('recruitment_period__start_date', 'delegated_role', 'user__first_name', 'user__last_name')
 	
 	if len(users) > 0:
 		organization_groups.append({
@@ -30,7 +30,7 @@ def list(request, year):
 	for organization_group in OrganizationGroup.objects.filter(fair = fair):
 		organization_groups.append({
 			'name': organization_group.name,
-			'users': RecruitmentApplication.objects.filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('delegated_role__organization_group', 'recruitment_period__start_date', 'delegated_role', 'user')
+			'users': RecruitmentApplication.objects.filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('delegated_role__organization_group', 'recruitment_period__start_date', 'delegated_role', 'user__first_name', 'user__last_name')
 		})
 	
 	return render(request, 'people/list.html', {
