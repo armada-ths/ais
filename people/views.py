@@ -56,7 +56,7 @@ def edit(request, year):
 	
 	if form.is_valid():
 		form.save()
-		return redirect('profile', fair.year, request.user.pk)
+		return redirect('people:profile', fair.year, request.user.pk)
 	
 	application = RecruitmentApplication.objects.filter(recruitment_period__fair = fair, user = request.user, status = 'accepted').first()
 	

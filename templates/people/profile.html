@@ -3,12 +3,11 @@
 {% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contact list</a></li>{% endblock %}
 
 {% block content %}
-	<div class="page-header">
-		<h1>{% include 'recruitment/user_name.html' with user=profile %}{% if role %} <small>{{ role }}</small>{% endif %}</h1>
-		{% if profile.user == request.user %}
-			<a href="{% url "people:edit" fair.year %}">Edit</a>
-		{% endif %}
-	</div>
+	<h1>{% include 'recruitment/user_name.html' with user=profile %}{% if role %} <small>{{ role }}</small>{% endif %}</h1>
+	
+	{% if profile.user == request.user %}
+		<p><a class="btn btn-default" href="{% url "people:edit" fair.year %}">Edit</a></p>
+	{% endif %}
 
 	{% if profile.picture_original %}
 		<img src="/media/{{ profile.picture_original }}" style="max-width: 100%; max-height: 400px;" alt="Profile picture" />
