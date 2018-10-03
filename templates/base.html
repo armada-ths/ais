@@ -60,7 +60,7 @@
 			</ul>
 			
 			<p class="navbar-text navbar-right">
-				<strong><a href="{% url 'people:profile' fair.year request.user.pk %}" style="color: lightgray">{% include 'recruitment/user_name.html' with user=request.user %}</a></strong> (<a href="/accounts/logout" class="navbar-link">sign out</a>)
+				<strong><a href="{% url 'people:profile' fair.year request.user.pk %}" style="color: lightgray">{{ user }}</a></strong> (<a href="/accounts/logout" class="navbar-link">sign out</a>)
 			</p>
 		</div>
 	</div>

@@ -5,7 +5,7 @@
 {% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contact list</a></li>{% endblock %}
 
 {% block content %}
-	<h1>{% include 'recruitment/user_name.html' with user=profile %}{% if role %} <small>{{ role }}</small>{% endif %}</h1>
+	<h1>{{ user }}{% if role %} <small>{{ role }}</small>{% endif %}</h1>
 	
 	<form method="POST" enctype="multipart/form-data">
 		{% csrf_token %}
