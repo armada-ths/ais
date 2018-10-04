@@ -21,7 +21,7 @@ def tags_mappings(items):
 def absolute_url(request, path):
     protocol = 'https://' if request.is_secure() else 'http://'
     url = request.META['HTTP_HOST']
-    return '{}{}{}'.format(protocol, url, path)
+    return '{}{}/{}'.format(protocol, url, path)
 
 def image_url_or_missing(request, image, missing=MISSING_IMAGE):
     if image:
@@ -44,38 +44,30 @@ def names(objects):
 
 
 def exhibitor(request, exhibitor, company):
-  #All nestled objects needs id in order to work in Android
-    hosts = [OrderedDict([
-      ('id', host.pk),
-      ('name', host.first_name + host.last_name),
-      ('email', host.email),
-    ]) for host in exhibitor.hosts.all()]
-    try:
-        location = exhibitor.location.name
-    except AttributeError:
-        location = None
-    tags = tags_mappings(exhibitor.tags.all())
-    return OrderedDict([
-                           ('id', exhibitor.pk),
-                           ('fair', exhibitor.fair.name),
-                           ('company', company.name),
-                           ('company_website', company.website),
-                           ('phone_number', None),
-                           ('address_street', None),
-                           ('address_zip_code', None),
-                           ('address_country', None),
-                           ('address_city', None),
-                           ('address_other_information', None),
-                           ('organisation_type', company.type.type if company.type is not None else None),
-                           ('exhibitor_location', location),
-                           ('booth_number', exhibitor.booth_number),
-                           ('about', exhibitor.about_text),
-                           ('facts', exhibitor.facts_text),
-                           ('hosts', hosts),
-                           ('logo_url', image_url_or_missing(request, exhibitor.logo)),
-                           ('map_location_url', image_url_or_missing(request, exhibitor.location_at_fair)),
-                           ('job_types', names(exhibitor.job_types))
-                       ] + tags)
+	img_placeholder = request.GET.get('img_placeholder') == 'true'
+	
+	return OrderedDict([
+		('id', exhibitor.pk),
+		('name', company.name),
+		('type', company.type.type),
+		('company_website', company.website),
+		('about', exhibitor.catalogue_about),
+		('purpose', exhibitor.catalogue_purpose),
+		('logo_squared', (exhibitor.catalogue_logo_squared.url) if exhibitor.catalogue_logo_squared else (MISSING_IMAGE if img_placeholder else None)),
+		('logo_freesize', (exhibitor.catalogue_logo_freesize.url) if exhibitor.catalogue_logo_freesize else (MISSING_IMAGE if img_placeholder else None)),
+		('contact_name', exhibitor.catalogue_contact_name),
+		('contact_email_address', exhibitor.catalogue_contact_email_address),
+		('contact_phone_number', exhibitor.catalogue_contact_phone_number),
+		('industries', [{'id': industry.pk, 'name': industry.industry} for industry in exhibitor.catalogue_industries.all()]),
+		('values', [{'id': value.pk, 'name': value.value} for value in exhibitor.catalogue_values.all()]),
+		('employments', [{'id': employment.pk, 'name': employment.employment} for employment in exhibitor.catalogue_employments.all()]),
+		('locations', [{'id': location.pk, 'name': location.location} for location in exhibitor.catalogue_locations.all()]),
+		('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
+		('average_age', exhibitor.catalogue_average_age),
+		('founded', exhibitor.catalogue_founded),
+		('groups', [{'id': group.pk, 'name': group.name} for group in company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
+		('fair_locations', [])
+	])
 
 
 def event(request, event):
@@ -151,22 +143,6 @@ def organization_group(request, group):
         ('id', group.pk),
         ('role', group.name),
         ('people', people)
-    ])
-
-
-def banquet_placement(request, attendence):
-    try:
-      table = attendence.table.name
-    except AttributeError:
-      table = None
-    return OrderedDict([
-        ('id', attendence.pk),
-        ('first_name', attendence.first_name),
-        ('last_name', attendence.last_name),
-        ('linkedin_url', attendence.linkedin_url or ""),
-        ('table', table or ""),
-        ('seat', attendence.seat_number or ""),
-        ('job_title', attendence.job_title)
     ])
 
 

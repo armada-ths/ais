@@ -1,0 +1,68 @@
+{% extends "register/inside/base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}" class="active">Lunch tickets</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Lunch tickets</h1>
+	<p>Here, you can view and edit the lunch tickets you have purchased.</p>
+	
+	<ul class="no-bullets">
+		<li><span class="information_label">Ordered lunch tickets:</span> {{ count_ordered }}</li>
+		<li><span class="information_label">Created lunch tickets:</span> {{ count_created }}</li>
+	</ul>
+	
+	{% if can_create %}
+		<h3>Create new lunch ticket</h3>
+		<p>You have ordered more lunch tickets than you have created.</p>
+		<p><a class="btn btn-armada-green" href="{% url 'anmalan:lunchtickets_new' company.pk %}">Create new lunch ticket</a></p>
+	{% endif %}
+	
+	{% for day in days %}
+		<h3>{{ day.name }}</h3>
+		
+		{% if day.lunch_tickets %}
+			{% for lunch_ticket in day.lunch_tickets %}
+				<div class="lunch_ticket">
+					<a class="btn btn-armada-green" style="float: right;" href="{% url 'anmalan:lunchtickets_edit' company.pk lunch_ticket.pk %}">Edit</a>
+					
+					<ul class="no-bullets">
+						<li><span class="information_label">E-mail address:</span> {{ lunch_ticket.email_address }}</li>
+						<li><span class="information_label">Comment:</span> {% if lunch_ticket.comment %}{{ lunch_ticket.comment }}{% else %}<span style="font-style: italic;">(no comment)</span>{% endif %}</li>
+						<li><span class="information_label">Dietary restrictions:</span> {% if lunch_ticket.dietary_restrictions.all %}{{ lunch_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">(no dietary restrictions)</span>{% endif %}</li>
+					</ul>
+				</div>
+			{% endfor %}
+		{% else %}
+			<p>No lunch tickets for this day.</p>
+		{% endif %}
+	{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		form
+		{
+			padding: 0;
+		}
+		
+		.lunch_ticket
+		{
+			background: #353535;
+			padding: 20px;
+			margin-bottom: 10px;
+			overflow: hidden;
+			padding-bottom: 10px;
+		}
+		
+		h3
+		{
+			margin: 30px 0 0;
+			padding: 0;
+			color: #00d791;
+		}
+	</style>
+{% endblock %}

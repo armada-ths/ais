@@ -40,6 +40,7 @@ echo "Configuring..."
 silent python manage.py migrate --settings local_settings
 silent python manage.py makemigrations --settings local_settings
 silent python manage.py migrate --settings local_settings
+silent npm install
 
 echo "Sprinkling magic..."
 echo "cd /vagrant" >> ~/.bashrc

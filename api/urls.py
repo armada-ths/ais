@@ -4,7 +4,6 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.root),
-    url(r'^banquet_placement/$', views.banquet_placement),
     url(r'^events/', include('events.api_urls')),
     url(r'^exhibitors/', views.exhibitors),
     url(r'^news/', views.news),

@@ -1,0 +1,22 @@
+{% extends "register/inside/base.html" %}
+
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-events %}<li><a href="{% url 'anmalan:events' company.pk %}" class="active">Events</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Events</h1>
+	
+	
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		
+	</style>
+	<script>
+		
+	</script>
+{% endblock %}

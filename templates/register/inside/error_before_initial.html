@@ -1,0 +1,10 @@
+{% extends "register/inside/base.html" %}
+
+{% load staticfiles %}
+
+{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}" class="active">{{ company.name }}</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Initial registration not open</h1>
+	<p>The initial registration has not opened yet. Please come back later.</p>
+{% endblock %}

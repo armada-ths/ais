@@ -8,6 +8,7 @@
 <h1>Statistics</h1>
 
 <p>
+	<a href="{% url 'contracts_export' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Export signatures</a>
 	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Companies</a>
 	<a href="{% url 'groups_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Groups</a>
 	<a href="{% url 'statistics' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Statistics</a>
@@ -40,7 +41,7 @@
 									{% for responsibility in signature.responsibilities %}
 										{% if responsibility.group.allow_statistics %}
 											<li>
-												{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}
+												{{ responsibility.group }} – {{ responsibility.users.all | join:", " }}
 											</li>
 										{% endif %}
 									{% endfor %}
@@ -61,13 +62,6 @@
 		{% endfor %}
 	</table>
 </div>
-
-<!--
-<form method="post" >
-	{{ form | crispy }}
-	<input class="btn btn-primary" type="submit" value="Submit" />
-</form>
--->
 
 <h2>Day to day</h2>
 <p>Click on a person's name to traice their progress.</p>
@@ -103,7 +97,7 @@
 			data.addColumn('datetime', 'Number of signatures');
 			
 			{% for signature in contract.signatures %}
-				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users_iterable | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
+				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users.all | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
 			{% endfor %}
 			
 			data.addRows([

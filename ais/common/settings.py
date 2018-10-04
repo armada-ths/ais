@@ -18,8 +18,8 @@ BASE_DIR = path.join(path.dirname(path.abspath(__file__)), '../../')
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'system@armada.nu'
-DEFAULT_TO_EMAIL = 'system@armada.nu'
+DEFAULT_FROM_EMAIL = 'info@armada.nu'
+DEFAULT_TO_EMAIL = 'info@armada.nu'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -119,5 +119,5 @@ USE_I18N = True
 USE_TZ = True
 LANGUAGE_CODE = 'en-us'
 USE_L10N = False
-DATE_FORMAT = "M d, Y"
-DATETIME_FORMAT = "M d, Y, H:i"
+DATE_FORMAT = "M j, Y"
+DATETIME_FORMAT = "M j, Y, H:i"

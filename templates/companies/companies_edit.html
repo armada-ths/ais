@@ -70,7 +70,7 @@
 									
 									<td>
 										<ul class="list-unstyled">
-											{% for user in responsible.users_iterable %}
+											{% for user in responsible.users.all %}
 												<li>{{ user }}</li>
 											{% endfor %}
 										</ul>

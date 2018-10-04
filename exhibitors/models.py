@@ -1,75 +1,50 @@
 from django.db import models
-from lib.image import UploadToDirUUID, UploadToDir, update_image_field
+from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
+
+from accounting.models import Order
+from banquet.models import Banquet, Participant
 from recruitment.models import RecruitmentApplication
 from fair.models import Fair
-from transportation.models import TransportationOrder
-
-class Location(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
-
-# Job type that an exhibitor offers
-class JobType(models.Model):
-    name = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.name
-
-class TransportationAlternative(models.Model):
-    name = models.CharField(max_length=150)
-    types = [
-            ('3rd_party', 'Third party'),
-            ('self', 'By Customer'),
-            ('internal', 'Fair arranger')
-            ]
-    transportation_type = models.CharField(choices=types, null=True, blank=True, max_length=30)
-    inbound = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
+from people.models import DietaryRestriction
 
 
 class CatalogueIndustry(models.Model):
 	industry = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.industry
+	class Meta: default_permissions = []
 
 
 class CatalogueValue(models.Model):
 	value = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.value
+	class Meta: default_permissions = []
 
 
 class CatalogueEmployment(models.Model):
 	employment = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.employment
+	class Meta: default_permissions = []
 
 
 class CatalogueLocation(models.Model):
 	location = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.location
+	class Meta: default_permissions = []
 
 
 class CatalogueBenefit(models.Model):
 	benefit = models.CharField(blank = False, max_length = 255)
 	def __str__(self): return self.benefit
+	class Meta: default_permissions = []
 
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
 	company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
 	fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
-	hosts = models.ManyToManyField(User, blank=True)
+	contact_persons = models.ManyToManyField(User, blank = True)
 	contact = models.ForeignKey('companies.CompanyContact', null=True, blank=True, on_delete=models.CASCADE)
-	location = models.ForeignKey(Location, null=True, blank=True, on_delete=models.CASCADE)
-	booth_number = models.IntegerField(blank=True, null=True)
-	fair_location = models.OneToOneField('locations.Location', blank=True, null=True, on_delete=models.CASCADE)
-	about_text = models.TextField(blank=True)
-	facts_text = models.TextField(blank=True)
-	accept_terms = models.BooleanField(default=False)
 	booth_height = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Height of the booth (cm)')
 	electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
 	electricity_socket_count = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Number of sockets')
@@ -97,171 +72,119 @@ class Exhibitor(models.Model):
 	placement_wish = models.CharField(choices = placement_wishes, blank = True, null = True, max_length = 255)
 	placement_comment = models.TextField(blank = True, null = True, verbose_name = 'Additional wishes regarding placement at the fair')
 	
-	# For the logistics team
-	comment = models.TextField(blank=True)
-	
-	statuses = [
-		('accepted', 'Accepted'),
-		('registered', 'Registered'),
-		('complete_registration', 'Completed Registration'),
-		('complete_registration_submit', 'CR - Submitted'),
-		('complete_registration_start', 'CR - In Progress'),
-		('complete_registration_terms', 'CR - Accepted Terms'),
-		('contacted_by_host', 'Contacted by host'),
-		('confirmed', 'Confirmed'),
-		('checked_in', 'Checked in'),
-		('checked_out', 'Checked out'),
-		('withdrawn', 'Withdrawn'),
+	transport_statuses = [
+		('NOT_BOOKED', 'Not booked'),
+		('BOOKED', 'Booked'),
+		('NOT_APPLICABLE', 'Not applicable')
 	]
 	
-	status = models.CharField(choices=statuses, null=True, blank=True, max_length=30)
-	logo = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'logo_original'), blank=True)
-	location_at_fair = models.ImageField(upload_to=UploadToDirUUID('exhibitors', 'location_at_fair'), blank=True)
+	transport_to = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
+	transport_from = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
+	transport_comment = models.TextField(blank = True, null = True)
 	
-	inbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, null=True, blank=True, related_name='inbound_transportation', verbose_name='Transportation to the fair')
-	outbound_transportation = models.ForeignKey(TransportationAlternative, on_delete=models.SET_NULL, null=True, blank=True, related_name='outbound_transportation', verbose_name='Transportation from the fair')
-	pickup_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL, null=True, blank=True, related_name='pickup_order')
-	delivery_order = models.ForeignKey(TransportationOrder, on_delete=models.SET_NULL, null=True, blank=True, related_name='delivery_order')
+	@property
+	def count_lunch_tickets(self):
+		count_ordered = 0
+		
+		for order in Order.objects.filter(purchasing_company = self.company, product = self.fair.product_lunch_ticket):
+			count_ordered += order.quantity
+		
+		count_created = LunchTicket.objects.filter(exhibitor = self).count()
+		
+		return {
+			'ordered': count_ordered,
+			'created': count_created
+		}
 	
-	tags = models.ManyToManyField('fair.Tag', blank=True)
+	@property
+	def count_banquet_tickets(self):
+		count_ordered = 0
+		count_created = 0
+		
+		for banquet in Banquet.objects.filter(fair = self.fair):
+			if banquet.product is not None:
+				for order in Order.objects.filter(purchasing_company = self.company, product = banquet.product):
+					count_ordered += order.quantity
+			
+			count_created += Participant.objects.filter(banquet = banquet, company = self.company).count()
+		
+		return {
+			'ordered': count_ordered,
+			'created': count_created
+		}
 	
-	job_types = models.ManyToManyField(JobType, blank=True)
-	
-	def total_cost(self):
-		return sum([order.price() for order in self.order_set.all()])
-	
-	def superiors(self):
-		accepted_applications = [RecruitmentApplication.objects.filter(status='accepted', user=host).first() for host in
-									self.hosts.all()]
-		return [application.superior_user for application in accepted_applications if application and application.superior_user]
-	
-	def __str__(self):
-		return '%s at %s' % (self.company.name, self.fair.name)
+	def __str__(self): return '%s at %s' % (self.company.name, self.fair.name)
 	
 	class Meta:
-		permissions = (('base', 'Exhibitors'),)
+		default_permissions = []
+		permissions = [
+			('base', 'View the Exhibitors tab'),
+			('view_all', 'Always view all exhibitors'),
+			('create', 'Create new exhibitors'),
+			('modify_contact_persons', 'Modify contact persons'),
+			('modify_transport', 'Modify transport details')
+		]
+
+
+class LunchTicketDay(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	name = models.CharField(blank = False, null = False, max_length = 255)
+	
+	class Meta:
+		default_permissions = []
+		ordering = ['fair', 'name']
+	
+	def __str__(self): return self.name + ' at ' + self.fair.name
+
+
+class LunchTicket(models.Model):
+	email_address = models.EmailField(blank = False, null = False, max_length = 255, verbose_name = 'E-mail address')
+	comment = models.CharField(blank = True, null = True, max_length = 255)
+	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
+	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
+	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
+	
+	class Meta:
+		default_permissions = []
+		ordering = ['pk']
+
+
+class LunchTicketScan(models.Model):
+	lunch_ticket = models.ForeignKey(LunchTicket, on_delete = models.CASCADE)
+	user = models.ForeignKey(User, on_delete = models.CASCADE)
+	timestamp = models.DateTimeField(auto_now_add = True, blank = False, null = False)
+	
+	class Meta:
+		default_permissions = []
 
 
 class ExhibitorView(models.Model):
-    '''
-    A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
-    '''
-    # A set of field names from Exhibitor model, that are not supposed to be selectable
-    ignore = {'user', 'id', 'pk', 'logo'}
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # The idea is to store field name for fields that a user selected to view (shouldn't be too many)
-    # and make this procedural, so if the Exhibitor model changes, no large changes to this model would be necessary
-    choices = models.TextField()
+	'''
+	A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
+	'''
+	selectable_fields = {
+		'contact_persons': 'Contact persons',
+		'transport_to': 'Transport to the fair',
+		'transport_from': 'Transport from the fair',
+		'transport_comment': 'Transport comment',
+		'placement_wish': 'Placement wish',
+		'placement_comment': 'Placement comment',
+		'electricity_total_power': 'Total power (W)',
+		'electricity_socket_count': 'Socket count',
+		'electricity_equipment': 'Electricity equipment',
+		'booth_height': 'Booth height (cm)',
+		'count_lunch_tickets': 'Lunch tickets',
+		'count_banquet_tickets': 'Banquet tickets'
+	}
+	
+	user = models.ForeignKey(User, on_delete = models.CASCADE)
+	choices = models.TextField()
 
-    def create(self):
-        # A set of field names from Exhibitor model, that are shown by default
-        default = {'location', 'hosts', 'status'}
-
-        for field in default:
-            self.choices = self.choices + ' ' + field
-        self.save()
-        return self
-
-# Work field that an exhibitor operates in
-class WorkField(models.Model):
-    name = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.name
-
-
-# Continent that an exhibitor operates in
-class Continent(models.Model):
-    name = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.name
-
-
-# Value or work environment that an exhibitor has
-class Value(models.Model):
-    name = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.name
-
-
-# Info about an exhibitor to be displayed in apps and on website
-class CatalogInfo(models.Model):
-    exhibitor = models.OneToOneField(
-        Exhibitor,
-        on_delete=models.CASCADE,
-    )
-    display_name = models.CharField(max_length=200)
-    slug = models.SlugField(db_index=False, blank=True)
-    short_description = models.CharField(max_length=200, blank=True)
-    description = models.TextField()
-    employees_sweden = models.IntegerField(default=0)
-    employees_world = models.IntegerField(default=0)
-    countries = models.IntegerField(default=0)
-    website_url = models.CharField(max_length=300, blank=True)
-    facebook_url = models.CharField(max_length=300, blank=True)
-    twitter_url = models.CharField(max_length=300, blank=True)
-    linkedin_url = models.CharField(max_length=300, blank=True)
-
-    # Image fields
-    # Field with name ending with original serves as the original uploaded
-    # image and should be the only image uploaded,
-    # the others are auto generated
-    logo_original = models.ImageField(
-        upload_to=UploadToDirUUID('exhibitors', 'logo_original'),
-        blank=True,
-    )
-    logo_small = models.ImageField(
-        upload_to=UploadToDir('exhibitors', 'logo_small'), blank=True)
-    logo = models.ImageField(
-        upload_to=UploadToDir('exhibitors', 'logo'), blank=True)
-
-    ad_original = models.ImageField(
-        upload_to=UploadToDirUUID('exhibitors', 'ad_original'), blank=True)
-    ad = models.ImageField(
-        upload_to=UploadToDir('exhibitors', 'ad'), blank=True)
-
-    location_at_fair_original = models.ImageField(
-        upload_to=UploadToDirUUID('exhibitors', 'location_at_fair_original'),
-        blank=True
-    )
-
-    location_at_fair = models.ImageField(
-        upload_to=UploadToDir('exhibitors', 'location_at_fair'),
-        blank=True
-    )
-
-    # ManyToMany relationships
-    programs = models.ManyToManyField('people.Programme', blank=True)
-    main_work_field = models.ForeignKey(
-        WorkField, blank=True, null=True, related_name='+', on_delete=models.CASCADE)
-    work_fields = models.ManyToManyField(
-        WorkField, blank=True, related_name='+')
-    job_types = models.ManyToManyField(JobType, blank=True)
-    continents = models.ManyToManyField(Continent, blank=True)
-    values = models.ManyToManyField(Value, blank=True)
-    tags = models.ManyToManyField('fair.Tag', blank=True)
-
-    def __str__(self):
-        return self.display_name
-
-    # Override default save method to automatically generate associated images
-    # if the original has been changed
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            self.slug = slugify(self.display_name[:50])
-        super(CatalogInfo, self).save(*args, **kwargs)
-        self.logo = update_image_field(
-            self.logo_original,
-            self.logo, 400, 400, 'png')
-        self.logo_small = update_image_field(
-            self.logo_original,
-            self.logo_small, 200, 200, 'png')
-        self.ad = update_image_field(
-            self.ad_original,
-            self.ad, 640, 480, 'jpg')
-        self.location_at_fair = update_image_field(
-            self.location_at_fair_original,
-            self.location_at_fair, 1000, 1000, 'png')
-        super(CatalogInfo, self).save(*args, **kwargs)
+	def create(self):
+		self.choices = 'contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets'
+		self.save()
+		
+		return self
+	
+	class Meta:
+		default_permissions = []

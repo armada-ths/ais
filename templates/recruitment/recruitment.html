@@ -1,88 +1,54 @@
 {% extends "base.html" %}
+
 {% block nav-recruitment %}
-    <li role="presentation" class="active"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+	<li role="presentation" class="active"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
 {% endblock %}
+
 {% block content %}
-
-
-    <div class="jumbotron recruitment-jumbotron">
-        <div class="container recruitment-jumbotron-container">
-            <h1>Shape<br />THS Armada</h1>
-        </div>
-    </div>
-
-
-    <div class="row">
-        <div class="col-md-9">
-            <h2>Recruitment Periods</h2>
-            {% if recruitment_periods %}
-                <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Date</th>
-                        {% if perms.recruitment.view_recruitment_applications %}
-                        <th>Applications</th>
-                        {% endif %}
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    {% for period in recruitment_periods %}
-                        <tr>
-                            <td><a href="{% url 'recruitment_period' fair.year period.id %}">{{ period.name }}</a></td>
-                            <td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
-                            {% if perms.recruitment.view_recruitment_applications %}
-                            <td>{{ period.recruitmentapplication_set.count }}</td>
-                            {% endif %}
-                            <td>
-                                {% if period.is_past %}
-                                    <span class="label label-default">Closed</span>
-                                {% elif period.is_future %}
-                                    <span class="label label-default">Not opened yet</span>
-                                {% else %}
-                                    <span class="label label-success">Open</span>
-
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                </div>
-            {% else %}
-                <p>No recruitment periods</p>
-            {% endif %}
-            {% if perms.recruitment.administer_recruitment %}
-                <p><a href="{% url "recruitment_period_new" fair.year %}">
-                    {{ period.year }}
-                    <button class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New recruitment
-                        period
-                    </button>
-                </a>
-                <a class="btn btn-default" href="{% url "recruitment_statistics" fair.year %}">Statistics</a>
-                <a class="btn btn-default" href="{% url "contact" fair.year %}">Contact list</a>
-                </p>
-                <form action="{% url "assign_roles" fair.year %}" method="POST">
-                    {% csrf_token %}
-                    <button class="btn btn-default">Assign roles</button>
-                </form>
-            {% endif %}
-        </div>
-
-        <div class="col-md-3">
-
-            <h2>Roles</h2>
-            <p>Click on a role to learn more about it.</p>
-            {% for role in roles %}
-                <p><a href="{% url "roles_new" fair.year role.pk %}"><strong>{{ role }}</strong></a></p>
-            {% endfor %}
-
-            {% if perms.recruitment.administer_roles %}
-                <a class="btn btn-primary" href="{% url "roles_new" fair.year %}"><span class="glyphicon glyphicon-plus"></span>
-                    New role</a>
-
-            {% endif %}
-        </div>
-    </div>
+	<ol class="breadcrumb">
+		<li class="active">Recruitment</li>
+	</ol>
+	
+	<h1>Recruitment periods</h1>
+	
+	{% if perms.recruitment.administer_recruitment %}
+		<p>
+			<a class="btn btn-default" href="{% url "recruitment_period_new" fair.year %}">New recruitment period</a>
+			<a class="btn btn-default" href="{% url "recruitment_statistics" fair.year %}">Statistics</a>
+			<a class="btn btn-default" href="{% url "assign_roles" fair.year %}">Assign roles</a>
+		</p>
+	{% endif %}
+	
+	{% if recruitment_periods %}
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Date</th>
+						{% if perms.recruitment.view_recruitment_applications %}<th>Applications</th>{% endif %}
+						<th>Status</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					{% for period in recruitment_periods %}
+						<tr>
+							<td><a href="{% url 'recruitment_period' fair.year period.id %}">{{ period.name }}</a></td>
+							<td>{{ period.start_date|date:"d M" }} - {{ period.end_date|date:"d M" }}</td>
+							{% if perms.recruitment.view_recruitment_applications %}<td>{{ period.recruitmentapplication_set.count }}</td>{% endif %}
+							<td>
+								{% if period.is_past %}<span class="label label-default">Closed</span>
+								{% elif period.is_future %}<span class="label label-default">Not opened yet</span>
+								{% else %}<span class="label label-success">Open</span>{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% else %}
+		<p>No recruitment periods.</p>
+	{% endif %}
 {% endblock %}
 

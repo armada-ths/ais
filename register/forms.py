@@ -8,7 +8,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.models import User
 
 from companies.models import Group, Company
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, LunchTicket
+from banquet.models import Participant as BanquetParticipant
 from fair.models import Fair
 
 
@@ -74,7 +75,7 @@ class CompleteLogisticsDetailsForm(ModelForm):
 		widgets = {
 			'electricity_equipment': forms.Textarea(attrs = {'rows': 5}),
 			'placement_wish': forms.RadioSelect,
-			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your with of placement, but we cannot give any guarantees.'})
+			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your wish of placement, but we cannot give any guarantees.'})
 		}
 
 	def is_valid(self):
@@ -238,3 +239,41 @@ class RegistrationForm(ModelForm):
 	
 	authorized_accepted = BooleanField(required = True)
 	authorized_accepted.label = "I am authorized to register my company for Armada 2018 and sign this contract*"
+
+
+class TransportForm(Form):
+	contact_name = forms.CharField(max_length = 100, label = 'Contact person\'s name', help_text = 'The person at your company who is responsible for the parcels to and from the fair.')
+	contact_email_address = forms.CharField(max_length = 100, label = 'Contact person\'s e-mail address', help_text = 'This is the e-mail address to which Ryska posten will respond.')
+	contact_phone_number = forms.CharField(max_length = 100, label = 'Contact person\'s phone number')
+	description_of_parcels = forms.CharField(widget = forms.Textarea, help_text = 'Describe your parcels as detailed as possible; how many, their sizes, their weights etc. The description can be either in English or in Swedish.')
+	address_details = forms.CharField(widget = forms.Textarea, help_text = 'Physical addresses that Ryska posten should collected from and deliver the parcels to.')
+
+
+class LunchTicketForm(ModelForm):
+	class Meta:
+		model = LunchTicket
+		fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
+		
+		widgets = {
+			'day': forms.RadioSelect(),
+			'dietary_restrictions': forms.CheckboxSelectMultiple()
+		}
+		
+		help_texts = {
+			'email_address': 'The lunch ticket will be sent to this e-mail address in advance of the career fair.',
+			'comment': 'The comment is for your use only. It could, for instance, contain the name of the person who is going to use the ticket.'
+		}
+
+
+class BanquetParticipantForm(ModelForm):
+	class Meta:
+		model = BanquetParticipant
+		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions']
+		
+		widgets = {
+			'dietary_restrictions': forms.CheckboxSelectMultiple()
+		}
+		
+		help_texts = {
+			'email_address': 'The banquet ticket will be sent to this e-mail address.',
+		}

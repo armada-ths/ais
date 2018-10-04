@@ -1,17 +1,14 @@
 import re
-
 from django.forms import ModelForm
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
 from django.contrib.auth.models import User
-
 import django.forms as forms
+from lib.image import UploadToDirUUID
 
 from people.models import Profile
 from companies.models import Company
-from exhibitors.models import Exhibitor
 from fair.models import Fair
-from lib.image import UploadToDirUUID
 
 from .models import RecruitmentPeriod, RecruitmentApplication, RoleApplication, RecruitmentApplicationComment, Role, Programme, CustomFieldArgument, CustomFieldAnswer
 
@@ -68,7 +65,7 @@ class RecruitmentApplicationSearchForm(forms.Form):
     )
 
     rating = forms.ChoiceField(
-        choices=[('', '-------')] + [(i, i) for i in range(1, 6)],
+        choices=[('', '-------'), (1, 1), (2, 2), (3, 3), (5, 5)],
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=False
     )

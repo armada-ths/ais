@@ -1,166 +1,227 @@
 {% extends "base.html" %}
+
 {% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-exhibitors %}<li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>{% endblock %}
+
 {% block content %}
-
-    <ol class="breadcrumb">
-        <li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
-        <li class="active">{{ exhibitor.company }}</li>
-    </ol>
-
-    <h2>{{ exhibitor.company }}</h2>
-    <hr>
-
-    <div class="row">
-        <div class="col-md-6">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-
-
-                <h3>Exhibitor</h3>
-                {{ exhibitor_form|crispy }}
-
-                <h3>Company</h3>
-                {{ company_form|crispy }}
-
-                <h3>Invoice</h3>
-                {{ invoice_form|crispy }}
-
-                <button class="btn btn-primary">Save</button>
-            </form>
-
-        </div>
-
-        <div class="col-md-6">
-
-            <div>
-
-            <h3>Contact</h3>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <strong>Contact</strong>
-                    {% if exhibitor.contact %}
-                    <a href="{% url 'contact' fair.year exhibitor.pk exhibitor.contact.pk %}" class="pull-right"> Edit</a>
-                    {% endif %}
-                </div>
-                <div class="panel-body">
-                    <p>Name: <strong>{{ exhibitor.contact|default:'' }}</strong></p>
-                    <p>Email: <a href="mailto:{{ exhibitor.contact.email }}">{{ exhibitor.contact.email }}</a></p>
-                    <p>Cell phone: <strong>{{ exhibitor.contact.cell_phone }}</strong></p>
-                    <p>Work phone: <strong>{{ exhibitor.contact.work_phone }}</strong></p>
-                    <p>Active: <strong>{{ exhibitor.contact.active }}</strong></p>
-
-                </div>
-            </div>
-
-            <h3>Hosts</h3>
-            {% for host in exhibitor.hosts.all %}
-            <div class="panel panel-default">
-                <div class="panel-heading"><strong>Host</strong></div>
-                <div class="panel-body">
-                    <p>Host: <a href="{% url "view_person" fair.year host.pk %}">{{ host.get_full_name }}</a></p>
-                    {% for superior in exhibitor.superiors %}
-                    <p>Superior: <a href="{% url "view_person" fair.year superior.pk %}">{{ superior.get_full_name }}</a></p>
-                    {% endfor %}
-
-                </div>
-            </div>
-            {% endfor %}
-
-                <h3>Products</h3>
-                <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Amount</th>
-                        <th>Product price</th>
-                        <th>Total price</th>
-                    </tr>
-                    </thead>
-                    {% for order in exhibitor.order_set.all %}
-                        <tr>
-                            <td><a href="{% url 'order' fair.year exhibitor.pk order.pk %}">{{ order.product.name }}</a></td>
-                            <td>{{ order.amount }}</td>
-                            <td>{{ order.product.price }}</td>
-                            <td>{{ order.price }}</td>
-                        </tr>
-                    {% endfor %}
-                    <tfoot>
-                    <tr>
-                        <th>Total</th>
-                        <th></th>
-                        <th></th>
-                        <th>{{ exhibitor.total_cost }}</th>
-                    </tr>
-                    </tfoot>
-                </table>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="col-md-6">
-                            <a href="{% url 'order_new' fair.year exhibitor.pk %}" class="btn btn-primary"><span
-                                class="glyphicon glyphicon-plus"></span> New order</a>
-                        </div>
-                        {% if request.user.is_staff %}
-                        <div class="col-md-6 text-right">
-                            <p><a href="{% url "send_emails" fair.year exhibitor.pk %}">
-                                 <button class="btn btn-default"> Send Confirmation Email on CR </button>
-                            </a></p>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <h3>Banquet attendants</h3>
-
-                    {% for attendant in banquet_attendants %}
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><strong>{{ attendant.first_name }} {{ attendant.last_name }}</strong>
-                                <a href="{% url 'banquette_attendant' fair.year exhibitor.pk attendant.pk %}" class="pull-right"> Edit</a></div>
-                            <div class="panel-body">
-
-                        <p>Job title: <strong>{{ attendant.job_title }}</strong></p>
-                        <p>LinkedIn: <a href="{{ attendant.linkedin_url }}">{{ attendant.linkedin_url }}</a></p>
-                        <p>Gender: <strong>{{ attendant.get_gender_display }}</strong></p>
-                        <p>Phone number: <strong>{{ attendant.phone_number }}</strong></p>
-                        <p>Allergies: <strong>{{ attendant.allergies|default:'None' }}</strong></p>
-
-
-                        {% if attendant.student_ticket %}
-                            <p><span class="glyphicon glyphicon-ok"></span> Student ticket</p>
-                        {% endif %}
-
-                        {% if attendant.wants_alcohol %}
-                            <p><span class="glyphicon glyphicon-ok"></span> Wants alcohol</p>
-                        {% endif %}
-
-
-                        {% if attendant.wants_lactose_free_food %}
-                            <p><span class="glyphicon glyphicon-ok"></span> Wants lactose free food</p>
-                        {% endif %}
-
-                        {% if attendant.wants_gluten_free_food %}
-                            <p><span class="glyphicon glyphicon-ok"></span> Wants gluten free food</p>
-                        {% endif %}
-                            </div>
-                        </div>
-
-                    {% endfor %}
-
-
-                <a href="{% url 'banquette_attendant_new' fair.year exhibitor.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> New attendant</a>
-            </div>
-        <br>
-
-
-
-
-
-
-        </div>
-    </div>
-
-
-
-
-
+	<ol class="breadcrumb">
+		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+		<li class="active">{{ exhibitor.company }}</li>
+	</ol>
+	
+	<h1>{{ exhibitor.company }}</h1>
+	
+	<p>
+		{% if perms.exhibitors.modify_transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
+		<a href="{% url 'anmalan:registration' exhibitor.company.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Go to registration</a>
+	</p>
+	
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Responsibilities within {{ fair }}</h3>
+				</div>
+				
+				<div class="panel-body">
+					{% if contact_persons %}
+						{% for contact_person in contact_persons %}
+							<p>
+								<a href="{% url 'people:profile' fair.year contact_person.user.profile.pk %}">{{ contact_person.user }}</a>
+								{% if contact_person.role %}<br />{{ contact_person.role }}{% endif %}
+							</p>
+						{% endfor %}
+					{% else %}
+						<p>No responsibilities specified.</p>
+					{% endif %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Transport details</h3>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><span style="font-weight: 700;">To the fair:</span> {{ exhibitor.get_transport_to_display }}</li>
+						<li><span style="font-weight: 700;">From the fair:</span> {{ exhibitor.get_transport_from_display }}</li>
+					</ul>
+					
+					{% if exhibitor.transport_comment %}<p>{{ exhibitor.transport_comment }}</p>{% endif %}
+				</div>
+			</div>
+			
+			{% for contact in contacts %}
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h2 class="panel-title">{% if contact.preferred_language %}{{ contact.preferred_language.short }} {% endif %}{{ contact }}</h2>
+						{% if contact.title %}{{ contact.title }}{% endif %}
+					</div>
+					
+					<div class="panel-body">
+						<ul class="list-unstyled">
+							{% if contact.user %}
+								<li><strong>Username:</strong> {{ contact.user.username }}</li>
+								<li><strong>Registered:</strong> {{ contact.user.date_joined }}</li>
+								<li><strong>Last login:</strong> {{ contact.user.last_login }}</li>
+							{% endif %}
+							
+							<li><strong>E-mail address:</strong> <a href="mailto:{{ contact.email_address }}">{{ contact.email_address }}</a></li>
+							{% if contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> <a href="tel:{{ contact.mobile_phone_number }}">{{ contact.mobile_phone_number }}</a></li>{% endif %}
+							{% if contact.work_phone_number %}<li><strong>Work phone number:</strong> <a href="tel:{{ contact.work_phone_number }}">{{ contact.work_phone_number }}</a></li>{% endif %}
+						</ul>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+		
+		<div class="col-md-8">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Orders</h2>
+				</div>
+				
+				<div class="panel-body">
+					{% if orders %}
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Product</th>
+									<th style="text-align: right;">Quantity</th>
+									<th style="text-align: right;">Unit price</th>
+								</tr>
+							</thead>
+							
+							{% for order in orders %}
+								<tr>
+									<td>
+										{{ order.name }}
+										
+										{% if order.comment %}
+											<br /><span style="font-style: italic;">{{ order.comment }}</span>
+										{% endif %}
+									</td>
+									<td style="text-align: right;">{{ order.quantity }}</td>
+									<td style="text-align: right;">{{ order.unit_price | intcomma }}</td>
+								</tr>
+							{% endfor %}
+						</table>
+					{% else %}
+						<p>The company has no orders for {{ fair }}.</p>
+					{% endif %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Lunch tickets</h2>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>Ordered lunch tickets:</strong> {{ lunch_tickets_count_ordered }}</li>
+						<li><strong>Created lunch tickets:</strong> {{ lunch_tickets_count_created }}</li>
+					</ul>
+					
+					{% for lunch_tickets_day in lunch_tickets_days %}
+						{% if lunch_tickets_day.lunch_tickets %}
+							<h3>{{ lunch_tickets_day.name }}</h3>
+							
+							<table class="table">
+								<thead>
+									<tr>
+										<th style="width: 40%;">E-mail address</th>
+										<th>Dietary restrictions</th>
+									</tr>
+								</thead>
+								
+								{% for lunch_ticket in lunch_tickets_day.lunch_tickets %}
+									<tr>
+										<td>
+											{{ lunch_ticket.email_address }}
+											{% if lunch_ticket.comment %}<br /><span style="font-style: italic;">{{ lunch_ticket.comment }}</span>{% endif %}
+										</td>
+										<td>{{ lunch_ticket.dietary_restrictions.all | join:', ' }}</td>
+									</tr>
+								{% endfor %}
+							</table>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Banquet tickets</h2>
+				</div>
+				
+				<div class="panel-body">
+					<ul class="list-unstyled">
+						<li><strong>Ordered banquet tickets:</strong> {{ banquet_tickets_count_ordered }}</li>
+						<li><strong>Created banquet tickets:</strong> {{ banquet_tickets_count_created }}</li>
+					</ul>
+					
+					{% for banquet in banquets %}
+						{% if banquet_tickets.banquet_tickets %}
+							<h3>{{ banquet }}</h3>
+							
+							<table class="table">
+								<thead>
+									<tr>
+										<th style="width: 40%;">Name</th>
+										<th style="width: 30%;">E-mail address</th>
+										<th>Phone number</th>
+									</tr>
+								</thead>
+								
+								{% for banquet_ticket in banquet.banquet_tickets %}
+									<tr>
+										<td>{{ banquet_ticket.name }}</td>
+										<td>{{ banquet_ticket.email_address }}</td>
+										<td>{{ banquet_ticket.phone_number }}</td>
+									</tr>
+								{% endfor %}
+							</table>
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Write comment</h2>
+				</div>
+				
+				<div class="panel-body">
+					<form method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+						{{ form_comment | crispy }}
+						<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save comment</button>
+					</form>
+				</div>
+			</div>
+			
+			{% for comment in comments %}
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<div class="pull-right">
+							<a onclick="confirm('Do you want to remove the comment?');" href=" url 'companies_comments_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+							<a href=" url 'companies_comments_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+						</div>
+						
+						<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
+						{{ comment.groups.all | join:", " }}
+					</div>
+					
+					<div class="panel-body">
+						<p>{{ comment.comment | linebreaks }}</p>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
 {% endblock %}

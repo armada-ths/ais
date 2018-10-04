@@ -1,17 +1,14 @@
 from __future__ import unicode_literals
-
+import datetime, os.path
 from django.db import models
 from django.contrib.auth.models import User, Group
-import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
-from fair.models import Fair
-from companies.models import Company
-import os.path
 from django.utils import timezone
 from markupfield.fields import MarkupField
 
+from fair.models import Fair, OrganizationGroup
 from people.models import Programme, Profile
 
 class ExtraField(models.Model):
@@ -195,9 +192,7 @@ class RecruitmentPeriod(models.Model):
 		return [application.user for application in RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=self.fair, recruitment_period__start_date__lte=self.start_date).prefetch_related('user').order_by('user__first_name', 'user__last_name')]
 
 	def state_choices(self):
-		return [('new', 'New'), ('interview_delegated', 'Delegated'),
-			('interview_planned', 'Planned'), ('interview_done', 'Done'),
-			('accepted', 'Accepted'), ('rejected', 'Rejected')]
+		return [('new', 'New'), ('interview_delegated', 'Delegated'), ('interview_planned', 'Planned'), ('interview_done', 'Done'), ('accepted', 'Accepted'), ('rejected', 'Rejected'), ('withdrawn', 'Withdrawn')]
 
 	def __str__(self):
 		return str(self.fair.year) + ' – ' + self.name
@@ -237,8 +232,9 @@ class Role(models.Model):
 	parent_role = models.ForeignKey('Role', null=True, blank=True, on_delete=models.CASCADE)
 	description = models.TextField(default="", blank=True)
 	group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.CASCADE)
-	organization_group = models.CharField(max_length=100, default='', null=True)
 	recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
+	allow_exhibitor_contact_person = models.BooleanField(null = False, blank = False, default = False, verbose_name = 'People with this role can be contact persons for exhibitors')
+	organization_group = models.ForeignKey(OrganizationGroup, null = True, blank = True, on_delete = models.CASCADE)
 	
 	def add_user_to_groups(self, user):
 		if self.group is None: return
@@ -278,7 +274,6 @@ class RecruitmentApplication(models.Model):
 	rating = models.IntegerField(null=True, blank=True)
 	interviewer = models.ForeignKey(User, null=True, blank=True, related_name='interviewer', on_delete=models.CASCADE)
 	interviewer2 = models.ForeignKey(User, null=True, blank=True, related_name='interviewer2', on_delete=models.CASCADE)
-	exhibitor = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE)
 	slot = models.ForeignKey(Slot, null = True, blank = True, on_delete = models.CASCADE, verbose_name = 'Time and location')
 	submission_date = models.DateTimeField(default=timezone.now, blank=True)
 	recommended_role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
