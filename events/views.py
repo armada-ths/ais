@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import permission_required, login_required
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
@@ -125,7 +126,7 @@ def event_signup(request, year, event_pk):
     return render(request, 'events/event_signup.html', {
         'event': event,
         'participant': participant,
-        'react_props': json.dumps(react_props)
+        'react_props': json.dumps(react_props, cls=DjangoJSONEncoder)
     })
 
 

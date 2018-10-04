@@ -1,9 +1,12 @@
 import React, {Component, Fragment} from 'react';
 import ReactDOM from 'react-dom';
 import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
-import {createMuiTheme} from '@material-ui/core/styles';
+import {createMuiTheme, withStyles} from '@material-ui/core/styles';
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
-import Form from "./Form";
+import SignupForm from "./SignupForm";
+import Manage from './Manage';
+import Header from "./Header";
+import Paper from "@material-ui/core/es/Paper/Paper";
 
 const theme = createMuiTheme({
   palette: {
@@ -14,29 +17,53 @@ const theme = createMuiTheme({
   }
 });
 
+const styles = theme => ({
+  root: {
+    maxWidth: 960,
+    margin: 'auto',
+    padding: theme.spacing.unit * 2,
+    [theme.breakpoints.down('xs')]: {
+      padding: 0
+    }
+  },
+  paper: {
+    padding: theme.spacing.unit * 4,
+  },
+});
+
 class App extends Component {
   render() {
-
-    const {event, payment_url, signup_url, user} = window.reactProps;
+    const {classes} = this.props;
+    const {event, payment_url, signup_url, user, teams} = window.reactProps;
 
     return (
         <Fragment>
           <CssBaseline/>
           <MuiThemeProvider theme={theme}>
-            <span>{user.signup_complete ? 'Yes' : 'No'}</span>
-            <Form
-                event={event}
-                feePayed={user.fee_payed}
-                paymentUrl={payment_url}
-                signupUrl={signup_url}
-            />
+            <div className={classes.root}>
+              <Paper className={classes.paper}>
+                <Header event={event}/>
+                {user.signup_complete ? (
+                    <Manage event={event} teams={teams}/>
+                ) : (
+                    <SignupForm
+                        event={event}
+                        feePayed={user.fee_payed}
+                        paymentUrl={payment_url}
+                        signupUrl={signup_url}
+                    />
+                )}
+              </Paper>
+            </div>
           </MuiThemeProvider>
         </Fragment>
     )
   }
 }
 
+const AppWithStyles = withStyles(styles)(App);
+
 ReactDOM.render(
-    <App/>,
+    <AppWithStyles/>,
     document.getElementById('react')
 );

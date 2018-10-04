@@ -14,6 +14,7 @@ def event(event, request):
         'name': event.name,
         'description': event.description,
         'location': event.location,
+        'start_date': event.date_start,
         'fee': event.fee_s,
         'external_event_link': event.external_event_link,
         'signup_questions': [signup_question(question) for question in event.signupquestion_set.all()],
@@ -37,10 +38,12 @@ def signup_question(signup_question):
 
 def team(team):
     data = {
+        'id': team.pk,
         'name': team.name,
         'capacity': team.max_capacity,
         'leader': team.leader.get_full_name() if team.leader is not None else None,
-        'members': [member.participant.__str__() for member in team.teammember_set.all()]
+        'members': [member.participant.__str__() for member in team.teammember_set.all()],
+        'number_of_members': team.number_of_members()
     }
 
     return data

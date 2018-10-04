@@ -38,6 +38,6 @@
     "lodash": "^4.17.11",
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
-    "react-stripe-elements": "^2.0.1"
+    "react-select": "^2.1.0"
   }
 }

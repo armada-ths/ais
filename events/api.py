@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 
 from events import serializers
-from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer
+from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer, Team, TeamMember
 from fair.models import Fair
 
 
@@ -112,3 +112,59 @@ def payment(request, event_pk):
     participant.save()
 
     return HttpResponse(status=204)
+
+
+@require_POST
+def join_team(request, event_pk, team_pk):
+    """
+    Endpoint to join teams
+    """
+    event = get_object_or_404(Event, pk=event_pk)
+    team = get_object_or_404(Team, pk=team_pk)
+
+    if not request.user:
+        return JsonResponse({'message': 'Authentication required.'}, status=403)
+
+    if team.is_full():
+        return JsonResponse({'message': 'Team is full.'}, status=400)
+
+    participant = Participant.objects.get(user_s=request.user, event=event)
+
+    if team.leader is None:
+        # TODO Remove as leader if leader of another team
+        TeamMember.objects.filter(participant=participant).delete()
+        team.leader = request.user
+        team.save()
+    else:
+        TeamMember.objects.update_or_create(participant=participant, defaults={'team': team})
+
+    return JsonResponse({'data': serializers.team(team)}, status=205)
+
+
+@require_POST
+def create_team(request, event_pk):
+    """
+    Endpoint to create new teams for an event
+    """
+
+    event = get_object_or_404(Event, pk=event_pk)
+
+    if not request.user:
+        return JsonResponse({'message': 'Authentication required.'}, status=403)
+
+    participant = Participant.objects.get(user_s=request.user, event=event)
+
+    data = json.loads(request.body)
+
+    # TODO
+    #   Check if team name is take
+    #   Check (and remove) if user is already member (or leader) of a team
+
+    team = Team.objects.create(
+        event=event,
+        name=data['name'],
+        leader=request.user,
+        max_capacity=event.teams_default_max_capacity,
+    )
+
+    return JsonResponse({'data': serializers.team(team)}, status=200)

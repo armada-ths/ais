@@ -62,6 +62,12 @@ class Team(models.Model):
                                         verbose_name='Allow company representatives to join the team')
     allow_join_s = models.BooleanField(default=True, blank=False, null=False, verbose_name='Allow students to join the team')
 
+    def is_full(self):
+        return self.number_of_members() >= self.max_capacity
+
+    def number_of_members(self):
+        return self.teammember_set.count() + (1 if self.leader is not None else 0)
+
     def __str__(self):
         return self.name
 
