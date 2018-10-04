@@ -485,16 +485,15 @@ def banquet(request, company_pk):
 	
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
+	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
 	
-	if request.user.has_perm('companies.base'):
+	if request.user.has_perm('companies.base') or (exhibitor is not None and (request.user.has_perm('exhibitors.view_all') or request.user in exhibitor.contact_persons.all())):
 		company_contact = None
 	
 	else:
 		company_contact = CompanyContact.objects.filter(user = request.user, company = company).first()
 		
 		if not company_contact: return redirect('anmalan:choose_company')
-	
-	exhibitor = Exhibitor.objects.filter(fair = fair, company = company).first()
 	
 	count_ordered = 0
 	
