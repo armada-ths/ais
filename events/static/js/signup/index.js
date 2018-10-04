@@ -34,7 +34,14 @@ const styles = theme => ({
 class App extends Component {
   render() {
     const {classes} = this.props;
-    const {event, payment_url, signup_url, user, teams} = window.reactProps;
+    const {
+        event,
+        payment_url,
+        signup_url,
+        user,
+        teams,
+        stripe_publishable
+    } = window.reactProps;
 
     return (
         <Fragment>
@@ -51,6 +58,7 @@ class App extends Component {
                         feePayed={user.fee_payed}
                         paymentUrl={payment_url}
                         signupUrl={signup_url}
+                        stripe_publishable={stripe_publishable}
                     />
                 )}
               </Paper>

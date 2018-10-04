@@ -105,7 +105,7 @@ class SignupForm extends Component {
   }
 
   render() {
-    const {event} = this.props;
+    const {event, stripe_publishable} = this.props;
     const {answers, errors, payed} = this.state;
 
     return (
@@ -123,7 +123,12 @@ class SignupForm extends Component {
                       ) : (
                           <Fragment>
                             This event has a fee of {event.fee} SEK to sign up.
-                            <Stripe handleToken={this.handleStripeToken} description={event.name} amount={event.fee}/>
+                            <Stripe
+                                handleToken={this.handleStripeToken}
+                                stripe_publishable={stripe_publishable}
+                                description={event.name}
+                                amount={event.fee}
+                            />
                           </Fragment>
                       )}
                     </Typography>

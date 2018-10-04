@@ -25,6 +25,10 @@ CAS_SERVER_URL = 'https://login.kth.se/'
 CAS_AUTO_CREATE_USER = False
 CAS_RESPONSE_CALLBACKS = ('lib.CAS_callback.callback',)
 
+# Stripe test keys
+STRIPE_SECRET = 'sk_test_l4sPsGIoc2f8sD5N4D2fZkBY'
+STRIPE_PUBLISHABLE = 'pk_test_IzgUj9oJhednbt4EIf78esBE'
+
 # We don't need performance here so use SQLite for ease of setup.
 DATABASES = {
     'default': {

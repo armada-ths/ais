@@ -6,7 +6,7 @@ class Stripe extends Component {
     super(props);
 
     this.handler = StripeCheckout.configure({
-      key: 'pk_test_IzgUj9oJhednbt4EIf78esBE',
+      key: props.stripe_publishable,
       image: 'https://ais.armada.nu/static/images/armadalogo.svg',
       locale: 'auto',
       token: props.handleToken,

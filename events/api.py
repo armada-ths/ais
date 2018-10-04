@@ -4,6 +4,7 @@ import stripe
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
+from django.conf import settings
 
 from events import serializers
 from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer, Team, TeamMember
@@ -99,7 +100,7 @@ def payment(request, event_pk):
     amount = event.fee_s * 100
     token = data['token']
 
-    stripe.api_key = "sk_test_l4sPsGIoc2f8sD5N4D2fZkBY"
+    stripe.api_key = settings.STRIPE_SECRET
     charge = stripe.Charge.create(
         amount=amount,
         currency='sek',
