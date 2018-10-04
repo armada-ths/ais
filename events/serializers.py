@@ -14,11 +14,15 @@ def event(event, request):
         'name': event.name,
         'description': event.description,
         'location': event.location,
-        'start_date': event.date_start,
+        'event_start': int(event.date_start.strftime('%s')),
+        'event_end': int(event.date_end.strftime('%s')),
+        'registration_end': int(event.date_start.strftime('%s')),
+        'image_url': '//archive.kottnet.net/pictures/armada%20run.png',
         'fee': event.fee_s,
+        'registration_required': True,
         'external_event_link': event.external_event_link,
         'signup_questions': [signup_question(question) for question in event.signupquestion_set.all()],
-        'signup_url': signup_url,
+        'signup_link': signup_url,
     }
 
     return data
