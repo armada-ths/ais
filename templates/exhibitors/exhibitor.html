@@ -208,10 +208,12 @@
 			{% for comment in comments %}
 				<div class="panel panel-info">
 					<div class="panel-heading">
-						<div class="pull-right">
-							<a onclick="confirm('Do you want to remove the comment?');" href=" url 'companies_comments_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-							<a href=" url 'companies_comments_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
-						</div>
+						{% if comment.user == user %}
+							<div class="pull-right">
+								<a onclick="confirm('Do you want to remove the comment?');" href="{% url 'exhibitor_comment_remove' fair.year exhibitor.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+								<a href="{% url 'exhibitor_comment_edit' fair.year exhibitor.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+							</div>
+						{% endif %}
 						
 						<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
 						{{ comment.groups.all | join:", " }}

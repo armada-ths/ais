@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-exhibitors %}<li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>{% endblock %}
+
+{% block content %}
+	<ol class="breadcrumb">
+		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+		<li><a href="{% url 'exhibitor' fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></li>
+		<li class="active">Edit comment</li>
+	</ol>
+	
+	<h1>Edit comment for {{ exhibitor.company }}</h1>
+	
+	<p>
+		{% if perms.exhibitors.modify_transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
+		<a href="{% url 'anmalan:registration' exhibitor.company.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Go to registration</a>
+	</p>
+	
+	<form method="post">
+		{% csrf_token %}
+		{{ form | crispy }}
+		<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save changes</button>
+	</form>
+{% endblock %}

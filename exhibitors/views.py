@@ -263,3 +263,33 @@ def exhibitor_contact_persons(request, year, pk):
 		'exhibitor': exhibitor,
 		'form': form
 	})
+
+
+@permission_required('exhibitors.base')
+def exhibitor_comment_edit(request, year, pk, comment_pk):
+	fair = get_object_or_404(Fair, year = year)
+	exhibitor = get_object_or_404(Exhibitor, pk = pk)
+	comment = get_object_or_404(CompanyCustomerComment, company = exhibitor.company, pk = comment_pk, user = request.user)
+	
+	form = CommentForm(request.POST or None, instance = comment)
+	
+	if request.POST and form.is_valid():
+		form.save()
+		return redirect('exhibitor', fair.year, exhibitor.pk)
+	
+	return render(request, 'exhibitors/exhibitor_comment_edit.html', {
+		'fair': fair,
+		'exhibitor': exhibitor,
+		'form': form
+	})
+
+
+@permission_required('exhibitors.base')
+def exhibitor_comment_remove(request, year, pk, comment_pk):
+	fair = get_object_or_404(Fair, year = year)
+	exhibitor = get_object_or_404(Exhibitor, pk = pk)
+	comment = get_object_or_404(CompanyCustomerComment, company = exhibitor.company, pk = comment_pk, user = request.user)
+	
+	comment.delete()
+	
+	return redirect('exhibitor', fair.year, exhibitor.pk)
