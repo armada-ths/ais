@@ -1,0 +1,26 @@
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th class="text-center">No. members</th>
+    <th>Open for</th>
+  </tr>
+  </thead>
+  {% for team in teams %}
+    <tr>
+      <td><a href="{% url 'events:team_edit' fair.year event.id team.id %}">{{ team.name }}</a></td>
+      <td class="text-center">{{ team.teammember_set.count }}/{{ team.max_capacity }}</td>
+      <td>
+        {% if team.allow_join_cr and team.allow_join_s %}
+          Mixed
+        {% elif team.allow_join_cr %}
+          Company reps.
+        {% elif team.allow_join_s %}
+          Students
+        {% else %}
+          Closed
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>

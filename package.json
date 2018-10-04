@@ -1,0 +1,43 @@
+{
+  "name": "armada",
+  "version": "1.0.0",
+  "description": "AIS — Armada Internal System",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js --progress --colors --mode production",
+    "watch": "webpack --config webpack.config.js --watch --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armada-ths/ais.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/armada-ths/ais/issues"
+  },
+  "homepage": "https://github.com/armada-ths/ais#readme",
+  "devDependencies": {
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.2",
+    "clean-webpack-plugin": "^0.1.19",
+    "webpack": "^4.19.1",
+    "webpack-bundle-tracker": "^0.3.0",
+    "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.1.0",
+    "axios": "^0.18.0",
+    "classnames": "^2.2.6",
+    "js-cookie": "^2.2.0",
+    "lodash": "^4.17.11",
+    "react": "^16.5.1",
+    "react-dom": "^16.5.1",
+    "react-select": "^2.1.0"
+  }
+}

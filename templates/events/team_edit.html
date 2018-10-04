@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <h1>
+    {% if team %}
+      {{ team.name }}
+    {% else %}
+      New Team
+    {% endif %}
+  </h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form | crispy }}
+    <input class="btn btn-primary" type="submit" value="Submit"/>
+  </form>
+{% endblock %}

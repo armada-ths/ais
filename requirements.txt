@@ -16,3 +16,5 @@ django_dynamic_formsets
 django-markupfield
 markdown
 slackclient
+stripe
+django-webpack-loader

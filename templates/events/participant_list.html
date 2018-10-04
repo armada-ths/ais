@@ -1,0 +1,26 @@
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Team</th>
+    <th>Email</th>
+    <th>Phone no.</th>
+    <th>Type</th>
+  </tr>
+  </thead>
+  {% for participant in participants %}
+    <tr>
+      <td>{{ participant.name }}</td>
+      <td>{{ participant.teammember_set.first.team.name }}</td>
+      <td>{{ participant.email_address }}</td>
+      <td>{{ participant.phone_number }}</td>
+      <td>
+        {% if participant.user_cr %}
+          Company rep.
+        {% else %}
+          Student
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>

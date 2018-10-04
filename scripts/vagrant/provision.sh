@@ -17,7 +17,7 @@ silent sudo apt-get update
 
 echo "Installing dependencies..."
 cd /vagrant
-silent sudo apt-get install -y libpq-dev python3-pip postgresql postgresql-contrib
+silent sudo apt-get install -y libpq-dev python3-pip postgresql postgresql-contrib nodejs npm
 silent sudo pip3 install virtualenv
 silent virtualenv ais_venv
 silent source ais_venv/bin/activate
@@ -40,6 +40,7 @@ echo "Configuring..."
 silent python manage.py migrate --settings local_settings
 silent python manage.py makemigrations --settings local_settings
 silent python manage.py migrate --settings local_settings
+silent npm install
 
 echo "Sprinkling magic..."
 echo "cd /vagrant" >> ~/.bashrc

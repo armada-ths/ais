@@ -24,48 +24,49 @@ DEFAULT_TO_EMAIL = 'info@armada.nu'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
-	'root',
-	'django.contrib.admin',
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.sessions',
-	'django.contrib.messages',
-	'django.contrib.staticfiles',
-	'polymorphic',
-	'events',
-	'companies',
-	'fair',
-	'people',
-	'locations',
-	'recruitment',
-	'api',
-	'news',
-	'orders',
-	'crispy_forms',
-	'exhibitors',
-	'django.contrib.humanize',
-	'banquet',
-	'register',
-	'matching',
-	'student_profiles',
-	'transportation',
-	'accounting',
-	'dynamic_formsets',
-	'journal',
-	'markupfield',
+    'root',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'webpack_loader',
+    'polymorphic',
+    'events',
+    'companies',
+    'fair',
+    'people',
+    'locations',
+    'recruitment',
+    'api',
+    'news',
+    'orders',
+    'crispy_forms',
+    'exhibitors',
+    'django.contrib.humanize',
+    'banquet',
+    'register',
+    'matching',
+    'student_profiles',
+    'transportation',
+    'accounting',
+    'dynamic_formsets',
+    'journal',
+    'markupfield',
 )
 
 MIDDLEWARE_CLASSES = (
-	'django.contrib.sessions.middleware.SessionMiddleware',
-	'django.middleware.common.CommonMiddleware',
-	'django.middleware.csrf.CsrfViewMiddleware',
-	'django.middleware.gzip.GZipMiddleware',
-	'django.contrib.auth.middleware.AuthenticationMiddleware',
-	'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-	'django.contrib.messages.middleware.MessageMiddleware',
-	'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'django.middleware.security.SecurityMiddleware',
-	'recruitment.middleware.LoginRequiredMiddleware'
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'recruitment.middleware.LoginRequiredMiddleware'
 )
 
 USE_ETAGS = True
@@ -90,15 +91,23 @@ TEMPLATES = [
     },
 ]
 
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': path.join(BASE_DIR, 'webpack-stats.js')
+    }
+}
+
 WSGI_APPLICATION = 'ais.wsgi.application'
 
 STATIC_ROOT = path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (path.join(BASE_DIR, "ais_static"),)
+STATICFILES_DIRS = (
+    path.join(BASE_DIR, "ais_static"),
+)
 
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 MEDIA_ROOT = path.abspath(path.join(BASE_DIR, '..', 'media'))
-
 
 MEDIA_URL = '/media/'
 
