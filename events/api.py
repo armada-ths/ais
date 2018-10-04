@@ -1,10 +1,10 @@
 import json
 
 import stripe
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
-from django.conf import settings
 
 from events import serializers
 from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer, Team, TeamMember
@@ -72,7 +72,7 @@ def signup(request, event_pk):
     participant.signup_complete = True
     participant.save()
 
-    return HttpResponse(status=200)
+    return JsonResponse({'participant': serializers.participant(participant)}, status=201)
 
 
 @require_POST
@@ -139,7 +139,7 @@ def join_team(request, event_pk, team_pk):
     else:
         TeamMember.objects.update_or_create(participant=participant, defaults={'team': team})
 
-    return JsonResponse({'data': serializers.team(team)}, status=205)
+    return JsonResponse({'team': serializers.team(team)}, status=201)
 
 
 @require_POST
@@ -168,4 +168,4 @@ def create_team(request, event_pk):
         max_capacity=event.teams_default_max_capacity,
     )
 
-    return JsonResponse({'data': serializers.team(team)}, status=200)
+    return JsonResponse({'team': serializers.team(team)}, status=200)

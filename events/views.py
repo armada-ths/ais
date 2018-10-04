@@ -1,12 +1,12 @@
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import permission_required, login_required
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.conf import settings
 
 from events import serializers
 from events.forms import EventForm, TeamForm
@@ -119,10 +119,8 @@ def event_signup(request, year, event_pk):
         'payment_url': payment_url,
         'signup_url': signup_url,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-        'user': {
-            'fee_payed': participant is not None and participant.fee_payed_s,
-            'signup_complete': participant is not None and participant.signup_complete
-        }
+        'participant': serializers.participant(participant)
+
     }
 
     return render(request, 'events/event_signup.html', {

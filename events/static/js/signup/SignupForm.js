@@ -8,6 +8,7 @@ import forEach from 'lodash/forEach';
 import isEmpty from 'lodash/isEmpty';
 import find from 'lodash/find';
 import mapValues from 'lodash/mapValues';
+import * as ACTIONS from './actions';
 
 import Question from "./Question";
 import Stripe from "./Stripe";
@@ -50,7 +51,7 @@ class SignupForm extends Component {
 
   handleSubmit() {
     const errors = this.validate(this.state);
-    const {signupUrl} = this.props;
+    const {signupUrl, dispatcher} = this.props;
 
     const answers = mapValues(this.state.answers, answer => Array.isArray(answer) ? answer.join(',') : answer);
 
@@ -63,7 +64,13 @@ class SignupForm extends Component {
         headers: {
           "X-CSRFToken": Cookie.get('csrftoken')
         }
-      })
+      }).then(response => {
+            dispatcher({
+              type: ACTIONS.UPDATE_PARTICIPANT,
+              payload: response.data
+            })
+          }
+      )
     }
   }
 

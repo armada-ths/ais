@@ -47,3 +47,12 @@ def team(team):
     }
 
     return data
+
+
+def participant(participant):
+    data = {
+        'fee_payed': participant is not None and participant.fee_payed_s,
+        'signup_complete': participant is not None and participant.signup_complete
+    }
+
+    return data

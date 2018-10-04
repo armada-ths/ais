@@ -1,11 +1,8 @@
 import React, {Component, Fragment} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from "@material-ui/core/es/Grid/Grid";
-import Team from "./Team";
-import CreateTeamDialog from "./CreateTeamDialog";
 import {createTeam, joinTeam} from "./api";
-import Button from "@material-ui/core/es/Button/Button";
-import TextField from "@material-ui/core/es/TextField/TextField";
+import * as ACTIONS from './actions';
 import Typography from "@material-ui/core/es/Typography/Typography";
 
 const styles = theme => ({
@@ -13,6 +10,9 @@ const styles = theme => ({
     margin: theme.spacing.unit,
     minWidth: 120,
   },
+  signupText: {
+    marginTop: theme.spacing.unit * 2
+  }
 });
 
 class Manage extends Component {
@@ -20,7 +20,7 @@ class Manage extends Component {
     super(props);
 
     this.state = {
-      selectedTeam: null,
+      selectedTeamId: null,
       dialogOpen: false
     };
 
@@ -32,26 +32,28 @@ class Manage extends Component {
   }
 
   handleSelectTeam(event) {
-    const {teams} = this.props;
     const id = event.target.value;
 
     this.setState({
-      selectedTeam: teams.find(team => team.id === id)
+      selectedTeamId: id
     })
   }
 
   handleJoinTeam() {
     const {event} = this.props;
-    const {selectedTeam} = this.state;
+    const {selectedTeamId} = this.state;
 
-    joinTeam(event.id, selectedTeam.id);
+    joinTeam(event.id, selectedTeamId);
   }
 
   handleCreateTeam(teamName) {
-    const {event} = this.props;
+    const {event, dispatcher} = this.props;
 
-    createTeam(event.id, teamName);
-
+    createTeam(event.id, teamName)
+        .then(response => dispatcher({
+          type: ACTIONS.UPDATE_TEAM,
+          payload: response.data
+        }));
   }
 
   handleDialogOpen() {
@@ -64,11 +66,20 @@ class Manage extends Component {
 
   render() {
     const {teams, classes} = this.props;
-    const {selectedTeam, dialogOpen} = this.state;
+    const {selectedTeamId, dialogOpen} = this.state;
+
+    const selectedTeam = teams[selectedTeamId];
 
     return (
         <Fragment>
           <Grid container spacing={16}>
+            <Grid container item xs={12} justify="center">
+              <Typography className={classes.signupText} color="primary" variant="display1">
+                🎉 You have signed up to this event! 🎉
+              </Typography>
+            </Grid>
+
+            {/*
             <Grid item sm={6}>
               <Button color="primary" onClick={this.handleDialogOpen}>Create new team</Button>
               <CreateTeamDialog
@@ -84,7 +95,6 @@ class Manage extends Component {
                   type="search"
                   margin="normal"
               />
-              {/*
               <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="open-teams">Open Teams</InputLabel>
                 <Select
@@ -104,7 +114,6 @@ class Manage extends Component {
                       </MenuItem>)}
                 </Select>
               </FormControl>
-              */}
             </Grid>
             <Grid item sm={6}>
               {selectedTeam && (
@@ -117,6 +126,7 @@ class Manage extends Component {
                   />
               )}
             </Grid>
+              */}
           </Grid>
         </Fragment>
     )

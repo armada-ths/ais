@@ -6,7 +6,10 @@ import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 import SignupForm from "./SignupForm";
 import Manage from './Manage';
 import Header from "./Header";
+import reducer from './reducer';
 import Paper from "@material-ui/core/es/Paper/Paper";
+import * as ACTIONS from './actions';
+import keyBy from 'lodash/keyBy';
 
 const theme = createMuiTheme({
   palette: {
@@ -32,15 +35,36 @@ const styles = theme => ({
 });
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    const {
+      participant,
+      teams
+    } = window.reactProps;
+
+    this.state = reducer({}, {
+      type: ACTIONS.INIT,
+      payload: {
+        participant,
+        teams: keyBy(teams, 'id')
+      }
+    });
+
+    this.dispatcher = this.dispatcher.bind(this);
+  }
+
+  dispatcher(action) {
+    this.setState(state => reducer(state, action));
+  }
+
   render() {
     const {classes} = this.props;
+    const {participant, teams} = this.state;
     const {
-        event,
-        payment_url,
-        signup_url,
-        user,
-        teams,
-        stripe_publishable
+      event,
+      payment_url,
+      signup_url,
+      stripe_publishable
     } = window.reactProps;
 
     return (
@@ -50,15 +74,20 @@ class App extends Component {
             <div className={classes.root}>
               <Paper className={classes.paper}>
                 <Header event={event}/>
-                {user.signup_complete ? (
-                    <Manage event={event} teams={teams}/>
+                {participant.signup_complete ? (
+                    <Manage
+                        event={event}
+                        teams={teams}
+                        dispatcher={this.dispatcher}
+                    />
                 ) : (
                     <SignupForm
                         event={event}
-                        feePayed={user.fee_payed}
+                        feePayed={participant.fee_payed}
                         paymentUrl={payment_url}
                         signupUrl={signup_url}
                         stripe_publishable={stripe_publishable}
+                        dispatcher={this.dispatcher}
                     />
                 )}
               </Paper>
