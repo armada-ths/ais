@@ -70,7 +70,7 @@ def event_new(request, year):
     })
 
 
-@permission_required('event.base')
+@permission_required('events.base')
 def event_edit(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=pk)
@@ -130,7 +130,7 @@ def event_signup(request, year, event_pk):
     })
 
 
-@permission_required('event.base')
+@permission_required('events.base')
 def team_edit(request, year, event_pk, team_pk):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=event_pk)
@@ -149,7 +149,7 @@ def team_edit(request, year, event_pk, team_pk):
     })
 
 
-@permission_required('event.base')
+@permission_required('events.base')
 def team_new(request, year, event_pk):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=event_pk)
