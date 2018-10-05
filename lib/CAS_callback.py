@@ -24,5 +24,5 @@ def callback(tree):
 		
 		user.save()
 	
-	person, person_created = Profile.objects.get_or_create(user = user)
+	person, person_created = Profile.objects.get_or_create(user = user, no_dietary_restrictions = False)
 	person.save()
