@@ -97,7 +97,7 @@ class InternalInviteView(InviteCreateFormMixin, CreateView):
         """
         Modified so form doesn't need to have user
         """
-        form.instance.user = self.request.user
+        form.instance.user = self.user
         return super(InternalInviteView, self).form_valid(form)
 
 class ExternalInviteView(InviteCreateFormMixin, CreateView):
