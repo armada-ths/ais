@@ -26,8 +26,10 @@ class ExternalParticipantForm(forms.ModelForm):
     """
     class Meta:
         model = Participant
-        exclude = ['banquet','company','user', 'email_address']
+        exclude = ['banquet','company','user']
         widgets = {
+            'name' : forms.TextInput(attrs={'readonly':'readonly'}),
+            'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
             'dietary_restrictions' : forms.CheckboxSelectMultiple(),
             'alcohol' : forms.RadioSelect()
         }

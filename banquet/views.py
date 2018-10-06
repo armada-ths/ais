@@ -1,10 +1,11 @@
 import datetime, json
 import requests as r
+import csv
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden
-from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseForbidden
+from django.urls import reverse,reverse_lazy
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -18,14 +19,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms import modelform_factory
 
 from django import forms
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, TemplateView
 
 from fair.models import Fair
 from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
-from django.urls import reverse_lazy
 
 from .models import Banquet, Participant, Invitation
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm
@@ -91,14 +91,24 @@ class InternalInviteView(InviteCreateFormMixin, CreateView):
 
         return initial
 
+    def get_success_url(self):
+        """
+        We have some kwargs e.g. year that we need to send
+        """
+        return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
+
 class ExternalInviteView(InviteCreateFormMixin, CreateView):
     """
     Invite view for students and invitees (excl. companies)
     """
-    # Form: Participant
     form_class = ExternalParticipantForm
     template_name = 'banquet/invite.html'
-    success_url = '/'
+
+    def get_success_url(self):
+        """
+        We have some kwargs e.g. year that we need to send
+        """
+        return reverse_lazy('banquet_thank_you', kwargs=self.kwargs, current_app='banquet')
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -118,6 +128,7 @@ class ExternalInviteView(InviteCreateFormMixin, CreateView):
         initial = super(ExternalInviteView, self).get_initial()
         # kinda ugly, prob better to modify model
         initial['name'] = self.invitation.name
+        initial['email_address'] = self.invitation.email_address
 
         return initial
 
@@ -137,6 +148,34 @@ class SendInviteCreateView(InviteCreateFormMixin, CreateView):
     form_class = SendInvitationForm
     template_name = 'banquet/send_invite.html'
 
+    def get_success_url(self):
+        return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
+
+def export_invitations(request, year):
+    """
+    Exports invitations of banquet
+    so we can send out mail(not through ais)
+    """
+    # here's why I prefer class based views
+    # I already did this before >:(
+    fair = get_object_or_404(Fair, year=year)
+    #TODO: handle multiple banquets in a year
+    banquet = Banquet.objects.get(fair=fair)
+    invitations = Invitation.objects.filter(banquet=banquet)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="banquet_invitations.csv"'
+
+    writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
+    writer.writerow(['name','email_address','invite_link'])
+    for invitation in invitations:
+        token = invitation.token
+        # dynamic works in any domain
+        link = request.build_absolute_uri(reverse('external_invite', kwargs={"token":token,"year":year}, current_app='banquet'))
+
+        writer.writerow([invitation.name, invitation.email_address, link])
+    return response
+
 class SentInvitationsListView(GeneralMixin, ListView):
     """
     List who's been invited
@@ -145,3 +184,6 @@ class SentInvitationsListView(GeneralMixin, ListView):
 
     def get_queryset(self):
         return Invitation.objects.filter(banquet=self.banquet)
+
+class ThankYouView(GeneralMixin, TemplateView):
+    template_name='banquet/thank_you.html'

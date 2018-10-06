@@ -48,17 +48,24 @@
                 {% comment %}
 		<!--{% if perms.recruitment.administer_recruitment %}-->
                 {% endcomment %}
-                <p><a href="{% url "send_invite" fair.year %}">
-                    <button class="btn btn-primary">
-			    <span class="glyphicon glyphicon-plus"></span>
-			    New Invitation
-                    </button>
-                </a>
+                <p>
+                    <a href="{% url "send_invite" fair.year %}">
+                        <button class="btn btn-primary">
+			            <span class="glyphicon glyphicon-plus"></span>
+			            New Invitation
+                        </button>
+                    </a>
+
+                    <a href="{% url "export_invitations" fair.year %}">
+                        <button class="btn btn-primary">
+                            Export Invitations
+                        </button>
+                    </a>
                 {% comment %}
 		<!--<a class="btn btn-default" href="{% url "contact" fair.year %}">Contact list</a>-->
                 {% endcomment %}
-                {% comment %}
                 </p>
+                {% comment %}
 		<!--{% endif %}-->
                 {% endcomment %}
         </div>
