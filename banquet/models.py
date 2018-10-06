@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -13,14 +14,8 @@ class Banquet(models.Model):
 	date = models.DateTimeField()
 	location = models.CharField(max_length = 75, blank = True, null = True)
 	product = models.ForeignKey(Product, null = True, blank = True, on_delete = models.CASCADE, verbose_name = 'Product to link the banquet with')
-	
+
 	def __str__(self): return self.name
-
-
-class DietaryPreference(models.Model):
-	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
-	preference = models.CharField(max_length = 75, blank = False, null = False)
-
 
 # For alcohol
 BOOL_CHOICES = [(True, 'Yes'), (False, 'No')]
@@ -40,9 +35,13 @@ class Participant(models.Model):
 
 
 class Invitation(models.Model):
-	token = models.CharField(max_length = 128, unique = True, blank = False, null = False)
+	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
+	token = models.CharField(max_length = 255, null = True, blank = False, default = uuid.uuid4)
 	participant = models.ForeignKey(Participant, blank = True, null = True, on_delete = models.CASCADE) # filled in when the participant has been created from this invitation
 	name = models.CharField(max_length = 75, blank = True, null = True)
 	email_address = models.CharField(max_length = 75, blank = True, null = True)
 	reason = models.CharField(max_length = 75, blank = True, null = True)
 	price = models.PositiveIntegerField() # can be zero
+	denied = models.BooleanField(default=False)
+
+	def __str__(self): return (self.name)
