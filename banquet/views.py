@@ -61,10 +61,8 @@ class InviteCreateFormMixin(GeneralMixin,object):
     """
     def form_valid(self, form):
         """
-        Modified so form doesn't need to have banquet and user,
-        instead sent with the form on succesfull form
+        Modified so form doesn't need to have banquet,
         """
-        form.instance.user = self.user
         form.instance.banquet = self.banquet
 
         return super(InviteCreateFormMixin, self).form_valid(form)
@@ -73,10 +71,8 @@ class InternalInviteView(InviteCreateFormMixin, CreateView):
     """
     Invite view for already registered students
     """
-    # Form: Participant
     form_class = InternalParticipantForm
-    template_name = 'banquet/invite.html'
-    success_url = '/'
+    template_name = 'banquet/internal_invite.html'
 
     def get_initial(self):
         """
@@ -97,18 +93,19 @@ class InternalInviteView(InviteCreateFormMixin, CreateView):
         """
         return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
 
+    def form_valid(self, form):
+        """
+        Modified so form doesn't need to have user
+        """
+        form.instance.user = self.request.user
+        return super(InternalInviteView, self).form_valid(form)
+
 class ExternalInviteView(InviteCreateFormMixin, CreateView):
     """
     Invite view for students and invitees (excl. companies)
     """
     form_class = ExternalParticipantForm
     template_name = 'banquet/invite.html'
-
-    def get_success_url(self):
-        """
-        We have some kwargs e.g. year that we need to send
-        """
-        return reverse_lazy('banquet_thank_you', kwargs=self.kwargs, current_app='banquet')
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -120,6 +117,12 @@ class ExternalInviteView(InviteCreateFormMixin, CreateView):
             return HttpResponseForbidden()
         self.invitation = get_object_or_404(Invitation, token = token)
         return super(ExternalInviteView, self).dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        """
+        We have some kwargs e.g. year that we need to send
+        """
+        return reverse_lazy('banquet_thank_you', kwargs=self.kwargs, current_app='banquet')
 
     def get_initial(self):
         """
@@ -133,7 +136,6 @@ class ExternalInviteView(InviteCreateFormMixin, CreateView):
         return initial
 
     def form_valid(self, form):
-        form.instance.user = self.user
         form.instance.banquet = self.banquet
         form.instance.email_address = self.invitation.email_address
         self.object = form.save()
@@ -171,7 +173,14 @@ def export_invitations(request, year):
     for invitation in invitations:
         token = invitation.token
         # dynamic works in any domain
-        link = request.build_absolute_uri(reverse('external_invite', kwargs={"token":token,"year":year}, current_app='banquet'))
+        # get absolute path of invite link
+        link = request.build_absolute_uri(
+            reverse(
+                'external_invite',
+                kwargs={"token":token,"year":year},
+                current_app='banquet'
+            )
+        )
 
         writer.writerow([invitation.name, invitation.email_address, link])
     return response
@@ -184,6 +193,24 @@ class SentInvitationsListView(GeneralMixin, ListView):
 
     def get_queryset(self):
         return Invitation.objects.filter(banquet=self.banquet)
+
+    def get_context_data(self, **kwargs):
+        """
+        Adding fair,year to our context for consistency with other templates
+        """
+        context = super(SentInvitationsListView, self).get_context_data(**kwargs)
+        ##remove invitation in template if already exists
+        context['participant'] = Participant.objects.filter(user = self.request.user).first()
+        return context
+
+class ParticipantsListView(GeneralMixin, ListView):
+    """
+    List who's been invited
+    """
+    template_name = 'banquet/participant_list.html'
+
+    def get_queryset(self):
+        return Participant.objects.filter(banquet=self.banquet)
 
 class ThankYouView(GeneralMixin, TemplateView):
     template_name='banquet/thank_you.html'

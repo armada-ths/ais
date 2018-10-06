@@ -1,29 +1,30 @@
+{% extends "base.html" %}
+
+{% block nav-banquet %}
+<li role="presentation" class="active"><a href="{% url 'invite_list' fair.year %}">Banquet</a></li>
+{% endblock %}
 
 {% load crispy_forms_tags %} {% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-		<meta charset="utf-8">
-		{% include "header.html" %}{% block head-extra %}{% endblock %}
-		<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
-		<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
-	</head>
+{% block content %}
+    <ol class="breadcrumb">
+	    <li><a href="{% url 'invite_list' fair.year %}">Banquet</a></li>
+        <li class="active">Internal Registration</li>
+    </ol>
 
-	<body>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-6 col-md-offset-3">
-					<img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo-small">
+                    <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="img-responsive">
 				</div>
 			</div>
-		
 			<div class="row">
                 <div class="text-center headline">
                     <h1> INVITATION </h1>
                     <h2>THS ARMADA: {{year}} BANQUET</h2>
 				</div>
-			</div>
+			</div> 
+            <hr class="my-4">
 			<div class="row form-group">
 				<div class="col-md-12">
                     <p>
@@ -40,5 +41,5 @@
 				</div>
 			</div>
 		</div>
-	</body>
-</html>
+
+{% endblock %}

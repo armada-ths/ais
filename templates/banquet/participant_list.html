@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block nav-banquet %}<li role="presentation" class="active"><a href="{% url 'invite_list' fair.year %}">Banquet</a></li>{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <ol class="breadcrumb">
+	    <li><a href="{% url 'invite_list' fair.year %}">Banquet</a></li>
+        <li class="active">Registered Participants</li>
+    </ol>
+    <div class="row">
+        <div class="col-md-12">
+		<h2>Registered Participants</h2>
+        <h4>Currently {{ object_list | length }} participants</h4>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>E-mail Address</th>
+                        <th>Invitation Type</th>
+                    </tr>
+                    </thead>
+                    {% for participant in object_list %}
+                        <tr>
+                            <td>{{ participant.name }}</td>
+                            <td>{{ participant.email_address }}</td>
+                            <td>
+                                {% if participant.company %}
+                                Company
+                                {% elif participant.user  %}
+                                Armada Member
+                                {% else %}
+                                External
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+        </div>
+    </div>
+{% endblock %}
