@@ -36,7 +36,8 @@ class Participant(models.Model):
 
 class Invitation(models.Model):
 	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
-	token = models.CharField(max_length = 255, null = True, blank = False, default = uuid.uuid4)
+	token = models.CharField(max_length = 255, null = True, blank = False, default = uuid.uuid4, unique = True)
+	user = models.ForeignKey(User, blank = True, null = True, on_delete = models.CASCADE, related_name = 'banquet_invitation_user')
 	participant = models.ForeignKey(Participant, blank = True, null = True, on_delete = models.CASCADE) # filled in when the participant has been created from this invitation
 	name = models.CharField(max_length = 75, blank = True, null = True)
 	email_address = models.CharField(max_length = 75, blank = True, null = True)

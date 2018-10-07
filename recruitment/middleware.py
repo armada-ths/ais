@@ -46,7 +46,9 @@ class LoginRequiredMiddleware:
         if path.startswith("/journal/ics/"):
             return
 
-        if re.match(r'/banquet/invitation/[a-zA-z0-9\-]+$', path): return
+        print(path)
+
+        if re.match(r'/banquet/invitation/[a-zA-z0-9\-]+(/create|/update|/thank_you){0,1}$', path): return
 
         for prefix in url_prefix_exceptions:
             if path.startswith(prefix, 0, len(prefix)):

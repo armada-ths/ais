@@ -286,7 +286,7 @@ def export_invitations(request, year):
     for invitation in invitations:
         token = invitation.token
         #if external
-        if not invitation.participant.user:
+        if invitation.user is None:
             link = request.build_absolute_uri(
                 reverse(
                     'external_invite_redirect',
