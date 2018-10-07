@@ -19,7 +19,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms import modelform_factory
 
 from django import forms
-from django.views.generic import CreateView, ListView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView, RedirectView, UpdateView
 
 from fair.models import Fair
 from people.models import Profile
@@ -30,11 +30,119 @@ from people.models import Language, Profile
 from .models import Banquet, Participant, Invitation
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm
 
+
+#External Invite
+class ExternalInviteRedirectView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        """
+        Check if object exists by token
+        if it does send to updateview
+        """
+        invitation = Invitation.objects.get(token=self.kwargs["token"])
+        if invitation.participant:
+            return reverse_lazy('external_invite_update', kwargs=self.kwargs, current_app='banquet')
+        else:
+            return reverse_lazy('external_invite_create', kwargs=self.kwargs, current_app='banquet')
+
+class ExternalInviteUpdateView(UpdateView):
+    """
+    UpdateView for external
+    """
+    model = Participant
+    form_class = ExternalParticipantForm
+    template_name = 'banquet/invite.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Get invitation object
+        """
+        self.invitation = get_object_or_404(Invitation, token=self.kwargs["token"])
+        self.participant = self.invitation.participant
+        self.year = self.invitation.banquet.fair.year
+        return super(ExternalInviteUpdateView, self).dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        """
+        Set partipant as what we are updating
+        """
+        return self.participant
+
+    def get_success_url(self):
+        """
+        We have some kwargs e.g. year that we need to send
+        """
+        return reverse_lazy('external_invite_thankyou', kwargs=self.kwargs, current_app='banquet')
+
+    def get_context_data(self, **kwargs):
+        """
+        Adding year
+        """
+        context = super(ExternalInviteUpdateView, self).get_context_data(**kwargs)
+        context['year'] = self.year
+        return context
+
+class ExternalInviteCreateView(CreateView):
+    """
+    Invite view for students and invitees (excl. companies)
+    """
+    form_class = ExternalParticipantForm
+    template_name = 'banquet/invite.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Checks if valid token
+        """
+        token = self.kwargs["token"]
+
+        if not Invitation.objects.filter(token=token).exists():
+            return HttpResponseForbidden()
+        self.invitation = get_object_or_404(Invitation, token = token)
+
+        if(self.invitation.participant):
+            return redirect(reverse_lazy('external_invite_update', kwargs=self.kwargs, current_app='banquet'))
+        else:
+            self.year = self.invitation.banquet.fair.year
+            return super(ExternalInviteCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        """
+        We have some kwargs e.g. year that we need to send
+        """
+        return reverse_lazy('external_invite_thankyou', kwargs=self.kwargs, current_app='banquet')
+
+    def get_initial(self):
+        """
+        Returns the initial data to use for forms on this view.
+        """
+        initial = super(ExternalInviteCreateView, self).get_initial()
+        # kinda ugly, prob better to modify model
+        initial['name'] = self.invitation.name
+        initial['email_address'] = self.invitation.email_address
+
+        return initial
+
+    def get_context_data(self, **kwargs):
+        """
+        Adding year
+        """
+        context = super(ExternalInviteCreateView, self).get_context_data(**kwargs)
+        context['year'] = self.year
+        return context
+
+    def form_valid(self, form):
+        form.instance.banquet = self.invitation.banquet
+        form.instance.email_address = self.invitation.email_address
+        self.object = form.save()
+        self.invitation.participant = self.object
+        self.invitation.save()
+        return super(ExternalInviteCreateView, self).form_valid(form)
+
 class GeneralMixin(object):
     """
     Shared functions of Banquet pages
     We will always need to add use some parameters e.g. year banquet
     """
+
     def dispatch(self, request, *args, **kwargs):
         """
         Adding year, fair as parameters
@@ -44,6 +152,7 @@ class GeneralMixin(object):
         self.fair = get_object_or_404(Fair, year=self.year)
         # TODO: Allow for multiple banquets in a year
         self.banquet = Banquet.objects.get(fair=self.fair)
+
         return super(GeneralMixin, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -55,30 +164,60 @@ class GeneralMixin(object):
         context['fair'] = self.fair
         return context
 
-class InviteCreateFormMixin(GeneralMixin,object):
-    """
-    Shared form_valid for invite createViews
-    """
-    def form_valid(self, form):
-        """
-        Modified so form doesn't need to have banquet,
-        """
-        form.instance.banquet = self.banquet
+class InternalInviteRedirectView(GeneralMixin, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        if Invitation.objects.filter(banquet=self.banquet, participant__user=self.request.user).exists():
+            return reverse_lazy('internal_invite_update', kwargs=self.kwargs, current_app='banquet')
+        else:
+            return reverse_lazy('internal_invite_create', kwargs=self.kwargs, current_app='banquet')
 
-        return super(InviteCreateFormMixin, self).form_valid(form)
+class InternalInviteUpdateView(GeneralMixin, UpdateView):
+    """
+    Invite view for already registered students
+    """
+    model = Participant
+    form_class = InternalParticipantForm
+    template_name = 'banquet/internal_invite.html'
 
-class InternalInviteView(InviteCreateFormMixin, CreateView):
+    def get_object(self):
+        """
+        Which object are we updating
+        """
+        return get_object_or_404(Participant, banquet=self.banquet, user=self.request.user)
+
+    def get_success_url(self):
+        """
+        We have some kwargs e.g. year that we need to send
+        """
+        return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
+
+class InternalInviteCreateView(GeneralMixin, CreateView):
     """
     Invite view for already registered students
     """
     form_class = InternalParticipantForm
     template_name = 'banquet/internal_invite.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        @overites GeneralMixin >:(
+        For security
+        Redirects to updateview if object exists
+        """
+        self.user = self.request.user
+        self.year = self.kwargs['year']
+        self.fair = get_object_or_404(Fair, year=self.year)
+        # TODO: Allow for multiple banquets in a year
+        self.banquet = Banquet.objects.get(fair=self.fair)
+        if Invitation.objects.filter(banquet=self.banquet, participant__user=self.request.user).exists():
+            return redirect(reverse_lazy('internal_invite_update', kwargs=self.kwargs, current_app='banquet'))
+        return super(InternalInviteCreateView, self).dispatch(request, *args, **kwargs)
+
     def get_initial(self):
         """
         Returns the initial data to use for forms on this view.
         """
-        initial = super(InternalInviteView, self).get_initial()
+        initial = super(InternalInviteCreateView, self).get_initial()
         user_profile = Profile.objects.get(user=self.user)
         # kinda ugly, prob better to modify model
         initial['name'] = self.user.get_full_name()
@@ -95,56 +234,25 @@ class InternalInviteView(InviteCreateFormMixin, CreateView):
 
     def form_valid(self, form):
         """
-        Modified so form doesn't need to have user
+        Modified so form doesn't need to have user, banquet
+        Also creates an invitation
         """
         form.instance.user = self.user
-        return super(InternalInviteView, self).form_valid(form)
-
-class ExternalInviteView(InviteCreateFormMixin, CreateView):
-    """
-    Invite view for students and invitees (excl. companies)
-    """
-    form_class = ExternalParticipantForm
-    template_name = 'banquet/invite.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Checks if valid token
-        """
-        token = self.kwargs["token"]
-
-        if not Invitation.objects.filter(token=token).exists():
-            return HttpResponseForbidden()
-        self.invitation = get_object_or_404(Invitation, token = token)
-        self.kwargs["year"] = self.invitation.banquet.fair.year
-        return super(ExternalInviteView, self).dispatch(request, *args, **kwargs)
-
-    def get_success_url(self):
-        """
-        We have some kwargs e.g. year that we need to send
-        """
-        return reverse_lazy('banquet_thank_you', kwargs=self.kwargs, current_app='banquet')
-
-    def get_initial(self):
-        """
-        Returns the initial data to use for forms on this view.
-        """
-        initial = super(ExternalInviteView, self).get_initial()
-        # kinda ugly, prob better to modify model
-        initial['name'] = self.invitation.name
-        initial['email_address'] = self.invitation.email_address
-
-        return initial
-
-    def form_valid(self, form):
         form.instance.banquet = self.banquet
-        form.instance.email_address = self.invitation.email_address
+        # participant
         self.object = form.save()
-        self.invitation.participant = self.object
-        self.invitation.save()
-        return super(ExternalInviteView, self).form_valid(form)
+        invitation = Invitation.create(
+            banquet=self.banquet,
+            participant=self.object,
+            name=form.instance.name,
+            email_address=form.instance.email_address,
+            reason="Armada Member",
+            price=0
+        )
+        invitation.save()
+        return super(InternalInviteCreateView, self).form_valid(form)
 
-class SendInviteCreateView(InviteCreateFormMixin, CreateView):
+class SendInviteCreateView(GeneralMixin, CreateView):
     """
     Banquet group can set who to invite
     """
@@ -153,6 +261,10 @@ class SendInviteCreateView(InviteCreateFormMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
+
+    def form_valid(self, form):
+        form.instance.banquet = self.banquet
+        return super(SendInviteCreateView, self).form_valid(form)
 
 def export_invitations(request, year):
     """
@@ -177,9 +289,8 @@ def export_invitations(request, year):
         # get absolute path of invite link
         link = request.build_absolute_uri(
             reverse(
-                'external_invite',
-                kwargs={"token":token,"year":year},
-                current_app='banquet'
+                'external_invite_redirect',
+                kwargs={"token":token},
             )
         )
 
@@ -213,5 +324,5 @@ class ParticipantsListView(GeneralMixin, ListView):
     def get_queryset(self):
         return Participant.objects.filter(banquet=self.banquet)
 
-class ThankYouView(GeneralMixin, TemplateView):
+class ThankYouView(TemplateView):
     template_name='banquet/thank_you.html'

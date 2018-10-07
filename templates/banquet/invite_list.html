@@ -25,7 +25,7 @@
 	{% if perms.banquet.base %}
         <div class="row">
             <div class="col-md-12">
-	    	    <h2>External Invites</h2>
+	    	    <h2>Invites</h2>
 
                 <p>
                     <a href="{% url "send_invite" fair.year %}">
@@ -53,6 +53,7 @@
                         <tr>
                             <th>Name</th>
                             <th>E-mail Address</th>
+                            <th>Reason</th>
                             <th>Status</th>
                         </tr>
                         </thead>
@@ -60,6 +61,7 @@
                             <tr>
                                 <td>{{ invite.name }}</td>
                                 <td>{{ invite.email_address}}</td>
+                                <td>{{ invite.reason}}</td>
                                 <td>
                                     {% if invite.denied %}
                                         <span class="label label-danger">Denied</span>

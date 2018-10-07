@@ -25,7 +25,7 @@ class Participant(models.Model):
 	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
 	company = models.ForeignKey(Company, blank = True, null = True, on_delete = models.CASCADE)
 	user = models.ForeignKey(User, blank = True, null = True, on_delete = models.CASCADE)
-	name = models.CharField(max_length = 75, blank = True, null = True)          # None if a user is provided, required for others
+	name = models.CharField(max_length = 75, blank = True, null = True)	     # None if a user is provided, required for others
 	email_address = models.EmailField(max_length = 75, blank = True, null = True, verbose_name = 'E-mail address') # None if a user is provided, required for others
 	phone_number = models.CharField(max_length = 75, blank = True, null = True)  # None if a user is provided, required for others
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
@@ -43,5 +43,16 @@ class Invitation(models.Model):
 	reason = models.CharField(max_length = 75, blank = True, null = True)
 	price = models.PositiveIntegerField() # can be zero
 	denied = models.BooleanField(default=False)
+
+	@classmethod
+	def create(cls, banquet, participant, name, email_address, reason, price):
+		return cls(
+			banquet=banquet,
+			participant=participant,
+			name=name,
+			email_address=email_address,
+			reason=reason,
+			price=price
+		)
 
 	def __str__(self): return (self.name)
