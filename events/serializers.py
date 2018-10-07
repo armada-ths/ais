@@ -56,7 +56,8 @@ def team(team):
 def participant(participant):
     data = {
         'fee_payed': participant is not None and participant.fee_payed_s,
-        'signup_complete': participant is not None and participant.signup_complete
+        'signup_complete': participant is not None and participant.signup_complete,
+        'qr_code': participant.assigned_name()
     }
 
     return data

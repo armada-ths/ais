@@ -23,6 +23,7 @@ class QRCode extends Component {
                   size={256}
                   fgColor={theme.palette.primary.main}
                   value={value}
+                  level="M"
               />
             </Grid>
             <Grid item>
