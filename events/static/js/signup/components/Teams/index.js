@@ -39,6 +39,7 @@ class Teams extends Component {
       classes,
       teams,
       selectedTeam,
+      currentTeamId,
       handleCreateTeam,
       handleSelectTeam,
       handleJoinTeam,
@@ -74,9 +75,9 @@ class Teams extends Component {
             <Grid item sm={6} xs={12}>
               {selectedTeam && (
                   <TeamInformation
-                      name={selectedTeam.name}
-                      members={selectedTeam.members}
-                      canJoin={selectedTeam.number_of_members < selectedTeam.capacity}
+                      team={selectedTeam}
+                      canJoin={selectedTeam.number_of_members < selectedTeam.capacity && selectedTeam.id !== currentTeamId}
+                      canLeave={selectedTeam.id === currentTeamId}
                       handleJoinTeam={handleJoinTeam}
                       handleLeaveTeam={handleLeaveTeam}
                   />

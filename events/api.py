@@ -131,7 +131,7 @@ def join_team(request, event_pk, team_pk):
 
     participant = Participant.objects.get(user_s=request.user, event=event)
 
-    TeamMember.objects.update_or_create(participant=participant, defaults={'team': team})
+    TeamMember.objects.update_or_create(participant=participant, defaults={'team': team, 'leader': False})
 
     teams = Team.objects.filter(event=event).all()
 

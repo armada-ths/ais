@@ -15,7 +15,7 @@ class Manage extends Component {
     super(props);
 
     this.state = {
-      selectedTeamId: null,
+      selectedTeamId: props.currentTeamId,
       tabIndex: 0
     };
 
@@ -68,7 +68,7 @@ class Manage extends Component {
   }
 
   render() {
-    const {teams, width, qrCode} = this.props;
+    const {teams, width, qrCode, currentTeamId} = this.props;
     const {selectedTeamId, tabIndex} = this.state;
 
     const selectedTeam = teams[selectedTeamId];
@@ -90,6 +90,7 @@ class Manage extends Component {
               <Teams
                   teams={teams}
                   selectedTeam={selectedTeam}
+                  currentTeamId={currentTeamId}
                   handleCreateTeam={this.handleCreateTeam}
                   handleSelectTeam={this.handleSelectTeam}
                   handleJoinTeam={this.handleJoinTeam}

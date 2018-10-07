@@ -11,31 +11,33 @@ import RemovePeopleIcon from 'mdi-material-ui/AccountRemove';
 
 class TeamInformation extends Component {
   render() {
-    const {name, members, canJoin, handleJoinTeam, handleLeaveTeam} = this.props;
+    const {team, canJoin, canLeave, handleJoinTeam, handleLeaveTeam} = this.props;
 
     return (
         <Fragment>
-          <List disablePadding subheader={<ListSubheader disableGutters>Members of {name}</ListSubheader>}>
-            {members.map(({name, leader}) =>
+          <List disablePadding subheader={<ListSubheader disableGutters>Members of {team.name}</ListSubheader>}>
+            {team.members.map(({name, leader}) =>
                 <ListItem key={name}>
                   <ListItemText primary={name} secondary={leader ? 'Leader' : ''}/>
                 </ListItem>
             )}
-            <Fragment>
-              <Divider/>
-              <ListItem button disabled={!canJoin} onClick={handleJoinTeam}>
-                <ListItemIcon>
-                  <AddPeopleIcon/>
-                </ListItemIcon>
-                <ListItemText primary="Join team"/>
-              </ListItem>
-              <ListItem button disabled={!canJoin} onClick={handleLeaveTeam}>
-                <ListItemIcon>
-                  <RemovePeopleIcon/>
-                </ListItemIcon>
-                <ListItemText primary="Leave team"/>
-              </ListItem>
-            </Fragment>
+            <Divider/>
+            {canJoin && (
+                <ListItem button onClick={handleJoinTeam}>
+                  <ListItemIcon>
+                    <AddPeopleIcon/>
+                  </ListItemIcon>
+                  <ListItemText primary="Join team"/>
+                </ListItem>
+            )}
+            {canLeave && (
+                <ListItem button onClick={handleLeaveTeam}>
+                  <ListItemIcon>
+                    <RemovePeopleIcon/>
+                  </ListItemIcon>
+                  <ListItemText primary="Leave team"/>
+                </ListItem>
+            )}
           </List>
         </Fragment>
     )

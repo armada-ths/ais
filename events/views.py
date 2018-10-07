@@ -124,7 +124,6 @@ def event_signup(request, year, event_pk):
         'signup_url': signup_url,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'participant': serializers.participant(participant)
-
     }
 
     return render(request, 'events/event_signup.html', {

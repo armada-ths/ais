@@ -63,8 +63,9 @@ def team_member(team_member):
 
 def participant(participant):
     data = {
-        'fee_payed': participant is not None and participant.fee_payed_s,
-        'signup_complete': participant is not None and participant.signup_complete,
+        'fee_payed': participant.fee_payed_s,
+        'signup_complete': participant.signup_complete,
+        'team_id': participant.team().id if participant.team() else None,
         'qr_code': participant.assigned_name()
     }
 

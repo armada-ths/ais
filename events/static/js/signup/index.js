@@ -73,6 +73,7 @@ class App extends Component {
               {participant.signup_complete ? (
                   <Manage
                       qrCode={participant.qr_code}
+                      currentTeamId={participant.team_id}
                       event={event}
                       teams={teams}
                       dispatcher={this.dispatcher}
