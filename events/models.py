@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 from accounting.models import Product
 from fair.models import Fair
@@ -116,6 +119,24 @@ class Participant(models.Model):
             return self.user_cr.get_full_name()
         else:
             return self.name
+
+
+class CheckInToken(models.Model):
+    value = models.CharField(max_length=32, unique=True, verbose_name='The randomly generated 32 character long string of the token')
+    check_in_timestamp = models.DateTimeField(null=True, verbose_name='When the token was last used to check in')
+    check_in_counter = models.IntegerField(default=0, verbose_name='How many times the token has been used. For none-fraudulent use, '
+                                                                   'this should be 0 or 1.')
+    participant = models.OneToOneField(Participant, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=Participant)
+def generate_token(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    token = get_random_string(length=32)
+
+    CheckInToken.objects.create(value=token, participant=instance)
 
 
 class TeamMember(models.Model):

@@ -123,7 +123,7 @@ def event_signup(request, year, event_pk):
         'payment_url': payment_url,
         'signup_url': signup_url,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-        'participant': serializers.participant(participant)
+        'participant': serializers.participant(participant) if participant else None
     }
 
     return render(request, 'events/event_signup.html', {

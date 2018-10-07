@@ -68,7 +68,7 @@ class Manage extends Component {
   }
 
   render() {
-    const {teams, width, qrCode, currentTeamId} = this.props;
+    const {teams, width, checkInToken, currentTeamId} = this.props;
     const {selectedTeamId, tabIndex} = this.state;
 
     const selectedTeam = teams[selectedTeamId];
@@ -98,7 +98,7 @@ class Manage extends Component {
               />
           )}
           {tabIndex === 1 && (
-              <QRCode value={qrCode}/>
+              <QRCode value={checkInToken}/>
           )}
         </Fragment>
     )

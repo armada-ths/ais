@@ -72,7 +72,7 @@ class App extends Component {
               <Header event={event}/>
               {participant.signup_complete ? (
                   <Manage
-                      qrCode={participant.qr_code}
+                      checkInToken={participant.check_in_token}
                       currentTeamId={participant.team_id}
                       event={event}
                       teams={teams}

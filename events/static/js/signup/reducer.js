@@ -2,15 +2,24 @@ import {INIT, SET_TEAMS, UPDATE_PARTICIPANT} from "./actions";
 
 const initialState = {
   teams: {},
-  participant: {}
+  participant: {
+    signup_complete: false,
+    fee_payed: false
+  }
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case INIT:
       return {
-        participant: action.participant,
-        teams: action.teams,
+        participant: {
+          ...state.participant,
+          ...action.participant
+        },
+        teams: {
+          ...state.teams,
+          ...action.teams,
+        }
       };
     case UPDATE_PARTICIPANT:
       return {
