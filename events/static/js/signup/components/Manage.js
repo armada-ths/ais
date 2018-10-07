@@ -21,9 +21,8 @@ class Manage extends Component {
 
     this.handleSelectTeam = this.handleSelectTeam.bind(this);
     this.handleJoinTeam = this.handleJoinTeam.bind(this);
+    this.handleLeaveTeam = this.handleLeaveTeam.bind(this);
     this.handleCreateTeam = this.handleCreateTeam.bind(this);
-
-
     this.handleTabSwitch = this.handleTabSwitch.bind(this);
   }
 
@@ -38,6 +37,16 @@ class Manage extends Component {
     const {selectedTeamId} = this.state;
 
     API.joinTeam(event.id, selectedTeamId)
+        .then(response => {
+          const mappedTeams = keyBy(response.data.teams, 'id');
+          dispatcher(setTeams(mappedTeams));
+        });
+  }
+
+  handleLeaveTeam() {
+    const {event, dispatcher} = this.props;
+
+    API.leaveTeam(event.id)
         .then(response => {
           const mappedTeams = keyBy(response.data.teams, 'id');
           dispatcher(setTeams(mappedTeams));
@@ -84,6 +93,7 @@ class Manage extends Component {
                   handleCreateTeam={this.handleCreateTeam}
                   handleSelectTeam={this.handleSelectTeam}
                   handleJoinTeam={this.handleJoinTeam}
+                  handleLeaveTeam={this.handleLeaveTeam}
               />
           )}
           {tabIndex === 1 && (

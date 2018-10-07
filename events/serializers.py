@@ -45,9 +45,17 @@ def team(team):
         'id': team.pk,
         'name': team.name,
         'capacity': team.max_capacity,
-        'leader': team.leader.get_full_name() if team.leader is not None else None,
-        'members': [member.participant.__str__() for member in team.teammember_set.all()],
+        'members': [team_member(member) for member in team.teammember_set.all()],
         'number_of_members': team.number_of_members()
+    }
+
+    return data
+
+
+def team_member(team_member):
+    data = {
+        'name': team_member.participant.__str__(),
+        'leader': team_member.leader
     }
 
     return data

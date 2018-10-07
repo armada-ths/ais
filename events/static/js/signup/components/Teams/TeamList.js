@@ -58,7 +58,7 @@ class TeamList extends Component {
                 />
                 <List className={classes.list}>
                   {map(sortedTeams, team => (
-                      <ListItem key={team.id} button onClick={() => handleSelectTeam(team.id)}>
+                      <ListItem disableGutters key={team.id} button onClick={() => handleSelectTeam(team.id)}>
                         <ListItemText
                             primary={team.name}
                         />

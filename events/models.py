@@ -57,7 +57,6 @@ class Invitation(models.Model):
 class Team(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     name = models.CharField(max_length=75, blank=False, null=False)
-    leader = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)  # None if a team is created by an administrator
     max_capacity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Max number of team members')  # None => no limit
     allow_join_cr = models.BooleanField(default=True, blank=False, null=False,
                                         verbose_name='Allow company representatives to join the team')
@@ -67,7 +66,7 @@ class Team(models.Model):
         return self.number_of_members() >= self.max_capacity
 
     def number_of_members(self):
-        return self.teammember_set.count() + (1 if self.leader is not None else 0)
+        return self.teammember_set.count()
 
     def __str__(self):
         return self.name
@@ -119,6 +118,10 @@ class Participant(models.Model):
 class TeamMember(models.Model):
     team = models.ForeignKey(Team, blank=False, null=False, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
+    leader = models.BooleanField(blank=False, null=False, default=False)
+
+    class Meta:
+        unique_together = ('team', 'leader')
 
     def __str__(self):
         return self.participant.__str__() + self.team.__str__()
