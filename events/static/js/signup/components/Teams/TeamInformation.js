@@ -4,9 +4,11 @@ import ListItem from "@material-ui/core/es/ListItem/ListItem";
 import ListItemText from "@material-ui/core/es/ListItemText/ListItemText";
 import Divider from "@material-ui/core/es/Divider/Divider";
 import ListSubheader from "@material-ui/core/es/ListSubheader/ListSubheader";
+import ListItemIcon from "@material-ui/core/es/ListItemIcon/ListItemIcon";
+import AddPeopleIcon from 'mdi-material-ui/AccountPlus';
 
 
-class Team extends Component {
+class TeamInformation extends Component {
   render() {
     const {name, leader, members, canJoin, handleJoinTeam} = this.props;
 
@@ -26,6 +28,9 @@ class Team extends Component {
             <Fragment>
               <Divider/>
               <ListItem button disabled={!canJoin} onClick={handleJoinTeam}>
+                <ListItemIcon>
+                  <AddPeopleIcon/>
+                </ListItemIcon>
                 <ListItemText primary="Join team"/>
               </ListItem>
             </Fragment>
@@ -35,4 +40,4 @@ class Team extends Component {
   }
 }
 
-export default Team;
+export default TeamInformation;

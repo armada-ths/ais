@@ -127,19 +127,15 @@ def join_team(request, event_pk, team_pk):
         return JsonResponse({'message': 'Authentication required.'}, status=403)
 
     if team.is_full():
-        return JsonResponse({'message': 'Team is full.'}, status=400)
+        return JsonResponse({'message': 'TeamInformation is full.'}, status=400)
 
     participant = Participant.objects.get(user_s=request.user, event=event)
 
-    if team.leader is None:
-        # TODO Remove as leader if leader of another team
-        TeamMember.objects.filter(participant=participant).delete()
-        team.leader = request.user
-        team.save()
-    else:
-        TeamMember.objects.update_or_create(participant=participant, defaults={'team': team})
+    TeamMember.objects.update_or_create(participant=participant, defaults={'team': team})
 
-    return JsonResponse({'team': serializers.team(team)}, status=201)
+    teams = Team.objects.filter(event=event).all()
+
+    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=201)
 
 
 @require_POST
@@ -161,11 +157,13 @@ def create_team(request, event_pk):
     #   Check if team name is take
     #   Check (and remove) if user is already member (or leader) of a team
 
-    team = Team.objects.create(
+    Team.objects.create(
         event=event,
         name=data['name'],
         leader=request.user,
         max_capacity=event.teams_default_max_capacity,
     )
 
-    return JsonResponse({'team': serializers.team(team)}, status=200)
+    teams = Team.objects.filter(event=event).all()
+
+    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)
