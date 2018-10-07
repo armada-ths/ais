@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.utils.http import urlquote
 from django.core.urlresolvers import reverse
-import datetime
+import datetime, re
 
 
 class LoginRequiredMiddleware:
@@ -31,9 +31,7 @@ class LoginRequiredMiddleware:
             '/',
             '/register/', '/register/user', '/register/company',
             '/register/password_reset/', '/register/password_reset/done/',
-            '/register/external/signup',
-            '/fairs/' + str(current_year) + '/banquet/signup',
-            '/fairs/' + str(current_year) + '/banquet/placement',
+            '/register/external/signup'
         }
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
@@ -47,6 +45,8 @@ class LoginRequiredMiddleware:
 
         if path.startswith("/journal/ics/"):
             return
+
+        if re.match(r'/banquet/invitation/[a-zA-z0-9\-]+$', path): return
 
         for prefix in url_prefix_exceptions:
             if path.startswith(prefix, 0, len(prefix)):

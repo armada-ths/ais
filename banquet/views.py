@@ -116,6 +116,7 @@ class ExternalInviteView(InviteCreateFormMixin, CreateView):
         if not Invitation.objects.filter(token=token).exists():
             return HttpResponseForbidden()
         self.invitation = get_object_or_404(Invitation, token = token)
+        self.kwargs["year"] = self.invitation.banquet.fair.year
         return super(ExternalInviteView, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):

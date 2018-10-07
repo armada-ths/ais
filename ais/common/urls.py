@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^$', login_redirect),
     url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),
     url(r'^journal/', include('journal.urls')),
+    url(r'^banquet/', include('banquet.urls_external')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
