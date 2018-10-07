@@ -285,16 +285,23 @@ def export_invitations(request, year):
     writer.writerow(['name','email_address','invite_link'])
     for invitation in invitations:
         token = invitation.token
-        # dynamic works in any domain
-        # get absolute path of invite link
-        link = request.build_absolute_uri(
-            reverse(
-                'external_invite_redirect',
-                kwargs={"token":token},
+        #if external
+        if not invitation.participant.user:
+            link = request.build_absolute_uri(
+                reverse(
+                    'external_invite_redirect',
+                    kwargs={"token":token},
+                )
             )
-        )
-
+        else:
+            link = request.build_absolute_uri(
+                reverse(
+                    'internal_invite_redirect',
+                    kwargs={"year":year},
+                )
+            )
         writer.writerow([invitation.name, invitation.email_address, link])
+        token = None
     return response
 
 class SentInvitationsListView(GeneralMixin, ListView):
