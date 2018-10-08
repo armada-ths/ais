@@ -46,14 +46,15 @@ class Invitation(models.Model):
 	denied = models.BooleanField(default=False)
 
 	@classmethod
-	def create(cls, banquet, participant, name, email_address, reason, price):
+	def create(cls, banquet, participant, name, email_address, reason, price, user):
 		return cls(
 			banquet=banquet,
 			participant=participant,
 			name=name,
 			email_address=email_address,
 			reason=reason,
-			price=price
+			price=price,
+			user=user,
 		)
 
 	def __str__(self): return (self.name)

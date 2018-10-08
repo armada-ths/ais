@@ -38,7 +38,7 @@ class ExternalInviteRedirectView(RedirectView):
         Check if object exists by token
         if it does send to updateview
         """
-        invitation = Invitation.objects.get(token=self.kwargs["token"])
+        invitation = get_object_or_404(Invitation, token=self.kwargs["token"])
         if invitation.participant:
             return reverse_lazy('external_invite_update', kwargs=self.kwargs, current_app='banquet')
         else:
@@ -71,7 +71,7 @@ class ExternalInviteUpdateView(UpdateView):
         """
         We have some kwargs e.g. year that we need to send
         """
-        return reverse_lazy('external_invite_thankyou', kwargs=self.kwargs, current_app='banquet')
+        return reverse_lazy('external_invite_thankyou', kwargs={"year":self.kwargs["year"]}, current_app='banquet')
 
     def get_context_data(self, **kwargs):
         """
@@ -166,7 +166,9 @@ class GeneralMixin(object):
 
 class InternalInviteRedirectView(GeneralMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        if Invitation.objects.filter(banquet=self.banquet, participant__user=self.request.user).exists():
+        invitation = get_object_or_404(Invitation, token = self.kwargs["token"], user = self.request.user)
+        #actual redirect
+        if invitation.participant:
             return reverse_lazy('internal_invite_update', kwargs=self.kwargs, current_app='banquet')
         else:
             return reverse_lazy('internal_invite_create', kwargs=self.kwargs, current_app='banquet')
@@ -183,13 +185,13 @@ class InternalInviteUpdateView(GeneralMixin, UpdateView):
         """
         Which object are we updating
         """
-        return get_object_or_404(Participant, banquet=self.banquet, user=self.request.user)
+        return get_object_or_404(Invitation, token = self.kwargs["token"], user = self.request.user)
 
     def get_success_url(self):
         """
         We have some kwargs e.g. year that we need to send
         """
-        return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
+        return reverse_lazy('invite_list', kwargs={"year" : self.kwargs["year"]}, current_app='banquet')
 
 class InternalInviteCreateView(GeneralMixin, CreateView):
     """
@@ -200,17 +202,17 @@ class InternalInviteCreateView(GeneralMixin, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        @overites GeneralMixin >:(
         For security
         Redirects to updateview if object exists
         """
         self.user = self.request.user
         self.year = self.kwargs['year']
-        self.fair = get_object_or_404(Fair, year=self.year)
-        # TODO: Allow for multiple banquets in a year
-        self.banquet = Banquet.objects.get(fair=self.fair)
-        if Invitation.objects.filter(banquet=self.banquet, participant__user=self.request.user).exists():
+        self.token = self.kwargs['token']
+        self.invitation = get_object_or_404(Invitation, token = self.token, user=self.request.user)
+        if self.invitation.participant:
             return redirect(reverse_lazy('internal_invite_update', kwargs=self.kwargs, current_app='banquet'))
+        self.banquet = self.invitation.banquet
+        self.user_profile = Profile.objects.get(user=self.user)
         return super(InternalInviteCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
@@ -218,11 +220,10 @@ class InternalInviteCreateView(GeneralMixin, CreateView):
         Returns the initial data to use for forms on this view.
         """
         initial = super(InternalInviteCreateView, self).get_initial()
-        user_profile = Profile.objects.get(user=self.user)
         # kinda ugly, prob better to modify model
         initial['name'] = self.user.get_full_name()
         initial['email_address'] = self.user.email
-        initial['phone_number'] = user_profile.phone_number
+        initial['phone_number'] = self.user_profile.phone_number
 
         return initial
 
@@ -230,26 +231,18 @@ class InternalInviteCreateView(GeneralMixin, CreateView):
         """
         We have some kwargs e.g. year that we need to send
         """
-        return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
+        return reverse_lazy('invite_list', kwargs={"year":self.kwargs["year"]}, current_app='banquet')
 
     def form_valid(self, form):
         """
         Modified so form doesn't need to have user, banquet
         Also creates an invitation
         """
+        form.instance.banquet = self.invitation.banquet
         form.instance.user = self.user
-        form.instance.banquet = self.banquet
-        # participant
         self.object = form.save()
-        invitation = Invitation.create(
-            banquet=self.banquet,
-            participant=self.object,
-            name=form.instance.name,
-            email_address=form.instance.email_address,
-            reason="Armada Member",
-            price=0
-        )
-        invitation.save()
+        self.invitation.participant = self.object
+        self.invitation.save()
         return super(InternalInviteCreateView, self).form_valid(form)
 
 class SendInviteCreateView(GeneralMixin, CreateView):
@@ -263,6 +256,10 @@ class SendInviteCreateView(GeneralMixin, CreateView):
         return reverse_lazy('invite_list', kwargs=self.kwargs, current_app='banquet')
 
     def form_valid(self, form):
+        if form.instance.user:
+            form.instance.name = form.instance.user.get_full_name()
+            form.instance.email_address = form.instance.user.email
+
         form.instance.banquet = self.banquet
         return super(SendInviteCreateView, self).form_valid(form)
 
@@ -274,7 +271,6 @@ def export_invitations(request, year):
     # here's why I prefer class based views
     # I already did this before >:(
     fair = get_object_or_404(Fair, year=year)
-    #TODO: handle multiple banquets in a year
     banquet = Banquet.objects.get(fair=fair)
     invitations = Invitation.objects.filter(banquet=banquet)
 
@@ -297,7 +293,7 @@ def export_invitations(request, year):
             link = request.build_absolute_uri(
                 reverse(
                     'internal_invite_redirect',
-                    kwargs={"year":year},
+                    kwargs={"year":year,"token":token}
                 )
             )
         writer.writerow([invitation.name, invitation.email_address, link])
@@ -319,7 +315,7 @@ class SentInvitationsListView(GeneralMixin, ListView):
         """
         context = super(SentInvitationsListView, self).get_context_data(**kwargs)
         ##remove invitation in template if already exists
-        context['participant'] = Participant.objects.filter(user = self.request.user).first()
+        context['user_invitations'] = Invitation.objects.filter(user = self.user)
         return context
 
 class ParticipantsListView(GeneralMixin, ListView):

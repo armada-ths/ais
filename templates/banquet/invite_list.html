@@ -7,20 +7,48 @@
 
 {% block content %}
 
-    {% if not participant %}
-        <div class="jumbotron">
-            <h1 class="display-4">Hello, Armada Family!</h1>
-            <h3> It Is Time For The Banquet.</h3>
-            <hr class="my-4">
-            <p class="lead">
-                <a href="{% url "internal_invite_redirect" fair.year %}">
-                    <button type="button" class="btn btn-success btn-lg btn-block">
-                    Register Now! 
-                    </button>
-                </a>
-            </p>
+        <div class="row">
+            <div class="col-md-12">
+	    	    <h2>Your Banquets</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Banquet Name</th>
+                            <th class="text-right">Registration Link</th>
+				            <th class="text-right">Status</th>
+                        </tr>
+                        </thead>
+                        {% for invite in user_invitations %}
+                            <tr>
+                                <td>{{ invite.banquet }}</td>
+                                <td class="text-right">
+                                    <a href="{% url "internal_invite_redirect" fair.year invite.token %}">
+                                        <button class="btn btn-sm btn-default">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                            {% if invite.participant %}
+                                                Update Info
+                                            {% else %}
+                                                Register
+                                            {% endif %}
+                                        </button>
+                                    </a>
+                                </td>
+                                <td class="text-right">
+                                    {% if invite.denied %}
+                                        <span class="label label-danger">Denied</span>
+                                    {% elif invite.participant %}
+                                        <span class="label label-success">Completed</span>
+                                    {% else %}
+                                        <span class="label label-default">Pending</span>
+                                    {% endif %}
+                                <td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
         </div>
-	{% endif %}
 
 	{% if perms.banquet.base %}
         <div class="row">
@@ -68,8 +96,7 @@
                                     {% elif invite.participant %}
                                         <span class="label label-success">Completed</span>
                                     {% else %}
-                                        <span class="label label-info">Sent</span>
-                    
+                                        <span class="label label-default">Pending</span>
                                     {% endif %}
                                 </td>
                             </tr>
