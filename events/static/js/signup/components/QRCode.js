@@ -21,14 +21,13 @@ class QRCode extends Component {
             <Grid item>
               <QRCodeReact
                   size={256}
-                  fgColor={theme.palette.primary.main}
                   value={value}
-                  level="M"
+                  level="L"
               />
             </Grid>
             <Grid item>
               <Typography variant="subheading">
-                Show this code when checking in to the event! 🤳
+                📸 Show this code when checking in to the event! 🤳
               </Typography>
             </Grid>
           </Grid>

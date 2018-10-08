@@ -1,8 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 
@@ -87,6 +85,7 @@ class Participant(models.Model):
     fee_payed_s = models.BooleanField(default=False)
     attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
     signup_complete = models.BooleanField(blank=False, null=False, default=False, verbose_name='The participant has completed signup')
+    check_in_token = models.CharField(max_length=32, unique=True, default=get_random_string(32))
 
     # Name, email and phone number can be stored either in this model or in the user model depending on if this is a student or not,
     # so we define these help functions to get them easier
@@ -121,22 +120,9 @@ class Participant(models.Model):
             return self.name
 
 
-class CheckInToken(models.Model):
-    value = models.CharField(max_length=32, unique=True, verbose_name='The randomly generated 32 character long string of the token')
-    check_in_timestamp = models.DateTimeField(null=True, verbose_name='When the token was last used to check in')
-    check_in_counter = models.IntegerField(default=0, verbose_name='How many times the token has been used. For none-fraudulent use, '
-                                                                   'this should be 0 or 1.')
-    participant = models.OneToOneField(Participant, on_delete=models.CASCADE)
-
-
-@receiver(post_save, sender=Participant)
-def generate_token(sender, instance, created, **kwargs):
-    if not created:
-        return
-
-    token = get_random_string(length=32)
-
-    CheckInToken.objects.create(value=token, participant=instance)
+class ParticipantCheckIn(models.Model):
+    timestamp = models.DateTimeField(null=True, verbose_name='When the participant checked in at the event')
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
 
 
 class TeamMember(models.Model):

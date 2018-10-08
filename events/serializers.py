@@ -66,7 +66,7 @@ def participant(participant):
         'fee_payed': participant.fee_payed_s,
         'signup_complete': participant.signup_complete,
         'team_id': participant.team().id if participant.team() else None,
-        'check_in_token': participant.checkintoken.value
+        'check_in_token': participant.check_in_token
     }
 
     return data

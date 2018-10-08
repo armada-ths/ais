@@ -1,7 +1,8 @@
 import React, {Component, Fragment} from 'react';
 import ReactDOM from 'react-dom';
 import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
-import {createMuiTheme, withStyles} from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
+import theme from '../theme';
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 import SignupForm from "./components/SignupForm";
 import Manage from './components/Manage';
@@ -12,15 +13,6 @@ import Paper from "@material-ui/core/es/Paper/Paper";
 import {init} from './actions';
 import keyBy from 'lodash/keyBy';
 import withWidth, {isWidthDown} from "@material-ui/core/es/withWidth/withWidth";
-
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: "#01d690",
-      contrastText: "#ffffff"
-    },
-  }
-});
 
 const styles = theme => ({
   root: {

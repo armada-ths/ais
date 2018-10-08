@@ -134,6 +134,11 @@ def event_signup(request, year, event_pk):
 
 
 @permission_required('events.base')
+def qr_scanner(request, year):
+    return render(request, 'events/qr_scanner.html')
+
+
+@permission_required('events.base')
 def team_edit(request, year, event_pk, team_pk):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=event_pk)
