@@ -8,7 +8,8 @@ const config = {
 
   entry: {
     event_form: './events/static/js/event_form/index.js',
-    signup: './events/static/js/signup/index.js'
+    signup: './events/static/js/signup/index.js',
+    qr_scanner: './events/static/js/qr_scanner/index.js'
   },
 
   output: {

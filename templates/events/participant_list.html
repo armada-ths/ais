@@ -10,10 +10,10 @@
   </thead>
   {% for participant in participants %}
     <tr>
-      <td>{{ participant.name }}</td>
+      <td>{{ participant.assigned_name }}</td>
       <td>{{ participant.teammember_set.first.team.name }}</td>
-      <td>{{ participant.email_address }}</td>
-      <td>{{ participant.phone_number }}</td>
+      <td>{{ participant.assigned_email }}</td>
+      <td>{{ participant.assigned_phone_number }}</td>
       <td>
         {% if participant.user_cr %}
           Company rep.

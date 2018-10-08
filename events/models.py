@@ -2,9 +2,11 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 
 from accounting.models import Product
 from fair.models import Fair
+from people.models import Profile
 
 
 class Event(models.Model):
@@ -56,7 +58,6 @@ class Invitation(models.Model):
 class Team(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     name = models.CharField(max_length=75, blank=False, null=False)
-    leader = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)  # None if a team is created by an administrator
     max_capacity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Max number of team members')  # None => no limit
     allow_join_cr = models.BooleanField(default=True, blank=False, null=False,
                                         verbose_name='Allow company representatives to join the team')
@@ -66,7 +67,7 @@ class Team(models.Model):
         return self.number_of_members() >= self.max_capacity
 
     def number_of_members(self):
-        return self.teammember_set.count() + (1 if self.leader is not None else 0)
+        return self.teammember_set.count()
 
     def __str__(self):
         return self.name
@@ -84,6 +85,31 @@ class Participant(models.Model):
     fee_payed_s = models.BooleanField(default=False)
     attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
     signup_complete = models.BooleanField(blank=False, null=False, default=False, verbose_name='The participant has completed signup')
+    check_in_token = models.CharField(max_length=32, unique=True, default=get_random_string(32))
+
+    # Name, email and phone number can be stored either in this model or in the user model depending on if this is a student or not,
+    # so we define these help functions to get them easier
+
+    def assigned_name(self):
+        if self.user_s:
+            return self.user_s.get_full_name()
+        else:
+            return self.name
+
+    def assigned_email(self):
+        if self.user_s:
+            return self.user_s.email
+        else:
+            return self.email_address
+
+    def assigned_phone_number(self):
+        if self.user_s:
+            return Profile.objects.get(user=self.user_s).phone_number
+        else:
+            return self.phone_number
+
+    def team(self):
+        return self.teammember_set.first().team if self.teammember_set.first() is not None else None
 
     def __str__(self):
         if self.user_s:
@@ -94,9 +120,18 @@ class Participant(models.Model):
             return self.name
 
 
+class ParticipantCheckIn(models.Model):
+    timestamp = models.DateTimeField(null=True, verbose_name='When the participant checked in at the event')
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+
+
 class TeamMember(models.Model):
     team = models.ForeignKey(Team, blank=False, null=False, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
+    leader = models.BooleanField(blank=False, null=False, default=False)
+
+    class Meta:
+        unique_together = ('team', 'leader')
 
     def __str__(self):
         return self.participant.__str__() + self.team.__str__()

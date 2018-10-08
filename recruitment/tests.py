@@ -1,14 +1,11 @@
-
-
-from django.test import TestCase, Client
-from django.utils import timezone
 from django.contrib.auth.models import User, Group, Permission
 from django.core.exceptions import PermissionDenied
+from django.test import TestCase, Client
 from django.urls.exceptions import NoReverseMatch
+from django.utils import timezone
 
 from fair.models import Fair
 from lib.image import load_test_image
-
 from .models import RecruitmentPeriod, RecruitmentApplication, Role, RoleApplication, Programme
 
 

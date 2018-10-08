@@ -1,31 +1,38 @@
-import {INIT, UPDATE_PARTICIPANT, UPDATE_TEAM} from "./actions";
+import {INIT, SET_TEAMS, UPDATE_PARTICIPANT} from "./actions";
 
 const initialState = {
   teams: {},
-  participant: {}
+  participant: {
+    signup_complete: false,
+    fee_payed: false
+  }
 };
 
-const reducer = (state = initialState, {type, payload}) => {
-  switch (type) {
+const reducer = (state = initialState, action) => {
+  switch (action.type) {
     case INIT:
-      return payload;
+      return {
+        participant: {
+          ...state.participant,
+          ...action.participant
+        },
+        teams: {
+          ...state.teams,
+          ...action.teams,
+        }
+      };
     case UPDATE_PARTICIPANT:
       return {
         ...state,
         participant: {
           ...state.participant,
-          ...payload.participant
+          ...action.participant
         }
       };
-    case UPDATE_TEAM:
+    case SET_TEAMS:
       return {
         ...state,
-        teams: {
-          ...state.teams,
-          [payload.team.id]: {
-            ...payload.team
-          }
-        }
+        teams: action.teams,
       };
     default:
       return state;

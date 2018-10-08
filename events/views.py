@@ -31,7 +31,8 @@ def save_questions(questions_data, event):
         q, _created = SignupQuestion.objects.update_or_create(pk=pk, defaults=defaults)
         questions.append(q)
 
-    # This should work to override the questions with only the once that were sent, but it doesn't.
+    # TODO This should work to override the questions with only the once that were sent, but it doesn't. So the old questions are not
+    # deleted as they should
     event.signupquestion_set.set(questions)
 
 
@@ -75,6 +76,8 @@ def event_edit(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
     event = get_object_or_404(Event, pk=pk)
 
+    participants = Participant.objects.filter(event=event).select_related('user_s__profile').all()
+
     react_props = {
         'questions': [serializers.signup_question(question) for question in event.signupquestion_set.all()],
         'question_types': dict(SignupQuestion.QUESTION_TYPES)
@@ -93,6 +96,7 @@ def event_edit(request, year, pk):
     return render(request, 'events/event_edit.html', {
         'fair': fair,
         'event': event,
+        'participants': participants,
         'form': form,
         'react_props': json.dumps(react_props)
     })
@@ -119,8 +123,7 @@ def event_signup(request, year, event_pk):
         'payment_url': payment_url,
         'signup_url': signup_url,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-        'participant': serializers.participant(participant)
-
+        'participant': serializers.participant(participant) if participant else None
     }
 
     return render(request, 'events/event_signup.html', {
@@ -128,6 +131,11 @@ def event_signup(request, year, event_pk):
         'participant': participant,
         'react_props': json.dumps(react_props, cls=DjangoJSONEncoder)
     })
+
+
+@permission_required('events.base')
+def qr_scanner(request, year):
+    return render(request, 'events/qr_scanner.html')
 
 
 @permission_required('events.base')

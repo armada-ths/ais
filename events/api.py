@@ -131,15 +131,28 @@ def join_team(request, event_pk, team_pk):
 
     participant = Participant.objects.get(user_s=request.user, event=event)
 
-    if team.leader is None:
-        # TODO Remove as leader if leader of another team
-        TeamMember.objects.filter(participant=participant).delete()
-        team.leader = request.user
-        team.save()
-    else:
-        TeamMember.objects.update_or_create(participant=participant, defaults={'team': team})
+    TeamMember.objects.update_or_create(participant=participant, defaults={'team': team, 'leader': False})
 
-    return JsonResponse({'team': serializers.team(team)}, status=201)
+    teams = Team.objects.filter(event=event).all()
+
+    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=201)
+
+
+@require_POST
+def leave_team(request, event_pk):
+    """
+    Endpoint to leave teams for the event
+    """
+    event = get_object_or_404(Event, pk=event_pk)
+
+    if not request.user:
+        return JsonResponse({'message': 'Authentication required.'}, status=403)
+
+    Participant.objects.get(user_s=request.user, event=event).teammember_set.all().delete()
+
+    teams = Team.objects.filter(event=event).all()
+
+    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)
 
 
 @require_POST
@@ -157,15 +170,14 @@ def create_team(request, event_pk):
 
     data = json.loads(request.body)
 
-    # TODO
-    #   Check if team name is take
-    #   Check (and remove) if user is already member (or leader) of a team
-
     team = Team.objects.create(
         event=event,
         name=data['name'],
-        leader=request.user,
         max_capacity=event.teams_default_max_capacity,
     )
 
-    return JsonResponse({'team': serializers.team(team)}, status=200)
+    TeamMember.objects.update_or_create(participant=participant, defaults={'team': team, 'leader': True})
+
+    teams = Team.objects.filter(event=event).all()
+
+    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)

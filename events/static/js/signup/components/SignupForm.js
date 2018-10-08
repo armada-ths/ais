@@ -8,7 +8,7 @@ import forEach from 'lodash/forEach';
 import isEmpty from 'lodash/isEmpty';
 import find from 'lodash/find';
 import mapValues from 'lodash/mapValues';
-import * as ACTIONS from './actions';
+import {updateParticipant} from '../actions';
 
 import Question from "./Question";
 import Stripe from "./Stripe";
@@ -65,10 +65,7 @@ class SignupForm extends Component {
           "X-CSRFToken": Cookie.get('csrftoken')
         }
       }).then(response => {
-            dispatcher({
-              type: ACTIONS.UPDATE_PARTICIPANT,
-              payload: response.data
-            })
+            dispatcher(updateParticipant(response.data.participant));
           }
       )
     }
@@ -152,7 +149,7 @@ class SignupForm extends Component {
                   {...question}/>)}
             </Grid>
           </Grid>
-          <Grid item>
+          <Grid item sm={12}>
             <Button onClick={this.handleSubmit} variant="contained" color="primary">Sign Up</Button>
           </Grid>
         </Grid>

@@ -9,12 +9,14 @@ const client = axios.create({
   }
 });
 
-const joinTeam = (eventId, teamId) => {
+export const joinTeam = (eventId, teamId) => {
   return client.post(`events/${eventId}/teams/${teamId}`);
 };
 
-const createTeam = (eventId, teamName) => {
-  return client.post(`events/${eventId}/teams`, {name: teamName});
+export const leaveTeam = (eventId) => {
+  return client.post(`events/${eventId}/teams/leave`);
 };
 
-export {joinTeam, createTeam};
+export const createTeam = (eventId, teamName) => {
+  return client.post(`events/${eventId}/teams/create`, {name: teamName});
+};
