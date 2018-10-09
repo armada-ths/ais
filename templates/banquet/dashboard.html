@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block nav-banquet %}
+	<li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>Your invitations</h1>
+	
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Banquet</th>
+					<th>Time and date</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% if invitiations %}
+					{% for invitiation in invitiations %}
+						<tr>
+							<td>
+								<a href="{% url 'banquet_invitation' fair.year invitiation.token %}">{{ invitiation.banquet }}</a>
+								
+								{% if invitiation.denied %}<span class="label label-danger">Not going</span>
+								{% elif invitiation.participant %}<span class="label label-success">Going</span>
+								{% else %}<span class="label label-default">Waiting for your response</span>{% endif %}
+							</td>
+							
+							<td>{{ invitiation.banquet.date }}</td>
+							<td>{{ invitiation.banquet.location }}</td>
+						</tr>
+					{% endfor %}
+				{% else %}
+					<tr><td colspan="3" style="text-align: center;">You have no invitations.</td></tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+	
+	{% if perms.banquet.base %}
+		<h1>Manage banquets</h1>
+		
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Banquet</th>
+						<th>Time and date</th>
+						<th>Location</th>
+						<th style="text-align: right;">Going</th>
+						<th style="text-align: right;">Not going</th>
+						<th style="text-align: right;">Pending</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					{% for banquet in banquets %}
+						<tr>
+							<td><a href="{% url 'banquet_manage' fair.year banquet.pk %}">{{ banquet.name }}</a></td>
+							<td>{{ banquet.date }}</td>
+							<td>{{ banquet.location }}</td>
+							<td style="text-align: right;">{{ banquet.count_going }}</td>
+							<td style="text-align: right;">{{ banquet.count_not_going }}</td>
+							<td style="text-align: right;">{{ banquet.count_pending }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+{% endblock %}
+

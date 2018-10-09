@@ -28,7 +28,7 @@ from exhibitors.models import Exhibitor
 from people.models import Language, Profile
 
 from .models import Banquet, Participant, Invitation
-from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm
+from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm
 
 
 #External Invite
@@ -300,23 +300,139 @@ def export_invitations(request, year):
         token = None
     return response
 
-class SentInvitationsListView(GeneralMixin, ListView):
-    """
-    List who's been invited
-    """
-    template_name = 'banquet/invite_list.html'
+def banquet_dashboard(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	banquets = []
+	
+	for banquet in Banquet.objects.filter(fair = fair):
+		banquets.append({
+			'pk': banquet.pk,
+			'name': banquet.name,
+			'date': banquet.date,
+			'location': banquet.location,
+			'count_going': Participant.objects.filter(banquet = banquet).count(),
+			'count_not_going': Invitation.objects.filter(banquet = banquet, denied = True).count(),
+			'count_pending': Invitation.objects.filter(banquet = banquet, participant = None).exclude(denied = True).count()
+		})
+	
+	return render(request, 'banquet/dashboard.html', {
+		'fair': fair,
+		'invitiations': Invitation.objects.filter(user = request.user),
+		'banquets': banquets
+	})
 
-    def get_queryset(self):
-        return Invitation.objects.filter(banquet=self.banquet)
 
-    def get_context_data(self, **kwargs):
-        """
-        Adding fair,year to our context for consistency with other templates
-        """
-        context = super(SentInvitationsListView, self).get_context_data(**kwargs)
-        ##remove invitation in template if already exists
-        context['user_invitations'] = Invitation.objects.filter(user = self.user)
-        return context
+@permission_required('banquet.base')
+def banquet_manage(request, year, banquet_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	
+	return render(request, 'banquet/manage.html', {
+		'fair': fair,
+		'banquet': banquet
+	})
+
+
+@permission_required('banquet.base')
+def banquet_manage_invitations(request, year, banquet_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	
+	invitations = []
+	
+	for invitation in Invitation.objects.filter(banquet = banquet):
+		if invitation.participant is not None: status = 'GOING'
+		elif invitation.denied: status = 'NOT_GOING'
+		else: status = 'PENDING'
+		
+		invitations.append({
+			'pk': invitation.pk,
+			'name': invitation.user.get_full_name() if invitation.user is not None else invitation.name,
+			'email_address': invitation.user.email if invitation.user is not None else invitation.email_address,
+			'reason': invitation.reason,
+			'status': status,
+			'price': invitation.price
+		})
+	
+	return render(request, 'banquet/manage_invitations.html', {
+		'fair': fair,
+		'banquet': banquet,
+		'invitiations': invitations
+	})
+
+
+@permission_required('banquet.base')
+def banquet_manage_invitation(request, year, banquet_pk, invitation_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	invitation = get_object_or_404(Invitation, banquet = banquet, pk = invitation_pk)
+	
+	return render(request, 'banquet/manage_invitation.html', {
+		'fair': fair,
+		'banquet': banquet,
+		'invitation': invitation
+	})
+
+
+@permission_required('banquet.base')
+def banquet_manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	
+	invitation = get_object_or_404(Invitation, banquet = banquet, pk = invitation_pk) if invitation_pk is not None else None
+	
+	form = SendInvitationForm(request.POST or None, instance = invitation)
+	
+	if request.POST and form.is_valid():
+		form.instance.banquet = banquet
+		invitation = form.save()
+		return redirect('banquet_manage_invitation', fair.year, banquet.pk, invitation.pk)
+	
+	return render(request, 'banquet/manage_invitation_form.html', {
+		'fair': fair,
+		'banquet': banquet,
+		'invitation': invitation,
+		'form': form
+	})
+
+
+@permission_required('banquet.base')
+def banquet_manage_participants(request, year, banquet_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	
+	return render(request, 'banquet/manage_participants.html', {
+		'fair': fair,
+		'banquet': banquet,
+		'participants': Participant.objects.filter(banquet = banquet)
+	})
+
+
+def banquet_invitation(request, year, token):
+	fair = get_object_or_404(Fair, year = year)
+	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
+	
+	participant = invitation.participant if invitation.participant is not None else Participant(banquet = invitation.banquet, user = request.user)
+	
+	participant.name = request.user.get_full_name()
+	participant.email_address = request.user.email
+	
+	form = InvitationForm(request.POST or None, instance = participant)
+	
+	if request.POST and form.is_valid():
+		form.instance.name = None
+		form.instance.email_address = None
+		invitation.participant = form.save()
+		invitation.save()
+		form = None
+	
+	return render(request, 'banquet/invitation_internal.html', {
+		'fair': fair,
+		'invitation': invitation,
+		'form': form
+	})
+
 
 class ParticipantsListView(GeneralMixin, ListView):
     """

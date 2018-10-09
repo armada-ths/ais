@@ -1,10 +1,55 @@
 from django import forms
+from django.contrib.auth.models import User
+import re
+
 from .models import Participant, Invitation
 
-from django.contrib.auth.models import User
 
-from recruitment.models import RecruitmentApplication
-from django.forms import modelformset_factory
+def fix_phone_number(n):
+	if n is None: return None
+	
+	n = n.replace(' ', '')
+	n = n.replace('-', '')
+	
+	if n.startswith("00"): n = "+" + n[2:]
+	if n.startswith("0"): n = "+46" + n[1:]
+	
+	return n
+
+
+class InvitationForm(forms.ModelForm):
+	def clean(self):
+		super(InvitationForm, self).clean()
+		
+		if 'phone_number' in self.cleaned_data:
+			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+		
+		return self.cleaned_data
+	
+	def is_valid(self):
+		valid = super(InvitationForm, self).is_valid()
+		
+		if not valid: return valid
+		
+		phone_number = self.cleaned_data.get('phone_number')
+		
+		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
+			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
+			valid = False
+			
+		return valid
+	
+	class Meta:
+		model = Participant
+		fields = ['name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']
+		
+		widgets = {
+			'name' : forms.TextInput(attrs={'readonly':'readonly'}),
+			'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
+			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
+			'alcohol': forms.RadioSelect()
+		}
+
 
 class InternalParticipantForm(forms.ModelForm):
     """

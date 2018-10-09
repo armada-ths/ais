@@ -38,12 +38,11 @@
 							<li role="presentation"><a href="{% url 'events:event_list' fair.year %}">Events</a></li>
 						{% endblock %}
 					{% endif %}
-					{% if perms.banquet.base %}
-					    {% block nav-banquet %}
-					        <li role="presentation"><a href="{% url 'invite_list' fair.year %}">Banquet</a></li>
-					    {% endblock %}
-                    {% endif %}	
-
+					
+					{% block nav-banquet %}
+						<li role="presentation"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+					{% endblock %}
+					
 					{% if perms.exhibitors.base %}
 						{% block nav-exhibitors %}
 							<li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>

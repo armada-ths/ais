@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-banquet %}
+	<li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+{% endblock %}
+
+{% block content %}
+	{% if form %}
+		<h1>{{ invitation.banquet.name }}</h1>
+		<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>
+		
+		<ul class="list-unstyled">
+			<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>
+			<li><span style="font-weight: bold;">Location:</span> {{ invitation.banquet.location }}</li>
+		</ul>
+		
+		<form method="post">
+			{% csrf_token %}
+			{{ form | crispy }}
+			<button type="submit" class="btn btn-lg btn-success center-block">Submit</button>
+		</form>
+	{% else %}
+		<h1>Thank you!</h1>
+		<p>Your repsonse has been recorded. If you would like to change your response for {{ invitation.banquet.name }}, you can <a href="{% url 'banquet_invitation' fair.year invitation.token %}">return to the form</a>.</p>
+	{% endif %}
+{% endblock %}

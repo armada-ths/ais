@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-banquet %}
+	<li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{{ banquet.name }} – {% if invitation %}Edit invitation{% else %}New invitation{% endif %}</h1>
+	
+	<p>
+		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
+		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
+	</p>
+	
+	<form method="post">
+        {% csrf_token %}
+		{{ form | crispy }}
+		<input type="submit" class="btn btn-primary" value="Save invitation" />
+	</form>
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+	<script>
+		$(function()
+		{
+			$('#invitation_table').DataTable({ 'paging': false });
+		})
+	</script>
+{% endblock %}

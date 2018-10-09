@@ -48,7 +48,7 @@ class LoginRequiredMiddleware:
 
         print(path)
 
-        if re.match(r'/banquet/invitation/[a-zA-z0-9\-]+(/create|/update|/thank_you){0,1}$', path): return
+        if re.match(r'/banquet/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/create|/update|/thank_you){0,1}$', path): return
 
         for prefix in url_prefix_exceptions:
             if path.startswith(prefix, 0, len(prefix)):

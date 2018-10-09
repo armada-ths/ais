@@ -8,8 +8,8 @@ from banquet.views import (
 
 urlpatterns = [
 	#external invite
-	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)$', ExternalInviteRedirectView.as_view(), name = 'external_invite_redirect'),
-	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)/create$', ExternalInviteCreateView.as_view(), name = 'external_invite_create'),
-	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)/update$', ExternalInviteUpdateView.as_view(), name = 'external_invite_update'),
-	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)/thank_you$', ThankYouView.as_view(), name = 'external_invite_thankyou'),
+	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', ExternalInviteRedirectView.as_view(), name = 'external_invite_redirect'),
+	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/create$', ExternalInviteCreateView.as_view(), name = 'external_invite_create'),
+	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/update$', ExternalInviteUpdateView.as_view(), name = 'external_invite_update'),
+	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/thank_you$', ThankYouView.as_view(), name = 'external_invite_thankyou'),
 ]

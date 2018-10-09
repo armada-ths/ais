@@ -31,7 +31,7 @@ class Participant(models.Model):
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	alcohol = models.BooleanField(choices = BOOL_CHOICES, default = True)
 
-	def __str__(self): return (self.company.name + ' : ' + self.name) if self.company else self.name
+	def __str__(self): return (self.name + ' (' + self.company.name + ')') if self.company else (self.name if self.name else str(self.user))
 
 
 class Invitation(models.Model):
