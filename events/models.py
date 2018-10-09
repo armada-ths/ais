@@ -112,6 +112,9 @@ class Participant(models.Model):
         else:
             return self.phone_number
 
+    def has_checked_in(self):
+        return self.participantcheckin_set.count() > 0
+
     def team(self):
         return self.teammember_set.first().team if self.teammember_set.first() is not None else None
 

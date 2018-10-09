@@ -66,11 +66,13 @@ def team_member(team_member):
 def participant(participant):
     data = {
         'id': participant.pk,
+        'name': participant.assigned_name(),
         'fee_payed': participant.fee_payed_s,
         'signup_complete': participant.signup_complete,
         'team_id': participant.team().id if participant.team() else None,
         'is_team_leader': participant.teammember_set.first() and participant.teammember_set.first().leader,
         'check_in_token': participant.check_in_token
+        'has_checked_in': participant.has_checked_in()
     }
 
     return data
