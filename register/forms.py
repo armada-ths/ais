@@ -268,10 +268,11 @@ class LunchTicketForm(ModelForm):
 class BanquetParticipantForm(ModelForm):
 	class Meta:
 		model = BanquetParticipant
-		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions']
+		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']
 		
 		widgets = {
-			'dietary_restrictions': forms.CheckboxSelectMultiple()
+			'dietary_restrictions': forms.CheckboxSelectMultiple(),
+			'alcohol': forms.RadioSelect()
 		}
 		
 		help_texts = {
