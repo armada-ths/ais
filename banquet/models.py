@@ -57,4 +57,4 @@ class Invitation(models.Model):
 			user=user,
 		)
 
-	def __str__(self): return (self.name)
+	def __str__(self): return (self.name if self.name is not None else str(self.user))
