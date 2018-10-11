@@ -29,7 +29,7 @@ CAS_RESPONSE_CALLBACKS = ('lib.CAS_callback.callback',)
 # Use a full-fledged database instead of SQLite.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
             'NAME': DB_NAME,
             'USER': DB_USERNAME,
             'PASSWORD': DB_PASSWORD,

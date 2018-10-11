@@ -1,6 +1,7 @@
 from django.db import models
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
+from django.contrib.gis.db import models
 
 from accounting.models import Order
 from banquet.models import Banquet, Participant
@@ -188,3 +189,40 @@ class ExhibitorView(models.Model):
 	
 	class Meta:
 		default_permissions = []
+
+
+class Location(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	parent = models.ForeignKey('exhibitors.Location', on_delete = models.CASCADE, null = True, blank = True)
+	name = models.CharField(blank = False, null = False, max_length = 255)
+	background = models.ImageField(upload_to = UploadToDirUUID('locations'), null = True, blank = True)
+	
+	class Meta:
+		ordering = ['fair', 'name']
+		unique_together = [['fair', 'name']]
+	
+	def __str__(self): return self.name
+
+
+class Booth(models.Model):
+	location = models.ForeignKey(Location, on_delete = models.CASCADE)
+	name = models.CharField(blank = False, null = False, max_length = 255)
+	boundaries = models.PolygonField(blank = True, null = True)
+	
+	class Meta:
+		ordering = ['location', 'name']
+		unique_together = [['location', 'name']]
+	
+	def __str__(self): return str(self.location) + ' -> ' + self.name
+
+
+class ExhibitorInBooth(models.Model):
+	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
+	booth = models.ForeignKey(Booth, on_delete = models.CASCADE)
+	comment = models.CharField(max_length = 255, null = True, blank = True)
+	
+	class Meta:
+		ordering = ['exhibitor', 'booth']
+		unique_together = [['exhibitor', 'booth']]
+	
+	def __str__(self): return self.exhibitor + ' in ' + self.booth

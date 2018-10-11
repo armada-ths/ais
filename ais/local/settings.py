@@ -32,7 +32,7 @@ STRIPE_PUBLISHABLE = 'pk_test_IzgUj9oJhednbt4EIf78esBE'
 # We don't need performance here so use SQLite for ease of setup.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'ais_dev',
         'USER': 'ais_dev',
         'PASSWORD': 'ais_dev',

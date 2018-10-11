@@ -18,3 +18,4 @@ markdown
 slackclient
 stripe
 django-webpack-loader
+postgis

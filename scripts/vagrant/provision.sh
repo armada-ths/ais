@@ -17,11 +17,14 @@ silent sudo apt-get update
 
 echo "Installing dependencies..."
 cd /vagrant
-silent sudo apt-get install -y libpq-dev python3-pip postgresql postgresql-contrib nodejs npm
+silent sudo apt-get install -y libpq-dev python3-pip postgresql postgresql-contrib nodejs npm binutils libproj-dev gdal-bin postgresql-10-postgis-2.4
 silent sudo pip3 install virtualenv
 silent virtualenv ais_venv
 silent source ais_venv/bin/activate
 silent pip3 install -r requirements.txt
+
+# https://stackoverflow.com/questions/18643998/geodjango-geosexception-error
+sed -r -i 's/ver = geos_version\(\)\.decode\(\)/ver = geos_version().decode().split(" ")\[0\]/' /vagrant/ais_venv/lib/python3.6/site-packages/django/contrib/gis/geos/libgeos.py
 
 echo "Setting up database..."
 
@@ -35,6 +38,7 @@ echo "CREATE USER ais_dev PASSWORD 'ais_dev';" | silent sudo -u postgres psql
 echo "ALTER USER ais_dev CREATEDB;" | silent sudo -u postgres psql
 silent sudo -u postgres createdb ais_dev
 echo "GRANT ALL PRIVILEGES ON DATABASE ais_dev TO ais_dev;" | silent sudo -u postgres psql
+echo "ALTER USER ais_dev WITH SUPERUSER;"| silent sudo -u postgres psql
 
 echo "Configuring..."
 silent python manage.py migrate --settings local_settings
