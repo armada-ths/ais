@@ -76,6 +76,7 @@ class Exhibitor(models.Model):
 	transport_statuses = [
 		('NOT_BOOKED', 'Not booked'),
 		('BOOKED', 'Booked'),
+		('ARKAD', 'Transported by Arkad'),
 		('NOT_APPLICABLE', 'Not applicable')
 	]
 	
