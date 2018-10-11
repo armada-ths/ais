@@ -80,7 +80,6 @@ class ParticipantList extends Component {
                 placeholder="Filter participants..."
                 type="search"
                 fullWidth
-                autoFocus
             />
           </Grid>
           <Grid item className={classes.list}>
