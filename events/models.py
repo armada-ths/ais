@@ -73,6 +73,10 @@ class Team(models.Model):
         return self.name
 
 
+def get_random_32_length_string():
+    return get_random_string(32)
+
+
 class Participant(models.Model):
     event = models.ForeignKey(Event, blank=False, null=True, on_delete=models.CASCADE)
     name = models.CharField(blank=True, null=True, max_length=255)  # None for students, required for company representatives
@@ -85,7 +89,7 @@ class Participant(models.Model):
     fee_payed_s = models.BooleanField(default=False)
     attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
     signup_complete = models.BooleanField(blank=False, null=False, default=False, verbose_name='The participant has completed signup')
-    check_in_token = models.CharField(max_length=32, unique=True, default=get_random_string(32))
+    check_in_token = models.CharField(max_length=32, unique=True, default=get_random_32_length_string)
 
     # Name, email and phone number can be stored either in this model or in the user model depending on if this is a student or not,
     # so we define these help functions to get them easier
