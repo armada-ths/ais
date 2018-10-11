@@ -1,7 +1,8 @@
 import React, {Component, Fragment} from 'react';
+import JssProvider from 'react-jss/lib/JssProvider';
 import ReactDOM from 'react-dom';
+import {createGenerateClassName, withStyles} from '@material-ui/core/styles';
 import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
-import {withStyles} from '@material-ui/core/styles';
 import theme from '../theme';
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 import SignupForm from "./components/SignupForm";
@@ -12,6 +13,11 @@ import compose from 'recompose/compose';
 import {init} from './actions';
 import keyBy from 'lodash/keyBy';
 import withWidth from "@material-ui/core/es/withWidth/withWidth";
+
+const generateClassName = createGenerateClassName({
+  dangerouslyUseGlobalCSS: false,
+  productionPrefix: 'c'
+});
 
 const styles = theme => ({
   root: {
@@ -53,34 +59,36 @@ class App extends Component {
     } = window.reactProps;
 
     return (
-        <Fragment>
-          <CssBaseline/>
-          <MuiThemeProvider theme={theme}>
-            <div
-                className={classes.root}
-            >
-              <Header event={event}/>
-              {participant.signup_complete ? (
-                  <Manage
-                      checkInToken={participant.check_in_token}
-                      currentTeamId={participant.team_id}
-                      event={event}
-                      teams={teams}
-                      dispatcher={this.dispatcher}
-                  />
-              ) : (
-                  <SignupForm
-                      event={event}
-                      feePayed={participant.fee_payed}
-                      paymentUrl={payment_url}
-                      signupUrl={signup_url}
-                      stripe_publishable={stripe_publishable}
-                      dispatcher={this.dispatcher}
-                  />
-              )}
-            </div>
-          </MuiThemeProvider>
-        </Fragment>
+        <JssProvider generateClassName={generateClassName}>
+          <Fragment>
+            <CssBaseline/>
+            <MuiThemeProvider theme={theme}>
+              <div
+                  className={classes.root}
+              >
+                <Header event={event}/>
+                {participant.signup_complete ? (
+                    <Manage
+                        checkInToken={participant.check_in_token}
+                        currentTeamId={participant.team_id}
+                        event={event}
+                        teams={teams}
+                        dispatcher={this.dispatcher}
+                    />
+                ) : (
+                    <SignupForm
+                        event={event}
+                        feePayed={participant.fee_payed}
+                        paymentUrl={payment_url}
+                        signupUrl={signup_url}
+                        stripe_publishable={stripe_publishable}
+                        dispatcher={this.dispatcher}
+                    />
+                )}
+              </div>
+            </MuiThemeProvider>
+          </Fragment>
+        </JssProvider>
     )
   }
 }
