@@ -13,8 +13,11 @@ class Banquet(models.Model):
 	name = models.CharField(max_length = 75, blank = False, null = False)
 	date = models.DateTimeField()
 	location = models.CharField(max_length = 75, blank = True, null = True)
+	dress_code = models.CharField(max_length = 255, blank = True, null = True)
+	caption_phone_number = models.CharField(max_length = 255, blank = True, null = True, verbose_name = 'Caption for the phone number field')
+	caption_dietary_restrictions = models.CharField(max_length = 255, blank = True, null = True, verbose_name = 'Caption for dietary restrictions')
 	product = models.ForeignKey(Product, null = True, blank = True, on_delete = models.CASCADE, verbose_name = 'Product to link the banquet with')
-
+	
 	def __str__(self): return self.name
 
 # For alcohol

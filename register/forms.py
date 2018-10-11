@@ -266,6 +266,27 @@ class LunchTicketForm(ModelForm):
 
 
 class BanquetParticipantForm(ModelForm):
+	def clean(self):
+		super(BanquetParticipantForm, self).clean()
+		
+		if 'phone_number' in self.cleaned_data:
+			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+		
+		return self.cleaned_data
+	
+	def is_valid(self):
+		valid = super(BanquetParticipantForm, self).is_valid()
+		
+		if not valid: return valid
+		
+		phone_number = self.cleaned_data.get('phone_number')
+		
+		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
+			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
+			valid = False
+			
+		return valid
+	
 	class Meta:
 		model = BanquetParticipant
 		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']

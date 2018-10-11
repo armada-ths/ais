@@ -24,6 +24,13 @@
 	{% for banquet in banquets %}
 		{% if banquet.banquet_tickets %}
 			<h3>Tickets for {{ banquet.name }}</h3>
+			
+			<ul class="no-bullets">
+				{% if banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ banquet.date }}</li>{% endif %}
+				{% if banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ banquet.location }}</li>{% endif %}
+				{% if banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ banquet.dress_code }}</li>{% endif %}
+			</ul>
+			
 			{% for banquet_ticket in banquet.banquet_tickets %}
 				<div class="banquet_ticket">
 					<a class="btn btn-armada-green" style="float: right;" href="{% url 'anmalan:banquet_edit' company.pk banquet_ticket.pk %}">Edit</a>
@@ -33,6 +40,7 @@
 						<li><span class="information_label">E-mail address:</span> {{ banquet_ticket.email_address }}</li>
 						<li><span class="information_label">Phone number:</span> {{ banquet_ticket.phone_number }}</li>
 						<li><span class="information_label">Dietary restrictions:</span> {% if banquet_ticket.dietary_restrictions.all %}{{ banquet_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">(no dietary restrictions)</span>{% endif %}</li>
+						<li><span class="information_label">Alcohol:</span> {{ banquet_ticket.get_alcohol_display }}</li>
 					</ul>
 				</div>
 			{% endfor %}

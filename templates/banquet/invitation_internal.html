@@ -12,8 +12,9 @@
 		<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>
 		
 		<ul class="list-unstyled">
-			<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>
-			<li><span style="font-weight: bold;">Location:</span> {{ invitation.banquet.location }}</li>
+			{% if invitation.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>{% endif %}
+			{% if invitation.banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ invitation.banquet.location }}</li>{% endif %}
+			{% if invitation.banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ invitation.banquet.dress_code }}</li>{% endif %}
 		</ul>
 		
 		<form method="post">

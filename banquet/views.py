@@ -420,6 +420,9 @@ def banquet_invitation(request, year, token):
 	
 	form = InvitationForm(request.POST or None, instance = participant)
 	
+	if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
+	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
+	
 	if request.POST and form.is_valid():
 		form.instance.name = None
 		form.instance.email_address = None
