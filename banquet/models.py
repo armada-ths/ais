@@ -20,8 +20,25 @@ class Banquet(models.Model):
 	
 	def __str__(self): return self.name
 
-# For alcohol
-BOOL_CHOICES = [(True, 'Yes'), (False, 'No')]
+
+class Table(models.Model):
+	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
+	name = models.CharField(max_length = 75, blank = False, null = False)
+	
+	class Meta:
+		unique_together = [['banquet', 'name']]
+	
+	def __str__(self): return self.name
+
+
+class Seat(models.Model):
+	table = models.ForeignKey(Table, on_delete = models.CASCADE)
+	name = models.CharField(max_length = 75, blank = False, null = False)
+	
+	class Meta:
+		unique_together = [['table', 'name']]
+	
+	def __str__(self): return self.table.name + ' ' + self.name
 
 
 class Participant(models.Model):
@@ -32,7 +49,8 @@ class Participant(models.Model):
 	email_address = models.EmailField(max_length = 75, blank = True, null = True, verbose_name = 'E-mail address') # None if a user is provided, required for others
 	phone_number = models.CharField(max_length = 75, blank = True, null = True)  # None if a user is provided, required for others
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
-	alcohol = models.BooleanField(choices = BOOL_CHOICES, default = True)
+	alcohol = models.BooleanField(choices = [(True, 'Yes'), (False, 'No')], default = True)
+	seat = models.OneToOneField(Seat, blank = True, null = True, on_delete = models.CASCADE)
 
 	def __str__(self): return (self.name + ' (' + self.company.name + ')') if self.company else (self.name if self.name else str(self.user))
 
