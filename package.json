@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js --progress --colors --mode production",
+    "build": "webpack --config webpack.config.js --progress --colors --mode=development",
     "watch": "webpack --config webpack.config.js --watch --mode development"
   },
   "repository": {

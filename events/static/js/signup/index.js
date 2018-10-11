@@ -9,10 +9,9 @@ import Manage from './components/Manage';
 import Header from "./components/Header";
 import reducer from './reducer';
 import compose from 'recompose/compose';
-import Paper from "@material-ui/core/es/Paper/Paper";
 import {init} from './actions';
 import keyBy from 'lodash/keyBy';
-import withWidth, {isWidthDown} from "@material-ui/core/es/withWidth/withWidth";
+import withWidth from "@material-ui/core/es/withWidth/withWidth";
 
 const styles = theme => ({
   root: {
@@ -57,8 +56,7 @@ class App extends Component {
         <Fragment>
           <CssBaseline/>
           <MuiThemeProvider theme={theme}>
-            <Paper
-                square={isWidthDown('sm', width)}
+            <div
                 className={classes.root}
             >
               <Header event={event}/>
@@ -80,7 +78,7 @@ class App extends Component {
                       dispatcher={this.dispatcher}
                   />
               )}
-            </Paper>
+            </div>
           </MuiThemeProvider>
         </Fragment>
     )
