@@ -24,5 +24,6 @@ def callback(tree):
 		
 		user.save()
 	
-	person, person_created = Profile.objects.get_or_create(user = user, no_dietary_restrictions = False)
-	person.save()
+	profile = Profile.objects.filter(user = user).first()
+	
+	if profile is None: Profile(user = user, no_dietary_restrictions = False).save()
