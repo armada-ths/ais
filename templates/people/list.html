@@ -6,7 +6,7 @@
 	<h1>Contacts</h1>
 	
 	{% for organization_group in organization_groups %}
-		{% if organization_group.name %}<h2>{{ organization_group.name }}</h2>{% endif %}
+		{% if organization_group.name %}<h2>{{ organization_group.name }} ({{ organization_group.users | length }})</h2>{% endif %}
 		
 		<table class="table table-striped">
 			<tr>
