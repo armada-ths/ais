@@ -134,9 +134,6 @@ class TeamMember(models.Model):
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
     leader = models.BooleanField(blank=False, null=False, default=False)
 
-    class Meta:
-        unique_together = ('team', 'leader')
-
     def __str__(self):
         return self.participant.__str__() + self.team.__str__()
 
