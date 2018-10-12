@@ -15,7 +15,7 @@ class Manage extends Component {
     super(props);
 
     this.state = {
-      selectedTeamId: props.currentTeamId,
+      selectedTeamId: props.currentTeam ? props.currentTeam.id : null,
       tabIndex: 0
     };
 
@@ -68,7 +68,7 @@ class Manage extends Component {
   }
 
   render() {
-    const {teams, width, checkInToken, currentTeamId} = this.props;
+    const {teams, width, checkInToken, currentTeam, participantId} = this.props;
     const {selectedTeamId, tabIndex} = this.state;
 
     const selectedTeam = teams[selectedTeamId];
@@ -90,7 +90,8 @@ class Manage extends Component {
               <Teams
                   teams={teams}
                   selectedTeam={selectedTeam}
-                  currentTeamId={currentTeamId}
+                  currentTeam={currentTeam}
+                  participantId={participantId}
                   handleCreateTeam={this.handleCreateTeam}
                   handleSelectTeam={this.handleSelectTeam}
                   handleJoinTeam={this.handleJoinTeam}

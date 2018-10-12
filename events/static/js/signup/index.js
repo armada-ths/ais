@@ -69,8 +69,9 @@ class App extends Component {
                 <Header event={event}/>
                 {participant.signup_complete ? (
                     <Manage
+                        participantId={participant.id}
                         checkInToken={participant.check_in_token}
-                        currentTeamId={participant.team_id}
+                        currentTeam={participant.team}
                         event={event}
                         teams={teams}
                         dispatcher={this.dispatcher}

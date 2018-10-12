@@ -54,6 +54,8 @@ def team(team):
 
 def team_member(team_member):
     data = {
+        'id': team_member.pk,
+        'participant_id': team_member.participant.pk,
         'name': team_member.participant.__str__(),
         'leader': team_member.leader
     }
@@ -63,9 +65,10 @@ def team_member(team_member):
 
 def participant(participant):
     data = {
+        'id': participant.pk,
         'fee_payed': participant.fee_payed_s,
         'signup_complete': participant.signup_complete,
-        'team_id': participant.team().id if participant.team() else None,
+        'team': team(participant.team()) if participant.team() else None,
         'check_in_token': participant.check_in_token
     }
 

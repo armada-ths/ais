@@ -39,12 +39,21 @@ class Teams extends Component {
       classes,
       teams,
       selectedTeam,
-      currentTeamId,
+      currentTeam,
+      participantId,
       handleCreateTeam,
       handleSelectTeam,
       handleJoinTeam,
       handleLeaveTeam
     } = this.props;
+
+    const isMemberOfSelectedTeam = selectedTeam.id === currentTeam.id;
+
+    const leaderOfSelectedTeam = selectedTeam.members.find(member => member.leader);
+
+    const isLeaderOfSelectedTeam = isMemberOfSelectedTeam && leaderOfSelectedTeam && leaderOfSelectedTeam.participant_id === participantId;
+
+    console.log(isLeaderOfSelectedTeam);
 
     return (
         <div className={classes.root}>
@@ -76,8 +85,9 @@ class Teams extends Component {
               {selectedTeam && (
                   <TeamInformation
                       team={selectedTeam}
-                      canJoin={selectedTeam.number_of_members < selectedTeam.capacity && selectedTeam.id !== currentTeamId}
-                      canLeave={selectedTeam.id === currentTeamId}
+                      canJoin={selectedTeam.number_of_members < selectedTeam.capacity && selectedTeam.id !== currentTeam.id}
+                      canLeave={selectedTeam.id === currentTeam.id}
+                      isLeader={isLeaderOfSelectedTeam}
                       handleJoinTeam={handleJoinTeam}
                       handleLeaveTeam={handleLeaveTeam}
                   />
