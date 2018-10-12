@@ -49,8 +49,6 @@ class Teams extends Component {
       handleUpdateTeam
     } = this.props;
 
-    const isMemberOfSelectedTeam = selectedTeam && selectedTeam.id === currentTeamId;
-
     return (
         <div className={classes.root}>
           <Grid container spacing={16}>
@@ -82,8 +80,9 @@ class Teams extends Component {
                   <TeamInformation
                       team={selectedTeam}
                       canJoin={selectedTeam.number_of_members < selectedTeam.capacity && selectedTeam.id !== currentTeamId}
-                      canLeave={selectedTeam.id === currentTeamId}
                       isLeader={selectedTeam.id === currentTeamId && isTeamLeader}
+                      isCurrentTeam={selectedTeam.id === currentTeamId}
+                      participantId={participantId}
                       handleJoinTeam={handleJoinTeam}
                       handleLeaveTeam={handleLeaveTeam}
                       handleUpdateTeam={handleUpdateTeam}

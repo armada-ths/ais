@@ -195,11 +195,21 @@ def update_team(request, event_pk, team_pk):
     if not request.user:
         return JsonResponse({'message': 'Authentication required.'}, status=403)
 
-    participant = Participant.objects.get(user_s=request.user, event=event)
+    team_member = TeamMember.objects.filter(participant__user_s=request.user, team=team).first()
+
+    if not team_member and team_member.leader:
+        return JsonResponse({'message': 'Only the team leader can edit the team.'}, status=403)
 
     data = json.loads(request.body)
 
+    if 'name' not in data or 'members' not in data:
+        return JsonResponse({'message': 'Bad request.'}, status=400)
+
     Team.objects.filter(id=team_pk).update(name=data['name'])
+
+    ids = [member['id'] for member in data['members']]
+
+    team.teammember_set.exclude(id__in=ids).delete()
 
     teams = Team.objects.filter(event=event).all()
 

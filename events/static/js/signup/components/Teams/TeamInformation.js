@@ -3,16 +3,19 @@ import {withStyles} from '@material-ui/core/styles';
 import List from "@material-ui/core/es/List/List";
 import ListItem from "@material-ui/core/es/ListItem/ListItem";
 import ListItemText from "@material-ui/core/es/ListItemText/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/es/ListItemSecondaryAction/ListItemSecondaryAction";
 import Divider from "@material-ui/core/es/Divider/Divider";
 import ListItemIcon from "@material-ui/core/es/ListItemIcon/ListItemIcon";
 import AddPeopleIcon from 'mdi-material-ui/AccountPlus';
 import RemovePeopleIcon from 'mdi-material-ui/AccountRemove';
+import CloseIcon from 'mdi-material-ui/Close';
 import EditIcon from 'mdi-material-ui/Pencil';
 import CheckIcon from 'mdi-material-ui/Check';
 import Typography from "@material-ui/core/Typography/Typography";
 import IconButton from "@material-ui/core/IconButton/IconButton";
 import Input from "@material-ui/core/Input/Input";
 import InputAdornment from "@material-ui/core/InputAdornment/InputAdornment";
+import reject from 'lodash/reject';
 
 const styles = theme => ({
   input: {
@@ -30,6 +33,7 @@ class TeamInformation extends Component {
     };
 
     this.handleInputButton = this.handleInputButton.bind(this);
+    this.handleRemoveMember = this.handleRemoveMember.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -38,7 +42,13 @@ class TeamInformation extends Component {
 
     this.setState(prevState => {
       if (prevState.editing) {
-        handleUpdateTeam(team.id, {name: prevState.name});
+
+        if (prevState.name !== team.name) {
+          handleUpdateTeam(team.id, {
+            name: prevState.name,
+            members: team.members
+          });
+        }
 
         return {
           editing: false
@@ -49,6 +59,17 @@ class TeamInformation extends Component {
         editing: true
       }
     })
+  }
+
+  handleRemoveMember(teamMemberId) {
+    const {handleUpdateTeam, team} = this.props;
+
+    const updatedTeamMembers = reject(team.members, {'id': teamMemberId});
+
+    handleUpdateTeam(team.id, {
+      name: team.name,
+      members: updatedTeamMembers
+    });
   }
 
   handleChange(event) {
@@ -64,8 +85,9 @@ class TeamInformation extends Component {
       classes,
       team,
       canJoin,
-      canLeave,
+      isCurrentTeam,
       isLeader,
+      participantId,
       handleJoinTeam,
       handleLeaveTeam
     } = this.props;
@@ -97,9 +119,16 @@ class TeamInformation extends Component {
               <Typography gutterBottom variant="subtitle1">{team.name}</Typography>
           )}
           <List disablePadding>
-            {team.members.map(({name, leader}) =>
-                <ListItem disableGutters key={name}>
+            {team.members.map(({id, name, leader, participant_id}) =>
+                <ListItem disableGutters key={id}>
                   <ListItemText primary={name} secondary={leader ? 'Leader' : ''}/>
+                  {isLeader && participantId !== participant_id && (
+                      <ListItemSecondaryAction>
+                        <IconButton onClick={() => this.handleRemoveMember(id)}>
+                          <CloseIcon/>
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                  )}
                 </ListItem>
             )}
             <Divider/>
@@ -111,7 +140,7 @@ class TeamInformation extends Component {
                   <ListItemText primary="Join team"/>
                 </ListItem>
             )}
-            {canLeave && (
+            {isCurrentTeam && (
                 <ListItem disableGutters button onClick={handleLeaveTeam}>
                   <ListItemIcon>
                     <RemovePeopleIcon/>
