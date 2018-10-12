@@ -15,7 +15,7 @@ class Manage extends Component {
     super(props);
 
     this.state = {
-      selectedTeamId: props.currentTeam ? props.currentTeam.id : null,
+      selectedTeamId: props.currentTeamId,
       tabIndex: 0
     };
 
@@ -23,6 +23,7 @@ class Manage extends Component {
     this.handleJoinTeam = this.handleJoinTeam.bind(this);
     this.handleLeaveTeam = this.handleLeaveTeam.bind(this);
     this.handleCreateTeam = this.handleCreateTeam.bind(this);
+    this.handleUpdateTeam = this.handleUpdateTeam.bind(this);
     this.handleTabSwitch = this.handleTabSwitch.bind(this);
   }
 
@@ -63,12 +64,22 @@ class Manage extends Component {
         });
   }
 
+  handleUpdateTeam(teamId, team) {
+    const {event, dispatcher} = this.props;
+
+    API.updateTeam(event.id, teamId, team)
+        .then(response => {
+          const mappedTeams = keyBy(response.data.teams, 'id');
+          dispatcher(setTeams(mappedTeams));
+        })
+  }
+
   handleTabSwitch(event, value) {
     this.setState({tabIndex: value})
   }
 
   render() {
-    const {teams, width, checkInToken, currentTeam, participantId} = this.props;
+    const {teams, width, checkInToken, currentTeamId, isTeamLeader, participantId} = this.props;
     const {selectedTeamId, tabIndex} = this.state;
 
     const selectedTeam = teams[selectedTeamId];
@@ -90,12 +101,14 @@ class Manage extends Component {
               <Teams
                   teams={teams}
                   selectedTeam={selectedTeam}
-                  currentTeam={currentTeam}
+                  currentTeamId={currentTeamId}
                   participantId={participantId}
+                  isTeamLeader={isTeamLeader}
                   handleCreateTeam={this.handleCreateTeam}
                   handleSelectTeam={this.handleSelectTeam}
                   handleJoinTeam={this.handleJoinTeam}
                   handleLeaveTeam={this.handleLeaveTeam}
+                  handleUpdateTeam={this.handleUpdateTeam}
               />
           )}
           {tabIndex === 1 && (

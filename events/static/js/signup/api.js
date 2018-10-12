@@ -20,3 +20,7 @@ export const leaveTeam = (eventId) => {
 export const createTeam = (eventId, teamName) => {
   return client.post(`events/${eventId}/teams/create`, {name: teamName});
 };
+
+export const updateTeam = (eventId, teamId, team) => {
+  return client.post(`events/${eventId}/teams/${teamId}/update`, team);
+};

@@ -68,7 +68,8 @@ def participant(participant):
         'id': participant.pk,
         'fee_payed': participant.fee_payed_s,
         'signup_complete': participant.signup_complete,
-        'team': team(participant.team()) if participant.team() else None,
+        'team_id': participant.team().id if participant.team() else None,
+        'is_team_leader': participant.teammember_set.first() and participant.teammember_set.first().leader,
         'check_in_token': participant.check_in_token
     }
 

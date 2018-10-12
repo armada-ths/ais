@@ -181,3 +181,26 @@ def create_team(request, event_pk):
     teams = Team.objects.filter(event=event).all()
 
     return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)
+
+
+@require_POST
+def update_team(request, event_pk, team_pk):
+    """
+    Endpoint to update a team
+    """
+
+    event = get_object_or_404(Event, pk=event_pk)
+    team = get_object_or_404(Team, pk=team_pk)
+
+    if not request.user:
+        return JsonResponse({'message': 'Authentication required.'}, status=403)
+
+    participant = Participant.objects.get(user_s=request.user, event=event)
+
+    data = json.loads(request.body)
+
+    Team.objects.filter(id=team_pk).update(name=data['name'])
+
+    teams = Team.objects.filter(event=event).all()
+
+    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)

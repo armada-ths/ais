@@ -71,7 +71,8 @@ class App extends Component {
                     <Manage
                         participantId={participant.id}
                         checkInToken={participant.check_in_token}
-                        currentTeam={participant.team}
+                        currentTeamId={participant.team_id}
+                        isTeamLeader={participant.is_team_leader}
                         event={event}
                         teams={teams}
                         dispatcher={this.dispatcher}

@@ -7,18 +7,59 @@ import Divider from "@material-ui/core/es/Divider/Divider";
 import ListItemIcon from "@material-ui/core/es/ListItemIcon/ListItemIcon";
 import AddPeopleIcon from 'mdi-material-ui/AccountPlus';
 import RemovePeopleIcon from 'mdi-material-ui/AccountRemove';
+import EditIcon from 'mdi-material-ui/Pencil';
+import CheckIcon from 'mdi-material-ui/Check';
 import Typography from "@material-ui/core/Typography/Typography";
-import TextField from "@material-ui/core/TextField/TextField";
+import IconButton from "@material-ui/core/IconButton/IconButton";
+import Input from "@material-ui/core/Input/Input";
+import InputAdornment from "@material-ui/core/InputAdornment/InputAdornment";
 
 const styles = theme => ({
-  root: {
-    paddingLeft: theme.spacing.unit * 2,
-    paddingRight: theme.spacing.unit * 2,
-  },
+  input: {
+    color: theme.palette.text.primary
+  }
 });
 
 class TeamInformation extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      editing: false,
+      name: props.team.name
+    };
+
+    this.handleInputButton = this.handleInputButton.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleInputButton() {
+    const {handleUpdateTeam, team} = this.props;
+
+    this.setState(prevState => {
+      if (prevState.editing) {
+        handleUpdateTeam(team.id, {name: prevState.name});
+
+        return {
+          editing: false
+        }
+      }
+
+      return {
+        editing: true
+      }
+    })
+  }
+
+  handleChange(event) {
+    const {name, value} = event.target;
+    this.setState({
+      [name]: value
+    })
+  }
+
   render() {
+    const {editing, name} = this.state;
     const {
       classes,
       team,
@@ -29,17 +70,32 @@ class TeamInformation extends Component {
       handleLeaveTeam
     } = this.props;
 
+    const inputError = name.trim().length === 0;
+
     return (
         <div className={classes.root}>
           {isLeader ? (
-              <TextField
-                  value={team.name}
+              <Input
+                  type="text"
+                  name="name"
+                  onChange={this.handleChange}
+                  classes={{disabled: classes.input}}
+                  error={inputError}
+                  value={name}
+                  disabled={!editing}
+                  disableUnderline={!editing}
                   fullWidth
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton disabled={editing && inputError} onClick={this.handleInputButton} aria-label="Delete">
+                        {editing ? <CheckIcon/> : <EditIcon/>}
+                      </IconButton>
+                    </InputAdornment>
+                  }
               />
           ) : (
               <Typography gutterBottom variant="subtitle1">{team.name}</Typography>
           )}
-          <Divider/>
           <List disablePadding>
             {team.members.map(({name, leader}) =>
                 <ListItem disableGutters key={name}>
