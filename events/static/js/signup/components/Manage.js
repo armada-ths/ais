@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import * as API from "../api";
-import {setTeams} from '../actions';
+import {joinTeam, leaveTeam, setTeams} from '../actions';
 import keyBy from 'lodash/keyBy';
 import QRCode from './QRCode';
 import Teams from './Teams';
@@ -40,7 +40,7 @@ class Manage extends Component {
     API.joinTeam(event.id, selectedTeamId)
         .then(response => {
           const mappedTeams = keyBy(response.data.teams, 'id');
-          dispatcher(setTeams(mappedTeams));
+          dispatcher(joinTeam(mappedTeams, selectedTeamId));
         });
   }
 
@@ -50,7 +50,7 @@ class Manage extends Component {
     API.leaveTeam(event.id)
         .then(response => {
           const mappedTeams = keyBy(response.data.teams, 'id');
-          dispatcher(setTeams(mappedTeams));
+          dispatcher(leaveTeam(mappedTeams));
         });
   }
 
@@ -60,7 +60,7 @@ class Manage extends Component {
     API.createTeam(event.id, teamName)
         .then(response => {
           const mappedTeams = keyBy(response.data.teams, 'id');
-          dispatcher(setTeams(mappedTeams));
+          dispatcher(setTeams(mappedTeams, response.data.participant));
         });
   }
 
@@ -70,7 +70,7 @@ class Manage extends Component {
     API.updateTeam(event.id, teamId, team)
         .then(response => {
           const mappedTeams = keyBy(response.data.teams, 'id');
-          dispatcher(setTeams(mappedTeams));
+          dispatcher(setTeams(mappedTeams, response.data.participant));
         })
   }
 

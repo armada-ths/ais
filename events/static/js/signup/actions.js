@@ -1,5 +1,7 @@
 export const INIT = 'INIT';
 export const SET_TEAMS = 'SET_TEAMS';
+export const LEAVE_TEAM = 'LEAVE_TEAM';
+export const JOIN_TEAM = 'JOIN_TEAM';
 export const UPDATE_PARTICIPANT = 'UPDATE_PARTICIPANT';
 
 export const init = (participant, teams) => ({
@@ -13,7 +15,19 @@ export const updateParticipant = (participant) => ({
   participant
 });
 
-export const setTeams = (teams) => ({
+export const setTeams = (teams, participant) => ({
   type: SET_TEAMS,
+  teams,
+  participant
+});
+
+export const leaveTeam = (teams) => ({
+  type: LEAVE_TEAM,
   teams
+});
+
+export const joinTeam = (teams, teamId) => ({
+  type: JOIN_TEAM,
+  teams,
+  teamId
 });

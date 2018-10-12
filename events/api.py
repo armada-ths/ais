@@ -180,7 +180,10 @@ def create_team(request, event_pk):
 
     teams = Team.objects.filter(event=event).all()
 
-    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)
+    return JsonResponse({
+        'teams': [serializers.team(team) for team in teams],
+        'participant': serializers.participant(participant)
+    }, status=200)
 
 
 @require_POST
@@ -212,5 +215,9 @@ def update_team(request, event_pk, team_pk):
     team.teammember_set.exclude(id__in=ids).delete()
 
     teams = Team.objects.filter(event=event).all()
+    participant = Participant.objects.get(user_s=request.user, event=event)
 
-    return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)
+    return JsonResponse({
+        'teams': [serializers.team(team) for team in teams],
+        'participant': serializers.participant(participant)
+    }, status=200)
