@@ -40,11 +40,12 @@ const styles = theme => ({
 
 class Notification extends Component {
   render() {
-    const {classes, message, type = 'success', ...rest} = this.props;
-    const Icon = variantIcon[type];
+    const {classes, message: {key, text, type}, ...rest} = this.props;
+    const Icon = type ? variantIcon[type] : null;
 
     return (
         <Snackbar
+            key={key}
             open={open}
             anchorOrigin={{
               vertical: 'top',
@@ -57,8 +58,8 @@ class Notification extends Component {
               className={classes.contentRoot}
               message={
                 <span className={classes.content}>
-                  <Icon className={classNames(classes.icon, classes[type])}/>
-                  {message}
+                  {Icon && <Icon className={classNames(classes.icon, classes[type])}/>}
+                  {text}
                 </span>
               }
           />

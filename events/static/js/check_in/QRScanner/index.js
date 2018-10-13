@@ -39,11 +39,13 @@ class Index extends Component {
   constructor(props) {
     super(props);
 
+    this.notificationQueue = [];
+
     this.state = {
       ready: false,
       paused: false,
       notificationOpen: false,
-      notificationMessage: null
+      notificationInfo: {}
     };
 
     this.videoRef = React.createRef();
@@ -54,6 +56,8 @@ class Index extends Component {
     this.tick = this.tick.bind(this);
     this.handleTogglePause = this.handleTogglePause.bind(this);
     this.handleFoundData = this.handleFoundData.bind(this);
+    this.queueNotification = this.queueNotification.bind(this);
+    this.processQueue = this.processQueue.bind(this);
     this.handleNotificationClose = this.handleNotificationClose.bind(this);
     this.handleNotificationClosed = this.handleNotificationClosed.bind(this);
   }
@@ -83,9 +87,9 @@ class Index extends Component {
         this.tick();
       };
     }).catch(reason => {
-      this.setState({
-        notificationOpen: true,
-        notificationMessage: `Error when starting camera: ${reason.message}`
+      this.queueNotification({
+        text: `Error when starting camera: ${reason.message}`,
+        type: "error"
       });
     });
   }
@@ -124,17 +128,46 @@ class Index extends Component {
         .then(response => {
           this.props.handleCheckIn(response.data.participant.id);
 
-          this.setState({
-            notificationOpen: true,
-            notificationMessage: `${response.data.participant.name} checked in!`
+          this.queueNotification({
+            text: `${response.data.participant.name} checked in!`,
+            type: "success"
           });
         })
         .catch(reason => {
-          this.setState({
-            notificationOpen: true,
-            notificationMessage: `${data} is not a valid code.`
+          this.queueNotification({
+            text: `${data} is not a valid code.`,
+            type: "error"
           });
+        })
+        .then(() => {
+          this.timeoutId = setTimeout(this.tick, 2000);
         });
+  }
+
+  queueNotification(message) {
+    const {notificationOpen} = this.state;
+
+    this.notificationQueue.push({
+      ...message,
+      key: new Date().getTime()
+    });
+
+    if (notificationOpen) {
+      this.setState({
+        notificationOpen: false
+      });
+    } else {
+      this.processQueue();
+    }
+  }
+
+  processQueue() {
+    if (this.notificationQueue.length > 0) {
+      this.setState({
+        notificationInfo: this.notificationQueue.shift(),
+        notificationOpen: true,
+      })
+    }
   }
 
   handleNotificationClose(event, reason) {
@@ -146,9 +179,7 @@ class Index extends Component {
   }
 
   handleNotificationClosed() {
-    this.setState({
-      notificationMessage: null
-    });
+    this.processQueue();
   }
 
   handleTogglePause() {
@@ -156,11 +187,15 @@ class Index extends Component {
       if (prevState.paused) {
         this.videoRef.current.srcObject.getTracks()[0].enabled = true;
 
+        this.tick();
+
         return {
           paused: false
         }
       } else {
         this.videoRef.current.srcObject.getTracks()[0].enabled = false;
+
+        clearTimeout(this.timeoutId);
 
         return {
           paused: true
@@ -171,7 +206,7 @@ class Index extends Component {
 
   render() {
     const {classes} = this.props;
-    const {ready, paused, notificationMessage, notificationOpen} = this.state;
+    const {ready, paused, notificationInfo, notificationOpen} = this.state;
 
     return (
         <Grid container direction="column" wrap="nowrap" className={classes.root}>
@@ -198,7 +233,7 @@ class Index extends Component {
           )}
           <Notification
               open={notificationOpen}
-              message={notificationMessage}
+              message={notificationInfo}
               onClose={this.handleNotificationClose}
               onExited={this.handleNotificationClosed}
           />
