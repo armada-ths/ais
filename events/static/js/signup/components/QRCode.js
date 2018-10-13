@@ -7,7 +7,8 @@ import Typography from "@material-ui/core/es/Typography/Typography";
 const styles = theme => ({
   root: {
     marginTop: theme.spacing.unit * 2,
-    paddingTop: theme.spacing.unit * 2,
+    paddingTop: theme.spacing.unit * 6,
+    paddingBottom: theme.spacing.unit * 6,
   },
 });
 
@@ -26,7 +27,7 @@ class QRCode extends Component {
               />
             </Grid>
             <Grid item>
-              <Typography variant="subheading">
+              <Typography variant="subtitle1">
                 📸 Show this code when checking in to the event! 🤳
               </Typography>
             </Grid>

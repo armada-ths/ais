@@ -6,7 +6,10 @@ const theme = createMuiTheme({
       main: "#01d690",
       contrastText: "#ffffff"
     },
-  }
+  },
+  typography: {
+    useNextVariants: true,
+  },
 });
 
 export default theme;

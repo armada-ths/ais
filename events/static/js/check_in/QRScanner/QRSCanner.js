@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import jsQR from 'jsqr';
+import * as API from '../api';
 import CameraIcon from 'mdi-material-ui/Camera';
 import CameraOffIcon from 'mdi-material-ui/CameraOff';
 import Button from "@material-ui/core/es/Button/Button";
@@ -56,7 +57,7 @@ class QRSCanner extends Component {
       this.videoRef.current.onloadedmetadata = () => {
         this.setState({ready: true, paused: false});
         this.videoRef.current.play();
-        // requestAnimationFrame(this.tick);
+        requestAnimationFrame(this.tick);
       };
     }).catch(reason => console.dir(reason));
   }
@@ -77,6 +78,11 @@ class QRSCanner extends Component {
     });
 
     if (code && code.data !== "") {
+      API.getByCheckInToken(1, code.data)
+          .then(response => {
+            console.log(response.data);
+            this.props.handleCheckIn(response.data.participant.id);
+          });
       this.setState({data: code.data});
     } else {
       requestAnimationFrame(this.tick)
@@ -102,7 +108,8 @@ class QRSCanner extends Component {
               ref={this.videoRef}
           />
           <canvas style={{display: 'none'}} ref={this.canvasRef}/>
-          <Button style={{position: 'absolute', bottom: '16px', right: '16px'}} variant="fab" color="primary" onClick={this.handlePause}>
+          <Button mini style={{position: 'absolute', bottom: '16px', right: '16px'}} variant="fab" color="primary"
+                  onClick={this.handlePause}>
             {paused ? (
                 <CameraIcon/>
             ) : (

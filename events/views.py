@@ -141,6 +141,7 @@ def check_in(request, year, event_pk):
 
     react_props = {
         'participants': [serializers.participant(participant) for participant in participants],
+        'event_id': event_pk
     }
 
     return render(request, 'events/check_in.html', {

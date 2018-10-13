@@ -4,7 +4,8 @@ import Typography from "@material-ui/core/es/Typography/Typography";
 
 const styles = theme => ({
   root: {
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: theme.palette.background.paper,
+    paddingTop: 4
   }
 });
 

@@ -128,7 +128,7 @@ class Participant(models.Model):
 
 
 class ParticipantCheckIn(models.Model):
-    timestamp = models.DateTimeField(null=True, verbose_name='When the participant checked in at the event')
+    timestamp = models.DateTimeField(null=True, auto_now_add=True, verbose_name='When the participant checked in at the event')
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
 
 

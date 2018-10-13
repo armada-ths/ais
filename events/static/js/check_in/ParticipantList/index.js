@@ -10,6 +10,11 @@ import Checkbox from "@material-ui/core/es/Checkbox/Checkbox";
 import TextField from "@material-ui/core/es/TextField/TextField";
 import includes from 'lodash/includes';
 import filter from 'lodash/filter';
+import Dialog from "@material-ui/core/Dialog/Dialog";
+import DialogContent from "@material-ui/core/DialogContent/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions/DialogActions";
+import Button from "@material-ui/core/Button/Button";
 
 const styles = theme => ({
   root: {
@@ -34,10 +39,15 @@ class ParticipantList extends Component {
 
     this.state = {
       filterString: '',
-      openDialog: false,
+      dialogOpen: false,
+      clickedParticipantName: null,
+      clickedParticipantId: null,
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleDialogClose = this.handleDialogClose.bind(this);
+    this.handleDialogClosed = this.handleDialogClosed.bind(this);
+    this.handleCheckOutConfirmed = this.handleCheckOutConfirmed.bind(this);
     this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
   }
 
@@ -49,26 +59,55 @@ class ParticipantList extends Component {
     })
   }
 
-  handleCheckboxChange(event, id) {
+  handleDialogClose() {
+    this.setState({
+      dialogOpen: false,
+    })
+  }
+
+  handleDialogClosed() {
+    this.setState({
+      clickedParticipantName: null,
+      clickedParticipantId: null
+    })
+  }
+
+  handleCheckOutConfirmed() {
+    const {handleCheckOut} = this.props;
+    const {clickedParticipantId} = this.state;
+
+    this.setState({
+      dialogOpen: false
+    });
+
+    handleCheckOut(clickedParticipantId);
+  }
+
+  handleCheckboxChange(event, id, name) {
     const {handleCheckIn} = this.props;
     const {checked} = event.target;
 
-    // TODO Show dialog confirming we want to undo a check-in
-
     if (checked) {
       handleCheckIn(id);
+      this.setState({
+        filterString: ''
+      });
     } else {
       this.setState({
-        openDialog: true
+        dialogOpen: true,
+        clickedParticipantName: name,
+        clickedParticipantId: id
       })
     }
   }
 
   render() {
-    const {filterString} = this.state;
+    const {filterString, dialogOpen, clickedParticipantName} = this.state;
     const {classes, participants} = this.props;
 
-    const filteredParticipants = filter(participants, participant => includes(participant.name.toLowerCase(), filterString.toLowerCase()));
+    const filteredParticipants = filter(participants, participant =>
+        includes(participant.name.toLowerCase(), filterString.toLowerCase())
+    );
 
     return (
         <Grid container direction="column" wrap="nowrap" className={classes.root}>
@@ -89,14 +128,33 @@ class ParticipantList extends Component {
                     <ListItemText primary={participant.name}/>
                     <ListItemSecondaryAction>
                       <Checkbox
-                          onChange={(event) => this.handleCheckboxChange(event, participant.id)}
                           color="primary"
                           checked={participant.has_checked_in}
+                          onChange={event => this.handleCheckboxChange(event, participant.id, participant.name)}
                       />
                     </ListItemSecondaryAction>
                   </ListItem>
               ))}
             </List>
+            <Dialog
+                open={dialogOpen}
+                onClose={this.handleDialogClose}
+                onExited={this.handleDialogClosed}
+            >
+              <DialogContent>
+                <DialogContentText>
+                  Undo check in of {clickedParticipantName}?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleDialogClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={this.handleCheckOutConfirmed} color="primary" autoFocus>
+                  Undo
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Grid>
         </Grid>
     )
