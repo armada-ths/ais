@@ -103,7 +103,6 @@ class Index extends Component {
     const canvasElement = this.canvasRef.current;
     const video = this.videoRef.current;
 
-    console.log("Tick!");
     canvasElement.height = video.videoHeight;
     canvasElement.width = video.videoWidth;
 
