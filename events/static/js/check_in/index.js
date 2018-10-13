@@ -11,7 +11,7 @@ import ParticipantList from './ParticipantList';
 import BottomNavigation from "@material-ui/core/es/BottomNavigation/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/es/BottomNavigationAction/BottomNavigationAction";
 import Grid from "@material-ui/core/es/Grid/Grid";
-import QRSCanner from "./QRScanner/QRSCanner";
+import QRSCanner from "./QRScanner";
 import * as API from './api';
 import CounterLine from "./CounterLine";
 import sortBy from 'lodash/sortBy';
@@ -91,6 +91,7 @@ class App extends Component {
   render() {
     const {classes} = this.props;
     const {navigationIndex, participants} = this.state;
+    const {event_id} = window.reactProps;
 
     const total = participants.length;
     const current = filter(participants, 'has_checked_in').length;
@@ -103,6 +104,7 @@ class App extends Component {
               <Grid container direction="column" wrap="nowrap" className={classes.root}>
                 {navigationIndex === 0 && (
                     <QRSCanner
+                        eventId={event_id}
                         handleCheckIn={this.handleCheckIn}
                     />
                 )}
