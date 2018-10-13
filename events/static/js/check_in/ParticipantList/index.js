@@ -26,6 +26,10 @@ const styles = theme => ({
   list: {
     overflow: 'scroll'
   },
+  listItem: {
+    paddingTop: 13,
+    paddingBottom: 13
+  },
   search: {
     height: 50,
     padding: theme.spacing.unit * 2,
@@ -124,7 +128,7 @@ class ParticipantList extends Component {
           <Grid item className={classes.list}>
             <List>
               {filteredParticipants.map(participant => (
-                  <ListItem key={participant.id}>
+                  <ListItem className={classes.listItem} key={participant.id}>
                     <ListItemText primary={participant.name}/>
                     <ListItemSecondaryAction>
                       <Checkbox
