@@ -134,8 +134,19 @@ def event_signup(request, year, event_pk):
 
 
 @permission_required('events.base')
-def qr_scanner(request, year):
-    return render(request, 'events/qr_scanner.html')
+def check_in(request, year, event_pk):
+    event = get_object_or_404(Event, pk=event_pk)
+
+    participants = Participant.objects.filter(event=event).all()
+
+    react_props = {
+        'participants': [serializers.participant(participant) for participant in participants],
+        'event_id': event_pk
+    }
+
+    return render(request, 'events/check_in.html', {
+        'react_props': json.dumps(react_props)
+    })
 
 
 @permission_required('events.base')

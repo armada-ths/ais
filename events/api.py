@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 
 from events import serializers
-from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer, Team, TeamMember
+from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer, Team, TeamMember, ParticipantCheckIn
 from fair.models import Fair
 
 
@@ -221,3 +221,44 @@ def update_team(request, event_pk, team_pk):
         'teams': [serializers.team(team) for team in teams],
         'participant': serializers.participant(participant)
     }, status=200)
+
+
+@require_POST
+def check_in(request, event_pk, participant_pk):
+    """
+    Endpoint to check in a participant
+    """
+    get_object_or_404(Event, pk=event_pk)
+    participant = get_object_or_404(Participant, pk=participant_pk)
+
+    ParticipantCheckIn.objects.create(participant=participant)
+
+    return HttpResponse(status=204)
+
+
+@require_POST
+def check_out(request, event_pk, participant_pk):
+    """
+    Endpoint to check out a participant
+    """
+    get_object_or_404(Event, pk=event_pk)
+    participant = get_object_or_404(Participant, pk=participant_pk)
+
+    ParticipantCheckIn.objects.filter(participant=participant).delete()
+
+    return HttpResponse(status=204)
+
+
+@require_POST
+def get_by_token(request, event_pk, check_in_token):
+    """
+    Endpoint to get a participant by their check in token
+    """
+    event = get_object_or_404(Event, pk=event_pk)
+
+    participant = Participant.objects.filter(event=event, check_in_token=check_in_token).first()
+
+    if participant is None:
+        return JsonResponse({'message': 'No participant with that check_in_token.'}, status=404)
+
+    return JsonResponse({'participant': serializers.participant(participant)}, status=200)

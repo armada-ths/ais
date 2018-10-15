@@ -112,6 +112,9 @@ class Participant(models.Model):
         else:
             return self.phone_number
 
+    def has_checked_in(self):
+        return self.participantcheckin_set.count() > 0
+
     def team(self):
         return self.teammember_set.first().team if self.teammember_set.first() is not None else None
 
@@ -125,7 +128,7 @@ class Participant(models.Model):
 
 
 class ParticipantCheckIn(models.Model):
-    timestamp = models.DateTimeField(null=True, verbose_name='When the participant checked in at the event')
+    timestamp = models.DateTimeField(null=True, auto_now_add=True, verbose_name='When the participant checked in at the event')
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
 
 

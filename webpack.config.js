@@ -9,7 +9,7 @@ const config = {
   entry: {
     event_form: './events/static/js/event_form/index.js',
     signup: './events/static/js/signup/index.js',
-    qr_scanner: './events/static/js/qr_scanner/index.js'
+    check_in: './events/static/js/check_in/index.js'
   },
 
   output: {
@@ -18,7 +18,7 @@ const config = {
   },
 
   watchOptions: {
-    poll: 500,
+    poll: 1000,
     ignored: /node_modules/
   },
 
