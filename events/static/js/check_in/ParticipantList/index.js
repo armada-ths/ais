@@ -109,8 +109,11 @@ class ParticipantList extends Component {
     const {filterString, dialogOpen, clickedParticipantName} = this.state;
     const {classes, participants} = this.props;
 
-    const filteredParticipants = filter(participants, participant =>
-        includes(participant.name.toLowerCase(), filterString.toLowerCase())
+    const filteredParticipants = filter(participants, participant => {
+          const nameMatch = includes(participant.name.toLowerCase(), filterString.toLowerCase());
+          const teamNameMatch = participant.team_name && includes(participant.team_name.toLowerCase(), filterString.toLowerCase());
+          return nameMatch || teamNameMatch;
+        }
     );
 
     return (
@@ -129,7 +132,7 @@ class ParticipantList extends Component {
             <List>
               {filteredParticipants.map(participant => (
                   <ListItem className={classes.listItem} key={participant.id}>
-                    <ListItemText primary={participant.name}/>
+                    <ListItemText primary={participant.name} secondary={participant.team_name}/>
                     <ListItemSecondaryAction>
                       <Checkbox
                           color="primary"

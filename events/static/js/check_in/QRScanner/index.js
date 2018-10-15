@@ -127,8 +127,16 @@ class Index extends Component {
         .then(response => {
           this.props.handleCheckIn(response.data.participant.id);
 
+          let message;
+
+          if (response.data.participant.team_name) {
+            message = `${response.data.participant.name} (${response.data.participant.team_name}) checked in!`
+          } else {
+            message = `${response.data.participant.name} checked in!`
+          }
+
           this.queueNotification({
-            text: `${response.data.participant.name} checked in!`,
+            text: message,
             type: "success"
           });
         })
