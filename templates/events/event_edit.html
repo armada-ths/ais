@@ -2,6 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
   <h1>{{ event.name }}</h1>
+  <a href="{% url 'events:check_in' fair.year event.id %}" class="btn btn-default btn-checkin">Check in</a>
   <ul class="nav nav-tabs nav-tabs-margin" role="tablist">
     <li role="presentation" class="active"><a href="#details" aria-controls="details" role="tab"
                                               data-toggle="tab">Details</a>
