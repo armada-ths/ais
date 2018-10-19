@@ -77,7 +77,9 @@ class Exhibitor(models.Model):
 		('NOT_BOOKED', 'Not booked'),
 		('BOOKED', 'Booked'),
 		('ARKAD', 'Transported by Arkad'),
-		('NOT_APPLICABLE', 'Not applicable')
+		('NOT_APPLICABLE', 'Not applicable'),
+		('EXCEPTION', 'Exception'),
+		('IN_CONTACT', 'In contact')
 	]
 	
 	transport_to = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
