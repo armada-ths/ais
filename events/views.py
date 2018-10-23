@@ -58,7 +58,7 @@ def event_new(request, year):
 
     form = EventForm(request.POST or None)
     
-    users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = 'accepted', recruitment_period__fair = event.fair).order_by('user__first_name', 'user__last_name')]
+    users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = 'accepted', recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
     form.fields['contact_person'].choices = [('', '---------')] + [(user.pk, user.get_full_name()) for user in users if user.has_perm('companies.base')]
 
     if request.POST and form.is_valid():
@@ -78,7 +78,7 @@ def event_new(request, year):
 @permission_required('events.base')
 def event_edit(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
-    event = get_object_or_404(Event, pk=pk)
+    event = get_object_or_404(Event, pk=pk, fair = fair)
 
     participants = Participant.objects.filter(event=event).select_related('user_s__profile').all()
 
