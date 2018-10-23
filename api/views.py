@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 import api.deserializers as deserializers
 import api.serializers as serializers
 
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueBenefit
 from fair.models import Partner, Fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
@@ -39,6 +39,43 @@ def exhibitors(request):
             for exhibitor in exhibitors]
     # data.sort(key=lambda x: x['company_name'].lower())
     return JsonResponse(data, safe=False)
+
+
+@cache_page(60 * 5)
+def catalogueselections(request):
+	selections = []
+	
+	selections.append({
+		'selection': 'industries',
+		'question': 'Which industries does your company work in?',
+		'options': [(industry.pk, industry.industry) for industry in CatalogueIndustry.objects.all()]
+	})
+	
+	selections.append({
+		'selection': 'values',
+		'question': 'Select up to three values that apply to the company.',
+		'options': [(value.pk, value.value) for value in CatalogueValue.objects.all()]
+	})
+	
+	selections.append({
+		'selection': 'employments',
+		'question': 'What kind of employments does your company offer?',
+		'options': [(employment.pk, employment.employment) for employment in CatalogueEmployment.objects.all()]
+	})
+	
+	selections.append({
+		'selection': 'locations',
+		'question': 'Where does your company operate?',
+		'options': [(location.pk, location.location) for location in CatalogueLocation.objects.all()]
+	})
+	
+	selections.append({
+		'selection': 'benefits',
+		'question': 'Which benefits does your company offers its employees?',
+		'options': [(benefit.pk, benefit.benefit) for benefit in CatalogueBenefit.objects.all()]
+	})
+	
+	return JsonResponse(selections, safe = False)
 
 
 @cache_page(60 * 5)
