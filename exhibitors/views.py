@@ -200,7 +200,7 @@ def exhibitor(request, year, pk):
 	for banquet in Banquet.objects.filter(fair = fair):
 		if banquet.product is not None:
 			for order in Order.objects.filter(purchasing_company = exhibitor.company, product = banquet.product):
-				banquet_tickets_count_created += order.quantity
+				banquet_tickets_count_ordered += order.quantity
 		
 		banquet_tickets = Participant.objects.filter(banquet = banquet, company = exhibitor.company)
 		banquet_tickets_count_created += len(banquet_tickets)
@@ -222,7 +222,7 @@ def exhibitor(request, year, pk):
 		'lunch_tickets_count_created': lunch_tickets_count_created,
 		'lunch_tickets_days': lunch_tickets_days,
 		'banquet_tickets_count_ordered': banquet_tickets_count_ordered,
-		'banquet_tickets_count_created': banquet_tickets_count_ordered,
+		'banquet_tickets_count_created': banquet_tickets_count_created,
 		'banquets': banquets
 	})
 

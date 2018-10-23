@@ -166,8 +166,8 @@
 					</ul>
 					
 					{% for banquet in banquets %}
-						{% if banquet_tickets.banquet_tickets %}
-							<h3>{{ banquet }}</h3>
+						{% if banquet.banquet_tickets %}
+							<h3>{{ banquet.banquet.name }}</h3>
 							
 							<table class="table">
 								<thead>
