@@ -73,7 +73,7 @@ class Exhibitor(models.Model):
 	placement_wish = models.CharField(choices = placement_wishes, blank = True, null = True, max_length = 255)
 	placement_comment = models.TextField(blank = True, null = True, verbose_name = 'Additional wishes regarding placement at the fair')
 	
-	transport_statuses = [
+	transport_to_statuses = [
 		('NOT_BOOKED', 'Not booked'),
 		('BOOKED', 'Booked'),
 		('ARKAD', 'Transported by Arkad'),
@@ -82,8 +82,17 @@ class Exhibitor(models.Model):
 		('IN_CONTACT', 'In contact')
 	]
 	
-	transport_to = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
-	transport_from = models.CharField(choices = transport_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
+	transport_to = models.CharField(choices = transport_to_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
+	
+	transport_from_statuses = [
+		('NOT_BOOKED', 'Not booked'),
+		('BOOKED', 'Booked'),
+		('NOT_APPLICABLE', 'Not applicable'),
+		('EXCEPTION', 'Exception'),
+		('IN_CONTACT', 'In contact')
+	]
+	
+	transport_from = models.CharField(choices = transport_from_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
 	transport_comment = models.TextField(blank = True, null = True)
 	
 	@property
