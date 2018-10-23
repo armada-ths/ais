@@ -12,6 +12,7 @@ from events import serializers
 from events.forms import EventForm, TeamForm
 from events.models import Event, Team, Participant, SignupQuestion
 from fair.models import Fair
+from recruitment.models import RecruitmentApplication
 
 
 def save_questions(questions_data, event):
@@ -56,6 +57,9 @@ def event_new(request, year):
     }
 
     form = EventForm(request.POST or None)
+    
+    users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = 'accepted', recruitment_period__fair = event.fair).order_by('user__first_name', 'user__last_name')]
+    form.fields['contact_person'].choices = [('', '---------')] + [(user.pk, user.get_full_name()) for user in users if user.has_perm('companies.base')]
 
     if request.POST and form.is_valid():
         event = form.save()
@@ -84,6 +88,9 @@ def event_edit(request, year, pk):
     }
 
     form = EventForm(request.POST or None, instance=event)
+    
+    users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = 'accepted', recruitment_period__fair = event.fair).order_by('user__first_name', 'user__last_name')]
+    form.fields['contact_person'].choices = [('', '---------')] + [(user.pk, user.get_full_name()) for user in users if user.has_perm('companies.base')]
 
     if request.POST and form.is_valid():
         form.save()
