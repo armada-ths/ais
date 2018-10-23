@@ -6,6 +6,7 @@ urlpatterns = [
 	url(r'^$', views.exhibitors, name='exhibitors'),
 	url(r'^(?P<pk>\d+)$', views.exhibitor, name = 'exhibitor'),
 	url(r'^(?P<pk>\d+)/transport$', views.exhibitor_transport, name = 'exhibitor_transport'),
+	url(r'^(?P<pk>\d+)/details$', views.exhibitor_details, name = 'exhibitor_details'),
 	url(r'^(?P<pk>\d+)/contact_persons$', views.exhibitor_contact_persons, name = 'exhibitor_contact_persons'),
 	url(r'^(?P<pk>\d+)/comments/(?P<comment_pk>\d+)/edit$', views.exhibitor_comment_edit, name = 'exhibitor_comment_edit'),
 	url(r'^(?P<pk>\d+)/comments/(?P<comment_pk>\d+)/remove$', views.exhibitor_comment_remove, name = 'exhibitor_comment_remove'),

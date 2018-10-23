@@ -60,6 +60,16 @@ class ContactPersonForm(forms.ModelForm):
 		}
 
 
+class DetailsForm(forms.ModelForm):
+	class Meta:
+		model = Exhibitor
+		fields = ['deadline_complete_registration']
+		
+		widgets = {
+			'deadline_complete_registration': forms.TextInput(attrs = {'placeholder': 'Y-m-d H:i:s, e.g. 1995-10-10 13:37:00'}),
+		}
+
+
 class CommentForm(forms.ModelForm):
 	class Meta:
 		model = CompanyCustomerComment

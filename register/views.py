@@ -104,7 +104,9 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	
 	orders = Order.objects.filter(purchasing_company = company, unit_price = None, name = None)
 	
-	is_editable = timezone.now() >= fair.complete_registration_start_date and timezone.now() <= fair.complete_registration_close_date
+	deadline = exhibitor.deadline_complete_registration or fair.complete_registration_close_date
+	
+	is_editable = timezone.now() >= fair.complete_registration_start_date and timezone.now() <= deadline
 	
 	# hosts can never edit the form
 	if company_contact is None and not request.user.has_perm('companies.base'): is_editable = False
@@ -249,6 +251,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		'errors': errors,
 		'form_final_submission': form_final_submission,
 		'signature': signature,
+		'deadline': deadline,
 		'is_editable': is_editable
 	})
 

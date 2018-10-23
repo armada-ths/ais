@@ -10,7 +10,7 @@ from accounting.models import Product, Order
 from register.models import SignupLog
 from banquet.models import Banquet, Participant
 
-from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, ContactPersonForm, CommentForm, ExhibitorSearchForm
+from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CommentForm, ExhibitorSearchForm
 from .models import Exhibitor, ExhibitorView, LunchTicketDay, LunchTicket
 
 
@@ -223,7 +223,8 @@ def exhibitor(request, year, pk):
 		'lunch_tickets_days': lunch_tickets_days,
 		'banquet_tickets_count_ordered': banquet_tickets_count_ordered,
 		'banquet_tickets_count_created': banquet_tickets_count_created,
-		'banquets': banquets
+		'banquets': banquets,
+		'deadline_complete_registration': exhibitor.deadline_complete_registration or fair.complete_registration_close_date
 	})
 
 
@@ -239,6 +240,24 @@ def exhibitor_transport(request, year, pk):
 		return redirect('exhibitor', fair.year, exhibitor.pk)
 	
 	return render(request, 'exhibitors/exhibitor_transport.html', {
+		'fair': fair,
+		'exhibitor': exhibitor,
+		'form': form
+	})
+
+
+@permission_required('exhibitors.modify_details')
+def exhibitor_details(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	exhibitor = get_object_or_404(Exhibitor, pk = pk)
+	
+	form = DetailsForm(request.POST or None, instance = exhibitor)
+	
+	if request.POST and form.is_valid():
+		form.save()
+		return redirect('exhibitor', fair.year, exhibitor.pk)
+	
+	return render(request, 'exhibitors/exhibitor_details.html', {
 		'fair': fair,
 		'exhibitor': exhibitor,
 		'form': form

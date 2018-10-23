@@ -7,6 +7,7 @@ class EventForm(ModelForm):
 	class Meta:
 		model = Event
 		fields = '__all__'
+		
 		widgets = {
 			'date_start': TextInput(attrs = {'placeholder': '1994-07-12 13:37:00'}),
 			'date_end': TextInput(attrs = {'placeholder': '1995-10-10 13:37:00'})

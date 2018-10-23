@@ -45,7 +45,7 @@ class Exhibitor(models.Model):
 	company = models.ForeignKey('companies.Company', on_delete=models.CASCADE)
 	fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
 	contact_persons = models.ManyToManyField(User, blank = True)
-	contact = models.ForeignKey('companies.CompanyContact', null=True, blank=True, on_delete=models.CASCADE)
+	contact = models.ForeignKey('companies.CompanyContact', null = True, blank = True, on_delete = models.CASCADE)
 	booth_height = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Height of the booth (cm)')
 	electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
 	electricity_socket_count = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Number of sockets')
@@ -64,6 +64,8 @@ class Exhibitor(models.Model):
 	catalogue_benefits = models.ManyToManyField(CatalogueBenefit, blank = True)
 	catalogue_average_age = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Average age of employees')
 	catalogue_founded = models.PositiveIntegerField(blank = True, null = True)
+	
+	deadline_complete_registration = models.DateTimeField(blank = True, null = True, verbose_name = 'Deviating deadline for complete registration')
 	
 	placement_wishes = [
 		('MIXED', 'Mixed with companies from other industries'),
@@ -135,7 +137,8 @@ class Exhibitor(models.Model):
 			('view_all', 'Always view all exhibitors'),
 			('create', 'Create new exhibitors'),
 			('modify_contact_persons', 'Modify contact persons'),
-			('modify_transport', 'Modify transport details')
+			('modify_transport', 'Modify transport details'),
+			('modify_details', 'Modify details')
 		]
 
 
