@@ -1,3 +1,5 @@
+from lib.image import UploadToDirUUID, UploadToDir, update_image_field
+
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -32,6 +34,7 @@ class Event(models.Model):
     requires_invitation = models.BooleanField(blank=False, null=False, verbose_name='Participants need an invitation to sign up')
     contact_person = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     external_event_link = models.CharField(max_length=255, blank=True, null=True)
+    picture = models.ImageField(upload_to = UploadToDirUUID('events', 'pictures'), blank = True, null = True)
 
     class Meta:
         ordering = ['date_start', 'name']
