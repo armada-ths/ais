@@ -474,7 +474,7 @@ def invitation_maybe(request, year, token):
 def external_invitation(request, token):
 	invitation = get_object_or_404(Invitation, token = token, user = None)
 	
-	participant = invitation.participant if invitation.participant is not None else Participant(banquet = invitation.banquet, user = request.user)
+	participant = invitation.participant if invitation.participant is not None else Participant(banquet = invitation.banquet, user = None)
 	
 	participant.name = invitation.name
 	participant.email_address = invitation.email_address
