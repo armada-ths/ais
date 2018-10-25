@@ -342,17 +342,14 @@ def banquet_manage_invitations(request, year, banquet_pk):
 	invitations = []
 	
 	for invitation in Invitation.objects.filter(banquet = banquet):
-		if invitation.participant is not None: status = 'GOING'
-		elif invitation.denied: status = 'NOT_GOING'
-		else: status = 'PENDING'
-		
 		invitations.append({
 			'pk': invitation.pk,
 			'name': invitation.user.get_full_name() if invitation.user is not None else invitation.name,
 			'email_address': invitation.user.email if invitation.user is not None else invitation.email_address,
 			'reason': invitation.reason,
-			'status': status,
-			'price': invitation.price
+			'status': invitation.status,
+			'price': invitation.price,
+			'status': invitation.status
 		})
 	
 	return render(request, 'banquet/manage_invitations.html', {
@@ -435,6 +432,30 @@ def banquet_invitation(request, year, token):
 		'invitation': invitation,
 		'form': form
 	})
+
+
+def banquet_invitation_no(request, year, token):
+	fair = get_object_or_404(Fair, year = year)
+	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
+	
+	if invitation.participant is not None:
+		invitation.participant.delete()
+		invitation.participant = None
+	
+	invitation.denied = True
+	invitation.save()
+	
+	return redirect('banquet_invitation', fair.year, invitation.token)
+
+
+def banquet_invitation_maybe(request, year, token):
+	fair = get_object_or_404(Fair, year = year)
+	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
+	
+	invitation.denied = False
+	invitation.save()
+	
+	return redirect('banquet_invitation', fair.year, invitation.token)
 
 
 class ParticipantsListView(GeneralMixin, ListView):

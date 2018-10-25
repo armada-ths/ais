@@ -16,6 +16,8 @@ from banquet import views
 urlpatterns = [
 	url(r'^$', views.banquet_dashboard, name = 'banquet_dashboard'),
 	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)$', views.banquet_invitation, name = 'banquet_invitation'),
+	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)/no$', views.banquet_invitation_no, name = 'banquet_invitation_no'),
+	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)/maybe$', views.banquet_invitation_maybe, name = 'banquet_invitation_maybe'),
 	url(r'^(?P<banquet_pk>[0-9]+)$', views.banquet_manage, name = 'banquet_manage'),
 	url(r'^(?P<banquet_pk>[0-9]+)/invitations$', views.banquet_manage_invitations, name = 'banquet_manage_invitations'),
 	url(r'^(?P<banquet_pk>[0-9]+)/invitations/(?P<invitation_pk>[0-9]+)$', views.banquet_manage_invitation, name = 'banquet_manage_invitation'),

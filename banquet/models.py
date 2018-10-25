@@ -65,6 +65,12 @@ class Invitation(models.Model):
 	reason = models.CharField(max_length = 75, blank = True, null = True)
 	price = models.PositiveIntegerField() # can be zero
 	denied = models.BooleanField(default=False)
+	
+	@property
+	def status(self):
+		if self.participant is not None: return 'GOING'
+		elif self.denied: return 'NOT_GOING'
+		else: return 'PENDING'
 
 	@classmethod
 	def create(cls, banquet, participant, name, email_address, reason, price, user):

@@ -9,7 +9,6 @@
 {% block content %}
 	{% if form %}
 		<h1>{{ invitation.banquet.name }}</h1>
-		<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>
 		
 		<ul class="list-unstyled">
 			{% if invitation.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>{% endif %}
@@ -17,11 +16,32 @@
 			{% if invitation.banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ invitation.banquet.dress_code }}</li>{% endif %}
 		</ul>
 		
-		<form method="post">
-			{% csrf_token %}
-			{{ form | crispy }}
-			<button type="submit" class="btn btn-lg btn-success center-block">Submit</button>
-		</form>
+		<span style="font-weight: bold;">Invitation status:</span>
+		{% if invitation.status == 'GOING' %}<span class="label label-success">You are going</span>{% endif %}
+		{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">You are not going</span>{% endif %}
+		{% if invitation.status == 'PENDING' %}<span class="label label-default">Your invitation is pending response</span>{% endif %}
+		
+		{% if invitation.denied %}
+			<h2>Not attending</h2>
+			<p>You have chosen not to attend. If you change your mind, please press the button below.</p>
+			
+			<a href="{% url 'banquet_invitation_maybe' fair.year invitation.token %}" class="btn btn-default">I want to attend</a>
+		{% else %}
+			<h2>Not attending?</h2>
+			<p>If you wish not to attend the banquet, please push the button below.</p>
+			
+			<a href="{% url 'banquet_invitation_no' fair.year invitation.token %}" class="btn btn-default">I will not attend</a>
+			
+			<h2>If you are attending</h2>
+			{% if invitation.status == 'GOING' %}<p><span class="text-success">Your details have already been filled out and you have a spot on the banquet.</span> If you wish to change your details, you can do so here.</p>
+			{% else %}<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>{% endif %}
+			
+			<form method="post">
+				{% csrf_token %}
+				{{ form | crispy }}
+				<button type="submit" class="btn btn-lg btn-success center-block">Submit</button>
+			</form>
+		{% endif %}
 	{% else %}
 		<h1>Thank you!</h1>
 		<p>Your repsonse has been recorded. If you would like to change your response for {{ invitation.banquet.name }}, you can <a href="{% url 'banquet_invitation' fair.year invitation.token %}">return to the form</a>.</p>
