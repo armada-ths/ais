@@ -6,10 +6,10 @@ from banquet.views import (
     ThankYouView,
 )
 
+from banquet import views
+
 urlpatterns = [
-	#external invite
-	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', ExternalInviteRedirectView.as_view(), name = 'external_invite_redirect'),
-	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/create$', ExternalInviteCreateView.as_view(), name = 'external_invite_create'),
-	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/update$', ExternalInviteUpdateView.as_view(), name = 'external_invite_update'),
-	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/thank_you$', ThankYouView.as_view(), name = 'external_invite_thankyou'),
+	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', views.external_invitation, name = 'banquet_external_invitation'),
+	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/no$', views.external_invitation_no, name = 'banquet_external_invitation_no'),
+	url(r'^(?P<token>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/maybe$', views.external_invitation_maybe, name = 'banquet_external_invitation_maybe'),
 ]

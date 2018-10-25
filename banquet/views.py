@@ -301,7 +301,7 @@ def export_invitations(request, year):
         token = None
     return response
 
-def banquet_dashboard(request, year):
+def dashboard(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
 	banquets = []
@@ -325,7 +325,7 @@ def banquet_dashboard(request, year):
 
 
 @permission_required('banquet.base')
-def banquet_manage(request, year, banquet_pk):
+def manage(request, year, banquet_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	
@@ -348,7 +348,7 @@ def banquet_manage(request, year, banquet_pk):
 
 
 @permission_required('banquet.base')
-def banquet_manage_invitations(request, year, banquet_pk):
+def manage_invitations(request, year, banquet_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	
@@ -373,7 +373,7 @@ def banquet_manage_invitations(request, year, banquet_pk):
 
 
 @permission_required('banquet.base')
-def banquet_manage_invitation(request, year, banquet_pk, invitation_pk):
+def manage_invitation(request, year, banquet_pk, invitation_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	invitation = get_object_or_404(Invitation, banquet = banquet, pk = invitation_pk)
@@ -386,7 +386,7 @@ def banquet_manage_invitation(request, year, banquet_pk, invitation_pk):
 
 
 @permission_required('banquet.base')
-def banquet_manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
+def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	
@@ -408,7 +408,7 @@ def banquet_manage_invitation_form(request, year, banquet_pk, invitation_pk = No
 
 
 @permission_required('banquet.base')
-def banquet_manage_participants(request, year, banquet_pk):
+def manage_participants(request, year, banquet_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	
@@ -419,7 +419,7 @@ def banquet_manage_participants(request, year, banquet_pk):
 	})
 
 
-def banquet_invitation(request, year, token):
+def invitation(request, year, token):
 	fair = get_object_or_404(Fair, year = year)
 	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
 	
@@ -447,7 +447,7 @@ def banquet_invitation(request, year, token):
 	})
 
 
-def banquet_invitation_no(request, year, token):
+def invitation_no(request, year, token):
 	fair = get_object_or_404(Fair, year = year)
 	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
 	
@@ -461,7 +461,7 @@ def banquet_invitation_no(request, year, token):
 	return redirect('banquet_invitation', fair.year, invitation.token)
 
 
-def banquet_invitation_maybe(request, year, token):
+def invitation_maybe(request, year, token):
 	fair = get_object_or_404(Fair, year = year)
 	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
 	
@@ -469,6 +469,54 @@ def banquet_invitation_maybe(request, year, token):
 	invitation.save()
 	
 	return redirect('banquet_invitation', fair.year, invitation.token)
+
+
+def external_invitation(request, token):
+	invitation = get_object_or_404(Invitation, token = token, user = None)
+	
+	participant = invitation.participant if invitation.participant is not None else Participant(banquet = invitation.banquet, user = request.user)
+	
+	participant.name = invitation.name
+	participant.email_address = invitation.email_address
+	
+	form = InvitationForm(request.POST or None, instance = participant)
+	
+	if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
+	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
+	
+	if request.POST and form.is_valid():
+		form.instance.name = None
+		form.instance.email_address = None
+		invitation.participant = form.save()
+		invitation.save()
+		form = None
+	
+	return render(request, 'banquet/invitation_external.html', {
+		'invitation': invitation,
+		'form': form
+	})
+
+
+def external_invitation_no(request, token):
+	invitation = get_object_or_404(Invitation, token = token, user = None)
+	
+	if invitation.participant is not None:
+		invitation.participant.delete()
+		invitation.participant = None
+	
+	invitation.denied = True
+	invitation.save()
+	
+	return redirect('banquet_external_invitation', invitation.token)
+
+
+def external_invitation_maybe(request, token):
+	invitation = get_object_or_404(Invitation, token = token, user = None)
+	
+	invitation.denied = False
+	invitation.save()
+	
+	return redirect('banquet_external_invitation', invitation.token)
 
 
 class ParticipantsListView(GeneralMixin, ListView):
