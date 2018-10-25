@@ -33,7 +33,7 @@
 								<a href="{% url 'banquet_manage_invitation' fair.year banquet.pk invitation.pk %}">{{ invitation.name }}</a>
 								
 								{% if invitation.status == 'GOING' %}<span class="label label-success">Going</span>{% endif %}
-								{% if invitation.status == 'NOT_GOING' %}<span class="label label-error">Going</span>{% endif %}
+								{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">Not going</span>{% endif %}
 								{% if invitation.status == 'PENDING' %}<span class="label label-default">Pending</span>{% endif %}
 							</td>
 							<td><a href="mailto:{{ invitation.email_address }}">{{ invitation.email_address }}</a></td>
