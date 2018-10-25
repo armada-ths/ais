@@ -34,7 +34,7 @@
 				<p><br /></p>
 				
 				{% if invitation.denied %}
-					<h1>Not attending</h1>
+					<h2>Not attending</h2>
 					<p>You have chosen not to attend. If you change your mind, please press the button below.</p>
 					
 					<p><a href="{% url 'banquet_external_invitation_maybe' invitation.token %}" class="btn btn-default">I want to attend</a></p>
