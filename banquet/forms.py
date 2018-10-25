@@ -17,9 +17,9 @@ def fix_phone_number(n):
 	return n
 
 
-class InvitationForm(forms.ModelForm):
+class ParticipantForm(forms.ModelForm):
 	def clean(self):
-		super(InvitationForm, self).clean()
+		super(ParticipantForm, self).clean()
 		
 		if 'phone_number' in self.cleaned_data:
 			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
@@ -27,7 +27,7 @@ class InvitationForm(forms.ModelForm):
 		return self.cleaned_data
 	
 	def is_valid(self):
-		valid = super(InvitationForm, self).is_valid()
+		valid = super(ParticipantForm, self).is_valid()
 		
 		if not valid: return valid
 		
@@ -49,6 +49,65 @@ class InvitationForm(forms.ModelForm):
 			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
 			'alcohol': forms.RadioSelect()
 		}
+
+
+class InvitationForm(forms.ModelForm):
+	def clean(self):
+		super(InvitationForm, self).clean()
+		
+		if 'phone_number' in self.cleaned_data:
+			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+		
+		return self.cleaned_data
+	
+	def is_valid(self):
+		valid = super(InvitationForm, self).is_valid()
+		
+		if not valid: return valid
+		
+		user = self.cleaned_data.get('user')
+		name = self.cleaned_data.get('name')
+		email_address = self.cleaned_data.get('email_address')
+		
+		if user is not None:
+			if name is not None:
+				self.add_error('name', 'Leave this empty if you select a user.')
+				valid = False
+			
+			if email_address is not None:
+				self.add_error('email_address', 'Leave this empty if you select a user.')
+				valid = False
+		
+		else:
+			if name is None or len(name) == 0:
+				self.add_error('name', 'Either select a user or provide a name.')
+				valid = False
+			
+			if email_address is None or len(email_address) == 0:
+				self.add_error('email_address', 'Either select a user or provide an e-mail address.')
+				valid = False
+			
+		return valid
+	
+	def save(self, *args, **kwargs):
+		invitation = super(InvitationForm, self).save(*args, **kwargs)
+		
+		if invitation.participant is not None:
+			if invitation.user is None:
+				invitation.participant.name = invitation.name
+				invitation.participant.email_address = invitation.email_address
+			
+			else:
+				invitation.participant.name = None
+				invitation.participant.email_address = None
+			
+			invitation.participant.save()
+		
+		return invitation
+	
+	class Meta:
+		model = Invitation
+		fields = ['user', 'name', 'email_address', 'reason', 'price']
 
 
 class InternalParticipantForm(forms.ModelForm):

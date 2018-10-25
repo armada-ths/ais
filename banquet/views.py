@@ -29,7 +29,7 @@ from people.models import Language, Profile
 from accounting.models import Order
 
 from .models import Banquet, Participant, Invitation
-from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm
+from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, ParticipantForm
 
 
 #External Invite
@@ -392,7 +392,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 	
 	invitation = get_object_or_404(Invitation, banquet = banquet, pk = invitation_pk) if invitation_pk is not None else None
 	
-	form = SendInvitationForm(request.POST or None, instance = invitation)
+	form = InvitationForm(request.POST or None, instance = invitation)
 	
 	if request.POST and form.is_valid():
 		form.instance.banquet = banquet
@@ -428,7 +428,7 @@ def invitation(request, year, token):
 	participant.name = request.user.get_full_name()
 	participant.email_address = request.user.email
 	
-	form = InvitationForm(request.POST or None, instance = participant)
+	form = ParticipantForm(request.POST or None, instance = participant)
 	
 	if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
 	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
@@ -479,7 +479,7 @@ def external_invitation(request, token):
 	participant.name = invitation.name
 	participant.email_address = invitation.email_address
 	
-	form = InvitationForm(request.POST or None, instance = participant)
+	form = ParticipantForm(request.POST or None, instance = participant)
 	
 	if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
 	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions

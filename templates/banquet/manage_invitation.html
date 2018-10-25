@@ -12,7 +12,19 @@
 		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
 	</p>
 	
-	<p>This page needs to be further developed.</p>
+	<ul class="list-unstyled">
+		<li><span style="font-weight: bold;">Name:</span> {% if invitation.user is None %} {{ invitation.name }} {% else %} {{ invitation.user.get_full_name }} {% endif %}</li>
+		<li><span style="font-weight: bold;">E-mail address:</span> {% if invitation.user is None %} <a href="mailto:{{ invitation.email_address }}">{{ invitation.email_address }}</a> {% else %} <a href="mailto:{{ invitation.user.email }}">{{ invitation.user.email }}</a> {% endif %}</li>
+		<li
+			><span style="font-weight: bold;">Status:</span>
+			
+			{% if invitation.status == 'GOING' %}<span class="text-success">Going</span> <!--– <a href="#">view participation data</a>-->{% endif %}
+			{% if invitation.status == 'NOT_GOING' %}<span class="text-danger">Not going</span>{% endif %}
+			{% if invitation.status == 'PENDING' %}<span class="text-default">Pending</span>{% endif %}
+		</li>
+	</ul>
+	
+	<a href="{% url 'banquet_manage_invitation_edit' fair.year banquet.pk invitation.pk %}" class="btn btn-default">Edit invitation</a>
 	
 	<h2>Invitation link</h2>
 	{% if invitation.user is None %}
