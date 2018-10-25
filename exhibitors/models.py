@@ -81,7 +81,8 @@ class Exhibitor(models.Model):
 		('ARKAD', 'Transported by Arkad'),
 		('NOT_APPLICABLE', 'Not applicable'),
 		('EXCEPTION', 'Exception'),
-		('IN_CONTACT', 'In contact')
+		('IN_CONTACT', 'In contact'),
+		('IN_CONTACT_ARMADA', 'In contact by Armada')
 	]
 	
 	transport_to = models.CharField(choices = transport_to_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)

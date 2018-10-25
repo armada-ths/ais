@@ -53,7 +53,7 @@
 								</td>
 							{% elif field == 'transport_to' %}
 								{% if exhibitor.transport_to == 'NOT_BOOKED' %}<td class="bg-danger">
-								{% elif exhibitor.transport_to == 'IN_CONTACT' %}<td class="bg-warning">
+								{% elif exhibitor.transport_to == 'IN_CONTACT' or exhibitor.transport_to == 'IN_CONTACT_ARMADA' %}<td class="bg-warning">
 								{% else %}<td>{% endif %}
 									{{ exhibitor.get_transport_to_display }}
 								</td>
