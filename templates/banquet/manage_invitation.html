@@ -18,7 +18,7 @@
 	{% if invitation.user is None %}
 		<p>Give the following link to the invitee.</p>
 		
-		<input type="text" value="https://ais.armada.nu{% url 'external_invite_redirect' invitation.token %}" />
+		<input type="text" value="https://ais.armada.nu{% url 'banquet_external_invitation' invitation.token %}" />
 	{% else %}
 		<p>This invitation is tied to a user account. Ask {{ invitation.user.get_full_name }} to sign in to the AIS and click Banquet in the menu.</p>
 	{% endif %}
