@@ -26,6 +26,7 @@ from people.models import Profile
 from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
+from accounting.models import Order
 
 from .models import Banquet, Participant, Invitation
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm
@@ -328,9 +329,21 @@ def banquet_manage(request, year, banquet_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	
+	count_ordered = 0
+	
+	for order in Order.objects.filter(product = banquet.product):
+		count_ordered += order.quantity
+	
 	return render(request, 'banquet/manage.html', {
 		'fair': fair,
-		'banquet': banquet
+		'banquet': banquet,
+		'count_going': Invitation.objects.filter(banquet = banquet).exclude(participant = None).count(),
+		'count_not_going': Invitation.objects.filter(banquet = banquet, denied = True).count(),
+		'count_invitations': Invitation.objects.filter(banquet = banquet).count(),
+		'count_pending': Invitation.objects.filter(banquet = banquet, denied = False, participant = None).count(),
+		'count_ordered': count_ordered,
+		'count_created': Participant.objects.filter(banquet = banquet).exclude(company = None).count(),
+		'count_participants': Participant.objects.filter(banquet = banquet).count()
 	})
 
 

@@ -11,5 +11,22 @@
 		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
 		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
 	</p>
+	
+	<h2>At a glance</h2>
+	
+	<ul class="list-unstyled">
+		<li><span style="font-weight: bold;">Accepted invitations:</span> {{ count_going }}</li>
+		<li><span style="font-weight: bold;">Denied invitations:</span> {{ count_not_going }}</li>
+		<li><span style="font-weight: bold;">Pending invitations:</span> {{ count_pending }}</li>
+		<li><span style="font-weight: bold;">Totalt number of invitations:</span> {{ count_invitations }}</li>
+	</ul>
+	
+	<ul class="list-unstyled">
+		<li><span style="font-weight: bold;">Purchased company tickets:</span> {{ count_ordered }}</li>
+		<li><span style="font-weight: bold;">Filled out company tickets:</span> {{ count_created }}</li>
+	</ul>
+	<ul class="list-unstyled">
+		<li><span style="font-weight: bold;">Totalt number of participants:</span> {{ count_participants }}</li>
+	</ul>
 {% endblock %}
 
