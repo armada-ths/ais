@@ -120,7 +120,7 @@ def event_signup(request, year, event_pk):
     signup_url = reverse('events_api:signup', args=[event_pk])
 
     # Will be populated if user has started signup before
-    participant = Participant.objects.filter(user_s=request.user).first()
+    participant = Participant.objects.filter(user_s=request.user,event=event).first()
 
     open_student_teams = Team.objects.filter(event=event, allow_join_s=True)
 
