@@ -424,7 +424,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 	users_flat = []
 	
 	for organization_group in OrganizationGroup.objects.filter(fair = fair):
-		this_users_flat = [application.user for application in RecruitmentApplication.objects.filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
+		this_users_flat = [application.user for application in RecruitmentApplication.objects.select_related('user').filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
 		users_flat += this_users_flat
 		users.append([organization_group.name, [(user.pk, user.get_full_name()) for user in this_users_flat]])
 	

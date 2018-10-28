@@ -114,6 +114,10 @@ class InvitationForm(forms.ModelForm):
 			'deadline': 'Leave blank to get the group\'s default deadline.',
 			'price': 'Enter an integer price in SEK.'
 		}
+		
+		widgets = {
+			'deadline': forms.DateInput(attrs = {'type': 'date'})
+		}
 
 
 class InvitationSearchForm(forms.Form):
@@ -124,7 +128,7 @@ class InvitationSearchForm(forms.Form):
 	]
 	
 	statuses = forms.MultipleChoiceField(choices = status_choices, widget = forms.CheckboxSelectMultiple(), required = False)
-	groups = forms.ModelMultipleChoiceField(queryset = InvitationGroup.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only invitation belonging to any of these', required = False)
+	groups = forms.ModelMultipleChoiceField(queryset = InvitationGroup.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only invitation belonging to any of these groups', required = False)
 
 
 class InternalParticipantForm(forms.ModelForm):
