@@ -107,7 +107,7 @@ class InvitationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Invitation
-		fields = ['user', 'name', 'email_address', 'reason', 'deadline', 'price']
+		fields = ['group', 'user', 'name', 'email_address', 'reason', 'deadline', 'price']
 		
 		help_texts = {
 			'reason': 'Not shown to the invitee.',

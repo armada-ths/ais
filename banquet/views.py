@@ -18,7 +18,7 @@ from people.models import Language, Profile
 from accounting.models import Order
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 
-from .models import Banquet, Participant, Invitation
+from .models import Banquet, Participant, InvitationGroup, Invitation
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, ParticipantForm
 
 
@@ -400,6 +400,10 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 	users = [('', '---------')] + users
 	
 	form.fields['user'].choices = users
+	
+	groups = [(group.pk, group.name + ' (' + ('deadline ' + str(group.deadline) if group.deadline is not None else 'no deadline') + ')') for group in InvitationGroup.objects.filter(banquet = banquet)]
+	
+	form.fields['group'].choices = groups
 	
 	if invitation is not None and invitation.participant is not None:
 		form.fields['price'].disabled = True
