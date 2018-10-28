@@ -1,23 +1,12 @@
-import datetime, json
-import requests as r
-import csv
+import datetime, json, csv, stripe
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseForbidden
 from django.urls import reverse,reverse_lazy
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-from django.core.exceptions import ValidationError
-from django.utils import timezone
-from django.template.defaultfilters import date as date_filter
 from django.contrib.auth.decorators import permission_required
-from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from django.forms import modelform_factory
-
 from django import forms
 from django.views.generic import CreateView, ListView, TemplateView, RedirectView, UpdateView
 
@@ -485,15 +474,36 @@ def external_invitation(request, token):
 	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
 	
 	if request.POST and form.is_valid():
+		if invitation.participant is None and invitation.price > 0:
+			stripe.api_key = settings.STRIPE_SECRET
+			
+			charge = stripe.Charge.create(
+				amount = invitation.price * 100, # Stripe wants the price in ören
+				currency = 'SEK',
+				description = 'Banquet invitation token ' + invitation.token,
+				source = request.POST['stripeToken']
+			)
+		
+		else:
+			charge = None
+		
 		form.instance.name = None
 		form.instance.email_address = None
 		invitation.participant = form.save()
 		invitation.save()
+		
+		if charge is not None:
+			invitation.participant.charge_stripe = charge['id']
+			invitation.participant.save()
+		
 		form = None
 	
 	return render(request, 'banquet/invitation_external.html', {
 		'invitation': invitation,
-		'form': form
+		'form': form,
+		'charge': invitation.price > 0 and invitation.participant is None,
+		'stripe_publishable': settings.STRIPE_PUBLISHABLE,
+		'stripe_amount': invitation.price * 100
 	})
 
 
@@ -501,6 +511,8 @@ def external_invitation_no(request, token):
 	invitation = get_object_or_404(Invitation, token = token, user = None)
 	
 	if invitation.participant is not None:
+		if invitation.participant.charge_stripe is not None: refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
+		
 		invitation.participant.delete()
 		invitation.participant = None
 	
