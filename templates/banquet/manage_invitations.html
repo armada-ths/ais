@@ -18,6 +18,8 @@
 		<table class="table" id="invitation_table">
 			<thead>
 				<tr>
+					<th>Group</th>
+					<th>Deadline</th>
 					<th>Name</th>
 					<th>E-mail address</th>
 					<th>Reason</th>
@@ -29,6 +31,8 @@
 				{% if invitiations %}
 					{% for invitation in invitiations %}
 						<tr>
+							<td>{{ invitation.group }}</td>
+							<td>{% if invitation.deadline_smart is not None %} <span style="display: none;">{{ invitation.deadline_smart|date:"U" }}</span> {{ invitation.deadline_smart }} {% else %} <span style="font-style: italic;">no deadline</span> {% endif %}</td>
 							<td>
 								<a href="{% url 'banquet_manage_invitation' fair.year banquet.pk invitation.pk %}">{{ invitation.name }}</a>
 								

@@ -12,27 +12,32 @@
 	
 	<body>
 		<div class="container">
+			<div class="text-center headline">
+				<h2>{{ invitation.banquet.fair }}</h2>
+				<h1>{{ invitation.banquet.name }}</h1>
+			</div>
+			
+			<p>
+				<ul class="list-unstyled">
+					{% if invitation.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>{% endif %}
+					{% if invitation.banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ invitation.banquet.location }}</li>{% endif %}
+					{% if invitation.banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ invitation.banquet.dress_code }}</li>{% endif %}
+				</ul>
+				
+				<ul class="list-unstyled">
+					{% if invitation.deadline_smart %}<li><span style="font-weight: bold;">Deadline for answering:</span> {{ invitation.deadline_smart }}</li>{% endif %}
+					<li>
+						<span style="font-weight: bold;">Invitation status:</span>
+						{% if invitation.status == 'GOING' %}<span class="label label-success">You are going</span>{% endif %}
+						{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">You are not going</span>{% endif %}
+						{% if invitation.status == 'PENDING' %}<span class="label label-default">Your invitation is pending response</span>{% endif %}
+					</li>
+				</ul>
+			</p>
+			
+			<p><br /></p>
+			
 			{% if form %}
-				<div class="text-center headline">
-					<h2>{{ form.instance.banquet.fair }}</h2>
-					<h1>{{ form.instance.banquet.name }}</h1>
-				</div>
-				
-				<p>
-					<ul class="list-unstyled">
-						{% if invitation.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>{% endif %}
-						{% if invitation.banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ invitation.banquet.location }}</li>{% endif %}
-						{% if invitation.banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ invitation.banquet.dress_code }}</li>{% endif %}
-					</ul>
-					
-					<span style="font-weight: bold;">Invitation status:</span>
-					{% if invitation.status == 'GOING' %}<span class="label label-success">You are going</span>{% endif %}
-					{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">You are not going</span>{% endif %}
-					{% if invitation.status == 'PENDING' %}<span class="label label-default">Your invitation is pending response</span>{% endif %}
-				</p>
-				
-				<p><br /></p>
-				
 				{% if invitation.denied %}
 					<h2>Not attending</h2>
 					<p>You have chosen not to attend. If you change your mind, please press the button below.</p>
@@ -63,8 +68,16 @@
 					</form>
 				{% endif %}
 			{% else %}
-				<h1>Thank you!</h1>
-				<p>Your repsonse has been recorded. You can <a href="{% url 'banquet_external_invitation' invitation.token %}">return to the form</a> if you would like to edit your details.</p>
+				{% if can_edit %}
+					<h1>Thank you!</h1>
+					<p>Your repsonse has been recorded. You can <a href="{% url 'banquet_external_invitation' invitation.token %}">return to the form</a> if you would like to edit your details.</p>
+				{% elif invitation.status == 'GOING' %}
+					<ul class="list-unstyled">
+						<li><span style="font-weight: bold;">Phone number:</span> {% if invitation.participant.phone_number %} {{ invitation.participant.phone_number }} {% else %} <span style="font-style: italic;">not given</span> {% endif %}</li>
+						<li><span style="font-weight: bold;">Dietary restrictions:</span> {% if invitation.participant.dietary_restrictions.all %} {{ invitation.participant.dietary_restrictions.all | join:', ' }} {% else %} <span style="font-style: italic;">none</span> {% endif %}</li>
+						<li><span style="font-weight: bold;">Alcohol:</span> {{ invitation.participant.get_alcohol_display }}</li>
+					</ul>
+				{% endif %}
 			{% endif %}
 		</div>
 	</body>

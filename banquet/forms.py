@@ -107,7 +107,13 @@ class InvitationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Invitation
-		fields = ['user', 'name', 'email_address', 'reason', 'price']
+		fields = ['user', 'name', 'email_address', 'reason', 'deadline', 'price']
+		
+		help_texts = {
+			'reason': 'Not shown to the invitee.',
+			'deadline': 'Leave blank to get the group\'s default deadline.',
+			'price': 'Enter an integer price in SEK.'
+		}
 
 
 class InternalParticipantForm(forms.ModelForm):

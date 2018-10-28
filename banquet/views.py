@@ -344,15 +344,17 @@ def manage_invitations(request, year, banquet_pk):
 	
 	invitations = []
 	
-	for invitation in Invitation.objects.filter(banquet = banquet):
+	for invitation in Invitation.objects.select_related('user').select_related('group').filter(banquet = banquet):
 		invitations.append({
 			'pk': invitation.pk,
+			'group': invitation.group,
 			'name': invitation.user.get_full_name() if invitation.user is not None else invitation.name,
 			'email_address': invitation.user.email if invitation.user is not None else invitation.email_address,
 			'reason': invitation.reason,
 			'status': invitation.status,
 			'price': invitation.price,
-			'status': invitation.status
+			'status': invitation.status,
+			'deadline_smart': invitation.deadline_smart
 		})
 	
 	return render(request, 'banquet/manage_invitations.html', {
@@ -439,32 +441,40 @@ def invitation(request, year, token):
 	
 	form = ParticipantForm(request.POST or None, instance = participant)
 	
+	form.fields['phone_number'].required = True
+	
 	if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
 	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
 	
-	if request.POST and form.is_valid():
-		if invitation.participant is None and invitation.price > 0:
-			stripe.api_key = settings.STRIPE_SECRET
+	can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
+	
+	if can_edit:
+		if request.POST and form.is_valid() and can_edit:
+			if invitation.participant is None and invitation.price > 0:
+				stripe.api_key = settings.STRIPE_SECRET
+				
+				charge = stripe.Charge.create(
+					amount = invitation.price * 100, # Stripe wants the price in ören
+					currency = 'SEK',
+					description = 'Banquet invitation token ' + invitation.token,
+					source = request.POST['stripeToken']
+				)
 			
-			charge = stripe.Charge.create(
-				amount = invitation.price * 100, # Stripe wants the price in ören
-				currency = 'SEK',
-				description = 'Banquet invitation token ' + invitation.token,
-				source = request.POST['stripeToken']
-			)
-		
-		else:
-			charge = None
-		
-		form.instance.name = None
-		form.instance.email_address = None
-		invitation.participant = form.save()
-		invitation.save()
-		
-		if charge is not None:
-			invitation.participant.charge_stripe = charge['id']
-			invitation.participant.save()
-		
+			else:
+				charge = None
+			
+			form.instance.name = None
+			form.instance.email_address = None
+			invitation.participant = form.save()
+			invitation.save()
+			
+			if charge is not None:
+				invitation.participant.charge_stripe = charge['id']
+				invitation.participant.save()
+			
+			form = None
+	
+	else:
 		form = None
 	
 	return render(request, 'banquet/invitation_internal.html', {
@@ -473,13 +483,16 @@ def invitation(request, year, token):
 		'form': form,
 		'charge': invitation.price > 0 and invitation.participant is None,
 		'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-		'stripe_amount': invitation.price * 100
+		'stripe_amount': invitation.price * 100,
+		'can_edit': can_edit
 	})
 
 
 def invitation_no(request, year, token):
 	fair = get_object_or_404(Fair, year = year)
 	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
+	
+	if invitation.deadline_smart is not None and datetime.datetime.now().date() > invitation.deadline_smart: return HttpResponseForbidden()
 	
 	if invitation.participant is not None:
 		if invitation.participant.charge_stripe is not None: refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
@@ -497,6 +510,8 @@ def invitation_maybe(request, year, token):
 	fair = get_object_or_404(Fair, year = year)
 	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
 	
+	if invitation.deadline_smart is not None and datetime.datetime.now().date() > invitation.deadline_smart: return HttpResponseForbidden()
+	
 	invitation.denied = False
 	invitation.save()
 	
@@ -513,32 +528,40 @@ def external_invitation(request, token):
 	
 	form = ParticipantForm(request.POST or None, instance = participant)
 	
+	form.fields['phone_number'].required = True
+	
 	if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
 	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
 	
-	if request.POST and form.is_valid():
-		if invitation.participant is None and invitation.price > 0:
-			stripe.api_key = settings.STRIPE_SECRET
+	can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
+	
+	if can_edit:
+		if request.POST and form.is_valid():
+			if invitation.participant is None and invitation.price > 0:
+				stripe.api_key = settings.STRIPE_SECRET
+				
+				charge = stripe.Charge.create(
+					amount = invitation.price * 100, # Stripe wants the price in ören
+					currency = 'SEK',
+					description = 'Banquet invitation token ' + invitation.token,
+					source = request.POST['stripeToken']
+				)
 			
-			charge = stripe.Charge.create(
-				amount = invitation.price * 100, # Stripe wants the price in ören
-				currency = 'SEK',
-				description = 'Banquet invitation token ' + invitation.token,
-				source = request.POST['stripeToken']
-			)
-		
-		else:
-			charge = None
-		
-		form.instance.name = None
-		form.instance.email_address = None
-		invitation.participant = form.save()
-		invitation.save()
-		
-		if charge is not None:
-			invitation.participant.charge_stripe = charge['id']
-			invitation.participant.save()
-		
+			else:
+				charge = None
+			
+			form.instance.name = None
+			form.instance.email_address = None
+			invitation.participant = form.save()
+			invitation.save()
+			
+			if charge is not None:
+				invitation.participant.charge_stripe = charge['id']
+				invitation.participant.save()
+			
+			form = None
+	
+	else:
 		form = None
 	
 	return render(request, 'banquet/invitation_external.html', {
@@ -546,12 +569,15 @@ def external_invitation(request, token):
 		'form': form,
 		'charge': invitation.price > 0 and invitation.participant is None,
 		'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-		'stripe_amount': invitation.price * 100
+		'stripe_amount': invitation.price * 100,
+		'can_edit': can_edit
 	})
 
 
 def external_invitation_no(request, token):
 	invitation = get_object_or_404(Invitation, token = token, user = None)
+	
+	if invitation.deadline_smart is not None and datetime.datetime.now().date() > invitation.deadline_smart: return HttpResponseForbidden()
 	
 	if invitation.participant is not None:
 		if invitation.participant.charge_stripe is not None: refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
@@ -567,6 +593,8 @@ def external_invitation_no(request, token):
 
 def external_invitation_maybe(request, token):
 	invitation = get_object_or_404(Invitation, token = token, user = None)
+	
+	if invitation.deadline_smart is not None and datetime.datetime.now().date() > invitation.deadline_smart: return HttpResponseForbidden()
 	
 	invitation.denied = False
 	invitation.save()

@@ -73,9 +73,13 @@ class Invitation(models.Model):
 	name = models.CharField(max_length = 75, blank = True, null = True)
 	email_address = models.CharField(max_length = 75, blank = True, null = True)
 	reason = models.CharField(max_length = 75, blank = True, null = True)
-	price = models.PositiveIntegerField() # can be zero
+	price = models.PositiveIntegerField(verbose_name = 'Price (SEK)') # can be zero
 	denied = models.BooleanField(default = False)
 	deadline = models.DateField(null = True, blank = True)
+	
+	@property
+	def deadline_smart(self):
+		return self.deadline if self.deadline is not None else self.group.deadline
 	
 	@property
 	def status(self):
