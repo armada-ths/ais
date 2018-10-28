@@ -19,7 +19,7 @@ from accounting.models import Order
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 
 from .models import Banquet, Participant, InvitationGroup, Invitation
-from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, ParticipantForm
+from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, ParticipantForm
 
 
 #External Invite
@@ -357,10 +357,44 @@ def manage_invitations(request, year, banquet_pk):
 			'deadline_smart': invitation.deadline_smart
 		})
 	
+	form = InvitationSearchForm(request.POST or None)
+	
+	form.fields['groups'].queryset = InvitationGroup.objects.filter(banquet = banquet)
+	
+	has_filtering = request.POST and form.is_valid()
+	
+	invitations_modified = []
+	
+	for invitation in invitations:
+		if has_filtering:
+			if len(form.cleaned_data['groups']) > 0:
+				found = False
+				
+				for group in form.cleaned_data['groups']:
+					if invitation['group'] == group:
+						found = True
+						break
+				
+				if not found: continue
+			
+			if len(form.cleaned_data['statuses']) > 0:
+				found = False
+				
+				for status in form.cleaned_data['statuses']:
+					if invitation['status'] == status:
+						found = True
+						break
+				
+				if not found: continue
+		
+		invitations_modified.append(invitation)
+	
+	
 	return render(request, 'banquet/manage_invitations.html', {
 		'fair': fair,
 		'banquet': banquet,
-		'invitiations': invitations
+		'invitiations': invitations_modified,
+		'form': form
 	})
 
 
@@ -499,7 +533,9 @@ def invitation_no(request, year, token):
 	if invitation.deadline_smart is not None and datetime.datetime.now().date() > invitation.deadline_smart: return HttpResponseForbidden()
 	
 	if invitation.participant is not None:
-		if invitation.participant.charge_stripe is not None: refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
+		if invitation.participant.charge_stripe is not None:
+			stripe.api_key = settings.STRIPE_SECRET
+			refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
 		
 		invitation.participant.delete()
 		invitation.participant = None
@@ -584,7 +620,9 @@ def external_invitation_no(request, token):
 	if invitation.deadline_smart is not None and datetime.datetime.now().date() > invitation.deadline_smart: return HttpResponseForbidden()
 	
 	if invitation.participant is not None:
-		if invitation.participant.charge_stripe is not None: refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
+		if invitation.participant.charge_stripe is not None:
+			stripe.api_key = settings.STRIPE_SECRET
+			refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
 		
 		invitation.participant.delete()
 		invitation.participant = None

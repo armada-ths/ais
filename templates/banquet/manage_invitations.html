@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block nav-banquet %}
 	<li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
 {% endblock %}
@@ -13,6 +15,43 @@
 		
 		<a style="float: right;" class="btn btn-default" href="{% url 'banquet_manage_invitation_new' fair.year banquet.pk %}">New invitation</a>
 	</p>
+	
+	<style type="text/css">
+		.form_no_ul ul
+		{
+			margin: 0;
+			padding: 0;
+			margin: 0 0 20px 15px;
+		}
+		
+		.form_no_ul ul li
+		{
+			list-style-type: none;
+		}
+		
+		.form_no_ul ul li label
+		{
+			font-weight: 400;
+		}
+	</style>
+	
+	<form method="post" class="form_no_ul" enctype="multipart/form-data">
+		{% csrf_token %}
+		
+		<div class="row">
+			<div class="col-md-6">
+				<label for="{{ form.statuses.id_for_label }}">{{ form.statuses.label }}</label>
+				{{ form.statuses }}
+			</div>
+			
+			<div class="col-md-6">
+				<label for="{{ form.groups.id_for_label }}">{{ form.groups.label }}</label>
+				{{ form.groups }}
+			</div>
+		</div>
+		
+		<input class="btn btn-primary" type="submit" value="Refine search" />
+	</form>
 	
 	<div class="table-responsive">
 		<table class="table" id="invitation_table">
@@ -46,7 +85,7 @@
 						</tr>
 					{% endfor %}
 				{% else %}
-					<tr><td colspan="4" style="text-align: center;">This banquet has no invitations.</td></tr>
+					<tr><td colspan="6" style="text-align: center;">No invitations found.</td></tr>
 				{% endif %}
 			</tbody>
 		</table>

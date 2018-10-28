@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 import re
 
-from .models import Participant, Invitation
+from .models import Participant, InvitationGroup, Invitation
 
 
 def fix_phone_number(n):
@@ -114,6 +114,17 @@ class InvitationForm(forms.ModelForm):
 			'deadline': 'Leave blank to get the group\'s default deadline.',
 			'price': 'Enter an integer price in SEK.'
 		}
+
+
+class InvitationSearchForm(forms.Form):
+	status_choices = [
+		('GOING', 'Going'),
+		('NOT_GOING', 'Not going'),
+		('PENDING', 'Pending')
+	]
+	
+	statuses = forms.MultipleChoiceField(choices = status_choices, widget = forms.CheckboxSelectMultiple(), required = False)
+	groups = forms.ModelMultipleChoiceField(queryset = InvitationGroup.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only invitation belonging to any of these', required = False)
 
 
 class InternalParticipantForm(forms.ModelForm):
