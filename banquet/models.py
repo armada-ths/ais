@@ -57,6 +57,7 @@ class Participant(models.Model):
 
 
 class InvitationGroup(models.Model):
+	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
 	name = models.CharField(max_length = 255, null = False, blank = False, unique = True)
 	deadline = models.DateField(null = True, blank = True)
 	
@@ -65,6 +66,7 @@ class InvitationGroup(models.Model):
 
 class Invitation(models.Model):
 	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
+	group = models.ForeignKey(InvitationGroup, on_delete = models.CASCADE)
 	token = models.CharField(max_length = 255, null = False, blank = False, default = uuid.uuid4, unique = True)
 	user = models.ForeignKey(User, blank = True, null = True, on_delete = models.CASCADE, related_name = 'banquet_invitation_user')
 	participant = models.ForeignKey(Participant, blank = True, null = True, on_delete = models.CASCADE) # filled in when the participant has been created from this invitation
@@ -72,7 +74,8 @@ class Invitation(models.Model):
 	email_address = models.CharField(max_length = 75, blank = True, null = True)
 	reason = models.CharField(max_length = 75, blank = True, null = True)
 	price = models.PositiveIntegerField() # can be zero
-	denied = models.BooleanField(default=False)
+	denied = models.BooleanField(default = False)
+	deadline = models.DateField(null = True, blank = True)
 	
 	@property
 	def status(self):
