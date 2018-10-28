@@ -388,14 +388,20 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 	users_flat = []
 	
 	for organization_group in OrganizationGroup.objects.filter(fair = fair):
-		this_users_flat = [application.user for application in RecruitmentApplication.objects.filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('user')]
+		this_users_flat = [application.user for application in RecruitmentApplication.objects.filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
 		users_flat += this_users_flat
 		users.append([organization_group.name, [(user.pk, user.get_full_name()) for user in this_users_flat]])
 	
 	if invitation is not None and invitation.user is not None and invitation.user not in users_flat:
-		users = [(invitation.user.pk, invitation.user.get_full_name())] + users 
+		users = [(invitation.user.pk, invitation.user.get_full_name())] + users
+	
+	users = [('', '---------')] + users
 	
 	form.fields['user'].choices = users
+	
+	if invitation is not None and invitation.participant is not None:
+		form.fields['price'].disabled = True
+		form.fields['price'].help_text = 'The price cannot be changed as the invitation has already been accepted.'
 	
 	if request.POST and form.is_valid():
 		form.instance.banquet = banquet
