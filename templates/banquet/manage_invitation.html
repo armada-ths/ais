@@ -13,7 +13,7 @@
 	</p>
 	
 	<ul class="list-unstyled">
-		<li><span style="font-weight: bold;">Name:</span> {% if invitation.user is None %} {{ invitation.name }} {% else %} {{ invitation.user.get_full_name }} {% endif %}</li>
+		<li><span style="font-weight: bold;">Name:</span> {% if invitation.user is None %} {{ invitation.name }} {% else %} <a href="{% url 'people:profile' fair.year invitation.user.pk %}">{{ invitation.user.get_full_name }}</a> {% endif %}</li>
 		<li><span style="font-weight: bold;">E-mail address:</span> {% if invitation.user is None %} <a href="mailto:{{ invitation.email_address }}">{{ invitation.email_address }}</a> {% else %} <a href="mailto:{{ invitation.user.email }}">{{ invitation.user.email }}</a> {% endif %}</li>
 		<li
 			><span style="font-weight: bold;">Status:</span>

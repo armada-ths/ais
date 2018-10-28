@@ -16,6 +16,7 @@ from companies.models import Company
 from exhibitors.models import Exhibitor
 from people.models import Language, Profile
 from accounting.models import Order
+from recruitment.models import OrganizationGroup, RecruitmentApplication
 
 from .models import Banquet, Participant, Invitation
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, ParticipantForm
@@ -382,6 +383,19 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 	invitation = get_object_or_404(Invitation, banquet = banquet, pk = invitation_pk) if invitation_pk is not None else None
 	
 	form = InvitationForm(request.POST or None, instance = invitation)
+	
+	users = []
+	users_flat = []
+	
+	for organization_group in OrganizationGroup.objects.filter(fair = fair):
+		this_users_flat = [application.user for application in RecruitmentApplication.objects.filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('user')]
+		users_flat += this_users_flat
+		users.append([organization_group.name, [(user.pk, user.get_full_name()) for user in this_users_flat]])
+	
+	if invitation is not None and invitation.user is not None and invitation.user not in users_flat:
+		users = [(invitation.user.pk, invitation.user.get_full_name())] + users 
+	
+	form.fields['user'].choices = users
 	
 	if request.POST and form.is_valid():
 		form.instance.banquet = banquet
