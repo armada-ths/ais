@@ -51,7 +51,8 @@
 					{% else %}<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>{% endif %}
 				
 					<form method="post">
-						{% csrf_token %} {{ form | crispy }}
+						{% csrf_token %}
+						{{ form | crispy }}
 						
 						{% if charge %}
 							<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ invitation.price }}</p>

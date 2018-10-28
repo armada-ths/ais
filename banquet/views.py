@@ -423,16 +423,37 @@ def invitation(request, year, token):
 	if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
 	
 	if request.POST and form.is_valid():
+		if invitation.participant is None and invitation.price > 0:
+			stripe.api_key = settings.STRIPE_SECRET
+			
+			charge = stripe.Charge.create(
+				amount = invitation.price * 100, # Stripe wants the price in ören
+				currency = 'SEK',
+				description = 'Banquet invitation token ' + invitation.token,
+				source = request.POST['stripeToken']
+			)
+		
+		else:
+			charge = None
+		
 		form.instance.name = None
 		form.instance.email_address = None
 		invitation.participant = form.save()
 		invitation.save()
+		
+		if charge is not None:
+			invitation.participant.charge_stripe = charge['id']
+			invitation.participant.save()
+		
 		form = None
 	
 	return render(request, 'banquet/invitation_internal.html', {
 		'fair': fair,
 		'invitation': invitation,
-		'form': form
+		'form': form,
+		'charge': invitation.price > 0 and invitation.participant is None,
+		'stripe_publishable': settings.STRIPE_PUBLISHABLE,
+		'stripe_amount': invitation.price * 100
 	})
 
 
@@ -441,6 +462,8 @@ def invitation_no(request, year, token):
 	invitation = get_object_or_404(Invitation, banquet__fair = fair, token = token, user = request.user)
 	
 	if invitation.participant is not None:
+		if invitation.participant.charge_stripe is not None: refund = stripe.Refund.create(charge = invitation.participant.charge_stripe)
+		
 		invitation.participant.delete()
 		invitation.participant = None
 	

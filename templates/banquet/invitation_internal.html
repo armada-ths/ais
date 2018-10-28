@@ -39,11 +39,17 @@
 			<form method="post">
 				{% csrf_token %}
 				{{ form | crispy }}
-				<button type="submit" class="btn btn-lg btn-success center-block">Submit</button>
+				
+				{% if charge %}
+					<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ invitation.price }}</p>
+					<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-currency="sek" data-key="{{ stripe_publishable }}" data-label="Proceed to payment" data-email="{{ invitation.user.email }}" data-allow-remember-me="false" data-name="THS Armada" data-description="{{ invitation.banquet.name }}" data-amount="{{ stripe_amount }}" data-locale="en"></script>
+				{% else %}
+					<button type="submit" class="btn btn-lg btn-success center-block">{% if invitation.participant %}Save changes{% else %}Submit{% endif %}</button>
+				{% endif %}
 			</form>
 		{% endif %}
 	{% else %}
 		<h1>Thank you!</h1>
-		<p>Your repsonse has been recorded. If you would like to change your response for {{ invitation.banquet.name }}, you can <a href="{% url 'banquet_invitation' fair.year invitation.token %}">return to the form</a>.</p>
+		<p>Your repsonse has been recorded. You can <a href="{% url 'banquet_invitation' fair.year invitation.token %}">return to the form</a> if you would like to edit your details.</p>
 	{% endif %}
 {% endblock %}
