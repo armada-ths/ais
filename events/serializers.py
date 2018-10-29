@@ -24,6 +24,8 @@ def event(event, request):
         'external_event_link': event.external_event_link,
         'signup_questions': [signup_question(question) for question in event.signupquestion_set.all()],
         'signup_link': signup_url,
+        'can_create_teams': event.teams_create_s,
+        'can_join_teams': event.teams_participate_s
     }
 
     return data
