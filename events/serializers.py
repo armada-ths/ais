@@ -25,7 +25,8 @@ def event(event, request):
         'signup_questions': [signup_question(question) for question in event.signupquestion_set.all()],
         'signup_link': signup_url,
         'can_create_teams': event.teams_create_s,
-        'can_join_teams': event.teams_participate_s
+        'can_join_teams': event.teams_participate_s,
+        'open_for_signup': event.open_for_signup and event.signup_s
     }
 
     return data

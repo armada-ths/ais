@@ -48,6 +48,9 @@ def signup(request, event_pk):
     if not request.user:
         return JsonResponse({'message': 'Authentication required.'}, status=403)
 
+    if not event.open_for_signup:
+        return JsonResponse({'message': 'Event not open for sign ups.'}, status=403)
+
     participant, _created = Participant.objects.get_or_create(
         user_s=request.user,
         event=event

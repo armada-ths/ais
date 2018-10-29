@@ -150,7 +150,14 @@ class SignupForm extends Component {
             </Grid>
           </Grid>
           <Grid item sm={12}>
-            <Button onClick={this.handleSubmit} variant="contained" color="primary">Sign Up</Button>
+            <Button
+                disabled={!event.open_for_signup}
+                onClick={this.handleSubmit}
+                variant="contained"
+                color="primary"
+            >
+              {event.open_for_signup ? "Sign Up" : "Not open for sign up"}
+            </Button>
           </Grid>
         </Grid>
     )
