@@ -1,17 +1,24 @@
 import React, {Component, Fragment} from 'react';
+import {withStyles} from '@material-ui/core/styles';
 import Typography from "@material-ui/core/es/Typography/Typography";
 import Grid from "@material-ui/core/es/Grid/Grid";
 
+const styles = theme => ({
+  description: {
+    whiteSpace: 'pre-line'
+  }
+});
+
 class Header extends Component {
   render() {
-    const {event} = this.props;
+    const {event, classes} = this.props;
 
     return (
         <Fragment>
           <Typography variant="display2" color="primary" gutterBottom>
             {event.name}
           </Typography>
-          <Typography paragraph>
+          <Typography className={classes.description} paragraph>
             {event.description}
           </Typography>
           <Grid container spacing={16}>
@@ -52,4 +59,4 @@ class Header extends Component {
   }
 }
 
-export default Header;
+export default withStyles(styles)(Header);
