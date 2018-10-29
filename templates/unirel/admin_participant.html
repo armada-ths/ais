@@ -10,7 +10,7 @@
 	<h1>{{ participant.name }}</h1>
 	
 	<ul class="list-unstyled">
-		<li><span style="font-weight: bold;">Sign-up link:</span> {{ participant.token }}</li>
+		<li><span style="font-weight: bold;">Sign-up link:</span> <a href="{{ url }}" target="_blank">{{ url }}</a></li>
 		<li><span style="font-weight: bold;">Company:</span> {{ participant.company.name }}</li>
 		<li><span style="font-weight: bold;">E-mail address:</span> <a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></li>
 		<li><span style="font-weight: bold;">Phone number:</span> {% if participant.phone_number %} <a href="tel:{{ participant.phone_number }}">{{ participant.phone_number }}</a> {% else %} <span style="font-style: italic;">not given</span> {% endif %}</li>

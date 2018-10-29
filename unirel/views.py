@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
+from django.urls import reverse
 
 from fair.models import Fair
 from companies.models import Company
@@ -25,7 +26,8 @@ def admin_participant(request, year, participant_pk = None):
 	
 	return render(request, 'unirel/admin_participant.html', {
 		'fair': fair,
-		'participant': participant
+		'participant': participant,
+		'url': request.build_absolute_uri(reverse('unirel_register', args = [participant.token]))
 	})
 
 
@@ -47,9 +49,8 @@ def admin_participant_form(request, year, participant_pk = None):
 	})
 
 
-def register(request, year, token):
-	fair = get_object_or_404(Fair, year = year)
-	participant = get_object_or_404(Participant, token = token, fair = fair)
+def register(request, token):
+	participant = get_object_or_404(Participant, token = token)
 	
 	form = ParticipantForm(request.POST or None, instance = participant)
 	
@@ -60,12 +61,10 @@ def register(request, year, token):
 	form.fields['email_address'].disabled = True
 	
 	if request.POST and form.is_valid():
-		form.instance.fair = fair
 		form.save()
 		form = None
 	
 	return render(request, 'unirel/register.html', {
-		'fair': fair,
 		'participant': participant,
 		'form': form
 	})

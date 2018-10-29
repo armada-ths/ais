@@ -26,7 +26,7 @@
 				</form>
 			{% else %}
 				<h2>Thank you</h2>
-				<p>Your repsonse has been recorded. You can <a href="{% url 'unirel_register' fair.year participant.token %}">return to the form</a> if you would like to edit your details.</p>
+				<p>Your repsonse has been recorded. You can <a href="{% url 'unirel_register' participant.token %}">return to the form</a> if you would like to edit your details.</p>
 			{% endif %}
 		</div>
 	</body>
