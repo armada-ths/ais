@@ -6,6 +6,9 @@
     <th>Email</th>
     <th>Phone no.</th>
     <th>Type</th>
+    {% for question in questions %}
+      <th>{{ question.question }}</th>
+    {% endfor %}
   </tr>
   </thead>
   {% for participant in participants %}
@@ -21,6 +24,9 @@
           Student
         {% endif %}
       </td>
+      {% for answer in participant.signupquestionanswer_set.all %}
+        <th>{{ answer.answer }}</th>
+      {% endfor %}
     </tr>
   {% endfor %}
 </table>

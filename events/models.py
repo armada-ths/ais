@@ -1,5 +1,3 @@
-from lib.image import UploadToDirUUID, UploadToDir, update_image_field
-
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -8,6 +6,7 @@ from django.utils.crypto import get_random_string
 
 from accounting.models import Product
 from fair.models import Fair
+from lib.image import UploadToDirUUID
 from people.models import Profile
 
 
@@ -35,7 +34,7 @@ class Event(models.Model):
     requires_invitation = models.BooleanField(blank=False, null=False, verbose_name='Participants need an invitation to sign up')
     contact_person = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     external_event_link = models.CharField(max_length=255, blank=True, null=True)
-    picture = models.ImageField(upload_to = UploadToDirUUID('events', 'pictures'), blank = True, null = True)
+    picture = models.ImageField(upload_to=UploadToDirUUID('events', 'pictures'), blank=True, null=True)
 
     class Meta:
         ordering = ['date_start', 'name']
@@ -159,6 +158,9 @@ class SignupQuestion(models.Model):
         ('multiple_choice', 'Multiple Choice')
     )
 
+    class Meta:
+        ordering = ['pk']
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     type = models.CharField(blank=False, null=False, choices=QUESTION_TYPES, max_length=20)
     question = models.TextField(blank=False, null=False)
@@ -170,3 +172,6 @@ class SignupQuestionAnswer(models.Model):
     signup_question = models.ForeignKey(SignupQuestion, blank=False, null=False, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
     answer = models.TextField()  # Used for 'text_field' and 'text_area'
+
+    class Meta:
+        ordering = ['signup_question__pk']
