@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block nav-unirel %}
+	<li role="presentation" class="active"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
+{% endblock %}
+
+{% block content %}
+	<p>
+		<a style="float: right;" class="btn btn-default" href="{% url 'unirel_admin_participant_new' fair.year %}">New participant</a>
+	</p>
+	
+	<h1>University relations</h1>
+	
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Organization</th>
+					<th>Name</th>
+					<th>Contact details</th>
+					<th style="text-align: right;">Banquet?</th>
+					<th style="text-align: right;">Sleeping?</th>
+					<th style="text-align: right;">Lunch?</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% if participants %}
+					{% for participant in participants %}
+						<tr>
+							<td>{{ participant.company.name }}</td>
+							<td><a href="{% url 'unirel_admin_participant' fair.year participant.pk %}">{{ participant.name }}</a></td>
+							<td>
+								<a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a>
+								{% if participant.phone_number %}<br /><a href="tel:{{ participant.phone_number }}">{{ participant.phone_number }}</a>{% endif %}
+							</td>
+							<td style="text-align: right;">{{ participant.get_addon_banquet_display }}</td>
+							<td style="text-align: right;">{{ participant.get_addon_sleep_display }}</td>
+							<td style="text-align: right;">{{ participant.get_addon_lunch_display }}</td>
+						</tr>
+					{% endfor %}
+				{% else %}
+					<tr><td colspan="5" style="text-align: center;">No participants defined.</td></tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

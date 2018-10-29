@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'api',
     'news',
     'orders',
+    'unirel',
     'crispy_forms',
     'exhibitors',
     'django.contrib.humanize',

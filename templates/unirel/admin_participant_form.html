@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-unirel %}
+	<li role="presentation" class="active"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{% if form.instance %}Edit participant{% else %}New participant{% endif %}</h1>
+	
+	<form method="post">
+        {% csrf_token %}
+		{{ form | crispy }}
+		<input type="submit" class="btn btn-primary" value="Save" />
+	</form>
+{% endblock %}

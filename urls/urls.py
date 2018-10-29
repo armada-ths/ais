@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^companies/', include('companies.urls')),
     url(r'^accounting/', include('accounting.urls')),
     url(r'^banquet/', include('banquet.urls')),
+    url(r'^unirel/', include('unirel.urls'))
 ]
