@@ -17,6 +17,7 @@ from recruitment.models import RecruitmentApplication
 
 def save_questions(questions_data, event):
     questions = []
+    questions_to_delete = list(SignupQuestion.objects.filter(event = event))
 
     for question in questions_data:
         pk = question.pop('id', None)
@@ -31,10 +32,11 @@ def save_questions(questions_data, event):
 
         q, _created = SignupQuestion.objects.update_or_create(pk=pk, defaults=defaults)
         questions.append(q)
+        
+        if q in questions_to_delete: questions_to_delete.remove(q)
 
-    # TODO This should work to override the questions with only the once that were sent, but it doesn't. So the old questions are not
-    # deleted as they should
-    event.signupquestion_set.set(questions)
+    for question in questions_to_delete:
+        question.delete()
 
 
 @permission_required('events.base')
