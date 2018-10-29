@@ -14,6 +14,7 @@ def event(event, request):
         'name': event.name,
         'description': event.description,
         'location': event.location,
+        'food': event.food,
         'event_start': int(event.date_start.strftime('%s')),
         'event_end': int(event.date_end.strftime('%s')),
         'registration_end': int(event.date_start.strftime('%s')),

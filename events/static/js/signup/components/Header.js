@@ -25,6 +25,16 @@ class Header extends Component {
                   </Typography>
                 </Grid>
             )}
+            {event.food && (
+                <Grid item sm={6}>
+                  <Typography variant="caption" gutterBottom>
+                    Food
+                  </Typography>
+                  <Typography>
+                    {event.food}
+                  </Typography>
+                </Grid>
+            )}
             {event.external_event_link && (
                 <Grid item sm={6}>
                   <Typography variant="caption" gutterBottom>

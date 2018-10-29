@@ -18,6 +18,7 @@ class Event(models.Model):
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
     location = models.CharField(max_length=75, blank=True, null=True)
+    food = models.CharField(max_length=75, blank=True, null=True)
     signup_cr = models.BooleanField(blank=False, null=False, verbose_name='Let company representatives sign up')
     signup_s = models.BooleanField(blank=False, null=False, verbose_name='Let students sign up')
     open_for_signup = models.BooleanField(blank=False, null=False, verbose_name='Event is currently open for sign up')
