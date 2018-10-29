@@ -86,34 +86,7 @@ class Manage extends Component {
 
     return (
         <Fragment>
-          <Tabs
-              indicatorColor="primary"
-              textColor="primary"
-              centered={isWidthUp('sm', width)}
-              fullWidth={isWidthDown('sm', width)}
-              value={tabIndex}
-              onChange={this.handleTabSwitch}
-          >
-            <Tab icon={<PeopleIcon/>} label="Teams"/>
-            <Tab icon={<QrCodeIcon/>} label="QR Code"/>
-          </Tabs>
-          {tabIndex === 0 && (
-              <Teams
-                  teams={teams}
-                  selectedTeam={selectedTeam}
-                  currentTeamId={currentTeamId}
-                  participantId={participantId}
-                  isTeamLeader={isTeamLeader}
-                  handleCreateTeam={this.handleCreateTeam}
-                  handleSelectTeam={this.handleSelectTeam}
-                  handleJoinTeam={this.handleJoinTeam}
-                  handleLeaveTeam={this.handleLeaveTeam}
-                  handleUpdateTeam={this.handleUpdateTeam}
-              />
-          )}
-          {tabIndex === 1 && (
-              <QRCode value={checkInToken}/>
-          )}
+          <QRCode value={checkInToken}/>
         </Fragment>
     )
   }
