@@ -82,6 +82,14 @@ def edit_view(request, year, template_name='exhibitors/edit_view.html'):
 
 
 @permission_required('exhibitors.base')
+def export(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	return render(request, 'exhibitors/export.html', {
+		'exhibitors': Exhibitor.objects.filter(fair = fair)
+	})
+
+@permission_required('exhibitors.base')
 def create(request, year):
 	fair = get_object_or_404(Fair, year = year, current = True)
 	exhibitors = Exhibitor.objects.filter(fair = fair)
