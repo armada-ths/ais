@@ -17,25 +17,34 @@ from .forms import ProfileForm
 def list(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
+	total = 0
+	
 	organization_groups = []
 	
 	users = RecruitmentApplication.objects.select_related('user').filter(delegated_role__organization_group = None, status = 'accepted', recruitment_period__fair = fair).order_by('recruitment_period__start_date', 'delegated_role', 'user__first_name', 'user__last_name')
 	
-	if len(users) > 0:
+	total = len(users)
+	
+	if total > 0:
 		organization_groups.append({
 			'name': None,
 			'users': users
 		})
 	
 	for organization_group in OrganizationGroup.objects.filter(fair = fair):
+		users = RecruitmentApplication.objects.select_related('user').filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('delegated_role__organization_group', 'recruitment_period__start_date', 'delegated_role', 'user__first_name', 'user__last_name')
+		
 		organization_groups.append({
 			'name': organization_group.name,
-			'users': RecruitmentApplication.objects.select_related('user').filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('delegated_role__organization_group', 'recruitment_period__start_date', 'delegated_role', 'user__first_name', 'user__last_name')
+			'users': users
 		})
+		
+		total += len(users)
 	
 	return render(request, 'people/list.html', {
 		'fair': fair,
-		'organization_groups': organization_groups
+		'organization_groups': organization_groups,
+		'total': total
 	})
 
 

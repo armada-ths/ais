@@ -3,7 +3,7 @@
 {% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>{% endblock %}
 
 {% block content %}
-	<h1>Contacts</h1>
+	<h1>Contacts ({{ total }})</h1>
 	
 	{% for organization_group in organization_groups %}
 		{% if organization_group.name %}<h2>{{ organization_group.name }} ({{ organization_group.users | length }})</h2>{% endif %}
