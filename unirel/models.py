@@ -21,5 +21,5 @@ class Participant(models.Model):
 	def __str__(self): return self.name
 	
 	class Meta:
-		ordering = ['fair', 'name']
+		ordering = ['fair', 'company', 'name']
 		permissions = [('base', 'University relations')]
