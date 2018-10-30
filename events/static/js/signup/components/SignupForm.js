@@ -123,16 +123,19 @@ class SignupForm extends Component {
                     </Typography>
                     <Typography>
                       {payed ? (
-                          'The event fee has been payed!  🎉'
+                          'The event fee has been paid!  🎉'
                       ) : (
                           <Fragment>
                             This event has a fee of {event.fee} SEK to sign up.
-                            <Stripe
-                                handleToken={this.handleStripeToken}
-                                stripe_publishable={stripe_publishable}
-                                description={event.name}
-                                amount={event.fee}
-                            />
+                            
+                            {event.open_for_signup && (
+                                <Stripe
+                                    handleToken={this.handleStripeToken}
+                                    stripe_publishable={stripe_publishable}
+                                    description={event.name}
+                                    amount={event.fee}
+                                />
+                            )}
                           </Fragment>
                       )}
                     </Typography>
