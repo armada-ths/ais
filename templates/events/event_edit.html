@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+
 {% load crispy_forms_tags %}
+
+{% block nav-events %}<li role="presentation" class="active"><a href="{% url 'events:event_list' fair.year %}">Events</a></li>{% endblock %}
+
 {% block content %}
   <h1>{{ event.name }}</h1>
   <a href="{% url 'events:check_in' fair.year event.id %}" class="btn btn-default btn-checkin">Check in</a>
@@ -30,6 +34,17 @@
       {% include 'events/team_list.html' with teams=event.team_set.all event=event %}
     </div>
   </div>
+{% endblock %}
 
-
+{% block scripts %}
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+	
+	<script>
+		$(function()
+		{
+			$('#participants_table').DataTable({ 'paging': false });
+		})
+	</script>
 {% endblock %}
