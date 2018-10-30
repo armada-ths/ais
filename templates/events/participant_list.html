@@ -4,11 +4,11 @@
 			<tr>
 				<th>Name</th>
 				<th>Team</th>
-				<th>Email</th>
-				<th>Phone no.</th>
+				<th style="white-space: nowrap;">E-mail address</th>
+				<th style="white-space: nowrap;">Phone number</th>
 				<th>Type</th>
 				{% for question in questions %}
-					<th style="text-align: right;">{{ question.question }}</th>
+					<th style="white-space: nowrap; text-align: right;">{{ question.question }}</th>
 				{% endfor %}
 			</tr>
 		</thead>
