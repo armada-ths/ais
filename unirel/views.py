@@ -59,6 +59,7 @@ def register(request, token):
 	form.fields['company'].hidden = True
 	form.fields['name'].disabled = True
 	form.fields['email_address'].disabled = True
+	form.fields['phone_number'].required = True
 	
 	if request.POST and form.is_valid():
 		form.save()
