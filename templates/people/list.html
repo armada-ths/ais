@@ -55,7 +55,11 @@
 	<script>
 		$(function()
 		{
-			$('.organization_group_table').DataTable({ 'paging': false });
+			$('.organization_group_table').DataTable(
+			{
+				'paging': false,
+				'order': []
+			});
 		})
 	</script>
 {% endblock %}
