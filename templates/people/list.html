@@ -36,8 +36,8 @@
 				<tbody>
 					{% for user in organization_group.users %}
 						<tr>
-							<td><a href="{% url 'people:profile' fair.year user.profile.pk %}">{{ user }}</a></td>
-							<td>{{ user.delegated_role }}</td>
+							<td style="white-space: nowrap;"><a href="{% url 'people:profile' fair.year user.profile.pk %}">{{ user }}</a></td>
+							<td style="white-space: nowrap;">{{ user.delegated_role }}</td>
 							<td class="text-right">{% if user.profile.phone_number %}<a href="tel:{{ user.profile.phone_number }}">{{ user.profile.phone_number }}</a>{% endif %}</td>
 							<td class="text-right"><a href="mailto:{{ user.user.email }}">{{ user.user.email }}</a></td>
 						</tr>
