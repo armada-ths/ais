@@ -12,10 +12,23 @@ from .forms import ParticipantForm
 @permission_required('unirel.base')
 def admin(request, year):
 	fair = get_object_or_404(Fair, year = year)
+	participants = Participant.objects.filter(fair = fair)
+	
+	count_banquet = 0
+	count_sleep = 0
+	count_lunch = 0
+	
+	for participant in participants:
+		if participant.addon_banquet: count_banquet += 1
+		if participant.addon_sleep: count_sleep += 1
+		if participant.addon_lunch: count_lunch += 1
 	
 	return render(request, 'unirel/admin.html', {
 		'fair': fair,
-		'participants': Participant.objects.filter(fair = fair)
+		'participants': participants,
+		'count_banquet': count_banquet,
+		'count_sleep': count_sleep,
+		'count_lunch': count_lunch
 	})
 
 
