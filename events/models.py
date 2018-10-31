@@ -93,6 +93,7 @@ class Participant(models.Model):
     attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
     signup_complete = models.BooleanField(blank=False, null=False, default=False, verbose_name='The participant has completed signup')
     check_in_token = models.CharField(max_length=32, unique=True, default=get_random_32_length_string)
+    timestamp = models.DateTimeField(blank = True, null = True, auto_now_add = True)
 
     # Name, email and phone number can be stored either in this model or in the user model depending on if this is a student or not,
     # so we define these help functions to get them easier

@@ -3,6 +3,7 @@
 		<thead>
 			<tr>
 				<th>Name</th>
+				<th>Sign-up</th>
 				<th>Team</th>
 				<th style="white-space: nowrap;">E-mail address</th>
 				<th style="white-space: nowrap;">Phone number</th>
@@ -20,6 +21,7 @@
 						{% if participant.user_s %} <a href="{% url 'people:profile' fair.year participant.user_s.pk %}">{{ participant.assigned_name }}</a>
 						{% else %}{{ participant.assigned_name }}{% endif %}
 					</td>
+					<td style="white-space: nowrap;">{% if participant.timestamp %}<span style="display: none;">{{ participant.timestamp|date:"U" }}</span>{{ participant.timestamp }}{% endif %}</td>
 					<td>{{ participant.teammember_set.first.team.name }}</td>
 					<td><a href="mailto:{{ participant.assigned_email }}">{{ participant.assigned_email }}</a></td>
 					<td>{% if participant.assigned_phone_number %}<a href="tel:{{ participant.assigned_phone_number }}">{{ participant.assigned_phone_number }}</a>{% endif %}</td>
