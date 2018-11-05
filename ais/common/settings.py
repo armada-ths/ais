@@ -118,7 +118,6 @@ MEDIA_URL = '/media/'
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Stockholm'
 USE_I18N = True
-USE_TZ = True
 LANGUAGE_CODE = 'en-us'
 USE_L10N = False
 DATE_FORMAT = "M j, Y"
