@@ -157,6 +157,17 @@ class LunchTicketDay(models.Model):
 	def __str__(self): return self.name + ' at ' + self.fair.name
 
 
+class LunchTicketTime(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	name = models.CharField(blank = False, null = False, max_length = 255)
+	
+	class Meta:
+		default_permissions = []
+		ordering = ['fair', 'name']
+	
+	def __str__(self): return self.name + ' at ' + self.fair.name
+
+
 def get_random_32_length_string():
     return get_random_string(32)
 
@@ -169,6 +180,7 @@ class LunchTicket(models.Model):
 	company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
 	user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
 	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
+	time = models.ForeignKey(LunchTicketTime, on_delete = models.CASCADE, blank = True, null = True)
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	
 	class Meta:
