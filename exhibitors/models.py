@@ -162,7 +162,7 @@ def get_random_32_length_string():
 
 
 class LunchTicket(models.Model):
-	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string)
+	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string, unique = True)
 	email_address = models.EmailField(blank = True, null = True, max_length = 255, verbose_name = 'E-mail address')
 	comment = models.CharField(blank = True, null = True, max_length = 255)
 	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE, blank = True, null = True)
