@@ -193,7 +193,7 @@ def exhibitor(request, year, pk):
 	lunch_tickets_count_created = 0
 	
 	for day in LunchTicketDay.objects.filter(fair = fair):
-		lunch_tickets = LunchTicket.objects.filter(exhibitor = exhibitor, day = day)
+		lunch_tickets = LunchTicket.objects.filter(company = exhibitor.company, day = day)
 		lunch_tickets_count_created += len(lunch_tickets)
 		
 		lunch_tickets_days.append({

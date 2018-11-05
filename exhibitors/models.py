@@ -162,10 +162,12 @@ def get_random_32_length_string():
 
 
 class LunchTicket(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
 	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string, unique = True)
 	email_address = models.EmailField(blank = True, null = True, max_length = 255, verbose_name = 'E-mail address')
 	comment = models.CharField(blank = True, null = True, max_length = 255)
 	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE, blank = True, null = True)
+	company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
 	user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
 	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
