@@ -460,6 +460,8 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 	if lunch_ticket is not None or count_ordered > count_created:
 		form = LunchTicketForm(request.POST or None, instance = lunch_ticket, initial = {'exhibitor': exhibitor})
 		
+		form.fields['email_address'].required = True
+		
 		if not is_editable:
 			for field in form.fields: form.fields[field].disabled = True
 		

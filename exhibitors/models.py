@@ -2,6 +2,7 @@ from django.db import models
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.utils.crypto import get_random_string
 
 from accounting.models import Order
 from banquet.models import Banquet, Participant
@@ -156,10 +157,16 @@ class LunchTicketDay(models.Model):
 	def __str__(self): return self.name + ' at ' + self.fair.name
 
 
+def get_random_32_length_string():
+    return get_random_string(32)
+
+
 class LunchTicket(models.Model):
-	email_address = models.EmailField(blank = False, null = False, max_length = 255, verbose_name = 'E-mail address')
+	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string)
+	email_address = models.EmailField(blank = True, null = True, max_length = 255, verbose_name = 'E-mail address')
 	comment = models.CharField(blank = True, null = True, max_length = 255)
-	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
+	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE, blank = True, null = True)
+	user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
 	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	
