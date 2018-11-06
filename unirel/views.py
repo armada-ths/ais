@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from fair.models import Fair
 from companies.models import Company
+from people.models import DietaryRestriction
 
 from .models import Participant
 from .forms import ParticipantForm
@@ -29,6 +30,36 @@ def admin(request, year):
 		'count_banquet': count_banquet,
 		'count_sleep': count_sleep,
 		'count_lunch': count_lunch
+	})
+
+
+@permission_required('unirel.base')
+def admin_dietary_restrictions(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	participants_all = Participant.objects.filter(fair = fair)
+	
+	dietary_restrictions_all = {}
+	
+	for participant in participants_all:
+		for dietary_restriction in participant.dietary_restrictions.all():
+			if dietary_restriction in dietary_restrictions_all: dietary_restrictions_all[dietary_restriction].append(participant)
+			else: dietary_restrictions_all[dietary_restriction] = [participant]
+	
+	participants = []
+	
+	for participant in participants_all:
+		l = [(participant in dietary_restrictions_all[x]) for x in dietary_restrictions_all]
+		
+		participants.append({
+			'participant': participant,
+			'dietary_restrictions': l
+		})
+	
+	return render(request, 'unirel/admin_dietary_restrictions.html', {
+		'fair': fair,
+		'participants': participants,
+		'dietary_restrictions': [{'name': x, 'count': len(dietary_restrictions_all[x])} for x in dietary_restrictions_all],
 	})
 
 
