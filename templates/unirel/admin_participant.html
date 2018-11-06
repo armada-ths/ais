@@ -20,5 +20,8 @@
 		<li><span style="font-weight: bold;">Dietary restrictions:</span> {% if participant.dietary_restrictions.all %} {{ participant.dietary_restrictions.all | join:', ' }} {% else %} <span style="font-style: italic;">none</span> {% endif %}</li>
 	</ul>
 	
-	<p><a href="{% url 'unirel_admin_participant_edit' fair.year participant.pk %}" class="btn btn-default">Edit</a></p>
+	<p>
+		<a href="{% url 'unirel_admin_participant_edit' fair.year participant.pk %}" class="btn btn-default">Edit</a>
+		<a href="{% url 'unirel_admin_participant_delete' fair.year participant.pk %}" class="btn btn-default" onclick="confirm('Confirm the removal.');">Delete</a>
+	</p>
 {% endblock %}

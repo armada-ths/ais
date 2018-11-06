@@ -84,6 +84,16 @@ def admin_participant(request, year, participant_pk = None):
 
 
 @permission_required('unirel.base')
+def admin_participant_delete(request, year, participant_pk):
+	fair = get_object_or_404(Fair, year = year)
+	participant = get_object_or_404(Participant, pk = participant_pk, fair = fair)
+	
+	participant.delete()
+	
+	return redirect('unirel_admin', fair.year)
+
+
+@permission_required('unirel.base')
 def admin_participant_form(request, year, participant_pk = None):
 	fair = get_object_or_404(Fair, year = year)
 	participant = get_object_or_404(Participant, pk = participant_pk, fair = fair) if participant_pk is not None else None
