@@ -16,6 +16,12 @@ def fix_phone_number(n):
 	return n
 
 
+class DietaryRestrictionsTableForm(forms.Form):
+	addon_sleep = forms.BooleanField(required = False, label = 'Only those who are sleeping here')
+	addon_lunch = forms.BooleanField(required = False, label = 'Only those who are eating lunch here')
+	addon_banquet = forms.BooleanField(required = False, label = 'Only those who attend our banquet')
+
+
 class ParticipantForm(forms.ModelForm):
 	def clean(self):
 		super(ParticipantForm, self).clean()

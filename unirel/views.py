@@ -7,7 +7,7 @@ from companies.models import Company
 from people.models import DietaryRestriction
 
 from .models import Participant
-from .forms import ParticipantForm
+from .forms import ParticipantForm, DietaryRestrictionsTableForm
 
 
 @permission_required('unirel.base')
@@ -39,6 +39,13 @@ def admin_dietary_restrictions(request, year):
 	
 	participants_all = Participant.objects.filter(fair = fair)
 	
+	form = DietaryRestrictionsTableForm(request.POST or None)
+	
+	if request.POST and form.is_valid():
+		if form.cleaned_data['addon_sleep']: participants_all = participants_all.exclude(addon_sleep = False)
+		if form.cleaned_data['addon_lunch']: participants_all = participants_all.exclude(addon_lunch = False)
+		if form.cleaned_data['addon_banquet']: participants_all = participants_all.exclude(addon_banquet = False)
+	
 	dietary_restrictions_all = {}
 	
 	for participant in participants_all:
@@ -58,6 +65,7 @@ def admin_dietary_restrictions(request, year):
 	
 	return render(request, 'unirel/admin_dietary_restrictions.html', {
 		'fair': fair,
+		'form': form,
 		'participants': participants,
 		'dietary_restrictions': [{'name': x, 'count': len(dietary_restrictions_all[x])} for x in dietary_restrictions_all],
 	})

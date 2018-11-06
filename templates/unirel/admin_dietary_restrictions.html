@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block nav-unirel %}
 	<li role="presentation" class="active"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
 {% endblock %}
@@ -9,7 +11,13 @@
 		<a style="float: right;" class="btn btn-default" href="{% url 'unirel_admin' fair.year %}">Back to overview</a>
 	</p>
 	
-	<h1>University relations</h1>
+	<h1>Dietary restrictions</h1>
+	
+	<form method="post">
+        {% csrf_token %}
+		{{ form | crispy }}
+		<input type="submit" class="btn btn-primary" value="Refine search" />
+	</form>
 	
 	<div class="table-responsive">
 		<table class="table" id="unirel_table">
