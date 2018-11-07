@@ -260,10 +260,11 @@ class Booth(models.Model):
 class ExhibitorInBooth(models.Model):
 	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
 	booth = models.ForeignKey(Booth, on_delete = models.CASCADE)
+	days = models.ManyToManyField(LunchTicketDay)
 	comment = models.CharField(max_length = 255, null = True, blank = True)
 	
 	class Meta:
 		ordering = ['exhibitor', 'booth']
 		unique_together = [['exhibitor', 'booth']]
 	
-	def __str__(self): return self.exhibitor + ' in ' + self.booth
+	def __str__(self): return str(self.exhibitor) + ' in ' + str(self.booth)
