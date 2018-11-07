@@ -1,10 +1,32 @@
+import re
+
 from django import forms
 from django.forms import ModelForm
 from django.utils import timezone
 
 from .models import Profile
 
+def fix_phone_number(n):
+	if n is None: return None
+	
+	n = n.replace(' ', '')
+	n = n.replace('-', '')
+	
+	if n.startswith('00'): n = '+' + n[2:]
+	if n.startswith('0'): n = '+46' + n[1:]
+	
+	return n
+
+
 class ProfileForm(ModelForm):
+	def clean(self):
+		super(ProfileForm, self).clean()
+		
+		if 'phone_number' in self.cleaned_data:
+			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+		
+		return self.cleaned_data
+	
 	def is_valid(self):
 		valid = super(ProfileForm, self).is_valid()
 		
@@ -13,12 +35,18 @@ class ProfileForm(ModelForm):
 		dietary_restrictions = self.cleaned_data.get('dietary_restrictions')
 		no_dietary_restrictions = self.cleaned_data.get('no_dietary_restrictions')
 		
+		phone_number = self.cleaned_data.get('phone_number')
+		
 		if len(dietary_restrictions) == 0 and not no_dietary_restrictions:
 			self.add_error('no_dietary_restrictions', 'If you have no dietary restrictions, tick this box to confirm.')
 			valid = False
 		
 		elif len(dietary_restrictions) != 0 and no_dietary_restrictions:
 			self.add_error('no_dietary_restrictions', 'If you have dietary restrictions, you cannot tick this box.')
+			valid = False
+		
+		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
+			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
 			
 		return valid
