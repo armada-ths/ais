@@ -52,7 +52,6 @@ def matching(request):
                 # have to wait for subprocess to finish
                 retrieved.wait()
                 matching_path = os.path.join("/tmp/", docID + "_output.json")
-                print(matching_path)
                 with open(matching_path, 'r') as matching_file:
                     matching_data = json.load(matching_file)
                 return JsonResponse(matching_data)
