@@ -3,27 +3,63 @@
 {% block nav-people %}<li role="presentation" class="active"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>{% endblock %}
 
 {% block content %}
-	<h1>Contacts</h1>
+	<h1>Contacts ({{ total }})</h1>
+	
+	<ul class="list-unstyled">
+		{% for recruitment_period in recruitment_periods %}
+			<li><span style="font-weight: bold;">{{ recruitment_period.name }}:</span> {{ recruitment_period.count_accepted }}</li>
+		{% endfor %}
+	</ul>
+	
+	<ul>
+		{% for organization_group in organization_groups %}
+			{% if organization_group.name %}<li><a href="#l{{ organization_group.i }}">{{ organization_group.name }} ({{ organization_group.users | length }})</a></li>{% endif %}
+		{% endfor %}
+	</ul>
+	
+	<p><br /></p>
 	
 	{% for organization_group in organization_groups %}
-		{% if organization_group.name %}<h2>{{ organization_group.name }} ({{ organization_group.users | length }})</h2>{% endif %}
+		{% if organization_group.name %}<h2 id="l{{ organization_group.i }}">{{ organization_group.name }} ({{ organization_group.users | length }})</h2>{% endif %}
 		
-		<table class="table table-striped">
-			<tr>
-				<th class="text-uppercase" style="width: 25%">Name</th>
-				<th class="text-uppercase" style="width: 25%">Role</th>
-				<th class="text-uppercase text-right" style="width: 25%">Phone number</th>
-				<th class="text-uppercase text-right" style="width: 25%">E-mail address</th>
-			</tr>
-			
-			{% for user in organization_group.users %}
-				<tr>
-					<td><a href="{% url 'people:profile' fair.year user.profile.pk %}">{{ user }}</a></td>
-					<td>{{ user.delegated_role }}</td>
-					<td class="text-right">{% if user.profile.phone_number %}<a href="tel:{{ user.profile.phone_number }}">{{ user.profile.phone_number }}</a>{% endif %}</td>
-					<td class="text-right"><a href="mailto:{{ user.user.email }}">{{ user.user.email }}</a></td>
-				</tr>
-			{% endfor %}
-		</table>
+		<div class="table-responsive">
+			<table class="table organization_group_table">
+				<thead>
+					<tr>
+						<th class="text-uppercase" style="width: 25%">Name</th>
+						<th class="text-uppercase" style="width: 25%">Role</th>
+						<th class="text-uppercase text-right" style="width: 25%">Phone number</th>
+						<th class="text-uppercase text-right" style="width: 25%">E-mail address</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					{% for user in organization_group.users %}
+						<tr>
+							<td style="white-space: nowrap;"><a href="{% url 'people:profile' fair.year user.profile.pk %}">{{ user }}</a></td>
+							<td style="white-space: nowrap;">{{ user.delegated_role }}</td>
+							<td class="text-right">{% if user.profile.phone_number %}<a href="tel:{{ user.profile.phone_number }}">{{ user.profile.phone_number }}</a>{% endif %}</td>
+							<td class="text-right"><a href="mailto:{{ user.user.email }}">{{ user.user.email }}</a></td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+	<script>
+		$(function()
+		{
+			$('.organization_group_table').DataTable(
+			{
+				'paging': false,
+				'order': []
+			});
+		})
+	</script>
 {% endblock %}

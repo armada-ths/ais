@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-unirel %}
+	<li role="presentation" class="active"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
+{% endblock %}
+
+{% block content %}
+	<p>
+		<a style="float: right;" class="btn btn-default" href="{% url 'unirel_admin' fair.year %}">Back to overview</a>
+	</p>
+	
+	<h1>Dietary restrictions</h1>
+	
+	<form method="post">
+        {% csrf_token %}
+		{{ form | crispy }}
+		<input type="submit" class="btn btn-primary" value="Refine search" />
+	</form>
+	
+	<div class="table-responsive">
+		<table class="table" id="unirel_table">
+			<thead>
+				<tr>
+					<th>Organization</th>
+					<th>Name</th>
+					{% for d in dietary_restrictions %}
+						<th style="white-space: nowrap;">{{ d.name }} ({{ d.count }})</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% if participants %}
+					{% for participant in participants %}
+						<tr>
+							<td style="white-space: nowrap;">{{ participant.participant.company.name }}</td>
+							<td style="white-space: nowrap;"><a href="{% url 'unirel_admin_participant' fair.year participant.participant.pk %}">{{ participant.participant.name }}</a></td>
+							{% for d in participant.dietary_restrictions %}
+								{% if d %}<td style="text-align: center;" class="bg-danger">yes</td>
+								{% else %}<td style="text-align: center;">no</td>{% endif %}
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				{% else %}
+					<tr><td colspan="6" style="text-align: center;">No participants defined.</td></tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+	<script>
+		$(function()
+		{
+			$('#unirel_table').DataTable({ 'paging': false });
+		})
+	</script>
+{% endblock %}

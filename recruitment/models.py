@@ -174,6 +174,9 @@ class RecruitmentPeriod(models.Model):
 	
 	@property
 	def recruitable_roles(self): return Role.objects.filter(recruitment_period = self)
+	
+	@property
+	def count_accepted(self): return RecruitmentApplication.objects.filter(recruitment_period = self, status = 'accepted').count()
 
 	def is_past(self):
 		return self.end_date < timezone.now()

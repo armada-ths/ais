@@ -1,5 +1,3 @@
-from lib.image import UploadToDirUUID, UploadToDir, update_image_field
-
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -8,6 +6,7 @@ from django.utils.crypto import get_random_string
 
 from accounting.models import Product
 from fair.models import Fair
+from lib.image import UploadToDirUUID
 from people.models import Profile
 
 
@@ -18,6 +17,7 @@ class Event(models.Model):
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
     location = models.CharField(max_length=75, blank=True, null=True)
+    food = models.CharField(max_length=75, blank=True, null=True)
     signup_cr = models.BooleanField(blank=False, null=False, verbose_name='Let company representatives sign up')
     signup_s = models.BooleanField(blank=False, null=False, verbose_name='Let students sign up')
     open_for_signup = models.BooleanField(blank=False, null=False, verbose_name='Event is currently open for sign up')
@@ -34,7 +34,7 @@ class Event(models.Model):
     requires_invitation = models.BooleanField(blank=False, null=False, verbose_name='Participants need an invitation to sign up')
     contact_person = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     external_event_link = models.CharField(max_length=255, blank=True, null=True)
-    picture = models.ImageField(upload_to = UploadToDirUUID('events', 'pictures'), blank = True, null = True)
+    picture = models.ImageField(upload_to=UploadToDirUUID('events', 'pictures'), blank=True, null=True)
 
     class Meta:
         ordering = ['date_start', 'name']
@@ -93,6 +93,7 @@ class Participant(models.Model):
     attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
     signup_complete = models.BooleanField(blank=False, null=False, default=False, verbose_name='The participant has completed signup')
     check_in_token = models.CharField(max_length=32, unique=True, default=get_random_32_length_string)
+    timestamp = models.DateTimeField(blank = True, null = True, auto_now_add = True)
 
     # Name, email and phone number can be stored either in this model or in the user model depending on if this is a student or not,
     # so we define these help functions to get them easier
@@ -158,6 +159,9 @@ class SignupQuestion(models.Model):
         ('multiple_choice', 'Multiple Choice')
     )
 
+    class Meta:
+        ordering = ['pk']
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     type = models.CharField(blank=False, null=False, choices=QUESTION_TYPES, max_length=20)
     question = models.TextField(blank=False, null=False)
@@ -169,3 +173,6 @@ class SignupQuestionAnswer(models.Model):
     signup_question = models.ForeignKey(SignupQuestion, blank=False, null=False, on_delete=models.CASCADE)
     participant = models.ForeignKey(Participant, blank=False, null=False, on_delete=models.CASCADE)
     answer = models.TextField()  # Used for 'text_field' and 'text_area'
+
+    class Meta:
+        ordering = ['signup_question__pk']

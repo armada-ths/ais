@@ -14,6 +14,7 @@ def event(event, request):
         'name': event.name,
         'description': event.description,
         'location': event.location,
+        'food': event.food,
         'event_start': int(event.date_start.strftime('%s')),
         'event_end': int(event.date_end.strftime('%s')),
         'registration_end': int(event.date_start.strftime('%s')),
@@ -23,6 +24,9 @@ def event(event, request):
         'external_event_link': event.external_event_link,
         'signup_questions': [signup_question(question) for question in event.signupquestion_set.all()],
         'signup_link': signup_url,
+        'can_create_teams': event.teams_create_s,
+        'can_join_teams': event.teams_participate_s,
+        'open_for_signup': event.open_for_signup and event.signup_s
     }
 
     return data

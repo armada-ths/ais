@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-unirel %}
+	<li role="presentation" class="active"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{{ participant.name }}</h1>
+	
+	<ul class="list-unstyled">
+		<li><span style="font-weight: bold;">Sign-up link:</span> <a href="{{ url }}" target="_blank">{{ url }}</a></li>
+		<li><span style="font-weight: bold;">Company:</span> {{ participant.company.name }}</li>
+		<li><span style="font-weight: bold;">E-mail address:</span> <a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></li>
+		<li><span style="font-weight: bold;">Phone number:</span> {% if participant.phone_number %} <a href="tel:{{ participant.phone_number }}">{{ participant.phone_number }}</a> {% else %} <span style="font-style: italic;">not given</span> {% endif %}</li>
+		<li><span style="font-weight: bold;">Banquet?</span> {{ participant.get_addon_banquet_display }}</li>
+		<li><span style="font-weight: bold;">Sleeping?</span> {{ participant.get_addon_sleep_display }}</li>
+		<li><span style="font-weight: bold;">Lunch?</span> {{ participant.get_addon_lunch_display }}</li>
+		<li><span style="font-weight: bold;">Dietary restrictions:</span> {% if participant.dietary_restrictions.all %} {{ participant.dietary_restrictions.all | join:', ' }} {% else %} <span style="font-style: italic;">none</span> {% endif %}</li>
+	</ul>
+	
+	<p>
+		<a href="{% url 'unirel_admin_participant_edit' fair.year participant.pk %}" class="btn btn-default">Edit</a>
+		<a href="{% url 'unirel_admin_participant_delete' fair.year participant.pk %}" class="btn btn-default" onclick="confirm('Confirm the removal.');">Delete</a>
+	</p>
+{% endblock %}

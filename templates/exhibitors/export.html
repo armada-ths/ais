@@ -1,0 +1,8 @@
+{% block content %}
+	{% for exhibitor in exhibitors %}
+		<div style="text-align: center; page-break-after: always;">
+			<h1 style="font-size: 50pt;">{{ exhibitor.company.name }}</h1>
+			{% if exhibitor.catalogue_logo_squared %}<img style="max-width: 100%;" src="{{ exhibitor.catalogue_logo_squared.url }}" alt="{{ exhibitor.company.name }}" />{% endif %}
+		</div>
+	{% endfor %}
+{% endblock %}

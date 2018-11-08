@@ -50,6 +50,8 @@ class LoginRequiredMiddleware:
 
         if re.match(r'/banquet/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$', path): return
 
+        if re.match(r'/unirel/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$', path): return
+
         for prefix in url_prefix_exceptions:
             if path.startswith(prefix, 0, len(prefix)):
                 return

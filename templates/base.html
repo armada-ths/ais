@@ -60,6 +60,12 @@
 							<li role="presentation"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>
 						{% endblock %}
 					{% endif %}
+					
+					{% if perms.unirel.base %}
+						{% block nav-unirel %}
+							<li role="presentation"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
+						{% endblock %}
+					{% endif %}
 				</ul>
 				
 				<p class="navbar-text navbar-right">

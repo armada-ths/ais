@@ -1,26 +1,40 @@
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Team</th>
-    <th>Email</th>
-    <th>Phone no.</th>
-    <th>Type</th>
-  </tr>
-  </thead>
-  {% for participant in participants %}
-    <tr>
-      <td>{{ participant.assigned_name }}</td>
-      <td>{{ participant.teammember_set.first.team.name }}</td>
-      <td>{{ participant.assigned_email }}</td>
-      <td>{{ participant.assigned_phone_number }}</td>
-      <td>
-        {% if participant.user_cr %}
-          Company rep.
-        {% else %}
-          Student
-        {% endif %}
-      </td>
-    </tr>
-  {% endfor %}
-</table>
+<div class="table-responsive">
+	<table class="table" id="participants_table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Sign-up</th>
+				<th>Team</th>
+				<th style="white-space: nowrap;">E-mail address</th>
+				<th style="white-space: nowrap;">Phone number</th>
+				<th>Type</th>
+				{% for question in questions %}
+					<th style="white-space: nowrap; text-align: right;">{{ question.question }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+	
+		<tbody>
+			{% for participant in participants %}
+				<tr>
+					<td style="white-space: nowrap;">
+						{% if participant.user_s %} <a href="{% url 'people:profile' fair.year participant.user_s.pk %}">{{ participant.assigned_name }}</a>
+						{% else %}{{ participant.assigned_name }}{% endif %}
+					</td>
+					<td style="white-space: nowrap;">{% if participant.timestamp %}<span style="display: none;">{{ participant.timestamp|date:"U" }}</span>{{ participant.timestamp }}{% endif %}</td>
+					<td>{{ participant.teammember_set.first.team.name }}</td>
+					<td><a href="mailto:{{ participant.assigned_email }}">{{ participant.assigned_email }}</a></td>
+					<td>{% if participant.assigned_phone_number %}<a href="tel:{{ participant.assigned_phone_number }}">{{ participant.assigned_phone_number }}</a>{% endif %}</td>
+					
+					<td>
+						{% if participant.user_cr %} Company rep.
+						{% else %} Student {% endif %}
+					</td>
+					{% for answer in participant.signupquestionanswer_set.all %}
+						<td style="text-align: right;">{{ answer.answer }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>

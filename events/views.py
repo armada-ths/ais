@@ -17,6 +17,7 @@ from recruitment.models import RecruitmentApplication
 
 def save_questions(questions_data, event):
     questions = []
+    questions_to_delete = list(SignupQuestion.objects.filter(event=event))
 
     for question in questions_data:
         pk = question.pop('id', None)
@@ -32,9 +33,10 @@ def save_questions(questions_data, event):
         q, _created = SignupQuestion.objects.update_or_create(pk=pk, defaults=defaults)
         questions.append(q)
 
-    # TODO This should work to override the questions with only the once that were sent, but it doesn't. So the old questions are not
-    # deleted as they should
-    event.signupquestion_set.set(questions)
+        if q in questions_to_delete: questions_to_delete.remove(q)
+
+    for question in questions_to_delete:
+        question.delete()
 
 
 @permission_required('events.base')
@@ -57,9 +59,12 @@ def event_new(request, year):
     }
 
     form = EventForm(request.POST or None)
-    
-    users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = 'accepted', recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
-    form.fields['contact_person'].choices = [('', '---------')] + [(user.pk, user.get_full_name()) for user in users if user.has_perm('companies.base')]
+
+    users = [recruitment_application.user for recruitment_application in
+             RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=fair).order_by('user__first_name',
+                                                                                                              'user__last_name')]
+    form.fields['contact_person'].choices = [('', '---------')] + [(user.pk, user.get_full_name()) for user in users if
+                                                                   user.has_perm('companies.base')]
 
     if request.POST and form.is_valid():
         event = form.save()
@@ -78,19 +83,23 @@ def event_new(request, year):
 @permission_required('events.base')
 def event_edit(request, year, pk):
     fair = get_object_or_404(Fair, year=year)
-    event = get_object_or_404(Event, pk=pk, fair = fair)
+    event = get_object_or_404(Event, pk=pk, fair=fair)
 
     participants = Participant.objects.filter(event=event).select_related('user_s__profile').all()
+    signup_questions = event.signupquestion_set.all()
 
     react_props = {
-        'questions': [serializers.signup_question(question) for question in event.signupquestion_set.all()],
+        'questions': [serializers.signup_question(question) for question in signup_questions],
         'question_types': dict(SignupQuestion.QUESTION_TYPES)
     }
 
     form = EventForm(request.POST or None, instance=event)
-    
-    users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = 'accepted', recruitment_period__fair = event.fair).order_by('user__first_name', 'user__last_name')]
-    form.fields['contact_person'].choices = [('', '---------')] + [(user.pk, user.get_full_name()) for user in users if user.has_perm('companies.base')]
+
+    users = [recruitment_application.user for recruitment_application in
+             RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=event.fair).order_by('user__first_name',
+                                                                                                                    'user__last_name')]
+    form.fields['contact_person'].choices = [('', '---------')] + [(user.pk, user.get_full_name()) for user in users if
+                                                                   user.has_perm('companies.base')]
 
     if request.POST and form.is_valid():
         form.save()
@@ -104,6 +113,7 @@ def event_edit(request, year, pk):
         'fair': fair,
         'event': event,
         'participants': participants,
+        'questions': signup_questions,
         'form': form,
         'react_props': json.dumps(react_props)
     })
@@ -120,7 +130,7 @@ def event_signup(request, year, event_pk):
     signup_url = reverse('events_api:signup', args=[event_pk])
 
     # Will be populated if user has started signup before
-    participant = Participant.objects.filter(user_s=request.user,event=event).first()
+    participant = Participant.objects.filter(user_s=request.user, event=event).first()
 
     open_student_teams = Team.objects.filter(event=event, allow_join_s=True)
 

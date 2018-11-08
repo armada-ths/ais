@@ -410,7 +410,7 @@ def lunchtickets(request, company_pk):
 	count_created = 0
 	
 	for day in LunchTicketDay.objects.filter(fair = fair):
-		lunch_tickets = LunchTicket.objects.filter(exhibitor = exhibitor, day = day)
+		lunch_tickets = LunchTicket.objects.filter(company = exhibitor.company, day = day)
 		count_created += len(lunch_tickets)
 		
 		days.append({
@@ -448,26 +448,32 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 	
 	is_editable = company_contact is not None or request.user.has_perm('companies.base')
 	
-	lunch_ticket = get_object_or_404(LunchTicket, pk = lunch_ticket_pk, exhibitor = exhibitor) if lunch_ticket_pk is not None else None
+	lunch_ticket = get_object_or_404(LunchTicket, pk = lunch_ticket_pk, company = company) if lunch_ticket_pk is not None else None
 	
 	count_ordered = 0
 	
 	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
 		count_ordered += order.quantity
 	
-	count_created = LunchTicket.objects.filter(exhibitor = exhibitor).count()
+	count_created = LunchTicket.objects.filter(company = company).count()
 	
 	if lunch_ticket is not None or count_ordered > count_created:
-		form = LunchTicketForm(request.POST or None, instance = lunch_ticket, initial = {'exhibitor': exhibitor})
+		form = LunchTicketForm(request.POST or None, instance = lunch_ticket, initial = {
+			'company': company,
+			'fair': exhibitor.fair
+		})
+		
+		form.fields['email_address'].required = True
 		
 		if not is_editable:
 			for field in form.fields: form.fields[field].disabled = True
 		
 		if request.POST and form.is_valid() and is_editable:
-			form.instance.exhibitor = exhibitor
+			form.instance.fair = exhibitor.fair
+			form.instance.company = company
 			form.save()
 			
-			return redirect('anmalan:lunchtickets', exhibitor.company.pk)
+			return redirect('anmalan:lunchtickets', company.pk)
 	
 	else:
 		form = None

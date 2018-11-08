@@ -2,6 +2,7 @@ from django.db import models
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.utils.crypto import get_random_string
 
 from accounting.models import Order
 from banquet.models import Banquet, Participant
@@ -50,6 +51,9 @@ class Exhibitor(models.Model):
 	electricity_total_power = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Estimated power consumption (W)')
 	electricity_socket_count = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Number of sockets')
 	electricity_equipment = models.TextField(blank = True, null = True, verbose_name = 'Description of equipment')
+	check_in_timestamp = models.DateTimeField(blank = True, null = True)
+	check_in_comment = models.TextField(blank = True, null = True)
+	check_in_user = models.ForeignKey(User, blank = True, null = True, related_name = 'check_in_user')
 	catalogue_about = models.TextField(blank = True, null = True, max_length = 600)
 	catalogue_purpose = models.TextField(blank = True, null = True, max_length = 600)
 	catalogue_logo_squared = models.ImageField(upload_to = UploadToDirUUID('exhibitors', 'catalogue_logo_squared'), blank = True)
@@ -82,7 +86,8 @@ class Exhibitor(models.Model):
 		('NOT_APPLICABLE', 'Not applicable'),
 		('EXCEPTION', 'Exception'),
 		('IN_CONTACT', 'In contact'),
-		('IN_CONTACT_ARMADA', 'In contact by Armada')
+		('IN_CONTACT_ARMADA', 'In contact by Armada'),
+		('STURE', 'Sture')
 	]
 	
 	transport_to = models.CharField(choices = transport_to_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
@@ -92,7 +97,8 @@ class Exhibitor(models.Model):
 		('BOOKED', 'Booked'),
 		('NOT_APPLICABLE', 'Not applicable'),
 		('EXCEPTION', 'Exception'),
-		('IN_CONTACT', 'In contact')
+		('IN_CONTACT', 'In contact'),
+		('STURE', 'Sture')
 	]
 	
 	transport_from = models.CharField(choices = transport_from_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
@@ -105,7 +111,7 @@ class Exhibitor(models.Model):
 		for order in Order.objects.filter(purchasing_company = self.company, product = self.fair.product_lunch_ticket):
 			count_ordered += order.quantity
 		
-		count_created = LunchTicket.objects.filter(exhibitor = self).count()
+		count_created = LunchTicket.objects.filter(company = self.company).count()
 		
 		return {
 			'ordered': count_ordered,
@@ -154,11 +160,30 @@ class LunchTicketDay(models.Model):
 	def __str__(self): return self.name + ' at ' + self.fair.name
 
 
+class LunchTicketTime(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	name = models.CharField(blank = False, null = False, max_length = 255)
+	
+	class Meta:
+		default_permissions = []
+		ordering = ['fair', 'name']
+	
+	def __str__(self): return self.name + ' at ' + self.fair.name
+
+
+def get_random_32_length_string():
+    return get_random_string(32)
+
+
 class LunchTicket(models.Model):
-	email_address = models.EmailField(blank = False, null = False, max_length = 255, verbose_name = 'E-mail address')
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string, unique = True)
+	email_address = models.EmailField(blank = True, null = True, max_length = 255, verbose_name = 'E-mail address')
 	comment = models.CharField(blank = True, null = True, max_length = 255)
-	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
+	company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
+	user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
 	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
+	time = models.ForeignKey(LunchTicketTime, on_delete = models.CASCADE, blank = True, null = True)
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	
 	class Meta:
@@ -235,10 +260,11 @@ class Booth(models.Model):
 class ExhibitorInBooth(models.Model):
 	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
 	booth = models.ForeignKey(Booth, on_delete = models.CASCADE)
+	days = models.ManyToManyField(LunchTicketDay)
 	comment = models.CharField(max_length = 255, null = True, blank = True)
 	
 	class Meta:
 		ordering = ['exhibitor', 'booth']
 		unique_together = [['exhibitor', 'booth']]
 	
-	def __str__(self): return self.exhibitor + ' in ' + self.booth
+	def __str__(self): return str(self.exhibitor) + ' in ' + str(self.booth)

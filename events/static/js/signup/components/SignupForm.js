@@ -123,16 +123,19 @@ class SignupForm extends Component {
                     </Typography>
                     <Typography>
                       {payed ? (
-                          'The event fee has been payed!  🎉'
+                          'The event fee has been paid!  🎉'
                       ) : (
                           <Fragment>
                             This event has a fee of {event.fee} SEK to sign up.
-                            <Stripe
-                                handleToken={this.handleStripeToken}
-                                stripe_publishable={stripe_publishable}
-                                description={event.name}
-                                amount={event.fee}
-                            />
+                            
+                            {event.open_for_signup && (
+                                <Stripe
+                                    handleToken={this.handleStripeToken}
+                                    stripe_publishable={stripe_publishable}
+                                    description={event.name}
+                                    amount={event.fee}
+                                />
+                            )}
                           </Fragment>
                       )}
                     </Typography>
@@ -150,7 +153,14 @@ class SignupForm extends Component {
             </Grid>
           </Grid>
           <Grid item sm={12}>
-            <Button onClick={this.handleSubmit} variant="contained" color="primary">Sign Up</Button>
+            <Button
+                disabled={!event.open_for_signup}
+                onClick={this.handleSubmit}
+                variant="contained"
+                color="primary"
+            >
+              {event.open_for_signup ? "Sign Up" : "Not open for sign up"}
+            </Button>
           </Grid>
         </Grid>
     )

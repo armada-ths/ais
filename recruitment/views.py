@@ -1,4 +1,4 @@
-import datetime, json
+import datetime, json, pytz
 import requests as r
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -546,6 +546,8 @@ def recruitment_period_locations(request, year, pk):
 
 	locations_list = []
 	j = 0
+	
+	local_tz = pytz.timezone('Europe/Stockholm')
 
 	for location in locations:
 		location_modified = {
@@ -559,7 +561,7 @@ def recruitment_period_locations(request, year, pk):
 		date_modified_previous = None
 
 		for i in range(len(location_modified['slots'])):
-			date = timezone.localtime(location_modified['slots'][i]['slot'].start)
+			date = local_tz.localize(location_modified['slots'][i]['slot'].start, is_dst = None)
 
 			time_start = date.strftime('%H:%M')
 
@@ -865,11 +867,13 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	
 	slots_by_day = [('', '---------')]
 	all_slots = Slot.objects.filter(recruitment_period = application.recruitment_period)
+	
+	local_tz = pytz.timezone('Europe/Stockholm')
 
 	for slot in all_slots:
 		found = False
 
-		slot_yyyymmdd = timezone.localtime(slot.start)
+		slot_yyyymmdd = local_tz.localize(slot.start, is_dst = None)
 		slot_yyyymmdd = slot_yyyymmdd.strftime('%Y-%m-%d')
 
 		for slot_by_day in slots_by_day:
@@ -882,8 +886,8 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
 	for slot in all_slots:
 		if slot in used_slots: continue
-
-		slot_start = timezone.localtime(slot.start)
+		
+		slot_start = local_tz.localize(slot.start, is_dst = None)
 		slot_yyyymmdd = slot_start.strftime('%Y-%m-%d')
 
 		for slot_by_day in slots_by_day:
@@ -943,7 +947,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	if application.slot and application.interviewer and application.interviewer2 and (request.user == application.interviewer or request.user == application.interviewer2):
 		other = application.interviewer if application.interviewer != request.user else application.interviewer2
 
-		nicetime = timezone.localtime(slot.start)
+		nicetime = local_tz.localize(slot.start, is_dst = None)
 		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
 
 		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + slot.location + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
@@ -951,7 +955,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + slot.location + ". Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
 
 	elif application.slot and application.interviewer and request.user == application.interviewer:
-		nicetime = timezone.localtime(slot.start)
+		nicetime = local_tz.localize(slot.start, is_dst = None)
 		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
 
 		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + str(slot.location) + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. I am looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
