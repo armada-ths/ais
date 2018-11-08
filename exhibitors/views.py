@@ -39,7 +39,26 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 	
 	if not view: view = ExhibitorView(user = request.user).create()
 	
-	exhibitors = Exhibitor.objects.prefetch_related('contact_persons').filter(fair = fair).order_by('company__name')
+	choices = [] if len(view.choices) == 0 else view.choices.split(' ')
+	
+	if 'count_lunch_tickets' in choices:
+		lunch_tickets_orders = Order.objects.filter(product = fair.product_lunch_ticket)
+		lunch_tickets_created = LunchTicket.objects.select_related('company').filter(fair = fair).exclude(company = None)
+	
+	if 'count_banquet_tickets' in choices:
+		products = [banquet.product for banquet in Banquet.objects.select_related('product').filter(fair = fair).exclude(product = None)]
+		banquet_tickets_orders = Order.objects.filter(product__in = products)
+		banquet_tickets_created = Participant.objects.filter(banquet = Banquet.objects.filter(fair = fair).exclude(product = None)).exclude(company = None)
+	
+	exhibitors = []
+	
+	for exhibitor in Exhibitor.objects.prefetch_related('contact_persons').filter(fair = fair).order_by('company__name'):
+		exhibitors.append({
+			'id': exhibitor.pk,
+			'name': exhibitor.company.name,
+			'exhibitor': exhibitor,
+			'fields': []
+		})
 	
 	form = ExhibitorSearchForm(request.POST or None)
 	
@@ -50,18 +69,69 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 		
 		for exhibitor in exhibitors:
 			for contact_person in form.cleaned_data['contact_persons']:
-				if contact_person in exhibitor.contact_persons.all():
+				if contact_person in exhibitor['exhibitor'].contact_persons.all():
 					exhibitors_filtered.append(exhibitor)
 					break
 		
 		exhibitors = exhibitors_filtered
 	
-	if not request.user.has_perm('exhibitors.view_all'): exhibitors = [exhibitor for exhibitor in exhibitors if request.user in exhibitor.contact_persons.all()]
+	if not request.user.has_perm('exhibitors.view_all'): exhibitors = [exhibitor for exhibitor in exhibitors if request.user in exhibitor['exhibitor'].contact_persons.all()]
+	
+	for exhibitor in exhibitors:
+		e = exhibitor['exhibitor']
+		for choice in choices:
+			value = None
+			if choice == 'contact_persons': value = e.contact_persons.all()
+			if choice == 'transport_to': value = e.transport_to
+			if choice == 'transport_from': value = e.transport_from
+			if choice == 'transport_comment': value = e.transport_comment
+			if choice == 'placement_wish': value = e.get_placement_wish_display
+			if choice == 'placement_comment': value = e.placement_comment
+			if choice == 'electricity_total_power': value = e.electricity_total_power
+			if choice == 'electricity_socket_count': value = e.electricity_socket_count
+			if choice == 'electricity_equipment': value = e.electricity_equipment
+			if choice == 'booth_height': value = e.booth_height
+			if choice == 'booth_height': value = e.booth_height
+			
+			if choice == 'count_lunch_tickets':
+				ordered = 0
+				created = 0
+				
+				for lunch_tickets_order in lunch_tickets_orders:
+					if lunch_tickets_order.purchasing_company == e.company: ordered += lunch_tickets_order.quantity
+				
+				for lunch_tickets_create in lunch_tickets_created:
+					if lunch_tickets_create.company == e.company: created += 1
+				
+				value = {
+					'ordered': ordered,
+					'created': created
+				}
+			
+			if choice == 'count_banquet_tickets':
+				ordered = 0
+				created = 0
+				
+				for banquet_tickets_order in banquet_tickets_orders:
+					if banquet_tickets_order.purchasing_company == e.company: ordered += banquet_tickets_order.quantity
+				
+				for banquet_tickets_create in banquet_tickets_created:
+					if banquet_tickets_create.company == e.company: created += 1
+				
+				value = {
+					'ordered': ordered,
+					'created': created
+				}
+			
+			exhibitor['fields'].append({
+				'field': choice,
+				'value': value
+			})
 	
 	return render(request, template_name, {
 		'fair': fair,
 		'exhibitors': exhibitors,
-		'fields': [] if len(view.choices) == 0 else view.choices.split(' '),
+		'fields': choices,
 		'form': form
 	})
 

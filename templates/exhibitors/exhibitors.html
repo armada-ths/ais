@@ -33,7 +33,7 @@
 				<th>Exhibitor</th>
 				
 				{% for field in fields %}
-					<th>{% get_field_name field %}</th>
+					<th style="white-space: nowrap;">{% get_field_name field %}</th>
 				{% endfor %}
 				</tr>
 			</thead>
@@ -41,44 +41,44 @@
 			<tbody>
 				{% for exhibitor in exhibitors %}
 					<tr>
-						<td><a href="{% url 'exhibitor' fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></td>
+						<td style="white-space: nowrap;"><a href="{% url 'exhibitor' fair.year exhibitor.id %}">{{ exhibitor.name }}</a></td>
 						
-						{% for field in fields %}
-							{% if field == 'contact_persons' %}
-								<td>
+						{% for field in exhibitor.fields %}
+							{% if field.field == 'contact_persons' %}
+								<td style="white-space: nowrap;">
 									<ul class="list-unstyled">
-										{% for contact_person in exhibitor.contact_persons.all %}
+										{% for contact_person in field.value %}
 											<li><a href="{% url 'people:profile' fair.year contact_person.profile.pk %}">{{ contact_person }}</a></li>
 										{% endfor %}
 									</ul>
 								</td>
-							{% elif field == 'transport_to' %}
-								{% if exhibitor.transport_to == 'NOT_BOOKED' %}<td class="bg-danger">
-								{% elif exhibitor.transport_to == 'IN_CONTACT' or exhibitor.transport_to == 'IN_CONTACT_ARMADA' %}<td class="bg-warning">
+							{% elif field.field == 'transport_to' %}
+								{% if field.value == 'NOT_BOOKED' %}<td class="bg-danger">
+								{% elif field.value == 'IN_CONTACT' or field.value == 'IN_CONTACT_ARMADA' %}<td class="bg-warning">
 								{% else %}<td>{% endif %}
-									{{ exhibitor.get_transport_to_display }}
+									{{ exhibitor.exhibitor.get_transport_to_display }}
 								</td>
-							{% elif field == 'transport_from' %}
-								{% if exhibitor.transport_from == 'NOT_BOOKED' %}<td class="bg-danger">
-								{% elif exhibitor.transport_from == 'IN_CONTACT' %}<td class="bg-warning">
+							{% elif field.field == 'transport_from' %}
+								{% if field.value == 'NOT_BOOKED' %}<td class="bg-danger">
+								{% elif field.value == 'IN_CONTACT' %}<td class="bg-warning">
 								{% else %}<td>{% endif %}
-									{{ exhibitor.get_transport_from_display }}
+									{{ exhibitor.exhibitor.get_transport_from_display }}
 								</td>
-							{% elif field == 'count_lunch_tickets' %}
-								{% if exhibitor.count_lunch_tickets.created == exhibitor.count_lunch_tickets.ordered %}<td>
-								{% elif exhibitor.count_lunch_tickets.ordered > exhibitor.count_lunch_tickets.created %}<td class="bg-danger">
+							{% elif field.field == 'count_lunch_tickets' %}
+								{% if field.value.created == field.value.ordered %}<td>
+								{% elif field.value.ordered > field.value.created %}<td class="bg-danger">
 								{% else %}<td class="bg-info">{% endif %}
-									{{ exhibitor.count_lunch_tickets.created }} / {{ exhibitor.count_lunch_tickets.ordered }}
+									{{ field.value.created }} / {{ field.value.ordered }}
 								</td>
-							{% elif field == 'count_banquet_tickets' %}
-								{% if exhibitor.count_banquet_tickets.created == exhibitor.count_banquet_tickets.ordered %}<td>
-								{% elif exhibitor.count_banquet_tickets.ordered > exhibitor.count_banquet_tickets.created %}<td class="bg-danger">
+							{% elif field.field == 'count_banquet_tickets' %}
+								{% if field.value.created == field.value.ordered %}<td>
+								{% elif field.value.ordered > field.value.created %}<td class="bg-danger">
 								{% else %}<td class="bg-info">{% endif %}
-									{{ exhibitor.count_banquet_tickets.created }} / {{ exhibitor.count_banquet_tickets.ordered }}
+									{{ field.value.created }} / {{ field.value.ordered }}
 								</td>
 							{% else %}
 								<td>
-									{{ exhibitor | get_value:field }}
+									{{ field.value }}
 								</td>
 							{% endif %}
 						{% endfor %}
