@@ -34,18 +34,10 @@ def matching(request):
     # validera POST-indata så att de givna svaren faktiskt existerar
     request.method = 'POST'
     if request.method == 'POST':
-        #if request.body:
-        if 1 == 1:
+        if request.body:
             try:
                 # convert json to dict
-                #data = json.loads(request.body.decode())
-                data = {
-                    "industries" : [1,2],
-                    "values" : [2,3],
-                    "employments" : [1,2],
-                    "locations" : [1,2],
-                    "benefits" : [1,2]
-                }
+                data = json.loads(request.body.decode())
             except Exception:
                 return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
             # Here is where the actual deserialization happens:
