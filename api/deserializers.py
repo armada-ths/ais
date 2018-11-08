@@ -1,7 +1,38 @@
 from django.shortcuts import get_object_or_404
 from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Continent, SwedenRegion, \
 StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueBenefit
 
+def matching(data):
+    '''
+    check the student answers data, validating the data on the way
+    '''
+    if type(data) is dict:
+        industries = CatalogueIndustry.objects.values_list('pk', flat=True)
+        values = CatalogueValue.objects.values_list('pk', flat=True)
+        employments = CatalogueEmployment.objects.values_list('pk', flat=True)
+        locations = CatalogueEmployment.objects.values_list('pk', flat=True)
+        benefits = CatalogueValue.objects.values_list('pk', flat=True)
+
+        validation_multi_set = {
+            "industries" : industries,
+            "values" : values,
+            "employments" : employments,
+            "locations" : locations,
+            "benefits" : benefits
+        }
+
+        for key, value_list in validation_multi_set.items():
+            # check if list
+            if isinstance(data[key], (list,)):
+                # can't be a subset if it's not an int
+                if not set(data[key]).issubset(set(value_list)):
+                    return False
+            else:
+                return False
+        return True
+    else:
+        return False
 
 def answer_slider(answer, student, question, survey):
     '''
