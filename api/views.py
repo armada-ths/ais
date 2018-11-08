@@ -1,3 +1,6 @@
+import subprocess
+import os
+
 import json
 import platform
 import subprocess
@@ -10,6 +13,8 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from django.utils.crypto import get_random_string
 
 import api.deserializers as deserializers
 import api.serializers as serializers
@@ -25,7 +30,44 @@ from student_profiles.models import StudentProfile, MatchingResult
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
 
+def matching(request):
+    # validera POST-indata så att de givna svaren faktiskt existerar
+    request.method = 'POST'
+    if request.method == 'POST':
+        #if request.body:
+        if 1 == 1:
+            try:
+                # convert json to dict
+                #data = json.loads(request.body.decode())
+                data = {
+                    "industries" : [1,2],
+                    "values" : [2,3],
+                    "employments" : [1,2],
+                    "locations" : [1,2],
+                    "benefits" : [1,2]
+                }
+            except Exception:
+                return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+            # Here is where the actual deserialization happens:
+            if deserializers.matching(data):
+                docID = get_random_string(length=32)
+                random_doc_name = os.path.join("/tmp/", docID + ".json")
+                matching_script_loc = "/opt/matching.py"
 
+                with open(random_doc_name, 'w') as outfile:
+                    json.dump(data, outfile)
+                retrieved = subprocess.Popen(["python3", matching_script_loc, docID, random_doc_name],stdout=subprocess.PIPE)
+                # have to wait for subprocess to finish
+                retrieved.wait()
+                matching_path = os.path.join("/tmp/", docID + "_output.json")
+                print(matching_path)
+                with open(matching_path, 'r') as matching_file:
+                    matching_data = json.load(matching_file)
+                return JsonResponse(matching_data)
+            else:
+                return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
+    else:
+        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 @cache_page(60 * 5)
 def exhibitors(request):
     '''
@@ -44,37 +86,37 @@ def exhibitors(request):
 @cache_page(60 * 5)
 def catalogueselections(request):
 	selections = []
-	
+
 	selections.append({
 		'selection': 'industries',
 		'question': 'Which industries does your company work in?',
 		'options': [(industry.pk, industry.industry) for industry in CatalogueIndustry.objects.all()]
 	})
-	
+
 	selections.append({
 		'selection': 'values',
 		'question': 'Select up to three values that apply to the company.',
 		'options': [(value.pk, value.value) for value in CatalogueValue.objects.all()]
 	})
-	
+
 	selections.append({
 		'selection': 'employments',
 		'question': 'What kind of employments does your company offer?',
 		'options': [(employment.pk, employment.employment) for employment in CatalogueEmployment.objects.all()]
 	})
-	
+
 	selections.append({
 		'selection': 'locations',
 		'question': 'Where does your company operate?',
 		'options': [(location.pk, location.location) for location in CatalogueLocation.objects.all()]
 	})
-	
+
 	selections.append({
 		'selection': 'benefits',
 		'question': 'Which benefits does your company offers its employees?',
 		'options': [(benefit.pk, benefit.benefit) for benefit in CatalogueBenefit.objects.all()]
 	})
-	
+
 	return JsonResponse(selections, safe = False)
 
 
