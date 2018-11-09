@@ -65,7 +65,7 @@
 						<li><span style="font-weight: 700;">From the fair:</span> {{ exhibitor.get_transport_from_display }}</li>
 					</ul>
 					
-					{% if exhibitor.transport_comment %}<p>{{ exhibitor.transport_comment }}</p>{% endif %}
+					{% if exhibitor.transport_comment %}<p>{{ exhibitor.transport_comment | linebreaks }}</p>{% endif %}
 				</div>
 			</div>
 			
@@ -78,7 +78,7 @@
 					{% if exhibitor.check_in_timestamp %}
 						<p class="text-success">Checked in on {{ exhibitor.check_in_timestamp }} by <a href="{% url 'people:profile' fair.year exhibitor.check_in_user.profile.pk %}">{{ exhibitor.check_in_user }}</a>.</p>
 						
-						{% if exhibitor.check_in_comment %}<p>{{ exhibitor.check_in_comment }}</p>{% endif %}
+						{% if exhibitor.check_in_comment %}<p>{{ exhibitor.check_in_comment | linebreaks }}</p>{% endif %}
 					{% else %}
 						<p>Not checked in.</p>
 					{% endif %}

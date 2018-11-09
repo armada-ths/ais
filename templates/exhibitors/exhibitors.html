@@ -78,7 +78,7 @@
 								</td>
 							{% elif field.field == 'check_in_timestamp' %}
 								{% if field.value is None %}<td class="bg-danger"></td>
-								{% else %}<td class="bg-info" style="white-space: nowrap;"><span style="display: none;">{{ field.value|date:"U" }}</span>{{ field.value }}</td>{% endif %}
+								{% else %}<td style="white-space: nowrap;"><span style="display: none;">{{ field.value|date:"U" }}</span>{{ field.value }}</td>{% endif %}
 							{% else %}
 								<td>
 									{% if field.value is not None %}{{ field.value }}{% endif %}
