@@ -16,6 +16,7 @@
 	<p>
 		{% if perms.exhibitors.modify_transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
 		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
+		{% if perms.exhibitors.modify_check_in %}<a href="{% url 'exhibitor_check_in' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Check in</a>{% endif %}
 		{% if perms.exhibitors.modify_details %}<a href="{% url 'exhibitor_details' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Details</a>{% endif %}
 		<a href="{% url 'anmalan:registration' exhibitor.company.pk %}" class="btn btn-default pull-right"><span class="glyphicon glyphicon-th"></span> Go to registration</a>
 	</p>
@@ -65,6 +66,22 @@
 					</ul>
 					
 					{% if exhibitor.transport_comment %}<p>{{ exhibitor.transport_comment }}</p>{% endif %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Check in</h3>
+				</div>
+				
+				<div class="panel-body">
+					{% if exhibitor.check_in_timestamp %}
+						<p class="text-success">Checked in on {{ exhibitor.check_in_timestamp }} by <a href="{% url 'people:profile' fair.year exhibitor.check_in_user.profile.pk %}">{{ exhibitor.check_in_user }}</a>.</p>
+						
+						{% if exhibitor.check_in_comment %}<p>{{ exhibitor.check_in_comment }}</p>{% endif %}
+					{% else %}
+						<p>Not checked in.</p>
+					{% endif %}
 				</div>
 			</div>
 			

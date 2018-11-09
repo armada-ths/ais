@@ -145,6 +145,7 @@ class Exhibitor(models.Model):
 			('create', 'Create new exhibitors'),
 			('modify_contact_persons', 'Modify contact persons'),
 			('modify_transport', 'Modify transport details'),
+			('modify_check_in', 'Modify check in'),
 			('modify_details', 'Modify details')
 		]
 
@@ -216,7 +217,8 @@ class ExhibitorView(models.Model):
 		'electricity_equipment': 'Electricity equipment',
 		'booth_height': 'Booth height (cm)',
 		'count_lunch_tickets': 'Lunch tickets',
-		'count_banquet_tickets': 'Banquet tickets'
+		'count_banquet_tickets': 'Banquet tickets',
+		'check_in_timestamp': 'Check in'
 	}
 	
 	user = models.ForeignKey(User, on_delete = models.CASCADE)

@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import HttpResponseForbidden
 from recruitment.models import RecruitmentApplication
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,7 +12,7 @@ from accounting.models import Product, Order
 from register.models import SignupLog
 from banquet.models import Banquet, Participant
 
-from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CommentForm, ExhibitorSearchForm
+from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, ExhibitorSearchForm
 from .models import Exhibitor, ExhibitorView, LunchTicketDay, LunchTicket
 
 
@@ -91,7 +93,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 			if choice == 'electricity_socket_count': value = e.electricity_socket_count
 			if choice == 'electricity_equipment': value = e.electricity_equipment
 			if choice == 'booth_height': value = e.booth_height
-			if choice == 'booth_height': value = e.booth_height
+			if choice == 'check_in_timestamp': value = e.check_in_timestamp
 			
 			if choice == 'count_lunch_tickets':
 				ordered = 0
@@ -360,6 +362,44 @@ def exhibitor_contact_persons(request, year, pk):
 		'exhibitor': exhibitor,
 		'form': form
 	})
+
+
+@permission_required('exhibitors.modify_check_in')
+def exhibitor_check_in(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	exhibitor = get_object_or_404(Exhibitor, pk = pk)
+	
+	form = CheckInForm(request.POST or None, initial = { 'comment': exhibitor.check_in_comment })
+	
+	if request.POST and form.is_valid():
+		exhibitor.check_in_comment = form.cleaned_data['comment']
+		
+		if exhibitor.check_in_timestamp is None:
+			exhibitor.check_in_timestamp = datetime.datetime.now()
+			exhibitor.check_in_user = request.user
+		
+		exhibitor.save()
+		
+		return redirect('exhibitor', fair.year, exhibitor.pk)
+	
+	return render(request, 'exhibitors/exhibitor_check_in.html', {
+		'fair': fair,
+		'exhibitor': exhibitor,
+		'form': form
+	})
+
+
+@permission_required('exhibitors.modify_check_in')
+def exhibitor_check_in_revert(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	exhibitor = get_object_or_404(Exhibitor, pk = pk)
+	
+	exhibitor.check_in_timestamp = None
+	exhibitor.check_in_user = None
+	exhibitor.check_in_comment = None
+	exhibitor.save()
+	
+	return redirect('exhibitor', fair.year, exhibitor.pk)
 
 
 @permission_required('exhibitors.base')

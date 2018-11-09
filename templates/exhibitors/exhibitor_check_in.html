@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-exhibitors %}<li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>{% endblock %}
+
+{% block content %}
+	<ol class="breadcrumb">
+		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+		<li><a href="{% url 'exhibitor' fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></li>
+		<li class="active">Check in</li>
+	</ol>
+	
+	<h1>Check in for {{ exhibitor.company }}</h1>
+	
+	<p>
+		{% if perms.exhibitors.transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
+		<a href="{% url 'exhibitor_check_in' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Check in</a>
+		{% if perms.exhibitors.modify_details %}<a href="{% url 'exhibitor_details' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Details</a>{% endif %}
+	</p>
+	
+	{% if exhibitor.check_in_timestamp %}
+		<p><span style="font-weight: bold;">Status:</span> Checked in on {{ exhibitor.check_in_timestamp }} by <a href="{% url 'people:profile' fair.year exhibitor.check_in_user.profile.pk %}">{{ exhibitor.check_in_user }}</a></p>
+		
+		<form method="post">
+			{% csrf_token %}
+			{{ form | crispy }}
+			<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save changes</button>
+		</form>
+		
+		<h2>Revert check in</h2>
+		<p>If you want to revert the check in, use the button below.</p>
+		
+		<p><a href="{% url 'exhibitor_check_in_revert' fair.year exhibitor.pk %}" class="btn btn-danger" onclick="alert('Confirm that you want to revert the check in.');">Revert check in</a><p>
+	{% else %}
+		<p><span style="font-weight: bold;">Status:</span> Not checked in</p>
+		
+		<form method="post">
+			{% csrf_token %}
+			{{ form | crispy }}
+			<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Confirm check in</button>
+		</form>
+	{% endif %}
+{% endblock %}

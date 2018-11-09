@@ -60,6 +60,10 @@ class ContactPersonForm(forms.ModelForm):
 		}
 
 
+class CheckInForm(forms.Form):
+	comment = forms.CharField(required = False, label = 'Optional comment', widget = forms.Textarea(attrs = {'rows': 5}))
+
+
 class DetailsForm(forms.ModelForm):
 	class Meta:
 		model = Exhibitor
