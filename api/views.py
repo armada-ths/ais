@@ -20,6 +20,7 @@ import api.deserializers as deserializers
 import api.serializers as serializers
 
 from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueBenefit
+from exhibitors.api import serialize_exhibitor
 from fair.models import Partner, Fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
@@ -30,9 +31,9 @@ from student_profiles.models import StudentProfile, MatchingResult
 def root(request):
     return JsonResponse({'message': 'Welcome to the Armada API!'})
 
+@csrf_exempt
 def matching(request):
     # validera POST-indata så att de givna svaren faktiskt existerar
-    request.method = 'POST'
     if request.method == 'POST':
         if request.body:
             try:
@@ -40,6 +41,7 @@ def matching(request):
                 data = json.loads(request.body.decode())
             except Exception:
                 return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+
             # Here is where the actual deserialization happens:
             if deserializers.matching(data):
                 docID = get_random_string(length=32)
@@ -54,24 +56,20 @@ def matching(request):
                 matching_path = os.path.join("/tmp/", docID + "_output.json")
                 with open(matching_path, 'r') as matching_file:
                     matching_data = json.load(matching_file)
-                return JsonResponse(matching_data)
+                
+                for i in matching_data:
+                    print(matching_data[i])
+                
+                response = [{
+                    'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
+                    'distance': matching_data[i]['distance']
+                } for i in matching_data]
+                
+                return JsonResponse(response, safe = False)
             else:
                 return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
     else:
         return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
-@cache_page(60 * 5)
-def exhibitors(request):
-    '''
-    Returns the existing cataloginfo for exhibitors in current fair.
-    Does not return anything for those exhibitors that are without catalog info.
-    '''
-    fair = Fair.objects.get(current=True)
-    exhibitors = Exhibitor.objects.filter(fair = fair)
-
-    data = [serializers.exhibitor(request, exhibitor, exhibitor.company)
-            for exhibitor in exhibitors]
-    # data.sort(key=lambda x: x['company_name'].lower())
-    return JsonResponse(data, safe=False)
 
 
 @cache_page(60 * 5)

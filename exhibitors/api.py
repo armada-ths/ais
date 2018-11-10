@@ -8,35 +8,40 @@ from django.views.decorators.cache import cache_page
 from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth, LunchTicketDay
 from fair.models import Fair
 
+
+def serialize_exhibitor(exhibitor, request):
+	img_placeholder = request.GET.get('img_placeholder') == 'true'
+	
+	return OrderedDict([
+		('id', exhibitor.pk),
+		('name', exhibitor.company.name),
+		('type', exhibitor.company.type.type),
+		('company_website', exhibitor.company.website),
+		('about', exhibitor.catalogue_about),
+		('purpose', exhibitor.catalogue_purpose),
+		('logo_squared', (exhibitor.catalogue_logo_squared.url) if exhibitor.catalogue_logo_squared else (MISSING_IMAGE if img_placeholder else None)),
+		('logo_freesize', (exhibitor.catalogue_logo_freesize.url) if exhibitor.catalogue_logo_freesize else (MISSING_IMAGE if img_placeholder else None)),
+		('contact_name', exhibitor.catalogue_contact_name),
+		('contact_email_address', exhibitor.catalogue_contact_email_address),
+		('contact_phone_number', exhibitor.catalogue_contact_phone_number),
+		('industries', [{'id': industry.pk, 'name': industry.industry} for industry in exhibitor.catalogue_industries.all()]),
+		('values', [{'id': value.pk, 'name': value.value} for value in exhibitor.catalogue_values.all()]),
+		('employments', [{'id': employment.pk, 'name': employment.employment} for employment in exhibitor.catalogue_employments.all()]),
+		('locations', [{'id': location.pk, 'name': location.location} for location in exhibitor.catalogue_locations.all()]),
+		('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
+		('average_age', exhibitor.catalogue_average_age),
+		('founded', exhibitor.catalogue_founded),
+		('groups', [{'id': group.pk, 'name': group.name} for group in exhibitor.company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
+		('fair_locations', [])
+	])
+
+
 @cache_page(60 * 5)
 def exhibitors(request):
 	data = []
 	
 	for exhibitor in Exhibitor.objects.filter(fair = Fair.objects.get(current = True)):
-		img_placeholder = request.GET.get('img_placeholder') == 'true'
-		
-		data.append(OrderedDict([
-			('id', exhibitor.pk),
-			('name', exhibitor.company.name),
-			('type', exhibitor.company.type.type),
-			('company_website', exhibitor.company.website),
-			('about', exhibitor.catalogue_about),
-			('purpose', exhibitor.catalogue_purpose),
-			('logo_squared', (exhibitor.catalogue_logo_squared.url) if exhibitor.catalogue_logo_squared else (MISSING_IMAGE if img_placeholder else None)),
-			('logo_freesize', (exhibitor.catalogue_logo_freesize.url) if exhibitor.catalogue_logo_freesize else (MISSING_IMAGE if img_placeholder else None)),
-			('contact_name', exhibitor.catalogue_contact_name),
-			('contact_email_address', exhibitor.catalogue_contact_email_address),
-			('contact_phone_number', exhibitor.catalogue_contact_phone_number),
-			('industries', [{'id': industry.pk, 'name': industry.industry} for industry in exhibitor.catalogue_industries.all()]),
-			('values', [{'id': value.pk, 'name': value.value} for value in exhibitor.catalogue_values.all()]),
-			('employments', [{'id': employment.pk, 'name': employment.employment} for employment in exhibitor.catalogue_employments.all()]),
-			('locations', [{'id': location.pk, 'name': location.location} for location in exhibitor.catalogue_locations.all()]),
-			('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
-			('average_age', exhibitor.catalogue_average_age),
-			('founded', exhibitor.catalogue_founded),
-			('groups', [{'id': group.pk, 'name': group.name} for group in exhibitor.company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
-			('fair_locations', [])
-		]))
+		data.append(serialize_exhibitor(exhibitor, request))
 	
 	return JsonResponse(data, safe = False)
 
