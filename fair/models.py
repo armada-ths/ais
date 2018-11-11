@@ -117,7 +117,7 @@ class LunchTicket(models.Model):
 	company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
 	user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
 	day = models.ForeignKey(FairDay, on_delete = models.CASCADE)
-	time = models.ForeignKey(LunchTicketTime, on_delete = models.CASCADE, blank = True, null = True)
+	time = models.ForeignKey(LunchTicketTime, on_delete = models.SET_NULL, blank = True, null = True)
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	
 	class Meta:
