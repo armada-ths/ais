@@ -9,6 +9,9 @@ from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth
 from fair.models import Fair, FairDay
 
 
+MISSING_IMAGE = '/static/missing.png'
+
+
 def serialize_exhibitor(exhibitor, request):
 	img_placeholder = request.GET.get('img_placeholder') == 'true'
 	
