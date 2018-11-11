@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import JssProvider from 'react-jss/lib/JssProvider';
 import {createGenerateClassName, withStyles} from '@material-ui/core/styles';
-import armadaTheme from '../theme';
+import armadaTheme from 'armada/theme';
 import ReactDOM from 'react-dom';
 import QrCodeIcon from 'mdi-material-ui/Qrcode';
 import ChecklistIcon from 'mdi-material-ui/FormatListCheckbox';

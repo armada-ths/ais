@@ -2,15 +2,12 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleTracker = require('webpack-bundle-tracker');
+const paths = require('./paths');
 
 const config = {
-  context: __dirname,
+  context: path.resolve(__dirname, '../../'),
 
-  entry: {
-    event_form: './events/static/js/event_form/index.js',
-    signup: './events/static/js/signup/index.js',
-    check_in: './events/static/js/check_in/index.js'
-  },
+  entry: paths.entry_points,
 
   output: {
     path: path.resolve('./ais_static/bundles/'),
@@ -37,7 +34,8 @@ const config = {
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx']
+    extensions: ['*', '.js', '.jsx'],
+    modules: ['node_modules', 'shared_js']
   }
 };
 

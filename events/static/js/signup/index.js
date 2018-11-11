@@ -3,7 +3,7 @@ import JssProvider from 'react-jss/lib/JssProvider';
 import ReactDOM from 'react-dom';
 import {createGenerateClassName, withStyles} from '@material-ui/core/styles';
 import CssBaseline from "@material-ui/core/CssBaseline/CssBaseline";
-import theme from '../theme';
+import theme from 'armada/theme';
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 import SignupForm from "./components/SignupForm";
 import Manage from './components/Manage';

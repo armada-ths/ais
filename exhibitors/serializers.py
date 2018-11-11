@@ -30,3 +30,15 @@ def exhibitor(request, exhibitor, company):
     }
 
     return data
+
+
+def lunch_ticket(lunch_ticket):
+    data = {
+        'id': lunch_ticket.pk,
+        'company': lunch_ticket.company.name,
+        'comment': lunch_ticket.comment,
+        'day': lunch_ticket.day.name if lunch_ticket.day else None,
+        'dietary_restrictions': [diet.name for diet in lunch_ticket.dietary_restrictions.all()]
+    }
+
+    return data
