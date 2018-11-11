@@ -35,7 +35,12 @@ def serialize_exhibitor(exhibitor, request):
 		('average_age', exhibitor.catalogue_average_age),
 		('founded', exhibitor.catalogue_founded),
 		('groups', [{'id': group.pk, 'name': group.name} for group in exhibitor.company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
-		('fair_locations', [])
+		('booths', [{
+			'id': eib.booth.pk,
+			'name': eib.booth.name,
+			'comment': eib.comment,
+			'days': [day.date for day in eib.days.all()]
+		} for eib in ExhibitorInBooth.objects.filter(exhibitor = exhibitor)])
 	])
 
 
