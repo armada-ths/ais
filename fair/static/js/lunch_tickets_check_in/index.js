@@ -18,7 +18,6 @@ class App extends Component {
   }
 
   render() {
-    const tickets = window.reactProps.lunch_tickets;
 
     return (
         <JssProvider generateClassName={generateClassName}>
@@ -26,13 +25,6 @@ class App extends Component {
             <CssBaseline/>
             <MuiThemeProvider theme={armadaTheme}>
               <Typography color="primary">Hello lunch!</Typography>
-              <ul>
-                {tickets.map(ticket => (
-                    <li key={ticket.id}>
-                      {ticket.company}
-                    </li>
-                ))}
-              </ul>
             </MuiThemeProvider>
           </Fragment>
         </JssProvider>
