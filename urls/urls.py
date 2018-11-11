@@ -1,8 +1,7 @@
 from django.conf.urls import include, url
-from django.contrib import admin
 
 urlpatterns = [
-    url(r'^', include('root.urls')),
+    url(r'^', include('fair.urls')),
     url(r'^events/', include('events.urls')),
     url(r'^people/', include('people.urls')),
     url(r'^locations/', include('locations.urls')),

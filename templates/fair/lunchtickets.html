@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Lunch tickets</h1>
+	{% if my_lunchtickets %}
+	
+	{% else %}
+		<p>You do not have any lunch tickets.</p>
+	{% endif %}
+	
+	{% if perms.fair.lunchtickets %}
+		<h1>Manage lunch tickets</h1>
+		
+		<div class="table-responsive">
+			<table class="table" id="lunchticket_table">
+				<thead>
+					<tr>
+						<th>Status</th>
+						<th>Type</th>
+						<th>Day</th>
+						<th>Time</th>
+						<th>Name</th>
+						<th>E-mail address</th>
+						<th>Comment</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					{% for lunchticket in lunchtickets %}
+						<tr>
+							{% if lunchticket.status %} <td class="bg-danger">Used</td>
+							{% else %}<td class="bg-success">Unused</td>{% endif %}
+							<td>
+								{% if lunchticket.user %} Student
+								{% else %} Company {% endif %}
+							</td>
+							<td style="white-space: nowrap;">{{ lunchticket.day }}</td>
+							<td style="white-space: nowrap;">{% if lunchticket.time %} {{ lunchticket.time }} {% endif %}</td>
+							<td style="white-space: nowrap;">
+								{% if lunchticket.user %}{{ lunchticket.user.get_full_name }}
+								{% else %} {{ lunchticket.company.name }} {% endif %}
+							</td>
+							<td>
+								{% if lunchticket.user %} <a href="mailto:{{ lunchticket.user.email }}">{{ lunchticket.user.email }}</a>
+								{% else %} <a href="mailto:{{ lunchticket.email_address }}">{{ lunchticket.email_address }}</a> {% endif %}
+							</td>
+							<td>{% if lunchticket.comment %} {{ lunchticket.comment }} {% endif %}
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+	<script>
+		$(function()
+		{
+			$('#lunchticket_table').DataTable({ 'paging': false });
+		})
+	</script>
+{% endblock %}

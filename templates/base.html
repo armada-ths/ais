@@ -14,7 +14,7 @@
 	<div role="navigation" class="navbar navbar-inverse">
 		<div class="container">
 			<div class="navbar-header">
-				<a href="{% url 'home' fair.year %}" class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px" /></a>
+				<a href="{% url 'fair:home' fair.year %}" class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px" /></a>
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
 						data-target="#navHeaderCollapse" aria-expanded="false">
 					<span class="sr-only">Toggle navigation</span>
@@ -41,6 +41,10 @@
 					
 					{% block nav-banquet %}
 						<li role="presentation"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+					{% endblock %}
+					
+					{% block nav-lunchtickets %}
+						<li role="presentation"><a href="{% url 'fair:lunchtickets' fair.year %}">Lunch tickets</a></li>
 					{% endblock %}
 					
 					{% if perms.exhibitors.base %}

@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from ais.common import settings
 from django.conf.urls.static import static
-from root.views import login_redirect
+from fair.views import login_redirect
 
 urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),

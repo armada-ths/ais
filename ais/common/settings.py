@@ -24,7 +24,6 @@ DEFAULT_TO_EMAIL = 'info@armada.nu'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
-    'root',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

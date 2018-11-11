@@ -106,6 +106,7 @@ class LunchTicketTime(models.Model):
 class LunchTicket(models.Model):
 	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
 	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string, unique = True)
+	used = models.BooleanField(default = False, blank = False, null = False)
 	email_address = models.EmailField(blank = True, null = True, max_length = 255, verbose_name = 'E-mail address')
 	comment = models.CharField(blank = True, null = True, max_length = 255)
 	company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
@@ -115,6 +116,7 @@ class LunchTicket(models.Model):
 	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	
 	class Meta:
+		permissions = [('lunchtickets', 'Manage lunch tickets')]
 		default_permissions = []
 		ordering = ['pk']
 
