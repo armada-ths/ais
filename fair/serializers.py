@@ -6,6 +6,7 @@ def lunch_ticket(lunch_ticket):
         'name': lunch_ticket.user.get_full_name() if lunch_ticket.user else None,
         'comment': lunch_ticket.comment,
         'day': lunch_ticket.day.date if lunch_ticket.day else None,
+        'used': lunch_ticket.used,
         'dietary_restrictions': [diet.name for diet in lunch_ticket.dietary_restrictions.all()]
     }
 
