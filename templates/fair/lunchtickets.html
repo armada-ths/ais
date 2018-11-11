@@ -17,8 +17,7 @@
 					<tr>
 						<th>Status</th>
 						<th>Type</th>
-						<th>Day</th>
-						<th>Time</th>
+						<th>Date and time</th>
 						<th>Name</th>
 						<th>E-mail address</th>
 						<th>Comment</th>
@@ -34,8 +33,10 @@
 								{% if lunchticket.user %} Student
 								{% else %} Company {% endif %}
 							</td>
-							<td style="white-space: nowrap;">{{ lunchticket.day }}</td>
-							<td style="white-space: nowrap;">{% if lunchticket.time %} {{ lunchticket.time }} {% endif %}</td>
+							<td style="white-space: nowrap;">
+								{% if lunchticket.time %} {{ lunchticket.time }}
+								{% else %} {{ lunchticket.day }} {% endif %}
+							</td>
 							<td style="white-space: nowrap;">
 								{% if lunchticket.user %}{{ lunchticket.user.get_full_name }}
 								{% else %} {{ lunchticket.company.name }} {% endif %}
