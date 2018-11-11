@@ -47,6 +47,7 @@ class App extends Component {
     const {classes} = this.props;
     const {navigationIndex} = this.state;
 
+
     return (
         <JssProvider generateClassName={generateClassName}>
           <Fragment>

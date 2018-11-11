@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookie from 'js-cookie';
 
 const client = axios.create({
-  baseURL: '/api',
+  baseURL: '/api/fair',
   withCredentials: true,
   headers: {
     "X-CSRFToken": Cookie.get('csrftoken')
@@ -10,21 +10,17 @@ const client = axios.create({
 });
 
 export const search = (query) => {
-  return client.get(`fair/lunchtickets/search?query=${query}`)
+  return client.get(`lunchtickets/search?query=${query}`)
 };
 
-/*
-
-export const checkIn = (eventId, participantId) => {
-  return client.post(`events/${eventId}/check_in/${participantId}`);
+export const checkIn = (ticketId) => {
+  return client.post(`lunchtickets/check_in/${ticketId}`);
 };
 
-export const checkOut = (eventId, participantId) => {
-  return client.post(`events/${eventId}/check_out/${participantId}`);
+export const checkOut = (ticketId) => {
+  return client.post(`lunchtickets/check_out/${ticketId}`);
 };
 
-export const getByCheckInToken = (eventId, checkInToken) => {
-  return client.post(`events/${eventId}/get_by_token/${checkInToken}`);
+export const getByToken = (token) => {
+  return client.post(`lunchtickets/get_by_token/${token}`);
 };
-
-*/
