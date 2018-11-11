@@ -105,7 +105,7 @@ class LunchTicketTime(models.Model):
 		default_permissions = []
 		ordering = ['day', 'name']
 	
-	def __str__(self): return str(self.day) + ' ' + self.fair.name
+	def __str__(self): return str(self.day) + ' ' + self.name
 
 
 class LunchTicket(models.Model):
