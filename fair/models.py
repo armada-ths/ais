@@ -3,6 +3,7 @@ from lib.image import UploadToDirUUID
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.crypto import get_random_string
 
 from people.models import DietaryRestriction
 
@@ -61,7 +62,7 @@ class FairDay(models.Model):
 		default_permissions = []
 		ordering = ['fair', 'date']
 	
-	def __str__(self): return str(self.date) + ' at ' + self.fair.name
+	def __str__(self): return str(self.date)
 
 
 class OrganizationGroup(models.Model):

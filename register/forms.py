@@ -252,8 +252,7 @@ class TransportForm(Form):
 class LunchTicketForm(ModelForm):
 	class Meta:
 		model = LunchTicket
-		#fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
-		fields = ['email_address', 'comment']
+		fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
 		
 		widgets = {
 			'day': forms.RadioSelect(),

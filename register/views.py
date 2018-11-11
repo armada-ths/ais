@@ -409,12 +409,12 @@ def lunchtickets(request, company_pk):
 	days = []
 	count_created = 0
 	
-	for day in LunchTicketDay.objects.filter(fair = fair):
+	for day in FairDay.objects.filter(fair = fair):
 		lunch_tickets = LunchTicket.objects.filter(company = exhibitor.company, day = day)
 		count_created += len(lunch_tickets)
 		
 		days.append({
-			'name': day.name,
+			'date': day.date,
 			'lunch_tickets': lunch_tickets
 		})
 	

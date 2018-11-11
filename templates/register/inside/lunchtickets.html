@@ -22,7 +22,7 @@
 	{% endif %}
 	
 	{% for day in days %}
-		<h3>{{ day.name }}</h3>
+		<h3>{{ day.date }}</h3>
 		
 		{% if day.lunch_tickets %}
 			{% for lunch_ticket in day.lunch_tickets %}
