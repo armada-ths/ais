@@ -79,7 +79,7 @@ def location(request, location_pk):
 				'comment': exhibitor_in_booth.comment,
 				'days': [{
 					'id': day.pk,
-					'name': day.name
+					'date': day.date
 				} for day in exhibitor_in_booth.days.all()],
 			} for exhibitor_in_booth in ExhibitorInBooth.objects.filter(booth = booth)]
 		})
@@ -108,7 +108,7 @@ def days(request):
 	for day in FairDay.objects.filter(fair__current = True):
 		data.append({
 			'id': day.pk,
-			'name': day.name
+			'date': day.date
 		})
 	
 	return JsonResponse(data, safe = False)
