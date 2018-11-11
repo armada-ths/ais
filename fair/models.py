@@ -7,6 +7,11 @@ from django.utils.crypto import get_random_string
 
 from people.models import DietaryRestriction
 
+def get_common_name(self):
+	return '%s %s' % (self.first_name, self.last_name) if self.first_name and self.last_name else self.username
+
+User.add_to_class("__str__", get_common_name)
+
 def current_fair():
 	try: return Fair.objects.get(current = True).id
 	except Exception: return None
