@@ -36,7 +36,14 @@ def serialize_exhibitor(exhibitor, request):
 		('founded', exhibitor.catalogue_founded),
 		('groups', [{'id': group.pk, 'name': group.name} for group in exhibitor.company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
 		('booths', [{
-			'id': eib.booth.pk,
+			'location': {
+				'parent': {
+					'id': eib.booth.location.parent.pk,
+					'name': eib.booth.location.parent.name
+				} if eib.booth.location.parent else None,
+				'id': eib.booth.location.pk,
+				'name': eib.booth.location.name,
+			},
 			'name': eib.booth.name,
 			'comment': eib.comment,
 			'days': [day.date for day in eib.days.all()]
