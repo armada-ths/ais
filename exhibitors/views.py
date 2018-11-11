@@ -7,13 +7,13 @@ from django.contrib.auth.decorators import permission_required
 from django.urls import reverse
 
 from companies.models import Company, CompanyContact, CompanyCustomerComment, CompanyCustomerResponsible
-from fair.models import Fair
+from fair.models import Fair, FairDay, LunchTicket
 from accounting.models import Product, Order
 from register.models import SignupLog
 from banquet.models import Banquet, Participant
 
 from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, ExhibitorSearchForm
-from .models import Exhibitor, ExhibitorView, LunchTicketDay, LunchTicket
+from .models import Exhibitor, ExhibitorView
 
 
 def possible_contact_persons(fair):

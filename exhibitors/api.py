@@ -5,8 +5,8 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 
-from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth, LunchTicketDay
-from fair.models import Fair
+from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth
+from fair.models import Fair, FairDay
 
 
 def serialize_exhibitor(exhibitor, request):
@@ -105,7 +105,7 @@ def location(request, location_pk):
 def days(request):
 	data = []
 	
-	for day in LunchTicketDay.objects.filter(fair__current = True):
+	for day in FairDay.objects.filter(fair__current = True):
 		data.append({
 			'id': day.pk,
 			'name': day.name

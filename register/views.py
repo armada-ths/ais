@@ -13,8 +13,8 @@ from django.template.loader import get_template
 from django.forms.models import inlineformset_factory, HiddenInput
 
 from companies.models import Company, CompanyContact
-from exhibitors.models import Exhibitor, LunchTicket, LunchTicketDay
-from fair.models import Fair
+from exhibitors.models import Exhibitor
+from fair.models import Fair, FairDay, LunchTicket
 from companies.forms import CompanyForm, CompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
 from accounting.models import Product, Order, RegistrationSection
 from banquet.models import Participant as BanquetParticipant

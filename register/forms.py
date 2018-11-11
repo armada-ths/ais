@@ -8,9 +8,9 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.models import User
 
 from companies.models import Group, Company
-from exhibitors.models import Exhibitor, LunchTicket
+from exhibitors.models import Exhibitor
 from banquet.models import Participant as BanquetParticipant
-from fair.models import Fair
+from fair.models import Fair, LunchTicket
 
 
 def fix_phone_number(n):
@@ -252,7 +252,8 @@ class TransportForm(Form):
 class LunchTicketForm(ModelForm):
 	class Meta:
 		model = LunchTicket
-		fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
+		#fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
+		fields = ['email_address', 'comment']
 		
 		widgets = {
 			'day': forms.RadioSelect(),

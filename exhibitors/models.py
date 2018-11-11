@@ -7,8 +7,12 @@ from django.utils.crypto import get_random_string
 from accounting.models import Order
 from banquet.models import Banquet, Participant
 from recruitment.models import RecruitmentApplication
-from fair.models import Fair
+from fair.models import Fair, FairDay
 from people.models import DietaryRestriction
+
+
+def get_random_32_length_string():
+    return get_random_string(32)
 
 
 class CatalogueIndustry(models.Model):
@@ -150,57 +154,6 @@ class Exhibitor(models.Model):
 		]
 
 
-class LunchTicketDay(models.Model):
-	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
-	name = models.CharField(blank = False, null = False, max_length = 255)
-	
-	class Meta:
-		default_permissions = []
-		ordering = ['fair', 'name']
-	
-	def __str__(self): return self.name + ' at ' + self.fair.name
-
-
-class LunchTicketTime(models.Model):
-	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
-	name = models.CharField(blank = False, null = False, max_length = 255)
-	
-	class Meta:
-		default_permissions = []
-		ordering = ['fair', 'name']
-	
-	def __str__(self): return self.name + ' at ' + self.fair.name
-
-
-def get_random_32_length_string():
-    return get_random_string(32)
-
-
-class LunchTicket(models.Model):
-	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
-	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string, unique = True)
-	email_address = models.EmailField(blank = True, null = True, max_length = 255, verbose_name = 'E-mail address')
-	comment = models.CharField(blank = True, null = True, max_length = 255)
-	company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
-	user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
-	day = models.ForeignKey(LunchTicketDay, on_delete = models.CASCADE)
-	time = models.ForeignKey(LunchTicketTime, on_delete = models.CASCADE, blank = True, null = True)
-	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
-	
-	class Meta:
-		default_permissions = []
-		ordering = ['pk']
-
-
-class LunchTicketScan(models.Model):
-	lunch_ticket = models.ForeignKey(LunchTicket, on_delete = models.CASCADE)
-	user = models.ForeignKey(User, on_delete = models.CASCADE)
-	timestamp = models.DateTimeField(auto_now_add = True, blank = False, null = False)
-	
-	class Meta:
-		default_permissions = []
-
-
 class ExhibitorView(models.Model):
 	'''
 	A special model that houses information which fields a certain user wants to see in /fairs/%YEAR/exhibitors view
@@ -262,7 +215,7 @@ class Booth(models.Model):
 class ExhibitorInBooth(models.Model):
 	exhibitor = models.ForeignKey(Exhibitor, on_delete = models.CASCADE)
 	booth = models.ForeignKey(Booth, on_delete = models.CASCADE)
-	days = models.ManyToManyField(LunchTicketDay)
+	days = models.ManyToManyField(FairDay)
 	comment = models.CharField(max_length = 255, null = True, blank = True)
 	
 	class Meta:
