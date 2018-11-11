@@ -103,15 +103,15 @@ class LunchTicketTime(models.Model):
 
 
 class LunchTicket(models.Model):
-	#fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
 	token = models.CharField(max_length = 255, null = False, blank = False, default = get_random_32_length_string, unique = True)
 	email_address = models.EmailField(blank = True, null = True, max_length = 255, verbose_name = 'E-mail address')
 	comment = models.CharField(blank = True, null = True, max_length = 255)
-	#company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
-	#user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
-	#day = models.ForeignKey(FairDay, on_delete = models.CASCADE)
-	#time = models.ForeignKey(LunchTicketTime, on_delete = models.CASCADE, blank = True, null = True)
-	#dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
+	company = models.ForeignKey('companies.Company', on_delete = models.CASCADE, blank = True, null = True)
+	user = models.ForeignKey(User, on_delete = models.CASCADE, blank = True, null = True)
+	day = models.ForeignKey(FairDay, on_delete = models.CASCADE)
+	time = models.ForeignKey(LunchTicketTime, on_delete = models.CASCADE, blank = True, null = True)
+	dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank = True)
 	
 	class Meta:
 		default_permissions = []
@@ -119,8 +119,8 @@ class LunchTicket(models.Model):
 
 
 class LunchTicketScan(models.Model):
-	#lunch_ticket = models.ForeignKey(LunchTicket, on_delete = models.CASCADE)
-	#user = models.ForeignKey(User, on_delete = models.CASCADE)
+	lunch_ticket = models.ForeignKey(LunchTicket, on_delete = models.CASCADE)
+	user = models.ForeignKey(User, on_delete = models.CASCADE)
 	timestamp = models.DateTimeField(auto_now_add = True, blank = False, null = False)
 	
 	class Meta:

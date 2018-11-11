@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('exhibitors', '0049_auto_20181111_1246'),
+        ('fair', '0005_fairday_lunchticket_lunchticketscan_lunchtickettime'),
     ]
 
     operations = [
