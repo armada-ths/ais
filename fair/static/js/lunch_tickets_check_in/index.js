@@ -7,7 +7,10 @@ import QrCodeIcon from 'mdi-material-ui/Qrcode';
 import ChecklistIcon from 'mdi-material-ui/FormatListCheckbox';
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 import armadaTheme from 'armada/theme';
+import {createErrorMessage, createSuccessMessage, createWarningMessage} from 'armada/Notification/util';
 import List from './TicketList';
+import * as API from './api';
+import QRScanner from 'armada/QRScanner';
 import Grid from "@material-ui/core/Grid/Grid";
 import BottomNavigation from "@material-ui/core/BottomNavigation/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction/BottomNavigationAction";
@@ -33,14 +36,32 @@ class App extends Component {
     super(props);
 
     this.state = {
-      navigationIndex: 1
+      navigationIndex: 0
     };
 
     this.handleNavigation = this.handleNavigation.bind(this);
+    this.handleToken = this.handleToken.bind(this);
   }
 
   handleNavigation(event, value) {
     this.setState({navigationIndex: value})
+  }
+
+  handleToken(data) {
+    console.log(data);
+
+    return API.getByToken(data)
+        .then(response => {
+          console.log(response);
+          return createSuccessMessage(`This worked! ${data}`);
+        })
+        .catch(reason => {
+          if (reason.response.status === 403) {
+            return createWarningMessage(reason.response.data.message);
+          } else {
+            return createErrorMessage(reason.response.data.message);
+          }
+        });
   }
 
   render() {
@@ -54,6 +75,9 @@ class App extends Component {
             <CssBaseline/>
             <MuiThemeProvider theme={armadaTheme}>
               <Grid container direction="column" wrap="nowrap" className={classes.root}>
+                {navigationIndex === 0 && (
+                    <QRScanner handleData={this.handleToken}/>
+                )}
                 {navigationIndex === 1 && (
                     <List/>
                 )}

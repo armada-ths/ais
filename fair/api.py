@@ -79,16 +79,24 @@ def lunchticket_check_out(request, lunch_ticket_pk):
     return HttpResponse(status=204)
 
 
-@require_POST
+@require_GET
 @permission_required('fair.lunchtickets')
-def lunchticket_get_by_token(request, token):
+def lunchticket_get_by_token(request):
     """
     Get a lunch ticket by the check in token
     """
 
+    token = request.GET.get('token')
+
+    if token is None:
+        return JsonResponse({'message': 'No token.'}, status=400)
+
     lunch_ticket = LunchTicket.objects.filter(token=token).first()
 
     if lunch_ticket is None:
-        return JsonResponse({'message': 'No lunch ticket with that token.'}, status=404)
+        return JsonResponse({'message': 'Found no lunch ticket matching that code.'}, status=404)
+
+    if lunch_ticket.used is True:
+        return JsonResponse({'message': 'Lunch ticket has already been used.'}, status=403)
 
     return JsonResponse({'lunch_ticket': serializers.lunch_ticket(lunch_ticket)})
