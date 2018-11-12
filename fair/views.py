@@ -6,8 +6,10 @@ from django.urls import reverse
 from companies.models import CompanyContact
 from events.models import Event
 from recruitment.models import RecruitmentPeriod, Role
+from people.models import DietaryRestriction
 
-from .models import Fair, LunchTicket
+from .forms import LunchTicketSearchForm
+from .models import Fair, FairDay, LunchTicket
 
 
 def login_redirect(request):
@@ -56,10 +58,78 @@ def index(request, year = None):
 def lunchtickets(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
-	lunchtickets = LunchTicket.objects.select_related('user').select_related('company').select_related('day').select_related('time').filter(fair = fair)
+	form = LunchTicketSearchForm(request.POST or None)
+	
+	form.fields['days'].queryset = FairDay.objects.filter(fair = fair)
+	
+	if request.POST and form.is_valid():
+		lunchtickets = LunchTicket.objects.select_related('user').select_related('company').select_related('day').select_related('time').prefetch_related('dietary_restrictions').filter(fair = fair)
+		lunchtickets_filtered = []
+		
+		for lunchticket in lunchtickets:
+			if len(form.cleaned_data['statuses']) > 0:
+				found = False
+				
+				for s in form.cleaned_data['statuses']:
+					if s == 'USED' and lunchticket.used:
+						found = True
+						break
+					
+					if s == 'NOT_USED' and not lunchticket.used:
+						found = True
+						break
+				
+				if not found: continue
+			
+			if len(form.cleaned_data['types']) > 0:
+				found = False
+				
+				for t in form.cleaned_data['types']:
+					if t == 'STUDENT' and lunchticket.company is None:
+						found = True
+						break
+					
+					if t == 'COMPANY' and lunchticket.company is not None:
+						found = True
+						break
+				
+				if not found: continue
+			
+			if len(form.cleaned_data['days']) > 0:
+				found = False
+				
+				for d in form.cleaned_data['days']:
+					if lunchticket.day == d:
+						found = True
+						break
+				
+				if not found: continue
+			
+			lunchtickets_filtered.append({
+				't': lunchticket,
+				'drl': []
+			})
+		
+		dietary_restrictions_all = {}
+		
+		if form.cleaned_data['include_dietary_restrictions']:
+			for lunchticket in lunchtickets_filtered:
+				for dietary_restriction in lunchticket['t'].dietary_restrictions.all():
+					if dietary_restriction in dietary_restrictions_all: dietary_restrictions_all[dietary_restriction] += 1
+					else: dietary_restrictions_all[dietary_restriction] = 1
+			
+			for lunchticket in lunchtickets_filtered:
+				lunchticket['drl'] = [True if dietary_restriction in lunchticket['t'].dietary_restrictions.all() else False for dietary_restriction in dietary_restrictions_all]
+	
+	else:
+		lunchtickets_filtered = []
+		dietary_restrictions_all = {}
 	
 	return render(request, 'fair/lunchtickets.html', {
 		'fair': fair,
 		'my_lunchtickets': LunchTicket.objects.filter(fair = fair, user = request.user),
-		'lunchtickets': lunchtickets
+		'form': form,
+		'has_searched': request.POST and form.is_valid(),
+		'lunchtickets': lunchtickets_filtered,
+		'dietary_restrictions': [{'name': x, 'count': dietary_restrictions_all[x]} for x in dietary_restrictions_all]
 	})

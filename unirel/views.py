@@ -37,7 +37,7 @@ def admin(request, year):
 def admin_dietary_restrictions(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
-	participants_all = Participant.objects.filter(fair = fair)
+	participants_all = Participant.objects.prefetch_related('dietary_restrictions').filter(fair = fair)
 	
 	form = DietaryRestrictionsTableForm(request.POST or None)
 	
