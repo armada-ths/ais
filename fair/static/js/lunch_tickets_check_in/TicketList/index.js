@@ -9,6 +9,8 @@ import TableCell from "@material-ui/core/TableCell/TableCell";
 import TableBody from "@material-ui/core/TableBody/TableBody";
 import withStyles from "@material-ui/core/es/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox/Checkbox";
+import CircularProgress from "@material-ui/core/es/CircularProgress/CircularProgress";
+import sortBy from 'lodash/sortBy';
 
 const styles = theme => ({
   root: {
@@ -23,12 +25,15 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 2,
     width: '100%',
   },
-  list: {
-    overflow: 'scroll'
+  loading: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
   },
-  listItem: {
-    paddingTop: 13,
-    paddingBottom: 13
+  table: {
+    overflow: 'scroll'
   },
   nowrap: {
     whiteSpace: 'nowrap'
@@ -41,7 +46,8 @@ class TicketList extends Component {
 
     this.state = {
       searchQuery: '',
-      tickets: []
+      tickets: [],
+      loading: false
     };
 
     this.timeoutId = null;
@@ -69,9 +75,15 @@ class TicketList extends Component {
     const {searchQuery} = this.state;
 
     if (searchQuery.trim() !== '') {
+      this.setState({loading: true});
+
       API.search(searchQuery)
           .then(response => {
-            this.setState({tickets: response.data.result})
+            const sortedTickets = sortBy(response.data.result, 'date');
+            this.setState({
+              tickets: sortedTickets,
+              loading: false
+            })
           });
     }
 
@@ -79,7 +91,7 @@ class TicketList extends Component {
 
   render() {
     const {classes} = this.props;
-    const {searchQuery, tickets} = this.state;
+    const {searchQuery, tickets, loading} = this.state;
 
     return (
         <Grid container direction="column" wrap="nowrap" className={classes.root}>
@@ -92,36 +104,41 @@ class TicketList extends Component {
                 fullWidth
             />
           </Grid>
-          <Grid item className={classes.list}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Day</TableCell>
-                  <TableCell>Comment</TableCell>
-                  <TableCell>Used</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tickets.map(ticket => (
-                    <TableRow key={ticket.id}>
-                      <TableCell className={classes.nowrap}>{ticket.name}</TableCell>
-                      <TableCell>{ticket.email_address}</TableCell>
-                      <TableCell className={classes.nowrap}>{ticket.date}</TableCell>
-                      <TableCell>{ticket.comment}</TableCell>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                            color="primary"
-                            checked={ticket.used}
-                        />
-                      </TableCell>
+          {loading ? (
+              <div className={classes.loading}>
+                <CircularProgress/>
+              </div>
+          ) : (
+              <Grid item className={classes.table}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Email</TableCell>
+                      <TableCell>Day</TableCell>
+                      <TableCell>Comment</TableCell>
+                      <TableCell>Used</TableCell>
                     </TableRow>
-                ))}
-
-              </TableBody>
-            </Table>
-          </Grid>
+                  </TableHead>
+                  <TableBody>
+                    {tickets.map(ticket => (
+                        <TableRow hover key={ticket.id}>
+                          <TableCell className={classes.nowrap}>{ticket.name}</TableCell>
+                          <TableCell>{ticket.email_address}</TableCell>
+                          <TableCell className={classes.nowrap}>{ticket.date}</TableCell>
+                          <TableCell>{ticket.comment}</TableCell>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                                color="primary"
+                                checked={ticket.used}
+                            />
+                          </TableCell>
+                        </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Grid>
+          )}
         </Grid>
     )
   }
