@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-lunchtickets %}
+	<li role="presentation" class="active"><a href="{% url 'fair:lunchtickets' fair.year %}">Lunch tickets</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>Lunch ticket</h1>
+	<ul class="list-unstyled">
+		<li><span style="font-weight: bold;">Status:</span> {% if lunch_ticket.used %} <span class="text-danger">Used</span> {% else %} <span class="text-success">Not used</span> {% endif %}</li>
+		<li><span style="font-weight: bold;">Date:</span> {% if lunch_ticket.time %} {{ lunch_ticket.time }} {% else %} {{ lunch_ticket.day }} {% endif %}</li>
+		<li><span style="font-weight: bold;">Token:</span> {{ lunch_ticket.token }}</li>
+		<li><span style="font-weight: bold;">Dietary restrictions:</span> {% if lunch_ticket.dietary_restrictions.all %} {{ lunch_ticket.dietary_restrictions.all | join:', ' }} {% else %} None {% endif %}</li>
+	</ul>
+	
+	{% if perms.fair.lunchtickets %}
+		<a href="{% url 'fair:lunchticket_remove' fair.year lunch_ticket.token %}" class="btn btn-danger pull-right" onclick="return confirm('Confirm the removal.');">Delete lunch ticket</a>
+		<h2>Manage lunch ticket</h2>
+		
+		<form method="post">
+			{% csrf_token %}
+			{{ form | crispy }}
+			<input type="submit" class="btn btn-primary" value="Save changes" />
+		</form>
+	{% endif %}
+{% endblock %}

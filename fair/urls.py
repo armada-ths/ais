@@ -6,5 +6,7 @@ app_name = 'fair'
 
 urlpatterns = [
 	url(r'^$', views.index, name = 'home'),
-	url(r'^lunchtickets$', views.lunchtickets, name = 'lunchtickets')
+	url(r'^lunchtickets$', views.lunchtickets, name = 'lunchtickets'),
+	url(r'^lunchtickets/(?P<token>[A-Za-z0-9]+)$', views.lunchticket, name = 'lunchticket'),
+	url(r'^lunchtickets/(?P<token>[A-Za-z0-9]+)/remove$', views.lunchticket_remove, name = 'lunchticket_remove')
 ]

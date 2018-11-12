@@ -2,13 +2,14 @@ from django.db.models import Count
 from django.forms import modelform_factory
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.contrib.auth.decorators import permission_required
 
 from companies.models import CompanyContact
 from events.models import Event
 from recruitment.models import RecruitmentPeriod, Role
 from people.models import DietaryRestriction
 
-from .forms import LunchTicketSearchForm
+from .forms import LunchTicketForm, LunchTicketSearchForm
 from .models import Fair, FairDay, LunchTicket
 
 
@@ -133,3 +134,34 @@ def lunchtickets(request, year):
 		'lunchtickets': lunchtickets_filtered,
 		'dietary_restrictions': [{'name': x, 'count': dietary_restrictions_all[x]} for x in dietary_restrictions_all]
 	})
+
+
+def lunchticket(request, year, token):
+	fair = get_object_or_404(Fair, year = year)
+	lunch_ticket = get_object_or_404(LunchTicket, fair = fair, token = token)
+	
+	if request.user != lunch_ticket.user and not request.user.has_perm('fair.lunchtickets'): return HttpResponseForbidden()
+	
+	if request.user.has_perm('fair.lunchtickets'):
+		form = LunchTicketForm(request.POST or None, instance = lunch_ticket)
+		
+		if request.POST and form.is_valid(): form.save()
+	
+	else:
+		form = None
+	
+	return render(request, 'fair/lunchticket.html', {
+		'fair': fair,
+		'lunch_ticket': lunch_ticket,
+		'form': form
+	})
+
+
+@permission_required('fair.lunchtickets')
+def lunchticket_remove(request, year, token):
+	fair = get_object_or_404(Fair, year = year)
+	lunch_ticket = get_object_or_404(LunchTicket, fair = fair, token = token)
+	
+	lunch_ticket.delete()
+	
+	return redirect('fair:lunchtickets', fair.year)

@@ -9,13 +9,41 @@
 {% block content %}
 	<h1>Lunch tickets</h1>
 	{% if my_lunchtickets %}
-	
+		<p>Click on a lunch ticket to open it.</p>
+		
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Status</th>
+					<th>Date</th>
+					<th>Dietary restrictions</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				{% for my_lunchticket in my_lunchtickets %}
+					<tr>
+						{% if my_lunchticket.status %} <td class="bg-danger">Used</td>
+						{% else %}<td class="bg-success" style="white-space: nowrap;">Not used</td>{% endif %}
+						<td>
+							<a href="{% url 'fair:lunchticket' fair.year my_lunchticket.token %}">
+								{% if my_lunchticket.time %} {{ my_lunchticket.time }}
+								{% else %} {{ my_lunchticket.day }} {% endif %}
+							</a>
+						</td>
+						<td>
+							{% if my_lunchticket.dietary_restrictions.all %} {{ my_lunchticket.dietary_restrictions.all | join:', ' }} {% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	{% else %}
 		<p>You do not have any lunch tickets.</p>
 	{% endif %}
 	
 	{% if perms.fair.lunchtickets %}
-		<h1>Manage lunch tickets{% if has_searched %} ({{ lunchtickets | length }}){% endif %}</h1>
+		<h2>Manage lunch tickets{% if has_searched %} ({{ lunchtickets | length }}){% endif %}</h2>
 		
 			<style type="text/css">
 				.form_no_ul ul
@@ -86,8 +114,10 @@
 									{% else %} Company {% endif %}
 								</td>
 								<td style="white-space: nowrap;">
-									{% if l.t.time %} {{ l.t.time }}
-									{% else %} {{ l.t.day }} {% endif %}
+									<a href="{% url 'fair:lunchticket' fair.year l.t.token %}">
+										{% if l.t.time %} {{ l.t.time }}
+										{% else %} {{ l.t.day }} {% endif %}
+									</a>
 								</td>
 								<td style="white-space: nowrap;">
 									{% if l.t.user %} <a href="{% url 'people:profile' fair.year l.t.user.pk %}">{{ l.t.user.get_full_name }}</a>
