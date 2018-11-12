@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
@@ -17,12 +20,19 @@ def lunchtickets_search(request):
     fair = Fair.objects.get(current=True)
     search_query = request.GET.get('query', '')
 
+    if search_query == '':
+        return JsonResponse({'message': 'Query is empty.'}, status=400)
+
+    names = search_query.split()
+    print(names)
+
+    name_query = reduce(operator.__or__, [Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) for query in names])
+
     lunch_tickets = LunchTicket.objects.filter(
         Q(fair=fair) &
         Q(company__name__icontains=search_query) |
         Q(email_address__icontains=search_query) |
-        Q(user__first_name__icontains=search_query) |
-        Q(user__last_name__icontains=search_query)
+        name_query
     ).all()
 
     data = {

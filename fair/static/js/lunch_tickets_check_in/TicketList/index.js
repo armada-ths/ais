@@ -13,13 +13,14 @@ import Checkbox from "@material-ui/core/Checkbox/Checkbox";
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    maxWidth: 900,
     margin: '0 auto',
+    paddingLeft: theme.spacing.unit * 2,
+    paddingRight: theme.spacing.unit * 2,
     height: 0 // Why this works, I do not know
   },
   search: {
     height: 50,
-    padding: theme.spacing.unit * 2,
+    paddingTop: theme.spacing.unit * 2,
     width: '100%',
   },
   list: {
@@ -95,7 +96,7 @@ class TicketList extends Component {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Company</TableCell>
+                  <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Day</TableCell>
                   <TableCell>Comment</TableCell>
@@ -105,11 +106,11 @@ class TicketList extends Component {
               <TableBody>
                 {tickets.map(ticket => (
                     <TableRow key={ticket.id}>
-                      <TableCell className={classes.nowrap}>{ticket.company}</TableCell>
+                      <TableCell className={classes.nowrap}>{ticket.name}</TableCell>
                       <TableCell>{ticket.email_address}</TableCell>
-                      <TableCell className={classes.nowrap}>{ticket.day}</TableCell>
+                      <TableCell className={classes.nowrap}>{ticket.date}</TableCell>
                       <TableCell>{ticket.comment}</TableCell>
-                      <TableCell>
+                      <TableCell padding="checkbox">
                         <Checkbox
                             color="primary"
                             checked={ticket.used}
