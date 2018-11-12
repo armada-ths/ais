@@ -37,7 +37,11 @@ class LunchTicketForm(forms.ModelForm):
 	
 	class Meta:
 		model = LunchTicket
-		fields = ['company', 'user', 'email_address', 'comment', 'day', 'time', 'dietary_restrictions']
+		fields = ['used', 'company', 'user', 'email_address', 'comment', 'day', 'time', 'dietary_restrictions']
+		
+		labels = {
+			'used': 'The ticket has been used'
+		}
 		
 		widgets = {
 			'day': forms.RadioSelect(),

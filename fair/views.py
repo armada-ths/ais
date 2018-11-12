@@ -6,11 +6,12 @@ from django.contrib.auth.decorators import permission_required
 
 from companies.models import CompanyContact
 from events.models import Event
-from recruitment.models import RecruitmentPeriod, Role
+from recruitment.models import RecruitmentApplication, RecruitmentPeriod, Role
 from people.models import DietaryRestriction
+from exhibitors.models import Exhibitor
 
 from .forms import LunchTicketForm, LunchTicketSearchForm
-from .models import Fair, FairDay, LunchTicket
+from .models import Fair, FairDay, LunchTicket, OrganizationGroup
 
 
 def login_redirect(request):
@@ -165,3 +166,30 @@ def lunchticket_remove(request, year, token):
 	lunch_ticket.delete()
 	
 	return redirect('fair:lunchtickets', fair.year)
+
+
+@permission_required('fair.lunchtickets')
+def lunchticket_create(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	form = LunchTicketForm(request.POST or None, initial = {'fair': fair})
+	
+	form.fields['company'].choices = [('', '---------')] + [(exhibitor.company.pk, exhibitor.company.name) for exhibitor in Exhibitor.objects.select_related('company').filter(fair = fair).order_by('company')]
+	
+	users = []
+	
+	for organization_group in OrganizationGroup.objects.filter(fair = fair):
+		this_users_flat = [application.user for application in RecruitmentApplication.objects.select_related('user').filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
+		users.append([organization_group.name, [(user.pk, user.get_full_name()) for user in this_users_flat]])
+	
+	form.fields['user'].choices = [('', '---------')] + users
+	
+	if request.POST and form.is_valid():
+		form.instance.fair = fair
+		lunch_ticket = form.save()
+		return redirect('fair:lunchticket', fair.year, lunch_ticket.token)
+	
+	return render(request, 'fair/lunchticket_create.html', {
+		'fair': fair,
+		'form': form
+	})
