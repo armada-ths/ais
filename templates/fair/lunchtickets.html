@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% load crispy_forms_tags %}
+
+{% block nav-lunchtickets %}
+	<li role="presentation" class="active"><a href="{% url 'fair:lunchtickets' fair.year %}">Lunch tickets</a></li>
+{% endblock %}
+
 {% block content %}
 	<h1>Lunch tickets</h1>
 	{% if my_lunchtickets %}
