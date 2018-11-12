@@ -1,18 +1,19 @@
 import React, {Component} from 'react';
-import withStyles from "@material-ui/core/es/styles/withStyles";
 import TextField from "@material-ui/core/TextField/TextField";
 import Grid from "@material-ui/core/Grid/Grid";
 import * as API from '../api';
-import ListItem from "@material-ui/core/ListItem/ListItem";
-import ListItemText from "@material-ui/core/ListItemText/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction/ListItemSecondaryAction";
+import Table from "@material-ui/core/Table/Table";
+import TableHead from "@material-ui/core/TableHead/TableHead";
+import TableRow from "@material-ui/core/TableRow/TableRow";
+import TableCell from "@material-ui/core/TableCell/TableCell";
+import TableBody from "@material-ui/core/TableBody/TableBody";
+import withStyles from "@material-ui/core/es/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox/Checkbox";
-import List from "@material-ui/core/List/List";
 
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    maxWidth: 500,
+    maxWidth: 900,
     margin: '0 auto',
     height: 0 // Why this works, I do not know
   },
@@ -28,6 +29,9 @@ const styles = theme => ({
     paddingTop: 13,
     paddingBottom: 13
   },
+  nowrap: {
+    whiteSpace: 'nowrap'
+  }
 });
 
 class TicketList extends Component {
@@ -88,19 +92,34 @@ class TicketList extends Component {
             />
           </Grid>
           <Grid item className={classes.list}>
-            <List>
-              {tickets.map(ticket => (
-                  <ListItem className={classes.listItem} key={ticket.id}>
-                    <ListItemText primary={ticket.company} secondary={ticket.email_address}/>
-                    <ListItemSecondaryAction>
-                      <Checkbox
-                          color="primary"
-                          checked={ticket.used}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-              ))}
-            </List>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Company</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Day</TableCell>
+                  <TableCell>Comment</TableCell>
+                  <TableCell>Used</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tickets.map(ticket => (
+                    <TableRow key={ticket.id}>
+                      <TableCell className={classes.nowrap}>{ticket.company}</TableCell>
+                      <TableCell>{ticket.email_address}</TableCell>
+                      <TableCell className={classes.nowrap}>{ticket.day}</TableCell>
+                      <TableCell>{ticket.comment}</TableCell>
+                      <TableCell>
+                        <Checkbox
+                            color="primary"
+                            checked={ticket.used}
+                        />
+                      </TableCell>
+                    </TableRow>
+                ))}
+
+              </TableBody>
+            </Table>
           </Grid>
         </Grid>
     )
