@@ -9,7 +9,7 @@
 	{% endif %}
 	
 	{% if perms.fair.lunchtickets %}
-		<h1>Manage lunch tickets</h1>
+		<h1>Manage lunch tickets{% if has_searched %} ({{ lunchtickets | length }}){% endif %}</h1>
 		
 			<style type="text/css">
 				.form_no_ul ul
