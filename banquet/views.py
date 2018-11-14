@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import permission_required
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+from django.core.mail import send_mail
 from django.views.generic import CreateView, ListView, TemplateView, RedirectView, UpdateView
 
 from fair.models import Fair
@@ -18,8 +19,8 @@ from people.models import Language, Profile
 from accounting.models import Order
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 
-from .models import Banquet, Participant, InvitationGroup, Invitation
-from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, ParticipantForm
+from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket
+from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, ParticipantForm, AfterPartyTicketForm
 
 
 #External Invite
@@ -494,7 +495,7 @@ def invitation(request, year, token):
 				charge = stripe.Charge.create(
 					amount = invitation.price * 100, # Stripe wants the price in ören
 					currency = 'SEK',
-					description = 'Banquet invitation token ' + invitation.token,
+					description = 'Banquet invitation token ' + str(invitation.token),
 					source = request.POST['stripeToken']
 				)
 			
@@ -642,6 +643,52 @@ def external_invitation_maybe(request, token):
 	invitation.save()
 	
 	return redirect('banquet_external_invitation', invitation.token)
+
+
+def external_banquet_afterparty(request, token = None):
+	fair = get_object_or_404(Fair, current = True)
+	ticket = get_object_or_404(AfterPartyTicket, token = token) if token is not None else None
+	
+	amount = 75
+	form = None
+	
+	if ticket is None:
+		form = AfterPartyTicketForm(request.POST or None)
+	
+		if request.POST and form.is_valid():
+			ticket = form.save()
+			return redirect('banquet_external_afterparty_token', ticket.token)
+	
+	elif request.POST and ticket.paid_price is None:
+		stripe.api_key = settings.STRIPE_SECRET
+		
+		charge = stripe.Charge.create(
+			amount = amount * 100, # Stripe wants the price in ören
+			currency = 'SEK',
+			description = 'After party ticket ' + str(ticket.token),
+			source = request.POST['stripeToken']
+		)
+		
+		ticket.paid_timestamp = datetime.datetime.now()
+		ticket.paid_price = amount
+		ticket.save()
+		
+		send_mail(
+			'Your ticket for the After Party',
+			'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(ticket.token) + '\n\nTime and date: November 20, 22:00\nLocation: Münchenbryggeriet\n\nWelcome!',
+			'info@armada.nu',
+			[ticket.email_address],
+			fail_silently = True,
+		)
+	
+	return render(request, 'banquet/afterparty.html', {
+		'fair': fair,
+		'form': form,
+		'stripe_publishable': settings.STRIPE_PUBLISHABLE,
+		'stripe_amount': amount * 100,
+		'amount': amount,
+		'ticket': ticket
+	})
 
 
 class ParticipantsListView(GeneralMixin, ListView):

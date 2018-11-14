@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 import re
 
-from .models import Participant, InvitationGroup, Invitation
+from .models import Participant, InvitationGroup, Invitation, AfterPartyTicket
 
 
 def fix_phone_number(n):
@@ -129,6 +129,16 @@ class InvitationSearchForm(forms.Form):
 	
 	statuses = forms.MultipleChoiceField(choices = status_choices, widget = forms.CheckboxSelectMultiple(), required = False)
 	groups = forms.ModelMultipleChoiceField(queryset = InvitationGroup.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only invitations belonging to any of these groups', required = False)
+
+
+class AfterPartyTicketForm(forms.ModelForm):
+	class Meta:
+		model = AfterPartyTicket
+		fields = ['name', 'email_address']
+		
+		labels = {
+			'name': 'Your full name'
+		}
 
 
 class InternalParticipantForm(forms.ModelForm):
