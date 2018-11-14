@@ -174,8 +174,6 @@ def lunchticket_create(request, year):
 	
 	form = LunchTicketForm(request.POST or None, initial = {'fair': fair})
 	
-	form.fields['company'].choices = [('', '---------')] + [(exhibitor.company.pk, exhibitor.company.name) for exhibitor in Exhibitor.objects.select_related('company').filter(fair = fair).order_by('company')]
-	
 	users = []
 	
 	for organization_group in OrganizationGroup.objects.filter(fair = fair):
