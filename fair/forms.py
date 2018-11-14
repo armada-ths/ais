@@ -29,6 +29,10 @@ class LunchTicketForm(forms.ModelForm):
 			self.add_error('email_address', 'You cannot specify an e-mail address if you specify a user.')
 			valid = False
 		
+		if user is None and email_address is None:
+			self.add_error('email_address', 'You must specify an e-mail if you don\'t specify a user.')
+			valid = False
+		
 		if time is not None and time.day != day:
 			self.add_error('time', 'The time needs to be on the same day as the ticket.')
 			valid = False
