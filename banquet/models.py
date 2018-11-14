@@ -106,6 +106,7 @@ class AfterPartyTicket(models.Model):
 	token = models.CharField(max_length = 255, null = False, blank = False, default = uuid.uuid4, unique = True)
 	name = models.CharField(max_length = 75, blank = True, null = True)
 	email_address = models.EmailField(max_length = 75, blank = True, null = True, verbose_name = 'E-mail address')
+	charge_stripe = models.CharField(max_length = 255, blank = True, null = True)
 	paid_timestamp = models.DateTimeField(null = True, blank = True)
 	paid_price = models.PositiveIntegerField(null = True, blank = True)
 	

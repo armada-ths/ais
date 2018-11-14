@@ -669,6 +669,7 @@ def external_banquet_afterparty(request, token = None):
 			source = request.POST['stripeToken']
 		)
 		
+		ticket.charge_stripe = charge['id']
 		ticket.paid_timestamp = datetime.datetime.now()
 		ticket.paid_price = amount
 		ticket.save()
