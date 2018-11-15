@@ -50,9 +50,8 @@ class App extends Component {
   handleScannedToken(data) {
     console.log(data);
 
-    return API.getByToken(data)
+    return API.checkInByToken(data)
         .then(response => {
-          console.log(response);
           return createSuccessMessage(`This worked! ${data}`);
         })
         .catch(reason => {

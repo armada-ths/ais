@@ -21,6 +21,6 @@ export const checkOut = (ticketId) => {
   return client.post(`lunchtickets/check_out/${ticketId}`);
 };
 
-export const getByToken = (token) => {
-  return client.get(`lunchtickets/get_by_token?token=${token}`);
+export const checkInByToken = (token) => {
+  return client.get(`lunchtickets/check_in_by_token?token=${token}`);
 };
