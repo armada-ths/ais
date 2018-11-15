@@ -20,8 +20,12 @@ const config = {
   },
 
   plugins: [
-    new BundleTracker({filename: './webpack-stats.js'}),
-    new CleanWebpackPlugin([path.resolve('./ais_static/bundles/')])
+    new BundleTracker({
+      filename: './webpack-stats.js'
+    }),
+    new CleanWebpackPlugin([path.resolve('./ais_static/bundles/')], {
+      root: __dirname
+    })
   ],
 
   module: {
