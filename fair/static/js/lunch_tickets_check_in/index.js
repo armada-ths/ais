@@ -48,11 +48,14 @@ class App extends Component {
   }
 
   handleScannedToken(data) {
-    console.log(data);
-
     return API.checkInByToken(data)
         .then(response => {
-          return createSuccessMessage(`This worked! ${data}`);
+          const ticket = response.data.lunch_ticket;
+
+          if (ticket.type === 'student')
+            return createSuccessMessage(`${ticket.name} (${ticket.date})`);
+          else
+            return createSuccessMessage(`${ticket.name} - ${ticket.email_address} (${ticket.date})`);
         })
         .catch(reason => {
           if (reason.response.status === 403) {
@@ -66,7 +69,6 @@ class App extends Component {
   render() {
     const {classes} = this.props;
     const {navigationIndex} = this.state;
-
 
     return (
         <JssProvider generateClassName={generateClassName}>
