@@ -9,7 +9,7 @@ class Stripe extends Component {
       key: props.stripe_publishable,
       image: 'https://ais.armada.nu/static/images/armadalogo.svg',
       locale: 'auto',
-      token: props.handleToken,
+      token: props.handleScannedToken,
     });
 
     this.handleClick = this.handleClick.bind(this);

@@ -8,7 +8,7 @@ import ChecklistIcon from 'mdi-material-ui/FormatListCheckbox';
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 import armadaTheme from 'armada/theme';
 import {createErrorMessage, createSuccessMessage, createWarningMessage} from 'armada/Notification/util';
-import List from './TicketList';
+import TicketList from './TicketList';
 import * as API from './api';
 import QRScanner from 'armada/QRScanner';
 import Grid from "@material-ui/core/Grid/Grid";
@@ -36,18 +36,18 @@ class App extends Component {
     super(props);
 
     this.state = {
-      navigationIndex: 0
+      navigationIndex: 1
     };
 
     this.handleNavigation = this.handleNavigation.bind(this);
-    this.handleToken = this.handleToken.bind(this);
+    this.handleScannedToken = this.handleScannedToken.bind(this);
   }
 
   handleNavigation(event, value) {
     this.setState({navigationIndex: value})
   }
 
-  handleToken(data) {
+  handleScannedToken(data) {
     console.log(data);
 
     return API.getByToken(data)
@@ -76,10 +76,10 @@ class App extends Component {
             <MuiThemeProvider theme={armadaTheme}>
               <Grid container direction="column" wrap="nowrap" className={classes.root}>
                 {navigationIndex === 0 && (
-                    <QRScanner handleData={this.handleToken}/>
+                    <QRScanner handleData={this.handleScannedToken}/>
                 )}
                 {navigationIndex === 1 && (
-                    <List/>
+                    <TicketList/>
                 )}
                 <BottomNavigation
                     value={navigationIndex}

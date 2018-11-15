@@ -11,6 +11,7 @@ import withStyles from "@material-ui/core/es/styles/withStyles";
 import Checkbox from "@material-ui/core/Checkbox/Checkbox";
 import CircularProgress from "@material-ui/core/es/CircularProgress/CircularProgress";
 import sortBy from 'lodash/sortBy';
+import findIndex from 'lodash/findIndex';
 
 const styles = theme => ({
   root: {
@@ -53,6 +54,7 @@ class TicketList extends Component {
     this.timeoutId = null;
 
     this.handleSearchQueryChange = this.handleSearchQueryChange.bind(this);
+    this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
     this.performSearch = this.performSearch.bind(this);
   }
 
@@ -86,7 +88,28 @@ class TicketList extends Component {
             })
           });
     }
+  }
 
+  handleCheckboxChange(ticketId) {
+    const {tickets} = this.state;
+    const index = findIndex(tickets, {'id': ticketId});
+    const ticketIsUsed = tickets[index].used;
+
+    this.setState(prevState => {
+      const tickets = [...prevState.tickets];
+      tickets[index].used = !ticketIsUsed;
+
+      return {
+        ...prevState,
+        tickets
+      }
+    });
+
+    if (ticketIsUsed) {
+      API.checkOut(ticketId);
+    } else {
+      API.checkIn(ticketId);
+    }
   }
 
   render() {
@@ -131,6 +154,7 @@ class TicketList extends Component {
                             <Checkbox
                                 color="primary"
                                 checked={ticket.used}
+                                onChange={() => this.handleCheckboxChange(ticket.id)}
                             />
                           </TableCell>
                         </TableRow>
