@@ -11,3 +11,12 @@ def lunch_ticket(lunch_ticket):
     }
 
     return data
+
+
+def banquet_participant(banquet_participant):
+    data = {
+        'id': banquet_participant.pk,
+        'token': str(banquet_participant.pk)  # This is where you want to change to the real token mr Pola!
+    }
+
+    return data

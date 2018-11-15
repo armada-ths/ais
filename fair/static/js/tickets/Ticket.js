@@ -5,6 +5,7 @@ import Typography from "@material-ui/core/Typography/Typography";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails/ExpansionPanelDetails";
 import ExpandMoreIcon from 'mdi-material-ui/ChevronDown';
 import QRCodeReact from 'qrcode.react';
+import Grid from "@material-ui/core/Grid/Grid";
 
 class Ticket extends PureComponent {
   constructor(props) {
@@ -12,19 +13,23 @@ class Ticket extends PureComponent {
   }
 
   render() {
-    const {title, token} = this.props;
+    const {title, token, expanded, id, openPanel} = this.props;
     return (
         <Fragment>
-          <ExpansionPanel>
+          <ExpansionPanel expanded={expanded} onChange={() => openPanel(id)}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon/>}>
               <Typography>{title}</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <QRCodeReact
-                  size={256}
-                  value={token}
-                  level="L"
-              />
+              <Grid container justify="center" alignItems="center" direction="row">
+                <Grid item>
+                  <QRCodeReact
+                      size={256}
+                      value={token}
+                      level="L"
+                  />
+                </Grid>
+              </Grid>
             </ExpansionPanelDetails>
           </ExpansionPanel>
         </Fragment>

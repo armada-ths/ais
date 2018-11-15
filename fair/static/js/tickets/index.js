@@ -22,21 +22,60 @@ const styles = theme => ({
 class App extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      expanded: null
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(panel) {
+    this.setState(prevState => {
+      const {expanded} = prevState;
+      return {
+        expanded: expanded !== panel ? panel : false,
+      }
+    });
   }
 
   render() {
     const {classes} = this.props;
+    const {expanded} = this.state;
+    const {lunch_tickets, banquet_participant} = window.reactProps;
 
-    const {lunch_tickets} = window.reactProps;
-    console.log(lunch_tickets);
+    const hasTickets = lunch_tickets.length > 0 || banquet_participant;
 
     return (
         <JssProvider generateClassName={generateClassName}>
           <Fragment>
             <CssBaseline/>
             <MuiThemeProvider theme={armadaTheme}>
-              <Typography variant="h4" gutterBottom>Tickets for this years fair</Typography>
-              {lunch_tickets.map(ticket => <Ticket key={ticket.id} token={ticket.token} title={`Lunch Ticket - ${ticket.date}`}/>)}
+              <Typography variant="h4" gutterBottom>Tickets</Typography>
+              {hasTickets ? (
+                  <Fragment>
+                    {lunch_tickets.map(ticket =>
+                        <Ticket
+                            key={ticket.id}
+                            id={ticket.id}
+                            expanded={expanded === ticket.id}
+                            openPanel={this.handleChange}
+                            token={ticket.token}
+                            title={`Lunch Ticket - ${ticket.date}`}
+                        />
+                    )}
+                    {banquet_participant && (
+                        <Ticket
+                            id={banquet_participant.id}
+                            expanded={expanded === banquet_participant.id}
+                            openPanel={this.handleChange}
+                            token={banquet_participant.token}
+                            title={"The Grand Banquet"}
+                        />
+                    )}
+                  </Fragment>
+              ) : (
+                  <Typography>You have no tickets.</Typography>
+              )}
             </MuiThemeProvider>
           </Fragment>
         </JssProvider>
