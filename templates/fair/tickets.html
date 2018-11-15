@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
+
+{% block nav-tickets %}
+  <li role="presentation" class="active"><a href="{% url 'fair:tickets' fair.year %}">Tickets</a></li>
+{% endblock %}
+
+{% block content %}
+  <div id="react"></div>
+  <script>
+    window.reactProps = {{ react_props|safe }};
+  </script>
+{% endblock %}
+
+{% block scripts %}
+  {% render_bundle 'tickets' %}
+{% endblock scripts %}
+
+
+

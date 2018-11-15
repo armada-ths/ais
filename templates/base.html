@@ -11,73 +11,81 @@
 {% block header %}{% endblock %}
 
 {% block navigation %}
-	<div role="navigation" class="navbar navbar-inverse">
-		<div class="container">
-			<div class="navbar-header">
-				<a href="{% url 'fair:home' fair.year %}" class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship" style="max-height: 20px" /></a>
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-						data-target="#navHeaderCollapse" aria-expanded="false">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-			</div>
-			<div class="collapse navbar-collapse" id="navHeaderCollapse">
-				<ul class="nav navbar-nav">
-					{% block nav-recruitment %}
-						<li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
-					{% endblock %}
-					
-					{% block nav-people %}
-						<li role="presentation"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>
-					{% endblock %}
-					
-					{% if perms.events.base %}
-						{% block nav-events %}
-							<li role="presentation"><a href="{% url 'events:event_list' fair.year %}">Events</a></li>
-						{% endblock %}
-					{% endif %}
-					
-					{% block nav-banquet %}
-						<li role="presentation"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
-					{% endblock %}
-					
-					{% block nav-lunchtickets %}
-						<li role="presentation"><a href="{% url 'fair:lunchtickets' fair.year %}">Lunch tickets</a></li>
-					{% endblock %}
-					
-					{% if perms.exhibitors.base %}
-						{% block nav-exhibitors %}
-							<li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
-						{% endblock %}
-					{% endif %}
-					
-					{% if perms.companies.base %}
-						{% block nav-companies %}
-							<li role="presentation"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>
-						{% endblock %}
-					{% endif %}
-					
-					{% if perms.accounting.base %}
-						{% block nav-accounting %}
-							<li role="presentation"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>
-						{% endblock %}
-					{% endif %}
-					
-					{% if perms.unirel.base %}
-						{% block nav-unirel %}
-							<li role="presentation"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
-						{% endblock %}
-					{% endif %}
-				</ul>
-				
-				<p class="navbar-text navbar-right">
-					<strong><a href="{% url 'people:profile' fair.year request.user.pk %}" style="color: lightgray">{{ user }}</a></strong> (<a href="/accounts/logout" class="navbar-link">sign out</a>)
-				</p>
-			</div>
-		</div>
-	</div>
+  <div role="navigation" class="navbar navbar-inverse">
+    <div class="container">
+      <div class="navbar-header">
+        <a href="{% url 'fair:home' fair.year %}" class="navbar-brand"><img src="{% static 'images/ship-inverted.png' %}" alt="Armada Ship"
+                                                                            style="max-height: 20px"/></a>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                data-target="#navHeaderCollapse" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="navHeaderCollapse">
+        <ul class="nav navbar-nav">
+          {% block nav-recruitment %}
+            <li role="presentation"><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
+          {% endblock %}
+
+          {% block nav-people %}
+            <li role="presentation"><a href="{% url 'people:list' fair.year %}">Contacts</a></li>
+          {% endblock %}
+
+          {% if perms.events.base %}
+            {% block nav-events %}
+              <li role="presentation"><a href="{% url 'events:event_list' fair.year %}">Events</a></li>
+            {% endblock %}
+          {% endif %}
+
+          {% block nav-banquet %}
+            <li role="presentation"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+          {% endblock %}
+
+          {% if perms.fair.lunchtickets %}
+            {% block nav-lunchtickets %}
+              <li role="presentation"><a href="{% url 'fair:lunchtickets' fair.year %}">Lunch tickets</a></li>
+            {% endblock %}
+          {% endif %}
+
+          {% block nav-tickets %}
+            <li role="presentation"><a href="{% url 'fair:tickets' fair.year %}">Tickets</a></li>
+          {% endblock %}
+
+          {% if perms.exhibitors.base %}
+            {% block nav-exhibitors %}
+              <li role="presentation"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+            {% endblock %}
+          {% endif %}
+
+          {% if perms.companies.base %}
+            {% block nav-companies %}
+              <li role="presentation"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>
+            {% endblock %}
+          {% endif %}
+
+          {% if perms.accounting.base %}
+            {% block nav-accounting %}
+              <li role="presentation"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>
+            {% endblock %}
+          {% endif %}
+
+          {% if perms.unirel.base %}
+            {% block nav-unirel %}
+              <li role="presentation"><a href="{% url 'unirel_admin' fair.year %}">University relations</a></li>
+            {% endblock %}
+          {% endif %}
+        </ul>
+
+        <p class="navbar-text navbar-right">
+          <strong><a href="{% url 'people:profile' fair.year request.user.pk %}" style="color: lightgray">{{ user }}</a></strong> (<a
+            href="/accounts/logout" class="navbar-link">sign out</a>)
+        </p>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 <div class="container">

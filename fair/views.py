@@ -201,11 +201,23 @@ def lunchticket_create(request, year):
     })
 
 
+@permission_required('fair.lunchtickets')
 def lunchtickets_check_in(request, year):
     fair = get_object_or_404(Fair, year=year)
 
     react_props = {}
 
     return render(request, 'fair/lunch_ticket_check_in.html', {
+        'react_props': json.dumps(react_props)
+    })
+
+
+def tickets(request, year):
+    fair = get_object_or_404(Fair, year=year)
+
+    react_props = {}
+
+    return render(request, 'fair/tickets.html', {
+        'fair': fair,
         'react_props': json.dumps(react_props)
     })
