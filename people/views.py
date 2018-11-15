@@ -54,27 +54,21 @@ def list(request, year):
 
 
 def profile(request, year, pk):
-	fair = get_object_or_404(Fair, year=year)
-	user = get_object_or_404(User, pk=pk)
+	fair = get_object_or_404(Fair, year = year)
+	user = get_object_or_404(User, pk = pk)
 	
-	if (request.user == user) or request.user.has_perm('people.base'):
-		profile = Profile.objects.filter(user = user).first()
-		
-		if not profile: profile = Profile.objects.create(user = user, no_dietary_restrictions = False)
-		
-		application = RecruitmentApplication.objects.filter(user = user, status = 'accepted', recruitment_period__fair = fair).first()
-		
-		roles = RecruitmentApplication.objects.filter(user = user, status = 'accepted').order_by('recruitment_period__fair').all()
-		
-		return TemplateResponse(request, 'people/profile.html', {
-			'fair': fair,
-			'profile': profile,
-			'role': application.delegated_role if application else None,
-			'roles': roles
-		})
+	profile = Profile.objects.filter(user = user).first()
 	
-	else:
-		raise PermissionDenied
+	if not profile: profile = Profile.objects.create(user = user, no_dietary_restrictions = False)
+	
+	application = RecruitmentApplication.objects.filter(user = user, status = 'accepted', recruitment_period__fair = fair).first()
+	
+	return TemplateResponse(request, 'people/profile.html', {
+		'fair': fair,
+		'profile': profile,
+		'role': application.delegated_role if application else None,
+		'roles': RecruitmentApplication.objects.filter(user = user, status = 'accepted').order_by('recruitment_period__fair')
+	})
 
 
 def edit(request, year):
