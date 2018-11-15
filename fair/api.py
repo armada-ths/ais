@@ -24,7 +24,6 @@ def lunchtickets_search(request):
         return JsonResponse({'message': 'Query is empty.'}, status=400)
 
     names = search_query.split()
-    print(names)
 
     name_query = reduce(operator.__or__, [Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) for query in names])
 
