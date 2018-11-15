@@ -108,7 +108,7 @@
           <tbody>
           {% for l in lunchtickets %}
             <tr>
-              {% if l.t.status %}
+              {% if l.t.used %}
                 <td class="bg-danger">Used</td>
               {% else %}
                 <td class="bg-success" style="white-space: nowrap;">Not used</td>{% endif %}
