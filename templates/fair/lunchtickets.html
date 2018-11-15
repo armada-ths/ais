@@ -45,6 +45,7 @@
   {% endif %}
 
   {% if perms.fair.lunchtickets %}
+    <a href="{% url 'fair:lunchtickets_check_in' fair.year %}" class="btn btn-default">Check in lunch ticket</a>
     <a href="{% url 'fair:lunchticket_create' fair.year %}" class="btn btn-primary pull-right">Create lunch ticket</a>
     <h2>Manage lunch tickets{% if has_searched %} ({{ lunchtickets | length }}){% endif %}</h2>
 
