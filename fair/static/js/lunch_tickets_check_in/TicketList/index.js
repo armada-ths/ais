@@ -66,7 +66,7 @@ class TicketList extends Component {
     const {value} = event.target;
 
     if (this.timeoutId) clearTimeout(this.timeoutId);
-    this.timeoutId = setTimeout(this.performSearch, 2000);
+    this.timeoutId = setTimeout(this.performSearch, 200);
 
     this.setState({
       searchQuery: value,
