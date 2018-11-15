@@ -6,7 +6,8 @@ def lunch_ticket(lunch_ticket):
         'comment': lunch_ticket.comment,
         'date': lunch_ticket.time.__str__() if lunch_ticket.time else lunch_ticket.day.__str__(),
         'used': lunch_ticket.used,
-        'type': lunch_ticket.get_ticket_type()
+        'type': lunch_ticket.get_ticket_type(),
+        'token': lunch_ticket.token
     }
 
     return data

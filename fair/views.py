@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from companies.models import CompanyContact
 from events.models import Event
+from fair import serializers
 from recruitment.models import RecruitmentApplication
 from recruitment.models import RecruitmentPeriod, Role
 from .forms import LunchTicketForm, LunchTicketSearchForm
@@ -215,7 +216,11 @@ def lunchtickets_check_in(request, year):
 def tickets(request, year):
     fair = get_object_or_404(Fair, year=year)
 
-    react_props = {}
+    lunch_tickets = LunchTicket.objects.filter(fair=fair, user=request.user)
+
+    react_props = {
+        'lunch_tickets': [serializers.lunch_ticket(lunch_ticket=lunch_ticket) for lunch_ticket in lunch_tickets]
+    }
 
     return render(request, 'fair/tickets.html', {
         'fair': fair,
