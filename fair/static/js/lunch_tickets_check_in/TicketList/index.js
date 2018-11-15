@@ -133,34 +133,36 @@ class TicketList extends Component {
             )}
           </Grid>
           <Grid item className={classes.table}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Day</TableCell>
-                  <TableCell>Comment</TableCell>
-                  <TableCell>Used</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tickets.map(ticket => (
-                    <TableRow hover key={ticket.id}>
-                      <TableCell className={classes.nowrap}>{ticket.name}</TableCell>
-                      <TableCell>{ticket.email_address}</TableCell>
-                      <TableCell className={classes.nowrap}>{ticket.date}</TableCell>
-                      <TableCell>{ticket.comment}</TableCell>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                            color="primary"
-                            checked={ticket.used}
-                            onChange={() => this.handleCheckboxChange(ticket.id)}
-                        />
-                      </TableCell>
+            {tickets.length > 0 && (
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Email</TableCell>
+                      <TableCell>Day</TableCell>
+                      <TableCell>Comment</TableCell>
+                      <TableCell>Used</TableCell>
                     </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                  </TableHead>
+                  <TableBody>
+                    {tickets.map(ticket => (
+                        <TableRow hover key={ticket.id}>
+                          <TableCell className={classes.nowrap}>{ticket.name}</TableCell>
+                          <TableCell>{ticket.email_address}</TableCell>
+                          <TableCell className={classes.nowrap}>{ticket.date}</TableCell>
+                          <TableCell>{ticket.comment}</TableCell>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                                color="primary"
+                                checked={ticket.used}
+                                onChange={() => this.handleCheckboxChange(ticket.id)}
+                            />
+                          </TableCell>
+                        </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+            )}
           </Grid>
         </Grid>
     )
