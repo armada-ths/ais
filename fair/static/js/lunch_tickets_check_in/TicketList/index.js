@@ -22,16 +22,15 @@ const styles = theme => ({
     height: 0 // Why this works, I do not know
   },
   search: {
+    position: 'relative',
     height: 50,
     paddingTop: theme.spacing.unit * 2,
     width: '100%',
   },
   loading: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-    width: '100%',
+    position: 'absolute',
+    bottom: 12,
+    right: 24
   },
   table: {
     overflow: 'scroll'
@@ -126,43 +125,43 @@ class TicketList extends Component {
                 type="search"
                 fullWidth
             />
+            {loading && (
+                <CircularProgress
+                    size={20}
+                    className={classes.loading}
+                />
+            )}
           </Grid>
-          {loading ? (
-              <div className={classes.loading}>
-                <CircularProgress/>
-              </div>
-          ) : (
-              <Grid item className={classes.table}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Email</TableCell>
-                      <TableCell>Day</TableCell>
-                      <TableCell>Comment</TableCell>
-                      <TableCell>Used</TableCell>
+          <Grid item className={classes.table}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Day</TableCell>
+                  <TableCell>Comment</TableCell>
+                  <TableCell>Used</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tickets.map(ticket => (
+                    <TableRow hover key={ticket.id}>
+                      <TableCell className={classes.nowrap}>{ticket.name}</TableCell>
+                      <TableCell>{ticket.email_address}</TableCell>
+                      <TableCell className={classes.nowrap}>{ticket.date}</TableCell>
+                      <TableCell>{ticket.comment}</TableCell>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                            color="primary"
+                            checked={ticket.used}
+                            onChange={() => this.handleCheckboxChange(ticket.id)}
+                        />
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tickets.map(ticket => (
-                        <TableRow hover key={ticket.id}>
-                          <TableCell className={classes.nowrap}>{ticket.name}</TableCell>
-                          <TableCell>{ticket.email_address}</TableCell>
-                          <TableCell className={classes.nowrap}>{ticket.date}</TableCell>
-                          <TableCell>{ticket.comment}</TableCell>
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                                color="primary"
-                                checked={ticket.used}
-                                onChange={() => this.handleCheckboxChange(ticket.id)}
-                            />
-                          </TableCell>
-                        </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Grid>
-          )}
+                ))}
+              </TableBody>
+            </Table>
+          </Grid>
         </Grid>
     )
   }
