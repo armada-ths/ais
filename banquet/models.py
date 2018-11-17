@@ -47,7 +47,7 @@ class Seat(models.Model):
 
 
 class Participant(models.Model):
-	token = models.CharField(max_length = 32, default = get_random_32_length_string)
+	token = models.CharField(max_length = 32, unique = True, default = get_random_32_length_string)
 	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
 	company = models.ForeignKey(Company, blank = True, null = True, on_delete = models.CASCADE)
 	user = models.ForeignKey(User, blank = True, null = True, on_delete = models.CASCADE)
