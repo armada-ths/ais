@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {withStyles} from '@material-ui/core/styles';
+import Button from "@material-ui/core/Button/Button";
 
 const styles = theme => ({
   canvas: {
@@ -10,6 +11,8 @@ const styles = theme => ({
 
 const EPS = 18; // How many pixels away we want to snap to start of path
 const TARGET_WIDTH = 900;
+
+const scalePath = (path, xScale, yScale) => path.map(([x, y]) => [x * xScale, y * yScale]);
 
 const addToPath = (path, x, y) => {
   const [first, ...rest] = path;
@@ -49,20 +52,20 @@ class PlaceBooth extends Component {
     this.canvasRef = React.createRef();
 
     this.state = {
-      currentPath: []
+      currentPath: [],
     };
 
     this.handleCanvasClick = this.handleCanvasClick.bind(this);
+    this.handleUndo = this.handleUndo.bind(this);
   }
 
   componentDidMount() {
     const {map} = this.props;
 
-    const scaledWidth = TARGET_WIDTH;
+    const scaleFactor = TARGET_WIDTH * 1.0 / map.width;
 
-    const ratio = scaledWidth * 1.0 / map.width;
-
-    const scaledHeight = map.height * ratio;
+    const scaledWidth = map.width * scaleFactor;
+    const scaledHeight = map.height * scaleFactor;
 
     this.canvasRef.current.width = scaledWidth;
     this.canvasRef.current.height = scaledHeight;
@@ -70,7 +73,6 @@ class PlaceBooth extends Component {
     this.backgroundImage = new Image(scaledWidth, scaledHeight);
 
     this.backgroundImage.onload = () => {
-      console.log(this.backgroundImage.width, this.backgroundImage.height);
       this.drawCanvas();
     };
 
@@ -78,9 +80,11 @@ class PlaceBooth extends Component {
   }
 
   drawCanvas() {
+    const {booths} = this.props;
     const {currentPath} = this.state;
 
     const ctx = this.canvasRef.current.getContext('2d');
+    ctx.strokeWidth = 3;
 
     // Reset map
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
@@ -88,6 +92,10 @@ class PlaceBooth extends Component {
 
     if (currentPath.length > 1) {
       drawPath(ctx, currentPath, 'red');
+    }
+
+    for (let booth of booths) {
+      drawPath(ctx, scalePath(booth.boundaries, this.canvasRef.current.width, this.canvasRef.current.height), 'yellow');
     }
   }
 
@@ -103,17 +111,33 @@ class PlaceBooth extends Component {
     }), this.drawCanvas);
   }
 
+  handleUndo() {
+    this.setState(prevState => ({
+      currentPath: prevState.currentPath.slice(0, prevState.currentPath.length - 1),
+    }), this.drawCanvas);
+  }
+
   render() {
+    const {currentPath} = this.state;
     const {classes} = this.props;
 
     return (
-        <canvas
-            className={classes.canvas}
-            onClick={this.handleCanvasClick}
-            ref={this.canvasRef}
-        >
-
-        </canvas>
+        <Fragment>
+          <canvas
+              className={classes.canvas}
+              onClick={this.handleCanvasClick}
+              ref={this.canvasRef}
+          />
+          <div>
+            <Button
+                onClick={this.handleUndo}
+                variant="contained"
+                disabled={currentPath.length === 0}
+            >
+              Undo
+            </Button>
+          </div>
+        </Fragment>
     )
   }
 }

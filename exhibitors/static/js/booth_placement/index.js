@@ -79,7 +79,7 @@ class App extends Component {
                 </Grid>
                 <Grid item>
                   {selectedLocation && (
-                      <PlaceBooth map={selectedLocation.map}/>
+                      <PlaceBooth map={selectedLocation.map} booths={selectedLocation.booths}/>
                   )}
                 </Grid>
               </Grid>
