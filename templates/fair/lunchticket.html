@@ -7,22 +7,24 @@
 {% endblock %}
 
 {% block content %}
-	<h1>Lunch ticket</h1>
-	<ul class="list-unstyled">
-		<li><span style="font-weight: bold;">Status:</span> {% if lunch_ticket.used %} <span class="text-danger">Used</span> {% else %} <span class="text-success">Not used</span> {% endif %}</li>
-		<li><span style="font-weight: bold;">Date:</span> {% if lunch_ticket.time %} {{ lunch_ticket.time }} {% else %} {{ lunch_ticket.day }} {% endif %}</li>
-		<li><span style="font-weight: bold;">Token:</span> {{ lunch_ticket.token }}</li>
-		<li><span style="font-weight: bold;">Dietary restrictions:</span> {% if lunch_ticket.dietary_restrictions.all %} {{ lunch_ticket.dietary_restrictions.all | join:', ' }} {% else %} None {% endif %}</li>
-	</ul>
-	
-	{% if perms.fair.lunchtickets %}
-		<a href="{% url 'fair:lunchticket_remove' fair.year lunch_ticket.token %}" class="btn btn-danger pull-right" onclick="return confirm('Confirm the removal.');">Delete lunch ticket</a>
-		<h2>Manage lunch ticket</h2>
-		
-		<form method="post">
-			{% csrf_token %}
-			{{ form | crispy }}
-			<input type="submit" class="btn btn-primary" value="Save changes" />
-		</form>
+	<h1>Send over e-mail</h1>
+	{% if sends %}
+		<ul>
+			{% for send in sends %}
+				<li>Sent on {{ send.timestamp }} to <a href="mailto:{{ send.email_address }}">{{ send.email_address }}</a> by <a href="{{ send.user.pk }}">{{ send.user }}</a>.</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>This lunch ticket has never been sent out via e-mail.</p>
 	{% endif %}
+	
+	<a href="{% url 'fair:lunchticket_send' fair.year lunch_ticket.token %}" class="btn btn-primary">Send ticket to {% if lunch_ticket.user %} {{ lunch_ticket.user.email }} {% else %} {{ lunch_ticket.email_address }} {% endif %}</a>
+	
+	<h1>Manage lunch ticket</h1>
+	<form method="post">
+		{% csrf_token %}
+		{{ form | crispy }}
+		<input type="submit" class="btn btn-primary" value="Save changes" />
+		<a href="{% url 'fair:lunchticket_remove' fair.year lunch_ticket.token %}" class="btn btn-danger pull-right" onclick="return confirm('Confirm the removal.');">Delete lunch ticket</a>
+	</form>
 {% endblock %}

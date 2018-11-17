@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^lunchtickets/create$', views.lunchticket_create, name='lunchticket_create'),
     url(r'^lunchtickets/(?P<token>[A-Za-z0-9]+)$', views.lunchticket, name='lunchticket'),
     url(r'^lunchtickets/(?P<token>[A-Za-z0-9]+)/remove$', views.lunchticket_remove, name='lunchticket_remove'),
+    url(r'^lunchtickets/(?P<token>[A-Za-z0-9]+)/send$', views.lunchticket_send, name='lunchticket_send')
 ]

@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^journal/', include('journal.urls')),
     url(r'^banquet/', include('banquet.urls_external')),
     url(r'^unirel/', include('unirel.urls_external')),
+    url(r'^', include('fair.urls_external'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

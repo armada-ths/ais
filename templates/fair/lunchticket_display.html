@@ -1,0 +1,40 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<meta charset="utf-8" />
+		{% include "header.html" %}{% block head-extra %}{% endblock %}
+		<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
+		<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+	</head>
+	
+	<body>
+		<div class="container" style="max-width: 700px;">
+			<div class="text-center headline">
+				<h2>{{ lunch_ticket.fair }}</h2>
+				<h1>Lunch ticket</h1>
+			</div>
+			
+			<p><span style="font-weight: bold;">Date:</span> {% if lunch_ticket.time %} {{ lunch_ticket.time }} {% else %} {{ lunch_ticket.day }} {% endif %}</p>
+				
+			<p><span style="font-weight: bold;">Comment:</span><br />{% if lunch_ticket.comment %}{{ lunch_ticket.comment }}{% else %}<span style="font-style: italic;">(no comment)</span>{% endif %}</p>
+			
+			<p><span style="font-weight: bold;">Dietary restrictions:</span><br />{% if lunch_ticket.dietary_restrictions.all %}{{ lunch_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">(no dietary restrictions)</span>{% endif %}</p>
+			
+			{% if lunch_ticket.used %}
+				<p class="text-danger">This lunch ticket has already been used.</p>
+			{% else %}
+				<div id="qrcode" style="margin: 50px auto 50px; max-width: 256px;"></div>
+				
+				<h4 style="font-size: 25pt; text-align: center;">{% if lunch_ticket.company %} {{ lunch_ticket.company }} {% endif %}</h4>
+				
+				<script src="//static.kottnet.net/javascript/qrcode.min.js"></script>
+				<script>
+					new QRCode(document.getElementById('qrcode'), '{{ lunch_ticket.token }}');
+				</script>
+			{% endif %}
+		</div>
+	</body>
+</html>

@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import permission_required
 from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import send_mail
+from django.urls import reverse, reverse_lazy
 
 from banquet.models import Participant, Banquet
 from companies.models import CompanyContact
@@ -11,8 +13,9 @@ from events.models import Event
 from fair import serializers
 from recruitment.models import RecruitmentApplication
 from recruitment.models import RecruitmentPeriod, Role
+
 from .forms import LunchTicketForm, LunchTicketSearchForm
-from .models import Fair, LunchTicket
+from .models import Fair, LunchTicket, LunchTicketSend
 from .models import FairDay, OrganizationGroup
 
 
@@ -61,6 +64,7 @@ def index(request, year=None):
     })
 
 
+@permission_required('fair.lunchtickets')
 def lunchtickets(request, year):
     fair = get_object_or_404(Fair, year=year)
 
@@ -145,6 +149,7 @@ def lunchtickets(request, year):
     })
 
 
+@permission_required('fair.lunchtickets')
 def lunchticket(request, year, token):
     fair = get_object_or_404(Fair, year=year)
     lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
@@ -162,7 +167,8 @@ def lunchticket(request, year, token):
     return render(request, 'fair/lunchticket.html', {
         'fair': fair,
         'lunch_ticket': lunch_ticket,
-        'form': form
+        'form': form,
+        'sends': LunchTicketSend.objects.filter(lunch_ticket = lunch_ticket)
     })
 
 
@@ -174,6 +180,27 @@ def lunchticket_remove(request, year, token):
     lunch_ticket.delete()
 
     return redirect('fair:lunchtickets', fair.year)
+
+
+@permission_required('fair.lunchtickets')
+def lunchticket_send(request, year, token):
+    fair = get_object_or_404(Fair, year=year)
+    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+    
+    eat_by = str(lunch_ticket.time) if lunch_ticket.time else str(lunch_ticket.day)
+    email_address = lunch_ticket.user.email if lunch_ticket.user else lunch_ticket.email_address
+
+    send_mail(
+        'Lunch ticket ' + eat_by,
+        'Open the link below to redeem your lunch ticket at ' + lunch_ticket.fair.name + '.\n\nEat by: ' + eat_by + '\n' + request.build_absolute_uri(reverse('lunchticket_display', args = [lunch_ticket.token])),
+        'info@armada.nu',
+        [email_address],
+        fail_silently = True
+    )
+    
+    LunchTicketSend(lunch_ticket=lunch_ticket, user=request.user, email_address=email_address).save()
+
+    return redirect('fair:lunchticket', fair.year, lunch_ticket.token)
 
 
 @permission_required('fair.lunchtickets')
@@ -211,6 +238,13 @@ def lunchtickets_check_in(request, year):
 
     return render(request, 'fair/lunch_ticket_check_in.html', {
         'react_props': json.dumps(react_props)
+    })
+
+def lunchticket_display(request, token):
+    lunch_ticket = get_object_or_404(LunchTicket, fair__current=True, token=token)
+
+    return render(request, 'fair/lunchticket_display.html', {
+        'lunch_ticket': lunch_ticket
     })
 
 

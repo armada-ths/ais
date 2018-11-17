@@ -7,143 +7,109 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Lunch tickets</h1>
-  {% if my_lunchtickets %}
-    <p>Click on a lunch ticket to open it.</p>
+  <div class="pull-right">
+    <a href="{% url 'fair:lunchtickets_check_in' fair.year %}" class="btn btn-default">Check in</a>
+    <a href="{% url 'fair:lunchticket_create' fair.year %}" class="btn btn-primary">Create lunch ticket</a>
+  </div>
+  <h1>Manage lunch tickets {% if has_searched %} ({{ lunchtickets | length }}){% endif %}</h1>
 
-    <table class="table">
-      <thead>
-      <tr>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Dietary restrictions</th>
-      </tr>
-      </thead>
+  <style type="text/css">
+    .form_no_ul ul {
+      margin: 0;
+      padding: 0;
+      margin: 0 0 20px 15px;
+    }
 
-      <tbody>
-      {% for my_lunchticket in my_lunchtickets %}
+    .form_no_ul ul li {
+      list-style-type: none;
+    }
+
+    .form_no_ul ul li label {
+      font-weight: 400;
+    }
+  </style>
+
+  <form method="post" class="form_no_ul" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row">
+      <div class="col-md-6">
+        <label for="{{ form.statuses.id_for_label }}">{{ form.statuses.label }}</label>
+        {{ form.statuses }}
+
+        <label for="{{ form.types.id_for_label }}">{{ form.types.label }}</label>
+        {{ form.types }}
+      </div>
+
+      <div class="col-md-6">
+        <label for="{{ form.days.id_for_label }}">{{ form.days.label }}</label>
+        {{ form.days }}
+
+        {{ form.include_dietary_restrictions }} <label
+          for="{{ form.include_dietary_restrictions.id_for_label }}">{{ form.include_dietary_restrictions.label }}</label>
+      </div>
+    </div>
+
+    <input class="btn btn-primary" type="submit" value="Refine search"/>
+  </form>
+
+  {% if has_searched %}
+    <div class="table-responsive">
+      <table class="table" id="lunchticket_table">
+        <thead>
         <tr>
-          {% if my_lunchticket.status %}
-            <td class="bg-danger">Used</td>
-          {% else %}
-            <td class="bg-success" style="white-space: nowrap;">Not used</td>{% endif %}
-          <td>
-            <a href="{% url 'fair:lunchticket' fair.year my_lunchticket.token %}">
-              {% if my_lunchticket.time %} {{ my_lunchticket.time }}
-              {% else %} {{ my_lunchticket.day }} {% endif %}
-            </a>
-          </td>
-          <td>
-            {% if my_lunchticket.dietary_restrictions.all %} {{ my_lunchticket.dietary_restrictions.all | join:', ' }} {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>You do not have any lunch tickets.</p>
-  {% endif %}
-
-  {% if perms.fair.lunchtickets %}
-    <a href="{% url 'fair:lunchtickets_check_in' fair.year %}" class="btn btn-default">Check in lunch ticket</a>
-    <a href="{% url 'fair:lunchticket_create' fair.year %}" class="btn btn-primary pull-right">Create lunch ticket</a>
-    <h2>Manage lunch tickets{% if has_searched %} ({{ lunchtickets | length }}){% endif %}</h2>
-
-    <style type="text/css">
-      .form_no_ul ul {
-        margin: 0;
-        padding: 0;
-        margin: 0 0 20px 15px;
-      }
-
-      .form_no_ul ul li {
-        list-style-type: none;
-      }
-
-      .form_no_ul ul li label {
-        font-weight: 400;
-      }
-    </style>
-
-    <form method="post" class="form_no_ul" enctype="multipart/form-data">
-      {% csrf_token %}
-
-      <div class="row">
-        <div class="col-md-6">
-          <label for="{{ form.statuses.id_for_label }}">{{ form.statuses.label }}</label>
-          {{ form.statuses }}
-
-          <label for="{{ form.types.id_for_label }}">{{ form.types.label }}</label>
-          {{ form.types }}
-        </div>
-
-        <div class="col-md-6">
-          <label for="{{ form.days.id_for_label }}">{{ form.days.label }}</label>
-          {{ form.days }}
-
-          {{ form.include_dietary_restrictions }} <label
-            for="{{ form.include_dietary_restrictions.id_for_label }}">{{ form.include_dietary_restrictions.label }}</label>
-        </div>
-      </div>
-
-      <input class="btn btn-primary" type="submit" value="Refine search"/>
-    </form>
-
-    {% if has_searched %}
-      <div class="table-responsive">
-        <table class="table" id="lunchticket_table">
-          <thead>
-          <tr>
-            <th>Status</th>
-            <th>Type</th>
-            <th style="white-space: nowrap;">Date and time</th>
-            <th>Name</th>
-            <th>E-mail address</th>
-            <th>Comment</th>
-            {% for dietary_restriction in dietary_restrictions %}
-              <th style="white-space: nowrap;">{{ dietary_restriction.name }} ({{ dietary_restriction.count }})</th>
-            {% endfor %}
-          </tr>
-          </thead>
-
-          <tbody>
-          {% for l in lunchtickets %}
-            <tr>
-              {% if l.t.used %}
-                <td class="bg-danger">Used</td>
-              {% else %}
-                <td class="bg-success" style="white-space: nowrap;">Not used</td>{% endif %}
-              <td>
-                {% if l.t.user %} Student
-                {% else %} Company {% endif %}
-              </td>
-              <td style="white-space: nowrap;">
-                <a href="{% url 'fair:lunchticket' fair.year l.t.token %}">
-                  {% if l.t.time %} {{ l.t.time }}
-                  {% else %} {{ l.t.day }} {% endif %}
-                </a>
-              </td>
-              <td style="white-space: nowrap;">
-                {% if l.t.user %} <a href="{% url 'people:profile' fair.year l.t.user.pk %}">{{ l.t.user.get_full_name }}</a>
-                {% else %} {{ l.t.company.name }} {% endif %}
-              </td>
-              <td>
-                {% if l.t.user %} <a href="mailto:{{ l.t.user.email }}">{{ l.t.user.email }}</a>
-                {% else %} <a href="mailto:{{ l.t.email_address }}">{{ l.t.email_address }}</a> {% endif %}
-              </td>
-              <td>{% if l.t.comment %} {{ l.t.comment }} {% endif %}
-                {% for d in l.drl %}
-                  {% if d %}
-                    <td style="text-align: center;" class="bg-danger">yes</td>
-                  {% else %}
-                    <td style="text-align: center;">no</td>{% endif %}
-                {% endfor %}
-            </tr>
+          <th>Status</th>
+          <th>Type</th>
+          <th>Sent?</th>
+          <th style="white-space: nowrap;">Date and time</th>
+          <th>Name</th>
+          <th>E-mail address</th>
+          <th>Comment</th>
+          {% for dietary_restriction in dietary_restrictions %}
+            <th style="white-space: nowrap;">{{ dietary_restriction.name }} ({{ dietary_restriction.count }})</th>
           {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for l in lunchtickets %}
+          <tr>
+            {% if l.t.used %}
+              <td class="bg-danger">Used</td>
+            {% else %}
+              <td class="bg-success" style="white-space: nowrap;">Not used</td>{% endif %}
+            <td>
+              {% if l.t.user %} Student
+              {% else %} Company {% endif %}
+            </td>
+            {% if l.t.sent %} <td class="bg-success">Yes</td>
+            {% else %} <td class="bg-danger">No</td> {% endif %}
+            <td style="white-space: nowrap;">
+              <a href="{% url 'fair:lunchticket' fair.year l.t.token %}">
+                {% if l.t.time %} {{ l.t.time }}
+                {% else %} {{ l.t.day }} {% endif %}
+              </a>
+            </td>
+            <td style="white-space: nowrap;">
+              {% if l.t.user %} <a href="{% url 'people:profile' fair.year l.t.user.pk %}">{{ l.t.user.get_full_name }}</a>
+              {% else %} {{ l.t.company.name }} {% endif %}
+            </td>
+            <td>
+              {% if l.t.user %} <a href="mailto:{{ l.t.user.email }}">{{ l.t.user.email }}</a>
+              {% else %} <a href="mailto:{{ l.t.email_address }}">{{ l.t.email_address }}</a> {% endif %}
+            </td>
+            <td>{% if l.t.comment %} {{ l.t.comment }} {% endif %}
+              {% for d in l.drl %}
+                {% if d %}
+                  <td style="text-align: center;" class="bg-danger">yes</td>
+                {% else %}
+                  <td style="text-align: center;">no</td>{% endif %}
+              {% endfor %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
   {% endif %}
 {% endblock %}
 

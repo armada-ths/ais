@@ -125,6 +125,7 @@ class LunchTicket(models.Model):
     day = models.ForeignKey(FairDay, on_delete=models.CASCADE)
     time = models.ForeignKey(LunchTicketTime, on_delete=models.SET_NULL, blank=True, null=True)
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
+    sent = models.BooleanField(blank = False, null = False, default = False)
 
     def get_ticket_type(self):
         return 'student' if self.user else 'company'
@@ -139,6 +140,16 @@ class LunchTicketScan(models.Model):
     lunch_ticket = models.ForeignKey(LunchTicket, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+
+    class Meta:
+        default_permissions = []
+
+
+class LunchTicketSend(models.Model):
+    lunch_ticket = models.ForeignKey(LunchTicket, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+    email_address = models.EmailField(max_length=255, verbose_name='E-mail address')
 
     class Meta:
         default_permissions = []
