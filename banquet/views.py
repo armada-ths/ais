@@ -20,7 +20,7 @@ from accounting.models import Order
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 
 from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket
-from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, ParticipantForm, AfterPartyTicketForm
+from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, ParticipantForm, ParticipantAdminForm, AfterPartyTicketForm
 
 
 #External Invite
@@ -481,6 +481,35 @@ def manage_participants(request, year, banquet_pk):
 		'fair': fair,
 		'banquet': banquet,
 		'participants': participants
+	})
+
+
+@permission_required('banquet.base')
+def manage_participant_form(request, year, banquet_pk, participant_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	participant = get_object_or_404(Participant, banquet = banquet, pk = participant_pk)
+	
+	form = ParticipantAdminForm(request.POST or None, instance = participant)
+	
+	if request.POST and form.is_valid():
+		participant = form.save()
+		
+		invitation = Invitation.objects.filter(participant = participant).first()
+		
+		if invitation is not None:
+			invitation.user = participant.user
+			invitation.name = participant.name
+			invitation.email_address = participant.email_address
+			invitation.save()
+		
+		return redirect('banquet_manage_participants', fair.year, banquet.pk)
+	
+	return render(request, 'banquet/manage_participant_form.html', {
+		'fair': fair,
+		'banquet': banquet,
+		'form': form,
+		'participant': participant
 	})
 
 

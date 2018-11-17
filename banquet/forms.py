@@ -51,6 +51,68 @@ class ParticipantForm(forms.ModelForm):
 		}
 
 
+class ParticipantAdminForm(forms.ModelForm):
+	def clean(self):
+		super(ParticipantAdminForm, self).clean()
+		
+		if 'phone_number' in self.cleaned_data:
+			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+		
+		return self.cleaned_data
+	
+	def is_valid(self):
+		valid = super(ParticipantAdminForm, self).is_valid()
+		
+		if not valid: return valid
+		
+		company = self.cleaned_data.get('company')
+		user = self.cleaned_data.get('user')
+		name = self.cleaned_data.get('name')
+		email_address = self.cleaned_data.get('email_address')
+		phone_number = self.cleaned_data.get('phone_number')
+		
+		if company is not None and user is not None:
+			self.add_error('company', 'Cannot have both a company and a user.')
+			self.add_error('user', 'Cannot have both a company and a user.')
+			valid = False
+		
+		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
+			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
+			valid = False
+		
+		if user is not None and name is not None:
+			self.add_error('name', 'Must be empty if a user is selected.')
+			valid = False
+		
+		if user is not None and email_address is not None:
+			self.add_error('email_address', 'Must be empty if a user is selected.')
+			valid = False
+		
+		if user is None and name is None:
+			self.add_error('name', 'Must be given if no user is selected.')
+			valid = False
+		
+		if user is None and email_address is None:
+			self.add_error('email_address', 'Must be given if no user is selected.')
+			valid = False
+		
+		return valid
+	
+	class Meta:
+		model = Participant
+		fields = ['company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']
+		
+		help_texts = {
+			'name': 'Only enter a name if you do not select a user.',
+			'email_address': 'Only enter an e-mail address if you do not select a user.'
+		}
+		
+		widgets = {
+			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
+			'alcohol': forms.RadioSelect()
+		}
+
+
 class InvitationForm(forms.ModelForm):
 	def clean(self):
 		super(InvitationForm, self).clean()
