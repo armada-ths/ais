@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	<h1>{{ banquet.name }} – Participants</h1>
+	<h1>{{ banquet.name }} – Participants ({{ participants | length }})</h1>
 	
 	<p>
 		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
@@ -16,27 +16,28 @@
 		<table class="table" id="participation_table">
 			<thead>
 				<tr>
+					<th>Company</th>
 					<th>Name</th>
 					<th>E-mail address</th>
-					<th>Reason</th>
-					<th style="text-align: right;">Price (SEK)</th>
+					<th>Alcohol?</th>
+					<th>Seat</th>
+					<th style="text-align: right;">Options</th>
 				</tr>
 			</thead>
 			
 			<tbody>
-				{% if invitiations %}
-					{% for invitation in invitiations %}
+				{% if participants %}
+					{% for participant in participants %}
 						<tr>
+							<td>{% if participant.company %} {{ participant.company }} {% endif %}</td>
+							<td>{% if participant.user %} <a href="{% url 'people:profile' fair.year participant.user.pk %}">{{ participant.name }}</a> {% else %} {{ participant.name }} {% endif %}</td>
+							<td><a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></td>
+							<td>{% if participant.alcohol %} Yes {% else %} No {% endif %}</td>
+							<td>{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td>
 							<td>
-								<a href="{% url 'banquet_manage_invitation' fair.year banquet.pk invitation.pk %}">{{ invitation.name }}</a>
-								
-								{% if invitation.status == 'GOING' %}<span class="label label-success">Going</span>{% endif %}
-								{% if invitation.status == 'NOT_GOING' %}<span class="label label-error">Going</span>{% endif %}
-								{% if invitation.status == 'PENDING' %}<span class="label label-default">Pending</span>{% endif %}
+								<a href="{% url 'banquet_manage_participant_remove' fair.year banquet.pk participant.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Confirm the removal of {{ participant.name }}.');">Remove</a>
+								<a href="#" class="btn btn-sm btn-default">Edit</a>
 							</td>
-							<td><a href="mailto:{{ invitation.email_address }}">{{ invitation.email_address }}</a></td>
-							<td>{{ invitation.reason }}</td>
-							<td style="text-align: right;">{{ invitation.price }}</td>
 						</tr>
 					{% endfor %}
 				{% else %}

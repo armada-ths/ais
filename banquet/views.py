@@ -447,6 +447,11 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 	if request.POST and form.is_valid():
 		form.instance.banquet = banquet
 		invitation = form.save()
+		
+		if invitation.participant is not None and invitation.participant.user is None and invitation.participant.company is None:
+			invitation.participant.name = invitation.name
+			invitation.participant.email_address = invitation.email_address
+		
 		return redirect('banquet_manage_invitation', fair.year, banquet.pk, invitation.pk)
 	
 	return render(request, 'banquet/manage_invitation_form.html', {
@@ -462,11 +467,33 @@ def manage_participants(request, year, banquet_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	
+	participants = [{
+		'pk': participant.pk,
+		'company': participant.company,
+		'user': participant.user,
+		'name': participant.user.get_full_name() if participant.user else participant.name,
+		'email_address': participant.user.email if participant.user else participant.email_address,
+		'alcohol': participant.alcohol,
+		'seat': participant.seat
+	} for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet = banquet)]
+	
 	return render(request, 'banquet/manage_participants.html', {
 		'fair': fair,
 		'banquet': banquet,
-		'participants': Participant.objects.filter(banquet = banquet)
+		'participants': participants
 	})
+
+
+@permission_required('banquet.base')
+def manage_participant_remove(request, year, banquet_pk, participant_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	participant = get_object_or_404(Participant, banquet = banquet, pk = participant_pk)
+	
+	participant.delete()
+	
+	return redirect('banquet_manage_participants', fair.year, banquet.pk)
+
 
 
 def invitation(request, year, token):
@@ -591,8 +618,8 @@ def external_invitation(request, token):
 			else:
 				charge = None
 			
-			form.instance.name = None
-			form.instance.email_address = None
+			form.instance.name = invitation.name
+			form.instance.email_address = invitation.email_address
 			invitation.participant = form.save()
 			invitation.save()
 			
