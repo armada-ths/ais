@@ -3,9 +3,28 @@ import {withStyles} from '@material-ui/core/styles';
 
 const styles = theme => ({
   canvas: {
-    border: 'solid 1px #CCC'
+    border: 'solid 1px #CCC',
+    cursor: 'crosshair'
   },
 });
+
+const EPS = 12; // How many pixels away we want to snap to start of path
+const TARGET_WIDTH = 900;
+
+const addToPath = (path, x, y) => {
+  const [first, ...rest] = path;
+
+  if (first) {
+    const xDist = Math.abs(first.x - x);
+    const yDist = Math.abs(first.y - y);
+
+    if (xDist < EPS && yDist < EPS) {
+      return [...path, first];
+    }
+  }
+
+  return [...path, {x, y}];
+};
 
 const drawPath = (ctx, path, color = 'black') => {
   if (path.length < 2) new Error("Path length is < 2");
@@ -39,12 +58,19 @@ class PlaceBooth extends Component {
   componentDidMount() {
     const {map} = this.props;
 
-    this.canvasRef.current.height = map.height;
-    this.canvasRef.current.width = map.width;
+    const scaledWidth = TARGET_WIDTH;
 
-    this.backgroundImage = new Image(map.width, map.height);
+    const ratio = scaledWidth * 1.0 / map.width;
+
+    const scaledHeight = map.height * ratio;
+
+    this.canvasRef.current.width = scaledWidth;
+    this.canvasRef.current.height = scaledHeight;
+
+    this.backgroundImage = new Image(scaledWidth, scaledHeight);
 
     this.backgroundImage.onload = () => {
+      console.log(this.backgroundImage.width, this.backgroundImage.height);
       this.drawCanvas();
     };
 
@@ -56,8 +82,9 @@ class PlaceBooth extends Component {
 
     const ctx = this.canvasRef.current.getContext('2d');
 
+    // Reset map
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
-    ctx.drawImage(this.backgroundImage, 0, 0);
+    ctx.drawImage(this.backgroundImage, 0, 0, this.backgroundImage.width, this.backgroundImage.height);
 
     if (currentPath.length > 1) {
       drawPath(ctx, currentPath, 'red');
@@ -72,10 +99,7 @@ class PlaceBooth extends Component {
     const y = event.pageY - elemTop;
 
     this.setState(prevState => ({
-      currentPath: [
-        ...prevState.currentPath,
-        {x, y}
-      ]
+      currentPath: addToPath(prevState.currentPath, x, y),
     }), this.drawCanvas);
   }
 
