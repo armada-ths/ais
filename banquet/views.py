@@ -494,6 +494,8 @@ def manage_participant_form(request, year, banquet_pk, participant_pk):
 	
 	seats_taken = [p.seat for p in Participant.objects.select_related('seat').exclude(seat = None)]
 	
+	if participant is not None and participant.seat is not None: seats_taken.remove(participant.seat)
+	
 	seats = []
 	
 	for table in Table.objects.filter(banquet = banquet):
