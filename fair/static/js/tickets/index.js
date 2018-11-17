@@ -60,7 +60,7 @@ class App extends Component {
                             expanded={expanded === ticket.id}
                             openPanel={this.handleChange}
                             token={ticket.token}
-                            title={`Lunch Ticket - ${ticket.date}`}
+                            title={`Lunch ticket - ${ticket.date}`}
                         />
                     )}
                     {banquet_participant && (
@@ -69,7 +69,7 @@ class App extends Component {
                             expanded={expanded === banquet_participant.id}
                             openPanel={this.handleChange}
                             token={banquet_participant.token}
-                            title={"The Grand Banquet"}
+                            title={banquet_participant.title}
                         />
                     )}
                   </Fragment>
