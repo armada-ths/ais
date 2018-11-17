@@ -3,7 +3,8 @@ const entry_points = {
   signup: './events/static/js/signup/index.js',
   event_check_in: './events/static/js/check_in/index.js',
   lunch_tickets_check_in: './fair/static/js/lunch_tickets_check_in/index.js',
-  tickets: './fair/static/js/tickets/index.js'
+  tickets: './fair/static/js/tickets/index.js',
+  booth_placement: './exhibitors/static/js/booth_placement/index.js'
 };
 
 module.exports = {
