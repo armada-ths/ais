@@ -33,7 +33,7 @@
 							<td>{% if participant.user %} <a href="{% url 'people:profile' fair.year participant.user.pk %}">{{ participant.name }}</a> {% else %} {{ participant.name }} {% endif %}</td>
 							<td><a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></td>
 							<td>{% if participant.alcohol %} Yes {% else %} No {% endif %}</td>
-							<td>{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td>
+							<td style="white-space: nowrap;">{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td>
 							<td style="white-space: nowrap;">
 								<a href="{% url 'banquet_manage_participant_remove' fair.year banquet.pk participant.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Confirm the removal of {{ participant.name }}.');">Remove</a>
 								<a href="{% url 'banquet_manage_participant_edit' fair.year banquet.pk participant.pk %}" class="btn btn-sm btn-default">Edit</a>
