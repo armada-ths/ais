@@ -19,7 +19,7 @@ from people.models import Language, Profile
 from accounting.models import Order
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 
-from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket
+from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, Table, Seat
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, ParticipantForm, ParticipantAdminForm, AfterPartyTicketForm
 
 
@@ -491,6 +491,32 @@ def manage_participant_form(request, year, banquet_pk, participant_pk):
 	participant = get_object_or_404(Participant, banquet = banquet, pk = participant_pk)
 	
 	form = ParticipantAdminForm(request.POST or None, instance = participant)
+	
+	seats_taken = [p.seat for p in Participant.objects.select_related('seat').exclude(seat = None)]
+	
+	seats = []
+	
+	for table in Table.objects.filter(banquet = banquet):
+		table_seats = []
+		
+		for table_seat in Seat.objects.filter(table = table):
+			if table_seat not in seats_taken: table_seats.append((table_seat.pk, table_seat.name))
+		
+		seats.append([table, table_seats])
+	
+	form.fields['seat'].choices = [('', '---------')] + seats
+	
+	users = []
+	all_users = []
+	
+	for organization_group in OrganizationGroup.objects.filter(fair = fair):
+		this_users_flat = [application.user for application in RecruitmentApplication.objects.select_related('user').filter(delegated_role__organization_group = organization_group, status = 'accepted', recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
+		all_users += this_users_flat
+		users.append([organization_group.name, [(user.pk, user.get_full_name()) for user in this_users_flat]])
+	
+	if participant is not None and participant.user is not None and participant.user not in all_users: users = [(participant.user.pk, participant.user.get_full_name())] + users
+	
+	form.fields['user'].choices = [('', '---------')] + users
 	
 	if request.POST and form.is_valid():
 		participant = form.save()

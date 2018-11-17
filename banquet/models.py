@@ -32,6 +32,7 @@ class Table(models.Model):
 	
 	class Meta:
 		unique_together = [['banquet', 'name']]
+		ordering = ['banquet', 'name']
 	
 	def __str__(self): return self.name
 
@@ -42,6 +43,7 @@ class Seat(models.Model):
 	
 	class Meta:
 		unique_together = [['table', 'name']]
+		ordering = ['table', 'name']
 	
 	def __str__(self): return self.table.name + ' ' + self.name
 

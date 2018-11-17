@@ -100,7 +100,7 @@ class ParticipantAdminForm(forms.ModelForm):
 	
 	class Meta:
 		model = Participant
-		fields = ['company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']
+		fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']
 		
 		help_texts = {
 			'name': 'Only enter a name if you do not select a user.',
