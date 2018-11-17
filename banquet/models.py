@@ -1,11 +1,16 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.crypto import get_random_string
 
 from companies.models import Company
 from people.models import DietaryRestriction
 from accounting.models import Product
 from fair.models import Fair
+
+
+def get_random_32_length_string():
+    return get_random_string(32)
 
 
 class Banquet(models.Model):
@@ -42,6 +47,7 @@ class Seat(models.Model):
 
 
 class Participant(models.Model):
+	token = models.CharField(max_length = 32, default = get_random_32_length_string)
 	banquet = models.ForeignKey(Banquet, on_delete = models.CASCADE)
 	company = models.ForeignKey(Company, blank = True, null = True, on_delete = models.CASCADE)
 	user = models.ForeignKey(User, blank = True, null = True, on_delete = models.CASCADE)
