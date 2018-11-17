@@ -1,6 +1,7 @@
 Django==1.11
 django-cas-client
 psycopg2
+psycopg2-binary
 setuptools
 uWSGI
 wheel
