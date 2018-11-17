@@ -42,3 +42,28 @@ def lunch_ticket(lunch_ticket):
     }
 
     return data
+
+
+def location(location):
+    data = {
+        'id': location.pk,
+        'name': location.name,
+        'booths': [booth(booth_obj) for booth_obj in location.booth_set.all()],
+        'map': {
+            'url': location.background.url,
+            'width': location.background.width,
+            'height': location.background.height,
+        }
+    }
+
+    return data
+
+
+def booth(booth):
+    data = {
+        'id': booth.pk,
+        'name': booth.name,
+        'boundaries': booth.boundaries.coords
+    }
+
+    return data

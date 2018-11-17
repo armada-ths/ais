@@ -8,12 +8,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from accounting.models import Order
 from banquet.models import Banquet, Participant
 from companies.models import CompanyContact, CompanyCustomerComment, CompanyCustomerResponsible
+from exhibitors import serializers
 from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
 from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, \
     ExhibitorSearchForm
-from .models import Exhibitor, ExhibitorView
+from .models import Exhibitor, ExhibitorView, Location
 
 
 def possible_contact_persons(fair):
@@ -441,7 +442,12 @@ def exhibitor_comment_remove(request, year, pk, comment_pk):
 @permission_required('exhibitors.base')
 def booth_placement(request, year):
     fair = get_object_or_404(Fair, year=year)
-    react_props = {}
+
+    locations_with_maps = Location.objects.exclude(background__exact='').all()
+
+    react_props = {
+        'locations': [serializers.location(location) for location in locations_with_maps]
+    }
 
     return render(request, 'exhibitors/booth_placement.html', {
         'fair': fair,
