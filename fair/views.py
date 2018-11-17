@@ -192,13 +192,16 @@ def lunchticket_send(request, year, token):
 
     send_mail(
         'Lunch ticket ' + eat_by,
-        'Open the link below to redeem your lunch ticket at ' + lunch_ticket.fair.name + '.\n\nEat by: ' + eat_by + '\n' + request.build_absolute_uri(reverse('lunchticket_display', args = [lunch_ticket.token])),
+        'Open the link below to redeem your lunch ticket at ' + lunch_ticket.fair.name + '.\n\nDate: ' + eat_by + '\n' + request.build_absolute_uri(reverse('lunchticket_display', args = [lunch_ticket.token])),
         'info@armada.nu',
         [email_address],
         fail_silently = True
     )
     
     LunchTicketSend(lunch_ticket=lunch_ticket, user=request.user, email_address=email_address).save()
+    
+    lunch_ticket.sent = True
+    lunch_ticket.save()
 
     return redirect('fair:lunchticket', fair.year, lunch_ticket.token)
 
