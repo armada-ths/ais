@@ -3,6 +3,7 @@ import {withStyles} from '@material-ui/core/styles';
 import Button from "@material-ui/core/Button/Button";
 import TextField from "@material-ui/core/TextField/TextField";
 import Grid from "@material-ui/core/Grid/Grid";
+import * as API from '../api';
 
 const styles = theme => ({
   canvas: {
@@ -118,7 +119,7 @@ class PlaceBooth extends Component {
     }
 
     for (let booth of booths) {
-      drawPath(ctx, scalePath(booth.boundaries, this.canvasRef.current.width, this.canvasRef.current.height), 'yellow');
+      drawPath(ctx, scalePath(booth.boundaries, this.canvasRef.current.width, this.canvasRef.current.height), 'green');
     }
   }
 
@@ -154,9 +155,12 @@ class PlaceBooth extends Component {
   }
 
   handleSave() {
+    const {locationId} = this.props;
+
     this.setState(prevState => {
-      console.log(prevState.currentPath);
-      console.log(scalePath(prevState.currentPath, 1.0 / this.canvasRef.current.width, 1.0 / this.canvasRef.current.height));
+      const scaledPath = scalePath(prevState.currentPath, 1.0 / this.canvasRef.current.width, 1.0 / this.canvasRef.current.height);
+
+      API.createBooth(locationId, prevState.boothName, scaledPath);
 
       return {
         currentPath: [],
