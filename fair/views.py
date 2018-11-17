@@ -5,8 +5,10 @@ from django.db.models import Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 
+from banquet.models import Participant, Banquet
 from companies.models import CompanyContact
 from events.models import Event
+from fair import serializers
 from recruitment.models import RecruitmentApplication
 from recruitment.models import RecruitmentPeriod, Role
 from .forms import LunchTicketForm, LunchTicketSearchForm
@@ -201,11 +203,30 @@ def lunchticket_create(request, year):
     })
 
 
+@permission_required('fair.lunchtickets')
 def lunchtickets_check_in(request, year):
     fair = get_object_or_404(Fair, year=year)
 
     react_props = {}
 
     return render(request, 'fair/lunch_ticket_check_in.html', {
+        'react_props': json.dumps(react_props)
+    })
+
+
+def tickets(request, year):
+    fair = get_object_or_404(Fair, year=year)
+    banquet = Banquet.objects.filter(fair=fair).first()
+
+    lunch_tickets = LunchTicket.objects.filter(fair=fair, user=request.user)
+    banquet_participant = Participant.objects.filter(user=request.user, banquet=banquet).first()
+
+    react_props = {
+        'lunch_tickets': [serializers.lunch_ticket(lunch_ticket=lunch_ticket) for lunch_ticket in lunch_tickets],
+        'banquet_participant': serializers.banquet_participant(banquet_participant) if banquet_participant else None
+    }
+
+    return render(request, 'fair/tickets.html', {
+        'fair': fair,
         'react_props': json.dumps(react_props)
     })

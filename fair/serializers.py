@@ -6,7 +6,17 @@ def lunch_ticket(lunch_ticket):
         'comment': lunch_ticket.comment,
         'date': lunch_ticket.time.__str__() if lunch_ticket.time else lunch_ticket.day.__str__(),
         'used': lunch_ticket.used,
-        'type': lunch_ticket.get_ticket_type()
+        'type': lunch_ticket.get_ticket_type(),
+        'token': lunch_ticket.token
+    }
+
+    return data
+
+
+def banquet_participant(banquet_participant):
+    data = {
+        'id': banquet_participant.pk,
+        'token': str(banquet_participant.pk)  # This is where you want to change to the real token mr Pola!
     }
 
     return data
