@@ -8,22 +8,22 @@ const styles = theme => ({
   },
 });
 
-const EPS = 12; // How many pixels away we want to snap to start of path
+const EPS = 18; // How many pixels away we want to snap to start of path
 const TARGET_WIDTH = 900;
 
 const addToPath = (path, x, y) => {
   const [first, ...rest] = path;
 
   if (first) {
-    const xDist = Math.abs(first.x - x);
-    const yDist = Math.abs(first.y - y);
+    const xDist = Math.abs(first[0] - x);
+    const yDist = Math.abs(first[1] - y);
 
     if (xDist < EPS && yDist < EPS) {
       return [...path, first];
     }
   }
 
-  return [...path, {x, y}];
+  return [...path, [x, y]];
 };
 
 const drawPath = (ctx, path, color = 'black') => {
@@ -33,9 +33,9 @@ const drawPath = (ctx, path, color = 'black') => {
 
   ctx.strokeStyle = color;
   ctx.beginPath();
-  ctx.moveTo(first.x, first.y);
+  ctx.moveTo(first[0], first[1]);
   for (let point of rest) {
-    ctx.lineTo(point.x, point.y);
+    ctx.lineTo(point[0], point[1]);
   }
   ctx.stroke();
 
