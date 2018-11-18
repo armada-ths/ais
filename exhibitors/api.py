@@ -41,6 +41,7 @@ def serialize_exhibitor(exhibitor, request):
         ('groups',
          [{'id': group.pk, 'name': group.name} for group in exhibitor.company.groups.filter(fair=exhibitor.fair, allow_exhibitors=True)]),
         ('booths', [{
+            'id': eib.booth.pk,
             'location': {
                 'parent': {
                     'id': eib.booth.location.parent.pk,
