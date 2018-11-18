@@ -3,7 +3,6 @@ import {withStyles} from '@material-ui/core/styles';
 import Button from "@material-ui/core/Button/Button";
 import TextField from "@material-ui/core/TextField/TextField";
 import Grid from "@material-ui/core/Grid/Grid";
-import * as API from '../api';
 
 const styles = theme => ({
   canvas: {
@@ -18,7 +17,7 @@ const styles = theme => ({
 });
 
 const EPS = 18; // How many pixels away we want to snap to start of path
-const TARGET_WIDTH = 900;
+const TARGET_WIDTH = 1100;
 
 const pathHasCycle = (path) => {
   const first = path[0];
@@ -104,11 +103,18 @@ class PlaceBooth extends Component {
     this.backgroundImage.src = map.url;
   }
 
+  componentDidUpdate() {
+    this.drawCanvas();
+  }
+
   drawCanvas() {
     const {booths} = this.props;
     const {currentPath} = this.state;
 
     const ctx = this.canvasRef.current.getContext('2d');
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '14px sans-serif';
 
     // Reset map
     ctx.clearRect(0, 0, this.canvasRef.current.width, this.canvasRef.current.height);
@@ -120,6 +126,9 @@ class PlaceBooth extends Component {
 
     for (let booth of booths) {
       drawPath(ctx, scalePath(booth.boundaries, this.canvasRef.current.width, this.canvasRef.current.height), 'green');
+      const nameX = booth.centroid[0] * this.canvasRef.current.width;
+      const nameY = booth.centroid[1] * this.canvasRef.current.height;
+      ctx.fillText(booth.name, nameX, nameY);
     }
   }
 
@@ -136,7 +145,7 @@ class PlaceBooth extends Component {
         currentPath: updatedPath,
         currentPathFinished: pathHasCycle(updatedPath)
       }
-    }, this.drawCanvas);
+    });
   }
 
   handleChange(event) {
@@ -151,23 +160,23 @@ class PlaceBooth extends Component {
         currentPath: updatedPath,
         currentPathFinished: pathHasCycle(updatedPath)
       };
-    }, this.drawCanvas);
+    });
   }
 
   handleSave() {
-    const {locationId} = this.props;
+    const {locationId, saveBooth} = this.props;
 
     this.setState(prevState => {
       const scaledPath = scalePath(prevState.currentPath, 1.0 / this.canvasRef.current.width, 1.0 / this.canvasRef.current.height);
 
-      API.createBooth(locationId, prevState.boothName, scaledPath);
+      saveBooth(prevState.boothName, scaledPath);
 
       return {
         currentPath: [],
         currentPathFinished: false,
         boothName: ""
       };
-    }, this.drawCanvas);
+    });
   }
 
   render() {

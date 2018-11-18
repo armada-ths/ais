@@ -63,7 +63,8 @@ def booth(booth):
     data = {
         'id': booth.pk,
         'name': booth.name,
-        'boundaries': booth.boundaries.coords[0]
+        'boundaries': booth.boundaries.coords[0],
+        'centroid': booth.boundaries.centroid.coords,
     }
 
     return data

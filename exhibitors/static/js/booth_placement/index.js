@@ -13,6 +13,7 @@ import keyBy from 'lodash/keyBy';
 import map from 'lodash/map';
 import PlaceBooth from "./PlaceBooth";
 import Grid from "@material-ui/core/Grid/Grid";
+import * as API from './api';
 
 const generateClassName = createGenerateClassName({
   dangerouslyUseGlobalCSS: false,
@@ -37,11 +38,33 @@ class App extends Component {
       selectedLocationId: ""
     };
     this.handleChange = this.handleChange.bind(this);
+    this.saveBooth = this.saveBooth.bind(this);
   }
 
   handleChange(event) {
     this.setState({[event.target.name]: event.target.value});
   };
+
+  saveBooth(boothName, boundaries) {
+    const {selectedLocationId} = this.state;
+    API.createBooth(selectedLocationId, boothName, boundaries)
+        .then(response => this.setState(prevState => {
+          const selectedLocation = prevState.locations[prevState.selectedLocationId];
+
+          return {
+            locations: {
+              ...prevState.locations,
+              [prevState.selectedLocationId]: {
+                ...selectedLocation,
+                booths: [
+                  ...selectedLocation.booths,
+                  response.data.booth
+                ]
+              }
+            }
+          }
+        }));
+  }
 
   render() {
     const {classes} = this.props;
@@ -83,6 +106,7 @@ class App extends Component {
                           locationId={selectedLocationId}
                           map={selectedLocation.map}
                           booths={selectedLocation.booths}
+                          saveBooth={this.saveBooth}
                       />
                   )}
                 </Grid>
