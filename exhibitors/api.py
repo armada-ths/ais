@@ -91,7 +91,7 @@ def location(request, location_pk):
     for booth in Booth.objects.filter(location=location):
         booths.append({
             'name': booth.name,
-            'boundaries': booth.boundaries.coords,
+            'boundaries': booth.boundaries.coords[0],
             'centroid': booth.boundaries.centroid.coords,
             'exhibitors': [{
                 'id': exhibitor_in_booth.exhibitor.pk,
