@@ -19,6 +19,7 @@ urlpatterns = [
 	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)/no$', views.invitation_no, name = 'banquet_invitation_no'),
 	url(r'^invitation/(?P<token>[0-9A-Fa-f-]+)/maybe$', views.invitation_maybe, name = 'banquet_invitation_maybe'),
 	url(r'^(?P<banquet_pk>[0-9]+)$', views.manage, name = 'banquet_manage'),
+	url(r'^(?P<banquet_pk>[0-9]+)/map$', views.manage_map, name = 'banquet_manage_map'),
 	url(r'^(?P<banquet_pk>[0-9]+)/invitations$', views.manage_invitations, name = 'banquet_manage_invitations'),
 	url(r'^(?P<banquet_pk>[0-9]+)/invitations/(?P<invitation_pk>[0-9]+)$', views.manage_invitation, name = 'banquet_manage_invitation'),
 	url(r'^(?P<banquet_pk>[0-9]+)/invitations/(?P<invitation_pk>[0-9]+)/edit$', views.manage_invitation_form, name = 'banquet_manage_invitation_edit'),

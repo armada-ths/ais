@@ -1,4 +1,6 @@
 import uuid
+from lib.image import UploadToDirUUID
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
@@ -22,6 +24,8 @@ class Banquet(models.Model):
 	caption_phone_number = models.CharField(max_length = 255, blank = True, null = True, verbose_name = 'Caption for the phone number field')
 	caption_dietary_restrictions = models.CharField(max_length = 255, blank = True, null = True, verbose_name = 'Caption for dietary restrictions')
 	product = models.ForeignKey(Product, null = True, blank = True, on_delete = models.CASCADE, verbose_name = 'Product to link the banquet with')
+	background = models.ImageField(upload_to = UploadToDirUUID('banquets', 'map'), blank = True, null = True)
+	point_size = models.DecimalField(blank = True, null = True, max_digits = 11, decimal_places = 10)
 	
 	def __str__(self): return self.name
 
@@ -40,6 +44,8 @@ class Table(models.Model):
 class Seat(models.Model):
 	table = models.ForeignKey(Table, on_delete = models.CASCADE)
 	name = models.CharField(max_length = 75, blank = False, null = False)
+	top = models.IntegerField(blank = True, null = True)
+	left = models.IntegerField(blank = True, null = True)
 	
 	class Meta:
 		unique_together = [['table', 'name']]

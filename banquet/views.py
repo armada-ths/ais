@@ -339,6 +339,20 @@ def manage(request, year, banquet_pk):
 
 
 @permission_required('banquet.base')
+def manage_map(request, year, banquet_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	
+	seats = Seat.objects.filter(table__banquet = banquet)
+	
+	return render(request, 'banquet/manage_map.html', {
+		'fair': fair,
+		'banquet': banquet,
+		'seats': seats
+	})
+
+
+@permission_required('banquet.base')
 def manage_invitations(request, year, banquet_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
