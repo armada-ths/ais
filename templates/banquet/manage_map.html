@@ -10,6 +10,16 @@
 		{
 			width: 100%;
 			background-size: cover; background-image: url('{{ banquet.background.url }}');
+			position: relative;
+		}
+		
+		#map .seat
+		{
+			position: absolute;
+			background: red;
+			width: 10px;
+			height: 10px;
+			cursor: crosshair;
 		}
 	</style>
 	
@@ -21,13 +31,20 @@
 		<a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a>
 	</p>
 	
+	<select id="selector">
+		<option value="0">Add seat</option>
+	</select>
+	
 	<div id="map"></div>
 {% endblock %}
 
 {% block scripts %}
+	<script src="//static.kottnet.net/javascript/jquery.js"></script>
+	<script src="//static.kottnet.net/javascript/jquery-ui.js"></script>
 	<script>
 		var image_width = {{ banquet.background.width }};
 		var image_height = {{ banquet.background.height }};
+		var seats = {{ seats | safe }};
 		var scaling;
 		
 		$(function()
@@ -36,10 +53,69 @@
 			
 			$('#map').height(image_height * scaling);
 			
+			for (var seat of seats)
+			{
+				if (seat.top !== null) { add_seat(seat.top * scaling, seat.left * scaling, seat.id, seat.table + ' – ' + seat.name); }
+				else { $('#selector').append('<option value="' + seat.id + '">' + seat.table + ' -- ' + seat.name + '</option>'); }
+			}
 			
+			$('#selector').change(function()
+			{
+				var to_remove = $('#selector :selected');
+				var added = parseInt(to_remove.val());
+				
+				if (added !== 0)
+				{
+					for (var seat of seats)
+					{
+						if (seat.id === added)
+						{
+							add_seat(20, 20, seat.id, seat.table + ' – ' + seat.name);
+							$('#map .seat:last-of-type').draggable();
+							
+							$('#selector option:first-of-type').focus();
+							to_remove.remove();
+							break;
+						}
+					}
+				}
+			});
 			
-			console.log(image_width);
-			console.log(image_height);
-		})
+			$('#map').droppable(
+			{
+				drop: function(event, ui)
+				{
+					var id = parseInt($(ui.draggable).attr('data-id'));
+					var top = parseInt($(ui.draggable).css('top').replace('px', ''));
+					var left = parseInt($(ui.draggable).css('left').replace('px', ''));
+					
+					$.post('/api/banquet/{{ banquet.pk }}/seats/' + id,
+					JSON.stringify({
+						'id': id,
+						'top': top / scaling,
+						'left': left / scaling
+					
+					}), function(data)
+					{
+						$(ui.draggable).css({ 'background': 'green' });
+						
+						setTimeout(function()
+						{
+							$(ui.draggable).css({ 'background': 'red' });
+						}, 1000);
+					});
+				}
+			});
+		});
+		
+		
+		var add_seat = function(top, left, id, name)
+		{
+			$('#map').append('<div class="seat" style="top: ' + top + 'px; left: ' + left + 'px;" title="' + name + '" data-id="' + id + '"></div>');
+			$('#map .seat:last-of-type').draggable(
+			{
+				containment: 'parent'
+			});
+		};
 	</script>
 {% endblock %}

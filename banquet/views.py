@@ -343,7 +343,13 @@ def manage_map(request, year, banquet_pk):
 	fair = get_object_or_404(Fair, year = year)
 	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
 	
-	seats = Seat.objects.filter(table__banquet = banquet)
+	seats = json.dumps([{
+		'id': seat.pk,
+		'name': seat.name,
+		'table': seat.table.name,
+		'top': seat.top,
+		'left': seat.left
+	} for seat in Seat.objects.filter(table__banquet = banquet)])
 	
 	return render(request, 'banquet/manage_map.html', {
 		'fair': fair,

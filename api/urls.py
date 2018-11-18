@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$', views.root),
     url(r'^events/', include('events.api_urls')),
     url(r'^exhibitors/', include('exhibitors.api_urls')),
+    url(r'^banquet/', include('banquet.api_urls')),
     url(r'^fair/', include('fair.api_urls')),
     url(r'^catalogueselections/', views.catalogueselections),
     url(r'^news/', views.news),
