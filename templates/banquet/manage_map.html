@@ -26,9 +26,36 @@
 			background: red;
 		}
 		
+		#map .seat.taken .name
+		{
+			background: rgba(128, 0, 0, 0.5);
+		}
+		
 		#map .seat.free
 		{
 			background: green;
+		}
+		
+		#map .seat.free .name
+		{
+			background: rgba(0, 128, 0, 0.5);
+		}
+		
+		#map .seat .name
+		{
+			white-space: nowrap;
+			position: absolute;
+			top: -2px;
+			left: 12px;
+			color: #ffffff;
+			font-size: 8pt;
+			font-weight: bold;
+			display: none;
+		}
+		
+		#map .seat:hover .name
+		{
+			display: block;
 		}
 	</style>
 	
@@ -64,7 +91,7 @@
 			
 			for (var seat of seats)
 			{
-				if (seat.top !== null) { add_seat(seat.top * scaling, seat.left * scaling, seat.id, seat.table + ' – ' + seat.name, seat.taken); }
+				if (seat.top !== null) { add_seat(seat.top * scaling, seat.left * scaling, seat.id, seat.table + ' – ' + seat.name, seat.participant); }
 				else { $('#selector').append('<option value="' + seat.id + '">' + seat.table + ' -- ' + seat.name + '</option>'); }
 			}
 			
@@ -79,7 +106,7 @@
 					{
 						if (seat.id === added)
 						{
-							add_seat(20, 20, seat.id, seat.table + ' – ' + seat.name, seat.taken);
+							add_seat(20, 20, seat.id, seat.table + ' – ' + seat.name, seat.participant);
 							$('#map .seat:last-of-type').draggable();
 							
 							$('#selector option:first-of-type').focus();
@@ -118,9 +145,9 @@
 		});
 		
 		
-		var add_seat = function(top, left, id, name, taken)
+		var add_seat = function(top, left, id, name, participant)
 		{
-			$('#map').append('<div class="seat ' + (taken ? 'taken' : 'free') + '" style="top: ' + top + 'px; left: ' + left + 'px;" title="' + name + '" data-id="' + id + '"></div>');
+			$('#map').append('<div class="seat ' + (participant !== null ? 'taken' : 'free') + '" style="top: ' + top + 'px; left: ' + left + 'px;" data-id="' + id + '"><div class="name">' + name + (participant !== null ? (' – ' + participant) : '') + '</div></div>');
 			$('#map .seat:last-of-type').draggable(
 			{
 				containment: 'parent'
