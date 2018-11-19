@@ -449,7 +449,7 @@ def booths(request, year):
 	eibs = {}
 	
 	for eib in ExhibitorInBooth.objects.select_related('exhibitor').select_related('booth').filter(exhibitor__fair = fair):
-		if eib.booth in eibs: eibs[eib.booth] += eib.exhibitor
+		if eib.booth in eibs: eibs[eib.booth].append(eib.exhibitor)
 		else: eibs[eib.booth] = [eib.exhibitor]
 	
 	return render(request, 'exhibitors/booths.html', {
