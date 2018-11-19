@@ -374,8 +374,8 @@ def manage_invitations(request, year, banquet_pk):
 		invitations.append({
 			'pk': invitation.pk,
 			'group': invitation.group,
+			'user': invitation.user,
 			'name': invitation.user.get_full_name() if invitation.user is not None else invitation.name,
-			'email_address': invitation.user.email if invitation.user is not None else invitation.email_address,
 			'reason': invitation.reason,
 			'status': invitation.status,
 			'price': invitation.price,
@@ -484,6 +484,26 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk = None):
 		'banquet': banquet,
 		'invitation': invitation,
 		'form': form
+	})
+
+
+@permission_required('banquet.base')
+def manage_participant(request, year, banquet_pk, participant_pk):
+	fair = get_object_or_404(Fair, year = year)
+	banquet = get_object_or_404(Banquet, fair = fair, pk = banquet_pk)
+	participant = get_object_or_404(Participant, banquet = banquet, pk = participant_pk)
+	
+	return render(request, 'banquet/manage_participant.html', {
+		'fair': fair,
+		'banquet': banquet,
+		'participant': {
+			'pk': participant.pk,
+			'name': participant.user.get_full_name() if participant.user else participant.name,
+			'email_address': participant.user.email if participant.user else participant.email_address,
+			'phone_number': participant.phone_number,
+			'token': participant.token,
+			'seat': participant.seat
+		}
 	})
 
 

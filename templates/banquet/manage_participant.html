@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-banquet %}
+	<li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>{{ banquet.name }} – Participant</h1>
+	
+	<p>
+		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
+		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
+		{% if banquet.background %} <a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a> {% endif %}
+	</p>
+	
+	<ul class="list-unstyled">
+		{% if participant.company %}<li><span style="font-weight: bold;">Company:</span> {{ participant.company }}</li>{% endif %}
+		<li><span style="font-weight: bold;">Name:</span> {{ participant.name }}</li>
+		<li><span style="font-weight: bold;">E-mail address:</span> <a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></li>
+		<li><span style="font-weight: bold;">Phone number:</span> <a href="tel:{{ participant.phone_number }}">{{ participant.phone_number }}</a></li>
+	</ul>
+	
+	{% if participant.seat %}
+		<ul class="list-unstyled">
+			<li><span style="font-weight: bold;">Table:</span> {{ participant.seat.table.name }}</li>
+			<li><span style="font-weight: bold;">Seat:</span> {{ participant.seat.name }}</li>
+		</ul>
+	{% else %}
+		<p class="text-danger">The participant has no seat.</p>
+	{% endif %}
+	
+	<p>
+		<a href="{% url 'banquet_manage_participant_remove' fair.year banquet.pk participant.pk %}" class="btn btn-danger" onclick="return confirm('Confirm the removal of {{ participant.name }}.');">Remove participant</a>
+		<a href="{% url 'banquet_manage_participant_edit' fair.year banquet.pk participant.pk %}" class="btn btn-primary">Edit participant</a>
+	</p>
+	
+	<h2>Ticket link</h2>
+	<p>Give the following link to the participant.</p>
+	
+	<input type="text" value="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}" />
+{% endblock %}

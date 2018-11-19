@@ -61,33 +61,29 @@
 					<th>Group</th>
 					<th>Deadline</th>
 					<th>Name</th>
-					<th>E-mail address</th>
 					<th>Reason</th>
-					<th style="text-align: right;">Price (SEK)</th>
+					<th style="text-align: right; white-space: nowrap;">Price (SEK)</th>
+					<th></th>
 				</tr>
 			</thead>
 			
 			<tbody>
-				{% if invitiations %}
-					{% for invitation in invitiations %}
-						<tr>
-							<td>{{ invitation.group }}</td>
-							<td>{% if invitation.deadline_smart is not None %} <span style="display: none;">{{ invitation.deadline_smart|date:"U" }}</span> {{ invitation.deadline_smart }} {% else %} <span style="font-style: italic;">no deadline</span> {% endif %}</td>
-							<td>
-								<a href="{% url 'banquet_manage_invitation' fair.year banquet.pk invitation.pk %}">{{ invitation.name }}</a>
-								
-								{% if invitation.status == 'GOING' %}<span class="label label-success">Going</span>{% endif %}
-								{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">Not going</span>{% endif %}
-								{% if invitation.status == 'PENDING' %}<span class="label label-default">Pending</span>{% endif %}
-							</td>
-							<td><a href="mailto:{{ invitation.email_address }}">{{ invitation.email_address }}</a></td>
-							<td>{% if invitation.reason %}{{ invitation.reason }}{% endif %}</td>
-							<td style="text-align: right;">{{ invitation.price }}</td>
-						</tr>
-					{% endfor %}
-				{% else %}
-					<tr><td colspan="6" style="text-align: center;">No invitations found.</td></tr>
-				{% endif %}
+				{% for invitation in invitiations %}
+					<tr>
+						<td>{{ invitation.group }}</td>
+						<td>{% if invitation.deadline_smart is not None %} <span style="display: none;">{{ invitation.deadline_smart|date:"U" }}</span> {{ invitation.deadline_smart }} {% else %} <span style="font-style: italic;">no deadline</span> {% endif %}</td>
+						<td>
+							{% if invitation.user %} <a href="{% url 'people:profile' fair.year invitation.user.pk %}">{{ invitation.name }}</a> {% else %} {{ invitation.name }} {% endif %}
+							
+							{% if invitation.status == 'GOING' %}<span class="label label-success">Going</span>{% endif %}
+							{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">Not going</span>{% endif %}
+							{% if invitation.status == 'PENDING' %}<span class="label label-default">Pending</span>{% endif %}
+						</td>
+						<td>{% if invitation.reason %}{{ invitation.reason }}{% endif %}</td>
+						<td style="text-align: right;">{{ invitation.price }}</td>
+						<td style="text-align: right;"><a href="{% url 'banquet_manage_invitation' fair.year banquet.pk invitation.pk %}" class="btn btn-sm btn-default">Details</a></td>
+					</tr>
+				{% endfor %}
 			</tbody>
 		</table>
 	</div>
@@ -100,7 +96,20 @@
 	<script>
 		$(function()
 		{
-			$('#invitation_table').DataTable({ 'paging': false });
+			$('#invitation_table').DataTable(
+			{
+				'paging': false,
+				"columns":
+				[
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					{ 'orderable': false }
+				]
+			});
 		})
 	</script>
 {% endblock %}
