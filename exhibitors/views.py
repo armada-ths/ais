@@ -314,7 +314,8 @@ def exhibitor(request, year, pk):
         'banquet_tickets_count_ordered': banquet_tickets_count_ordered,
         'banquet_tickets_count_created': banquet_tickets_count_created,
         'banquets': banquets,
-        'deadline_complete_registration': exhibitor.deadline_complete_registration or fair.complete_registration_close_date
+        'deadline_complete_registration': exhibitor.deadline_complete_registration or fair.complete_registration_close_date,
+        'booths': [eib.booth for eib in ExhibitorInBooth.objects.select_related('booth').filter(exhibitor = exhibitor)]
     })
 
 

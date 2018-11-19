@@ -56,6 +56,24 @@
 			
 			<div class="panel panel-default">
 				<div class="panel-heading">
+					<h3 class="panel-title">Booths</h3>
+				</div>
+				
+				<div class="panel-body">
+					{% if booths %}
+						<ul class="list-unstyled">
+							{% for booth in booths %}
+								<li><a href="//maps.armada.nu/?location={{ booth.location.pk }}&booth={{ booth.pk }}" target="_blank">{% if booth.location.parent %}{{ booth.location.parent.name }} – {% endif %} {{ booth.location.name }} – {{ booth.name }}</a></li>
+							{% endfor %}
+						</ul>
+					{% else %}
+						<p>No booth(s) assigned.</p>
+					{% endif %}
+				</div>
+			</div>
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
 					<h3 class="panel-title">Transport details</h3>
 				</div>
 				
