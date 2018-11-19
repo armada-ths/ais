@@ -27,20 +27,16 @@
 			</thead>
 			
 			<tbody>
-				{% if participants %}
-					{% for participant in participants %}
-						<tr>
-							<td>{% if participant.company %} {{ participant.company }} {% endif %}</td>
-							<td>{% if participant.user %} <a href="{% url 'people:profile' fair.year participant.user.pk %}">{{ participant.name }}</a> {% else %} {{ participant.name }} {% endif %}</td>
-							<td><a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></td>
-							<td>{% if participant.alcohol %} Yes {% else %} No {% endif %}</td>
-							<td style="white-space: nowrap;">{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td>
-							<td><a href="{% url 'banquet_manage_participant' fair.year banquet.pk participant.pk %}" class="btn btn-sm btn-default">Details</a></td>
-						</tr>
-					{% endfor %}
-				{% else %}
-					<tr><td colspan="5" style="text-align: center;">This banquet has no participants.</td></tr>
-				{% endif %}
+				{% for participant in participants %}
+					<tr>
+						<td>{% if participant.company %} {{ participant.company }} {% endif %}</td>
+						<td>{% if participant.user %} <a href="{% url 'people:profile' fair.year participant.user.pk %}">{{ participant.name }}</a> {% else %} {{ participant.name }} {% endif %}</td>
+						<td><a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></td>
+						<td>{% if participant.alcohol %} Yes {% else %} No {% endif %}</td>
+						<td style="white-space: nowrap;">{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td>
+						<td><a href="{% url 'banquet_manage_participant' fair.year banquet.pk participant.pk %}" class="btn btn-sm btn-default">Details</a></td>
+					</tr>
+				{% endfor %}
 			</tbody>
 		</table>
 	</div>
