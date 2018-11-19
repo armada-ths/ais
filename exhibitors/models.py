@@ -143,6 +143,7 @@ class Exhibitor(models.Model):
 	
 	class Meta:
 		default_permissions = []
+		ordering = ['company__name']
 		permissions = [
 			('base', 'View the Exhibitors tab'),
 			('view_all', 'Always view all exhibitors'),
