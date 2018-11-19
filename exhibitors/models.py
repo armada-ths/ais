@@ -151,7 +151,8 @@ class Exhibitor(models.Model):
 			('modify_contact_persons', 'Modify contact persons'),
 			('modify_transport', 'Modify transport details'),
 			('modify_check_in', 'Modify check in'),
-			('modify_details', 'Modify details')
+			('modify_details', 'Modify details'),
+			('modify_booths', 'Modify booths')
 		]
 
 
@@ -196,10 +197,10 @@ class Location(models.Model):
 	background = models.ImageField(upload_to = UploadToDirUUID('locations'), null = True, blank = True)
 	
 	class Meta:
-		ordering = ['fair', 'name']
+		ordering = ['fair', 'parent__name', 'name']
 		unique_together = [['fair', 'name']]
 	
-	def __str__(self): return self.name
+	def __str__(self): return ((str(self.parent) + ' -> ') if self.parent else '') + self.name
 
 
 class Booth(models.Model):

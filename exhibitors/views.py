@@ -12,9 +12,8 @@ from exhibitors import serializers
 from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
-from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, \
-    ExhibitorSearchForm
-from .models import Exhibitor, ExhibitorView, ExhibitorInBooth, Location
+from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, ExhibitorSearchForm, BoothForm, ExhibitorInBoothForm
+from .models import Exhibitor, ExhibitorView, Booth, ExhibitorInBooth, Location
 
 
 def possible_contact_persons(fair):
@@ -441,6 +440,86 @@ def exhibitor_comment_remove(request, year, pk, comment_pk):
     comment.delete()
 
     return redirect('exhibitor', fair.year, exhibitor.pk)
+
+
+@permission_required('exhibitors.modify_booths')
+def booths(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	
+	eibs = {}
+	
+	for eib in ExhibitorInBooth.objects.select_related('exhibitor').select_related('booth').filter(exhibitor__fair = fair):
+		if eib.booth in eibs: eibs[eib.booth] += eib.exhibitor
+		else: eibs[eib.booth] = [eib.exhibitor]
+	
+	return render(request, 'exhibitors/booths.html', {
+		'fair': fair,
+		'booths': [{
+			'pk': booth.pk,
+			'location': booth.location,
+			'name': booth.name,
+			'exhibitors': eibs[booth] if booth in eibs else []
+		} for booth in Booth.objects.filter(location__fair = fair)]
+	})
+
+
+@permission_required('exhibitors.modify_booths')
+def booth(request, year, booth_pk):
+	fair = get_object_or_404(Fair, year = year)
+	booth = get_object_or_404(Booth, location__fair = fair, pk = booth_pk)
+	
+	form = BoothForm(request.POST or None, instance = booth)
+	
+	form.fields['location'].queryset = Location.objects.exclude(background = '')
+	
+	if request.POST and form.is_valid():
+		form.save()
+	
+	return render(request, 'exhibitors/booth.html', {
+		'fair': fair,
+		'booth': booth,
+		'form': form,
+		'eibs': ExhibitorInBooth.objects.filter(booth = booth)
+	})
+
+
+@permission_required('exhibitors.modify_booths')
+def exhibitor_in_booth(request, year, booth_pk, exhibitor_pk):
+	pass
+
+
+@permission_required('exhibitors.modify_booths')
+def exhibitor_in_booth_form(request, year, booth_pk, exhibitor_pk = None):
+	fair = get_object_or_404(Fair, year = year)
+	booth = get_object_or_404(Booth, pk = booth_pk, location__fair = fair)
+	exhibitor_in_booth = get_object_or_404(ExhibitorInBooth, booth = booth, exhibitor__pk = exhibitor_pk, exhibitor__fair = fair) if exhibitor_pk else None
+	
+	form = ExhibitorInBoothForm(request.POST or None, instance = exhibitor_in_booth)
+	
+	form.instance.booth = booth
+	
+	form.fields['exhibitor'].queryset = Exhibitor.objects.filter(fair = fair)
+	
+	if request.POST and form.is_valid():
+		form.save()
+		return redirect('booth', fair.year, booth.pk)
+	
+	return render(request, 'exhibitors/booth_exhibitor_form.html', {
+		'fair': fair,
+		'booth': booth,
+		'form': form,
+		'eib': exhibitor_in_booth
+	})
+
+
+@permission_required('exhibitors.modify_booths')
+def exhibitor_in_booth_remove(request, year, booth_pk, exhibitor_pk):
+	fair = get_object_or_404(Fair, year = year)
+	eib = get_object_or_404(ExhibitorInBooth, exhibitor__pk = exhibitor_pk, exhibitor__fair = fair, booth__pk = booth_pk)
+	
+	eib.delete()
+	
+	return redirect('booth', fair.year, booth_pk)
 
 
 @permission_required('exhibitors.base')

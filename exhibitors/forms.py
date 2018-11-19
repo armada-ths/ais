@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import inspect
 
 from companies.models import Company, CompanyCustomerComment
-from .models import ExhibitorView, Exhibitor
+from .models import ExhibitorView, Exhibitor, Booth, ExhibitorInBooth
 
 class ExhibitorViewForm(forms.Form):
 	instance = None
@@ -78,6 +78,22 @@ class CommentForm(forms.ModelForm):
 	class Meta:
 		model = CompanyCustomerComment
 		fields = ['comment']
+
+
+class BoothForm(forms.ModelForm):
+	class Meta:
+		model = Booth
+		fields = ['location', 'name']
+
+
+class ExhibitorInBoothForm(forms.ModelForm):
+	class Meta:
+		model = ExhibitorInBooth
+		fields = ['exhibitor', 'days', 'comment']
+		
+		widgets = {
+			'days' : forms.CheckboxSelectMultiple()
+		}
 
 
 class ExhibitorSearchForm(forms.Form):
