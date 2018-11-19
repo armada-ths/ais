@@ -1,0 +1,86 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<meta charset="utf-8" />
+		{% include "header.html" %}{% block head-extra %}{% endblock %}
+		<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
+		<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+	</head>
+	
+	<body>
+		<div class="container" style="max-width: 900px;">
+			<style type="text/css">
+				#map
+				{
+					background-image: url('{{ participant.banquet.background.url }}');
+					background-size: cover;
+					width: 100%;
+					height: 300px;
+					position: relative;
+				}
+				
+				#ticket_seat
+				{
+					background: red;
+					width: 7px;
+					height: 7px;
+					position: absolute;
+				}
+			</style>
+			
+			<div class="text-center headline">
+				<h2>{{ participant.banquet }}</h2>
+				<h1>Ticket</h1>
+			</div>
+			
+			<ul class="list-unstyled">
+				{% if participant.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ participant.banquet.date }}</li>{% endif %}
+				{% if participant.banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ participant.banquet.location }}</li>{% endif %}
+				{% if participant.banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ participant.banquet.dress_code }}</li>{% endif %}
+			</ul>
+			
+			<div id="qrcode" style="margin: 50px auto 50px; max-width: 256px;"></div>
+			
+			<script src="//static.kottnet.net/javascript/qrcode.min.js"></script>
+			<script>
+				new QRCode(document.getElementById('qrcode'), '{{ participant.token }}');
+			</script>
+			
+			{% if participant.seat %}
+				<ul class="list-unstyled">
+					<li><span style="font-weight: bold;">Table:</span> {{ participant.seat.table.name }}</li>
+					<li><span style="font-weight: bold;">Seat:</span> {{ participant.seat.name }}</li>
+				</ul>
+				
+				{% if participant.seat.top %}
+					<div id="map">
+						<div id="ticket_seat"></div>
+					</div>
+					
+					<script src="//static.kottnet.net/javascript/jquery.js"></script>
+					<script>
+						var width = {{ participant.banquet.background.width }};
+						var height = {{ participant.banquet.background.height }};
+						
+						$(function()
+						{
+							console.log($('#map').width());
+							var scaling =  $('#map').width() / width;
+							
+							$('#map').height(height * scaling);
+							
+							$('#ticket_seat').css(
+							{
+								'top': ({{ participant.seat.top }} * scaling) + 'px',
+								'left': ({{ participant.seat.left }} * scaling) + 'px'
+							});
+						});
+					</script>
+				{% endif %}
+			{% endif %}
+		</div>
+	</body>
+</html>

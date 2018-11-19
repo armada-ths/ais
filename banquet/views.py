@@ -2,7 +2,7 @@ import datetime, json, csv, stripe
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import permission_required
 from django.conf import settings
@@ -670,7 +670,6 @@ def invitation_maybe(request, year, token):
 
 def external_invitation(request, token):
 	invitation = get_object_or_404(Invitation, token = token, user = None)
-	
 	participant = invitation.participant if invitation.participant is not None else Participant(banquet = invitation.banquet, user = None)
 	
 	participant.name = invitation.name
@@ -721,6 +720,13 @@ def external_invitation(request, token):
 		'stripe_publishable': settings.STRIPE_PUBLISHABLE,
 		'stripe_amount': invitation.price * 100,
 		'can_edit': can_edit
+	})
+
+def participant_display(request, token):
+	participant = get_object_or_404(Participant, token = token)
+	
+	return render(request, 'banquet/participant_display.html', {
+		'participant': participant
 	})
 
 
