@@ -172,7 +172,8 @@ class ExhibitorView(models.Model):
 		'booth_height': 'Booth height (cm)',
 		'count_lunch_tickets': 'Lunch tickets',
 		'count_banquet_tickets': 'Banquet tickets',
-		'check_in_timestamp': 'Check in'
+		'check_in_timestamp': 'Check in',
+		'booths': 'Booths'
 	}
 	
 	user = models.ForeignKey(User, on_delete = models.CASCADE)

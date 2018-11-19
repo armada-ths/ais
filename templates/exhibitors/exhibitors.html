@@ -79,6 +79,14 @@
 							{% elif field.field == 'check_in_timestamp' %}
 								{% if field.value is None %}<td class="bg-danger"></td>
 								{% else %}<td style="white-space: nowrap;"><span style="display: none;">{{ field.value|date:"U" }}</span>{{ field.value }}</td>{% endif %}
+							{% elif field.field == 'booths' %}
+								<td style="white-space: nowrap;">
+									<ul class="list-unstyled">
+										{% for booth in field.value %}
+											<li>{% if booth.location.parent %} {{ booth.location.parent }} {% endif %}{{ booth }}</li>
+										{% endfor %}
+									</ul>
+								</td>
 							{% else %}
 								<td>
 									{% if field.value is not None %}{{ field.value }}{% endif %}

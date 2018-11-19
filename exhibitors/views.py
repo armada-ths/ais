@@ -14,7 +14,7 @@ from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
 from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, \
     ExhibitorSearchForm
-from .models import Exhibitor, ExhibitorView, Location
+from .models import Exhibitor, ExhibitorView, ExhibitorInBooth, Location
 
 
 def possible_contact_persons(fair):
@@ -53,8 +53,12 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     if 'count_banquet_tickets' in choices:
         products = [banquet.product for banquet in Banquet.objects.select_related('product').filter(fair=fair).exclude(product=None)]
         banquet_tickets_orders = Order.objects.filter(product__in=products)
-        banquet_tickets_created = Participant.objects.filter(banquet=Banquet.objects.filter(fair=fair).exclude(product=None)).exclude(
-            company=None)
+        banquet_tickets_created = Participant.objects.filter(banquet=Banquet.objects.filter(fair=fair).exclude(product=None)).exclude(company=None)
+    
+    if 'booths' in choices:
+        eibs = [eib for eib in ExhibitorInBooth.objects.select_related('booth__location').select_related('booth__location__parent').filter(exhibitor__fair = fair)]
+    
+    print(eibs)
 
     exhibitors = []
 
@@ -81,8 +85,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
 
         exhibitors = exhibitors_filtered
 
-    if not request.user.has_perm('exhibitors.view_all'): exhibitors = [exhibitor for exhibitor in exhibitors if
-                                                                       request.user in exhibitor['exhibitor'].contact_persons.all()]
+    if not request.user.has_perm('exhibitors.view_all'): exhibitors = [exhibitor for exhibitor in exhibitors if request.user in exhibitor['exhibitor'].contact_persons.all()]
 
     for exhibitor in exhibitors:
         e = exhibitor['exhibitor']
@@ -129,6 +132,8 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
                     'ordered': ordered,
                     'created': created
                 }
+
+            if choice == 'booths': value = [eib.booth for eib in eibs if eib.exhibitor == e]
 
             exhibitor['fields'].append({
                 'field': choice,
