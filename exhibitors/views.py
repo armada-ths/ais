@@ -57,8 +57,6 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
     
     if 'booths' in choices:
         eibs = [eib for eib in ExhibitorInBooth.objects.select_related('booth__location').select_related('booth__location__parent').filter(exhibitor__fair = fair)]
-    
-    print(eibs)
 
     exhibitors = []
 
