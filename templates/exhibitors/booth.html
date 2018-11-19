@@ -9,7 +9,8 @@
 {% block content %}
 	<ol class="breadcrumb">
 		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
-		<li class="active">Booths</li>
+		<li><a href="{% url 'booths' fair.year %}">Booths</a></li>
+		<li class="active">{{ booth.name }}</li>
 	</ol>
 	
 	<h1>Booth</h1>
