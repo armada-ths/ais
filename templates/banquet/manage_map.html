@@ -16,10 +16,19 @@
 		#map .seat
 		{
 			position: absolute;
-			background: red;
 			width: 10px;
 			height: 10px;
 			cursor: crosshair;
+		}
+		
+		#map .seat.taken
+		{
+			background: red;
+		}
+		
+		#map .seat.free
+		{
+			background: green;
 		}
 	</style>
 	
@@ -55,7 +64,7 @@
 			
 			for (var seat of seats)
 			{
-				if (seat.top !== null) { add_seat(seat.top * scaling, seat.left * scaling, seat.id, seat.table + ' – ' + seat.name); }
+				if (seat.top !== null) { add_seat(seat.top * scaling, seat.left * scaling, seat.id, seat.table + ' – ' + seat.name, seat.taken); }
 				else { $('#selector').append('<option value="' + seat.id + '">' + seat.table + ' -- ' + seat.name + '</option>'); }
 			}
 			
@@ -70,7 +79,7 @@
 					{
 						if (seat.id === added)
 						{
-							add_seat(20, 20, seat.id, seat.table + ' – ' + seat.name);
+							add_seat(20, 20, seat.id, seat.table + ' – ' + seat.name, seat.taken);
 							$('#map .seat:last-of-type').draggable();
 							
 							$('#selector option:first-of-type').focus();
@@ -89,6 +98,8 @@
 					var top = parseInt($(ui.draggable).css('top').replace('px', ''));
 					var left = parseInt($(ui.draggable).css('left').replace('px', ''));
 					
+					$(ui.draggable).css({ 'opacity': 0.3 });
+					
 					$.post('/api/banquet/{{ banquet.pk }}/seats/' + id,
 					JSON.stringify({
 						'id': id,
@@ -97,21 +108,19 @@
 					
 					}), function(data)
 					{
-						$(ui.draggable).css({ 'background': 'green' });
-						
 						setTimeout(function()
 						{
-							$(ui.draggable).css({ 'background': 'red' });
-						}, 1000);
+							$(ui.draggable).css({ 'opacity': 1 });
+						}, 100);
 					});
 				}
 			});
 		});
 		
 		
-		var add_seat = function(top, left, id, name)
+		var add_seat = function(top, left, id, name, taken)
 		{
-			$('#map').append('<div class="seat" style="top: ' + top + 'px; left: ' + left + 'px;" title="' + name + '" data-id="' + id + '"></div>');
+			$('#map').append('<div class="seat ' + (taken ? 'taken' : 'free') + '" style="top: ' + top + 'px; left: ' + left + 'px;" title="' + name + '" data-id="' + id + '"></div>');
 			$('#map .seat:last-of-type').draggable(
 			{
 				containment: 'parent'
