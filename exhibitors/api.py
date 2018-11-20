@@ -6,9 +6,10 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 from exhibitors import serializers
-from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth
+from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth, LocationTick
 from fair.models import Fair, FairDay
 
 MISSING_IMAGE = '/static/missing.png'
@@ -152,3 +153,22 @@ def create_booth(request, location_pk):
     )
 
     return JsonResponse({'booth': serializers.booth(booth)}, status=201)
+
+
+@require_POST
+@csrf_exempt
+def people_count(request, location_pk):
+    location = get_object_or_404(Location, pk = location_pk)
+
+    if not request.user: return JsonResponse({'message': 'Authentication required.'}, status=403)
+
+    data = json.loads(request.body)
+    
+    if location.people_count is None: location.people_count = 0
+
+    location.people_count += data['change']
+    location.save()
+    
+    LocationTick(location = location, user = request.user, change = data['change'], new_people_count = location.people_count).save()
+
+    return JsonResponse({'people_count': location.people_count}, status = 200)

@@ -152,7 +152,8 @@ class Exhibitor(models.Model):
 			('modify_transport', 'Modify transport details'),
 			('modify_check_in', 'Modify check in'),
 			('modify_details', 'Modify details'),
-			('modify_booths', 'Modify booths')
+			('modify_booths', 'Modify booths'),
+			('people_count', 'Count people in locations')
 		]
 
 
@@ -195,12 +196,22 @@ class Location(models.Model):
 	parent = models.ForeignKey('exhibitors.Location', on_delete = models.CASCADE, null = True, blank = True)
 	name = models.CharField(blank = False, null = False, max_length = 255)
 	background = models.ImageField(upload_to = UploadToDirUUID('locations'), null = True, blank = True)
+	people_count_enabled = models.BooleanField(default = False)
+	people_count = models.IntegerField(null = True, blank = True)
 	
 	class Meta:
 		ordering = ['fair', 'parent__name', 'name']
 		unique_together = [['fair', 'name']]
 	
 	def __str__(self): return ((str(self.parent) + ' -> ') if self.parent else '') + self.name
+
+
+class LocationTick(models.Model):
+	location = models.ForeignKey(Location, on_delete = models.CASCADE)
+	user = models.ForeignKey(User, on_delete = models.CASCADE)
+	timestamp = models.DateTimeField(auto_now_add = True)
+	change = models.IntegerField()
+	new_people_count = models.IntegerField()
 
 
 class Booth(models.Model):

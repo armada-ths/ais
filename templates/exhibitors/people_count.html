@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% load humanize %}
+
+{% block nav-exhibitors %}<li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>{% endblock %}
+
+{% block content %}
+	<ol class="breadcrumb">
+		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+		<li class="active">People count for {{ location.name }}</li>
+	</ol>
+	
+	<h1>People count for {{ location.name }}</h1>
+	
+	<p>
+		<button class="change" data-change="1">Add 1</button>
+		<button class="change" data-change="-1">Remove 1</button>
+	</p>
+	
+	<div id="people_count">{% if location.people_count %} {{ location.people_count }} {% else %} 0 {% endif %}</div>
+{% endblock %}
+
+{% block scripts %}
+	<script src="//static.kottnet.net/javascript/jquery.js"></script>
+	<script>
+		$(function()
+		{
+			$('.change').click(function()
+			{
+				$.post('/api/exhibitors/locations/{{ location.pk }}/people_count', JSON.stringify({ 'change': parseInt($(this).attr('data-change')) }), function(data)
+				{
+					$('#people_count').html(data.people_count);
+				});
+			});
+		});
+	</script>
+{% endblock %}

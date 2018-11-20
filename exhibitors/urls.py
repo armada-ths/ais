@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^view$', views.edit_view, name='edit_view'),
     url(r'^create$', views.create, name='create'),
     url(r'^export$', views.export, name='export'),
+    url(r'^people_count/(?P<location_pk>[0-9]+)$', views.people_count, name='people_count'),
     url(r'^booths$', views.booths, name='booths'),
     url(r'^booths/(?P<booth_pk>[0-9]+)$', views.booth, name='booth'),
     url(r'^booths/(?P<booth_pk>[0-9]+)/add$', views.exhibitor_in_booth_form, name='exhibitor_in_booth_add'),
