@@ -483,7 +483,6 @@ def booth(request, year, booth_pk):
 	})
 
 
-@permission_required('exhibitors.people_count')
 def people_count(request, year, location_pk):
 	location = get_object_or_404(Location, fair__year = year, pk = location_pk, people_count_enabled = True)
 	
