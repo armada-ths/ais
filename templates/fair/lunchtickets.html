@@ -34,14 +34,17 @@
 
     <div class="row">
       <div class="col-md-6">
-        <label for="{{ form.statuses.id_for_label }}">{{ form.statuses.label }}</label>
-        {{ form.statuses }}
-
-        <label for="{{ form.types.id_for_label }}">{{ form.types.label }}</label>
-        {{ form.types }}
+        <label for="{{ form.used_statuses.id_for_label }}">{{ form.used_statuses.label }}</label>
+        {{ form.used_statuses }}
+        
+        <label for="{{ form.sent_statuses.id_for_label }}">{{ form.sent_statuses.label }}</label>
+        {{ form.sent_statuses }}
       </div>
 
       <div class="col-md-6">
+        <label for="{{ form.types.id_for_label }}">{{ form.types.label }}</label>
+        {{ form.types }}
+        
         <label for="{{ form.days.id_for_label }}">{{ form.days.label }}</label>
         {{ form.days }}
 
@@ -58,9 +61,9 @@
       <table class="table" id="lunchticket_table">
         <thead>
         <tr>
-          <th>Status</th>
-          <th>Type</th>
+          <th>Used?</th>
           <th>Sent?</th>
+          <th>Type</th>
           <th style="white-space: nowrap;">Date and time</th>
           <th>Name</th>
           <th>E-mail address</th>
@@ -75,15 +78,15 @@
         {% for l in lunchtickets %}
           <tr>
             {% if l.t.used %}
-              <td class="bg-danger">Used</td>
+              <td class="bg-success">Yes</td>
             {% else %}
-              <td class="bg-success" style="white-space: nowrap;">Not used</td>{% endif %}
+              <td class="bg-danger">No</td>{% endif %}
+            {% if l.t.sent %} <td class="bg-success">Yes</td>
+            {% else %} <td class="bg-danger">No</td> {% endif %}
             <td>
               {% if l.t.user %} Student
               {% else %} Company {% endif %}
             </td>
-            {% if l.t.sent %} <td class="bg-success">Yes</td>
-            {% else %} <td class="bg-danger">No</td> {% endif %}
             <td style="white-space: nowrap;">
               <a href="{% url 'fair:lunchticket' fair.year l.t.token %}">
                 {% if l.t.time %} {{ l.t.time }}

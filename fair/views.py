@@ -78,10 +78,10 @@ def lunchtickets(request, year):
         lunchtickets_filtered = []
 
         for lunchticket in lunchtickets:
-            if len(form.cleaned_data['statuses']) > 0:
+            if len(form.cleaned_data['used_statuses']) > 0:
                 found = False
 
-                for s in form.cleaned_data['statuses']:
+                for s in form.cleaned_data['used_statuses']:
                     if s == 'USED' and lunchticket.used:
                         found = True
                         break
@@ -101,6 +101,20 @@ def lunchtickets(request, year):
                         break
 
                     if t == 'COMPANY' and lunchticket.company is not None:
+                        found = True
+                        break
+
+                if not found: continue
+
+            if len(form.cleaned_data['sent_statuses']) > 0:
+                found = False
+
+                for t in form.cleaned_data['sent_statuses']:
+                    if t == 'SENT' and lunchticket.sent:
+                        found = True
+                        break
+
+                    if t == 'NOT_SENT' and not lunchticket.sent:
                         found = True
                         break
 
