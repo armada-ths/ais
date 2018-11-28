@@ -55,7 +55,7 @@ class Product(models.Model):
 		ordering = ['name']
 		default_permissions = []
 		permissions = [
-			('base', 'Accounting'),
+			('base', 'View the Accounting tab'),
 			('export_orders', 'Export orders'),
 			('ths_customer_ids', 'Edit companies without THS customer IDs')
 		]
