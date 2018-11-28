@@ -182,8 +182,10 @@
 								<td style="text-align: right;">{{ order.quantity }}</td>
 								<td style="text-align: right;">{% if order.unit_price is not None %}<span style="color: #000000;">{{ order.unit_price | intcomma }}</span>{% else %}<span style="color: #999999;">{{ order.product.unit_price | intcomma }}</span>{% endif %}</td>
 								<td>
-									<a onclick="confirm('Do you want to remove the order?');" href="{% url 'companies_orders_remove' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-									<a href="{% url 'companies_orders_edit' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+									{% if order.export_batch is None %}
+										<a onclick="confirm('Do you want to remove the order?');" href="{% url 'companies_orders_remove' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+										<a href="{% url 'companies_orders_edit' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+									{% endif %}
 								</td>
 							</tr>
 						{% endfor %}

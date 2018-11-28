@@ -559,7 +559,7 @@ def companies_orders_new(request, year, pk):
 def companies_orders_edit(request, year, pk, order_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
-	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company)
+	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company, export_batch = None)
 	
 	form_order = CompanyEditOrderForm(request.POST or None, instance = order)
 	
@@ -585,7 +585,7 @@ def companies_orders_edit(request, year, pk, order_pk):
 def companies_orders_remove(request, year, pk, order_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
-	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company)
+	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company, export_batch = None)
 	
 	order.delete()
 	

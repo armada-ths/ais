@@ -12,6 +12,7 @@ class Revenue(models.Model):
 		verbose_name_plural = 'Revenues'
 		ordering = ['fair__year', 'name']
 		unique_together = ['name', 'fair']
+		default_permissions = []
 
 	def __str__(self): return '%s – %s' % (self.name, self.description)
 
@@ -23,6 +24,7 @@ class Category(models.Model):
 	class Meta:
 		verbose_name_plural = 'Categories'
 		ordering = ['name']
+		default_permissions = []
 	
 	def __str__(self): return self.name
 
@@ -33,6 +35,7 @@ class RegistrationSection(models.Model):
 	class Meta:
 		verbose_name_plural = 'Registration sections'
 		ordering = ['name']
+		default_permissions = []
 	
 	def __str__(self): return self.name
 
@@ -50,9 +53,24 @@ class Product(models.Model):
 	class Meta:
 		verbose_name_plural = 'Products'
 		ordering = ['name']
-		permissions = [('base', 'Accounting')]
+		default_permissions = []
+		permissions = [
+			('base', 'Accounting'),
+			('export_orders', 'Export orders'),
+			('ths_customer_ids', 'Edit companies without THS customer IDs')
+		]
 
 	def __str__(self): return '%s – %s' % (self.revenue, self.name)
+
+
+class ExportBatch(models.Model):
+	timestamp = models.DateTimeField(blank = False, null = False, auto_now_add = True)
+	user = models.ForeignKey(User, blank = False, null = False)
+	
+	class Meta:
+		ordering = ['timestamp']
+		default_permissions = []
+
 
 class Order(models.Model):
 	product = models.ForeignKey(Product, blank = False, on_delete = models.CASCADE)
@@ -62,39 +80,12 @@ class Order(models.Model):
 	quantity = models.PositiveIntegerField(blank = False)
 	unit_price = models.IntegerField(blank = True, null = True)
 	comment = models.TextField(blank = True)
+	export_batch = models.ForeignKey(ExportBatch, blank = True, null = True)
 	
 	class Meta:
 		verbose_name_plural = 'Orders'
 		ordering = ['name']
+		default_permissions = []
 
 	def __str__(self):
 		return '%s – %s' % (self.name if self.name is not None else self.product.name, self.purchasing_company.name if self.purchasing_company is not None else self.purchasing_user)
-
-# Something that could be sold to CompanyCustomer associated with a Fair
-class Invoice(models.Model):
-	id_display = models.PositiveIntegerField(blank = False, unique = True)
-	company_customer = models.ForeignKey('companies.CompanyCustomer', blank = False, on_delete = models.CASCADE)
-	address = models.ForeignKey('companies.CompanyAddress', blank = False, on_delete = models.CASCADE)
-	price = models.PositiveIntegerField(blank = False)
-	date_issue = models.DateField(blank = False)
-	date_due = models.DateField(blank = False)
-	date_delivery_start = models.DateField(blank = False)
-	date_delivery_end = models.DateField(null = True, blank = True)
-	
-	class Meta:
-		verbose_name_plural = 'Invoices'
-
-	def __str__(self): return 'Invoice ' + str(id)
-
-# Something that could be sold to CompanyCustomer associated with a Fair
-class ProductOnInvoice(models.Model):
-	product = models.ForeignKey(Product, blank = False, on_delete = models.CASCADE)
-	invoice = models.ForeignKey(Invoice, blank = False, on_delete = models.CASCADE)
-	name = models.CharField(max_length = 100, null = True, blank = True)
-	price = models.PositiveIntegerField(null = True, blank = True)
-	
-	class Meta:
-		verbose_name_plural = 'Products'
-		ordering = ['name']
-
-	def __str__(self): return '%s – %s' % (self.revenue, self.name)

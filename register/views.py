@@ -111,6 +111,9 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	# hosts can never edit the form
 	if company_contact is None and not request.user.has_perm('companies.base'): is_editable = False
 	
+	# exhibitor representatives cannot edit orders if they have received at least one invoice
+	can_edit_orders = Order.objects.filter(purchasing_company = company, product__revenue__fair = fair).exclude(export_batch = None).count() == 0
+	
 	registration_sections = []
 	
 	for registration_section_raw in RegistrationSection.objects.all():
@@ -129,16 +132,16 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			
 			if product_raw.max_quantity == 1:
 				form_product = CompleteProductBooleanForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id), initial = {'checkbox': True if quantity_initial == 1 else False})
-				if not is_editable: form_product.fields['checkbox'].disabled = True
+				if not is_editable or not can_edit_orders: form_product.fields['checkbox'].disabled = True
 			
 			else:
 				form_product = CompleteProductQuantityForm(request.POST if request.POST and request.POST.get('save_product_' + str(product_raw.id)) else None, prefix = 'product_' + str(product_raw.id))
 				form_product.fields['quantity'].choices = [(i, i) for i in range(0, (product_raw.max_quantity + 1) if product_raw.max_quantity is not None else 21)]
 				form_product.fields['quantity'].initial = quantity_initial
 				
-				if not is_editable: form_product.fields['quantity'].disabled = True
+				if not is_editable or not can_edit_orders: form_product.fields['quantity'].disabled = True
 			
-			if request.POST and request.POST.get('save_product_' + str(product_raw.id)) and form_product.is_valid() and is_editable:
+			if request.POST and request.POST.get('save_product_' + str(product_raw.id)) and form_product.is_valid() and is_editable and can_edit_orders:
 				quantity = (1 if form_product.cleaned_data['checkbox'] else 0) if product_raw.max_quantity == 1 else int(form_product.cleaned_data['quantity'])
 				
 				if quantity == 0:

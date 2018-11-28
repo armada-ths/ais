@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Export orders</h1>
+
+	<p>
+		<a class="btn btn-default" type="button" href="{% url 'export_orders' fair.year %}">Export orders</a>
+		{% if perms.accounting.ths_customer_ids %} <a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer IDs</a> {% endif %}
+		<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
+	</p>
+
+	{% if missing_ths_customer_ids != 0 %}
+		<p style="color: red;"><span style="font-weight: bold;">Please note:</span> {% if missing_ths_customer_ids == 1 %}There is currently 1 company{% else %}There are currently {{ missing_ths_customer_ids }} companies{% endif %} with pending orders, but without THS customer IDs. They cannot be invoiced until they have THS customer IDs.</p>
+	{% endif %}
+
+	<form method="post" id="form_export_orders">
+		{% csrf_token %}
+		{{ form_generate_company_invoices | crispy }}
+		<input class="btn btn-primary" type="submit" value="Export orders to file" />
+	</form>
+{% endblock %}
+
+{% block scripts %}
+	<script src="//static.kottnet.net/javascript/jquery.js"></script>
+	<script>
+		$(function()
+		{
+			$('#form_export_orders').submit(function()
+			{
+				$('#form_export_orders input[type=\'submit\']').prop('disabled', true).val('Exporting orders to file...');
+			});
+		});
+	</script>
+{% endblock %}

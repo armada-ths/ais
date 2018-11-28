@@ -6,71 +6,74 @@
 {% block nav-accounting %}<li role="presentation" class="active"><a href="{% url 'accounting' fair.year %}">Accounting</a></li>{% endblock %}
 
 {% block content %}
-<h1>Product summary</h1>
+	<h1>Product summary</h1>
 
-<p>
-	<a class="btn btn-default" type="button" href="{% url 'invoice_companies' fair.year %}">Invoice companies</a>
-	<a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer ID's</a>
-	<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
-</p>
+	<p>
+		{% if perms.accounting.export_orders %} <a class="btn btn-default" type="button" href="{% url 'export_orders' fair.year %}">Export orders</a> {% endif %}
+		{% if perms.accounting.ths_customer_ids %} <a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer IDs</a> {% endif %}
+		<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
+	</p>
 
-<p>The following tables summarize all orders for all products at this fair.</p>
+	<p>The following tables summarize all orders for all products at this fair.</p>
 
-<ul>
+	<ul>
+		{% for product in products %}
+			<li><a href="#l{{ product.i }}">{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</a></li>
+		{% endfor %}
+	</ul>
+
 	{% for product in products %}
-		<li><a href="#l{{ product.i }}">{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</a></li>
-	{% endfor %}
-</ul>
-
-{% for product in products %}
-	<h2 id="l{{ product.i }}">{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</h2>
-	
-	<div class="table-responsive">
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Company</th>
-					<th style="width: 20%; text-align: right;">Quantity</th>
-					<th style="width: 20%; text-align: right;">Unit price (SEK)</th>
-					<th style="width: 20%; text-align: right;">Price (SEK)</th>
-				</tr>
-			</thead>
-			
-			<tbody>
-				{% if product.orders %}
-					{% for order in product.orders %}
+		<h2 id="l{{ product.i }}">{% if product.category %}{{ product.category }} – {% endif %}{{ product.name }}</h2>
+		
+		<div class="table-responsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Company</th>
+						<th style="width: 10%; text-align: right;">Invoiced?</th>
+						<th style="width: 10%; text-align: right;">Quantity</th>
+						<th style="width: 20%; text-align: right;">Unit price (SEK)</th>
+						<th style="width: 20%; text-align: right;">Price (SEK)</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					{% if product.orders %}
+						{% for order in product.orders %}
+							<tr>
+								<td>
+									<a href="{% url 'companies_orders_edit' fair.year order.purchasing_company.pk order.pk %}">{{ order.purchasing_company.name }}</a>
+									
+									{% if order.name %}
+										<span style="font-style: italic;">({{ order.name }})</span>
+									{% endif %}
+									
+									{% if order.comment %}
+										<br />
+										<span style="font-style: italic;">{{ order.comment }}</span>
+									{% endif %}
+								</td>
+								<td style="text-align: right;">{% if order.export_batch is not None %} Yes {% else %} No {% endif %}</td>
+								<td style="text-align: right;">{{ order.quantity }}</td>
+								<td style="text-align: right;">{% if order.unit_price is not None %}<span style="color: #000000;">{{ order.unit_price | intcomma }}</span>{% else %}<span style="color: #999999;">{{ product.unit_price | intcomma }}</span>{% endif %}</td>
+								<td style="text-align: right;">{{ order.price | intcomma }}</td>
+							</tr>
+						{% endfor %}
+						
 						<tr>
-							<td>
-								<a href="{% url 'companies_orders_edit' fair.year order.purchasing_company.pk order.pk %}">{{ order.purchasing_company.name }}</a>
-								
-								{% if order.name %}
-									<span style="font-style: italic;">({{ order.name }})</span>
-								{% endif %}
-								
-								{% if order.comment %}
-									<br />
-									<span style="font-style: italic;">{{ order.comment }}</span>
-								{% endif %}
-							</td>
-							<td style="text-align: right;">{{ order.quantity }}</td>
-							<td style="text-align: right;">{% if order.unit_price is not None %}<span style="color: #000000;">{{ order.unit_price | intcomma }}</span>{% else %}<span style="color: #999999;">{{ product.unit_price | intcomma }}</span>{% endif %}</td>
-							<td style="text-align: right;">{{ order.price | intcomma }}</td>
+							<td></td>
+							<td></td>
+							<td style="text-align: right; font-weight: 700;">{{ product.total_quantity }}</td>
+							<td></td>
+							<td style="text-align: right; font-weight: 700;">{{ product.total_price | intcomma }}</td>
 						</tr>
-					{% endfor %}
-					
-					<tr>
-						<td></td>
-						<td style="text-align: right; font-weight: 700;">{{ product.total_quantity }}</td>
-						<td></td>
-						<td style="text-align: right; font-weight: 700;">{{ product.total_price | intcomma }}</td>
-					</tr>
-				{% else %}
-					<tr>
-						<td colspan="4" style="text-align: center;">No orders for this product.</td>
-					</tr>
-				{% endif %}
-			</tbody>
-		</table>
-	</div>
-{% endfor %}
+					{% else %}
+						<tr>
+							<td colspan="4" style="text-align: center;">No orders for this product.</td>
+						</tr>
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+	{% endfor %}
 {% endblock %}

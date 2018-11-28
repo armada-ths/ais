@@ -6,7 +6,7 @@ from django.forms import modelformset_factory
 from fair.models import Fair
 from companies.models import Company
 
-from .models import Order, Product
+from .models import Order, Product, ExportBatch
 from .forms import GenerateCompanyInvoicesForm, BaseCompanyCustomerIdFormSet, CompanyCustomerIdForm
 
 @permission_required('accounting.base')
@@ -20,9 +20,10 @@ def accounting(request, year):
 
 
 @permission_required('accounting.base')
-def invoice_companies(request, year):
+@permission_required('accounting.export_orders')
+def export_orders(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	orders = Order.objects.filter(product__revenue__fair = fair).exclude(purchasing_company = None).exclude(unit_price = 0)
+	orders = Order.objects.filter(product__revenue__fair = fair, export_batch = None).exclude(purchasing_company = None).exclude(unit_price = 0)
 	
 	companies = []
 	
@@ -36,21 +37,31 @@ def invoice_companies(request, year):
 	form_generate_company_invoices.fields['companies'].choices = [(company.pk, company.name) for company in companies]
 	
 	if request.POST and form_generate_company_invoices.is_valid():
+		if form_generate_company_invoices.cleaned_data['mark_exported']:
+			export_batch = ExportBatch(user = request.user)
+			export_batch.save()
+			filename = 'fakturaunderlag ' + export_batch.timestamp.strftime('%s') + '.txt'
+		
+		else:
+			export_batch = None
+			filename = 'fakturaunderlag.txt'
+		
 		invoices = []
 		
 		for company in form_generate_company_invoices.cleaned_data['companies']:
-				if company in companies:
-					orders_company = []
-					
-					for order in orders:
-						if order.purchasing_company == company:
-							orders_company.append(order)
-					
-					if len(orders_company) != 0:
-						invoices.append({
-							'company': company,
-							'orders': orders_company
-						})
+			if company not in companies: continue
+			
+			orders_company = []
+			
+			for order in orders:
+				if order.purchasing_company == company:
+					orders_company.append(order)
+			
+			if len(orders_company) != 0:
+				invoices.append({
+					'company': company,
+					'orders': orders_company
+				})
 		
 		txt = 'Rubrik	THS Armada\r\n'
 		txt += 'Datumformat	YYYY-MM-DD\r\n'
@@ -99,13 +110,21 @@ def invoice_companies(request, year):
 				txt += txt_order + '\r\n'
 			txt += 'Kundfaktura-slut\r\n'
 		
-		response = HttpResponse(txt, content_type = 'text/plain')
+		if export_batch is not None:
+			for invoice in invoices:
+				for order in invoice['orders']:
+					order.export_batch = export_batch
+					order.save()
+		
+		txt = txt.encode('windows-1252')
+		
+		response = HttpResponse(txt, content_type = 'text/plain; charset=windows-1252')
 		response['Content-Length'] = len(txt)
-		response['Content-Disposition'] = 'attachment; filename="fakturaunderlag.txt"'
+		response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
 		
 		return response
 	
-	return render(request, 'accounting/invoice_companies.html',
+	return render(request, 'accounting/export_orders.html',
 	{
 		'fair': fair,
 		'missing_ths_customer_ids': companies_with_orders(fair).count(),
@@ -114,6 +133,7 @@ def invoice_companies(request, year):
 
 
 @permission_required('accounting.base')
+@permission_required('accounting.ths_customer_ids')
 def companies_without_ths_customer_ids(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	
@@ -151,7 +171,7 @@ def product_summary(request, year):
 		
 		j += 1
 		
-		for order_raw in Order.objects.filter(product = product_raw).order_by('purchasing_company'):
+		for order_raw in Order.objects.select_related('export_batch').filter(product = product_raw).order_by('purchasing_company'):
 			price = (order_raw.unit_price if order_raw.unit_price is not None else product_raw.unit_price) * order_raw.quantity
 			
 			product['orders'].append({
