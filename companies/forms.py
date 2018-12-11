@@ -243,7 +243,7 @@ class StatisticsForm(forms.Form):
 class CompanyNewOrderForm(ModelForm):
 	class Meta:
 		model = Order
-		fields = ('product', 'quantity')
+		fields = ['product', 'quantity']
 	
 	def is_valid(self):
 		valid = super(CompanyNewOrderForm, self).is_valid()
@@ -268,8 +268,7 @@ class CompanyNewOrderForm(ModelForm):
 class CompanyEditOrderForm(ModelForm):
 	class Meta:
 		model = Order
-		fields = '__all__'
-		exclude = ('product', 'purchasing_company', 'purchasing_user')
+		fields = ['name', 'quantity', 'unit_price', 'comment']
 	
 	def is_valid(self):
 		valid = super(CompanyEditOrderForm, self).is_valid()
