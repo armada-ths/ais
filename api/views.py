@@ -375,9 +375,7 @@ def recruitment(request):
         roles = recruitment.recruitable_roles.all()
         # Adds all roles available for this recruitment
         for role in roles:
-            organization_group = role.organization_group
-            if organization_group == None or organization_group == '':
-                organization_group = 'Other'
+            organization_group = str(role.organization_group) if organization_group is not None else ''
             role = OrderedDict([
                 ('name', role.name),
                 ('parent', role.parent_role.name if role.parent_role else None),
