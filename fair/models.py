@@ -35,10 +35,10 @@ class Fair(models.Model):
     year = models.IntegerField(default=date.today().year)
     description = models.TextField(max_length=500, default=default_name)
 
-    registration_start_date = models.DateTimeField(null=True)
-    registration_end_date = models.DateTimeField(null=True)
-    complete_registration_start_date = models.DateTimeField(null=True, blank=True)
-    complete_registration_close_date = models.DateTimeField(null=True, blank=True)
+    registration_start_date = models.DateTimeField(null=False, blank=False)
+    registration_end_date = models.DateTimeField(null=False, blank=False)
+    complete_registration_start_date = models.DateTimeField(null=False, blank=False)
+    complete_registration_close_date = models.DateTimeField(null=False, blank=False)
 
     current = models.BooleanField(default=False)
 
