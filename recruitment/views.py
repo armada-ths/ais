@@ -64,67 +64,67 @@ def recruitment(request, year, template_name='recruitment/recruitment.html'):
 
 def recruitment_statistics(request, year):
 	fair = get_object_or_404(Fair, year=year)
-	
+
 	form = CompareForm(request.POST or None)
-	
+
 	recruitment_periods = []
-	
+
 	if request.POST and form.is_valid():
 		for recruitment_period in form.cleaned_data['recruitment_periods']:
 			i = 1
 			applications = []
-			
+
 			for application in RecruitmentApplication.objects.filter(recruitment_period = recruitment_period):
 				if application.submission_date > recruitment_period.end_date and not form.cleaned_data['include_late']: continue
-				
+
 				applications.append({
 					'i': i,
 					'difference': (application.submission_date - recruitment_period.start_date).total_seconds() / 86400
 				})
-				
+
 				i += 1
-			
+
 			recruitment_periods.append({
 				'name': recruitment_period.name,
 				'applications': applications
 			})
-	
+
 		table_map = {}
 		i = 0
-		
+
 		for recruitment_period in recruitment_periods:
 			j = 1
-			
+
 			for application in recruitment_period['applications']:
 				current_row = None
-				
+
 				for row in table_map:
 					if row == application['difference']:
 						current_row = table_map[row]
 						break
-				
+
 				if current_row is None:
 					current_row = [None for x in range(len(recruitment_periods))]
-					
+
 					table_map[application['difference']] = current_row
-				
+
 				current_row[i] = j
-				
+
 				j += 1
 			i += 1
-		
+
 		table = []
-		
+
 		for row in table_map:
 			table.append({
 				'difference': row,
 				'cells': table_map[row]
 			})
-	
+
 	else:
 		table = None
-	
-	
+
+
 	return render(request, 'recruitment/statistics.html', {
 		'fair': fair,
 		'form': form,
@@ -546,7 +546,7 @@ def recruitment_period_locations(request, year, pk):
 
 	locations_list = []
 	j = 0
-	
+
 	local_tz = pytz.timezone('Europe/Stockholm')
 
 	for location in locations:
@@ -734,9 +734,15 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
             if role_application:
                 role_form.fields[key].initial = role_application.role.pk
 
+    if recruitment_period.name == 'Developer':
+        message_to_applicants = 'You can view your submitted application from the recruitment page. All applicants will be contacted to schedule an interview which will be held during week 13 or 14.'
+    elif recruitment_period.name == 'Team Leader and Coordinator':
+        message_to_applicants = 'Please note that you will not receive a confirmation email after you submit your application. You can find and view your submitted application from the recruitment page. All applicants will be contacted to schedule an interview which will be held during week 17 or 18.'
+    else:
+        message_to_applicants = 'Please note that you will not receive a confirmation email after you submit your application. You can find and view your submitted application from the recruitment page.'
+
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, user)
-
         if role_form.is_valid() and profile_form.is_valid():
 
             if not recruitment_application:
@@ -774,6 +780,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
         'role_form': role_form,
         'new_application': pk == None,
         'fair': fair,
+        'message_to_applicants': message_to_applicants
     })
 
 
@@ -861,13 +868,13 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 	interview_planning_form.fields['recommended_role'].queryset = application.recruitment_period.recruitable_roles
 
 	used_slots = []
-	
+
 	for a in RecruitmentApplication.objects.select_related('slot').exclude(slot = None).exclude(pk = application.pk):
 		used_slots.append(a.slot)
-	
+
 	slots_by_day = [('', '---------')]
 	all_slots = Slot.objects.filter(recruitment_period = application.recruitment_period)
-	
+
 	local_tz = pytz.timezone('Europe/Stockholm')
 
 	for slot in all_slots:
@@ -886,7 +893,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
 	for slot in all_slots:
 		if slot in used_slots: continue
-		
+
 		slot_start = local_tz.localize(slot.start, is_dst = None)
 		slot_yyyymmdd = slot_start.strftime('%Y-%m-%d')
 
