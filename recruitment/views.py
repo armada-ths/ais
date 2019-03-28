@@ -736,7 +736,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
     if recruitment_period.name == 'Developer':
         message_to_applicants = 'You can view your submitted application from the recruitment page. All applicants will be contacted to schedule an interview which will be held during week 13 or 14.'
-    elif recruitment_period.name == 'Team Leader and Coordinator':
+    elif recruitment_period.name == 'Operations Team':
         message_to_applicants = 'Please note that you will not receive a confirmation email after you submit your application. You can find and view your submitted application from the recruitment page. All applicants will be contacted to schedule an interview which will be held during week 17 or 18.'
     else:
         message_to_applicants = 'Please note that you will not receive a confirmation email after you submit your application. You can find and view your submitted application from the recruitment page.'
