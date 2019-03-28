@@ -6,6 +6,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 
 from banquet.models import Participant, Banquet
 from companies.models import CompanyContact
@@ -26,11 +27,12 @@ def login_redirect(request):
 
     if request.user.is_authenticated():
         contact = CompanyContact.objects.filter(user=request.user).first()
+        year = timezone.now().year
 
         if contact is not None:
             return redirect('anmalan:choose_company')
 
-        return redirect('fair:home', 2018)
+        return redirect('fair:home', year)
 
     return render(request, 'login.html', {'next': next})
 
@@ -200,7 +202,7 @@ def lunchticket_remove(request, year, token):
 def lunchticket_send(request, year, token):
     fair = get_object_or_404(Fair, year=year)
     lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
-    
+
     eat_by = str(lunch_ticket.time) if lunch_ticket.time else str(lunch_ticket.day)
     email_address = lunch_ticket.user.email if lunch_ticket.user else lunch_ticket.email_address
 
@@ -211,9 +213,9 @@ def lunchticket_send(request, year, token):
         [email_address],
         fail_silently = True
     )
-    
+
     LunchTicketSend(lunch_ticket=lunch_ticket, user=request.user, email_address=email_address).save()
-    
+
     lunch_ticket.sent = True
     lunch_ticket.save()
 
