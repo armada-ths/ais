@@ -10,31 +10,31 @@
 			{
 				overflow-y: scroll;
 			}
-			
+
 			#content
 			{
 				margin: 15px auto;
 				max-width: 1000px;
 			}
-			
+
 			h3
 			{
 				margin: 30px 0 0;
 				padding: 0;
 			}
-			
+
 			#menu
 			{
 				margin: 0 auto 30px;
 				text-align: center;
 				border-bottom: 1px dotted #ffffff;
 			}
-			
+
 			#menu li
 			{
 				display: inline-block;
 			}
-			
+
 			#menu li a, #menu li a:visited
 			{
 				display: block;
@@ -45,41 +45,41 @@
 				letter-spacing: 0.2pt;
 				color: #ffffff;
 			}
-			
+
 			#menu li a.active, #menu li a:hover, #menu li a:active
 			{
 				background: #353535;
 				text-decoration: none;
 				color: #00d791;
 			}
-			
+
 			a.btn, a:visited.btn, a:active.btn
 			{
 				color: #000000 !important;
 			}
-			
+
 			a:hover.btn
 			{
 				color: #ffffff !important;
 			}
-			
+
 			.information_label
 			{
 				color: #00d791;
 				font-weight: 700;
 			}
-			
+
 			.no-bullets
 			{
 				margin-left: 0;
 				padding-left: 0;
 			}
-			
+
 			.no-bullets li
 			{
 				list-style-type: none;
 			}
-			
+
 			input[disabled]:not([type='submit']), select[disabled], textarea[disabled]
 			{
 				background: transparent !important;
@@ -87,18 +87,18 @@
 				border: 1px dotted #666666;
 				cursor: not-allowed !important;
 			}
-			
+
 			input[disabled][type='submit']
 			{
 				background: #eeeeee !important;
 				color: #000000 !important;
 			}
-			
+
 			input[disabled][type='submit']:hover
 			{
 				color: #000000 !important;
 			}
-			
+
 			input[disabled][type='checkbox'] + label
 			{
 				cursor: not-allowed !important;
@@ -107,24 +107,24 @@
 		{% include "header.html" %}{% block head-extra %}{% endblock %}
 		<link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen" />
 	</head>
-	
+
 	<body>
 		<ul id="menu">
 			{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}">{{ company.name }}</a></li>{% endblock %}
 			{% if exhibitor is not None %}
 				{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
 				{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
+				{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
 			{% endif %}
-			{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
 			{% if company.name == 'Kottnet' %}
 				{% block nav-events %}<li><a href="{% url 'anmalan:events' company.pk %}">Events</a></li>{% endblock %}
 			{% endif %}
 		</ul>
-		
+
 		<div id="content">
 			{% block content %}{% endblock %}
 		</div>
 	</body>
-	
+
 	{% block scripts %}{% endblock scripts %}
 </html>

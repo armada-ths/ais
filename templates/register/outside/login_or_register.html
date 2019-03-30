@@ -17,6 +17,9 @@
                     <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
                 </svg>
                 <h2>Company registration</h2>
+                {% if initial_not_open %}
+                  <h4> Initial registration opens on {{ fair.registration_start_date|date:"F j" }} </h4>
+                {% endif %}
             </div>
         </div>
         <div class="row">
