@@ -133,9 +133,6 @@ def form_initial(request, company, company_contact, fair):
 					comment = 'INITIAL REGISTRATION: '+input_comment,
 					show_in_exhibitors = False
 				)
-				# the comment instance has to be created (and get an id) before the many to many relation with groups is set
-				comment.groups = groups = Group.objects.filter(allow_comments = True)
-				comment.save()
 
 			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company)
 
