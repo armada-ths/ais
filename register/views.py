@@ -101,7 +101,7 @@ def form_initial(request, company, company_contact, fair):
 
 	# form is bounded (request.POST) if the post has to do with the form in question
 	# form_initial_registration is unbound (no parameter) since no existing data can be connected to the form
-	form_initial_interests = InitialInterestsRegistrationForm(request.POST if request.POST and request.POST.get('save_initial_registration') else None, instance = company)
+	form_initial_interests = InitialInterestsRegistrationForm(request.POST if request.POST and request.POST.get('save_initial_registration') else None)
 	form_initial_comment = InitialCommentForm(request.POST if request.POST and request.POST.get('save_initial_registration') else None)
 	form_initial_registration = InitialRegistrationForm()
 
@@ -121,8 +121,14 @@ def form_initial(request, company, company_contact, fair):
 			form_company_contact.save()
 			form_company_contact = InitialCompanyContactForm(instance = company_contact)
 
+		# the initial interest form and saving to company could probably be done smarter (as a ModelForm?) if there is time
 		elif request.POST.get('save_initial_registration') and is_editable and is_authorized and signature is None:
-			form_initial_interests.save()
+			if form_initial_interests.is_valid():
+				current_groups = company.groups.filter(fair= fair)
+				added_groups = form_initial_interests.cleaned_data['groups']
+				all_groups = current_groups.union(added_groups)
+				for group in all_groups:
+					company.groups.add(group)
 
 			if form_initial_comment.is_valid():
 				input_comment = form_initial_comment.cleaned_data['text_input']

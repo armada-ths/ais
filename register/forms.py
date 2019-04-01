@@ -25,13 +25,9 @@ def fix_phone_number(n):
 	return n
 
 
-class InitialInterestsRegistrationForm(ModelForm):
+class InitialInterestsRegistrationForm(Form):
 	fair = Fair.objects.filter(current = True).first()
 	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_registration = True, fair = fair), widget = forms.CheckboxSelectMultiple(), required = False, label = "")
-
-	class Meta:
-		model = Company
-		fields = ("groups",)
 
 
 class InitialCommentForm(Form):
