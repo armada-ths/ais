@@ -25,6 +25,15 @@ def fix_phone_number(n):
 	return n
 
 
+def fix_url(url):
+	if url is None: return None
+
+	if not url.startswith('http://') and not url.startswith('https://'):
+		url = 'http://' + url
+
+	return url
+
+
 class InitialInterestsRegistrationForm(Form):
 	fair = Fair.objects.filter(current = True).first()
 	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_registration = True, fair = fair), widget = forms.CheckboxSelectMultiple(), required = False, label = "")
@@ -41,12 +50,6 @@ class InitialRegistrationForm(Form):
 
 	gdpr_accepted = BooleanField(required = True)
 	gdpr_accepted.label = "THS Armada would like to process personal data about you and your organization to be able to contact you in conjunction with complete registration and send you information regarding the fair of 2019. The data we intend to collect and process is forename, surname, title of your organization, phone number and email adress. You decide for yourself if you want to leave any information to us. The data will only be processed by the project group in THS Armada and by THS Management. The data will be saved until 2020-06-24 in Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request correction as to what personal data we are processing about you. I consent for THS Armada to process my personal data in accordance with the above.*"
-
-
-class InitialCompanyDetailsForm(ModelForm):
-	class Meta:
-		model = Company
-		fields = ['name', 'identity_number', 'website', 'type']
 
 
 class CompleteCompanyDetailsForm(ModelForm):
@@ -203,7 +206,16 @@ class CompleteFinalSubmissionForm(Form):
 	gdpr.label = 'THS Armada would like to process personal data about you and your organization to be able to create the career fair of 2018, in conjunction with complete registration. The data we intend to collect and process is for name, surname, title of your position, phone number and email address. The data will be processed by members in the THS Armada organization and by our external transport partner, Ryska Posten, in purpose to transport your goods. The data will be saved until 2020-08–07 in Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request correction as to what personal data we are processing about you.'
 
 
+# form is also used to edit company info during initial registration
 class NewCompanyForm(ModelForm):
+
+	def clean(self):
+		super(NewCompanyForm, self).clean()
+		# make sure http:// is included in the url, otherwise the url will not direct to correct website in CRM
+		if 'website' in self.cleaned_data:
+			self.cleaned_data['website'] = fix_url(self.cleaned_data['website'])
+		return self.cleaned_data
+
 	class Meta:
 		model = Company
 		fields = ['name', 'identity_number', 'website', 'type']

@@ -22,7 +22,7 @@ from banquet.models import Banquet
 from django.contrib.auth.models import User
 
 from .models import SignupContract, SignupLog
-from .forms import InitialInterestsRegistrationForm, InitialCommentForm, InitialRegistrationForm, InitialCompanyDetailsForm, CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm, BanquetParticipantForm
+from .forms import InitialInterestsRegistrationForm, InitialCommentForm, InitialRegistrationForm, CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm, BanquetParticipantForm
 
 from .help.methods import get_time_flag
 
@@ -105,29 +105,26 @@ def form_initial(request, company, company_contact, fair):
 	form_initial_comment = InitialCommentForm(request.POST if request.POST and request.POST.get('save_initial_registration') else None)
 	form_initial_registration = InitialRegistrationForm()
 
-	form_company_details = InitialCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company)
+	form_company_details = NewCompanyForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company)
 	form_company_contact = InitialCompanyContactForm(request.POST if request.POST and request.POST.get('save_contact_details') else None, instance = company_contact)
 
 	is_editable = timezone.now() >= fair.registration_start_date and timezone.now() <= fair.registration_end_date
-	# only company contacts can edit the form - maybe add extra security feature that the company_contact should be active or confirmed?
+	# only company contacts can edit the form - maybe add extra security feature that the company_contact should be active (or confirmed for complete registration?)
 	is_authorized = company_contact != None
 
 	if request.POST:
 		if request.POST.get('save_company_details') and form_company_details.is_valid() and is_authorized:
 			form_company_details.save()
-			form_company_details = InitialCompanyDetailsForm(instance = company)
+			form_company_details = NewCompanyForm(instance = company)
 
 		elif request.POST.get('save_contact_details') and form_company_contact.is_valid() and is_authorized:
 			form_company_contact.save()
 			form_company_contact = InitialCompanyContactForm(instance = company_contact)
 
-		# the initial interest form and saving to company could probably be done smarter (as a ModelForm?) if there is time
 		elif request.POST.get('save_initial_registration') and is_editable and is_authorized and signature is None:
 			if form_initial_interests.is_valid():
-				current_groups = company.groups.filter(fair= fair)
 				added_groups = form_initial_interests.cleaned_data['groups']
-				all_groups = current_groups.union(added_groups)
-				for group in all_groups:
+				for group in added_groups:
 					company.groups.add(group)
 
 			if form_initial_comment.is_valid():
