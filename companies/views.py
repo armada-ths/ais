@@ -23,127 +23,127 @@ def current_fair():
 @permission_required('companies.base')
 def companies_slack_call(request, year):
 	profile = get_object_or_404(Profile, user = request.user)
-	
+
 	phone_number = request.GET["phone_number"].strip()
 	phone_number = phone_number.replace("+", "00")
-	
+
 	sc = SlackClient(settings.SLACK_KEY)
-	
+
 	sc.api_call(
 		"chat.postMessage",
 		channel = profile.slack_id,
 		text = "tel://" + phone_number
 	)
-	
+
 	return HttpResponse('')
 
 
 def groups_to_tree_list(groups, selected = None):
 	groups_tree = {"selected": None, "children": {}}
-	
+
 	for group in groups:
 		path = group.path()
-		
+
 		p = groups_tree
-		
+
 		for step in range(len(path)):
 			if path[step] not in p["children"]:
 				p["children"][path[step]] = {"selected": None if selected is None else path[step] in selected, "children": {}}
-			
+
 			p = p["children"][path[step]]
-	
+
 	groups_list = tree_to_list(None, groups_tree)
-	
+
 	groups_list.pop(0)
 	groups_list.pop(0)
 	groups_list.pop()
-	
+
 	return groups_list
 
 
 def tree_to_list(k, groups_tree):
 	if len(groups_tree['children'].keys()) > 0:
 		o = ["open_short", k, "open"]
-		
+
 		for child in groups_tree["children"].keys():
 			o = o + tree_to_list({"group": child, 'selected': groups_tree["children"][child]["selected"]}, groups_tree["children"][child])
-		
+
 		o.append("close")
-	
+
 	else:
 		o = ["open_short", k, "close_short"]
-	
+
 	return o
 
 
 def has_same_group_and_users(q1, q2):
 	if not q1.group.allow_statistics or not q2.group.allow_statistics:
 		return True
-	
+
 	if q1.group != q2.group:
 		return False
-	
+
 	for o1 in q1.users.all():
 		if o1 not in q2.users.all():
 			return False
-	
+
 	for o2 in q2.users.all():
 		if o2 not in q1.users.all():
 			return False
-	
+
 	return True
 
 
 def is_equal(q1, q2):
 	for ccr1 in q1:
 		found = False
-		
+
 		for ccr2 in q2:
 			if has_same_group_and_users(ccr1, ccr2):
 				found = True
 				break
-		
+
 		if not found:
 			return False
-	
+
 	for ccr2 in q2:
 		found = False
-		
+
 		for ccr1 in q1:
 			if has_same_group_and_users(ccr2, ccr1):
 				found = True
 				break
-		
+
 		if not found:
 			return False
-		
+
 	return True
 
 
 @permission_required('companies.base')
 def statistics(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	form = StatisticsForm(request.POST or None)
-	
+
 	contracts = []
 	smallest = None
-	
+
 	for contract in SignupContract.objects.filter(fair = fair).all():
 		signatures_raw = SignupLog.objects.filter(contract = contract).order_by('timestamp')
 		signatures = []
-		
+
 		i = 0
 		rows = 0
-		
+
 		for signature in signatures_raw:
 			responsibilities = list(CompanyCustomerResponsible.objects.filter(company = signature.company))
-			
+
 			if smallest is None or signature.timestamp < smallest:
 				smallest = signature.timestamp
-			
+
 			add = True
-			
+
 			for signature_existing in signatures:
 				if is_equal(signature_existing['responsibilities'], responsibilities):
 					signature_existing['count'] += 1
@@ -152,10 +152,10 @@ def statistics(request, year):
 						'timestamp': signature.timestamp,
 						'count': signature_existing['count']
 					})
-					
+
 					add = False
 					break
-			
+
 			if add:
 				signatures.append(
 				{
@@ -168,29 +168,29 @@ def statistics(request, year):
 						'count': 1
 					}]
 				})
-						
+
 				i += 1
-			
+
 		rows += len(signatures)
-		
+
 		row_length = len(signatures)
 		table = []
-		
+
 		for j in range(len(signatures)):
 			for timestamp in signatures[j]['timestamps']:
 				row = {
 					'timestamp': timestamp['timestamp'],
 					'cells': []
 				}
-				
+
 				for k in range(row_length):
 					row['cells'].append(None)
-				
+
 				row['cells'][j] = timestamp['count']
 				table.append(row)
-			
+
 			j += 1
-		
+
 		contracts.append(
 		{
 			'i': len(contracts),
@@ -200,9 +200,9 @@ def statistics(request, year):
 			'signatures': signatures,
 			'table': table
 		})
-	
+
 	form.fields['date_from'].initial = smallest
-	
+
 	return render(request, 'companies/statistics.html',
 	{
 		'fair': fair,
@@ -214,88 +214,88 @@ def statistics(request, year):
 @permission_required('companies.base')
 def companies_list(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	form = CompanySearchForm(request.POST or None)
-	
+
 	all_users = []
-	
+
 	contracts = SignupContract.objects.filter(fair = fair)
-	
+
 	form.fields['contracts_positive'].queryset = contracts
 	form.fields['contracts_negative'].queryset = contracts
-	
+
 	has_filtering = request.POST and form.is_valid()
-	
+
 	companies = Company.objects.prefetch_related('groups')
-	
+
 	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company').select_related('group').filter(group__fair = fair).prefetch_related('users'))
 	responsibles = {}
-	
+
 	for responsible in responsibles_list:
 		users = responsible.users.all()
-		
+
 		for user in users:
 			if user not in all_users: all_users.append(user)
-		
+
 		o = {
 			'group': responsible.group.name,
 			'users': users
 		}
-		
+
 		if responsible.company not in responsibles:
 			responsibles[responsible.company] = [o]
-		
+
 		else:
 			responsibles[responsible.company].append(o)
-	
+
 	all_users.sort(key = lambda x: x.get_full_name())
-	
+
 	form.fields['users'].choices = [(user.pk, user.get_full_name()) for user in all_users]
-	
+
 	signatures_list = []
 	signatures = {}
-	
+
 	for contract in SignupContract.objects.filter(fair = fair):
 		signatures_list = signatures_list + list(SignupLog.objects.select_related('company').select_related('contract').filter(contract = contract))
-	
+
 	for signature in signatures_list:
 		if signature.company not in signatures:
 			signatures[signature.company] = [signature]
-		
+
 		else:
 			signatures[signature.company].append(signature)
-	
+
 	exhibitors = [x.company for x in Exhibitor.objects.select_related('company').filter(fair = fair)]
-	
+
 	companies_modified = []
-	
+
 	for company in companies:
 		exhibitor = company in exhibitors
-		
+
 		if has_filtering:
 			if not exhibitor and form.cleaned_data['exhibitors'] == 'YES': continue
 			if exhibitor and form.cleaned_data['exhibitors'] == 'NO': continue
-			
+
 			if len(form.cleaned_data['contracts_positive']) != 0:
 				if company not in signatures: continue
-				
+
 				if len([signature for signature in signatures[company] if signature.contract in form.cleaned_data['contracts_positive']]) == 0: continue
-			
+
 			if len(form.cleaned_data['contracts_negative']) > 0:
 				if company in signatures and len([signature for signature in signatures[company] if signature.contract in form.cleaned_data['contracts_negative']]) != 0: continue
-			
+
 			if len(form.cleaned_data['users']) != 0:
 				if company not in responsibles: continue
-				
+
 				found = False
-				
+
 				for r in responsibles[company]:
 					if len([u for u in r['users'] if u in form.cleaned_data['users']]) != 0:
 						found = True
 						break
-				
+
 				if not found: continue
-		
+
 		companies_modified.append({
 			'pk': company.pk,
 			'name': company.name,
@@ -305,7 +305,7 @@ def companies_list(request, year):
 			'signatures': signatures[company] if company in signatures else None,
 			'exhibitor': exhibitor
 		})
-	
+
 	return render(request, 'companies/companies_list.html',
 	{
 		'fair': fair,
@@ -317,13 +317,13 @@ def companies_list(request, year):
 @permission_required('companies.base')
 def companies_new(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	form = CompanyForm(request.POST or None)
-	
+
 	if request.POST and form.is_valid():
 		company = form.save()
 		return redirect('companies_view', fair.year, company.pk)
-	
+
 	return render(request, 'companies/companies_new.html',
 	{
 		'fair': fair,
@@ -335,32 +335,32 @@ def companies_new(request, year):
 def companies_view(request, year, pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
-	
+
 	initially_selected = []
-	
+
 	for responsible in CompanyCustomerResponsible.objects.filter(company = company):
 		if request.user in responsible.users.all():
 			initially_selected.append(responsible.group)
-	
+
 	form_comment = CompanyCustomerCommentForm(request.POST if request.POST else None, initial = {'groups': initially_selected})
-	
+
 	if request.POST and form_comment.is_valid():
 		comment = form_comment.save(commit = False)
 		comment.company = company
 		comment.user = request.user
 		comment.save()
 		form_comment.save()
-		
+
 		form_comment = CompanyCustomerCommentForm(initial = {'groups': initially_selected})
-	
+
 	fairs = []
-	
+
 	for fair in Fair.objects.all():
 		fairs.append({
 			'fair': fair,
 			'exhibitor': Exhibitor.objects.filter(fair = fair, company = company).count() == 1
 		})
-	
+
 	return render(request, 'companies/companies_view.html',
 	{
 		'fair': fair,
@@ -384,9 +384,9 @@ def companies_edit_responsibles_remove(request, year, pk, responsible_group_pk):
 	company = get_object_or_404(Company, pk = pk)
 	responsible_group = get_object_or_404(Group, pk = responsible_group_pk, fair = fair)
 	responsible = get_object_or_404(CompanyCustomerResponsible, company = company, group = responsible_group)
-	
+
 	responsible.delete()
-	
+
 	return redirect('companies_edit', fair.year, company.pk)
 
 
@@ -394,13 +394,13 @@ def companies_edit_responsibles_remove(request, year, pk, responsible_group_pk):
 def companies_details(request, year, pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
-	
+
 	form_company_details = CompanyForm(request.POST if request.POST else None, instance = company)
-	
+
 	if request.POST and form_company_details.is_valid():
 		form_company_details.save()
 		return redirect('companies_view', fair.year, company.pk)
-	
+
 	return render(request, 'companies/companies_details.html',
 	{
 		'fair': fair,
@@ -414,49 +414,49 @@ def companies_edit(request, year, pk, group_pk = None, responsible_group_pk = No
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
 	responsibles = CompanyCustomerResponsible.objects.select_related('group').filter(company = company, group__fair = fair)
-	
+
 	if group_pk is not None:
 		group_toggle = get_object_or_404(Group, pk = group_pk, fair = fair)
-		
+
 		if group_toggle in company.groups.all():
 			company.groups.remove(group_toggle)
-		
+
 		elif group_toggle.allow_companies:
 			company.groups.add(group_toggle)
-		
+
 		company.save()
-	
+
 	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair), company.groups.all())
-	
+
 	if responsible_group_pk is not None:
 		responsible_group = get_object_or_404(Group, pk = responsible_group_pk, fair = fair)
 		responsible = get_object_or_404(CompanyCustomerResponsible, company = company, group = responsible_group)
-	
+
 	else:
 		responsible = None
-	
+
 	form_responsible = CompanyCustomerResponsibleForm(company, request.POST if request.POST.get('save_responsibilities') else None, instance = responsible)
-	
+
 	users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair).order_by('user__first_name', 'user__last_name')]
-	
+
 	users = [user for user in users if (responsible is not None and user in responsible.users.all()) or user.has_perm('companies.base')]
 
 	form_responsible.fields["users"].choices = [(user.pk, user.get_full_name()) for user in users]
-	form_responsible.fields["group"].choices = [(group.pk, group.__str__()) for group in Group.objects.filter(allow_responsibilities = True)]
-	
+	form_responsible.fields["group"].choices = [(group.pk, group.__str__()) for group in Group.objects.filter(allow_responsibilities = True, fair = fair)]
+
 	if request.POST and request.POST.get('save_responsibilities') and form_responsible.is_valid():
 		form_responsible.save()
 		return redirect('companies_edit', fair.year, company.pk)
-	
+
 
 	form_status = CompanyCustomerStatusForm(request.POST if request.POST.get('save_status') else None, initial = {"status": None}) # TODO: fix
-	
+
 	form_status.fields["status"].choices = [('', '---------')] + [(group.pk, group.__str__) for group in Group.objects.filter(fair = fair, allow_status = True)]
-	
+
 	if request.POST and request.POST.get('save_status') and form_status.is_valid():
 		company.status = form_status.cleaned_data["status"]
 		company.save()
-	
+
 	return render(request, 'companies/companies_edit.html',
 	{
 		'fair': fair,
@@ -473,15 +473,15 @@ def companies_edit(request, year, pk, group_pk = None, responsible_group_pk = No
 def groups(request, year, pk = None):
 	fair = get_object_or_404(Fair, year = year)
 	groups_list = groups_to_tree_list(Group.objects.filter(fair = fair))
-	
+
 	group = Group.objects.filter(pk = pk).first()
-	
+
 	form = GroupForm(fair, request.POST or None, instance = group)
-	
+
 	if request.POST and form.is_valid(group):
 		group = form.save()
 		return redirect('groups_list', fair.year)
-	
+
 	return render(request, 'companies/groups.html', {'fair': fair, 'groups_list': groups_list, 'form': form, 'form_group': group})
 
 
@@ -490,13 +490,13 @@ def companies_comments_edit(request, year, pk, comment_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
 	comment = get_object_or_404(CompanyCustomerComment, company = company, pk = comment_pk)
-	
+
 	form = CompanyCustomerCommentForm(request.POST or None, instance = comment)
-	
+
 	if request.POST and form.is_valid():
 		form.save()
 		return redirect('companies_view', fair.year, company.pk)
-	
+
 	return render(request, 'companies/companies_comments_edit.html',
 	{
 		'fair': fair,
@@ -510,9 +510,9 @@ def companies_comments_remove(request, year, pk, comment_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
 	comment = get_object_or_404(CompanyCustomerComment, company = company, pk = comment_pk)
-	
+
 	comment.delete()
-	
+
 	return redirect('companies_view', fair.year, company.pk)
 
 
@@ -520,32 +520,32 @@ def companies_comments_remove(request, year, pk, comment_pk):
 def companies_orders_new(request, year, pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
-	
+
 	form_order = CompanyNewOrderForm(request.POST or None)
-	
+
 	revenues_list = []
 	revenues = Revenue.objects.filter(fair = fair)
-	
+
 	for revenue in revenues:
 		revenue_list = [revenue.name, []]
-		
+
 		products = Product.objects.filter(revenue = revenue)
-		
+
 		for product in products:
 			revenue_list[1].append([product.pk, product.name])
-		
+
 		if len(revenue_list[1]) != 0:
 			revenues_list.append(revenue_list)
-	
+
 	form_order.fields['product'].choices = revenues_list
-	
+
 	if request.POST and form_order.is_valid():
 		order = form_order.save(commit = False)
 		order.purchasing_company = company
 		order.save()
-		
+
 		return redirect('companies_orders_edit', fair.year, company.pk, order.pk)
-	
+
 	return render(request, 'companies/companies_orders_new.html',
 	{
 		'fair': fair,
@@ -560,18 +560,18 @@ def companies_orders_edit(request, year, pk, order_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
 	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company, export_batch = None)
-	
+
 	form_order = CompanyEditOrderForm(request.POST or None, instance = order)
-	
+
 	form_order.fields['name'].widget.attrs['placeholder'] = order.product.name
 	form_order.fields['quantity'].widget.attrs['max'] = order.product.max_quantity
 	form_order.fields['unit_price'].widget.attrs['placeholder'] = order.product.unit_price
-	
+
 	if request.POST and form_order.is_valid():
 		form_order.save()
-		
+
 		return redirect('companies_view', fair.year, company.pk)
-	
+
 	return render(request, 'companies/companies_orders_edit.html',
 	{
 		'fair': fair,
@@ -586,41 +586,41 @@ def companies_orders_remove(request, year, pk, order_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
 	order = get_object_or_404(Order, pk = order_pk, purchasing_company = company, export_batch = None)
-	
+
 	order.delete()
-	
+
 	return redirect('companies_view', fair.year, company.pk)
 
 
 @permission_required('companies.base')
 def contracts_export(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	form = ContractExportForm(request.POST or None)
 	form.fields['contract'].queryset = SignupContract.objects.filter(fair = fair)
-	
+
 	if request.POST and form.is_valid():
 		signatures = SignupLog.objects.select_related('company').select_related('company_contact').filter(contract = form.cleaned_data['contract'])
 		lines = []
-		
+
 		for company in Company.objects.all():
 			if form.cleaned_data['exhibitors'] != 'BOTH':
 				is_exhibitor = Exhibitor.objects.filter(fair = fair, company = company).count()
-				
+
 				if is_exhibitor and form.cleaned_data['exhibitors'] == 'NO': continue
 				if not is_exhibitor and form.cleaned_data['exhibitors'] == 'YES': continue
-			
+
 			signature = None
-			
+
 			for signature_candidate in signatures:
 				if signature_candidate.company == company:
 					signature = signature_candidate
 					break
-			
+
 			if signature is None and form.cleaned_data['companies'] == 'YES': continue
-			
+
 			line = [company.name]
-			
+
 			if signature is not None:
 				line.append(signature.contract.name)
 				line.append(str(signature.timestamp))
@@ -628,20 +628,20 @@ def contracts_export(request, year):
 				line.append(signature.company_contact.email_address if signature.company_contact.email_address is not None else '')
 				line.append(signature.company_contact.mobile_phone_number if signature.company_contact.mobile_phone_number is not None else '')
 				line.append(signature.company_contact.work_phone_number if signature.company_contact.work_phone_number is not None else '')
-			
+
 			lines.append(line)
-		
+
 		csv = '"company","contract", "signature date","company representative","e-mail address","mobile phone number","work phone number"\n'
-		
+
 		for line in lines:
 			csv += ','.join(['"' + column.replace('"', '\\"') + '"' for column in line]) + '\n'
-		
+
 		response = HttpResponse(csv, content_type = 'text/csv; charset=utf-8')
 		response['Content-Length'] = len(csv)
 		response['Content-Disposition'] = 'attachment; filename="exported signatures.csv"'
-		
+
 		return response
-	
+
 	return render(request, 'companies/contracts_export.html',
 	{
 		'fair': fair,
@@ -653,13 +653,13 @@ def companies_contacts_edit(request, year, pk, contact_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)
 	contact = get_object_or_404(CompanyContact, company = company, pk = contact_pk)
-	
+
 	form = CompanyContactForm(request.POST or None, instance = contact)
-	
+
 	if request.POST and form.is_valid():
 		form.save()
 		return redirect('companies_view', fair.year, company.pk)
-	
+
 	return render(request, 'companies/companies_contacts_edit.html',
 	{
 		'fair': fair,

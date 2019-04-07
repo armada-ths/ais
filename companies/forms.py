@@ -8,6 +8,7 @@ from django import forms
 from register.models import SignupContract
 from accounting.models import Product, Order
 from .models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, CompanyContact, CompanyCustomerComment, Group
+from fair.models import Fair
 
 
 class CompanyForm(ModelForm):
@@ -23,6 +24,9 @@ class CompanyAddressForm(ModelForm):
 
 
 class GroupForm(ModelForm):
+	fair = Fair.objects.filter(current = True).first()
+	parent = forms.ModelChoiceField(queryset = Group.objects.filter(fair = fair), required = False)
+
 	class Meta:
 		model = Group
 		fields = "__all__"
@@ -103,8 +107,8 @@ class CompanyCustomerResponsibleForm(ModelForm):
 
 
 class CompanyCustomerCommentForm(ModelForm):
-	# TODO: this needs to be Fair-specific
-	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_comments = True), widget = forms.CheckboxSelectMultiple(), required = False)
+	fair = Fair.objects.filter(current = True).first()
+	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_comments = True, fair = fair), widget = forms.CheckboxSelectMultiple(), required = False)
 
 	class Meta:
 		model = CompanyCustomerComment
