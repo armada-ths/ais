@@ -11,7 +11,23 @@ from .models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerRes
 from fair.models import Fair
 
 
+def fix_url(url):
+	if url is None: return None
+
+	if not url.startswith('http://') and not url.startswith('https://'):
+		url = 'http://' + url
+
+	return url
+
+
 class CompanyForm(ModelForm):
+	def clean(self):
+		super(CompanyForm, self).clean()
+		# make sure http:// is included in the url, otherwise the url will not direct to correct website in CRM
+		if 'website' in self.cleaned_data:
+			self.cleaned_data['website'] = fix_url(self.cleaned_data['website'])
+		return self.cleaned_data
+
 	class Meta:
 		model = Company
 		fields = ['name', 'identity_number', 'website', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
