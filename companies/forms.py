@@ -20,6 +20,7 @@ def fix_url(url):
 	return url
 
 
+# this form is used internally to edit company details in the CRM app
 class CompanyForm(ModelForm):
 	def clean(self):
 		super(CompanyForm, self).clean()
@@ -30,7 +31,7 @@ class CompanyForm(ModelForm):
 
 	class Meta:
 		model = Company
-		fields = ['name', 'identity_number', 'website', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
+		fields = ['show_externally', 'name', 'identity_number', 'website', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
 
 
 class CompanyAddressForm(ModelForm):
@@ -245,6 +246,7 @@ class CreateCompanyContactForm(ModelForm):
 
 	def __init__(self, *args, **kwargs):
 		super(CreateCompanyContactForm, self).__init__(*args, **kwargs)
+		self.fields["company"].queryset = Company.objects.filter(show_externally = True)
 		self.fields["company"].label = "Company"
 
 	class Meta:

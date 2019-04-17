@@ -21,14 +21,14 @@ class Group(models.Model):
 	fair = models.ForeignKey(Fair, null = False, blank = False, on_delete = models.CASCADE)
 	parent = models.ForeignKey("Group", null = True, blank = True, on_delete = models.CASCADE)
 	contract = models.ForeignKey(SignupContract, null = True, blank = True)
-	
+
 	colors = [
 		("BLUE", "Blue"),
 		("GREEN", "Green"),
 		("RED", "Red"),
 		("YELLOW", "Yellow"),
 	]
-	
+
 	color = models.CharField(max_length = 200, choices = colors, null = True, blank = True)
 	allow_companies = models.BooleanField(default = True, null = False, blank = False)
 	allow_registration = models.BooleanField(default = False, null = False, blank = False)
@@ -37,26 +37,26 @@ class Group(models.Model):
 	allow_statistics = models.BooleanField(default = False, null = False, blank = False)
 	allow_status = models.BooleanField(default = False, null = False, blank = False)
 	allow_exhibitors = models.BooleanField(default = False, null = False, blank = False)
-	
+
 	def path(self):
 		path = [self]
 		n = self.parent
-		
+
 		while n is not None:
 			path.append(n)
 			n = n.parent
-		
+
 		path.reverse()
 		return path
-	
+
 	def save(self, *args, **kwargs):
 		self.name_full = self.string_path()
 		super(Group, self).save(*args, **kwargs)
-	
+
 	class Meta:
 		verbose_name_plural = "Groups"
 		ordering = ["parent__name", "name"]
-	
+
 	def string_path(self):
 		return self.name if self.parent is None else ("%s – %s" % (self.parent.string_path(), self.name))
 
@@ -67,7 +67,7 @@ class Group(models.Model):
 # Type of a company, e.g. government agency, company or non-profit organization
 class CompanyType(models.Model):
 	type = models.CharField(max_length = 100, null = False, blank = False)
-	
+
 	class Meta:
 		verbose_name_plural = "Company types"
 		ordering = ["type"]
@@ -90,7 +90,8 @@ class Company(models.Model):
 	invoice_address_line_3 = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_city = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_zip_code = models.CharField(max_length = 300, null = True, blank = True)
-	
+	show_externally = models.BooleanField(default = True, null = False, blank = False)
+
 	countries = [
 		('DENMARK', 'Denmark'),
 		('FINLAND', 'Finland'),
@@ -101,28 +102,28 @@ class Company(models.Model):
 		('SWEDEN', 'Sweden'),
 		('UNITED_KINGDOM', 'United Kingdom'),
 	]
-	
+
 	invoice_country = models.CharField(max_length = 200, choices = countries, default = 'SWEDEN', null = True, blank = True)
 	invoice_reference = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_email_address = models.CharField(max_length = 300, null = True, blank = True, verbose_name = 'Invoice e-mail address')
 	modified_by = None
-	
+
 	def has_invoice_address(self):
 		return (self.invoice_address_line_1 is not None or self.invoice_address_line_2 is not None or self.invoice_address_line_3 is not None) and self.invoice_zip_code is not None and self.invoice_city is not None and self.invoice_country is not None
-	
+
 	@property
 	def addresses(self):
 		return CompanyAddress.objects.filter(company = self)
-	
+
 	@property
 	def log_items(self):
 		return CompanyLog.objects.filter(company = self)
-	
+
 	@property
 	def identity_number_allabolag(self):
 		if self.identity_number is not None and re.match("^[0-9]{6}-[0-9]{4}$", self.identity_number):
 			return self.identity_number.replace("-", "")
-		
+
 		else:
 			return None
 
@@ -145,19 +146,19 @@ class CompanyLog(models.Model):
 # Type of a company, e.g. government agency, company or non-profit organization
 class CompanyAddress(models.Model):
 	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
-	
+
 	types = [
 		("INVOICE", "Invoice"),
 		("TRANSPORT", "Transport"),
 		("OFFICE", "Office")
 	]
-	
+
 	type = models.CharField(max_length = 200, choices = types, null = False, blank = False)
 	name = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "Name, if different from the organization name")
 	street = models.CharField(max_length = 200, null = False, blank = False)
 	zipcode = models.CharField(max_length = 200, null = False, blank = False, verbose_name = 'Zip code')
 	city = models.CharField(max_length = 200, null = False, blank = False)
-	
+
 	countries = [
 		("DENMARK", "Denmark"),
 		("FINLAND", "Finland"),
@@ -167,12 +168,12 @@ class CompanyAddress(models.Model):
 		("SWEDEN", "Sweden"),
 		("UNITED_KINGDOM", "United Kingdom"),
 	]
-	
+
 	country = models.CharField(max_length = 200, choices = countries, default = "SWEDEN", null = False, blank = False)
 	phone_number = models.CharField(max_length = 200, null = True, blank = True)
 	email_address = models.CharField(max_length = 200, null = True, blank = True, verbose_name = "E-mail address")
 	reference = models.CharField(max_length = 200, null = True, blank = True, verbose_name = 'Your reference')
-	
+
 	class Meta:
 		verbose_name_plural = "Company addresses"
 
@@ -186,29 +187,29 @@ class CompanyCustomer(models.Model):
 	fair = models.ForeignKey("fair.Fair", null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	status = models.ForeignKey(Group, null = True, blank = True, related_name = "status")
 	groups = models.ManyToManyField(Group)
-	
+
 	@property
 	def responsibles(self):
 		return CompanyCustomerResponsible.objects.select_related("group").filter(company_customer = self).prefetch_related("users")
-	
+
 	@property
 	def comments(self):
 		return CompanyCustomerComment.objects.filter(company_customer = self)
-	
+
 	@property
 	def signatures(self):
 		return SignupLog.objects.select_related("contract").filter(company = self.company, contract__fair = self.fair)
-	
+
 	@property
 	def exhibitor(self):
 		return exhibitors.models.Exhibitor.objects.filter(company = self.company, fair = self.fair)
-	
+
 	def get_readonly_fields(self, request, obj = None):
 		if obj:
 			return ["fair",]
 		else:
 			return []
-	
+
 	class Meta:
 		verbose_name_plural = "Company customers"
 		ordering = ["company__name"]
@@ -225,10 +226,10 @@ class CompanyCustomerComment(models.Model):
 	comment = models.TextField(null = False, blank = False)
 	timestamp = models.DateTimeField(null = False, blank = False, auto_now_add = True)
 	show_in_exhibitors = models.BooleanField(null = False, blank = False, default = False)
-	
+
 	class Meta:
 		ordering = ["-timestamp"]
-	
+
 	def __str__(self):
 		return self.comment
 
@@ -237,7 +238,7 @@ class CompanyCustomerResponsible(models.Model):
 	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE, db_index = True)
 	group = models.ForeignKey(Group, null = False, blank = False, on_delete = models.CASCADE)
 	users = models.ManyToManyField(User, blank = False)
-	
+
 	class Meta:
 		verbose_name_plural = "Company customer responsibles"
 		ordering = ["company__name", "group__name"]
@@ -264,7 +265,7 @@ class CompanyContact(models.Model):
 
 	def __str__(self):
 		return "%s %s" % (self.first_name, self.last_name)
-	
+
 	class Meta:
 		ordering = ['-active', 'first_name']
 
@@ -273,8 +274,8 @@ class CompanyContact(models.Model):
 def update_stock(sender, instance, created, **kwargs):
 	if created:
 		CompanyLog.objects.create(company = instance, data = {"action": "create", "user": instance.modified_by})
-	
+
 	else:
 		pass
-	
+
 	instance.modified_by = None
