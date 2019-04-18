@@ -303,7 +303,8 @@ def companies_list(request, year):
 			'groups': company.groups.filter(fair = fair),
 			'responsibles': responsibles[company] if company in responsibles else None,
 			'signatures': signatures[company] if company in signatures else None,
-			'exhibitor': exhibitor
+			'exhibitor': exhibitor,
+			'show_externally': company.show_externally,
 		})
 
 	return render(request, 'companies/companies_list.html',

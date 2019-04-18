@@ -17,7 +17,7 @@
 <div class="row">
 	<div class="col-md-4">
 		<ul class="list-unstyled">
-			{% if company.show_externally == False %} <li class = 'text-danger'>This company is <strong>not</strong> shown on registration page.</li> {% endif %}
+			{% if company.show_externally == False %} <li class = 'text-danger'>Company is <strong>not</strong> shown externally on registration page.</li> {% endif %}
 			{% if company.identity_number %} <li><strong>Identity number:</strong>
 				{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
 				{% else %} {{ company.identity_number }} {% endif %}

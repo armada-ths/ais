@@ -25,12 +25,12 @@
 		padding: 0;
 		margin: 0 0 20px 15px;
 	}
-	
+
 	.form_no_ul ul li
 	{
 		list-style-type: none;
 	}
-	
+
 	.form_no_ul ul li label
 	{
 		font-weight: 400;
@@ -39,24 +39,24 @@
 
 <form method="post" class="form_no_ul" enctype="multipart/form-data">
 	{% csrf_token %}
-	
+
 	<div class="row">
 		<div class="col-md-6">
 			{{ form.exhibitors }}
-			
+
 			<label for="{{ form.users.id_for_label }}">{{ form.users.label }}</label>
 			{{ form.users }}
 		</div>
-		
+
 		<div class="col-md-6">
 			<label for="{{ form.contracts_positive.id_for_label }}">{{ form.contracts_positive.label }}</label>
 			{{ form.contracts_positive }}
-			
+
 			<label for="{{ form.contracts_negative.id_for_label }}">{{ form.contracts_negative.label }}</label>
 			{{ form.contracts_negative }}
 		</div>
 	</div>
-	
+
 	<input class="btn btn-primary" type="submit" value="Refine search" />
 </form>
 
@@ -70,14 +70,16 @@
 				<th>Responsibilities</th>
 			</tr>
 		</thead>
-		
+
 		{% for company in companies %}
 			<tr>
 				<td>
 					<a href="/fairs/{{ fair.year }}/companies/{{ company.pk }}">{{ company.name }}</a>
-					
+
+					{% if company.show_externally == False %}<span style="font-style: italic;">Not shown externally</span>{% endif %}
+
 					{% if company.exhibitor %}<span class="label label-success">Exhibitor</span>{% endif %}
-					
+
 					{% if company.status %}
 						{% if company.status.color == 'BLUE' %}<span class="label label-primary">
 						{% elif company.status.color == 'GREEN' %}<span class="label label-success">
@@ -87,7 +89,7 @@
 						{{ company.status.name }}</span>
 					{% endif %}
 				</td>
-				
+
 				<td>
 					<ul class="list-unstyled">
 						{% for signature in company.signatures %}
@@ -95,7 +97,7 @@
 						{% endfor %}
 					</ul>
 				</td>
-				
+
 				<td>
 					<ul class="list-unstyled">
 						{% if company.groups %}
@@ -105,7 +107,7 @@
 						{% endif %}
 					</ul>
 				</td>
-				
+
 				<td>
 					<ul class="list-unstyled">
 						{% if company.responsibles %}
