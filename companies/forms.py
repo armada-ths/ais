@@ -43,6 +43,7 @@ class CompanyAddressForm(ModelForm):
 class GroupForm(ModelForm):
 	fair = Fair.objects.filter(current = True).first()
 	parent = forms.ModelChoiceField(queryset = Group.objects.filter(fair = fair), required = False)
+	contract = forms.ModelChoiceField(queryset = SignupContract.objects.filter(fair = fair), required = False)
 
 	class Meta:
 		model = Group

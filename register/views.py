@@ -12,7 +12,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import get_template
 from django.forms.models import inlineformset_factory, HiddenInput
 
-from companies.models import Company, CompanyContact, Group, CompanyCustomerComment
+from companies.models import Company, CompanyType, CompanyContact, Group, CompanyCustomerComment
 from exhibitors.models import Exhibitor
 from fair.models import Fair, FairDay, LunchTicket
 from companies.forms import CompanyForm, InitialCompanyContactForm, CreateCompanyContactForm, CreateCompanyContactNoCompanyForm, UserForm
@@ -25,6 +25,27 @@ from .models import SignupContract, SignupLog
 from .forms import InitialInterestsRegistrationForm, InitialCommentForm, InitialRegistrationForm, CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm, BanquetParticipantForm
 
 from .help.methods import get_time_flag
+
+
+# This function returns the correct contract based on the company type or contract groups connected to the company
+def get_contract(company, fair, registration_type):
+	contract = None
+	# If the company has been tagged with a group connected to a contract in the CRM this contract should be used. This is used for special contracts or potentially for startups.
+	all_groups = company.groups.all()
+	for group in all_groups:
+		if group.contract:
+			contract = group.contract
+	# If no group with contract then fetch the contract that matches the company type or use the default contract if no match
+	if not contract:
+		try:
+			contract = SignupContract.objects.get(fair = fair, type = registration_type, contract_company_type = company.type, current = True)
+		except SignupContract.DoesNotExist:
+			try:
+				contract = SignupContract.objects.get(fair = fair, type = registration_type, default = True)
+			except SignupContract.DoesNotExist:
+				contract = None
+
+	return contract
 
 
 def choose_company(request):
@@ -93,8 +114,14 @@ def form(request, company_pk):
 
 
 def form_initial(request, company, company_contact, fair):
-	contract = SignupContract.objects.filter(fair = fair, type = 'INITIAL').first()
+
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL').first()
+
+	if signature:
+		contract = signature.contract
+	else:
+		contract = get_contract(company, fair, 'INITIAL')
+
 	deadline = fair.registration_end_date
 	# admin_user used as author of comment on company which will be imported in CRM system
 	admin_user = User.objects.filter(first_name = "admin", last_name = "admin", email = "support@armada.nu").first()
@@ -109,13 +136,14 @@ def form_initial(request, company, company_contact, fair):
 	form_company_contact = InitialCompanyContactForm(request.POST if request.POST and request.POST.get('save_contact_details') else None, instance = company_contact)
 
 	is_editable = timezone.now() >= fair.registration_start_date and timezone.now() <= fair.registration_end_date
-	# only company contacts can edit the form - maybe add extra security feature that the company_contact should be active (or confirmed for complete registration?)
+	# Only company contacts can edit the form - maybe add extra security feature that the company_contact should be confirmed for complete registration?
 	is_authorized = company_contact != None
 
 	if request.POST:
 		if request.POST.get('save_company_details') and form_company_details.is_valid() and is_authorized:
 			form_company_details.save()
 			form_company_details = NewCompanyForm(instance = company)
+			if not signature: contract = get_contract(company, fair, 'INITIAL') # Update the contract in case the company type has been changed
 
 		elif request.POST.get('save_contact_details') and form_company_contact.is_valid() and is_authorized:
 			form_company_contact.save()
