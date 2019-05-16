@@ -320,7 +320,6 @@ class RecruitmentApplication(models.Model):
 		else:
 			return 'new'
 
-
 	def roles_string(self):
 		return ' '.join(['(%s) %s' % (role.role.organization_group, role.role.name) for role in self.roleapplication_set.order_by('order')])
 

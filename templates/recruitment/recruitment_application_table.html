@@ -46,13 +46,13 @@
                 </div>
 
             </td>
-            <td>{{ search_form.programme }}</td>
-            <td>{{ search_form.registration_year }}</td>
-            <td>{{ search_form.rating }}</td>
-            <td>{{ search_form.submission_date }}</td>
-            <td>{{ search_form.roles }}</td>
+			<td>{{ search_form.programme }}</td>
+			<td>{{ search_form.submission_date }}</td>
+            <td>{{ search_form.role }}<br></td>
+			<td>{{ search_form.priority }}<br></td>
+			<td>{{ search_form.interviewer }}</td>
             <td>{{ search_form.recommended_role }}</td>
-            <td>{{ search_form.interviewer }}</td>
+			<td>{{ search_form.rating }}</td>
             <td>{{ search_form.state }}<br></td>
         </form>
     </tr>
@@ -70,20 +70,18 @@
 				{% if application.user.profile.programme.shortening %} {{ application.user.profile.programme.shortening }}
 				{% else %} {{ application.user.profile.programme }} {% endif %}
 			</td>
-            <td>{{ application.user.profile.registration_year }}</td>
-            <td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
+			{%comment%}<td>{{ application.user.profile.registration_year }}</td>{%endcomment%}
+			<td>{{ application.submission_date|date:"d M H:i" }}</td>
 
-
-            <td>{{ application.submission_date|date:"d M H:i" }}</td>
-            <td>
+			<td colspan="2">
 				<ol style="margin: 0; padding: 0 0 0 20px;">
 					{% for role in application.roles %}
 						<li>{{ role.role.name }}</li>
 					{% endfor %}
 				</ol>
             </td>
-            <td>{{ application.recommended_role.name }}</td>
-            <td>
+			
+			<td>
                 {% if application.interviewer %}
                     {{ application.interviewer.get_full_name }}
                 {% endif %}
@@ -91,7 +89,11 @@
                 {% if application.interviewer2 %}
                     <br />{{ application.interviewer2.get_full_name }}
                 {% endif %}
-            </td>
+			</td>
+			
+            <td>{{ application.recommended_role.name }}</td>
+			
+			<td>{% if application.rating != None %}{{ application.rating }}{% endif %}</td>
 
             <td>
                 {% if application.state == 'accepted' %}

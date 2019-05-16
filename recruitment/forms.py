@@ -39,9 +39,21 @@ class CompareForm(forms.Form):
 class RecruitmentApplicationSearchForm(forms.Form):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
-    roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    #roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
     recommended_role = forms.ModelChoiceField(
         queryset=Role.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    priority = forms.ChoiceField(
+        choices = [('', 'Any'), (0, 'First'), (1, 'Second'), (2, 'Third')],
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    role = forms.ModelChoiceField(
+        queryset=Role.objects.all(), # Necessary?
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=False
     )
@@ -58,11 +70,11 @@ class RecruitmentApplicationSearchForm(forms.Form):
         required=False
     )
 
-    registration_year = forms.ChoiceField(
-        choices=[('', '-------')] + [(i, i) for i in range(2001, timezone.now().year + 1)],
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
+    # registration_year = forms.ChoiceField(
+    #     choices=[('', '-------')] + [(i, i) for i in range(2001, timezone.now().year + 1)],
+    #     widget=forms.Select(attrs={'class': 'form-control'}),
+    #     required=False
+    # )
 
     rating = forms.ChoiceField(
         choices=[('', '-------'), (1, 1), (2, 2), (3, 3), (5, 5)],
@@ -89,10 +101,10 @@ class RecruitmentApplicationSearchForm(forms.Form):
             application_list = [application for application in application_list if
                                 programme == application.user.profile.programme]
 
-        registration_year = search_form.cleaned_data['registration_year']
-        if registration_year:
-            application_list = [application for application in application_list if
-                                int(registration_year) == application.user.profile.registration_year]
+        # registration_year = search_form.cleaned_data['registration_year']
+        # if registration_year:
+        #     application_list = [application for application in application_list if
+        #                         int(registration_year) == application.user.profile.registration_year]
 
         rating = search_form.cleaned_data['rating']
         if rating:
@@ -104,10 +116,10 @@ class RecruitmentApplicationSearchForm(forms.Form):
                                 submission_date.lower() in date_filter(
                                     application.submission_date + timezone.timedelta(hours=2), "d M H:i").lower()]
 
-        roles_string = search_form.cleaned_data['roles']
-        if roles_string:
-            application_list = [application for application in application_list if
-                                roles_string.lower() in application.roles_string().lower()]
+        # roles_string = search_form.cleaned_data['roles']
+        # if roles_string:
+        #     application_list = [application for application in application_list if
+        #                         roles_string.lower() in application.roles_string().lower()]
 
         interviewer = search_form.cleaned_data['interviewer']
         if interviewer:
@@ -122,6 +134,29 @@ class RecruitmentApplicationSearchForm(forms.Form):
         state = search_form.cleaned_data['state']
         if state:
             application_list = [application for application in application_list if state == application.state()]
+
+        # WIP
+        # Get role and priority
+        priority = (search_form.cleaned_data['priority']) # Django makes this a string even though it's declared an int in the form
+        role = search_form.cleaned_data['role']
+        # The user has chosen both a role and a priority,
+        # filter out the applications where an applicant
+        # has chosen exactly that role with that priority.
+        if role and priority:
+            print((role, priority))
+            print([[(roleapp.role, roleapp.order) for roleapp in application.roles] for application in application_list])
+            application_list = [application for application in application_list if (role, int(priority)) in [(roleapp.role, roleapp.order) for roleapp in application.roles]]
+        # The user has specified a role but not a 
+        # priority, filter out the applications
+        # that are for that role.
+        elif role:
+            application_list = [application for application in application_list if role in [roleapp.role for roleapp in application.roles]]
+        # The user has chosen a priority but no
+        # role... This is probably a rare use case.
+        # Filter out applications where any choice
+        # with the given priority has been made.
+        elif priority:
+            application_list = [application for application in application_list if int(priority) in [roleapp.order for roleapp in application.roles]]
 
         return application_list
 
