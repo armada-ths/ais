@@ -411,8 +411,6 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 	# user should be forbidden to look at applications that are not below them in hierari
 	#application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
 
-
-
 	search_form = RecruitmentApplicationSearchForm(request.GET or None)
 	search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
 																		interviewer in recruitment_period.interviewers()]
@@ -453,7 +451,7 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 		SearchField('Name', 'user__last_name'),
 		SearchField('Programme', 'user__profile__programme'),
 		SearchField('Submitted', 'submission_date'),
-		SearchField('Role', 'role'),
+		SearchField('Role', None),
 		SearchField('Priority', None),
 		SearchField('Interviewer', 'interviewer__last_name'),
 		SearchField('Recommended role', 'recommended_role'),
