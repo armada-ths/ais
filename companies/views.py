@@ -213,9 +213,12 @@ def statistics(request, year):
 
 @permission_required('companies.base')
 def companies_list(request, year):
-	fair = get_object_or_404(Fair, year = year)
-
 	form = CompanySearchForm(request.POST or None)
+	if form.is_valid():
+		year = int(form.cleaned_data['exhibitors_year'])
+	fair = get_object_or_404(Fair, year =  year)
+
+	# form = CompanySearchForm(request.POST or None)
 
 	all_users = []
 
@@ -540,7 +543,7 @@ def companies_orders_new(request, year, pk):
 
 	form_order.fields['product'].choices = revenues_list
 
-	if request.POST and form_order.is_valid():
+	if request.POST and form_order.is_valxid():
 		order = form_order.save(commit = False)
 		order.purchasing_company = company
 		order.save()
