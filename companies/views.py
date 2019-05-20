@@ -548,7 +548,7 @@ def companies_orders_new(request, year, pk):
 
 	form_order.fields['product'].choices = revenues_list
 
-	if request.POST and form_order.is_valid():
+	if request.POST and form_order.is_valxid():
 		order = form_order.save(commit = False)
 		order.purchasing_company = company
 		order.save()
