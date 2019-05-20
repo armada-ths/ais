@@ -395,10 +395,17 @@ def remember_last_query_params(url_name, query_params):
 @remember_last_query_params('recruitment', [field for field in RecruitmentApplicationSearchForm().fields])
 def recruitment_period(request, year, pk, template_name='recruitment/recruitment_period.html'):
 	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	eligible_roles = recruitment_period.eligible_roles
+
+	# We should be able to trust eligible_roles in the model,
+	# but in case something goes awry.
+	if eligible_roles < 1:
+		eligible_roles = 1
+	elif eligible_roles > 3:
+		eligible_roles = 3 
 
 	fair = get_object_or_404(Fair, year=year)
 	start = time.time()
-
 
 	sort_field = request.GET.get('sort_field')
 	if not sort_field:
@@ -412,15 +419,17 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 	#application_list = list(filter(lambda application: eligible_to_see_application(application, user), application_list))
 
 	search_form = RecruitmentApplicationSearchForm(request.GET or None)
+	search_form.fields['role'].choices = [('', '---------')] + [(role.pk, role.name) for role in recruitment_period.recruitable_roles.all()]
+	search_form.fields['priority'].choices = [('', '-------')] + [(str(i), str(i+1) + ':' + ('st' if i == 0 else 'nd' if i == 1 else 'rd')) 
+																for i in range(eligible_roles)]
 	search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
 																		interviewer in recruitment_period.interviewers()]
-	search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
 	search_form.fields['recommended_role'].choices = [('', '---------')] + [(role.pk, role.name) for
 																		role in recruitment_period.recruitable_roles.all()]
+	search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
+	
 
-	search_form.fields['role'].choices = [('', '-------')] + [(role.pk, role.name) for role in recruitment_period.recruitable_roles.all()]
-
-	search_form.fields['priority'].choices = [('', 'Any')] + [(str(i), str(i+1)) for i in range(recruitment_period.eligible_roles)]
+	
 
 	if search_form.is_valid():
 		application_list = search_form.applications_matching_search(application_list)
