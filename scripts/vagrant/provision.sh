@@ -41,9 +41,9 @@ echo "GRANT ALL PRIVILEGES ON DATABASE ais_dev TO ais_dev;" | silent sudo -u pos
 echo "ALTER USER ais_dev WITH SUPERUSER;"| silent sudo -u postgres psql
 
 echo "Configuring..."
-silent python manage.py migrate --settings local_settings
-silent python manage.py makemigrations --settings local_settings
-silent python manage.py migrate --settings local_settings
+# silent python manage.py migrate --settings local_settings
+# silent python manage.py makemigrations --settings local_settings
+# silent python manage.py migrate --settings local_settings
 silent npm install
 
 echo "Sprinkling magic..."
