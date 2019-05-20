@@ -427,9 +427,6 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 	search_form.fields['recommended_role'].choices = [('', '---------')] + [(role.pk, role.name) for
 																		role in recruitment_period.recruitable_roles.all()]
 	search_form.fields['state'].choices = [('', '-------')] + recruitment_period.state_choices()
-	
-
-	
 
 	if search_form.is_valid():
 		application_list = search_form.applications_matching_search(application_list)
