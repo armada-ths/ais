@@ -54,8 +54,7 @@ class RecruitmentApplicationSearchForm(forms.Form):
 	)
 
 	priority = forms.ChoiceField(
-		# The choices will also be populated from the view, so this line might be superfluous
-		choices = [('', '-------'), (0, '1:st'), (1, '2:nd'), (2, '3:rd')],
+		# The choices will be populated from the view
 		widget=forms.Select(attrs={'class': 'form-control'}),
 		required=False
 	)
