@@ -310,13 +310,16 @@ class RecruitmentApplication(models.Model):
 		if self.status:
 			return self.status
 		if self.interviewer:
-			if self.slot:
-				if self.slot.start < timezone.now() or self.recommended_role and self.rating: 
-					return 'interview_done'
-				else:
-					return 'interview_planned'
+			if self.recommended_role and self.rating:
+				return 'interview_done'
 			else:
-				return 'interview_delegated'
+				if self.slot:
+					if self.slot.start > timezone.now(): 
+						return 'interview_planned'
+					else:
+						return 'interview_done'
+				else:
+					return 'interview_delegated'
 		else:
 			return 'new'
 
