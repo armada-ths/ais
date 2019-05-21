@@ -37,103 +37,111 @@ class CompareForm(forms.Form):
 
 
 class RecruitmentApplicationSearchForm(forms.Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
-    submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
-    roles = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
-    recommended_role = forms.ModelChoiceField(
-        queryset=Role.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
+	name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
 
-    programme = forms.ModelChoiceField(
-        queryset=Programme.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
+	programme = forms.ModelChoiceField(
+		queryset=Programme.objects.all(),
+		widget=forms.Select(attrs={'class': 'form-control'}),
+		required=False
+	)
 
-    interviewer = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
+	submission_date = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
 
-    registration_year = forms.ChoiceField(
-        choices=[('', '-------')] + [(i, i) for i in range(2001, timezone.now().year + 1)],
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
+	role = forms.ModelChoiceField(
+		queryset=Role.objects.all(),
+		widget=forms.Select(attrs={'class': 'form-control'}),
+		required=False
+	)
 
-    rating = forms.ChoiceField(
-        choices=[('', '-------'), (1, 1), (2, 2), (3, 3), (5, 5)],
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
+	priority = forms.ChoiceField(
+		# The choices will be populated from the view
+		widget=forms.Select(attrs={'class': 'form-control'}),
+		required=False
+	)
 
-    state = forms.ChoiceField(
+	interviewer = forms.ModelChoiceField(
+		queryset=User.objects.all(),
+		widget=forms.Select(attrs={'class': 'form-control'}),
+		required=False
+	)
+	
+	recommended_role = forms.ModelChoiceField(
+		queryset=Role.objects.all(),
+		widget=forms.Select(attrs={'class': 'form-control'}),
+		required=False
+	)
 
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
+	rating = forms.ChoiceField(
+		choices=[('', '-------'), (1, 1), (2, 2), (3, 3), (5, 5)],
+		widget=forms.Select(attrs={'class': 'form-control'}),
+		required=False
+	)
 
-    def applications_matching_search(self, application_list):
-        search_form = self
+	state = forms.ChoiceField(
+		widget=forms.Select(attrs={'class': 'form-control'}),
+		required=False
+	)
 
-        name = search_form.cleaned_data['name']
-        if name:
-            application_list = [application for application in application_list if
-                                name.lower() in application.user.get_full_name().lower()]
+	def applications_matching_search(self, application_list):
+		search_form = self
 
-        programme = search_form.cleaned_data['programme']
-        if programme:
-            application_list = [application for application in application_list if
-                                programme == application.user.profile.programme]
+		name = search_form.cleaned_data['name']
+		if name:
+			application_list = [application for application in application_list if
+								name.lower() in application.user.get_full_name().lower()]
 
-        registration_year = search_form.cleaned_data['registration_year']
-        if registration_year:
-            application_list = [application for application in application_list if
-                                int(registration_year) == application.user.profile.registration_year]
+		programme = search_form.cleaned_data['programme']
+		if programme:
+			application_list = [application for application in application_list if
+								programme == application.user.profile.programme]
 
-        rating = search_form.cleaned_data['rating']
-        if rating:
-            application_list = [application for application in application_list if int(rating) == application.rating]
+		submission_date = search_form.cleaned_data['submission_date']
+		if submission_date:
+			application_list = [application for application in application_list if
+								submission_date.lower() in date_filter(
+									application.submission_date + timezone.timedelta(hours=2), "d M H:i").lower()]
 
-        submission_date = search_form.cleaned_data['submission_date']
-        if submission_date:
-            application_list = [application for application in application_list if
-                                submission_date.lower() in date_filter(
-                                    application.submission_date + timezone.timedelta(hours=2), "d M H:i").lower()]
+		role = search_form.cleaned_data['role']
+		priority = (search_form.cleaned_data['priority']) # A string: 0, 1, or 2
 
-        roles_string = search_form.cleaned_data['roles']
-        if roles_string:
-            application_list = [application for application in application_list if
-                                roles_string.lower() in application.roles_string().lower()]
+		# Three different search cases: role + priority, only role or only priority
+		if role and priority:
+			application_list = [application for application in application_list if (role, int(priority)) in [(roleapp.role, roleapp.order) for roleapp in application.roles]]
+		elif role:
+			application_list = [application for application in application_list if role in [roleapp.role for roleapp in application.roles]]
+		elif priority:
+			# Rare use case, matches all applications where any role has been chosen with the given priority
+			application_list = [application for application in application_list if int(priority) in [roleapp.order for roleapp in application.roles]]
+		
+		interviewer = search_form.cleaned_data['interviewer']
+		if interviewer:
+			application_list = [application for application in application_list if
+								interviewer == application.interviewer]
+		
+		recommended_role = search_form.cleaned_data['recommended_role']
+		if recommended_role:
+			application_list = [application for application in application_list if
+								recommended_role == application.recommended_role]
+		
+		rating = search_form.cleaned_data['rating']
+		if rating:
+			application_list = [application for application in application_list if int(rating) == application.rating]
 
-        interviewer = search_form.cleaned_data['interviewer']
-        if interviewer:
-            application_list = [application for application in application_list if
-                                interviewer == application.interviewer]
+		state = search_form.cleaned_data['state']
+		if state:
+			application_list = [application for application in application_list if state == application.state()]
 
-        recommended_role = search_form.cleaned_data['recommended_role']
-        if recommended_role:
-            application_list = [application for application in application_list if
-                                recommended_role == application.recommended_role]
-
-        state = search_form.cleaned_data['state']
-        if state:
-            application_list = [application for application in application_list if state == application.state()]
-
-        return application_list
+		return application_list
 
 class RolesForm(ModelForm):
-    class Meta:
-        model = Role
+	class Meta:
+		model = Role
 
-        exclude = ('group',)
-        widgets = {
-            'permissions': forms.CheckboxSelectMultiple(),
-            'description': forms.Textarea(),
-        }
+		exclude = ('group',)
+		widgets = {
+			'permissions': forms.CheckboxSelectMultiple(),
+			'description': forms.Textarea(),
+		}
 
 def fix_phone_number(n):
 	if n is None: return None
@@ -195,18 +203,18 @@ class ProfileForm(ModelForm):
 
 
 class RoleApplicationForm(forms.Form):
-    role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.none(), widget=forms.Select(attrs={'required': True}))
-    role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.none(), required=False)
-    role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.none(), required=False)
+	role1 = forms.ModelChoiceField(label='Role 1', queryset=Role.objects.none(), widget=forms.Select(attrs={'required': True}))
+	role2 = forms.ModelChoiceField(label='Role 2', queryset=Role.objects.none(), required=False)
+	role3 = forms.ModelChoiceField(label='Role 3', queryset=Role.objects.none(), required=False)
 
 
 class ProfilePictureForm(ModelForm):
-    '''
-    Simple 1-field form for changing profile picture in interview form
-    '''
-    class Meta:
-        model = Profile
-        fields = ('picture_original',)
-        labels = {
-            'picture_original': 'Profile picture',
-        }
+	'''
+	Simple 1-field form for changing profile picture in interview form
+	'''
+	class Meta:
+		model = Profile
+		fields = ('picture_original',)
+		labels = {
+			'picture_original': 'Profile picture',
+		}
