@@ -401,8 +401,6 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 	# but in case something goes awry.
 	if eligible_roles < 1:
 		eligible_roles = 1
-	elif eligible_roles > 3:
-		eligible_roles = 3 
 
 	fair = get_object_or_404(Fair, year=year)
 	start = time.time()
