@@ -214,10 +214,15 @@ def statistics(request, year):
 @permission_required('companies.base')
 def companies_list(request, year):
 	form = CompanySearchForm(request.POST or None)
+	exhibitor_year = year
+	num_fairs = Fair.objects.count()
+	year_list = range(int(year), int(year) - int(num_fairs) , -1)
+	form.fields['exhibitors_year'].choices = [(str(year), str(year)) for year in year_list]
+	form.fields['exhibitors_year'].initial = (str(year))
 	if form.is_valid():
-		year = int(form.cleaned_data['exhibitors_year'])
+		exhibitor_year = int(form.cleaned_data['exhibitors_year'])
+	exhibitor_fair = get_object_or_404(Fair, year =  exhibitor_year)
 	fair = get_object_or_404(Fair, year =  year)
-
 	# form = CompanySearchForm(request.POST or None)
 
 	all_users = []
@@ -268,7 +273,7 @@ def companies_list(request, year):
 		else:
 			signatures[signature.company].append(signature)
 
-	exhibitors = [x.company for x in Exhibitor.objects.select_related('company').filter(fair = fair)]
+	exhibitors = [x.company for x in Exhibitor.objects.select_related('company').filter(fair = exhibitor_fair)]
 
 	companies_modified = []
 
@@ -543,7 +548,7 @@ def companies_orders_new(request, year, pk):
 
 	form_order.fields['product'].choices = revenues_list
 
-	if request.POST and form_order.is_valxid():
+	if request.POST and form_order.is_valid():
 		order = form_order.save(commit = False)
 		order.purchasing_company = company
 		order.save()
