@@ -358,7 +358,8 @@ class CompanySearchForm(forms.Form):
 		('NO', 'Show only non-exhibitors'),
 		('YES', 'Show only exhibitors')
 	]
-
+	
+	exhibitors_year = forms.ChoiceField(widget = forms.Select(), label = 'For the year: ', required = True)
 	exhibitors = forms.ChoiceField(choices = exhibitors_choices, widget = forms.RadioSelect(), initial = 'BOTH', required = True)
 	contracts_positive = forms.ModelMultipleChoiceField(queryset = SignupContract.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies who have signed any of these', required = False)
 	contracts_negative = forms.ModelMultipleChoiceField(queryset = SignupContract.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies who have NOT signed any of these', required = False)

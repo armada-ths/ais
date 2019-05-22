@@ -213,9 +213,17 @@ def statistics(request, year):
 
 @permission_required('companies.base')
 def companies_list(request, year):
-	fair = get_object_or_404(Fair, year = year)
-
 	form = CompanySearchForm(request.POST or None)
+	exhibitor_year = year
+	num_fairs = Fair.objects.count()
+	year_list = range(int(year), int(year) - int(num_fairs) , -1)
+	form.fields['exhibitors_year'].choices = [(str(year), str(year)) for year in year_list]
+	form.fields['exhibitors_year'].initial = (str(year))
+	if form.is_valid():
+		exhibitor_year = int(form.cleaned_data['exhibitors_year'])
+	exhibitor_fair = get_object_or_404(Fair, year =  exhibitor_year)
+	fair = get_object_or_404(Fair, year =  year)
+	# form = CompanySearchForm(request.POST or None)
 
 	all_users = []
 
