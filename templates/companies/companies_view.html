@@ -18,12 +18,6 @@
 	<div class="col-md-4">
 		<ul class="list-unstyled">
 			{% if company.show_externally == False %} <li class = 'text-danger'>Company is <strong>not</strong> shown externally on registration page.</li> {% endif %}
-			{% if company.identity_number %} <li><strong>Identity number:</strong>
-				{% if company.identity_number_allabolag %} <a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</a>
-				{% else %} {{ company.identity_number }} {% endif %}
-			</li>{% endif %}
-
-			{% if company.website %} <li><strong>Website:</strong> <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></li>{% endif %}
 		</ul>
 
 		<div class="panel panel-default">
@@ -50,6 +44,24 @@
 				</ul>
 			</div>
 		</div>
+
+
+	<div class="panel panel-default">
+  	<div class="panel-heading">
+    	<h3 class="panel-title">General information</h3>
+  </div>
+
+  	<div class="panel-body">
+    	<ul class="list-unstyled">
+					{% if company.name%} <li><strong>Organization name:</strong> {{ company.name }}</li> {% endif %}
+					{% if company.identity_number_allabolag %}<li><strong>Identity number: </strong><a href="https://www.allabolag.se/{{ company.identity_number_allabolag }}" target="_blank">{{ company.identity_number }}</li></a>
+					{% else %} {% if company.identity_number%}<li><strong>Identity number: </strong>{{ company.identity_number }}</li> {% endif %}{% endif %}
+					{% if company.type %} <li><strong>Type:</strong> {{ company.type }}</li> {% endif %}
+					{% if company.website %} <li><strong>Website:</strong> <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></li>{% endif %}
+    	</ul>
+  		</div>
+		</div>
+
 
 		<div class="panel panel-default">
 			<div class="panel-heading">
