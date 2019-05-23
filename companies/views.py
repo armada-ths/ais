@@ -219,8 +219,7 @@ def companies_list(request, year):
 	year_list = range(int(year), int(year) - int(num_fairs) , -1)
 	form.fields['exhibitors_year'].choices = [(str(year), str(year)) for year in year_list]
 	form.fields['exhibitors_year'].initial = (str(year))
-	if form.is_valid():
-		exhibitor_year = int(form.cleaned_data['exhibitors_year'])
+	exhibitor_year = int(form['exhibitors_year'].value())
 	exhibitor_fair = get_object_or_404(Fair, year =  exhibitor_year)
 	fair = get_object_or_404(Fair, year =  year)
 
