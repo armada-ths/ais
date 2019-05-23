@@ -223,7 +223,6 @@ def companies_list(request, year):
 		exhibitor_year = int(form.cleaned_data['exhibitors_year'])
 	exhibitor_fair = get_object_or_404(Fair, year =  exhibitor_year)
 	fair = get_object_or_404(Fair, year =  year)
-	# form = CompanySearchForm(request.POST or None)
 
 	all_users = []
 
@@ -273,7 +272,7 @@ def companies_list(request, year):
 		else:
 			signatures[signature.company].append(signature)
 
-	exhibitors = [x.company for x in Exhibitor.objects.select_related('company').filter(fair = fair)]
+	exhibitors = [x.company for x in Exhibitor.objects.select_related('company').filter(fair = exhibitor_fair)]
 
 	companies_modified = []
 
