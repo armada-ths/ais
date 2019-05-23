@@ -62,7 +62,7 @@ def serialize_exhibitor(exhibitor, request):
 def exhibitors(request):
     data = []
 
-    for exhibitor in Exhibitor.objects.filter(fair=Fair.objects.get(current=True)):
+    for exhibitor in Exhibitor.objects.filter(fair=Fair.objects.get(year = 2018)): #Changed from current = True
         data.append(serialize_exhibitor(exhibitor, request))
 
     return JsonResponse(data, safe=False)
@@ -71,7 +71,7 @@ def exhibitors(request):
 def locations(request):
     data = []
 
-    for location in Location.objects.filter(fair__current=True):
+    for location in Location.objects.filter(fair__year = 2018): #Changed from current = True
         data.append({
             'id': location.pk,
             'parent': {
@@ -86,7 +86,7 @@ def locations(request):
 
 
 def location(request, location_pk):
-    location = get_object_or_404(Location, fair__current=True, pk=location_pk)
+    location = get_object_or_404(Location, fair__year = 2018, pk=location_pk) #Changed from current=True
 
     booths = []
 
@@ -128,7 +128,7 @@ def location(request, location_pk):
 def days(request):
     data = []
 
-    for day in FairDay.objects.filter(fair__current=True):
+    for day in FairDay.objects.filter(fair__year = 2018): #Changed from current = True
         data.append({
             'id': day.pk,
             'date': day.date
@@ -163,12 +163,12 @@ def people_count(request, location_pk):
     if not request.user: return JsonResponse({'message': 'Authentication required.'}, status=403)
 
     data = json.loads(request.body)
-    
+
     if location.people_count is None: location.people_count = 0
 
     location.people_count += data['change']
     location.save()
-    
+
     LocationTick(location = location, user = request.user, change = data['change'], new_people_count = location.people_count).save()
 
     return JsonResponse({'people_count': location.people_count}, status = 200)
