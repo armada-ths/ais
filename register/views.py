@@ -31,10 +31,11 @@ from .help.methods import get_time_flag
 def get_contract(company, fair, registration_type):
 	contract = None
 	# If the company has been tagged with a group connected to a contract in the CRM this contract should be used. This is used for special contracts or potentially for startups.
-	all_groups = company.groups.all()
+	all_groups = company.groups.filter(fair = fair)
 	for group in all_groups:
 		if group.contract:
-			contract = group.contract
+			if group.contract.fair == fair:
+				contract = group.contract
 	# If no group with contract then fetch the contract that matches the company type or use the default contract if no match
 	if not contract:
 		try:
