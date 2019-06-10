@@ -123,6 +123,7 @@ def is_equal(q1, q2):
 @permission_required('companies.base')
 def statistics(request, year):
 	fair = get_object_or_404(Fair, year = year)
+	current_fair_groups = Group.objects.filter(fair = fair)
 
 	form = StatisticsForm(request.POST or None)
 
@@ -137,7 +138,12 @@ def statistics(request, year):
 		rows = 0
 
 		for signature in signatures_raw:
-			responsibilities = list(CompanyCustomerResponsible.objects.filter(company = signature.company))
+			all_responsibilities = list(CompanyCustomerResponsible.objects.filter(company = signature.company))
+			# loop to exclude previous years' responsibilities
+			responsibilities = []
+			for responsibility in all_responsibilities:
+				if responsibility.group in current_fair_groups:
+					responsibilities.append(responsibility)
 
 			if smallest is None or signature.timestamp < smallest:
 				smallest = signature.timestamp
