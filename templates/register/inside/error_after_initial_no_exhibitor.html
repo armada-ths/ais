@@ -1,12 +1,14 @@
 {% extends "register/inside/base.html" %}
 
 {% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}" class="active">{{ company.name }}</a></li>{% endblock %}
 
 {% block content %}
 	<h1>No spot on the fair</h1>
-	<p>Your comany did complete the initial registration, but did not receive a spot on this year’s career fair. If you have any questions, contact one of the THS Armada project group members below, or go to <a href="armada.nu/contact">Contact Us</a>.</p>
+	<p>Your comany did complete the initial registration, but did not receive a spot on this year’s career fair. If you have any questions, contact one of the THS Armada project group members below, or visit the  <a href="armada.nu/contact">Contact Us</a> page.</p>
 	<br>
 
 	<div id="contact_cards">
@@ -49,4 +51,26 @@
 
 
 
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		.lowercase {
+  		text-transform: lowercase;
+  	}
+
+		#contact_cards
+		{
+			text-align: center;
+		}
+
+		#contact_cards .contact_card
+		{
+			display: inline-block;
+			text-align: left;
+			padding: 8px;
+			margin: 7px 5px;
+			background: #353535;
+		}
+	</style>
 {% endblock %}
