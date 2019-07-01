@@ -1,10 +1,76 @@
 {% extends "register/inside/base.html" %}
 
 {% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
 
 {% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}" class="active">{{ company.name }}</a></li>{% endblock %}
 
 {% block content %}
 	<h1>No spot on the fair</h1>
-	<p>Your company did complete the initial registration, but you did not receive a spot at this year's career fair.</p>
+	<p>Your comany did complete the initial registration, but did not receive a spot on this year’s career fair. If you have any questions, contact one of the THS Armada project group members below, or visit the  <a href="https://armada.nu/contact">Contact Us</a> page.</p>
+	<br>
+
+	<div id="contact_cards">
+
+		<div class="contact_card">
+			<span style="font-weight: 700;">Ulrik Sköldkvist</span><br />
+			Project Manager<br />
+			<a href="mailto:a@armada.nu">a@armada.nu</a><br />
+			<a href="tel:+46707909844">+4670-790 98 44</a>
+		</div>
+
+		<div class="contact_card">
+			<span style="font-weight: 700;">Filip Jacobson</span><br />
+			Head of Business Relations and Events<br />
+			<a href="mailto:filip.jacobson@armada.nu">filip.jacobson@armada.nu</a><br />
+			<a href="tel:+46704020341">+4670-402 03 41</a>
+		</div>
+
+		<div class="contact_card">
+			<span style="font-weight: 700;">Fahami Green</span><br />
+			Head of Sales<br />
+			<a href="mailto:fahami.annan.green@armada.nu">fahami.annan.green@armada.nu</a><br />
+			<a href="tel:+46702464944">+4670-246 49 44</a>
+		</div>
+
+		<div class="contact_card">
+			<span style="font-weight: 700;">Ferhat Kaya</span><br />
+			Head of Sales<br />
+			<a href="mailto:ferhat.kaya@armada.nu">ferhat.kaya@armada.nu</a><br />
+			<a href="tel:+46700120613">+4670-012 06 13</a>
+		</div>
+
+		<div class="contact_card">
+			<span style="font-weight: 700;">Daniel Aston</span><br />
+			Head of Sales<br />
+			<a href="mailto:daniel.aston@armada.nu">daniel.aston@armada.nu</a><br />
+			<a href="tel:+46701481412">+4670-148 14 12</a>
+		</div>
+	</div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		.lowercase {
+  		text-transform: lowercase;
+  	}
+
+		#contact_cards
+		{
+			text-align: center;
+		}
+
+		#contact_cards .contact_card
+		{
+			display: inline-block;
+			text-align: left;
+			padding: 8px;
+			margin: 7px 5px;
+			background: #353535;
+		}
+	</style>
 {% endblock %}
