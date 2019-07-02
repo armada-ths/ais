@@ -2,28 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from django.forms import modelformset_factory
-from django.core.mail import EmailMessage # NOTE: only for testing - remove after
 
 from fair.models import Fair
 from companies.models import Company
 
 from .models import Order, Product, ExportBatch
 from .forms import GenerateCompanyInvoicesForm, BaseCompanyCustomerIdFormSet, CompanyCustomerIdForm
-
-
-# # NOTE: only for testing - remove after
-def send_test_email():
-
-	email = EmailMessage(
-		subject = 'Test automated mail',
-		body = 'Test message from the AIS.',
-		from_email = 'info@armada.nu',
-		to = ['sara.gustafsson@armada.nu'],
-		bcc = ['support@armada.nu'],
-	)
-
-	# TODO: email.attach_file('path.pdf')
-	email.send()
 
 
 @permission_required('accounting.base')
@@ -170,7 +154,6 @@ def companies_without_ths_customer_ids(request, year):
 
 @permission_required('accounting.base')
 def product_summary(request, year):
-	send_test_email()
 	fair = get_object_or_404(Fair, year = year)
 
 	products = []
