@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponse
 from django.forms import modelformset_factory
+from django.core.mail import EmailMessage # NOTE: only for testing - remove after
 
 from fair.models import Fair
 from companies.models import Company
@@ -9,10 +10,26 @@ from companies.models import Company
 from .models import Order, Product, ExportBatch
 from .forms import GenerateCompanyInvoicesForm, BaseCompanyCustomerIdFormSet, CompanyCustomerIdForm
 
+
+# # NOTE: only for testing - remove after
+def send_test_email():
+
+	email = EmailMessage(
+		subject = 'Test automated mail',
+		body = 'Test message from the AIS.',
+		from_email = 'info@armada.nu',
+		to = ['sara.gustafsson@armada.nu'],
+		bcc = ['support@armada.nu'],
+	)
+
+	# TODO: email.attach_file('path.pdf')
+	email.send()
+
+
 @permission_required('accounting.base')
 def accounting(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	return render(request, 'accounting/accounting.html',
 	{
 		'fair': fair
@@ -24,51 +41,51 @@ def accounting(request, year):
 def export_orders(request, year):
 	fair = get_object_or_404(Fair, year = year)
 	orders = Order.objects.filter(product__revenue__fair = fair, export_batch = None).exclude(purchasing_company = None).exclude(unit_price = 0)
-	
+
 	companies = []
-	
+
 	for order in orders:
 		if order.purchasing_company not in companies and order.purchasing_company.has_invoice_address() and order.purchasing_company.ths_customer_id is not None:
 			companies.append(order.purchasing_company)
-	
+
 	form_generate_company_invoices = GenerateCompanyInvoicesForm(request.POST if request.POST else None, initial = {'text': fair.name})
-	
+
 	companies.sort(key = lambda x: x.name)
 	form_generate_company_invoices.fields['companies'].choices = [(company.pk, company.name) for company in companies]
-	
+
 	if request.POST and form_generate_company_invoices.is_valid():
 		if form_generate_company_invoices.cleaned_data['mark_exported']:
 			export_batch = ExportBatch(user = request.user)
 			export_batch.save()
 			filename = 'fakturaunderlag ' + export_batch.timestamp.strftime('%s') + '.txt'
-		
+
 		else:
 			export_batch = None
 			filename = 'fakturaunderlag.txt'
-		
+
 		invoices = []
-		
+
 		for company in form_generate_company_invoices.cleaned_data['companies']:
 			if company not in companies: continue
-			
+
 			orders_company = []
-			
+
 			for order in orders:
 				if order.purchasing_company == company:
 					orders_company.append(order)
-			
+
 			if len(orders_company) != 0:
 				invoices.append({
 					'company': company,
 					'orders': orders_company
 				})
-		
+
 		txt = 'Rubrik	THS Armada\r\n'
 		txt += 'Datumformat	YYYY-MM-DD\r\n'
-		
+
 		for invoice in invoices:
 			fields_invoice = [''] * 47
-			
+
 			fields_invoice[1] = 'Kundfaktura'
 			fields_invoice[5] = invoice['company'].ths_customer_id
 			fields_invoice[13] = form_generate_company_invoices.cleaned_data['our_reference']
@@ -83,14 +100,14 @@ def export_orders(request, year):
 			fields_invoice[26] += invoice['company'].invoice_zip_code + ' ' + invoice['company'].invoice_city
 			if invoice['company'].invoice_country != 'SWEDEN': fields_invoice[26] += '<CR>' + invoice['company'].get_invoice_country_display()
 			if invoice['company'].invoice_name is not None: fields_invoice[27] = invoice['company'].invoice_name
-			
+
 			del fields_invoice[0]
-			
+
 			txt_orders = []
-			
+
 			for order in invoice['orders']:
 				fields_order = [''] * 21
-				
+
 				fields_order[1] = 'Fakturarad'
 				fields_order[2] = '3'
 				fields_order[4] = str(order.quantity)
@@ -100,30 +117,30 @@ def export_orders(request, year):
 				fields_order[12] = 'st'
 				fields_order[16] = str(order.product.result_center)
 				fields_order[19] = str(order.product.cost_unit)
-				
+
 				del fields_order[0]
-				
+
 				txt_orders.append('\t'.join(fields_order))
-			
+
 			txt += '\t'.join(fields_invoice) + '\r\n'
 			for txt_order in txt_orders:
 				txt += txt_order + '\r\n'
 			txt += 'Kundfaktura-slut\r\n'
-		
+
 		if export_batch is not None:
 			for invoice in invoices:
 				for order in invoice['orders']:
 					order.export_batch = export_batch
 					order.save()
-		
+
 		txt = txt.encode('windows-1252')
-		
+
 		response = HttpResponse(txt, content_type = 'text/plain; charset=windows-1252')
 		response['Content-Length'] = len(txt)
 		response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
-		
+
 		return response
-	
+
 	return render(request, 'accounting/export_orders.html',
 	{
 		'fair': fair,
@@ -136,14 +153,14 @@ def export_orders(request, year):
 @permission_required('accounting.ths_customer_ids')
 def companies_without_ths_customer_ids(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	CompanyCustomerIdFormSet = modelformset_factory(Company, fields = ['invoice_name', 'ths_customer_id'], extra = 0)
 	formset = CompanyCustomerIdFormSet(request.POST if request.POST else None, queryset = companies_with_orders(fair))
-	
+
 	if request.POST and formset.is_valid():
 		formset.save()
 		formset = CompanyCustomerIdFormSet(queryset = companies_with_orders(fair))
-	
+
 	return render(request, 'accounting/companies_without_ths_customer_ids.html',
 	{
 		'fair': fair,
@@ -153,11 +170,12 @@ def companies_without_ths_customer_ids(request, year):
 
 @permission_required('accounting.base')
 def product_summary(request, year):
+	send_test_email()
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	products = []
 	j = 1
-	
+
 	for product_raw in Product.objects.filter(revenue__fair = fair):
 		product = {
 			'i': j,
@@ -168,12 +186,12 @@ def product_summary(request, year):
 			'total_quantity': 0,
 			'total_price': 0
 		}
-		
+
 		j += 1
-		
+
 		for order_raw in Order.objects.select_related('export_batch').filter(product = product_raw).order_by('purchasing_company'):
 			price = (order_raw.unit_price if order_raw.unit_price is not None else product_raw.unit_price) * order_raw.quantity
-			
+
 			product['orders'].append({
 				'pk': order_raw.id,
 				'purchasing_company': order_raw.purchasing_company,
@@ -183,12 +201,12 @@ def product_summary(request, year):
 				'price': price,
 				'comment': order_raw.comment
 			})
-			
+
 			product['total_quantity'] += order_raw.quantity
 			product['total_price'] += price
-		
+
 		products.append(product)
-	
+
 	return render(request, 'accounting/product_summary.html',
 	{
 		'fair': fair,
@@ -199,10 +217,10 @@ def product_summary(request, year):
 def companies_with_orders(fair):
 	orders = Order.objects.filter(product__revenue__fair = fair).exclude(purchasing_company = None).exclude(unit_price = 0)
 	companies_with_orders = []
-	
+
 	for order in orders:
 		if order.purchasing_company.pk not in companies_with_orders: companies_with_orders.append(order.purchasing_company.pk)
-	
+
 	companies = Company.objects.filter(ths_customer_id = None, id__in = companies_with_orders)
-	
+
 	return companies
