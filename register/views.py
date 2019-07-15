@@ -62,8 +62,9 @@ def send_CR_confirmation_email(signature, orders, orders_total):
 						<td>%s</td>
 						<td>%s</td>
 						<td>%s</td>
+						<td>%s</td>
 						</tr>
-					''' % (product, order['quantity'], order['unit_price'])
+					''' % (product, order['quantity'], order['unit_price'], str(int(order['quantity'])*int(order['unit_price'])))
 		order_table_rows.append(order_row)
 
 	html_message = '''
@@ -85,7 +86,9 @@ def send_CR_confirmation_email(signature, orders, orders_total):
 				</div>
 				<div>
 					<br/>
-					Your current order contains the products listed below. To view or update your choices visit your <a href="http://ais.armada.nu/register/%s/registration">registration page</a>.
+					To view or update your choices visit your <a href="http://ais.armada.nu/register/%s/registration">registration page</a>.
+					<br/>
+					Your current order contains the products listed below.
 					<br/>
 					Total price: SEK %s
 					<br/><br/>
@@ -95,6 +98,7 @@ def send_CR_confirmation_email(signature, orders, orders_total):
 								<th scope="col">Product</th>
 								<th scope="col">Quantity</th>
 								<th scope="col">Unit price (SEK)</th>
+								<th scope="col">Total price (SEK)</th>
 							</tr>
 						</thead>
 						<tbody>
