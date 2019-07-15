@@ -49,6 +49,85 @@ def get_contract(company, fair, registration_type):
 	return contract
 
 
+def send_CR_confirmation_email(signature, orders, orders_total):
+	order_table_rows = []
+	for order in orders:
+		if order['category']:
+			product = order['category'] + ' - ' + order['name']
+		else:
+			product = order['name']
+
+		order_row = '''
+						<tr>
+						<td>%s</td>
+						<td>%s</td>
+						<td>%s</td>
+						</tr>
+					''' % (product, order['quantity'], order['unit_price'])
+		order_table_rows.append(order_row)
+
+	html_message = '''
+		<html>
+			<head>
+				<title></title>
+			</head>
+			<body>
+				<style>
+					* {
+					  font-family: sans-serif;
+					  font-size: 12px;
+					}
+				</style>
+				<div>
+					Thank you for submitting the complete registration for THS Armada 2019. The complete registration contract was signed by %s on the %s for %s.
+					<br/><br/>
+					Please note that this is an automatically generated email. If you have any questions please contact your sales contact person. For contact information, please visit our <a href="https://armada.nu/contact/">website</a>.
+				</div>
+				<div>
+					<br/>
+					Your current order contains the products listed below. To view or update your choices visit your <a href="http://ais.armada.nu/register/%s/registration">registration page</a>.
+					<br/>
+					Total price: SEK %s
+					<br/><br/>
+					<table align="left" border="1" cellpadding="1" cellspacing="0" style="width:600px">
+						<thead>
+							<tr>
+								<th scope="col">Product</th>
+								<th scope="col">Quantity</th>
+								<th scope="col">Unit price (SEK)</th>
+							</tr>
+						</thead>
+						<tbody>
+							%s
+						</tbody>
+					</table>
+				</div>
+			</body>
+		</html>
+		''' % 	(
+				str(signature.company_contact),
+				str(signature.timestamp),
+				str(signature.company),
+				str(signature.company.pk),
+				str(orders_total),
+				''.join(order_table_rows),
+				)
+
+	email = EmailMessage(
+		subject = 'Registration for THS Armada 2019',
+		body = html_message,
+		from_email = 'info@armada.nu',
+		to = [signature.company_contact.email_address],
+		# bcc = [],
+	)
+	email.content_subtype = 'html'
+
+	# file_path = 'https://ais.armada.nu' + signature.contract.contract.url
+	# print("Contract path: ", file_path)
+	# email.attach_file(signature.contract.contract.url)
+	email.send()
+
+
 def choose_company(request):
 	if not request.user.is_authenticated():
 		fair = Fair.objects.filter(current = True).first()
@@ -286,24 +365,6 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		form_catalogue_details.fields['catalogue_purpose'].required = True
 		form_catalogue_details.fields['catalogue_logo_squared'].required = True
 
-	if request.POST:
-		if request.POST.get('save_company_details') and form_company_details.is_valid() and is_editable:
-			form_company_details.save()
-			form_company_details = CompleteCompanyDetailsForm(instance = company)
-
-		elif request.POST.get('save_logistics_details') and form_logistics_details.is_valid() and is_editable:
-			form_logistics_details.save()
-			form_logistics_details = CompleteLogisticsDetailsForm(instance = exhibitor)
-
-		elif request.POST.get('save_catalogue_details') and form_catalogue_details.is_valid() and is_editable:
-			form_catalogue_details.save()
-			form_catalogue_details = CompleteCatalogueDetailsForm(instance = exhibitor)
-
-		elif request.POST.get('save_final_submission') and form_final_submission.is_valid() and signature is None:
-			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company)
-
-	form_company_details.fields['invoice_name'].widget.attrs['placeholder'] = company.name
-
 	orders = []
 	orders_total = 0
 
@@ -320,6 +381,25 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			'quantity': order.quantity,
 			'unit_price': unit_price
 		})
+
+	if request.POST:
+		if request.POST.get('save_company_details') and form_company_details.is_valid() and is_editable:
+			form_company_details.save()
+			form_company_details = CompleteCompanyDetailsForm(instance = company)
+
+		elif request.POST.get('save_logistics_details') and form_logistics_details.is_valid() and is_editable:
+			form_logistics_details.save()
+			form_logistics_details = CompleteLogisticsDetailsForm(instance = exhibitor)
+
+		elif request.POST.get('save_catalogue_details') and form_catalogue_details.is_valid() and is_editable:
+			form_catalogue_details.save()
+			form_catalogue_details = CompleteCatalogueDetailsForm(instance = exhibitor)
+
+		elif request.POST.get('save_final_submission') and form_final_submission.is_valid() and signature is None:
+			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company)
+			send_CR_confirmation_email(signature, orders, orders_total)
+
+	form_company_details.fields['invoice_name'].widget.attrs['placeholder'] = company.name
 
 	errors = []
 
