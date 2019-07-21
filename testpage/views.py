@@ -137,7 +137,7 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
         'Registration for THS Armada 2019',
         plain_text_message,
         'info@armada.nu',
-        [signature.company_contact.email_address],
+        'noreply@armada.nu',
         #bcc = [],
     )
 
