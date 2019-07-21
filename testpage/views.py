@@ -20,25 +20,25 @@ def send_test_email(request):
     company = get_object_or_404(Company, name='Test 2')
     fair = get_object_or_404(Fair, year=2019)
 
-    signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'COMPLETE').first()
+    signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL').first()
     # orders = Order.objects.filter(purchasing_company = company, unit_price = None, name = None)
     # orders_total = 10000 # dummy
 
     orders = []
     orders_total = 0
 
-    for order in Order.objects.filter(product__revenue__fair = fair, purchasing_company = company):
-        unit_price = order.product.unit_price if order.unit_price is None else order.unit_price
-        orders_total += order.quantity * unit_price
-
-        orders.append(
-		{
-			'category': order.product.category.name if order.product.category else None,
-			'name': order.product.name if order.name is None else order.name,
-			'description': order.product.description if order.product.registration_section is None else None,
-			'quantity': order.quantity,
-			'unit_price': unit_price
-		})
+    # for order in Order.objects.filter(product__revenue__fair = fair, purchasing_company = company):
+    #     unit_price = order.product.unit_price if order.unit_price is None else order.unit_price
+    #     orders_total += order.quantity * unit_price
+    #
+    #     orders.append(
+	# 	{
+	# 		'category': order.product.category.name if order.product.category else None,
+	# 		'name': order.product.name if order.name is None else order.name,
+	# 		'description': order.product.description if order.product.registration_section is None else None,
+	# 		'quantity': order.quantity,
+	# 		'unit_price': unit_price
+	# 	})
 
     send_CR_confirmation_email(signature, orders, orders_total)
 
@@ -68,6 +68,16 @@ def send_CR_confirmation_email(signature, orders, orders_total):
 
         order_html_rows.append(html_row)
         order_plain_rows.append(plain_row)
+
+    order_html_rows.append('''  <tr>
+                    <td>Banquet ticket</td>
+                    <td>4</td>
+                    <td>2000</td>
+                    <td>8000</td>
+                    </tr>
+                ''')
+
+    order_plain_rows.append('Banquet ticket --- 4 --- 2000 --- 8000')
 
     html_message = '''
 		<html>
@@ -154,6 +164,6 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
 
     file_path = 'https://ais.armada.nu' + signature.contract.contract.url
     print("Contract path: ", file_path)
-    email.attach_file(signature.contract.contract.url)
+    #email.attach_file(signature.contract.contract.url)
 
     email.send()
