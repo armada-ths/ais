@@ -16,28 +16,31 @@ def get_random_32_length_string():
 
 
 class CatalogueIndustry(models.Model):
-	industry = models.CharField(blank = False, max_length = 255)
-	def __str__(self): return self.industry
-	class Meta: default_permissions = []
+    industry = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(default = True)
+    def __str__(self): return self.industry
+    class Meta: default_permissions = []
 
 
 class CatalogueValue(models.Model):
-	value = models.CharField(blank = False, max_length = 255)
-	def __str__(self): return self.value
-	class Meta: default_permissions = []
+    value = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(default = True)
+    def __str__(self): return self.value
+    class Meta: default_permissions = []
 
 
 class CatalogueEmployment(models.Model):
-	employment = models.CharField(blank = False, max_length = 255)
-	def __str__(self): return self.employment
-	class Meta: default_permissions = []
+    employment = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(default = True)
+    def __str__(self): return self.employment
+    class Meta: default_permissions = []
 
 
 class CatalogueLocation(models.Model):
-	location = models.CharField(blank = False, max_length = 255)
-	def __str__(self): return self.location
-	class Meta: default_permissions = []
-
+    location = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(default = True)
+    def __str__(self): return self.location
+    class Meta: default_permissions = []
 
 class CatalogueBenefit(models.Model):
 	benefit = models.CharField(blank = False, max_length = 255)
@@ -72,17 +75,17 @@ class Exhibitor(models.Model):
 	catalogue_benefits = models.ManyToManyField(CatalogueBenefit, blank = True)
 	catalogue_average_age = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Average age of employees')
 	catalogue_founded = models.PositiveIntegerField(blank = True, null = True)
-	
+
 	deadline_complete_registration = models.DateTimeField(blank = True, null = True, verbose_name = 'Deviating deadline for complete registration')
-	
+
 	placement_wishes = [
 		('MIXED', 'Mixed with companies from other industries'),
 		('SIMILAR', 'Next to similar companies'),
 	]
-	
+
 	placement_wish = models.CharField(choices = placement_wishes, blank = True, null = True, max_length = 255)
 	placement_comment = models.TextField(blank = True, null = True, verbose_name = 'Additional wishes regarding placement at the fair')
-	
+
 	transport_to_statuses = [
 		('NOT_BOOKED', 'Not booked'),
 		('BOOKED', 'Booked'),
@@ -93,9 +96,9 @@ class Exhibitor(models.Model):
 		('IN_CONTACT_ARMADA', 'In contact by Armada'),
 		('STURE', 'Sture')
 	]
-	
+
 	transport_to = models.CharField(choices = transport_to_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
-	
+
 	transport_from_statuses = [
 		('NOT_BOOKED', 'Not booked'),
 		('BOOKED', 'Booked'),
@@ -104,43 +107,43 @@ class Exhibitor(models.Model):
 		('IN_CONTACT', 'In contact'),
 		('STURE', 'Sture')
 	]
-	
+
 	transport_from = models.CharField(choices = transport_from_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
 	transport_comment = models.TextField(blank = True, null = True)
-	
+
 	@property
 	def count_lunch_tickets(self):
 		count_ordered = 0
-		
+
 		for order in Order.objects.filter(purchasing_company = self.company, product = self.fair.product_lunch_ticket):
 			count_ordered += order.quantity
-		
+
 		count_created = LunchTicket.objects.filter(company = self.company).count()
-		
+
 		return {
 			'ordered': count_ordered,
 			'created': count_created
 		}
-	
+
 	@property
 	def count_banquet_tickets(self):
 		count_ordered = 0
 		count_created = 0
-		
+
 		for banquet in Banquet.objects.filter(fair = self.fair):
 			if banquet.product is not None:
 				for order in Order.objects.filter(purchasing_company = self.company, product = banquet.product):
 					count_ordered += order.quantity
-			
+
 			count_created += Participant.objects.filter(banquet = banquet, company = self.company).count()
-		
+
 		return {
 			'ordered': count_ordered,
 			'created': count_created
 		}
-	
+
 	def __str__(self): return '%s at %s' % (self.company.name, self.fair.name)
-	
+
 	class Meta:
 		default_permissions = []
 		ordering = ['company__name']
@@ -177,16 +180,16 @@ class ExhibitorView(models.Model):
 		'check_in_timestamp': 'Check in',
 		'booths': 'Booths'
 	}
-	
+
 	user = models.ForeignKey(User, on_delete = models.CASCADE)
 	choices = models.TextField()
 
 	def create(self):
 		self.choices = 'contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets'
 		self.save()
-		
+
 		return self
-	
+
 	class Meta:
 		default_permissions = []
 
@@ -198,11 +201,11 @@ class Location(models.Model):
 	background = models.ImageField(upload_to = UploadToDirUUID('locations'), null = True, blank = True)
 	people_count_enabled = models.BooleanField(default = False)
 	people_count = models.IntegerField(null = True, blank = True)
-	
+
 	class Meta:
 		ordering = ['fair', 'parent__name', 'name']
 		unique_together = [['fair', 'name']]
-	
+
 	def __str__(self): return ((str(self.parent) + ' -> ') if self.parent else '') + self.name
 
 
@@ -218,11 +221,11 @@ class Booth(models.Model):
 	location = models.ForeignKey(Location, on_delete = models.CASCADE)
 	name = models.CharField(blank = False, null = False, max_length = 255)
 	boundaries = models.PolygonField(blank = True, null = True)
-	
+
 	class Meta:
 		ordering = ['location', 'name']
 		unique_together = [['location', 'name']]
-	
+
 	def __str__(self): return str(self.location) + ' -> ' + self.name
 
 
@@ -231,9 +234,9 @@ class ExhibitorInBooth(models.Model):
 	booth = models.ForeignKey(Booth, on_delete = models.CASCADE)
 	days = models.ManyToManyField(FairDay)
 	comment = models.CharField(max_length = 255, null = True, blank = True)
-	
+
 	class Meta:
 		ordering = ['exhibitor', 'booth']
 		unique_together = [['exhibitor', 'booth']]
-	
+
 	def __str__(self): return str(self.exhibitor) + ' in ' + str(self.booth)
