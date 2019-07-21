@@ -20,7 +20,9 @@ class CatalogueIndustry(models.Model):
     include_in_form = models.BooleanField(default = True)
     include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.industry
-    class Meta: default_permissions = []
+    class Meta:
+        default_permissions = []
+        ordering = ['industry']
 
 
 class CatalogueValue(models.Model):
@@ -28,7 +30,9 @@ class CatalogueValue(models.Model):
     include_in_form = models.BooleanField(default = True)
     include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.value
-    class Meta: default_permissions = []
+    class Meta:
+        default_permissions = []
+        ordering = ['value']
 
 
 class CatalogueEmployment(models.Model):
@@ -36,7 +40,9 @@ class CatalogueEmployment(models.Model):
     include_in_form = models.BooleanField(default = True)
     include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.employment
-    class Meta: default_permissions = []
+    class Meta:
+        default_permissions = []
+        ordering = ['employment']
 
 
 class CatalogueLocation(models.Model):
@@ -44,14 +50,18 @@ class CatalogueLocation(models.Model):
     include_in_form = models.BooleanField(default = True)
     include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.location
-    class Meta: default_permissions = []
+    class Meta:
+        default_permissions = []
+        ordering = ['location']
 
 class CatalogueBenefit(models.Model):
     benefit = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(default = True)
     include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.benefit
-    class Meta: default_permissions = []
+    class Meta:
+        default_permissions = []
+        ordering = ['benefit']
 
 
 # A company (or organisation) participating in a fair
