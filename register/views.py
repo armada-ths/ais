@@ -138,18 +138,17 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
 				)
 
     email = EmailMultiAlternatives(
-        'Registration for THS Armada 2019',
+        'Complete registration for THS Armada 2019',
         plain_text_message,
         'info@armada.nu',
-        ['noreply@armada.nu'],
+        [signature.company_contact.email_address],
         #bcc = [],
     )
 
     email.attach_alternative(html_message, 'text/html')
 
-    file_path = 'https://ais.armada.nu' + signature.contract.contract.url
-    # print("Contract path: ", file_path)
-    # email.attach_file(signature.contract.contract.url)
+    file_path = settings.MEDIA_ROOT + signature.contract.contract.url[6:]
+    email.attach_file(file_path)
 
     email.send()
 
