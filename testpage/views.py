@@ -168,6 +168,6 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
     #file_path = os.path.join(settings.MEDIA_ROOT, signature.contract.contract.url)
     file_path = settings.MEDIA_ROOT + signature.contract.contract.url
     print("Contract path: ", file_path)
-    #email.attach_file(file_path)
+    email.attach_file(file_path)
 
     email.send()
