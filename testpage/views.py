@@ -17,7 +17,7 @@ def testpage(request):
 
 def send_test_email(request):
 
-    company = get_object_or_404(Company, name='Sales Company 1')
+    company = get_object_or_404(Company, name='Sales Company 2')
     fair = get_object_or_404(Fair, year=2019)
 
     signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL').first()
