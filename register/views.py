@@ -34,7 +34,7 @@ def get_contract(company, fair, registration_type):
 	all_groups = company.groups.filter(fair = fair)
 	for group in all_groups:
 		if group.contract:
-			if group.contract.fair == fair:
+			if group.contract.fair == fair and group.contract.type == registration_type:
 				contract = group.contract
 	# If no group with contract then fetch the contract that matches the company type or use the default contract if no match
 	if not contract:
@@ -299,7 +299,8 @@ def form_initial(request, company, company_contact, fair):
 
 
 def form_complete(request, company, company_contact, fair, exhibitor):
-	contract = SignupContract.objects.filter(fair = fair, type = 'COMPLETE').first()
+
+	contract = get_contract(company, fair, 'COMPLETE')
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'COMPLETE').first()
 
 	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company)
@@ -434,7 +435,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets required')
 	if not exhibitor.catalogue_about: errors.append('Short text about the company')
 	if not exhibitor.catalogue_purpose: errors.append('Text about the purpose of the company')
-	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
+	#if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
 
 	if signature:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
