@@ -3,6 +3,7 @@ from django.contrib import admin
 from ais.common import settings
 from django.conf.urls.static import static
 from fair.views import login_redirect
+from testpage.views import testpage
 
 urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
@@ -16,7 +17,8 @@ urlpatterns = [
     url(r'^journal/', include('journal.urls')),
     url(r'^banquet/', include('banquet.urls_external')),
     url(r'^unirel/', include('unirel.urls_external')),
-    url(r'^', include('fair.urls_external'))
+    url(r'^', include('fair.urls_external')),
+    url(r'^testpage/', include('testpage.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
