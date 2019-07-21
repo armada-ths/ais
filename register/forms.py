@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.models import User
 
 from companies.models import Group, Company
-from exhibitors.models import Exhibitor
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueBenefit, CatalogueLocation, CatalogueEmployment
 from banquet.models import Participant as BanquetParticipant
 from fair.models import Fair, LunchTicket
 
@@ -120,6 +120,33 @@ class CompleteLogisticsDetailsForm(ModelForm):
 
 
 class CompleteCatalogueDetailsForm(ModelForm):
+
+	catalogue_industries = forms.ModelMultipleChoiceField(
+		queryset = CatalogueIndustry.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Which industries does your company work in?',
+		required = False)
+	catalogue_values = forms.ModelMultipleChoiceField(
+		queryset = CatalogueValue.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Select up to three values that apply to the company.',
+		required = False)
+	catalogue_employments = forms.ModelMultipleChoiceField(
+		queryset = CatalogueEmployment.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'What kind of employments does your company offer?',
+		required = False)
+	catalogue_locations = forms.ModelMultipleChoiceField(
+		queryset = CatalogueLocation.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Where does your company operate?',
+		required = False)
+	catalogue_benefits = forms.ModelMultipleChoiceField(
+		queryset = CatalogueBenefit.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Which benefits does your company offer its employees?',
+		required = False)
+
 	class Meta:
 		model = Exhibitor
 		fields = ['catalogue_about', 'catalogue_purpose', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_benefits', 'catalogue_average_age', 'catalogue_founded']
@@ -138,22 +165,12 @@ class CompleteCatalogueDetailsForm(ModelForm):
 			'catalogue_purpose': 'Your organisation\'s purpose',
 			'catalogue_logo_squared': 'Upload your company\'s squared logotype.',
 			'catalogue_logo_freesize': 'Upload your company\'s logotype in any dimensions, in addition to the squared logotype.',
-			'catalogue_industries': 'Which industries does your company work in?',
-			'catalogue_values': 'Select up to three values that apply to the company.',
-			'catalogue_employments': 'What kind of employments does your company offer?',
-			'catalogue_locations': 'Where does your company operate?',
-			'catalogue_benefits': 'Which benefits does your company offers its employees?',
 			'catalogue_founded': 'Which year was the company founded?'
 		}
 
 		widgets = {
 			'catalogue_about': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'Concrete information about what your organisation does.'}),
 			'catalogue_purpose': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
-			'catalogue_industries': forms.CheckboxSelectMultiple,
-			'catalogue_values': forms.CheckboxSelectMultiple,
-			'catalogue_employments': forms.CheckboxSelectMultiple,
-			'catalogue_locations': forms.CheckboxSelectMultiple,
-			'catalogue_benefits': forms.CheckboxSelectMultiple
 		}
 
 	def clean(self):
