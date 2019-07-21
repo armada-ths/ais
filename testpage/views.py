@@ -17,7 +17,7 @@ def testpage(request):
 
 def send_test_email(request):
 
-    company = get_object_or_404(Company, name='Test 2')
+    company = get_object_or_404(Company, name='Sales Company 1')
     fair = get_object_or_404(Fair, year=2019)
 
     signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL').first()
@@ -164,6 +164,6 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
 
     file_path = 'https://ais.armada.nu' + signature.contract.contract.url
     print("Contract path: ", file_path)
-    #email.attach_file(signature.contract.contract.url)
+    email.attach_file(signature.contract.contract.url)
 
     email.send()
