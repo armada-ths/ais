@@ -164,6 +164,6 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
 
     file_path = 'https://ais.armada.nu' + signature.contract.contract.url
     print("Contract path: ", file_path)
-    email.attach_file(signature.contract.contract.url)
+    email.attach_file(file_path)
 
     email.send()
