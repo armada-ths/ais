@@ -18,6 +18,7 @@ def get_random_32_length_string():
 class CatalogueIndustry(models.Model):
     industry = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(default = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.industry
     class Meta: default_permissions = []
 
@@ -25,6 +26,7 @@ class CatalogueIndustry(models.Model):
 class CatalogueValue(models.Model):
     value = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(default = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.value
     class Meta: default_permissions = []
 
@@ -32,6 +34,7 @@ class CatalogueValue(models.Model):
 class CatalogueEmployment(models.Model):
     employment = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(default = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.employment
     class Meta: default_permissions = []
 
@@ -39,13 +42,16 @@ class CatalogueEmployment(models.Model):
 class CatalogueLocation(models.Model):
     location = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(default = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.location
     class Meta: default_permissions = []
 
 class CatalogueBenefit(models.Model):
-	benefit = models.CharField(blank = False, max_length = 255)
-	def __str__(self): return self.benefit
-	class Meta: default_permissions = []
+    benefit = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(default = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
+    def __str__(self): return self.benefit
+    class Meta: default_permissions = []
 
 
 # A company (or organisation) participating in a fair
