@@ -1,9 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
-#from django.core.mail import EmailMessage
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-#import os
 
 from fair.models import Fair
 from companies.models import Company
@@ -23,8 +21,6 @@ def send_test_email(request):
     fair = get_object_or_404(Fair, year=2019)
 
     signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL').first()
-    # orders = Order.objects.filter(purchasing_company = company, unit_price = None, name = None)
-    # orders_total = 10000 # dummy
 
     orders = []
     orders_total = 0
@@ -146,32 +142,15 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
 				)
 
     email = EmailMultiAlternatives(
-        'Registration for THS Armada 2019',
+        'Complete registration for THS Armada 2019',
         plain_text_message,
         'info@armada.nu',
         ['noreply@armada.nu'],
         #bcc = [],
     )
-
     email.attach_alternative(html_message, 'text/html')
 
-    # email = EmailMessage(
-	# 	subject = 'Registration for THS Armada 2019',
-	# 	body = html_message,
-	# 	from_email = 'info@armada.nu',
-	# 	to = [signature.company_contact.email_address],
-	# 	# bcc = [],
-	# )
-    # email.content_subtype = 'html'
-
-    #file_path = 'https://ais.armada.nu' + signature.contract.contract.url
-    #file_path = os.path.join(settings.MEDIA_ROOT, signature.contract.contract.url)
-
-    # print('File url: ', signature.contract.contract.url)
-    # print('File path: ', signature.contract.contract.path)
-
     file_path = settings.MEDIA_ROOT + signature.contract.contract.url[6:]
-    # print("Contract path: ", file_path)
     email.attach_file(file_path)
 
     email.send()
