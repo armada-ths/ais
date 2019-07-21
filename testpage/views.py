@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 #from django.core.mail import EmailMessage
 from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+#import os
 
 from fair.models import Fair
 from companies.models import Company
@@ -162,8 +164,10 @@ Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
 	# )
     # email.content_subtype = 'html'
 
-    file_path = 'https://ais.armada.nu' + signature.contract.contract.url
+    #file_path = 'https://ais.armada.nu' + signature.contract.contract.url
+    #file_path = os.path.join(settings.MEDIA_ROOT, signature.contract.contract.url)
+    file_path = settings.MEDIA_ROOT + signature.contract.contract.url
     print("Contract path: ", file_path)
-    email.attach_file(file_path)
+    #email.attach_file(file_path)
 
     email.send()
