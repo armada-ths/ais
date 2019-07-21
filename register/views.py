@@ -435,7 +435,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets required')
 	if not exhibitor.catalogue_about: errors.append('Short text about the company')
 	if not exhibitor.catalogue_purpose: errors.append('Text about the purpose of the company')
-	#if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
+	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
 
 	if signature:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
