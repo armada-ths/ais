@@ -145,7 +145,7 @@ class CompleteLogisticsDetailsFormWithCheckbox(CompleteLogisticsDetailsForm):
 		
 		box_checked = self.cleaned_data.get('confirmation_box')
 		if not box_checked:
-			self.add_error('confirmation_box', "Please check this box.")
+			self.add_error('confirmation_box', 'Please check this box.')
 			valid = False
 
 		return valid
