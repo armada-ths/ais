@@ -113,7 +113,10 @@ class CompleteLogisticsDetailsForm(ModelForm):
 				If possible, please provide the actual power consumption figures of the 
 				equipment you plan to bring.
 				Typical power requirements of common devices 
-				can be found below."""
+				can be found below.""",
+			'booth_height': '2.3 m is included in the Base kit. If you want additional height, remember to add "Additional Booth Height" in the Products section below',
+			'electricity_total_power': '1000 W is included in the Base kit. If you want additional electricity, remember to add "Additional Electricity" in the Products section below',
+			'placement_wish': 'We will use the industry information you provide in the section "Catalogue and student matching" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
 		}
 
 	def is_valid(self):
