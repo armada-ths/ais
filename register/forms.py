@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.models import User
 
 from companies.models import Group, Company
-from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueBenefit, CatalogueLocation, CatalogueEmployment
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueCompetence, CatalogueValue, CatalogueBenefit, CatalogueLocation, CatalogueEmployment
 from banquet.models import Participant as BanquetParticipant
 from fair.models import Fair, LunchTicket
 
@@ -154,6 +154,11 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		widget = forms.CheckboxSelectMultiple,
 		label = 'Which industries does your company work in?',
 		required = False)
+	catalogue_competences = forms.ModelMultipleChoiceField(
+		queryset = CatalogueCompetence.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'What competences is your company looking for?',
+		required = False)
 	catalogue_values = forms.ModelMultipleChoiceField(
 		queryset = CatalogueValue.objects.filter(include_in_form = True),
 		widget = forms.CheckboxSelectMultiple,
@@ -178,7 +183,7 @@ class CompleteCatalogueDetailsForm(ModelForm):
 	class Meta:
 		model = Exhibitor
 		#fields = ['catalogue_about', 'catalogue_purpose', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_benefits', 'catalogue_average_age', 'catalogue_founded']
-		fields = ['catalogue_about', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations']
+		fields = ['catalogue_about', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_competences', 'catalogue_values', 'catalogue_employments', 'catalogue_locations']
 
 		help_texts = {
 			'catalogue_logo_squared': 'Allowed formats are JPEG and PNG.',
