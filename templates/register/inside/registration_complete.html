@@ -37,7 +37,23 @@
 		<h2>Logistics and booth details</h2>
 
 		<div class="expandable_content">
-			<p>Estimate your need of total continuous power requirements during the fair. If possible, please provide the actual power consumption figures from the equipment you plan to bring.</p>
+			<h3>Is your booth ready?</h3>
+
+			<img style="float: right; width: 200px; margin-left: 15px;" src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
+
+			<p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
+
+			<p>Aligned with THS Armada's focus on environmental sustainability, we are very proud to collaborate with Sture, a company that has received a gold rating from Svensk miljöbas thanks to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
+
+			<p>For more information, please visit <a target="_blank" href="http://www.sture.se/">Sture's homepage</a>. To facilitate the ordering process, please send an e-mail to <a href="mailto:mats.svensson@sture.se">mats.svensson@sture.se</a> and state your request.</p>
+
+			<form method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+
+				{{ form_logistics_details | crispy }}
+
+				<input type="submit" name="save_logistics_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
+			</form>
 
 			<h3>Typical power requirements of commonly used devices</h3>
 
@@ -87,23 +103,6 @@
 				</tbody>
 			</table>
 
-			<form method="post" enctype="multipart/form-data">
-				{% csrf_token %}
-
-				{{ form_logistics_details | crispy }}
-
-				<input type="submit" name="save_logistics_details" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
-			</form>
-
-			<h3>Is your booth ready?</h3>
-
-			<img style="float: right; width: 200px; margin-left: 15px;" src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
-
-			<p>THS Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
-
-			<p>Aligned with THS Armada's focus on environmental sustainability, we are very proud to collaborate with Sture, a company that has received a gold rating from Svensk miljöbas thanks to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
-
-			<p>For more information, please visit <a target="_blank" href="http://www.sture.se/">Sture's homepage</a>. To facilitate the ordering process, please send an e-mail to <a href="mailto:mats.svensson@sture.se">mats.svensson@sture.se</a> and state your request.</p>
 		</div>
 	</div>
 
