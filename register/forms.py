@@ -109,6 +109,11 @@ class CompleteLogisticsDetailsForm(ModelForm):
 			'booth_height': '2.3 m is included in the Base kit. If you want additional height, remember to add "Additional Booth Height" in the Products section below',
 			'electricity_total_power': '1000 W is included in the Base kit. If you want additional electricity, remember to add "Additional Electricity" in the Products section below',
 			'placement_wish': 'We will use the industry information you provide in the section "Catalogue and student matching" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
+			'electricity_total_power': """
+				If possible, please provide the actual power consumption figures of the 
+				equipment you plan to bring.
+				Typical power requirements of common devices 
+				can be found below."""
 		}
 
 	def is_valid(self):
@@ -124,6 +129,23 @@ class CompleteLogisticsDetailsForm(ModelForm):
 
 		return valid
 
+class CompleteLogisticsDetailsFormWithCheckbox(CompleteLogisticsDetailsForm):
+	class Meta(CompleteLogisticsDetailsForm.Meta):
+		fields = ['confirmation_box'] + CompleteLogisticsDetailsForm.Meta.fields
+
+	confirmation_box = forms.BooleanField(required = False, 
+		label='I am aware of the services provided and have read the relevant information above.')
+
+	def is_valid(self):
+		valid = super(CompleteLogisticsDetailsFormWithCheckbox, self).is_valid()
+		if not valid: return valid
+		
+		box_checked = self.cleaned_data.get('confirmation_box')
+		if not box_checked:
+			self.add_error('confirmation_box', "Please check this box.")
+			valid = False
+
+		return valid
 
 class CompleteCatalogueDetailsForm(ModelForm):
 
