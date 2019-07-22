@@ -9,14 +9,17 @@
 {% block content %}
 	<h1>Complete registration for {{ company.name }}</h1>
 
-	<p>Make sure the form is completed and sent in before the last date of registration. You can save your progress by pushing the submit button at the bottom of each section. This way, you can return and continue if you do not have time to do it all at once. Your registration is completed when you have pushed the submit button in the last section. When you have submitted the application you will receive a confirmation email as soon as the application has been approved.</p>
+	<p>Please make sure that the mandatory information is provided and that you have signed the contract before the last date of the registration.</p>
+	<p>You can save your progress for each section and return later if you are unable to enter all information at once. <span style="font-weight: 700;">Please note that you must save each section individually before continuing with the next one,</span> otherwise your unsaved changes will be lost.</p>
+	<p><span style="font-weight: 700;">Your registration is completed when you have pushed the "Sign the contract" button at the bottom of this page.</span> When you have signed the contract, you will receive a confirmation email with the contract and a list of your chosen products.</p>
+	<p>All fields and products are editable until the last date of the registration, also after the contract has been signed. This means that your final selection of products and total to pay might be different from what is stated in the confirmation email if you have made changes after signing the contract. You may come back to this website at any time to view your current products and total to pay.</p>
 
-	<p>Please note that <span style="font-weight: 700;">the complete registration is binding</span> and you will be liable for all additional services chosen, provided that Armada is be able to supply your organisation with your choices.</p>
+	<p>Please note that <span style="font-weight: 700;">the complete registration is binding</span> and that you will be liable for all additional services selected at the last date of the registration, provided that THS Armada is able to supply your organisation with your choices.</p>
 
 	<h4 style="text-align: center;">Registration closes: <span style="font-weight: 700;">{{ deadline|date:"F j, Y" }}</span></h4>
 
 	<div class="expandable" style="margin-top: 10px; border-top: none;">
-		<h2>Company details</h2>
+		<h2>Invoice details</h2>
 
 		<div class="expandable_content">
 			<p>Make sure that there is at least one complete address to which THS Armada can send the final invoice. Provide an e-mail address to get the invoice sent by e-mail.</p>
@@ -25,13 +28,13 @@
 				{% csrf_token %}
 				{{ form_company_details | crispy }}
 
-				<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
+				<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
 			</form>
 		</div>
 	</div>
 
 	<div class="expandable">
-		<h2>Logistics details</h2>
+		<h2>Logistics and booth details</h2>
 
 		<div class="expandable_content">
 			<p>Estimate your need of total continuous power requirements during the fair. If possible, please provide the actual power consumption figures from the equipment you plan to bring.</p>
@@ -89,7 +92,7 @@
 
 				{{ form_logistics_details | crispy }}
 
-				<input type="submit" name="save_logistics_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
+				<input type="submit" name="save_logistics_details" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
 			</form>
 
 			<h3>Is your booth ready?</h3>
@@ -108,13 +111,13 @@
 		<h2>Catalogue and student matching</h2>
 
 		<div class="expandable_content">
-			<p>This information is used in the catalogue on the website and in the app, as well as for letting relevant students match with your company. Only the fields marked with asterisks (*) are required, but we encourage you to fill out as many as possible to increase the likelihood of receiving relevant matches.</p>
+			<p>This information is used in the exhibitor catalogue on the website and for matching relevant students with your company. Only the fields marked with asterisks (*) are required, but we encourage you to fill out as many as possible to increase the likelihood of receiving relevant matches.</p>
 
 			<form method="post" enctype="multipart/form-data">
 				{% csrf_token %}
 				{{ form_catalogue_details | crispy }}
 
-				<input type="submit" name="save_catalogue_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
+				<input type="submit" name="save_catalogue_details" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
 			</form>
 		</div>
 	</div>
@@ -131,7 +134,7 @@
 						<form method="post" enctype="multipart/form-data">
 							{% csrf_token %}
 
-							<input type="submit" name="save_product_{{ product.id }}" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
+							<input type="submit" name="save_product_{{ product.id }}" class="btn btn-armada-green" value="Save choice"{% if not is_editable %} disabled{% endif %} />
 
 							{% if product.max_quantity == 1 %}
 								{{ product.form.checkbox.errors }}
@@ -154,7 +157,7 @@
 	{% endfor %}
 
 	<div class="expandable always_opened">
-		<h2 style="color: #00d791;">Final submission</h2>
+		<h3 style="color: #00d791;">Summary</h3>
 		<p>The table below summarizes your choices.</p>
 
 		<table>
@@ -203,7 +206,7 @@
 					{% endfor %}
 				</ul>
 			{% else %}
-				<p>Please make sure that the information above is correct. In addition, please read the contract below.</p>
+				<p>Make sure that the information provided above is correct and that all sections have been saved. In addition, please open and read the contract below before signing the contract.</p>
 
 				<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
 
