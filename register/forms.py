@@ -105,6 +105,14 @@ class CompleteLogisticsDetailsForm(ModelForm):
 			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your wish of placement, but we cannot give any guarantees.'})
 		}
 
+		help_texts = {
+			'electricity_total_power': """
+				If possible, please provide the actual power consumption figures of the 
+				equipment you plan to bring.
+				Typical power requirements of common devices 
+				can be found below."""
+		}
+
 	def is_valid(self):
 		valid = super(CompleteLogisticsDetailsForm, self).is_valid()
 
@@ -118,6 +126,23 @@ class CompleteLogisticsDetailsForm(ModelForm):
 
 		return valid
 
+class CompleteLogisticsDetailsFormWithCheckbox(CompleteLogisticsDetailsForm):
+	class Meta(CompleteLogisticsDetailsForm.Meta):
+		fields = ['confirmation_box'] + CompleteLogisticsDetailsForm.Meta.fields
+
+	confirmation_box = forms.BooleanField(required = False, 
+		label='I am aware of the services provided and have read the relevant information above.')
+
+	def is_valid(self):
+		valid = super(CompleteLogisticsDetailsFormWithCheckbox, self).is_valid()
+		if not valid: return valid
+		
+		box_checked = self.cleaned_data.get('confirmation_box')
+		if not box_checked:
+			self.add_error('confirmation_box', "Please check this box.")
+			valid = False
+
+		return valid
 
 class CompleteCatalogueDetailsForm(ModelForm):
 
