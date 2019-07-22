@@ -16,6 +16,11 @@ class CatalogueIndustryAdmin(admin.ModelAdmin):
 	list_display = ('industry', 'include_in_form')
 	list_filter = ['include_in_form']
 
+@admin.register(CatalogueCompetence)
+class CatalogueCompetenceAdmin(admin.ModelAdmin):
+	list_display = ('competence', 'include_in_form')
+	list_filter = ['include_in_form']
+
 @admin.register(CatalogueValue)
 class CatalogueValueAdmin(admin.ModelAdmin):
 	list_display = ('value', 'include_in_form')
