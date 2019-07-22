@@ -388,7 +388,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		form_logistics_details.fields['electricity_total_power'].required = True
 		form_logistics_details.fields['electricity_socket_count'].required = True
 		form_catalogue_details.fields['catalogue_about'].required = True
-		form_catalogue_details.fields['catalogue_purpose'].required = True
+		#form_catalogue_details.fields['catalogue_purpose'].required = True # REMOVED FOR 2019
 		form_catalogue_details.fields['catalogue_logo_squared'].required = True
 
 	orders = []
@@ -434,7 +434,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if exhibitor.electricity_total_power is None: errors.append('Total power needed (W)')
 	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets required')
 	if not exhibitor.catalogue_about: errors.append('Short text about the company')
-	if not exhibitor.catalogue_purpose: errors.append('Text about the purpose of the company')
+	#if not exhibitor.catalogue_purpose: errors.append('Text about the purpose of the company') # REMOVED FOR 2019
 	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
 
 	if not is_editable:

@@ -147,36 +147,37 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		widget = forms.CheckboxSelectMultiple,
 		label = 'Where does your company operate?',
 		required = False)
-	catalogue_benefits = forms.ModelMultipleChoiceField(
-		queryset = CatalogueBenefit.objects.filter(include_in_form = True),
-		widget = forms.CheckboxSelectMultiple,
-		label = 'Which benefits does your company offer its employees?',
-		required = False)
+	# catalogue_benefits = forms.ModelMultipleChoiceField(
+	# 	queryset = CatalogueBenefit.objects.filter(include_in_form = True),
+	# 	widget = forms.CheckboxSelectMultiple,
+	# 	label = 'Which benefits does your company offer its employees?',
+	# 	required = False)
 
 	class Meta:
 		model = Exhibitor
-		fields = ['catalogue_about', 'catalogue_purpose', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_benefits', 'catalogue_average_age', 'catalogue_founded']
+		#fields = ['catalogue_about', 'catalogue_purpose', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_benefits', 'catalogue_average_age', 'catalogue_founded']
+		fields = ['catalogue_about', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations']
 
 		help_texts = {
 			'catalogue_logo_squared': 'Allowed formats are JPEG and PNG.',
 			'catalogue_logo_freesize': 'Allowed formats are JPEG and PNG.',
-			'catalogue_average_age': 'Leave the field empty if you\'re unsure.',
-			'catalogue_about': 'Keep it concise – no more than 600 characters.',
-			'catalogue_purpose': 'Keep it concise – no more than 600 characters.',
+			#'catalogue_average_age': 'Leave the field empty if you\'re unsure.',
+			'catalogue_about': 'Keep it concise – no more than 600 characters. Please write in english to reach both Swedish and international students.',
+			#'catalogue_purpose': 'Keep it concise – no more than 600 characters.',
 			'catalogue_contact_name': 'This is the person that students will be referred to if they wish to get in touch with you outside of the career fair.'
 		}
 
 		labels = {
 			'catalogue_about': 'Text about your organisation',
-			'catalogue_purpose': 'Your organisation\'s purpose',
+			#'catalogue_purpose': 'Your organisation\'s purpose',
 			'catalogue_logo_squared': 'Upload your company\'s squared logotype.',
 			'catalogue_logo_freesize': 'Upload your company\'s logotype in any dimensions, in addition to the squared logotype.',
-			'catalogue_founded': 'Which year was the company founded?'
+			#'catalogue_founded': 'Which year was the company founded?'
 		}
 
 		widgets = {
 			'catalogue_about': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'Concrete information about what your organisation does.'}),
-			'catalogue_purpose': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
+			#'catalogue_purpose': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
 		}
 
 	def clean(self):
@@ -197,15 +198,15 @@ class CompleteCatalogueDetailsForm(ModelForm):
 
 		catalogue_contact_phone_number = self.cleaned_data.get('catalogue_contact_phone_number')
 		catalogue_logo_squared = self.cleaned_data.get('catalogue_logo_squared')
-		catalogue_founded = self.cleaned_data.get('catalogue_founded')
+		#catalogue_founded = self.cleaned_data.get('catalogue_founded')
 
 		if catalogue_contact_phone_number is not None and not re.match(r'\+[0-9]+$', catalogue_contact_phone_number):
 			self.add_error('catalogue_contact_phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
 
-		if catalogue_founded is not None and (catalogue_founded < 1600 or catalogue_founded > datetime.datetime.now().year):
-			self.add_error('catalogue_founded', 'The year is invalid.')
-			valid = False
+		# if catalogue_founded is not None and (catalogue_founded < 1600 or catalogue_founded > datetime.datetime.now().year):
+		# 	self.add_error('catalogue_founded', 'The year is invalid.')
+		# 	valid = False
 
 		return valid
 
