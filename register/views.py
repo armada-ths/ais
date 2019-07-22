@@ -22,7 +22,7 @@ from banquet.models import Banquet
 from django.contrib.auth.models import User
 
 from .models import SignupContract, SignupLog
-from .forms import InitialInterestsRegistrationForm, InitialCommentForm, InitialRegistrationForm, CompleteCompanyDetailsForm, CompleteLogisticsDetailsForm, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm, BanquetParticipantForm
+from .forms import InitialInterestsRegistrationForm, InitialCommentForm, InitialRegistrationForm, CompleteCompanyDetailsForm, CompleteLogisticsDetailsFormWithCheckbox, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm, BanquetParticipantForm
 
 from .help.methods import get_time_flag
 
@@ -304,7 +304,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'COMPLETE').first()
 
 	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company)
-	form_logistics_details = CompleteLogisticsDetailsForm(request.POST if request.POST and request.POST.get('save_logistics_details') else None, instance = exhibitor)
+	form_logistics_details = CompleteLogisticsDetailsFormWithCheckbox(request.POST if request.POST and request.POST.get('save_logistics_details') else None, instance = exhibitor)
 	form_catalogue_details = CompleteCatalogueDetailsForm(request.POST if request.POST.get('save_catalogue_details') else None, request.FILES if request.POST.get('save_catalogue_details') else None, instance = exhibitor)
 	form_final_submission = CompleteFinalSubmissionForm(request.POST if request.POST and request.POST.get('save_final_submission') else None)
 
@@ -415,7 +415,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
 		elif request.POST.get('save_logistics_details') and form_logistics_details.is_valid() and is_editable:
 			form_logistics_details.save()
-			form_logistics_details = CompleteLogisticsDetailsForm(instance = exhibitor)
+			form_logistics_details = CompleteLogisticsDetailsFormWithCheckbox(instance = exhibitor, initial = {'confirmation_box': True})
 
 		elif request.POST.get('save_catalogue_details') and form_catalogue_details.is_valid() and is_editable:
 			form_catalogue_details.save()
