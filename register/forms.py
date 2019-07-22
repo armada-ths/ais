@@ -105,6 +105,12 @@ class CompleteLogisticsDetailsForm(ModelForm):
 			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your wish of placement, but we cannot give any guarantees.'})
 		}
 
+		help_texts = {
+			'booth_height': '2.3 m is included in the Base kit. If you want additional height, remember to add "Additional Booth Height" in the Products section below',
+			'electricity_total_power': '1000 W is included in the Base kit. If you want additional electricity, remember to add "Additional Electricity" in the Products section below',
+			'placement_wish': 'We will use the industry information you provide in the section "Catalogue and student matching" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
+		}
+
 	def is_valid(self):
 		valid = super(CompleteLogisticsDetailsForm, self).is_valid()
 
@@ -213,15 +219,12 @@ class CompleteProductBooleanForm(Form):
 
 
 class CompleteFinalSubmissionForm(Form):
-	authorized = BooleanField(required = True)
-	authorized.label = 'I am authorized to register my company for THS Armada 2018 and sign this contract'
 
 	contract = BooleanField(required = True)
-	contract.label = 'I have read the contract and, on behalf on my company, I agree to the terms'
+	contract.label = 'I have read the binding contract and agree to the terms. I am also authorized to register my organization for THS Armada 2019 and sign this contract.'
 
 	gdpr = BooleanField(required = True)
-	gdpr.label = 'THS Armada would like to process personal data about you and your organization to be able to create the career fair of 2018, in conjunction with complete registration. The data we intend to collect and process is for name, surname, title of your position, phone number and email address. The data will be processed by members in the THS Armada organization and by our external transport partner, Ryska Posten, in purpose to transport your goods. The data will be saved until 2020-08–07 in Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request correction as to what personal data we are processing about you.'
-
+	gdpr.label = 'THS Armada would like to process data about your organization in conjunction with complete registration to be able to create the career fair of 2019. The data will be processed by members of the THS Armada organization, our external transport partner Ryska Posten and Sture Exhibitions & Events AB. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what data we process and how we process these. You also have the right to request correction as to what data we are processing about your organization. I consent for THS Armada to process the data in accordance with the above.'
 
 # form is also used to edit company info during initial registration
 class NewCompanyForm(ModelForm):
