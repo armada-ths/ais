@@ -147,7 +147,7 @@ class CompleteLogisticsDetailsFormWithCheckbox(CompleteLogisticsDetailsForm):
 		fields = ['confirmation_box'] + CompleteLogisticsDetailsForm.Meta.fields
 
 	confirmation_box = forms.BooleanField(required = False,
-		label='I am aware of the services provided and have read the relevant information above.')
+		label='I have read the relevant information above and I am aware of the services offered.')
 
 	def is_valid(self):
 		valid = super(CompleteLogisticsDetailsFormWithCheckbox, self).is_valid()
@@ -216,7 +216,7 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		}
 
 		widgets = {
-			'catalogue_about': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'Concrete information about what your organisation does.'}),
+			'catalogue_about': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation work with?'}),
 			#'catalogue_purpose': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
 		}
 

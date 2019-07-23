@@ -110,7 +110,7 @@
 		<h2>Catalogue and student matching</h2>
 
 		<div class="expandable_content">
-			<p>This information is used in the exhibitor catalogue on the website and for matching relevant students with your company. Only the fields marked with asterisks (*) are required, but we encourage you to fill out as many as possible to increase the likelihood of receiving relevant matches.</p>
+			<p>This information is used in the exhibitor catalogue on the website and for matching relevant students with your company. We encourage you to fill out as many fields as possible to increase the likelihood of receiving relevant matches.</p>
 
 			<form method="post" enctype="multipart/form-data">
 				{% csrf_token %}
@@ -194,20 +194,18 @@
 
 				<p><span style="font-weight: 700;">Signed by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
 				<span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
-			{% elif errors %}
-				<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
-
-				<p>Please read the contract by clicking the button above. In order to sign the contract and complete your registration, the following data needs to be provided.</p>
-
-				<ul>
-					{% for error in errors %}
-						<li>{{ error }}</li>
-					{% endfor %}
-				</ul>
 			{% else %}
 				<p>Make sure that the information provided above is correct and that all sections have been saved. In addition, please open and read the contract below before signing the contract.</p>
-
 				<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+
+				{% if errors %}
+					<p>In order to sign the contract and complete your registration, the following data needs to be provided:</p>
+					<ul>
+						{% for error in errors %}
+							<li>{{ error }}</li>
+						{% endfor %}
+					</ul>
+				{% endif %}
 
 				{% if company_contact %}
 					<form method="post" enctype="multipart/form-data">
@@ -215,7 +213,7 @@
 
 						{{ form_final_submission | crispy }}
 
-						<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract" />
+						<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract"{% if errors %} disabled {% endif %} />
 					</form>
 				{% else %}
 					<p style="font-style: italic;">Since you are logged in as an Armada representative, you cannot sign the contract.</p>
