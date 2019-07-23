@@ -429,12 +429,12 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
 	errors = []
 
-	if not company.has_invoice_address(): errors.append('Invoice address')
-	if not exhibitor.booth_height: errors.append('Height of booth (cm)')
-	if exhibitor.electricity_total_power is None: errors.append('Total power needed (W)')
-	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets required')
-	if not exhibitor.catalogue_about: errors.append('Short text about the company')
-	#if not exhibitor.catalogue_purpose: errors.append('Text about the purpose of the company') # REMOVED FOR 2019
+	if not company.has_invoice_address(): errors.append('Invoice address, zip code, city and country')
+	if not exhibitor.booth_height: errors.append('Height of the booth (cm)')
+	if exhibitor.electricity_total_power is None: errors.append('Estimated power consumption (W)')
+	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets')
+	if not exhibitor.catalogue_about: errors.append('Text about your organisation')
+	#if not exhibitor.catalogue_purpose: errors.append('Your organisation\'s purpose') # REMOVED FOR 2019
 	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
 
 	if not is_editable:

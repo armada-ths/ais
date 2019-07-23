@@ -57,10 +57,17 @@ class CompleteCompanyDetailsForm(ModelForm):
 		model = Company
 		fields = ['name', 'identity_number', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
 
+		labels = {
+			'invoice_address_line_1': 'Invoice address line 1 (required to sign contract)',
+			'invoice_zip_code': 'Invoice zip code (required to sign contract)',
+			'invoice_city': 'Invoice city (required to sign contract)',
+			'invoice_country': 'Invoice country (required to sign contract)',
+		}
+
 		help_texts = {
 			'name': 'Your company\'s every-day name; the name students will know you by.',
 			'invoice_name': 'This should be your company\'s complete legal name, e.g. Example Inc. or Aktiebolaget Exempel.',
-			'invoice_reference': 'Name of your reference, your Purchase Order Number or equivalent. Optional, but ask your accounting department if you\'re unsure.',
+			'invoice_reference': 'Name of your reference, your Purchase Order Number or equivalent.',
 			'invoice_email_address': 'If you enter an e-mail address here, the invoice will be sent only through e-mail. Leave the field blank to receive the invoice by regular mail.'
 		}
 
@@ -105,12 +112,18 @@ class CompleteLogisticsDetailsForm(ModelForm):
 			'placement_comment': forms.Textarea(attrs = {'rows': 5, 'placeholder': 'We will consider your wish of placement, but we cannot give any guarantees.'})
 		}
 
+		labels = {
+			'booth_height': 'Height of the booth (cm) (required to sign contract)',
+			'electricity_total_power': 'Estimated power consumption (W) (required to sign contract)',
+			'electricity_socket_count': 'Number of sockets (required to sign contract)',
+		}
+
 		help_texts = {
 			'electricity_total_power': """
-				If possible, please provide the actual power consumption figures of the 
-				equipment you plan to bring. 
-				Typical power requirements of common devices are presented in a table below this form. 
-				1000 W is included in the Base kit. If you require additional electricity, 
+				If possible, please provide the actual power consumption figures of the
+				equipment you plan to bring.
+				Typical power requirements of common devices are presented in a table below this form.
+				1000 W is included in the Base kit. If you require additional electricity,
 				remember to add "Additional Electricity" in the Products section below.""",
 			'booth_height': '2.3 m is included in the Base kit. If you want additional height, remember to add "Additional Booth Height" in the Products section below.',
 			'placement_wish': 'We will use the industry information you provide in the section "Catalogue and student matching" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
@@ -133,13 +146,13 @@ class CompleteLogisticsDetailsFormWithCheckbox(CompleteLogisticsDetailsForm):
 	class Meta(CompleteLogisticsDetailsForm.Meta):
 		fields = ['confirmation_box'] + CompleteLogisticsDetailsForm.Meta.fields
 
-	confirmation_box = forms.BooleanField(required = False, 
+	confirmation_box = forms.BooleanField(required = False,
 		label='I am aware of the services provided and have read the relevant information above.')
 
 	def is_valid(self):
 		valid = super(CompleteLogisticsDetailsFormWithCheckbox, self).is_valid()
 		if not valid: return valid
-		
+
 		box_checked = self.cleaned_data.get('confirmation_box')
 		if not box_checked:
 			self.add_error('confirmation_box', 'Please check this box.')
@@ -195,9 +208,9 @@ class CompleteCatalogueDetailsForm(ModelForm):
 		}
 
 		labels = {
-			'catalogue_about': 'Text about your organisation',
+			'catalogue_about': 'Text about your organisation (required to sign contract)',
 			#'catalogue_purpose': 'Your organisation\'s purpose',
-			'catalogue_logo_squared': 'Upload your company\'s squared logotype.',
+			'catalogue_logo_squared': 'Upload your company\'s squared logotype. (required to sign contract)',
 			'catalogue_logo_freesize': 'Upload your company\'s logotype in any dimensions, in addition to the squared logotype.',
 			#'catalogue_founded': 'Which year was the company founded?'
 		}
