@@ -49,30 +49,7 @@ def get_contract(company, fair, registration_type):
 	return contract
 
 
-def send_CR_confirmation_email(signature, orders, orders_total):
-
-    order_html_rows = []
-    order_plain_rows = []
-
-    for order in orders:
-        if order['category']:
-            product = order['category'] + ' - ' + order['name']
-        else:
-            product = order['name']
-
-        html_row = '''  <tr>
-						<td>%s</td>
-						<td>%s</td>
-						<td>%s</td>
-						<td>%s</td>
-						</tr>
-                    ''' % (product, str(order['quantity']), str(order['unit_price']), str(int(order['quantity'])*int(order['unit_price'])))
-
-        plain_row = '%s --- %s --- %s --- %s' % (product, order['quantity'], order['unit_price'], str(int(order['quantity'])*int(order['unit_price'])))
-
-        order_html_rows.append(html_row)
-        order_plain_rows.append(plain_row)
-
+def send_CR_confirmation_email(signature, deadline):
     html_message = '''
 		<html>
         	<body>
@@ -83,31 +60,13 @@ def send_CR_confirmation_email(signature, orders, orders_total):
         			}
         		</style>
         		<div>
-        			Thank you for submitting the complete registration for THS Armada 2019. The complete registration contract was signed by %s on the %s for %s.
-        			<br/><br/>
-        			Please note that this is an automatically generated email. If you have any questions please contact your sales contact person. For contact information, please visit <a href="https://armada.nu/contact/">armada.nu/contact</a>.
-        		</div>
-        		<div>
-        			<br/>
-        			Your current order contains the products listed below.
-        			<br/>
-        			Total amount: SEK %s
-        			<br/>
-        			To view or update your choices go to <a href="https://ais.armada.nu/register/">register.armada.nu</a>.
-        			<br/><br/>
-        			<table align="left" border="1" cellpadding="1" cellspacing="0" style="width:600px">
-        				<thead>
-        					<tr>
-        						<th scope="col">Product</th>
-        						<th scope="col">Quantity</th>
-        						<th scope="col">Unit price (SEK)</th>
-        						<th scope="col">Product total (SEK)</th>
-        					</tr>
-        				</thead>
-        				<tbody>
-        					%s
-        				</tbody>
-        			</table>
+        		      Thank you for submitting the complete registration for THS Armada 2019. The complete registration contract was signed by %s on the %s for %s.
+                      <br/><br/>
+                      The complete registration is binding and you will be liable for all additional services selected at the last date of the registration (%s), provided that THS Armada is able to supply your organization with your choices.
+                      <br/><br/>
+                      To view and edit your ordered products, go to <a href="https://ais.armada.nu/register/">register.armada.nu</a>. You can edit your order until the last date of the registration.
+                      <br/><br/>
+                      Please note that this is an automatically generated email. If you have any questions, please contact your sales contact person. For contact information, visit <a href="https://armada.nu/contact/">armada.nu/contact</a>.
         		</div>
         	</body>
         </html>
@@ -115,26 +74,21 @@ def send_CR_confirmation_email(signature, orders, orders_total):
 				str(signature.company_contact),
 				str(signature.timestamp.strftime('%Y-%m-%d (%H:%M)')),
 				str(signature.company),
-				str(orders_total),
-				''.join(order_html_rows)
+				str(deadline.strftime('%Y-%m-%d')),
 				)
 
     plain_text_message = '''Thank you for submitting the complete registration for THS Armada 2019. The complete registration contract was signed by %s on the %s for %s.
 
-Please note that this is an automatically generated email. If you have any questions please contact your sales contact person. For contact information, please visit https://armada.nu/contact/.
+The complete registration is binding and you will be liable for all additional services selected at the last date of the registration (%s), provided that THS Armada is able to supply your organization with your choices.
 
-Your current order contains the products listed below.
-Total amount: SEK %s
-To view or update your choices go to https://register.armada.nu.
+To view and edit your ordered products, go to <a href="https://ais.armada.nu/register/">register.armada.nu</a>. You can edit your order until the last date of the registration.
 
-Product --- Quantity --- Unit price (SEK) --- Product total (SEK)
-%s
+Please note that this is an automatically generated email. If you have any questions, please contact your sales contact person. For contact information, visit <a href="https://armada.nu/contact/">armada.nu/contact</a>.
 ''' % 	(
 				str(signature.company_contact),
 				str(signature.timestamp.strftime('%Y-%m-%d (%H:%M)')),
 				str(signature.company),
-				str(orders_total),
-				'\n'.join(order_plain_rows),
+				str(deadline.strftime('%Y-%m-%d')),
 				)
 
     email = EmailMultiAlternatives(
@@ -423,7 +377,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
 		elif request.POST.get('save_final_submission') and form_final_submission.is_valid() and signature is None:
 			signature = SignupLog.objects.create(company_contact = company_contact, contract = contract, company = company)
-			send_CR_confirmation_email(signature, orders, orders_total)
+			send_CR_confirmation_email(signature, deadline)
 
 	form_company_details.fields['invoice_name'].widget.attrs['placeholder'] = company.name
 
