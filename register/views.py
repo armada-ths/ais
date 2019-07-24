@@ -304,11 +304,19 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			if request.POST and request.POST.get('save_product_' + str(product_raw.id)) and form_product.is_valid() and is_editable and can_edit_orders:
 				quantity = (1 if form_product.cleaned_data['checkbox'] else 0) if product_raw.max_quantity == 1 else int(form_product.cleaned_data['quantity'])
 
-				if quantity == 0:
+				if quantity == 0: # if a product has been unchecked or set to zero
 					for order in Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None):
 						order.delete()
 
-				else:
+				else: # if a product has been checked or a number given
+
+					# enforce that only one product in the category should be kept if multiple purchases is not allowed
+					if product_raw.category:
+						if not product_raw.category.allow_multiple_purchases:
+							invalid_order = Order.objects.filter(purchasing_company = company, product__category = product_raw.category, unit_price = None, name = None) # note that categories are fair specific
+							if invalid_order:
+								invalid_order.delete() # will work also if invalid_order contains multiple orders
+
 					order_all = Order.objects.filter(purchasing_company = company, product = product_raw, unit_price = None, name = None)
 
 					if len(order_all) == 1:
@@ -322,6 +330,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 					if len(order_all) != 1: order = Order(purchasing_company = company, product = product_raw, quantity = quantity)
 
 					order.save()
+					return HttpResponseRedirect('/') # to make sure all product forms will be updated
 
 			product = {
 				'id': product_raw.id,
