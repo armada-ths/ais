@@ -95,9 +95,10 @@ class Exhibitor(models.Model):
     catalogue_industries = models.ManyToManyField(CatalogueIndustry, blank = True)
     catalogue_values = models.ManyToManyField(CatalogueValue, blank = True)
     catalogue_employments = models.ManyToManyField(CatalogueEmployment, blank = True)
-    catalogue_locations = models.ManyToManyField(CatalogueLocation, blank = True)
     catalogue_benefits = models.ManyToManyField(CatalogueBenefit, blank = True)
     catalogue_competences = models.ManyToManyField(CatalogueCompetence, blank = True)
+    catalogue_locations = models.ManyToManyField(CatalogueLocation, blank = True)
+    catalogue_cities = models.TextField(blank = True, null = True, max_length = 400)
     catalogue_average_age = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Average age of employees')
     catalogue_founded = models.PositiveIntegerField(blank = True, null = True)
 

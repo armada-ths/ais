@@ -66,7 +66,7 @@ class CompleteCompanyDetailsForm(ModelForm):
 
 		help_texts = {
 			'name': 'Your company\'s every-day name; the name students will know you by.',
-			'invoice_name': 'This should be your company\'s complete legal name, e.g. Example Inc. or Aktiebolaget Exempel.',
+			'invoice_name': 'This should be your company\'s complete legal name.',
 			'invoice_reference': 'Name of your reference, your Purchase Order Number or equivalent.',
 			'invoice_email_address': 'If you enter an e-mail address here, the invoice will be sent only through e-mail. Leave the field blank to receive the invoice by regular mail.'
 		}
@@ -196,7 +196,7 @@ class CompleteCatalogueDetailsForm(ModelForm):
 	class Meta:
 		model = Exhibitor
 		#fields = ['catalogue_about', 'catalogue_purpose', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_benefits', 'catalogue_average_age', 'catalogue_founded']
-		fields = ['catalogue_about', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_competences', 'catalogue_values', 'catalogue_employments', 'catalogue_locations']
+		fields = ['catalogue_about', 'catalogue_logo_squared', 'catalogue_logo_freesize', 'catalogue_contact_name', 'catalogue_contact_email_address', 'catalogue_contact_phone_number', 'catalogue_industries', 'catalogue_competences', 'catalogue_values', 'catalogue_employments', 'catalogue_locations', 'catalogue_cities']
 
 		help_texts = {
 			'catalogue_logo_squared': 'Allowed formats are JPEG and PNG.',
@@ -204,7 +204,8 @@ class CompleteCatalogueDetailsForm(ModelForm):
 			#'catalogue_average_age': 'Leave the field empty if you\'re unsure.',
 			'catalogue_about': 'Keep it concise – no more than 600 characters. Please write in english to reach both Swedish and international students.',
 			#'catalogue_purpose': 'Keep it concise – no more than 600 characters.',
-			'catalogue_contact_name': 'This is the person that students will be referred to if they wish to get in touch with you outside of the career fair.'
+			'catalogue_contact_name': 'This is the person that students will be referred to if they wish to get in touch with you outside of the career fair.',
+			'catalogue_cities': 'E.g: Stockholm, Gothenburg, London'
 		}
 
 		labels = {
@@ -212,11 +213,13 @@ class CompleteCatalogueDetailsForm(ModelForm):
 			#'catalogue_purpose': 'Your organisation\'s purpose',
 			'catalogue_logo_squared': 'Upload your company\'s squared logotype. (required to sign contract)',
 			'catalogue_logo_freesize': 'Upload your company\'s logotype in any dimensions, in addition to the squared logotype.',
+			'catalogue_cities': 'Please write the main cities where your company operates. Separate the cities with commas.'
 			#'catalogue_founded': 'Which year was the company founded?'
 		}
 
 		widgets = {
 			'catalogue_about': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation work with?'}),
+			'catalogue_cities': forms.Textarea(attrs = {'maxlength': 400, 'rows': 1}),
 			#'catalogue_purpose': forms.Textarea(attrs = {'maxlength': 600, 'rows': 3, 'placeholder': 'What does your organisation believe in?'}),
 		}
 
