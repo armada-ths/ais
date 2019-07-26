@@ -12,10 +12,11 @@
 <h1>Groups in {{ fair }}</h1>
 
 <p>
-	<a href="{% url 'contracts_export' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Export signatures</a>
 	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Companies</a>
 	<a href="{% url 'groups_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Groups</a>
 	<a href="{% url 'statistics' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Statistics</a>
+	<a href="{% url 'email' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Email addresses</a>
+	<a href="{% url 'contracts_export' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Export signatures</a>
 </p>
 
 <div class="row">
@@ -24,7 +25,7 @@
 			<div class="panel-heading">
 				<h3 class="panel-title">Groups</h3>
 			</div>
-			
+
 			<div class="panel-body">
 				{% for group in groups_list %}
 					{% if group == 'open' %}<ul>
@@ -41,14 +42,14 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="col-md-7">
 		{% if request.resolver_match.url_name != 'groups_list' %}
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">{% if form_group %} Edit group {% else %} New group {% endif %}</h3>
 				</div>
-				
+
 				<div class="panel-body">
 					<form method="post" enctype="multipart/form-data">
 						{% csrf_token %}

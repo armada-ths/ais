@@ -6,14 +6,15 @@
 
 {% block content %}
 	<h1>Export signatures</h1>
-	
+
 	<p>
-		<a href="{% url 'contracts_export' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Export signatures</a>
 		<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Companies</a>
 		<a href="{% url 'groups_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Groups</a>
 		<a href="{% url 'statistics' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Statistics</a>
+		<a href="{% url 'email' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Email addresses</a>
+		<a href="{% url 'contracts_export' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Export signatures</a>
 	</p>
-	
+
 	<form method="post">
 		{% csrf_token %}
 		{{ form | crispy }}
