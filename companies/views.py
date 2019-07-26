@@ -499,6 +499,59 @@ def groups(request, year, pk = None):
 
 
 @permission_required('companies.base')
+def email(request, year):
+	fair = get_object_or_404(Fair, year = year)
+	contracts = SignupContract.objects.filter(fair = fair)
+	complete_contracts = SignupContract.objects.filter(fair = fair, type = 'COMPLETE')
+	initial_contracts = SignupContract.objects.filter(fair = fair, type = 'INITIAL')
+
+	categories = [
+		{'name': 'Has signed CR', 'help_text': 'Contacts that have signed a complete registration contract.', 'users': []},
+		{'name': 'Has signed IR but not CR', 'help_text': 'Contacts that have signed an initial registration contract.', 'users': []},
+		{'name': 'Has not signed IR or CR', 'help_text': 'All contacts connected to any company which has not signed any contract for the current year.', 'users': []},
+	]
+
+	signed_companies = []
+
+	for contract in complete_contracts:
+		complete_signatures = SignupLog.objects.filter(contract = contract)
+		for signature in complete_signatures:
+			signed_companies.append(signature.company)
+			categories[0]["users"].append({
+				"i": len(categories[0]["users"]) + 1,
+				"name": signature.company_contact.first_name + " " + signature.company_contact.last_name,
+				"email_address": signature.company_contact.email_address
+			})
+
+	for contract in initial_contracts:
+		initial_signatures = SignupLog.objects.filter(contract = contract)
+		for signature in initial_signatures:
+			if signature.company not in signed_companies:
+				signed_companies.append(signature.company)
+				categories[1]["users"].append({
+					"i": len(categories[1]["users"]) + 1,
+					"name": signature.company_contact.first_name + " " + signature.company_contact.last_name,
+					"email_address": signature.company_contact.email_address
+				})
+
+	added_email_addresses = []
+
+	for company in Company.objects.all():
+		if company not in signed_companies:
+			contacts = CompanyContact.objects.filter(company = company, active = True)
+			for contact in contacts:
+				if contact.email_address not in added_email_addresses:
+					added_email_addresses.append(contact.email_address)
+					categories[2]["users"].append({
+						"i": len(categories[2]["users"]) + 1,
+						"name": contact.first_name + " " + contact.last_name,
+						"email_address": contact.email_address
+					})
+
+	return render(request, 'companies/email.html', {'fair': fair, 'categories': categories})
+
+
+@permission_required('companies.base')
 def companies_comments_edit(request, year, pk, comment_pk):
 	fair = get_object_or_404(Fair, year = year)
 	company = get_object_or_404(Company, pk = pk)

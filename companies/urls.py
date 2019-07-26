@@ -6,6 +6,7 @@ urlpatterns = [
 	url(r'^new$', views.companies_new, name = 'companies_new'),
 	url(r'^slack_call$', views.companies_slack_call, name = 'companies_slack_call'),
 	url(r'^statistics$', views.statistics, name = 'statistics'),
+	url(r'^email$', views.email, name = 'email'),
 	url(r'^groups$', views.groups, name = 'groups_list'),
 	url(r'^groups/new$', views.groups, name = 'groups_new'),
 	url(r'^groups/(?P<pk>\d+)$', views.groups, name = 'groups_edit'),

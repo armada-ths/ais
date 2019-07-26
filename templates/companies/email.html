@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
+
+{% block content %}
+<h1>Email addresses</h1>
+
+<p>
+	<a href="{% url 'companies_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Companies</a>
+	<a href="{% url 'groups_list' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Groups</a>
+	<a href="{% url 'statistics' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Statistics</a>
+	<a href="{% url 'email' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Email addresses</a>
+	<a href="{% url 'contracts_export' fair.year %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> Export signatures</a>
+</p>
+
+<style type="text/css">
+	textarea
+	{
+		height: 200px;
+		width: 100%;
+		box-sizing: border-box;
+		font-size: 12pt;
+	}
+</style>
+
+<p class = 'text-danger'>Make sure to use blind carbon copies (BCC) when sending e-mail messages to the contacts below.</p>
+
+{% for category in categories %}
+	<h2>{% if category.name %}{{ category.name }}{% else %}<span style="font-style: italic;">no status</span>{% endif %}</h2>
+	<p style="font-style: italic;">{% if category.help_text %}{{ category.help_text }}{% endif %}</p>
+	<textarea>{% for user in category.users %}{% if user.i != 1 %}, {% endif %}{{ user.name }} <{{ user.email_address }}>{% endfor %}</textarea>
+{% endfor %}
+
+{% endblock %}
