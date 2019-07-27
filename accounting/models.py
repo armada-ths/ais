@@ -7,7 +7,7 @@ class Revenue(models.Model):
 	name = models.CharField(max_length = 100, blank = False)
 	description = models.CharField(max_length = 100, blank = False)
 	fair = models.ForeignKey('fair.Fair', blank = False, on_delete = models.CASCADE)
-    
+
 	class Meta:
 		verbose_name_plural = 'Revenues'
 		ordering = ['fair__year', 'name']
@@ -20,23 +20,23 @@ class Category(models.Model):
 	name = models.CharField(max_length = 100, blank = False)
 	fair = models.ForeignKey('fair.Fair', blank = False, on_delete = models.CASCADE)
 	allow_multiple_purchases = models.BooleanField(default = False)
-	
+
 	class Meta:
 		verbose_name_plural = 'Categories'
 		ordering = ['name']
 		default_permissions = []
-	
+
 	def __str__(self): return self.name
 
 class RegistrationSection(models.Model):
 	name = models.CharField(max_length = 100, blank = False)
 	description = models.TextField(blank = True, null = True)
-	
+
 	class Meta:
 		verbose_name_plural = 'Registration sections'
 		ordering = ['name']
 		default_permissions = []
-	
+
 	def __str__(self): return self.name
 
 class Product(models.Model):
@@ -49,10 +49,10 @@ class Product(models.Model):
 	category = models.ForeignKey(Category, blank = True, null = True, on_delete = models.CASCADE)
 	description = models.TextField(blank = True)
 	registration_section = models.ForeignKey(RegistrationSection, blank = True, null = True, on_delete = models.CASCADE)
-	
+
 	class Meta:
 		verbose_name_plural = 'Products'
-		ordering = ['name']
+		ordering = ['category', 'name']
 		default_permissions = []
 		permissions = [
 			('base', 'View the Accounting tab'),
@@ -66,7 +66,7 @@ class Product(models.Model):
 class ExportBatch(models.Model):
 	timestamp = models.DateTimeField(blank = False, null = False, auto_now_add = True)
 	user = models.ForeignKey(User, blank = False, null = False)
-	
+
 	class Meta:
 		ordering = ['timestamp']
 		default_permissions = []
@@ -81,7 +81,7 @@ class Order(models.Model):
 	unit_price = models.IntegerField(blank = True, null = True)
 	comment = models.TextField(blank = True)
 	export_batch = models.ForeignKey(ExportBatch, blank = True, null = True)
-	
+
 	class Meta:
 		verbose_name_plural = 'Orders'
 		ordering = ['name']
