@@ -174,7 +174,7 @@
 				<tr>
 					<th>Product</th>
 					<th style="width: 15%; text-align: right; white-space: nowrap;">Quantity</th>
-					<th style="width: 20%; text-align: right; white-space: nowrap;">Unit price (SEK)</th>
+					<th style="width: 20%; text-align: right; white-space: nowrap;">Product total (SEK)</th>
 				</tr>
 			</thead>
 
@@ -186,7 +186,7 @@
 							{% if order.description %}<div style="margin-left: 15px;">{{ order.description | linebreaks }}</div>{% endif %}
 						</td>
 						<td style="text-align: right;">{{ order.quantity }}</td>
-						<td style="text-align: right;">{{ order.unit_price | intcomma }}</td>
+						<td style="text-align: right;">{{ order.product_total | intcomma }}</td>
 					</tr>
 				{% endfor %}
 			</tbody>

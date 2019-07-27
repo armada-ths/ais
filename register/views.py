@@ -360,7 +360,8 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	for order in Order.objects.filter(product__revenue__fair = fair, purchasing_company = company):
 		unit_price = order.product.unit_price if order.unit_price is None else order.unit_price
 
-		orders_total += order.quantity * unit_price
+		product_total =  order.quantity * unit_price
+		orders_total += product_total
 
 		orders.append(
 		{
@@ -368,7 +369,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			'name': order.product.name if order.name is None else order.name,
 			'description': order.product.description if order.product.registration_section is None else None,
 			'quantity': order.quantity,
-			'unit_price': unit_price
+			'product_total': product_total
 		})
 
 	if request.POST:
