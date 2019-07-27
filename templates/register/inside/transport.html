@@ -8,27 +8,41 @@
 
 {% block content %}
 	<h1>Transport</h1>
-	<p>As part of the Base kit, you can choose to use our transport service Armada Transport in order to get your items delivered to and from the career fair. Regardless of whether or not you want to use Armada Transport, or if you have any transport related questions, please get in touch with our partner Ryska posten.</p>
-	
-	<p>Ryska posten can be reached by e-mail on <a href="mailto:armada@ryskaposten.se">armada@ryskaposten.se</a>.</p>
-	
+
+	<p>This year Armada is proud to present the concept Armada Transport which includes free transportation (limitations apply below)  of your goods to and from the fair. The background behind offering this service is our aim to reduce Armada's impact on the environment and ensure a smooth exhibitor experience. We believe that it is more sustainable to have one transportation company transporting goods with a fewer amount of trucks driving on the road, rather than letting everyone find their own transportation solution leading to a higher climate impact with more trucks driving to KTH and more complex logistics.</p>
+
+	<p>Armada is happy to announce that we have hired DHL to handle the transportation. All of the administration of bookings will be handled directly by DHL. <span style="font-weight: 700;">Included in the Base kit are some free transportation options, which gives you the opportunity to choose one of the following options for transports within Europe to and from the fair without any extra costs:</span></p>
+
+	<img style="float: right; width: 300px; margin-left: 15px;" src="{% static 'images/DHL_rgb.png' %}" alt="DHL Logo"/>
+
+	<ul class="no-bullets">
+		<li>a) Two packages, maximum measures 150x50x50 cm each and maximum weight 35 kg each</li>
+		<li>b) One half pallet, maximum measures 60x50x150 cm and maximum weight 400 kg</li>
+		<li>c) One EUR-pallet maximum measures 120x80x220 cm and maximum weight 950 kg</li>
+		<li>d) One cage trolley maximum measures 120x80x220 cm and maximum weight 950 kg</li>
+	</ul>
+
+	<p>All exhibitors who wants to send anything else than one of the included options will have to pay an extra transportation fee and the costs will be negotiated directly between the exhibitor and DHL. Please note that no exhibitors are allowed to use a different transportation company than DHL. No other company than DHL will get access to KTH's loading platforms and exhibitors who decides to not use Armada Transport will have to carry their goods into the buildings at the fair.</p>
+
+	<p><span style="font-weight: 700;">More details about Armada Transport with a complete service agreement and how to book transports with DHL will come after the summer</span> and be published here under the Transportation tab as well as sent to your email. In the meantime, please do not hesitate to contact Armada's Head of Logistics, Lukas Lindroos, at <a href="mailto:lukas.lindroos@armada.nu">lukas.lindroos@armada.nu</a> if you have any questions regarding transports.</p>
+
 	{% if form %}
 		<h3>Current status</h3>
 		<ul class="no-bullets">
 			<li><span class="information_label">Transport to the fair:</span> {{ exhibitor.get_transport_to_display }}</li>
 			<li><span class="information_label">Transport from the fair:</span> {{ exhibitor.get_transport_from_display }}</li>
 		</ul>
-		
+
 		{% if exhibitor.transport_comment %}<p>{{ exhibitor.transport_comment }}</p>{% endif %}
-		
+
 		<!--
 		<h3>Initialize an arrangement</h3>
 		<p>Transport to and from the career fair is handled by our partner Ryska posten. Please fill out the form below to initialize an arrangement.</p>
-		
+
 		<form method="post" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{ form | crispy }}
-			
+
 			<input type="submit" class="btn btn-armada-green" value="Send request" />
 		</form>
 		-->
@@ -43,7 +57,7 @@
 		{
 			padding: 0;
 		}
-		
+
 		h3
 		{
 			margin: 30px 0 0;
@@ -52,6 +66,6 @@
 		}
 	</style>
 	<script>
-		
+
 	</script>
 {% endblock %}
