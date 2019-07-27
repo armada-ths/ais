@@ -248,10 +248,15 @@ class CompleteCatalogueDetailsForm(ModelForm):
 
 		catalogue_contact_phone_number = self.cleaned_data.get('catalogue_contact_phone_number')
 		catalogue_logo_squared = self.cleaned_data.get('catalogue_logo_squared')
+		catalogue_number_values = self.cleaned_data.get('catalogue_values').count()
 		#catalogue_founded = self.cleaned_data.get('catalogue_founded')
 
 		if catalogue_contact_phone_number is not None and not re.match(r'\+[0-9]+$', catalogue_contact_phone_number):
 			self.add_error('catalogue_contact_phone_number', 'Must only contain numbers and a leading plus.')
+			valid = False
+
+		if catalogue_number_values > 3:
+			self.add_error('catalogue_values', 'You can not select more than 3 values.')
 			valid = False
 
 		# if catalogue_founded is not None and (catalogue_founded < 1600 or catalogue_founded > datetime.datetime.now().year):
