@@ -17,12 +17,14 @@ def get_random_32_length_string():
 
 class CatalogueIndustry(models.Model):
     industry = models.CharField(blank = False, max_length = 255)
+    category = models.ForeignKey('CatalogueCategory', blank = True, null = True, on_delete=models.CASCADE)
     include_in_form = models.BooleanField(default = True)
     include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.industry
     class Meta:
+        verbose_name_plural = 'Catalogue industries'
         default_permissions = []
-        ordering = ['industry']
+        ordering = ['category', 'industry']
 
 
 class CatalogueValue(models.Model):
@@ -65,12 +67,22 @@ class CatalogueBenefit(models.Model):
 
 class CatalogueCompetence(models.Model):
     competence = models.CharField(blank = False, max_length = 255)
+    category = models.ForeignKey('CatalogueCategory', blank = True, null = True, on_delete=models.CASCADE)
     include_in_form = models.BooleanField(default = True)
     include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.competence
     class Meta:
         default_permissions = []
-        ordering = ['competence']
+        ordering = ['category', 'competence']
+
+class CatalogueCategory(models.Model):
+    category = models.CharField(blank = False, max_length = 255)
+    def __str__(self): return self.category
+    class Meta:
+        verbose_name_plural = 'Catalogue categories'
+        default_permissions = []
+        ordering = ['category']
+
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):

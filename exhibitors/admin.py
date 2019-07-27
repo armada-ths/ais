@@ -13,12 +13,12 @@ class ExhibitorAdmin(admin.ModelAdmin):
 
 @admin.register(CatalogueIndustry)
 class CatalogueIndustryAdmin(admin.ModelAdmin):
-	list_display = ('industry', 'include_in_form')
+	list_display = ('industry', 'category', 'include_in_form')
 	list_filter = ['include_in_form']
 
 @admin.register(CatalogueCompetence)
 class CatalogueCompetenceAdmin(admin.ModelAdmin):
-	list_display = ('competence', 'include_in_form')
+	list_display = ('competence', 'category', 'include_in_form')
 	list_filter = ['include_in_form']
 
 @admin.register(CatalogueValue)
@@ -40,6 +40,10 @@ class CatalogueLocationAdmin(admin.ModelAdmin):
 class CatalogueBenefitAdmin(admin.ModelAdmin):
 	list_display = ('benefit', 'include_in_form')
 	list_filter = ['include_in_form']
+
+@admin.register(CatalogueCategory)
+class CatalogueCategoryAdmin(admin.ModelAdmin):
+	list_display = ['category']
 
 admin.site.register(Location)
 admin.site.register(Booth)
