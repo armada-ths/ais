@@ -161,13 +161,20 @@ class CompleteLogisticsDetailsFormWithCheckbox(CompleteLogisticsDetailsForm):
 		return valid
 
 class CompleteCatalogueDetailsForm(ModelForm):
+	# custom defined field subclass to overwrite string representation
+	class IncludeCategoryChoiceField(ModelMultipleChoiceField):
+		def label_from_instance(self, choice):
+			if choice.category:
+				return str(choice.category) + ' - ' + str(choice)
+			else:
+				return str(choice)
 
-	catalogue_industries = forms.ModelMultipleChoiceField(
+	catalogue_industries = IncludeCategoryChoiceField(
 		queryset = CatalogueIndustry.objects.filter(include_in_form = True),
 		widget = forms.CheckboxSelectMultiple,
 		label = 'Which industries does your company work in?',
 		required = False)
-	catalogue_competences = forms.ModelMultipleChoiceField(
+	catalogue_competences = IncludeCategoryChoiceField(
 		queryset = CatalogueCompetence.objects.filter(include_in_form = True),
 		widget = forms.CheckboxSelectMultiple,
 		label = 'What competences is your company looking for?',
