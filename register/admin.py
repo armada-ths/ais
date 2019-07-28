@@ -10,5 +10,7 @@ class SignupLogAdmin(admin.ModelAdmin):
 	ordering = ['-timestamp']
 	list_filter = ['type', 'contract__fair', 'contract']
 
-# Register your models here.
-admin.site.register(SignupContract)
+@admin.register(SignupContract)
+class SignupContractAdmin(admin.ModelAdmin):
+	list_display = ('name', 'fair', 'type', 'contract_company_type', 'current', 'default')
+	list_filter = ['fair', 'type']
