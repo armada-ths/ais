@@ -58,6 +58,7 @@
 					{% else %} {% if company.identity_number%}<li><strong>Identity number: </strong>{{ company.identity_number }}</li> {% endif %}{% endif %}
 					{% if company.type %} <li><strong>Type:</strong> {{ company.type }}</li> {% endif %}
 					{% if company.website %} <li><strong>Website:</strong> <a href="{{ company.website }}" target="_blank">{{ company.website }}</a></li>{% endif %}
+					{% if company.general_email_address %} <li><strong>Non-personal e-mail address:</strong> <a href="mailto:{{ company.general_email_address }}">{{ company.general_email_address }}</a></li>{% endif %}
     	</ul>
   		</div>
 		</div>
