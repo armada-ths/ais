@@ -74,8 +74,8 @@ Please note that this is an automatically generated email. If you have any quest
     email = EmailMultiAlternatives(
         'Complete registration for THS Armada 2019',
         plain_text_message,
-        'info@armada.nu',
-        ['noreply@armada.nu'],
+        'noreply@armada.nu',
+        ['info@armada.nu'],
         #bcc = [],
     )
     email.attach_alternative(html_message, 'text/html')

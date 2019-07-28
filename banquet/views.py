@@ -827,7 +827,7 @@ def external_banquet_afterparty(request, token=None):
             'Your ticket for the After Party',
             'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
                 ticket.token) + '\n\nTime and date: November 20, 22:00\nLocation: Münchenbryggeriet\n\nWelcome!',
-            'info@armada.nu',
+            'noreply@armada.nu',
             [ticket.email_address],
             fail_silently=True,
         )

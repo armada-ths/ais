@@ -94,7 +94,7 @@ Please note that this is an automatically generated email. If you have any quest
     email = EmailMultiAlternatives(
         'Complete registration for THS Armada 2019',
         plain_text_message,
-        'info@armada.nu',
+        'noreply@armada.nu',
         [signature.company_contact.email_address],
         #bcc = [],
     )
@@ -536,7 +536,7 @@ def transport(request, company_pk):
 		email = EmailMessage(
 			'Transport request from ' + company.name,
 			'\n'.join(body),
-			'info@armada.nu',
+			'noreply@armada.nu',
 			['armada@ryskaposten.se'],
 			['support@armada.nu'],
 			cc = [form.cleaned_data['contact_email_address']],

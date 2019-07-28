@@ -209,7 +209,7 @@ def lunchticket_send(request, year, token):
     send_mail(
         'Lunch ticket ' + eat_by,
         'Open the link below to redeem your lunch ticket at ' + lunch_ticket.fair.name + '.\n\nDate: ' + eat_by + '\n' + request.build_absolute_uri(reverse('lunchticket_display', args = [lunch_ticket.token])),
-        'info@armada.nu',
+        'noreply@armada.nu',
         [email_address],
         fail_silently = True
     )
