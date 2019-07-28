@@ -254,8 +254,12 @@ def form_initial(request, company, company_contact, fair):
 
 def form_complete(request, company, company_contact, fair, exhibitor):
 
-	contract = get_contract(company, fair, 'COMPLETE')
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'COMPLETE').first()
+
+	if signature:
+		contract = signature.contract
+	else:
+		contract = get_contract(company, fair, 'COMPLETE')
 
 	form_company_details = CompleteCompanyDetailsForm(request.POST if request.POST and request.POST.get('save_company_details') else None, instance = company)
 	form_logistics_details = CompleteLogisticsDetailsFormWithCheckbox(request.POST if request.POST and request.POST.get('save_logistics_details') else None, instance = exhibitor)
