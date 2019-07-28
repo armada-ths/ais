@@ -55,9 +55,10 @@ class InitialRegistrationForm(Form):
 class CompleteCompanyDetailsForm(ModelForm):
 	class Meta:
 		model = Company
-		fields = ['name', 'identity_number', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
+		fields = ['name', 'identity_number', 'invoice_name', 'general_email_address', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
 
 		labels = {
+			'general_email_address': 'If available, please provide a non-personal e-mail address for future contact between Armada and your organization',
 			'invoice_address_line_1': 'Invoice address line 1 (required to sign contract)',
 			'invoice_zip_code': 'Invoice zip code (required to sign contract)',
 			'invoice_city': 'Invoice city (required to sign contract)',
@@ -66,6 +67,7 @@ class CompleteCompanyDetailsForm(ModelForm):
 
 		help_texts = {
 			'name': 'Your company\'s every-day name; the name students will know you by.',
+			'general_email_address': 'This is to simplify the process of reaching out to your organization for the upcoming years\' fairs.',
 			'invoice_name': 'This should be your company\'s complete legal name.',
 			'invoice_reference': 'Name of your reference, your Purchase Order Number or equivalent.',
 			'invoice_email_address': 'If you enter an e-mail address here, the invoice will be sent only through e-mail. Leave the field blank to receive the invoice by regular mail.'
@@ -79,6 +81,9 @@ class CompleteCompanyDetailsForm(ModelForm):
 
 		if 'invoice_email_address' in self.cleaned_data and self.cleaned_data['invoice_email_address'] is not None:
 			self.cleaned_data['invoice_email_address'] = self.cleaned_data['invoice_email_address'].lower()
+
+		if 'general_email_address' in self.cleaned_data and self.cleaned_data['general_email_address'] is not None:
+			self.cleaned_data['general_email_address'] = self.cleaned_data['general_email_address'].lower()
 
 		return self.cleaned_data
 
@@ -290,11 +295,23 @@ class NewCompanyForm(ModelForm):
 		# make sure http:// is included in the url, otherwise the url will not direct to correct website in CRM
 		if 'website' in self.cleaned_data:
 			self.cleaned_data['website'] = fix_url(self.cleaned_data['website'])
+
+		if 'general_email_address' in self.cleaned_data and self.cleaned_data['general_email_address'] is not None:
+			self.cleaned_data['general_email_address'] = self.cleaned_data['general_email_address'].lower()
+
 		return self.cleaned_data
 
 	class Meta:
 		model = Company
-		fields = ['name', 'identity_number', 'website', 'type']
+		fields = ['name', 'identity_number', 'website', 'type', 'general_email_address']
+
+		labels = {
+			'general_email_address': 'If available, please provide a non-personal e-mail address for future contact between Armada and your organization',
+		}
+
+		help_texts = {
+			'general_email_address': 'This is to simplify the process of reaching out to your organization for the upcoming years\' fairs.',
+		}
 
 
 class LoginForm(AuthenticationForm):
