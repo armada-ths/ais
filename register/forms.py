@@ -58,6 +58,7 @@ class CompleteCompanyDetailsForm(ModelForm):
 		fields = ['name', 'identity_number', 'invoice_name', 'general_email_address', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
 
 		labels = {
+			'identity_number': 'Organization\'s corporate identity number',
 			'general_email_address': 'If available, please provide a non-personal e-mail address for future contact between Armada and your organization',
 			'invoice_address_line_1': 'Invoice address line 1 (required to sign contract)',
 			'invoice_zip_code': 'Invoice zip code (required to sign contract)',
