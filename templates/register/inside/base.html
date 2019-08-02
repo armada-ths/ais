@@ -28,6 +28,8 @@
 				margin: 0 auto 30px;
 				text-align: center;
 				border-bottom: 1px dotted #ffffff;
+				background: #2D2D2D;
+				z-index: 1;
 			}
 
 			#menu li
@@ -38,12 +40,13 @@
 			#menu li a, #menu li a:visited
 			{
 				display: block;
-				padding: 25px 25px;
+				padding: 15px 15px;
 				text-transform: uppercase;
 				font-weight: 700;
 				font-size: 13pt;
 				letter-spacing: 0.2pt;
 				color: #ffffff;
+				background: #2D2D2D;
 			}
 
 			#menu li a.active, #menu li a:hover, #menu li a:active
@@ -51,6 +54,18 @@
 				background: #353535;
 				text-decoration: none;
 				color: #00d791;
+			}
+
+			/* Additional class to make navigation bar fixed at top */
+			.sticky {
+			  position: fixed;
+			  top: 0;
+			  width: 100%
+			}
+
+			/* Added padding to make fixed navigation bar scroll more smooth */
+			.sticky + #content {
+			  padding-top: 50px;
 			}
 
 			a.btn, a:visited.btn, a:active.btn

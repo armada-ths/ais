@@ -9,12 +9,12 @@
 {% block content %}
 	{% if form %}
 		<h1>{% if form.instance.pk is not None %}Edit lunch ticket{% else %}Create new lunch ticket{% endif %}</h1>
-		
+
 		<form method="post" enctype="multipart/form-data">
 			{% csrf_token %}
-			
+
 			{{ form | crispy }}
-			
+
 			<input type="submit" class="btn btn-armada-green" value="Save lunch ticket"{% if not is_editable %} disabled{% endif %} />
 		</form>
 	{% else %}
@@ -24,12 +24,26 @@
 {% endblock %}
 
 {% block scripts %}
+	<script>
+		window.onscroll = function() {myFunction()};
+
+		var header = document.getElementById("menu");
+		var sticky = header.offsetTop;
+
+		function myFunction() {
+			if (window.pageYOffset > sticky) {
+				header.classList.add("sticky");
+			} else {
+				header.classList.remove("sticky");
+			}
+		}
+	</script>
 	<style type="text/css">
 		form
 		{
 			padding: 0;
 		}
-		
+
 		.lunch_ticket
 		{
 			background: #353535;
@@ -38,7 +52,7 @@
 			overflow: hidden;
 			padding-bottom: 10px;
 		}
-		
+
 		h2
 		{
 			margin: 30px 0 0;
