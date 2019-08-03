@@ -7,12 +7,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from accounting.models import Order
 from banquet.models import Banquet, Participant
-from companies.models import CompanyContact, CompanyCustomerComment, CompanyCustomerResponsible
+from companies.models import Company, CompanyContact, CompanyCustomerComment, CompanyCustomerResponsible
 from exhibitors import serializers
 from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
-from .forms import ExhibitorViewForm, ExhibitorCreateForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, ExhibitorSearchForm, BoothForm, ExhibitorInBoothForm
+from .forms import ExhibitorViewForm, ExhibitorCreateForm, ExhibitorCreateBypassedForm, TransportForm, DetailsForm, ContactPersonForm, CheckInForm, CommentForm, ExhibitorSearchForm, BoothForm, ExhibitorInBoothForm
 from .models import Exhibitor, ExhibitorView, Booth, ExhibitorInBooth, Location
 
 
@@ -53,7 +53,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
         products = [banquet.product for banquet in Banquet.objects.select_related('product').filter(fair=fair).exclude(product=None)]
         banquet_tickets_orders = Order.objects.filter(product__in=products)
         banquet_tickets_created = Participant.objects.filter(banquet=Banquet.objects.filter(fair=fair).exclude(product=None)).exclude(company=None)
-    
+
     if 'booths' in choices:
         eibs = [eib for eib in ExhibitorInBooth.objects.select_related('booth__location').select_related('booth__location__parent').filter(exhibitor__fair = fair)]
 
@@ -179,32 +179,59 @@ def create(request, year):
         companies_already_added.append(exhibitor.company)
 
     signatures = SignupLog.objects.filter(contract__fair=fair)
-    companies = []
+    eligible_companies = []
 
     for signature in signatures:
-        if signature.company not in companies and signature.company not in companies_already_added:
-            companies.append(signature.company)
+        if signature.company not in eligible_companies and signature.company not in companies_already_added:
+            eligible_companies.append(signature.company)
 
-    if len(companies) != 0:
-        form = ExhibitorCreateForm(request.POST or None)
+    if len(eligible_companies) != 0:
+        form = ExhibitorCreateForm(request.POST if request.POST and request.POST.get('add_eligible') else None)
 
-        companies.sort(key=lambda x: x.name)
-        form.fields['companies'].choices = [(company.pk, company.name) for company in companies]
-
-        if request.POST and form.is_valid():
-            for company in form.cleaned_data['companies']:
-                if company in companies:
-                    exhibitor = Exhibitor.objects.create(fair=fair, company=company)
-                    exhibitor.save()
-
-            return redirect('exhibitors', year)
-
+        eligible_companies.sort(key=lambda x: x.name)
+        form.fields['companies'].choices = [(company.pk, company.name) for company in eligible_companies]
     else:
         form = None
 
+    bypass_allowed = False
+    if datetime.datetime.now() > fair.complete_registration_start_date:
+        bypass_allowed = True
+
+    all_companies = Company.objects.all()
+    non_IR_companies = []
+
+    for company in all_companies:
+        if (company not in companies_already_added) and (company not in eligible_companies):
+            non_IR_companies.append(company)
+
+    form_bypass = ExhibitorCreateBypassedForm(request.POST if request.POST and request.POST.get('add_bypassed') else None)
+
+    non_IR_companies.sort(key=lambda x: x.name)
+    form_bypass.fields['company'].choices = [(company.pk, company.name) for company in non_IR_companies]
+
+    if not bypass_allowed:
+        form_bypass.fields['company'].disabled = True
+
+    if request.POST:
+        if request.POST.get('add_eligible') and form.is_valid():
+            for company in form.cleaned_data['companies']:
+                if company in eligible_companies:
+                    exhibitor = Exhibitor.objects.create(fair=fair, company=company)
+                    exhibitor.save()
+
+        elif request.POST.get('add_bypassed') and form_bypass.is_valid() and bypass_allowed:
+            company = form_bypass.cleaned_data['company']
+            if company in non_IR_companies:
+                exhibitor = Exhibitor.objects.create(fair=fair, company=company)
+                exhibitor.save()
+
+        return redirect('exhibitors', year)
+
     return render(request, 'exhibitors/create.html', {
         'fair': fair,
-        'form': form
+        'form': form,
+        'form_bypass': form_bypass,
+        'bypass_allowed': bypass_allowed,
     })
 
 
@@ -445,13 +472,13 @@ def exhibitor_comment_remove(request, year, pk, comment_pk):
 @permission_required('exhibitors.modify_booths')
 def booths(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	
+
 	eibs = {}
-	
+
 	for eib in ExhibitorInBooth.objects.select_related('exhibitor').select_related('booth').filter(exhibitor__fair = fair):
 		if eib.booth in eibs: eibs[eib.booth].append(eib.exhibitor)
 		else: eibs[eib.booth] = [eib.exhibitor]
-	
+
 	return render(request, 'exhibitors/booths.html', {
 		'fair': fair,
 		'booths': [{
@@ -467,14 +494,14 @@ def booths(request, year):
 def booth(request, year, booth_pk):
 	fair = get_object_or_404(Fair, year = year)
 	booth = get_object_or_404(Booth, location__fair = fair, pk = booth_pk)
-	
+
 	form = BoothForm(request.POST or None, instance = booth)
-	
+
 	form.fields['location'].queryset = Location.objects.exclude(background = '')
-	
+
 	if request.POST and form.is_valid():
 		form.save()
-	
+
 	return render(request, 'exhibitors/booth.html', {
 		'fair': fair,
 		'booth': booth,
@@ -485,7 +512,7 @@ def booth(request, year, booth_pk):
 
 def people_count(request, year, location_pk):
 	location = get_object_or_404(Location, fair__year = year, pk = location_pk, people_count_enabled = True)
-	
+
 	return render(request, 'exhibitors/people_count.html', {
 		'fair': location.fair,
 		'location': location
@@ -497,17 +524,17 @@ def exhibitor_in_booth_form(request, year, booth_pk, exhibitor_pk = None):
 	fair = get_object_or_404(Fair, year = year)
 	booth = get_object_or_404(Booth, pk = booth_pk, location__fair = fair)
 	exhibitor_in_booth = get_object_or_404(ExhibitorInBooth, booth = booth, exhibitor__pk = exhibitor_pk, exhibitor__fair = fair) if exhibitor_pk else None
-	
+
 	form = ExhibitorInBoothForm(request.POST or None, instance = exhibitor_in_booth)
-	
+
 	form.instance.booth = booth
-	
+
 	form.fields['exhibitor'].queryset = Exhibitor.objects.filter(fair = fair)
-	
+
 	if request.POST and form.is_valid():
 		form.save()
 		return redirect('booth', fair.year, booth.pk)
-	
+
 	return render(request, 'exhibitors/booth_exhibitor_form.html', {
 		'fair': fair,
 		'booth': booth,
@@ -520,9 +547,9 @@ def exhibitor_in_booth_form(request, year, booth_pk, exhibitor_pk = None):
 def exhibitor_in_booth_remove(request, year, booth_pk, exhibitor_pk):
 	fair = get_object_or_404(Fair, year = year)
 	eib = get_object_or_404(ExhibitorInBooth, exhibitor__pk = exhibitor_pk, exhibitor__fair = fair, booth__pk = booth_pk)
-	
+
 	eib.delete()
-	
+
 	return redirect('booth', fair.year, booth_pk)
 
 

@@ -154,20 +154,22 @@ def form(request, company_pk):
 
 	# we're in or after CR! perhaps the company did not complete their IR?
 	signature = SignupLog.objects.filter(company = company, contract__fair = fair, contract__type = 'INITIAL')
-	if len(signature) == 0: return render(request, 'register/inside/error_after_initial_no_signature.html',
-	{
-		'fair': fair,
-		'company': company,
-		'company_contact': company_contact,
-	})
-
-	# ...or perhaps they weren't selected to participate in this year's fair?
-	if exhibitor is None: return render(request, 'register/inside/error_after_initial_no_exhibitor.html',
-	{
-		'fair': fair,
-		'company': company,
-		'company_contact': company_contact,
-	})
+	if exhibitor is None:
+		if len(signature) == 0:
+			return render(request, 'register/inside/error_after_initial_no_signature.html',
+				{
+					'fair': fair,
+					'company': company,
+					'company_contact': company_contact,
+				})
+		else:
+			# ...or perhaps they weren't selected to participate in this year's fair?
+			return render(request, 'register/inside/error_after_initial_no_exhibitor.html',
+			{
+				'fair': fair,
+				'company': company,
+				'company_contact': company_contact,
+			})
 
 	return form_complete(request, company, company_contact, fair, exhibitor)
 
