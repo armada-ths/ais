@@ -201,7 +201,7 @@ def create(request, year):
     non_IR_companies = []
 
     for company in all_companies:
-        if company not in (companies_already_added or eligible_companies):
+        if (company not in companies_already_added) and (company not in eligible_companies):
             non_IR_companies.append(company)
 
     form_bypass = ExhibitorCreateBypassedForm(request.POST if request.POST and request.POST.get('add_bypassed') else None)
