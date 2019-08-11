@@ -31,7 +31,7 @@ class CompanyForm(ModelForm):
 
 	class Meta:
 		model = Company
-		fields = ['show_externally', 'name', 'identity_number', 'website', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
+		fields = ['show_externally', 'name', 'identity_number', 'website', 'general_email_address', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
 
 
 class CompanyAddressForm(ModelForm):
@@ -358,7 +358,7 @@ class CompanySearchForm(forms.Form):
 		('NO', 'Show only non-exhibitors'),
 		('YES', 'Show only exhibitors')
 	]
-	
+
 	exhibitors_year = forms.ChoiceField(widget = forms.Select(), label = 'For the year: ', required = True)
 	exhibitors = forms.ChoiceField(choices = exhibitors_choices, widget = forms.RadioSelect(), initial = 'BOTH', required = True)
 	contracts_positive = forms.ModelMultipleChoiceField(queryset = SignupContract.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only companies who have signed any of these', required = False)
