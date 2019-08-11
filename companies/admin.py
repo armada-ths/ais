@@ -17,13 +17,14 @@ class GroupAdmin(admin.ModelAdmin):
 @admin.register(CompanyContact)
 class CompanyContactAdmin(admin.ModelAdmin):
 	ordering = ("first_name", "last_name",)
+	search_fields = ('company__name', 'first_name', 'last_name',)
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
 	search_fields = ("name",)
 	ordering = ("name",)
 	inlines = [CompanyAddressInline, CompanyLogInline]
-	
+
 	def save_model(self, request, obj, form, change):
 		obj.modified_by = request.user.id
 		super(CompanyAdmin, self).save_model(request, obj, form, change)
