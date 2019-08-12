@@ -125,6 +125,12 @@
 
 	<body>
 		<ul id="menu">
+			{% if company_contact %}
+				<p>
+					<strong>{{ company_contact }}</strong> (<a
+						href="/accounts/logout?next=/register" class="navbar-link" style="color: white">sign out</a>)
+				</p>
+			{% endif %}
 			{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}">{{ company.name }}</a></li>{% endblock %}
 			{% if exhibitor is not None %}
 				{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
