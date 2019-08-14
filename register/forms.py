@@ -153,7 +153,7 @@ class CompleteLogisticsDetailsFormWithCheckbox(CompleteLogisticsDetailsForm):
 		fields = ['confirmation_box'] + CompleteLogisticsDetailsForm.Meta.fields
 
 	confirmation_box = forms.BooleanField(required = False,
-		label = 'I have read the information regarding booth equipment and transportation above and I am aware of the services offered.')
+		label = '<strong>I have read the information regarding booth equipment and transportation above and I am aware of the services offered. (required to sign contract)</strong>')
 
 	def is_valid(self):
 		valid = super(CompleteLogisticsDetailsFormWithCheckbox, self).is_valid()
