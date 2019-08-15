@@ -42,7 +42,7 @@ def save_questions(questions_data, event):
 @permission_required('events.base')
 def event_list(request, year):
     fair = get_object_or_404(Fair, year=year)
-    events = Event.objects.annotate(num_participants=Count('participant'))
+    events = Event.objects.annotate(num_participants=Count('participant')).filter(fair=fair)
 
     return render(request, 'events/event_list.html', {
         'fair': fair,
