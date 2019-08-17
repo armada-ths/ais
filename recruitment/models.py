@@ -165,16 +165,17 @@ class RecruitmentPeriod(models.Model):
 	application_questions = models.ForeignKey(ExtraField, blank=True, null=True, related_name='application_questions', on_delete=models.CASCADE)
 	eligible_roles = models.IntegerField(default=3)
 	allowed_groups = models.ManyToManyField(Group, blank = True, help_text = 'Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.')
+	message_to_applicants = models.TextField(blank=True, null=True)
 
 	class Meta:
 		ordering = ['fair', 'start_date', 'name']
 		permissions = (
 			('administer_recruitment', 'Administer recruitment'),
 		)
-	
+
 	@property
 	def recruitable_roles(self): return Role.objects.filter(recruitment_period = self)
-	
+
 	@property
 	def count_accepted(self): return RecruitmentApplication.objects.filter(recruitment_period = self, status = 'accepted').count()
 
@@ -202,10 +203,10 @@ class RecruitmentPeriod(models.Model):
 
 class Location(models.Model):
 	name = models.CharField(blank = False, null = False, max_length = 100)
-	
+
 	class Meta:
 		ordering = ['name']
-	
+
 	def __str__(self): return self.name
 
 class Slot(models.Model):
@@ -213,21 +214,21 @@ class Slot(models.Model):
 	location = models.ForeignKey(Location, blank = False, null = False, on_delete = models.CASCADE)
 	start = models.DateTimeField(blank = False, null = False)
 	length = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Length (minutes)')
-	
+
 	class Meta:
 		ordering = ['start', 'location', 'recruitment_period']
-	
+
 	@property
 	def start_iso8601(self): return self.start.isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
-	
+
 	@property
 	def end_iso8601(self): return (self.start + datetime.timedelta(minutes = self.length)).isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
-	
+
 	def __str__(self):
 		nice_start = timezone.localtime(self.start)
 		nice_end = timezone.localtime(self.start)
 		nice_end += datetime.timedelta(minutes = self.length)
-		
+
 		return nice_start.strftime('%Y-%m-%d %H:%M') + '–' + nice_end.strftime('%Y-%m-%d %H:%M')
 
 class Role(models.Model):
@@ -238,23 +239,23 @@ class Role(models.Model):
 	recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
 	allow_exhibitor_contact_person = models.BooleanField(null = False, blank = False, default = False, verbose_name = 'People with this role can be contact persons for exhibitors')
 	organization_group = models.ForeignKey(OrganizationGroup, null = True, blank = True, on_delete = models.CASCADE)
-	
+
 	def add_user_to_groups(self, user):
 		if self.group is None: return
-		
+
 		role = self
 		while role != None:
 			role.group.user_set.add(user)
 			role = role.parent_role
 			if role == self:
 				break
-	
+
 	class Meta:
 		ordering = ['recruitment_period', 'organization_group', 'name']
 		permissions = (
 			('administer_roles', 'Administer roles'),
 		)
-	
+
 	def has_parent(self, other):
 		role = self.parent_role
 		while role != None:
@@ -264,10 +265,10 @@ class Role(models.Model):
 			if role == self:
 				return False
 		return False
-	
+
 	def __str__(self):
 		return self.recruitment_period.name + ' – ' + self.name
-	
+
 	def users(self):
 		return [application.user for application in RecruitmentApplication.objects.filter(delegated_role=self, status='accepted')]
 
@@ -284,7 +285,7 @@ class RecruitmentApplication(models.Model):
 	superior_user = models.ForeignKey(User, null=True, blank=True, related_name='superior_user', on_delete=models.CASCADE)
 	scorecard = models.CharField(null=True, blank=True, max_length=300)
 	drive_document = models.CharField(null=True, blank=True, max_length=300)
-	
+
 	@property
 	def profile(self): return Profile.objects.filter(user = self.user).first()
 
@@ -314,7 +315,7 @@ class RecruitmentApplication(models.Model):
 				return 'interview_done'
 			else:
 				if self.slot:
-					if self.slot.start > timezone.now(): 
+					if self.slot.start > timezone.now():
 						return 'interview_planned'
 					else:
 						return 'interview_done'
