@@ -18,13 +18,13 @@ class RecruitmentPeriodForm(ModelForm):
 		model = RecruitmentPeriod
 		fields = '__all__'
 		exclude = ['image', 'interview_questions', 'application_questions', 'fair']
-		
+
 		widgets = {
 			'start_date': forms.TextInput(attrs={'class': 'datepicker'}),
 			'end_date': forms.TextInput(attrs={'class': 'datepicker'}),
 			'allowed_groups': forms.CheckboxSelectMultiple
 		}
-		
+
 		labels = {
 			'start_date': 'Start date (Format: 2016-12-24 13:37)',
 			'end_date': 'End date (Format: 2016-12-24 13:37)'
@@ -64,7 +64,7 @@ class RecruitmentApplicationSearchForm(forms.Form):
 		widget=forms.Select(attrs={'class': 'form-control'}),
 		required=False
 	)
-	
+
 	recommended_role = forms.ModelChoiceField(
 		queryset=Role.objects.all(),
 		widget=forms.Select(attrs={'class': 'form-control'}),
@@ -112,17 +112,17 @@ class RecruitmentApplicationSearchForm(forms.Form):
 		elif priority:
 			# Rare use case, matches all applications where any role has been chosen with the given priority
 			application_list = [application for application in application_list if int(priority) in [roleapp.order for roleapp in application.roles]]
-		
+
 		interviewer = search_form.cleaned_data['interviewer']
 		if interviewer:
 			application_list = [application for application in application_list if
 								interviewer == application.interviewer]
-		
+
 		recommended_role = search_form.cleaned_data['recommended_role']
 		if recommended_role:
 			application_list = [application for application in application_list if
 								recommended_role == application.recommended_role]
-		
+
 		rating = search_form.cleaned_data['rating']
 		if rating:
 			application_list = [application for application in application_list if int(rating) == application.rating]
@@ -145,56 +145,56 @@ class RolesForm(ModelForm):
 
 def fix_phone_number(n):
 	if n is None: return None
-	
+
 	n = n.replace(' ', '')
 	n = n.replace('-', '')
-	
+
 	if n.startswith("00"): n = "+" + n[2:]
 	if n.startswith("0"): n = "+46" + n[1:]
-	
+
 	return n
 
 class ProfileForm(ModelForm):
 	def clean(self):
 		super(ProfileForm, self).clean()
-		
+
 		if 'phone_number' in self.cleaned_data:
 			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
-		
+
 		return self.cleaned_data
-	
+
 	def is_valid(self):
 		valid = super(ProfileForm, self).is_valid()
-		
+
 		if not valid: return valid
-		
+
 		phone_number = self.cleaned_data.get('phone_number')
-		
+
 		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
 			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
-			
+
 		return valid
-	
+
 	def __init__(self, *args, **kwargs):
 		super(ProfileForm, self).__init__(*args, **kwargs)
-		
+
 		self.fields['registration_year'].required = True
 		self.fields['programme'].required = True
 		self.fields['phone_number'].required = True
-		self.fields['picture_original'].required = True
+		self.fields['picture_original'].required = False
 		self.fields['preferred_language'].required = True
-	
+
 	class Meta:
 		model = Profile
 		fields = ['registration_year', 'programme', 'phone_number', 'linkedin_url', 'picture_original', 'preferred_language']
-		
+
 		labels = {
 			'linkedin_url': 'Link to your LinkedIn profile',
 			'picture_original': 'A picture of yourself',
 			'preferred_language': 'What language would you prefer to be interviewed in?'
 		}
-		
+
 		widgets = {
 			'registration_year': forms.Select(choices = [('', '--------')] + [(year, year) for year in range(2000, timezone.now().year + 1)], attrs = {'required': True}),
 			'programme': forms.Select(attrs={'required': True}),
