@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.core.mail import EmailMultiAlternatives
 
 from fair.models import Fair
 from people.models import Profile
@@ -747,6 +748,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
             if not recruitment_application:
                 recruitment_application = RecruitmentApplication()
+                send_confirmation_email(user, recruitment_period)
 
             recruitment_application.user = user
             recruitment_application.recruitment_period = recruitment_period
@@ -782,6 +784,59 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
         'fair': fair,
         'message_to_applicants': message_to_applicants
     })
+
+
+def send_confirmation_email(user, recruitment_period):
+    hr_contact_name = 'Agnes Gemvik'
+    hr_contact_role = 'Head of Human Resources'
+    hr_contact_email = 'agnes.gemvik@armada.nu'
+    url_to_application = 'https://ais.armada.nu/fairs/%s/recruitment/%s' % (str(recruitment_period.fair.year), str(recruitment_period.pk))
+
+    html_message = '''
+		<html>
+        	<body>
+        		<style>
+        			* {
+        			  font-family: sans-serif;
+        			  font-size: 12px;
+        			}
+        		</style>
+        		<div>
+        		      We have received your application for %s. You can view and edit your application <a href="%s">here</a>. All applicants will be contacted and offered an interview.
+                      <br/><br/>
+                      If you have any questions, do not hesitate to contact %s, %s, at <a href="mailto:%s">%s</a>.
+        		</div>
+        	</body>
+        </html>
+		''' % 	(
+				str(recruitment_period.fair),
+                url_to_application,
+				hr_contact_name,
+                hr_contact_role,
+				hr_contact_email,
+                hr_contact_email,
+				)
+
+    plain_text_message = '''We have received your application for %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
+
+If you have any questions, do not hesitate to contact %s, %s, at %s.
+''' % 	(
+        str(recruitment_period.fair),
+        url_to_application,
+        hr_contact_name,
+        hr_contact_role,
+        hr_contact_email,
+        )
+
+    email = EmailMultiAlternatives(
+        'Thank you for applying to THS Armada!',
+        plain_text_message,
+        'noreply@armada.nu',
+        [user.email],
+    )
+
+    email.attach_alternative(html_message, 'text/html')
+    email.send()
 
 
 def set_foreign_key_from_request(request, model, model_field, foreign_key_model):
