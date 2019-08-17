@@ -166,6 +166,7 @@ class RecruitmentPeriod(models.Model):
 	eligible_roles = models.IntegerField(default=3)
 	allowed_groups = models.ManyToManyField(Group, blank = True, help_text = 'Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.')
 	message_to_applicants = models.TextField(blank=True, null=True)
+	message_to_applicants.help_text = 'If a message is given it will be displayed to the applicant in the application form before the Apply/Save button.'
 
 	class Meta:
 		ordering = ['fair', 'start_date', 'name']
