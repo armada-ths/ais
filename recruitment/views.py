@@ -418,7 +418,7 @@ def recruitment_period(request, year, pk, template_name='recruitment/recruitment
 
 	search_form = RecruitmentApplicationSearchForm(request.GET or None)
 	search_form.fields['role'].choices = [('', '---------')] + [(role.pk, role.name) for role in recruitment_period.recruitable_roles.all()]
-	search_form.fields['priority'].choices = [('', '-------')] + [(str(i), str(i+1) + ':' + ('st' if i == 0 else 'nd' if i == 1 else 'rd')) 
+	search_form.fields['priority'].choices = [('', '-------')] + [(str(i), str(i+1) + ':' + ('st' if i == 0 else 'nd' if i == 1 else 'rd'))
 																for i in range(eligible_roles)]
 	search_form.fields['interviewer'].choices = [('', '---------')] + [(interviewer.pk, interviewer.get_full_name()) for
 																		interviewer in recruitment_period.interviewers()]
@@ -739,12 +739,7 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
             if role_application:
                 role_form.fields[key].initial = role_application.role.pk
 
-    if recruitment_period.name == 'Developer':
-        message_to_applicants = 'You can view your submitted application from the recruitment page. All applicants will be contacted to schedule an interview which will be held during week 13 or 14.'
-    elif recruitment_period.name == 'Operations Team':
-        message_to_applicants = 'Please note that you will not receive a confirmation email after you submit your application. You can find and view your submitted application from the recruitment page. All applicants will be contacted to schedule an interview which will be held during week 17 or 18.'
-    else:
-        message_to_applicants = 'Please note that you will not receive a confirmation email after you submit your application. You can find and view your submitted application from the recruitment page.'
+    message_to_applicants = recruitment_period.message_to_applicants
 
     if request.POST:
         recruitment_period.application_questions.handle_answers_from_request(request, user)

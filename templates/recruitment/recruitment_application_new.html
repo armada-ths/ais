@@ -34,7 +34,7 @@
 
         {% include 'recruitment/custom_fields.html' with questions_with_answers=application_questions_with_answers %}
 
-        <p style="font-style: italic;"> {{ message_to_applicants }} </p>
+        {% if message_to_applicants %}<p style="font-style: italic;"> {{ message_to_applicants }} </p>{% endif %}
 
         <div class="form-group">
             {% if new_application %}
