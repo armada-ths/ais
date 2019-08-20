@@ -102,6 +102,7 @@ class Company(models.Model):
 		('POLAND', 'Poland'),
 		('SWEDEN', 'Sweden'),
 		('UNITED_KINGDOM', 'United Kingdom'),
+		('NETHERLANDS', 'Netherlands'),
 	]
 
 	invoice_country = models.CharField(max_length = 200, choices = countries, default = 'SWEDEN', null = True, blank = True)
