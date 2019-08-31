@@ -536,7 +536,9 @@ def recruitment_period_locations(request, year, pk):
 	used_slots = {}
 
 	for application in applications:
-		used_slots[application.slot] = application
+		if application.slot not in used_slots:
+			used_slots[application.slot] = []
+		used_slots[application.slot].append(application) # creating a list of all applications connected to each slot
 
 	locations = {}
 	slots = Slot.objects.select_related('location').filter(recruitment_period = recruitment_period)
@@ -547,7 +549,7 @@ def recruitment_period_locations(request, year, pk):
 	for slot in slots:
 		locations[slot.location].append({
 			'slot': slot,
-			'interview': used_slots[slot] if slot in used_slots else None
+			'interviews': used_slots[slot] if slot in used_slots else None # note that interviews is a list of all interviews for a slot
 		})
 
 	locations_list = []
@@ -581,7 +583,7 @@ def recruitment_period_locations(request, year, pk):
 				'rowspawn': None,
 				'time_start': time_start,
 				'time_end': time_end,
-				'interview': location_modified['slots'][i]['interview']
+				'interviews': location_modified['slots'][i]['interviews']
 			}
 
 			date_modified_previous = date_modified
@@ -947,7 +949,7 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 			slots_by_day.append((slot_yyyymmdd, []))
 
 	for slot in all_slots:
-		if slot in used_slots: continue
+		if slot in used_slots and slot.location.name != 'Other': continue
 
 		slot_start = local_tz.localize(slot.start, is_dst = None)
 		slot_yyyymmdd = slot_start.strftime('%Y-%m-%d')

@@ -28,7 +28,7 @@
 
 {% for location in locations %}
 	<h2 id="l{{ location.i }}">{{ location.name }}</h2>
-	
+
 	<div class="table-responsive">
 		<table class="table">
 			<thead>
@@ -38,13 +38,17 @@
 					<th>Interview</th>
 				</tr>
 			</thead>
-			
+
 			<tbody>
 				{% for slot in location.slots %}
 					<tr>
 						{% if slot.date %}<td style="font-weight: 700;" rowspan="{{ slot.rowspan }}">{{ slot.date }}</td>{% endif %}
 						<td>{{ slot.time_start }}-{{ slot.time_end }}</td>
-						<td>{% if slot.interview %}<a href="{% url 'recruitment_application_interview' fair.year slot.interview.recruitment_period.pk slot.interview.pk %}">{{ slot.interview.user }}</a> by <a href="{% url 'people:profile' fair.year slot.interview.interviewer.pk %}">{{ slot.interview.interviewer }}</a>{% if slot.interview.interviewer2 %} and <a href="{% url 'people:profile' fair.year slot.interview.interviewer2.pk %}">{{ slot.interview.interviewer2 }}</a>{% endif %}{% endif %}</td>
+						<td>{% if slot.interviews %}
+							{% for interview in slot.interviews %}
+								<p><a href="{% url 'recruitment_application_interview' fair.year interview.recruitment_period.pk interview.pk %}">{{ interview.user }}</a> by <a href="{% url 'people:profile' fair.year interview.interviewer.pk %}">{{ interview.interviewer }}</a>{% if interview.interviewer2 %} and <a href="{% url 'people:profile' fair.year interview.interviewer2.pk %}">{{ interview.interviewer2 }}</a>{% endif %}</p>
+							{% endfor %}
+						{% endif %}</td>
 					</tr>
 				{% endfor %}
 			</tbody>
