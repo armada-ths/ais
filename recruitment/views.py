@@ -911,7 +911,10 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 		},
 		labels = {
 			'drive_document': _('Interview document'),
-		}
+		},
+		help_texts = {
+			'slot': '<strong>Note:</strong> If you select a slot with <strong>Other</strong> as the location you must book a location separately and communicate this location to the participants of the interview.'
+		},
 	)
 
 	profile_pic_form = None
