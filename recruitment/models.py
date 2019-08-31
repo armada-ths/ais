@@ -211,26 +211,26 @@ class Location(models.Model):
 	def __str__(self): return self.name
 
 class Slot(models.Model):
-	recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
-	location = models.ForeignKey(Location, blank = False, null = False, on_delete = models.CASCADE)
-	start = models.DateTimeField(blank = False, null = False)
-	length = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Length (minutes)')
+    recruitment_period = models.ForeignKey(RecruitmentPeriod, null = False, blank = False, on_delete = models.CASCADE)
+    location = models.ForeignKey(Location, blank = False, null = False, on_delete = models.CASCADE)
+    start = models.DateTimeField(blank = False, null = False)
+    length = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Length (minutes)')
 
-	class Meta:
-		ordering = ['start', 'location', 'recruitment_period']
+    class Meta:
+    	ordering = ['start', 'location', 'recruitment_period']
 
-	@property
-	def start_iso8601(self): return self.start.isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
+    @property
+    def start_iso8601(self): return self.start.isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
 
-	@property
-	def end_iso8601(self): return (self.start + datetime.timedelta(minutes = self.length)).isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
+    @property
+    def end_iso8601(self): return (self.start + datetime.timedelta(minutes = self.length)).isoformat().replace('-', '').replace(':', '').replace('+0000', 'Z')
 
-	def __str__(self):
-		nice_start = timezone.localtime(self.start)
-		nice_end = timezone.localtime(self.start)
-		nice_end += datetime.timedelta(minutes = self.length)
+    def __str__(self):
+        nice_start = self.start
+        nice_end = self.start
+        nice_end += datetime.timedelta(minutes = self.length)
 
-		return nice_start.strftime('%Y-%m-%d %H:%M') + '–' + nice_end.strftime('%Y-%m-%d %H:%M')
+        return nice_start.strftime('%Y-%m-%d %H:%M') + '–' + nice_end.strftime('%Y-%m-%d %H:%M')
 
 class Role(models.Model):
 	name = models.CharField(max_length = 100)
