@@ -46,7 +46,7 @@
 						<td>{{ slot.time_start }}-{{ slot.time_end }}</td>
 						<td>{% if slot.interviews %}
 							{% for interview in slot.interviews %}
-								<p><a href="{% url 'recruitment_application_interview' fair.year interview.recruitment_period.pk interview.pk %}">{{ interview.user }}</a> by <a href="{% url 'people:profile' fair.year interview.interviewer.pk %}">{{ interview.interviewer }}</a>{% if interview.interviewer2 %} and <a href="{% url 'people:profile' fair.year interview.interviewer2.pk %}">{{ interview.interviewer2 }}</a>{% endif %}</p>
+								<p><a href="{% url 'recruitment_application_interview' fair.year interview.recruitment_period.pk interview.pk %}">{{ interview.user }}</a>{% if interview.interviewer %} by <a href="{% url 'people:profile' fair.year interview.interviewer.pk %}">{{ interview.interviewer }}</a>{% endif %}{% if interview.interviewer2 %} and <a href="{% url 'people:profile' fair.year interview.interviewer2.pk %}">{{ interview.interviewer2 }}</a>{% endif %}</p>
 							{% endfor %}
 						{% endif %}</td>
 					</tr>
