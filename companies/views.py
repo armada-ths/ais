@@ -238,10 +238,11 @@ def companies_list(request, year):
 
 	has_filtering = request.POST and form.is_valid()
 
-	companies = Company.objects.prefetch_related('groups')
+	companies = Company.objects.prefetch_related('groups', 'companycontact_set', 'companyaddress_set')
 
 	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company').select_related('group').filter(group__fair = fair).prefetch_related('users'))
 	responsibles = {}
+
 
 	for responsible in responsibles_list:
 		users = responsible.users.all()
@@ -308,9 +309,20 @@ def companies_list(request, year):
 
 				if not found: continue
 
+
+		# Related company contacts
+		contacts = []
+		for contact in company.companycontact_set.values():
+			contacts.append( {
+				'name': contact['first_name'] + ' ' + contact['last_name'],
+				'emails': [contact['email_address'], contact['alternative_email_address']],
+				'numbers': [contact['mobile_phone_number'], contact['work_phone_number']] 
+			})
+		
 		companies_modified.append({
 			'pk': company.pk,
 			'name': company.name,
+			'contacts': contacts,
 			'status': None, # TODO: fix status!
 			'groups': company.groups.filter(fair = fair),
 			'responsibles': responsibles[company] if company in responsibles else None,

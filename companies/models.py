@@ -129,10 +129,15 @@ class Company(models.Model):
 		else:
 			return None
 
+	@property
+	def contacts(self):
+		return CompanyContact.objects.filter(company = self) # Unused. Slow compared to prefetch_related?
+
 	class Meta:
 		verbose_name_plural = "Companies"
 		ordering = ["name"]
 		permissions = (("base", "Companies"),)
+		# INDEXES: Potential performance gains?
 
 	def __str__(self):
 		return self.name
