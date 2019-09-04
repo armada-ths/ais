@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^(?P<recruitment_period_pk>\d+)/application/(?P<pk>\d+)/interview$', views.recruitment_application_interview, name = 'recruitment_application_interview'),
 
     url(r'^(\d+)/application/(?P<pk>\d+)/delete$', views.recruitment_application_delete, name='recruitment_application_delete'),
-    url(r'^(?P<pk>\d+)/export_applications$', views.export_applications, name = 'export_applications'), #?
+    url(r'^(?P<pk>\d+)/export_applications$', views.export_applications, name = 'export_applications'), 
 
     url(r'^(\d+)/application/(?P<pk>\d+)/comment$', views.recruitment_application_comment_new,
         name='recruitment_application_comment_new')
