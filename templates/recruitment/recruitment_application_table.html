@@ -42,11 +42,15 @@
 
 						<div class="btn-group">
 					<button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-search"></span> Search</button>
-
 				</div>
 
 			</td>
-			<td>{{ search_form.programme }}</td>
+			<td>{{ search_form.programme }}
+				<br>
+				<div class="btn-group">
+					<a class="btn btn-primary" type="button" href="{% url 'export_applications' fair.year recruitment_period.id %}">Export all applications</a>
+				</div>
+			</td>
 			<td>{{ search_form.submission_date }}</td>
 			<td>{{ search_form.role }}<br></td>
 			<td>{{ search_form.priority }}<br></td>
