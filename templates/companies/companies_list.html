@@ -64,11 +64,15 @@
 	<input class="btn btn-primary" type="submit" value="Refine search" />
 </form>
 
+
 <div class="table-responsive">
 	<table class="table" id="company_table">
 		<thead>
 			<tr>
 				<th>Name</th>
+				<th>Contact</th>
+				<th>Phone</th>
+				<th>Email</th>
 				<th>Contracts</th>
 				<th>Groups</th>
 				<th>Responsibilities</th>
@@ -92,6 +96,31 @@
 						{% else %}<span class="label label-default">{% endif %}
 						{{ company.status.name }}</span>
 					{% endif %}
+				</td>
+
+				<td>
+					{% for contact in company.contacts %}
+						{{ contact.name }} <BR>
+					{% endfor %}
+				</td>
+
+				<td>
+					{% for contact in company.contacts %}
+						{% for number in contact.numbers %}
+							{% if number %} {{ number }} {% endif %} 
+						{% endfor %}
+						<BR>
+					{% endfor %}
+				</td>
+
+
+				<td>
+					{% for contact in company.contacts %}
+						{% for email in contact.emails %}
+							{% if email %}{{ email }} {% endif %} 
+						{% endfor %}
+						<BR>
+					{% endfor %}
 				</td>
 
 				<td>
@@ -136,7 +165,14 @@
 <script>
 	$(function()
 	{
-		$('#company_table').DataTable({ 'paging': false });
+		$('#company_table').DataTable({ 'paging': false,
+										'columnDefs': [
+										{
+											"targets": [1, 2, 3],
+											"visible": false
+										}
+										] 
+									});
 	})
 </script>
 {% endblock %}

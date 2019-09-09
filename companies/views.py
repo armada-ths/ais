@@ -238,10 +238,11 @@ def companies_list(request, year):
 
 	has_filtering = request.POST and form.is_valid()
 
-	companies = Company.objects.prefetch_related('groups')
+	companies = Company.objects.prefetch_related('groups', 'companycontact_set')
 
 	responsibles_list = list(CompanyCustomerResponsible.objects.select_related('company').select_related('group').filter(group__fair = fair).prefetch_related('users'))
 	responsibles = {}
+
 
 	for responsible in responsibles_list:
 		users = responsible.users.all()
@@ -308,9 +309,28 @@ def companies_list(request, year):
 
 				if not found: continue
 
+
+		# Related company contacts
+		contacts = []
+		for contact in company.companycontact_set.values():
+			contacts.append( {
+				'name': contact['first_name'] + ' ' + contact['last_name'],
+				'emails': [contact['email_address'], contact['alternative_email_address']],
+				'numbers': [contact['mobile_phone_number'], contact['work_phone_number']] 
+			})
+			# The numbers all start with +46, it would be nice to able to search numbers 
+			# without the country code so for every number +46701234567, we append 0701234567.
+			# Note: some numbers do not have swedish country codes, and cannot be searched
+			# for with a leading 0.
+			for number in contacts[-1]['numbers']:
+				if number is not None and number[:3] == '+46':
+					contacts[-1]['numbers'].append(number.replace('+46', '0'))
+
+		
 		companies_modified.append({
 			'pk': company.pk,
 			'name': company.name,
+			'contacts': contacts,
 			'status': None, # TODO: fix status!
 			'groups': company.groups.filter(fair = fair),
 			'responsibles': responsibles[company] if company in responsibles else None,
