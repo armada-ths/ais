@@ -386,7 +386,8 @@ def manage_invitations(request, year, banquet_pk):
             'status': invitation.status,
             'price': invitation.price,
             'status': invitation.status,
-            'deadline_smart': invitation.deadline_smart
+            'deadline_smart': invitation.deadline_smart,
+            'matching_status': invitation.part_of_matching
         })
 
     form = InvitationSearchForm(request.POST or None)

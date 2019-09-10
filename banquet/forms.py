@@ -169,12 +169,13 @@ class InvitationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Invitation
-		fields = ['group', 'user', 'name', 'email_address', 'reason', 'deadline', 'price']
+		fields = ['group', 'user', 'name', 'email_address', 'reason', 'deadline', 'price', 'part_of_matching']
 		
 		help_texts = {
 			'reason': 'Not shown to the invitee.',
 			'deadline': 'Leave blank to get the group\'s default deadline.',
-			'price': 'Enter an integer price in SEK.'
+			'price': 'Enter an integer price in SEK.',
+			'part_of_matching': "This person is subject to the banquet placement matching functionality."
 		}
 		
 		widgets = {

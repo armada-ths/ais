@@ -94,6 +94,7 @@ class Invitation(models.Model):
     price = models.PositiveIntegerField(verbose_name='Price (SEK)')  # can be zero
     denied = models.BooleanField(default=False)
     deadline = models.DateField(null=True, blank=True)
+    part_of_matching = models.BooleanField(default=False, choices=[(True, 'Yes'), (False, 'No')]) #Indicates that this person is to fill in information for the matching functionality
 
     @property
     def deadline_smart(self):
