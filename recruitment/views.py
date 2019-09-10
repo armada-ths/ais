@@ -1074,6 +1074,8 @@ def user_can_access_recruitment_period(user, recruitment_period):
 
 def export_applications(request, year, pk):
 	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	if not user_can_access_recruitment_period(request.user, recruitment_period):
+		return HttpResponseForbidden()
 	applications = RecruitmentApplication.objects.filter(recruitment_period = recruitment_period)
 	txt = "SEP=, \n"
 	response = HttpResponse(txt, content_type='text/csv')
