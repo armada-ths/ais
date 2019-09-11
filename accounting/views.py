@@ -32,7 +32,7 @@ def export_orders(request, year):
 		if order.purchasing_company not in companies and order.purchasing_company.has_invoice_address() and order.purchasing_company.ths_customer_id is not None:
 			companies.append(order.purchasing_company)
 
-	form_generate_company_invoices = GenerateCompanyInvoicesForm(request.POST if request.POST else None, initial = {'text': fair.name})
+	form_generate_company_invoices = GenerateCompanyInvoicesForm(request.POST if request.POST else None, initial = {'text': fair.name + "." + ' For questions and feedback, please contact armada@ths.kth.se.'})
 
 	companies.sort(key = lambda x: x.name)
 	form_generate_company_invoices.fields['companies'].choices = [(company.pk, company.name) for company in companies]
@@ -84,6 +84,7 @@ def export_orders(request, year):
 			fields_invoice[26] += invoice['company'].invoice_zip_code + ' ' + invoice['company'].invoice_city
 			if invoice['company'].invoice_country != 'SWEDEN': fields_invoice[26] += '<CR>' + invoice['company'].get_invoice_country_display()
 			if invoice['company'].invoice_name is not None: fields_invoice[27] = invoice['company'].invoice_name
+			fields_invoice[29] = '\r\n' + str(invoice['company'].e_invoice)
 
 			del fields_invoice[0]
 
