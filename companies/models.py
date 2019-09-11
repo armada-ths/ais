@@ -108,6 +108,7 @@ class Company(models.Model):
 	invoice_country = models.CharField(max_length = 200, choices = countries, default = 'SWEDEN', null = True, blank = True)
 	invoice_reference = models.CharField(max_length = 300, null = True, blank = True)
 	invoice_email_address = models.CharField(max_length = 300, null = True, blank = True, verbose_name = 'Invoice e-mail address')
+	e_invoice = models.IntegerField(verbose_name = 'E-invoice', default = 0)
 	modified_by = None
 
 	def has_invoice_address(self):
