@@ -131,4 +131,4 @@ class AfterPartyTicket(models.Model):
     paid_timestamp = models.DateTimeField(null=True, blank=True)
     paid_price = models.PositiveIntegerField(null=True, blank=True)
 
-    def __str__(self): return self.name + ' <' + self.email_address + '> -- ' + str(self.token)
+    def __str__(self): return str(self.name) + ' <' + str(self.email_address) + '> -- ' + str(self.token)
