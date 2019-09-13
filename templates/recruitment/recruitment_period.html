@@ -34,6 +34,8 @@
 				<a href="{% url 'recruitment_period_locations' fair.year recruitment_period.id %}">
 					<button class="btn btn-default btn-lg">Locations</button>
 				</a>
+
+				<a class="btn btn-default btn-lg" type="button" href="{% url 'export_applications' fair.year recruitment_period.id %}">Export all applications</a>
 			{% endif %}
 		</div>
 	</div>
