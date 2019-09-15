@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from companies.models import Group, Company
 from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueCompetence, CatalogueValue, CatalogueBenefit, CatalogueLocation, CatalogueEmployment
 from banquet.models import Participant as BanquetParticipant
-from fair.models import Fair, LunchTicket
+from fair.models import Fair, LunchTicket, FairDay
 
 
 def fix_phone_number(n):
@@ -381,12 +381,13 @@ class TransportForm(Form):
 
 
 class LunchTicketForm(ModelForm):
+	day = forms.ModelChoiceField(queryset = FairDay.objects.filter(fair__current = True), widget=forms.RadioSelect, required = True)
+
 	class Meta:
 		model = LunchTicket
 		fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
 
 		widgets = {
-			'day': forms.RadioSelect(),
 			'dietary_restrictions': forms.CheckboxSelectMultiple()
 		}
 
