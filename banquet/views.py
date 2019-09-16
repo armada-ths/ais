@@ -420,6 +420,13 @@ def manage_invitations(request, year, banquet_pk):
 
                 if not found: continue
 
+            if form.cleaned_data['matching_statuses']: # '' if choice 'Any' given, 'True' if yes, 'False' if no
+                if invitation['matching_status'] and form.cleaned_data['matching_statuses'] != 'True':
+                    continue
+                if not invitation['matching_status'] and form.cleaned_data['matching_statuses'] != 'False':
+                    continue
+
+
         invitations_modified.append(invitation)
 
     return render(request, 'banquet/manage_invitations.html', {
