@@ -49,6 +49,11 @@
 				<label for="{{ form.groups.id_for_label }}">{{ form.groups.label }}</label>
 				{{ form.groups }}
 			</div>
+
+			<div class="col-md-6">
+				<label for="{{ form.matching_statuses.id_for_label }}">{{ form.matching_statuses.label }}</label>
+				{{ form.matching_statuses }}
+			</div>
 		</div>
 		
 		<input class="btn btn-primary" type="submit" value="Refine search" />
@@ -62,6 +67,7 @@
 					<th>Deadline</th>
 					<th>Name</th>
 					<th>Reason</th>
+					<th>Part of Matching</th>
 					<th style="text-align: right; white-space: nowrap;">Price (SEK)</th>
 					<th></th>
 				</tr>
@@ -80,6 +86,7 @@
 							{% if invitation.status == 'PENDING' %}<span class="label label-default">Pending</span>{% endif %}
 						</td>
 						<td>{% if invitation.reason %}{{ invitation.reason }}{% endif %}</td>
+						<td>{% if invitation.matching_status %} Yes {% else %} No {% endif %}</td>
 						<td style="text-align: right;">{{ invitation.price }}</td>
 						<td style="text-align: right;"><a href="{% url 'banquet_manage_invitation' fair.year banquet.pk invitation.pk %}" class="btn btn-sm btn-default">Details</a></td>
 					</tr>

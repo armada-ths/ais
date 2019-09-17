@@ -386,7 +386,8 @@ def manage_invitations(request, year, banquet_pk):
             'status': invitation.status,
             'price': invitation.price,
             'status': invitation.status,
-            'deadline_smart': invitation.deadline_smart
+            'deadline_smart': invitation.deadline_smart,
+            'matching_status': invitation.part_of_matching
         })
 
     form = InvitationSearchForm(request.POST or None)
@@ -418,6 +419,13 @@ def manage_invitations(request, year, banquet_pk):
                         break
 
                 if not found: continue
+
+            if form.cleaned_data['matching_statuses']: # '' if choice 'Any' given, 'True' if yes, 'False' if no
+                if invitation['matching_status'] and form.cleaned_data['matching_statuses'] != 'True':
+                    continue
+                if not invitation['matching_status'] and form.cleaned_data['matching_statuses'] != 'False':
+                    continue
+
 
         invitations_modified.append(invitation)
 

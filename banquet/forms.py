@@ -169,12 +169,13 @@ class InvitationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Invitation
-		fields = ['group', 'user', 'name', 'email_address', 'reason', 'deadline', 'price']
+		fields = ['group', 'user', 'name', 'email_address', 'reason', 'deadline', 'price', 'part_of_matching']
 		
 		help_texts = {
 			'reason': 'Not shown to the invitee.',
 			'deadline': 'Leave blank to get the group\'s default deadline.',
-			'price': 'Enter an integer price in SEK.'
+			'price': 'Enter an integer price in SEK.',
+			'part_of_matching': "This person is subject to the banquet placement matching functionality."
 		}
 		
 		widgets = {
@@ -188,10 +189,16 @@ class InvitationSearchForm(forms.Form):
 		('NOT_GOING', 'Not going'),
 		('PENDING', 'Pending')
 	]
+
+	matching_status_choices = [
+		(None, 'Any'),
+		(True, 'Part of matching'),
+		(False, 'Not part of matching')
+	]
 	
 	statuses = forms.MultipleChoiceField(choices = status_choices, widget = forms.CheckboxSelectMultiple(), required = False)
 	groups = forms.ModelMultipleChoiceField(queryset = InvitationGroup.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only invitations belonging to any of these groups', required = False)
-
+	matching_statuses = forms.ChoiceField(choices = matching_status_choices, widget = forms.RadioSelect(), label = 'Show only invitations that are / are not subject to the matching functionality', required = False)
 
 class AfterPartyTicketForm(forms.ModelForm):
 	class Meta:

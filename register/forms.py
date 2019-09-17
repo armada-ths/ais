@@ -421,13 +421,20 @@ class BanquetParticipantForm(ModelForm):
 
 	class Meta:
 		model = BanquetParticipant
-		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']
+		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol', 'giveaway']
+
+		labels = {
+			'giveaway': 'Giveaway ticket'
+		}
 
 		widgets = {
 			'dietary_restrictions': forms.CheckboxSelectMultiple(),
-			'alcohol': forms.RadioSelect()
+			'alcohol': forms.RadioSelect(),
+			'giveaway': forms.RadioSelect()
 		}
 
+		
 		help_texts = {
 			'email_address': 'The banquet ticket will be sent to this e-mail address.',
+			'giveaway': 'We plan to use this ticket in a giveaway for students.'
 		}
