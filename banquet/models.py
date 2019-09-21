@@ -64,7 +64,7 @@ class Participant(models.Model):
                                       verbose_name='E-mail address')  # None if a user is provided, required for others
     phone_number = models.CharField(max_length=75, blank=True, null=True)  # None if a user is provided, required for others
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
-    dietary_restrictions_other = models.CharField(max_length=75, blank=True, null=True)
+    other_dietary_restrictions = models.CharField(max_length=75, blank=True, null=True)
     alcohol = models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=True)
     seat = models.OneToOneField(Seat, blank=True, null=True, on_delete=models.CASCADE)
     charge_stripe = models.CharField(max_length=255, blank=True, null=True)  # set if the participant has paid for their participation

@@ -125,7 +125,7 @@ class LunchTicket(models.Model):
     day = models.ForeignKey(FairDay, on_delete=models.CASCADE)
     time = models.ForeignKey(LunchTicketTime, on_delete=models.SET_NULL, blank=True, null=True)
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
-    dietary_restrictions_other = models.CharField(max_length=75, blank=True, null=True)
+    other_dietary_restrictions = models.CharField(max_length=75, blank=True, null=True)
     sent = models.BooleanField(blank = False, null = False, default = False)
 
     def get_ticket_type(self):

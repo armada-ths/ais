@@ -41,7 +41,7 @@ class LunchTicketForm(forms.ModelForm):
 
 	class Meta:
 		model = LunchTicket
-		fields = ['used', 'company', 'user', 'email_address', 'comment', 'day', 'time', 'dietary_restrictions', 'dietary_restrictions_other']
+		fields = ['used', 'company', 'user', 'email_address', 'comment', 'day', 'time', 'dietary_restrictions', 'other_dietary_restrictions']
 
 		labels = {
 			'used': 'The ticket has been used'
@@ -51,7 +51,7 @@ class LunchTicketForm(forms.ModelForm):
 			'day': forms.RadioSelect(),
 			'time': forms.RadioSelect(),
 			'dietary_restrictions': forms.CheckboxSelectMultiple(),
-			'dietary_restictions_other' : forms.TextInput(),
+			'other_dietary_restrictions' : forms.TextInput(),
 		}
 
 

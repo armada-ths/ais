@@ -41,13 +41,13 @@ class ParticipantForm(forms.ModelForm):
 
 	class Meta:
 		model = Participant
-		fields = ['name', 'email_address', 'phone_number', 'dietary_restrictions', 'dietary_restrictions_other', 'alcohol']
+		fields = ['name', 'email_address', 'phone_number', 'dietary_restrictions', 'other_dietary_restrictions', 'alcohol']
 
 		widgets = {
 			'name' : forms.TextInput(attrs={'readonly':'readonly'}),
 			'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
 			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-			'dietary_restrictions_other' : forms.TextInput(),
+			'other_dietary_restrictions' : forms.TextInput(),
 			'alcohol': forms.RadioSelect()
 		}
 
@@ -101,7 +101,7 @@ class ParticipantAdminForm(forms.ModelForm):
 
 	class Meta:
 		model = Participant
-		fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'dietary_restrictions_other', 'alcohol']
+		fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'other_dietary_restrictions', 'alcohol']
 
 		help_texts = {
 			'name': 'Only enter a name if you do not select a user.',
@@ -110,7 +110,7 @@ class ParticipantAdminForm(forms.ModelForm):
 
 		widgets = {
 			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-			'dietary_restrictions_other' : forms.TextInput(),
+			'other_dietary_restrictions' : forms.TextInput(),
 			'alcohol': forms.RadioSelect()
 		}
 
@@ -227,7 +227,7 @@ class InternalParticipantForm(forms.ModelForm):
             'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
             'phone_number' : forms.TextInput(attrs={'readonly':'readonly'}),
             'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-			'dietary_restrictions_other' : forms.TextInput(),
+			'other_dietary_restrictions' : forms.TextInput(),
             'alcohol' : forms.RadioSelect()
         }
 
