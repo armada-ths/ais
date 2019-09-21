@@ -51,6 +51,10 @@ class ParticipantForm(forms.ModelForm):
 			'alcohol': forms.RadioSelect()
 		}
 
+		help_texts = {
+			'other_dietary_restrictions' : 'Please leave empty if no other restrictions.',
+		}
+
 
 class ParticipantAdminForm(forms.ModelForm):
 	def clean(self):
@@ -227,9 +231,15 @@ class InternalParticipantForm(forms.ModelForm):
             'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
             'phone_number' : forms.TextInput(attrs={'readonly':'readonly'}),
             'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-			'other_dietary_restrictions' : forms.TextInput(),
+            'other_dietary_restrictions' : forms.TextInput(),
             'alcohol' : forms.RadioSelect()
         }
+
+        help_texts = {
+            'other_dietary_restrictions' : 'Please leave empty if no other restrictions.',
+        }
+
+
 
 
 class ExternalParticipantForm(forms.ModelForm):
@@ -243,7 +253,7 @@ class ExternalParticipantForm(forms.ModelForm):
             'name' : forms.TextInput(attrs={'readonly':'readonly'}),
             'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
             'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-			'dietary_restictions_other' : forms.TextInput(),
+            'dietary_restictions_other' : forms.TextInput(),
             'alcohol' : forms.RadioSelect()
         }
 
