@@ -517,6 +517,10 @@ def manage_participant(request, year, banquet_pk, participant_pk):
             'name': participant.user.get_full_name() if participant.user else participant.name,
             'email_address': participant.user.email if participant.user else participant.email_address,
             'phone_number': participant.phone_number,
+			'dietary_restrictions': participant.dietary_restrictions,
+			'other_dietary_restrictions': participant.other_dietary_restrictions,
+			'alcohol': participant.get_alcohol_display,
+			'giveaway': participant.get_giveaway_display,
             'token': participant.token,
             'seat': participant.seat
         }
