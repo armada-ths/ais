@@ -385,13 +385,15 @@ class LunchTicketForm(ModelForm):
 
 	class Meta:
 		model = LunchTicket
-		fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
+		fields = ['email_address', 'comment', 'day', 'dietary_restrictions', 'dietary_restrictions_other']
 
 		widgets = {
-			'dietary_restrictions': forms.CheckboxSelectMultiple()
+			'dietary_restrictions': forms.CheckboxSelectMultiple(),
+			'dietary_restrictions_other': forms.TextInput(),
 		}
 
 		help_texts = {
+			'dietary_restrictions_other': 'Please leave empty if no other restrictions.',
 			'email_address': 'The lunch ticket will be sent to this e-mail address in advance of the career fair.',
 			'comment': 'The comment is for your use only. It could, for instance, contain the name of the person who is going to use the ticket.'
 		}
@@ -421,20 +423,23 @@ class BanquetParticipantForm(ModelForm):
 
 	class Meta:
 		model = BanquetParticipant
-		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol', 'giveaway']
+		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'dietary_restrictions_other', 'alcohol', 'giveaway']
 
 		labels = {
+			'dietary_restrictions_other' : 'Other dietary restrictions',
 			'giveaway': 'Giveaway ticket'
 		}
 
 		widgets = {
 			'dietary_restrictions': forms.CheckboxSelectMultiple(),
+			'dietary_restrictions_other': forms.TextInput(),
 			'alcohol': forms.RadioSelect(),
 			'giveaway': forms.RadioSelect()
 		}
 
-		
+
 		help_texts = {
+			'dietary_restrictions_other' : 'Please leave empty if no other restrictions.',
 			'email_address': 'The banquet ticket will be sent to this e-mail address.',
 			'giveaway': 'We plan to use this ticket in a giveaway for students.'
 		}
