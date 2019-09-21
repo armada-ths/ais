@@ -66,6 +66,7 @@ def matching(request):
                 } for i in matching_data]
                 
                 return JsonResponse(response, safe = False)
+                 
             else:
                 return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
     else:
@@ -74,92 +75,98 @@ def matching(request):
 
 # When using the matching function, this api can be used
 # to present the questions that the user should answer.
-# the response is a list of objects with the following 
-# structure:
-#
-#
-#   {
-#       "key":      <the key that the responder should use for the answers in the response>
-#       "question": <The question in a readable format>
-#       "answers":  <A list of answer objects with keys value, label and id>    
-#   }
-#
-@cache_page(60 * 15)
+# the response holds the questions, as well as 
+# the order in which they come.
+@cache_page(1)
 def matching_choices(request):
     if request.method == 'GET':
-        # We want to return a JSON object with information on what the user may input
-        response = []
 
+        # Get the choices that are relevant for this years fair
         competences = CatalogueCompetence.objects.filter(include_in_form=True).values('id', 'competence')
         employments = CatalogueEmployment.objects.filter(include_in_form=True).values('id', 'employment')
         values = CatalogueValue.objects.filter(include_in_form=True).values('id', 'value')
         industries = CatalogueIndustry.objects.filter(include_in_form=True).values('id', 'industry')
         locations = CatalogueLocation.objects.filter(include_in_form=True).values('id', 'location')
-        
-        # Append competence choices to response
-        comp = {}
-        comp['key'] = "competences" # Represents the key should use for these responses in the subsequent POST request to the matching API
-        comp['question'] = "What competences are you interested in?"
-        comp['answers'] = []
-        for competence in competences:
-            comp['answers'].append({
-                'value': competence['competence'],
-                'label': competence['competence'],
-                'id': competence['id']
-            })
-        response.append(comp)
 
-        # Append employment choices to results
-        emp = {}
-        emp['key'] = "employments"
-        emp['question'] = "What kind of employments are you interested in?"
-        emp['answers'] = []
-        for employment in employments:
-            emp['answers'].append({
-                'value': employment['employment'],
-                'label': employment['employment'],
-                'id': employment['id']
-            })
-        response.append(emp)
+        # We want to return a JSON object with the options the user has
+        response = {'options': [],
+                    'meta': {}
+                    }
 
-        # Append value choices to results
-        val = {}
-        val['key'] = "values"
-        val['question'] = "What values are important to you?"
-        val['answers'] = []
-        for value in values:
-            val['answers'].append({
-                'value': value['value'],
-                'label': value['value'],
-                'id': value['id']
-            })
-        response.append(val)
+        # Indicates which order the questions come in.
+        # To change which order the questions are asked
+        # on armada.nu/matching, we only change this, as long
+        # as armada.nu does not ignore this information
+        response['meta']['order'] = ['values', 'industries', 'competences', 'employments', 'locations']
 
-        # Append industry choices to results
-        ind = {}
-        ind['key'] = "industries"
-        ind['question'] = "What industries are you interested in?"
-        ind['answers'] = []
-        for industry in industries:
-            ind['answers'].append({
-                'value': industry['industry'],
-                'label': industry['industry'],
-                'id': industry['id']
-            })
-        response.append(ind)
+        def append_component(key):
+            if key == 'competences':
+                # Append competence choices to response
+                comp = {}
+                comp['question'] = "What competencies do you have?"
+                comp['answers'] = []
+                for competence in competences:
+                    comp['answers'].append({
+                        'value': competence['competence'],
+                        'label': competence['competence'],
+                        'id': competence['id']
+                    })
+                response['options'].append(comp)
 
-        # Append location choices to results
-        loc = {}
-        loc['key'] = "locations"
-        loc['question'] = "Where in the world?"
-        loc['answers'] = []
-        for location in locations:
-            loc['answers'].append({
-                'value': location['location'],
-                'label': location['location'],
-                'id': location['id']
-            })
-        response.append(loc)
+            elif key == 'employments':
+                # Append employment choices to results
+                emp = {}
+                emp['question'] = "What employment types are you interested in?"
+                emp['answers'] = []
+                for employment in employments:
+                    emp['answers'].append({
+                        'value': employment['employment'],
+                        'label': employment['employment'],
+                        'id': employment['id']
+                    })
+                response['options'].append(emp)
+
+            elif key == 'values':
+                # Append value choices to results
+                val = {}
+                val['question'] = "What values are important to you?"
+                val['answers'] = []
+                for value in values:
+                    val['answers'].append({
+                        'value': value['value'],
+                        'label': value['value'],
+                        'id': value['id']
+                    })
+                response['options'].append(val)
+
+            elif key == 'industries':
+                # # Append industry choices to results
+                ind = {}
+                ind['question'] = "What industries are you interested in?"
+                ind['answers'] = []
+                for industry in industries:
+                    ind['answers'].append({
+                        'value': industry['industry'],
+                        'label': industry['industry'],
+                        'id': industry['id']
+                    })
+                response['options'].append(ind)
+
+            elif key == 'locations':
+                # # Append location choices to results
+                loc = {}
+                loc['question'] = "Where in the world?"
+                loc['answers'] = []
+                for location in locations:
+                    loc['answers'].append({
+                        'value': location['location'],
+                        'label': location['location'],
+                        'id': location['id']
+                    })
+                response['options'].append(loc)
+
+        for key in response['meta']['order']:
+            append_component(key)
 
         return JsonResponse(response, safe=False)
 
