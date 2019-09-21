@@ -19,7 +19,7 @@ from django.utils.crypto import get_random_string
 import api.deserializers as deserializers
 import api.serializers as serializers
 
-from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueBenefit
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence #CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
 from fair.models import Partner, Fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
@@ -71,6 +71,100 @@ def matching(request):
     else:
         return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
+
+# When using the matching function, this api can be used
+# to present the questions that the user should answer.
+# the response is a list of objects with the following 
+# structure:
+#
+#
+#   {
+#       "key":      <the key that the responder should use for the answers in the response>
+#       "question": <The question in a readable format>
+#       "answers":  <A list of answer objects with keys value, label and id>    
+#   }
+#
+@cache_page(60 * 15)
+def matching_choices(request):
+    if request.method == 'GET':
+        # We want to return a JSON object with information on what the user may input
+        response = []
+
+        competences = CatalogueCompetence.objects.filter(include_in_form=True).values('id', 'competence')
+        employments = CatalogueEmployment.objects.filter(include_in_form=True).values('id', 'employment')
+        values = CatalogueValue.objects.filter(include_in_form=True).values('id', 'value')
+        industries = CatalogueIndustry.objects.filter(include_in_form=True).values('id', 'industry')
+        locations = CatalogueLocation.objects.filter(include_in_form=True).values('id', 'location')
+        
+        # Append competence choices to response
+        comp = {}
+        comp['key'] = "competences" # Represents the key should use for these responses in the subsequent POST request to the matching API
+        comp['question'] = "What competences are you interested in?"
+        comp['answers'] = []
+        for competence in competences:
+            comp['answers'].append({
+                'value': competence['competence'],
+                'label': competence['competence'],
+                'id': competence['id']
+            })
+        response.append(comp)
+
+        # Append employment choices to results
+        emp = {}
+        emp['key'] = "employments"
+        emp['question'] = "What kind of employments are you interested in?"
+        emp['answers'] = []
+        for employment in employments:
+            emp['answers'].append({
+                'value': employment['employment'],
+                'label': employment['employment'],
+                'id': employment['id']
+            })
+        response.append(emp)
+
+        # Append value choices to results
+        val = {}
+        val['key'] = "values"
+        val['question'] = "What values are important to you?"
+        val['answers'] = []
+        for value in values:
+            val['answers'].append({
+                'value': value['value'],
+                'label': value['value'],
+                'id': value['id']
+            })
+        response.append(val)
+
+        # Append industry choices to results
+        ind = {}
+        ind['key'] = "industries"
+        ind['question'] = "What industries are you interested in?"
+        ind['answers'] = []
+        for industry in industries:
+            ind['answers'].append({
+                'value': industry['industry'],
+                'label': industry['industry'],
+                'id': industry['id']
+            })
+        response.append(ind)
+
+        # Append location choices to results
+        loc = {}
+        loc['key'] = "locations"
+        loc['question'] = "Where in the world?"
+        loc['answers'] = []
+        for location in locations:
+            loc['answers'].append({
+                'value': location['location'],
+                'label': location['location'],
+                'id': location['id']
+            })
+        response.append(loc)
+
+        return JsonResponse(response, safe=False)
+
+    else:
+        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
 @cache_page(60 * 5)
 def catalogueselections(request):
