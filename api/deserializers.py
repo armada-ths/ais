@@ -1,25 +1,29 @@
 from django.shortcuts import get_object_or_404
 from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Continent, SwedenRegion, \
 StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
-from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueBenefit
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence#CatalogueBenefit
 
 def matching(data):
     '''
     check the student answers data, validating the data on the way
     '''
     if type(data) is dict:
+        # TODO Filter on include in form?
         industries = CatalogueIndustry.objects.values_list('pk', flat=True)
         values = CatalogueValue.objects.values_list('pk', flat=True)
         employments = CatalogueEmployment.objects.values_list('pk', flat=True)
-        locations = CatalogueEmployment.objects.values_list('pk', flat=True)
-        benefits = CatalogueValue.objects.values_list('pk', flat=True)
+        locations = CatalogueLocation.objects.values_list('pk', flat=True)
+        competences = CatalogueCompetence.objects.values_list('pk', flat=True)
+        #benefits = CatalogueValue.objects.values_list('pk', flat=True)
 
         validation_multi_set = {
             "industries" : industries,
             "values" : values,
             "employments" : employments,
             "locations" : locations,
-            "benefits" : benefits
+            "competences": competences,
+            #"cities": TODO
+            #"benefits" : benefits
         }
 
         for key, value_list in validation_multi_set.items():
@@ -30,6 +34,11 @@ def matching(data):
                     return False
             else:
                 return False
+
+        # The cities value must be a string of comma-separated cities
+        if not isinstance(data["cities"], str):
+            return False
+
         return True
     else:
         return False
