@@ -46,7 +46,11 @@
 			<form method="post">
 				{% csrf_token %}
 				{{ form | crispy }}
-				
+				<div class="expandable">
+					<div class="expandable_content">
+						{{ form_catalogue_details | crispy }}
+					</div>
+				</div>
 				{% if charge %}
 					<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ invitation.price }}</p>
 					<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-currency="sek" data-key="{{ stripe_publishable }}" data-label="Proceed to payment" data-email="{{ invitation.user.email }}" data-allow-remember-me="false" data-name="THS Armada" data-description="{{ invitation.banquet.name }}" data-amount="{{ stripe_amount }}" data-locale="en"></script>
