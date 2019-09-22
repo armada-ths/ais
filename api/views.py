@@ -59,10 +59,11 @@ def matching(request):
                 
                 for i in matching_data:
                     print(matching_data[i])
-                
+
                 response = [{
                     'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
-                    'distance': matching_data[i]['distance']
+                    #'exhibitor': serializers.exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
+                    'similarity': matching_data[i]['similarity']
                 } for i in matching_data]
                 
                 return JsonResponse(response, safe = False)
@@ -77,7 +78,8 @@ def matching(request):
 # to present the questions that the user should answer.
 # the response holds the questions, as well as 
 # the order in which they come.
-@cache_page(1)
+@cache_page(60*15)
+@csrf_exempt
 def matching_choices(request):
     if request.method == 'GET':
 
