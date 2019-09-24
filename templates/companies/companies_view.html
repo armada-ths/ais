@@ -87,6 +87,9 @@
 					{% if company.ths_customer_id %} <li><strong>THS Customer ID:</strong> {{ company.ths_customer_id }}</li> {% endif %}</li>
 					{% if company.invoice_reference %} <li><strong>Reference:</strong> {{ company.invoice_reference }}</li> {% endif %}</li>
 					{% if company.invoice_email_address %} <li><strong>E-mail address:</strong> <a href="mailto:{{ company.invoice_email_address }}">{{ company.invoice_email_address }}</a></li> {% endif %}</li>
+					<br>
+					{% if company.e_invoice == True %}<li><strong>This company uses E-invoice</strong></li>
+					{% else %} {% if company.e_invoice == False%}<li>This company doesn't use E-invoice</li> {% endif %}{% endif %}
 				</ul>
 			</div>
 		</div>
