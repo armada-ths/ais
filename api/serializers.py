@@ -47,11 +47,6 @@ def names(objects):
 def exhibitor(request, exhibitor, company):
 	img_placeholder = request.GET.get('img_placeholder') == 'true'
 	
-	city_list = []
-	exhibitor_cities_str = exhibitor.catalogue_cities.all()
-	if exhibitor_cities_str is not None:
-		city_list += [city.strip() for city in exhibitor_cities_str.split(',')]
-	
 	return OrderedDict([
 		('id', exhibitor.pk),
 		('name', company.name),
@@ -68,9 +63,9 @@ def exhibitor(request, exhibitor, company):
 		('values', [{'id': value.pk, 'name': value.value} for value in exhibitor.catalogue_values.all()]),
 		('employments', [{'id': employment.pk, 'name': employment.employment} for employment in exhibitor.catalogue_employments.all()]),
 		('locations', [{'id': location.pk, 'name': location.location} for location in exhibitor.catalogue_locations.all()]),
-        ('competences', [{'id': competence.pk, 'name': competence.name} for competence in exhibitor.catalogue_competences.all()]),
-        ('cities', city_list),
-		#('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
+        ('competences', [{'id': competence.pk, 'name': competence.competence} for competence in exhibitor.catalogue_competences.all()]),
+        ('cities', exhibitor.catalogue_cities),
+		('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
 		('average_age', exhibitor.catalogue_average_age),
 		('founded', exhibitor.catalogue_founded),
 		('groups', [{'id': group.pk, 'name': group.name} for group in company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
