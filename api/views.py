@@ -21,7 +21,7 @@ import api.serializers as serializers
 
 from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence #CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
-from fair.models import Partner, Fair
+from fair.models import Partner, Fair, current_fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
@@ -50,7 +50,10 @@ def matching(request):
 
                 with open(random_doc_name, 'w') as outfile:
                     json.dump(data, outfile)
-                retrieved = subprocess.Popen(["python3", matching_script_loc, docID, random_doc_name],stdout=subprocess.PIPE)
+                fair_id = current_fair()
+                if current_fair() is None: fair_id = 4 # Default to 2019
+                
+                retrieved = subprocess.Popen(["python3", matching_script_loc, docID, random_doc_name, str(fair_id)],stdout=subprocess.PIPE)
                 # have to wait for subprocess to finish
                 retrieved.wait()
                 matching_path = os.path.join("/tmp/", docID + "_output.json")
@@ -83,7 +86,7 @@ def matching(request):
 def matching_choices(request):
     if request.method == 'GET':
 
-        # Get the choices that are relevant for this years fair
+        # Get the choices that we include in the company forms
         competences = CatalogueCompetence.objects.filter(include_in_form=True).values('id', 'competence')
         employments = CatalogueEmployment.objects.filter(include_in_form=True).values('id', 'employment')
         values = CatalogueValue.objects.filter(include_in_form=True).values('id', 'value')
