@@ -33,7 +33,7 @@ def root(request):
 
 @csrf_exempt
 def matching(request):
-    # validera POST-indata så att de givna svaren faktiskt existerar
+    # Validate POST-input to make sure the given answers exist
     if request.method == 'POST':
         if request.body:
             try:
@@ -64,8 +64,8 @@ def matching(request):
                     print(matching_data[i])
 
                 response = [{
+                    # N.B: serialize_exhibitor is located in exhibitors/ and not here in api/serializers.py as one might expect
                     'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
-                    #'exhibitor': serializers.exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
                     'similarity': matching_data[i]['similarity']
                 } for i in matching_data]
                 
