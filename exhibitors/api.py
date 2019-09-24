@@ -18,11 +18,6 @@ MISSING_IMAGE = '/static/missing.png'
 def serialize_exhibitor(exhibitor, request):
     img_placeholder = request.GET.get('img_placeholder') == 'true'
 
-    city_list = []
-    exhibitor_cities_str = exhibitor.catalogue_cities
-    if exhibitor_cities_str is not None and exhibitor_cities_str: # Can't be None or empty string
-        city_list += [city.strip() for city in exhibitor_cities_str.split(',')]
-
     return OrderedDict([
         ('id', exhibitor.pk),
         ('name', exhibitor.company.name),
@@ -42,8 +37,8 @@ def serialize_exhibitor(exhibitor, request):
         ('employments', [{'id': employment.pk, 'name': employment.employment} for employment in exhibitor.catalogue_employments.all()]),
         ('locations', [{'id': location.pk, 'name': location.location} for location in exhibitor.catalogue_locations.all()]),
         ('competences', [{'id': competence.pk, 'name': competence.competence} for competence in exhibitor.catalogue_competences.all()]),
-        ('cities', city_list),
-        #('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
+        ('cities', exhibitor.catalogue_cities if exhibitor.catalogue_cities is not None else ''),
+        ('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
         ('average_age', exhibitor.catalogue_average_age),
         ('founded', exhibitor.catalogue_founded),
         ('groups',
