@@ -632,7 +632,7 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
 		count_ordered += order.quantity
 
-	count_created = LunchTicket.objects.filter(company = company).count()
+	count_created = LunchTicket.objects.filter(company = company, fair = fair).count()
 
 	if lunch_ticket is not None or count_ordered > count_created:
 		form = LunchTicketForm(request.POST or None, instance = lunch_ticket, initial = {
@@ -756,6 +756,8 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 
 		if len(banquets) == 1:
 			form.fields['banquet'].widget = HiddenInput()
+			if banquets[0].caption_phone_number is not None: form.fields['phone_number'].help_text = banquets[0].caption_phone_number
+			if banquets[0].caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = banquets[0].caption_dietary_restrictions
 
 		if not is_editable:
 			for field in form.fields: form.fields[field].disabled = True

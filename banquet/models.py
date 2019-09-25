@@ -64,10 +64,12 @@ class Participant(models.Model):
                                       verbose_name='E-mail address')  # None if a user is provided, required for others
     phone_number = models.CharField(max_length=75, blank=True, null=True)  # None if a user is provided, required for others
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
+    other_dietary_restrictions = models.CharField(max_length=75, blank=True, null=True)
     alcohol = models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=True)
     seat = models.OneToOneField(Seat, blank=True, null=True, on_delete=models.CASCADE)
     charge_stripe = models.CharField(max_length=255, blank=True, null=True)  # set if the participant has paid for their participation
     ticket_scanned = models.BooleanField(default=False, blank=False, null=False)
+    giveaway = models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=False, blank=False, null=False) # Indicates that the company may give their ticket away to a student
 
     def __str__(self): return (self.name + ' (' + self.company.name + ')') if self.company else (self.name if self.name else str(self.user))
 
@@ -107,6 +109,7 @@ class Invitation(models.Model):
     price = models.PositiveIntegerField(verbose_name='Price (SEK)')  # can be zero
     denied = models.BooleanField(default=False)
     deadline = models.DateField(null=True, blank=True)
+    part_of_matching = models.BooleanField(default=False, choices=[(True, 'Yes'), (False, 'No')]) #Indicates that this person is to fill in information for the matching functionality
 
     @property
     def deadline_smart(self):
@@ -145,4 +148,4 @@ class AfterPartyTicket(models.Model):
     paid_timestamp = models.DateTimeField(null=True, blank=True)
     paid_price = models.PositiveIntegerField(null=True, blank=True)
 
-    def __str__(self): return self.name + ' <' + self.email_address + '> -- ' + str(self.token)
+    def __str__(self): return str(self.name) + ' <' + str(self.email_address) + '> -- ' + str(self.token)

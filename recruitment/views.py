@@ -1,5 +1,6 @@
 import datetime, json, pytz
 import requests as r
+import csv
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
@@ -15,6 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import EmailMultiAlternatives
+from django.http import HttpResponse
 
 from fair.models import Fair
 from people.models import Profile
@@ -27,40 +29,40 @@ from django import forms
 from .forms import RoleApplicationForm, CompareForm, RecruitmentPeriodForm, RecruitmentApplicationSearchForm, RolesForm, ProfileForm, ProfilePictureForm
 
 def assign_roles(request, year):
-    if not request.user.has_perm('recruitment.administer_roles'):
-        return HttpResponseForbidden()
+	if not request.user.has_perm('recruitment.administer_roles'):
+		return HttpResponseForbidden()
 
-    # Save all roles because that will guarantee that all roles have a group
-    for role in Role.objects.all():
-        role.save()
+	# Save all roles because that will guarantee that all roles have a group
+	for role in Role.objects.all():
+		role.save()
 
-    # Remove permission groups from everyone that does not have a role this year
-    for application in RecruitmentApplication.objects.all().exclude(recruitment_period__fair__year=year, delegated_role=None):
-        application.user.groups.clear()
-        application.user.user_permissions.clear()
-    # There should be no accepted applications without a delegated role, if there is one then recruitment manager has messed up
-    # But we don't want this to crash if that's case so exclude all without a delegated role
-    for application in RecruitmentApplication.objects.filter(recruitment_period__fair__year=year, status='accepted').exclude(delegated_role=None):
-        application.delegated_role.add_user_to_groups(application.user)
+	# Remove permission groups from everyone that does not have a role this year
+	for application in RecruitmentApplication.objects.all().exclude(recruitment_period__fair__year=year, delegated_role=None):
+		application.user.groups.clear()
+		application.user.user_permissions.clear()
+	# There should be no accepted applications without a delegated role, if there is one then recruitment manager has messed up
+	# But we don't want this to crash if that's case so exclude all without a delegated role
+	for application in RecruitmentApplication.objects.filter(recruitment_period__fair__year=year, status='accepted').exclude(delegated_role=None):
+		application.delegated_role.add_user_to_groups(application.user)
 
-    return redirect('recruitment', year)
+	return redirect('recruitment', year)
 
 
 def recruitment(request, year, template_name='recruitment/recruitment.html'):
-    fair = get_object_or_404(Fair, year=year)
+	fair = get_object_or_404(Fair, year=year)
+	# raise Exception('hello')
+	recruitment_periods = RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date')
 
-    recruitment_periods = RecruitmentPeriod.objects.filter(fair=fair).order_by('-start_date')
+	roles = []
 
-    roles = []
+	for period in recruitment_periods:
+		for role in period.recruitable_roles.all():
+			roles.append(role)
 
-    for period in recruitment_periods:
-        for role in period.recruitable_roles.all():
-            roles.append(role)
-
-    return render(request, template_name, {
-        'recruitment_periods': recruitment_periods,
-        'fair': fair
-    })
+	return render(request, template_name, {
+		'recruitment_periods': recruitment_periods,
+		'fair': fair
+	})
 
 
 def recruitment_statistics(request, year):
@@ -136,183 +138,183 @@ def recruitment_statistics(request, year):
 
 
 def daterange(start_date, end_date):
-    for n in range(int((end_date - start_date).days) + 1):
-        yield start_date + timezone.timedelta(n)
+	for n in range(int((end_date - start_date).days) + 1):
+		yield start_date + timezone.timedelta(n)
 
 
 import time
 from django.http import JsonResponse
 
 def interview_state_counts(request, year, pk):
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = recruitment_period.recruitmentapplication_set.order_by(
-        '-submission_date').all().prefetch_related('roleapplication_set')
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	application_list = recruitment_period.recruitmentapplication_set.order_by(
+		'-submission_date').all().prefetch_related('roleapplication_set')
 
-    ignored_application_states = ['new', 'accepted', 'rejected']
-    interview_count_states = [state for state in recruitment_period.state_choices() if
-                              state[0] not in ignored_application_states]
+	ignored_application_states = ['new', 'accepted', 'rejected']
+	interview_count_states = [state for state in recruitment_period.state_choices() if
+							  state[0] not in ignored_application_states]
 
-    interview_state_count_map = {}
+	interview_state_count_map = {}
 
-    for interviewer in recruitment_period.interviewers():
-        interview_state_count_map[interviewer] = dict([(state[0], 0) for state in interview_count_states])
+	for interviewer in recruitment_period.interviewers():
+		interview_state_count_map[interviewer] = dict([(state[0], 0) for state in interview_count_states])
 
-    for application in application_list:
-        if application.interviewer:
-            if not application.interviewer in interview_state_count_map:
-                interview_state_count_map[application.interviewer] = dict([(state[0], 0) for state in interview_count_states])
+	for application in application_list:
+		if application.interviewer:
+			if not application.interviewer in interview_state_count_map:
+				interview_state_count_map[application.interviewer] = dict([(state[0], 0) for state in interview_count_states])
 
-            application_state = application.state()
-            if application_state in interview_state_count_map[application.interviewer]:
-                interview_state_count_map[application.interviewer][application_state] += 1
+			application_state = application.state()
+			if application_state in interview_state_count_map[application.interviewer]:
+				interview_state_count_map[application.interviewer][application_state] += 1
 
-        if application.interviewer2:
-            if not application.interviewer2 in interview_state_count_map:
-                interview_state_count_map[application.interviewer2] = dict([(state[0], 0) for state in interview_count_states])
+		if application.interviewer2:
+			if not application.interviewer2 in interview_state_count_map:
+				interview_state_count_map[application.interviewer2] = dict([(state[0], 0) for state in interview_count_states])
 
-            application_state = application.state()
-            if application_state in interview_state_count_map[application.interviewer2]:
-                interview_state_count_map[application.interviewer2][application_state] += 1
+			application_state = application.state()
+			if application_state in interview_state_count_map[application.interviewer2]:
+				interview_state_count_map[application.interviewer2][application_state] += 1
 
 
 
-    return JsonResponse({
-        'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()] + [('total', sum(state_counts.values()))]) for interviewer,state_counts in interview_state_count_map.items()]
-    })
+	return JsonResponse({
+		'data': [dict([('name', interviewer.get_full_name())] + [(state_name, state_count) for state_name,state_count in state_counts.items()] + [('total', sum(state_counts.values()))]) for interviewer,state_counts in interview_state_count_map.items()]
+	})
 
 
 def recruitment_period_graphs(request, year, pk):
-    start = time.time()
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
-    application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
+	start = time.time()
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	application_list = recruitment_period.recruitmentapplication_set.order_by('-submission_date').all().prefetch_related('roleapplication_set')
 
-    # Graph stuff :)
-    class ValueCounter(object):
-        def __init__(self, description, monocolor, charts, values=None, sort_key=None):
-            self.data = {}
-            self.description = description
-            self.monocolor = monocolor
-            self.charts = charts
-            self.sort_key = sort_key
-            self.y_limit = None
+	# Graph stuff :)
+	class ValueCounter(object):
+		def __init__(self, description, monocolor, charts, values=None, sort_key=None):
+			self.data = {}
+			self.description = description
+			self.monocolor = monocolor
+			self.charts = charts
+			self.sort_key = sort_key
+			self.y_limit = None
 
-            if values:
-                self.add_values(values)
+			if values:
+				self.add_values(values)
 
-        def add_value(self, value):
-            if not value in self.data:
-                self.data[value] = 0
-            self.data[value] += 1
+		def add_value(self, value):
+			if not value in self.data:
+				self.data[value] = 0
+			self.data[value] += 1
 
-        def add_values(self, values):
-            for value in values:
-                self.add_value(value)
+		def add_values(self, values):
+			for value in values:
+				self.add_value(value)
 
-        def sorted_values(self):
-            return sorted(self.data.keys(), key=self.sort_key)
+		def sorted_values(self):
+			return sorted(self.data.keys(), key=self.sort_key)
 
-        def sorted_value_counts(self):
-            return [self.data[key] for key in self.sorted_values()]
+		def sorted_value_counts(self):
+			return [self.data[key] for key in self.sorted_values()]
 
-        def json(self):
-            return {
-                'description': self.description,
-                'monocolor': self.monocolor,
-                'charts': self.charts,
-                'sorted_values': self.sorted_values(),
-                'sorted_value_counts': self.sorted_value_counts(),
-                'y_limit': self.y_limit,
-            }
+		def json(self):
+			return {
+				'description': self.description,
+				'monocolor': self.monocolor,
+				'charts': self.charts,
+				'sorted_values': self.sorted_values(),
+				'sorted_value_counts': self.sorted_value_counts(),
+				'y_limit': self.y_limit,
+			}
 
-    date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
-    applications_per_date_count = ValueCounter(
-        'Applications per date',
-        True,
-        ['bar'],
-        [date_filter(application.submission_date, "d M") for application in application_list],
-        lambda x: date_dictionary[x]
-    )
+	date_dictionary = dict([(date_filter(application.submission_date, "d M"), application.submission_date) for application in application_list])
+	applications_per_date_count = ValueCounter(
+		'Applications per date',
+		True,
+		['bar'],
+		[date_filter(application.submission_date, "d M") for application in application_list],
+		lambda x: date_dictionary[x]
+	)
 
-    role_applications = RoleApplication.objects.filter(recruitment_application__recruitment_period=recruitment_period).prefetch_related('role')
+	role_applications = RoleApplication.objects.filter(recruitment_application__recruitment_period=recruitment_period).prefetch_related('role')
 
-    total_role_application_count = ValueCounter(
-        'Total number of applications per role',
-        False,
-        ['bar', 'pie'],
-        [role_application.role.name for role_application in role_applications]
-    )
+	total_role_application_count = ValueCounter(
+		'Total number of applications per role',
+		False,
+		['bar', 'pie'],
+		[role_application.role.name for role_application in role_applications]
+	)
 
-    first_preference_role_application_count = ValueCounter(
-        'Number of first preference applications per role',
-        False,
-        ['bar', 'pie'],
-        [role_application.role.name for role_application in role_applications.filter(order=0)]
-    )
+	first_preference_role_application_count = ValueCounter(
+		'Number of first preference applications per role',
+		False,
+		['bar', 'pie'],
+		[role_application.role.name for role_application in role_applications.filter(order=0)]
+	)
 
-    # Add graphs also for application questions where users select from a fixed set of arguments
-    custom_field_counts = []
-    for custom_field in recruitment_period.application_questions.customfield_set.all():
-        try:
-            arguments = custom_field.customfieldargument_set.all()
-            if len(arguments) > 0:
-                custom_field_count = ValueCounter(
-                    custom_field.question,
-                    False,
-                    ['bar'],
-                    [arguments.get(pk=int(answer.answer)).value for answer in custom_field.customfieldanswer_set.all()]
-                )
-                custom_field_counts.append(custom_field_count)
+	# Add graphs also for application questions where users select from a fixed set of arguments
+	custom_field_counts = []
+	for custom_field in recruitment_period.application_questions.customfield_set.all():
+		try:
+			arguments = custom_field.customfieldargument_set.all()
+			if len(arguments) > 0:
+				custom_field_count = ValueCounter(
+					custom_field.question,
+					False,
+					['bar'],
+					[arguments.get(pk=int(answer.answer)).value for answer in custom_field.customfieldanswer_set.all()]
+				)
+				custom_field_counts.append(custom_field_count)
 
-                # Also, for each argument we want to plot bar graphs so we can see the number of english or swedish applicants per date
-                argument_per_date_counts = []
-                y_limit = 0
-                for argument in arguments:
-                    date_dictionary = dict(
-                        [(date_filter(application.submission_date, "d M"), application.submission_date) for application in
-                         application_list])
+				# Also, for each argument we want to plot bar graphs so we can see the number of english or swedish applicants per date
+				argument_per_date_counts = []
+				y_limit = 0
+				for argument in arguments:
+					date_dictionary = dict(
+						[(date_filter(application.submission_date, "d M"), application.submission_date) for application in
+						 application_list])
 
-                    argument_per_date_count = ValueCounter(
-                        argument.value,
-                        True,
-                        ['bar'],
-                        [date_filter(application.submission_date, "d M") for application in application_list if CustomFieldAnswer.objects.filter(user=application.user, answer=str(argument.pk)).exists()],
-                        lambda x: date_dictionary[x]
-                    )
+					argument_per_date_count = ValueCounter(
+						argument.value,
+						True,
+						['bar'],
+						[date_filter(application.submission_date, "d M") for application in application_list if CustomFieldAnswer.objects.filter(user=application.user, answer=str(argument.pk)).exists()],
+						lambda x: date_dictionary[x]
+					)
 
-                    for date in daterange(recruitment_period.start_date, min(timezone.now(), recruitment_period.end_date)):
-                        date_string = date_filter(date, "d M")
-                        if not date_string in argument_per_date_count.data:
-                            argument_per_date_count.data[date_string] = 0
-                            date_dictionary[date_string] = date
+					for date in daterange(recruitment_period.start_date, min(timezone.now(), recruitment_period.end_date)):
+						date_string = date_filter(date, "d M")
+						if not date_string in argument_per_date_count.data:
+							argument_per_date_count.data[date_string] = 0
+							date_dictionary[date_string] = date
 
-                    y_limit = max(y_limit, max(argument_per_date_count.data.values()))
-                    argument_per_date_counts.append(argument_per_date_count)
+					y_limit = max(y_limit, max(argument_per_date_count.data.values()))
+					argument_per_date_counts.append(argument_per_date_count)
 
-                for argument_per_date_count in argument_per_date_counts:
-                    argument_per_date_count.y_limit = y_limit
-                    custom_field_counts.append(argument_per_date_count)
+				for argument_per_date_count in argument_per_date_counts:
+					argument_per_date_count.y_limit = y_limit
+					custom_field_counts.append(argument_per_date_count)
 
-        except (ValueError, ObjectDoesNotExist):
-            pass
+		except (ValueError, ObjectDoesNotExist):
+			pass
 
-    def user_has_programme(user):
-        try:
-            return user.profile
-        except ObjectDoesNotExist:
-            return False
+	def user_has_programme(user):
+		try:
+			return user.profile
+		except ObjectDoesNotExist:
+			return False
 
-    programme_applications_count = ValueCounter(
-        'Applications per programme',
-        True,
-        ['bar'],
-        [application.user.profile.programme.name for application in application_list.prefetch_related('user', 'user__profile', 'user__profile__programme') if user_has_programme(application.user) and application.user.profile.programme]
-    )
+	programme_applications_count = ValueCounter(
+		'Applications per programme',
+		True,
+		['bar'],
+		[application.user.profile.programme.name for application in application_list.prefetch_related('user', 'user__profile', 'user__profile__programme') if user_has_programme(application.user) and application.user.profile.programme]
+	)
 
-    value_counters = [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count] + custom_field_counts
+	value_counters = [applications_per_date_count, total_role_application_count, first_preference_role_application_count, programme_applications_count] + custom_field_counts
 
-    return JsonResponse({
-        'graph_datasets': [value_counter.json() for value_counter in value_counters]
-    })
+	return JsonResponse({
+		'graph_datasets': [value_counter.json() for value_counter in value_counters]
+	})
 
 
 from django.http import HttpResponseRedirect
@@ -320,77 +322,77 @@ import urllib
 
 def remember_last_query_params(url_name, query_params):
 
-    """Stores the specified list of query params from the last time this user
-    looked at this URL (by url_name). Stores the last values in the session.
-    If the view is subsequently rendered w/o specifying ANY of the query params,
-    it will redirect to the same URL with the last query params added to the URL.
+	"""Stores the specified list of query params from the last time this user
+	looked at this URL (by url_name). Stores the last values in the session.
+	If the view is subsequently rendered w/o specifying ANY of the query params,
+	it will redirect to the same URL with the last query params added to the URL.
 
-    url_name is a unique identifier key for this view or view type if you want
-    to group multiple views together in terms of shared history
+	url_name is a unique identifier key for this view or view type if you want
+	to group multiple views together in terms of shared history
 
-    Example:
+	Example:
 
-    @remember_last_query_params("jobs", ["category", "location"])
-    def myview(request):
-        pass
+	@remember_last_query_params("jobs", ["category", "location"])
+	def myview(request):
+		pass
 
-    """
+	"""
 
-    def is_query_params_specified(request, query_params):
-        """ Are any of the query parameters we are interested in on this request URL?"""
-        for current_param in request.GET:
-            if current_param in query_params:
-                return True
-        return False
+	def is_query_params_specified(request, query_params):
+		""" Are any of the query parameters we are interested in on this request URL?"""
+		for current_param in request.GET:
+			if current_param in query_params:
+				return True
+		return False
 
-    def params_from_last_time(request, key_prefix, query_params):
-        """ Gets a dictionary of JUST the params from the last render with values """
-        params = {}
-        for query_param in query_params:
-            last_value = request.session.get(key_prefix + query_param)
-            if last_value:
-                params[query_param] = last_value
-        return params
+	def params_from_last_time(request, key_prefix, query_params):
+		""" Gets a dictionary of JUST the params from the last render with values """
+		params = {}
+		for query_param in query_params:
+			last_value = request.session.get(key_prefix + query_param)
+			if last_value:
+				params[query_param] = last_value
+		return params
 
-    def update_url(url, params):
-        """ update an existing URL with or without paramters to include new parameters
-        from http://stackoverflow.com/questions/2506379/add-params-to-given-url-in-python
-        """
-        if not params:
-            return url
-        if not url: # handle None
-            url = ""
-        url_parts = list(urllib.parse.urlparse(url))
-        # http://docs.python.org/library/urlparse.html#urlparse.urlparse, part 4 == params
-        query = dict(urllib.parse.parse_qsl(url_parts[4]))
-        query.update(params)
-        url_parts[4] = urllib.parse.urlencode(query)
-        return urllib.parse.urlunparse(url_parts)
+	def update_url(url, params):
+		""" update an existing URL with or without paramters to include new parameters
+		from http://stackoverflow.com/questions/2506379/add-params-to-given-url-in-python
+		"""
+		if not params:
+			return url
+		if not url: # handle None
+			url = ""
+		url_parts = list(urllib.parse.urlparse(url))
+		# http://docs.python.org/library/urlparse.html#urlparse.urlparse, part 4 == params
+		query = dict(urllib.parse.parse_qsl(url_parts[4]))
+		query.update(params)
+		url_parts[4] = urllib.parse.urlencode(query)
+		return urllib.parse.urlunparse(url_parts)
 
-    def do_decorator(view_func):
+	def do_decorator(view_func):
 
-        def decorator(*args, **kwargs):
+		def decorator(*args, **kwargs):
 
-            request = args[0]
+			request = args[0]
 
-            key_prefix =  url_name + "_"
+			key_prefix =  url_name + "_"
 
-            if is_query_params_specified(request, query_params):
-                for query_param in query_params:
-                    request.session[key_prefix + query_param] = request.GET.get(query_param)
+			if is_query_params_specified(request, query_params):
+				for query_param in query_params:
+					request.session[key_prefix + query_param] = request.GET.get(query_param)
 
-            else:
-                last_params = params_from_last_time(request, key_prefix, query_params)
-                if last_params and last_params != {}:
-                    current_url = "%s?%s" % (request.META.get("PATH_INFO"), request.META.get("QUERY_STRING"))
-                    new_url = update_url(current_url, last_params)
-                    return HttpResponseRedirect(new_url)
+			else:
+				last_params = params_from_last_time(request, key_prefix, query_params)
+				if last_params and last_params != {}:
+					current_url = "%s?%s" % (request.META.get("PATH_INFO"), request.META.get("QUERY_STRING"))
+					new_url = update_url(current_url, last_params)
+					return HttpResponseRedirect(new_url)
 
-            return view_func(*args, **kwargs)
+			return view_func(*args, **kwargs)
 
-        return decorator
+		return decorator
 
-    return do_decorator
+	return do_decorator
 
 
 @remember_last_query_params('recruitment', [field for field in RecruitmentApplicationSearchForm().fields])
@@ -612,13 +614,13 @@ def recruitment_period_locations(request, year, pk):
 
 
 def recruitment_period_delete(request, year, pk):
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
 
-    if not user_can_access_recruitment_period(request.user, recruitment_period):
-        return HttpResponseForbidden()
+	if not user_can_access_recruitment_period(request.user, recruitment_period):
+		return HttpResponseForbidden()
 
-    recruitment_period.delete()
-    return redirect('recruitment', year)
+	recruitment_period.delete()
+	return redirect('recruitment', year)
 
 
 def recruitment_period_edit(request, year, pk = None):
@@ -652,243 +654,243 @@ def recruitment_period_edit(request, year, pk = None):
 
 
 def roles_new(request, year, pk=None, template_name='recruitment/roles_form.html'):
-    fair = get_object_or_404(Fair, year=year)
-    role = Role.objects.filter(pk=pk).first()
-    roles_form = RolesForm(request.POST or None, instance=role)
+	fair = get_object_or_404(Fair, year=year)
+	role = Role.objects.filter(pk=pk).first()
+	roles_form = RolesForm(request.POST or None, instance=role)
 
-    if request.user.has_perm('recruitment.administer_roles'):
-        if roles_form.is_valid():
-            roles_form.save()
-            return redirect('recruitment', fair.year)
+	if request.user.has_perm('recruitment.administer_roles'):
+		if roles_form.is_valid():
+			roles_form.save()
+			return redirect('recruitment', fair.year)
 
-    users = [application.user for application in
-             RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
-    return render(request, template_name, {
-        'role': role,
-        'users': users,
-        'roles_form': roles_form,
-        'fair': fair
-    })
+	users = [application.user for application in
+			 RecruitmentApplication.objects.filter(delegated_role=role, status='accepted')]
+	return render(request, template_name, {
+		'role': role,
+		'users': users,
+		'roles_form': roles_form,
+		'fair': fair
+	})
 
 
 @permission_required('recruitment.administer_roles', raise_exception=True)
 def roles_delete(request, year, pk):
-    fair = get_object_or_404(Fair, year=year)
-    role = get_object_or_404(Role, pk=pk)
-    role.delete()
-    return redirect('recruitment', fair.year)
+	fair = get_object_or_404(Fair, year=year)
+	role = get_object_or_404(Role, pk=pk)
+	role.delete()
+	return redirect('recruitment', fair.year)
 
 
 def recruitment_application_comment_new(request, year, pk):
-    fair = get_object_or_404(Fair, year=year)
-    application = get_object_or_404(RecruitmentApplication, pk=pk)
-    comment = RecruitmentApplicationComment()
-    comment.user = request.user
-    comment.recruitment_application = application
-    comment.comment = request.POST['comment']
-    comment.save()
-    return redirect('recruitment_application_interview', fair.year, application.recruitment_period.pk, application.id)
+	fair = get_object_or_404(Fair, year=year)
+	application = get_object_or_404(RecruitmentApplication, pk=pk)
+	comment = RecruitmentApplicationComment()
+	comment.user = request.user
+	comment.recruitment_application = application
+	comment.comment = request.POST['comment']
+	comment.save()
+	return redirect('recruitment_application_interview', fair.year, application.recruitment_period.pk, application.id)
 
 
 
 def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
-                                template_name='recruitment/recruitment_application_new.html'):
-    fair = get_object_or_404(Fair, year=year)
-    recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
+								template_name='recruitment/recruitment_application_new.html'):
+	fair = get_object_or_404(Fair, year=year)
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=recruitment_period_pk)
 
-    if not pk:
-        recruitment_application = recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
+	if not pk:
+		recruitment_application = recruitment_period.recruitmentapplication_set.filter(user=request.user).first()
 
-        # If the user already has an application for this period redirect to it
-        if recruitment_application:
-            return redirect('recruitment_application_new', fair.year, recruitment_period.pk, recruitment_application.pk)
+		# If the user already has an application for this period redirect to it
+		if recruitment_application:
+			return redirect('recruitment_application_new', fair.year, recruitment_period.pk, recruitment_application.pk)
 
-    recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
+	recruitment_application = RecruitmentApplication.objects.filter(pk=pk).first()
 
-    user = recruitment_application.user if recruitment_application else request.user
-    profile = Profile.objects.filter(user=user).first()
-    if not profile:
-        p = Profile(user=user)
-        p.save()
+	user = recruitment_application.user if recruitment_application else request.user
+	profile = Profile.objects.filter(user=user).first()
+	if not profile:
+		p = Profile(user=user)
+		p.save()
 
-    now = timezone.now()
+	now = timezone.now()
 
-    if recruitment_period.start_date > now:
-        return render(request, 'recruitment/recruitment_application_closed.html', {
-            'recruitment_period': recruitment_period,
-            'message': 'Application has not opened',
-            'fair': fair
-        })
+	if recruitment_period.start_date > now:
+		return render(request, 'recruitment/recruitment_application_closed.html', {
+			'recruitment_period': recruitment_period,
+			'message': 'Application has not opened',
+			'fair': fair
+		})
 
-    if recruitment_period.end_date < now:
-        return render(request, 'recruitment/recruitment_application_closed.html', {
-            'recruitment_period': recruitment_period,
-            'message': 'Application closed',
-            'fair': fair
-        })
+	if recruitment_period.end_date < now:
+		return render(request, 'recruitment/recruitment_application_closed.html', {
+			'recruitment_period': recruitment_period,
+			'message': 'Application closed',
+			'fair': fair
+		})
 
-    profile_form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
+	profile_form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
 
-    role_form = RoleApplicationForm(request.POST or None)
+	role_form = RoleApplicationForm(request.POST or None)
 
-    for i in range(1, 4):
-        key = 'role%d' % i
-        role_form.fields[key].queryset = recruitment_period.recruitable_roles
-        if recruitment_application:
-            role_application = RoleApplication.objects.filter(
-                recruitment_application=recruitment_application,
-                order=i - 1
-            ).first()
-            if role_application:
-                role_form.fields[key].initial = role_application.role.pk
+	for i in range(1, 4):
+		key = 'role%d' % i
+		role_form.fields[key].queryset = recruitment_period.recruitable_roles
+		if recruitment_application:
+			role_application = RoleApplication.objects.filter(
+				recruitment_application=recruitment_application,
+				order=i - 1
+			).first()
+			if role_application:
+				role_form.fields[key].initial = role_application.role.pk
 
-    message_to_applicants = recruitment_period.message_to_applicants
+	message_to_applicants = recruitment_period.message_to_applicants
 
-    if request.POST:
-        recruitment_period.application_questions.handle_answers_from_request(request, user)
-        if role_form.is_valid() and profile_form.is_valid():
+	if request.POST:
+		recruitment_period.application_questions.handle_answers_from_request(request, user)
+		if role_form.is_valid() and profile_form.is_valid():
 
-            if not recruitment_application:
-                recruitment_application = RecruitmentApplication()
-                send_confirmation_email(user, recruitment_period)
+			if not recruitment_application:
+				recruitment_application = RecruitmentApplication()
+				send_confirmation_email(user, recruitment_period)
 
-            recruitment_application.user = user
-            recruitment_application.recruitment_period = recruitment_period
-            recruitment_application.save()
+			recruitment_application.user = user
+			recruitment_application.recruitment_period = recruitment_period
+			recruitment_application.save()
 
-            recruitment_application.roleapplication_set.all().delete()
-            for i in range(1, 4):
-                key = 'role%d' % i
-                role = role_form.cleaned_data[key]
-                if role:
-                    RoleApplication.objects.create(
-                        recruitment_application=recruitment_application,
-                        role=role,
-                        order=i - 1
-                    )
+			recruitment_application.roleapplication_set.all().delete()
+			for i in range(1, 4):
+				key = 'role%d' % i
+				role = role_form.cleaned_data[key]
+				if role:
+					RoleApplication.objects.create(
+						recruitment_application=recruitment_application,
+						role=role,
+						order=i - 1
+					)
 
-            if pk == None: #Slack webhook for signup notifications
+			if pk == None: #Slack webhook for signup notifications
 
-                r.post(settings.RECRUITMENT_HOOK_URL,
-                        data=json.dumps({'text': ' {!s} {!s} just applied for {!s}!'.format(user.first_name, user.last_name, role_form.cleaned_data["role1"])}))
+				r.post(settings.RECRUITMENT_HOOK_URL,
+						data=json.dumps({'text': ' {!s} {!s} just applied for {!s}!'.format(user.first_name, user.last_name, role_form.cleaned_data["role1"])}))
 
-            profile_form.save()
-            return redirect('recruitment_period', fair.year, recruitment_period.pk)
+			profile_form.save()
+			return redirect('recruitment_period', fair.year, recruitment_period.pk)
 
-    return render(request, template_name, {
-        'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(
-            recruitment_application.user if recruitment_application else None),
-        'recruitment_period': recruitment_period,
-        'profile_form': profile_form,
-        'profile': profile,
-        'role_form': role_form,
-        'new_application': pk == None,
-        'fair': fair,
-        'message_to_applicants': message_to_applicants
-    })
+	return render(request, template_name, {
+		'application_questions_with_answers': recruitment_period.application_questions.questions_with_answers_for_user(
+			recruitment_application.user if recruitment_application else None),
+		'recruitment_period': recruitment_period,
+		'profile_form': profile_form,
+		'profile': profile,
+		'role_form': role_form,
+		'new_application': pk == None,
+		'fair': fair,
+		'message_to_applicants': message_to_applicants
+	})
 
 
 def send_confirmation_email(user, recruitment_period):
-    hr_contact_name = 'Agnes Gemvik'
-    hr_contact_role = 'Head of Human Resources'
-    hr_contact_email = 'agnes.gemvik@armada.nu'
-    url_to_application = 'https://ais.armada.nu/fairs/%s/recruitment/%s' % (str(recruitment_period.fair.year), str(recruitment_period.pk))
+	hr_contact_name = 'Agnes Gemvik'
+	hr_contact_role = 'Head of Human Resources'
+	hr_contact_email = 'agnes.gemvik@armada.nu'
+	url_to_application = 'https://ais.armada.nu/fairs/%s/recruitment/%s' % (str(recruitment_period.fair.year), str(recruitment_period.pk))
 
-    html_message = '''
+	html_message = '''
 		<html>
-        	<body>
-        		<style>
-        			* {
-        			  font-family: sans-serif;
-        			  font-size: 12px;
-        			}
-        		</style>
-        		<div>
-        		      We have received your application for %s. You can view and edit your application <a href="%s">here</a>. All applicants will be contacted and offered an interview.
-                      <br/><br/>
-                      If you have any questions, do not hesitate to contact %s, %s, at <a href="mailto:%s">%s</a>.
-        		</div>
-        	</body>
-        </html>
+			<body>
+				<style>
+					* {
+					  font-family: sans-serif;
+					  font-size: 12px;
+					}
+				</style>
+				<div>
+					  We have received your application for %s. You can view and edit your application <a href="%s">here</a>. All applicants will be contacted and offered an interview.
+					  <br/><br/>
+					  If you have any questions, do not hesitate to contact %s, %s, at <a href="mailto:%s">%s</a>.
+				</div>
+			</body>
+		</html>
 		''' % 	(
 				str(recruitment_period.fair),
-                url_to_application,
+				url_to_application,
 				hr_contact_name,
-                hr_contact_role,
+				hr_contact_role,
 				hr_contact_email,
-                hr_contact_email,
+				hr_contact_email,
 				)
 
-    plain_text_message = '''We have received your application for %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
+	plain_text_message = '''We have received your application for %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
 
 If you have any questions, do not hesitate to contact %s, %s, at %s.
 ''' % 	(
-        str(recruitment_period.fair),
-        url_to_application,
-        hr_contact_name,
-        hr_contact_role,
-        hr_contact_email,
-        )
+		str(recruitment_period.fair),
+		url_to_application,
+		hr_contact_name,
+		hr_contact_role,
+		hr_contact_email,
+		)
 
-    email = EmailMultiAlternatives(
-        'Thank you for applying to THS Armada!',
-        plain_text_message,
-        'noreply@armada.nu',
-        [user.email],
-    )
+	email = EmailMultiAlternatives(
+		'Thank you for applying to THS Armada!',
+		plain_text_message,
+		'noreply@armada.nu',
+		[user.email],
+	)
 
-    email.attach_alternative(html_message, 'text/html')
-    email.send()
+	email.attach_alternative(html_message, 'text/html')
+	email.send()
 
 
 def set_foreign_key_from_request(request, model, model_field, foreign_key_model):
-    if model_field in request.POST:
-        try:
-            foreign_key_id = int(request.POST[model_field])
-            role = foreign_key_model.objects.filter(id=foreign_key_id).first()
-            setattr(model, model_field, role)
-            model.save()
-        except ValueError:
-            setattr(model, model_field, None)
-            model.save()
+	if model_field in request.POST:
+		try:
+			foreign_key_id = int(request.POST[model_field])
+			role = foreign_key_model.objects.filter(id=foreign_key_id).first()
+			setattr(model, model_field, role)
+			model.save()
+		except ValueError:
+			setattr(model, model_field, None)
+			model.save()
 
 
 def set_int_key_from_request(request, model, model_field):
-    if model_field in request.POST:
-        try:
-            setattr(model, model_field, int(request.POST[model_field]))
-            model.save()
-        except ValueError:
-            setattr(model, model_field, None)
-            model.save()
+	if model_field in request.POST:
+		try:
+			setattr(model, model_field, int(request.POST[model_field]))
+			model.save()
+		except ValueError:
+			setattr(model, model_field, None)
+			model.save()
 
 
 def set_string_key_from_request(request, model, model_field):
-    if model_field in request.POST:
-        try:
-            setattr(model, model_field, request.POST[model_field])
-            model.save()
-        except (ValueError, ValidationError) as e:
-            setattr(model, model_field, None)
-            model.save()
+	if model_field in request.POST:
+		try:
+			setattr(model, model_field, request.POST[model_field])
+			model.save()
+		except (ValueError, ValidationError) as e:
+			setattr(model, model_field, None)
+			model.save()
 
 
 def set_image_key_from_request(request, model, model_field, file_directory):
-    image_key = model_field
-    if image_key in request.FILES:
-        try:
-            file = request.FILES[image_key]
-            file_extension = file.name.split('.')[-1]
-            if file_extension in ['png', 'jpg', 'jpeg']:
-                file_path = '%s/%d/image.%s' % (file_directory, model.pk, file_extension)
-                if default_storage.exists(file_path):
-                    default_storage.delete(file_path)
-                default_storage.save(file_path, ContentFile(file.read()))
-                setattr(model, model_field, file_path)
-                model.save()
-        except (ValueError, ValidationError) as e:
-            setattr(model, model_field, None)
-            model.save()
+	image_key = model_field
+	if image_key in request.FILES:
+		try:
+			file = request.FILES[image_key]
+			file_extension = file.name.split('.')[-1]
+			if file_extension in ['png', 'jpg', 'jpeg']:
+				file_path = '%s/%d/image.%s' % (file_directory, model.pk, file_extension)
+				if default_storage.exists(file_path):
+					default_storage.delete(file_path)
+				default_storage.save(file_path, ContentFile(file.read()))
+				setattr(model, model_field, file_path)
+				model.save()
+		except (ValueError, ValidationError) as e:
+			setattr(model, model_field, None)
+			model.save()
 
 
 
@@ -1017,9 +1019,9 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 		nicetime = local_tz.localize(slot.start, is_dst = None)
 		nicetime = nicetime.strftime("%Y-%m-%d %H:%M")
 
-		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + slot.location + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
+		sms_english = "Hello! Thank you for applying to THS Armada. This is a confirmation of our interview arrangement. The interview is scheduled to take place on " + nicetime + " in " + str(slot.location) + ". If you have any questions or if you would like to change the date and time, don't hesitate to contact me. " + other.first_name + " " + other.last_name + " and I are looking forward to meet you. /" + request.user.first_name + " " + request.user.last_name
 
-		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + slot.location + ". Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
+		sms_swedish = "Hej! Tack för att du har sökt till THS Armada. Detta är en bekräftelse på vår överenskommelse. Intervjun är planerad till " + nicetime + " i " + str(slot.location) + ". Tveka inte att kontakta mig om du har några frågor eller om du vill ändra datum eller tid. " + other.first_name + " " + other.last_name + " och jag själv ser fram emot att få träffa dig. /" + request.user.first_name + " " + request.user.last_name
 
 	elif application.slot and application.interviewer and request.user == application.interviewer:
 		nicetime = local_tz.localize(slot.start, is_dst = None)
@@ -1052,20 +1054,43 @@ def recruitment_application_interview(request, year, recruitment_period_pk, pk, 
 
 @permission_required('recruitment.delete_recruitmentapplication')
 def recruitment_application_delete(request, year, pk):
-    fair = get_object_or_404(Fair, year=year)
-    recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
-    recruitment_application.delete()
-    return redirect('recruitment_period', fair.year, recruitment_application.recruitment_period.pk)
+	fair = get_object_or_404(Fair, year=year)
+	recruitment_application = get_object_or_404(RecruitmentApplication, pk=pk)
+	recruitment_application.delete()
+	return redirect('recruitment_period', fair.year, recruitment_application.recruitment_period.pk)
 
 def user_can_access_recruitment_period(user, recruitment_period):
-    if user.is_superuser:
-        return True
+	if user.is_superuser:
+		return True
 
-    if len(user.groups.all().intersection(recruitment_period.allowed_groups.all())) != 0:
-        return True
+	if len(user.groups.all().intersection(recruitment_period.allowed_groups.all())) != 0:
+		return True
 
-    #for group in user.groups.all():
-    #    if group in recruitment_period.allowed_groups.all():
-    #        return True
+	#for group in user.groups.all():
+	#    if group in recruitment_period.allowed_groups.all():
+	#        return True
 
-    return False
+	return False
+
+def export_applications(request, year, pk):
+	recruitment_period = get_object_or_404(RecruitmentPeriod, pk=pk)
+	if not user_can_access_recruitment_period(request.user, recruitment_period):
+		return HttpResponseForbidden()
+	applications = RecruitmentApplication.objects.filter(recruitment_period = recruitment_period)
+	txt = "SEP=, \n"
+	response = HttpResponse(txt, content_type='text/csv')
+	response['Content-Length'] = len(txt)
+	response['Content-Disposition'] = 'attachment; filename="exported_applications.csv"'
+	writer = csv.writer(response)
+	writer.writerow(['Name', 'E-mail', 'Roles applied for', 'Team1', 'Team2', 'Team3'])
+	for application in applications:
+		applicationsArray = []
+		applicationsArray.append(str(application.user))
+		applicationsArray.append(str(application.user.email))
+		rolesArray = []
+		for role in application.roles:
+			rolesArray.append(role.role.name)
+		allRoles = " & ".join(rolesArray)
+		applicationsArray.append(allRoles)
+		writer.writerow(applicationsArray)
+	return response

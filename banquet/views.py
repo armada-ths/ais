@@ -388,7 +388,8 @@ def manage_invitations(request, year, banquet_pk):
             'status': invitation.status,
             'price': invitation.price,
             'status': invitation.status,
-            'deadline_smart': invitation.deadline_smart
+            'deadline_smart': invitation.deadline_smart,
+            'matching_status': invitation.part_of_matching
         })
 
     form = InvitationSearchForm(request.POST or None)
@@ -420,6 +421,13 @@ def manage_invitations(request, year, banquet_pk):
                         break
 
                 if not found: continue
+
+            if form.cleaned_data['matching_statuses']: # '' if choice 'Any' given, 'True' if yes, 'False' if no
+                if invitation['matching_status'] and form.cleaned_data['matching_statuses'] != 'True':
+                    continue
+                if not invitation['matching_status'] and form.cleaned_data['matching_statuses'] != 'False':
+                    continue
+
 
         invitations_modified.append(invitation)
 
@@ -511,6 +519,10 @@ def manage_participant(request, year, banquet_pk, participant_pk):
             'name': participant.user.get_full_name() if participant.user else participant.name,
             'email_address': participant.user.email if participant.user else participant.email_address,
             'phone_number': participant.phone_number,
+			'dietary_restrictions': participant.dietary_restrictions,
+			'other_dietary_restrictions': participant.other_dietary_restrictions,
+			'alcohol': participant.get_alcohol_display,
+			'giveaway': participant.get_giveaway_display,
             'token': participant.token,
             'seat': participant.seat
         }

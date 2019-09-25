@@ -31,8 +31,9 @@
 
 					<ul class="no-bullets">
 						<li><span class="information_label">E-mail address:</span> {{ lunch_ticket.email_address }}</li>
-						<li><span class="information_label">Comment:</span> {% if lunch_ticket.comment %}{{ lunch_ticket.comment }}{% else %}<span style="font-style: italic;">(no comment)</span>{% endif %}</li>
-						<li><span class="information_label">Dietary restrictions:</span> {% if lunch_ticket.dietary_restrictions.all %}{{ lunch_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">(no dietary restrictions)</span>{% endif %}</li>
+						<li><span class="information_label">Comment:</span> {% if lunch_ticket.comment %}{{ lunch_ticket.comment }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
+						<li><span class="information_label">Dietary restrictions:</span> {% if lunch_ticket.dietary_restrictions.all %}{{ lunch_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
+						<li><span class="information_label">Other dietary restrictions:</span> {% if banquet_ticket.other_dietary_restrictions %}{{ banquet_ticket.other_dietary_restrictions }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
 					</ul>
 				</div>
 			{% endfor %}

@@ -39,8 +39,10 @@
 						<li><span class="information_label">Name:</span> {{ banquet_ticket.name }}</li>
 						<li><span class="information_label">E-mail address:</span> {{ banquet_ticket.email_address }}</li>
 						<li><span class="information_label">Phone number:</span> {{ banquet_ticket.phone_number }}</li>
-						<li><span class="information_label">Dietary restrictions:</span> {% if banquet_ticket.dietary_restrictions.all %}{{ banquet_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">(no dietary restrictions)</span>{% endif %}</li>
+						<li><span class="information_label">Dietary restrictions:</span> {% if banquet_ticket.dietary_restrictions.all %}{{ banquet_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
+						<li><span class="information_label">Other dietary restrictions:</span> {% if banquet_ticket.other_dietary_restrictions %}{{ banquet_ticket.other_dietary_restrictions }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
 						<li><span class="information_label">Alcohol:</span> {{ banquet_ticket.get_alcohol_display }}</li>
+						<li><span class="information_label">Giveaway:</span> {{ banquet_ticket.get_giveaway_display }}</li>
 					</ul>
 				</div>
 			{% endfor %}

@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from companies.models import Group, Company
 from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueCompetence, CatalogueValue, CatalogueBenefit, CatalogueLocation, CatalogueEmployment
 from banquet.models import Participant as BanquetParticipant
-from fair.models import Fair, LunchTicket
+from fair.models import Fair, LunchTicket, FairDay
 
 
 def fix_phone_number(n):
@@ -381,16 +381,20 @@ class TransportForm(Form):
 
 
 class LunchTicketForm(ModelForm):
+	day = forms.ModelChoiceField(queryset = FairDay.objects.filter(fair__current = True), widget=forms.RadioSelect, required = True)
+
 	class Meta:
 		model = LunchTicket
-		fields = ['email_address', 'comment', 'day', 'dietary_restrictions']
+		fields = ['email_address', 'comment', 'day', 'dietary_restrictions', 'other_dietary_restrictions']
 
 		widgets = {
-			'day': forms.RadioSelect(),
-			'dietary_restrictions': forms.CheckboxSelectMultiple()
+			'dietary_restrictions': forms.CheckboxSelectMultiple(),
+			'other_dietary_restrictions': forms.TextInput(),
 		}
 
 		help_texts = {
+			'dietary_restrictions': 'Please note that the lunch is entirely vegetarian.',
+			'other_dietary_restrictions': 'Please leave empty if no other restrictions.',
 			'email_address': 'The lunch ticket will be sent to this e-mail address in advance of the career fair.',
 			'comment': 'The comment is for your use only. It could, for instance, contain the name of the person who is going to use the ticket.'
 		}
@@ -420,13 +424,22 @@ class BanquetParticipantForm(ModelForm):
 
 	class Meta:
 		model = BanquetParticipant
-		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'alcohol']
+		fields = ['banquet', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'other_dietary_restrictions', 'alcohol', 'giveaway']
+
+		labels = {
+			'giveaway': 'Giveaway ticket',
+		}
 
 		widgets = {
 			'dietary_restrictions': forms.CheckboxSelectMultiple(),
-			'alcohol': forms.RadioSelect()
+			'other_dietary_restrictions': forms.TextInput(),
+			'alcohol': forms.RadioSelect(),
+			'giveaway': forms.RadioSelect()
 		}
 
+
 		help_texts = {
-			'email_address': 'The banquet ticket will be sent to this e-mail address.',
+			'other_dietary_restrictions' : 'Please leave empty if no other restrictions.',
+			#'email_address': 'The banquet ticket will be sent to this e-mail address.',
+			'giveaway': 'We plan to use this ticket in a giveaway for students.'
 		}

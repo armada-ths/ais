@@ -25,6 +25,7 @@
 			{% if invitation.status == 'NOT_GOING' %}<span class="text-danger">Not going</span>{% endif %}
 			{% if invitation.status == 'PENDING' %}<span class="text-default">Pending</span>{% endif %}
 		</li>
+		<li><span style="font-weight: bold;">Part of matching:</span> {{ invitation.get_part_of_matching_display }}</li>
 	</ul>
 	
 	<a href="{% url 'banquet_manage_invitation_edit' fair.year banquet.pk invitation.pk %}" class="btn btn-default">Edit invitation</a>
