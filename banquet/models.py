@@ -74,6 +74,20 @@ class Participant(models.Model):
     def __str__(self): return (self.name + ' (' + self.company.name + ')') if self.company else (self.name if self.name else str(self.user))
 
 
+class TableMatching(models.Model):
+    catalogue_industries = models.ManyToManyField('exhibitors.CatalogueIndustry', blank = True)
+    catalogue_competences = models.ManyToManyField('exhibitors.CatalogueCompetence', blank = True)
+    catalogue_values = models.ManyToManyField('exhibitors.CatalogueValue', blank = True)
+    catalogue_employments = models.ManyToManyField('exhibitors.CatalogueEmployment', blank = True)
+    catalogue_locations = models.ManyToManyField('exhibitors.CatalogueLocation', blank = True)
+    participant = models.ForeignKey(Participant, blank=True, null=True,
+                                    on_delete=models.CASCADE)  # filled in when the participant has been created from this invitation
+
+    def __str__(self):
+        name = str(self.participant)
+        return name
+
+
 class InvitationGroup(models.Model):
     banquet = models.ForeignKey(Banquet, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False, blank=False, unique=True)

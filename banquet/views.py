@@ -10,14 +10,16 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, TemplateView, RedirectView, UpdateView
+from django.core.exceptions import ObjectDoesNotExist
+
 
 from accounting.models import Order
 from fair.models import Fair
 from people.models import Profile
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, \
-    ParticipantForm, ParticipantAdminForm, AfterPartyTicketForm
-from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, Table, Seat
+    ParticipantForm, ParticipantAdminForm, AfterPartyTicketForm, ParticipantTableMatchingForm
+from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, Table, Seat, TableMatching
 
 
 # External Invite
@@ -626,12 +628,16 @@ def invitation(request, year, token):
 
     participant = invitation.participant if invitation.participant is not None else Participant(banquet=invitation.banquet,
                                                                                                 user=request.user)
-
+    try:
+        existingTableMatching = TableMatching.objects.get(participant = participant)
+    except ObjectDoesNotExist:
+        existingTableMatching = None
+    tableMatching = existingTableMatching if existingTableMatching is not None else TableMatching()
     participant.name = request.user.get_full_name()
     participant.email_address = request.user.email
 
     form = ParticipantForm(request.POST or None, instance=participant)
-
+    tableMatchingForm = ParticipantTableMatchingForm(request.POST or None, instance=tableMatching)
     form.fields['phone_number'].required = True
 
     if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
@@ -651,15 +657,15 @@ def invitation(request, year, token):
                     description='Banquet invitation token ' + str(invitation.token),
                     source=request.POST['stripeToken']
                 )
-
             else:
                 charge = None
 
             form.instance.name = None
             form.instance.email_address = None
             invitation.participant = form.save()
+            tableMatchingForm.instance.participant = invitation.participant
             invitation.save()
-
+            tableMatchingForm.save()
             if charge is not None:
                 invitation.participant.charge_stripe = charge['id']
                 invitation.participant.save()
@@ -676,7 +682,8 @@ def invitation(request, year, token):
         'charge': invitation.price > 0 and invitation.participant is None,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
-        'can_edit': can_edit
+        'can_edit': can_edit,
+        'form_catalogue_details': tableMatchingForm
     })
 
 

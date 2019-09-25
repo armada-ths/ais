@@ -1,8 +1,10 @@
 from django import forms
+from django.forms import ModelForm, Form, ModelMultipleChoiceField
 from django.contrib.auth.models import User
 import re
 
-from .models import Participant, InvitationGroup, Invitation, AfterPartyTicket
+from .models import Participant, InvitationGroup, Invitation, AfterPartyTicket, TableMatching
+from exhibitors.models import CatalogueIndustry, CatalogueCompetence, CatalogueValue, CatalogueLocation, CatalogueEmployment, CatalogueCategory
 
 
 def fix_phone_number(n):
@@ -240,6 +242,44 @@ class InternalParticipantForm(forms.ModelForm):
         }
 
 
+class ParticipantTableMatchingForm(ModelForm):
+	# custom defined field subclass to overwrite string representation
+	class IncludeCategoryChoiceField(ModelMultipleChoiceField):
+		def label_from_instance(self, choice):
+			if choice.category:
+				return str(choice.category) + ' - ' + str(choice)
+			else:
+				return str(choice)
+
+	catalogue_industries = IncludeCategoryChoiceField(
+		queryset = CatalogueIndustry.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Which industries would you like to work in?',
+		required = False)
+	catalogue_competences = IncludeCategoryChoiceField(
+		queryset = CatalogueCompetence.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'What competences do you have?',
+		required = False)
+	catalogue_values = forms.ModelMultipleChoiceField(
+		queryset = CatalogueValue.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Select up to three values that you are interested in.',
+		required = False)
+	catalogue_employments = forms.ModelMultipleChoiceField(
+		queryset = CatalogueEmployment.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'What kind of employments are you looking for?',
+		required = False)
+	catalogue_locations = forms.ModelMultipleChoiceField(
+		queryset = CatalogueLocation.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Where would you like to work?',
+		required = False)
+
+	class Meta:
+		model =TableMatching
+		fields = ['catalogue_industries', 'catalogue_competences', 'catalogue_values', 'catalogue_employments', 'catalogue_locations']
 
 
 class ExternalParticipantForm(forms.ModelForm):
@@ -258,15 +298,15 @@ class ExternalParticipantForm(forms.ModelForm):
         }
 
 class SendInvitationForm(forms.ModelForm):
-    """
-    Banquet administrator sends out invite
-    """
-    def __init__(self, *args, **kwargs):
-        ## would like to do as in conact list however I can't get user object in that case
-        ## but this works also although not pretty
-        super(SendInvitationForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = User.objects.exclude(groups__isnull=True).order_by('last_name')
+	"""
+	Banquet administrator sends out invite
+	"""
+	def __init__(self, *args, **kwargs):
+		## would like to do as in conact list however I can't get user object in that case
+		## but this works also although not pretty
+		super(SendInvitationForm, self).__init__(*args, **kwargs)
+		self.fields['user'].queryset = User.objects.exclude(groups__isnull=True).order_by('last_name')
 
-    class Meta:
-        model = Invitation
-        exclude = ['banquet', 'participant', 'denied','token']
+	class Meta:
+		model = Invitation
+		exclude = ['banquet', 'participant', 'denied','token']
