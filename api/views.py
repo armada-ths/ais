@@ -60,14 +60,23 @@ def matching(request):
                 with open(matching_path, 'r') as matching_file:
                     matching_data = json.load(matching_file)
                 
-                for i in matching_data:
-                    print(matching_data[i])
+                # for i in matching_data:
+                #     print(matching_data[i])
+                print(matching_data)
 
-                response = [{
-                    # N.B: serialize_exhibitor is located in exhibitors/ and not here in api/serializers.py as one might expect
-                    'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
-                    'similarity': matching_data[i]['similarity']
-                } for i in matching_data]
+                # response = [{
+                #     # N.B: serialize_exhibitor is located in exhibitors/ and not here in api/serializers.py as one might expect
+                #     'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
+                #     'similarity': matching_data[i]['similarity']
+                # } for i in matching_data]
+
+                response = {}
+
+                for category, similar_companies in matching_data.items():
+                    response[category] = [{
+                        'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = company['exhibitor_id']).first(), request),
+                        'similarity': company['similarity']
+                    } for company in similar_companies]
                 
                 return JsonResponse(response, safe = False)
                  
