@@ -31,7 +31,7 @@ class CompanyForm(ModelForm):
 
 	class Meta:
 		model = Company
-		fields = ['show_externally', 'name', 'identity_number', 'website', 'general_email_address', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address']
+		fields = ['show_externally', 'name', 'identity_number', 'website', 'general_email_address', 'type', 'ths_customer_id', 'invoice_name', 'invoice_address_line_1', 'invoice_address_line_2', 'invoice_address_line_3', 'invoice_zip_code', 'invoice_city', 'invoice_country', 'invoice_reference', 'invoice_email_address', 'e_invoice']
 
 
 class CompanyAddressForm(ModelForm):
