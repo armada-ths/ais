@@ -721,6 +721,7 @@ def invitation_maybe(request, year, token):
 
 def external_invitation(request, token):
     invitation = get_object_or_404(Invitation, token=token, user=None)
+	# get participant or create a new one with correct name and email prefilled in participant form
     participant = invitation.participant if invitation.participant is not None else Participant(banquet=invitation.banquet, user=None)
 
     participant.name = invitation.name
@@ -736,7 +737,7 @@ def external_invitation(request, token):
 
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
-    if invitation.participant is None and invitation.price > 0:
+    if invitation.participant is None and invitation.price > 0: # should pay a price and has not dne this already
         stripe.api_key = settings.STRIPE_SECRET
 
         '''charge = stripe.Charge.create(
@@ -746,10 +747,12 @@ def external_invitation(request, token):
         source=request.POST['stripeToken']
         )'''
 
+		# Create a Stripe payment intent
         intent = stripe.PaymentIntent.create(
-        amount = invitation.price * 100,
+        amount = invitation.price * 100, # Stripe wants the price in öre
         currency = 'sek',
         )
+        request.session['intent'] = intent
 
     else:
         intent = None
@@ -765,8 +768,7 @@ def external_invitation(request, token):
             if intent is not None:
                 invitation.participant.charge_stripe = intent['id']
                 invitation.participant.save()
-                redirect('payments/views:checkout', intent)
-
+                return redirect('../payments/checkout')
                 # testa skicka med intent här ist för templet xredirect(skicka till checkouten)
 
             form = None
@@ -777,7 +779,7 @@ def external_invitation(request, token):
     return render(request, 'banquet/invitation_external.html', {
         'invitation': invitation,
         'form': form,
-        'charge': invitation.price > 0 and invitation.participant is None,
+        'charge': invitation.price > 0 and invitation.participant is None, # not necessary anymore - check on intent instead
         'intent': intent,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
@@ -800,8 +802,11 @@ def external_invitation_no(request, token):
 
     if invitation.participant is not None:
         if invitation.participant.charge_stripe is not None:
+            # Stripe refund: https://stripe.com/docs/payments/cards/refunds
             stripe.api_key = settings.STRIPE_SECRET
-            refund = stripe.Refund.create(charge=invitation.participant.charge_stripe)
+            intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
+            intent['charges']['data'][0].refund()
+            #refund = stripe.Refund.create(charge=invitation.participant.charge_stripe)
 
         invitation.participant.delete()
         invitation.participant = None

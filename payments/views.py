@@ -6,17 +6,20 @@ from django.shortcuts import render
 
 
 #@app.route('/checkout')
-def checkout(request, intent):
+def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
     stripe.api_version = '2019-09-09'
-    print("HEJ")
+    intent = request.session['intent']
+    # if intent:
+    #     print("HEJ")
+
 
     '''intent = stripe.PaymentIntent.create(
     amount = 5000,
     currency = 'sek',
     )'''
 
-    client_secret = intent.client_secret
+    client_secret = intent['client_secret']
     template_name = 'payments/checkout.html'
 
     return render(request, template_name, {
