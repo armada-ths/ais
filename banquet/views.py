@@ -738,7 +738,13 @@ def external_invitation(request, token):
 
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
-    if invitation.participant is None and invitation.price > 0: # should pay a price and has not dne this already
+    try:
+        intent = request.session['intent']
+    except KeyError:
+        intent = None
+
+
+    if invitation.participant is None and invitation.price > 0 and intent == None: # should pay a price and has not dne this already
         stripe.api_key = settings.STRIPE_SECRET
 
         '''charge = stripe.Charge.create(
@@ -749,6 +755,7 @@ def external_invitation(request, token):
         )'''
 
 		# Create a Stripe payment intent
+        # print("****Creating PaymentIntent****")
         intent = stripe.PaymentIntent.create(
         amount = invitation.price * 100, # Stripe wants the price in öre
         currency = 'sek',
@@ -756,8 +763,8 @@ def external_invitation(request, token):
         )
         request.session['intent'] = intent # Should we clear the session values somwehere?
 
-    else:
-        intent = None
+    # else:
+    #     intent = None
 
     if can_edit:
         if request.POST and form.is_valid():
@@ -804,6 +811,7 @@ def external_invitation_no(request, token):
 
     if invitation.participant is not None:
         if invitation.participant.charge_stripe is not None:
+            del request.session['intent']
             # Stripe refund: https://stripe.com/docs/payments/cards/refunds
             stripe.api_key = settings.STRIPE_SECRET
             intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)

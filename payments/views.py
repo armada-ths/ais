@@ -19,9 +19,11 @@ def checkout(request):
 
 def confirm(request):
 	invitation_token = request.session['invitation_token']
-	print("Confirm function")
+	# print("Confirm function")
 	# TODO: Check status on the paymentintent here.
 	# Maybe set a boolean on the participant? Or we redirect to checkout if it has not succeeded and redirect to banquet only if it is okay.
+	del request.session['invitation_token']
+	del request.session['intent']
 	return redirect('../banquet/' + invitation_token)
 
 # below webhook might not have to be used
