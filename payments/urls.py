@@ -1,0 +1,10 @@
+from django.conf.urls import url
+from . import views
+
+from django.conf import settings
+from django.conf.urls.static import  static
+
+urlpatterns = [
+    url(r'^(?P<intent>\w+)$', views.checkout, name='checkout'),
+    #url(r'^gör en ny url-path views.check_payment_status name='check_payment_status')
+]

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <input id="cardholder-name" type="text">
+  <div id="card-element"></div>
+  <button id="card-button" data-secret="{{ client_secret }}">
+    Submit Payment
+  </button>
+  <p><div id='message'></p>
+</body>
+
+<head>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    var stripe = Stripe("{{ stripe_publishable }}");
+
+    var elements = stripe.elements();
+    var cardElement = elements.create('card');
+    cardElement.mount('#card-element');
+
+    var cardholderName = document.getElementById('cardholder-name');
+    var cardButton = document.getElementById('card-button');
+    var clientSecret = cardButton.dataset.secret;
+
+    cardButton.addEventListener('click', function(ev) {
+      stripe.handleCardPayment(
+        clientSecret, cardElement, {
+          payment_method_data: {
+            billing_details: {name: cardholderName.value}
+          }
+        }
+      ).then(function(result) {
+        alert("We got a result!");
+        if (result.error) {
+          // Display error.message in your UI.
+          // skicka till
+          document.getElementById('message').innerHTML = 'payment not succeeded';
+          alert(result.error.message);
+        } else {
+          // The payment has succeeded. Display a success message.
+          // skicka till views och dubbelkolla på servern att vi har lyckats
+          document.getElementById('message').innerHTML = 'payment succeeded'
+          
+        }
+      });
+    });
+  </script>
+</head>
+
+</html>

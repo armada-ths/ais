@@ -13,12 +13,13 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^banquet/', include('banquet.urls')),
     url(r'^$', login_redirect),
-    url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),
+    url(r'^fairs/(?P<year>\w+)/', include('urls.urls')),
     url(r'^journal/', include('journal.urls')),
     url(r'^banquet/', include('banquet.urls_external')),
     url(r'^unirel/', include('unirel.urls_external')),
     url(r'^', include('fair.urls_external')),
     url(r'^testpage/', include('testpage.urls')),
+    url(r'^payments/(?P<intent>\d+)', include('payments.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

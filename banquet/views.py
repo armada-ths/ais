@@ -736,29 +736,38 @@ def external_invitation(request, token):
 
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
+    if invitation.participant is None and invitation.price > 0:
+        stripe.api_key = settings.STRIPE_SECRET
+
+        '''charge = stripe.Charge.create(
+        amount=invitation.price * 100,  # Stripe wants the price in ören
+        currency='SEK',
+        description='Banquet invitation token ' + invitation.token,
+        source=request.POST['stripeToken']
+        )'''
+
+        intent = stripe.PaymentIntent.create(
+        amount = invitation.price * 100,
+        currency = 'sek',
+        )
+
+    else:
+        intent = None
+
     if can_edit:
         if request.POST and form.is_valid():
-            if invitation.participant is None and invitation.price > 0:
-                stripe.api_key = settings.STRIPE_SECRET
-
-                charge = stripe.Charge.create(
-                    amount=invitation.price * 100,  # Stripe wants the price in ören
-                    currency='SEK',
-                    description='Banquet invitation token ' + invitation.token,
-                    source=request.POST['stripeToken']
-                )
-
-            else:
-                charge = None
 
             form.instance.name = invitation.name
             form.instance.email_address = invitation.email_address
             invitation.participant = form.save()
             invitation.save()
 
-            if charge is not None:
-                invitation.participant.charge_stripe = charge['id']
+            if intent is not None:
+                invitation.participant.charge_stripe = intent['id']
                 invitation.participant.save()
+                redirect('payments/views:checkout', intent)
+
+                # testa skicka med intent här ist för templet xredirect(skicka till checkouten)
 
             form = None
 
@@ -769,6 +778,7 @@ def external_invitation(request, token):
         'invitation': invitation,
         'form': form,
         'charge': invitation.price > 0 and invitation.participant is None,
+        'intent': intent,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
         'can_edit': can_edit
