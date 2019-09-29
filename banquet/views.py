@@ -720,6 +720,7 @@ def invitation_maybe(request, year, token):
 
 
 def external_invitation(request, token):
+    # TODO somewhee in this function: check if payment has suceeded if a payment intent exist on the participant
     invitation = get_object_or_404(Invitation, token=token, user=None)
 	# get participant or create a new one with correct name and email prefilled in participant form
     participant = invitation.participant if invitation.participant is not None else Participant(banquet=invitation.banquet, user=None)
@@ -751,8 +752,9 @@ def external_invitation(request, token):
         intent = stripe.PaymentIntent.create(
         amount = invitation.price * 100, # Stripe wants the price in öre
         currency = 'sek',
+		description='Banquet invitation token ' + str(invitation.token),
         )
-        request.session['intent'] = intent
+        request.session['intent'] = intent # Should we clear the session values somwehere?
 
     else:
         intent = None
@@ -768,10 +770,8 @@ def external_invitation(request, token):
             if intent is not None:
                 invitation.participant.charge_stripe = intent['id']
                 invitation.participant.save()
-                request.session['invitation_url'] = token
-                print(request.get_full_path)
+                request.session['invitation_token'] = token # Should we clear the session values somwehere?
                 return redirect('../payments/checkout')
-                # testa skicka med intent här ist för templet xredirect(skicka till checkouten)
 
             form = None
 

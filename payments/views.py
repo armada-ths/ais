@@ -2,38 +2,29 @@ import json
 import stripe
 from django.conf import settings
 from django.shortcuts import render, redirect
-# Create your views here.
 
-
-#@app.route('/checkout')
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
     stripe.api_version = '2019-09-09'
     intent = request.session['intent']
-    # if intent:
-    #     print("HEJ")
-
-
-    '''intent = stripe.PaymentIntent.create(
-    amount = 5000,
-    currency = 'sek',
-    )'''
-
     client_secret = intent['client_secret']
     template_name = 'payments/checkout.html'
 
     return render(request, template_name, {
         'client_secret' : client_secret,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
+        'amount' : intent['amount']/100,
     })
 
+
 def confirm(request):
-	invitation_url = request.session['invitation_url']
+	invitation_token = request.session['invitation_token']
 	print("Confirm function")
 	# TODO: Check status on the paymentintent here.
 	# Maybe set a boolean on the participant? Or we redirect to checkout if it has not succeeded and redirect to banquet only if it is okay.
-	return redirect('../banquet/'+invitation_url)
+	return redirect('../banquet/' + invitation_token)
 
+# below webhook might not have to be used
 #def check_payment_status
 #skicka med request och
 '''def webhook():

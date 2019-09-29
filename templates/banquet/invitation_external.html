@@ -61,7 +61,7 @@
 
 						{% if charge %}
 							<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ invitation.price }}</p>
-							<button type="submit" class="btn btn-lg btn-success center-block">Proceed Payment</button>
+							<button type="submit" class="btn btn-lg btn-success center-block">Proceed to payment</button>
 							<!--här vill vi skicka oss vidare till betalningsvyn-->
 							<!--<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" onclick="checkout" data-currency="sek" data-key="{{ stripe_publishable }}" data-label="Proceed to payment" data-email="{{ invitation.email_address }}" data-allow-remember-me="false" data-name="THS Armada" data-description="{{ invitation.banquet.name }}" data-amount="{{ stripe_amount }}" data-locale="en"></script>-->
 						{% else %}
