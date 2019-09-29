@@ -1,7 +1,7 @@
 import json
 import stripe
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 # Create your views here.
 
 
@@ -25,8 +25,14 @@ def checkout(request):
     return render(request, template_name, {
         'client_secret' : client_secret,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-
     })
+
+def confirm(request):
+	invitation_url = request.session['invitation_url']
+	print("Confirm function")
+	# TODO: Check status on the paymentintent here.
+	# Maybe set a boolean on the participant? Or we redirect to checkout if it has not succeeded and redirect to banquet only if it is okay.
+	return redirect('../banquet/'+invitation_url)
 
 #def check_payment_status
 #skicka med request och

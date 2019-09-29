@@ -768,6 +768,8 @@ def external_invitation(request, token):
             if intent is not None:
                 invitation.participant.charge_stripe = intent['id']
                 invitation.participant.save()
+                request.session['invitation_url'] = token
+                print(request.get_full_path)
                 return redirect('../payments/checkout')
                 # testa skicka med intent här ist för templet xredirect(skicka till checkouten)
 

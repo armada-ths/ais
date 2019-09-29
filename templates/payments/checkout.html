@@ -1,16 +1,32 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html>
+
 <body>
-  <input id="cardholder-name" type="text">
-  <div id="card-element"></div>
-  <button id="card-button" data-secret="{{ client_secret }}">
-    Submit Payment
-  </button>
-  <p><div id='message'></p>
+	<div class="container">
+		<div class="text-center headline">
+			<h2>THS Armada</h2>
+			<h1>Payment</h1>
+		</div>
+		<div style="width: 50%; position: center;">
+			<input id="cardholder-name" type="text">
+		  <div id="card-element"></div>
+		  <button id="card-button" data-secret="{{ client_secret }}">
+		    Submit Payment
+		  </button>
+		  <p id='message'></p>
+		</div>
+	</div>
 </body>
 
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+	<meta charset="utf-8" />
+	{% include "header.html" %}{% block head-extra %}{% endblock %}
+	<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
+	<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
   <script src="https://js.stripe.com/v3/"></script>
+
   <script>
     var stripe = Stripe("{{ stripe_publishable }}");
 
@@ -30,17 +46,15 @@
           }
         }
       ).then(function(result) {
-        alert("We got a result!");
         if (result.error) {
           // Display error.message in your UI.
-          // skicka till
-          document.getElementById('message').innerHTML = 'payment not succeeded';
+          document.getElementById('message').innerHTML = 'payment not succeeded: '.concat(result.error.message);
           alert(result.error.message);
         } else {
           // The payment has succeeded. Display a success message.
           // skicka till views och dubbelkolla på servern att vi har lyckats
           document.getElementById('message').innerHTML = 'payment succeeded'
-          
+					window.location.href="{% url 'confirm' %}";
         }
       });
     });
