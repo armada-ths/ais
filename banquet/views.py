@@ -811,7 +811,10 @@ def external_invitation_no(request, token):
 
     if invitation.participant is not None:
         if invitation.participant.charge_stripe is not None:
-            del request.session['intent']
+            try:
+                del request.session['intent']
+            except KeyError:
+                pass
             # Stripe refund: https://stripe.com/docs/payments/cards/refunds
             stripe.api_key = settings.STRIPE_SECRET
             intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
