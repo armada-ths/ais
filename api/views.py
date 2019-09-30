@@ -70,13 +70,27 @@ def matching(request):
                 #     'similarity': matching_data[i]['similarity']
                 # } for i in matching_data]
 
-                response = {}
-
+                # Only serialize each exhibitor once, even if
+                # one exhibitor appears as a top choice in several cateogories.
+                exhibitors = {}
                 for category, similar_companies in matching_data.items():
-                    response[category] = [{
-                        'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = company['exhibitor_id']).first(), request),
-                        'similarity': company['similarity']
-                    } for company in similar_companies]
+                    for company in similar_companies:
+                        exhibitor_id = company['exhibitor_id']
+                        if exhibitor_id not in exhibitors:
+                            exhibitors[exhibitor_id] = serialize_exhibitor(Exhibitor.objects.filter(pk = exhibitor_id).first(), request)
+
+
+                response = {
+                    "similarities": matching_data,
+                    "exhibitors": exhibitors
+                }
+
+
+                # for category, similar_companies in matching_data.items():
+                #     response[category] = [{
+                #         'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = company['exhibitor_id']).first(), request),
+                #         'similarity': company['similarity']
+                #     } for company in similar_companies]
                 
                 return JsonResponse(response, safe = False)
                  

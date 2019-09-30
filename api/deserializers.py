@@ -8,13 +8,12 @@ def matching(data):
     check the student answers data, validating the data on the way
     '''
     if type(data) is dict:
-        # TODO Filter on include in form?
         industries = CatalogueIndustry.objects.values_list('pk', flat=True)
         values = CatalogueValue.objects.values_list('pk', flat=True)
         employments = CatalogueEmployment.objects.values_list('pk', flat=True)
         locations = CatalogueLocation.objects.values_list('pk', flat=True)
         competences = CatalogueCompetence.objects.values_list('pk', flat=True)
-        #benefits = CatalogueValue.objects.values_list('pk', flat=True)
+
 
         validation_multi_set = {
             "industries" : industries,
@@ -22,21 +21,28 @@ def matching(data):
             "employments" : employments,
             "locations" : locations,
             "competences": competences,
-            #"cities": TODO
-            #"benefits" : benefits
         }
 
+        # Check that the values are lists and that
+        # they are subsets of the possible values.
+        # Also check that the weights, if given,
+        # don't sum to zero.
+        sum = 0
         for key, value_list in validation_multi_set.items():
             # check if list
-            if isinstance(data[key], (list,)):
+            if isinstance(data[key]["answer"], (list,)):
                 # can't be a subset if it's not an int
-                if not set(data[key]).issubset(set(value_list)):
+                if not set(data[key]["answer"]).issubset(set(value_list)):
                     return False
+                sum += data[key]["weight"]
             else:
                 return False
 
+        if (sum + data["cities"]["weight"] == 0):
+            return False
+
         # The cities value must be a string of comma-separated cities
-        if not isinstance(data["cities"], str):
+        if not isinstance(data["cities"]["answer"], str):
             return False
 
         return True
