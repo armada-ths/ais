@@ -60,15 +60,7 @@ def matching(request):
                 with open(matching_path, 'r') as matching_file:
                     matching_data = json.load(matching_file)
                 
-                # for i in matching_data:
-                #     print(matching_data[i])
-                print(matching_data)
-
-                # response = [{
-                #     # N.B: serialize_exhibitor is located in exhibitors/ and not here in api/serializers.py as one might expect
-                #     'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
-                #     'similarity': matching_data[i]['similarity']
-                # } for i in matching_data]
+                #print(matching_data) # Leaving this for debugging purposes
 
                 # Only serialize each exhibitor once, even if
                 # one exhibitor appears as a top choice in several cateogories.
@@ -79,19 +71,11 @@ def matching(request):
                         if exhibitor_id not in exhibitors:
                             exhibitors[exhibitor_id] = serialize_exhibitor(Exhibitor.objects.filter(pk = exhibitor_id).first(), request)
 
-
                 response = {
                     "similarities": matching_data,
                     "exhibitors": exhibitors
                 }
 
-
-                # for category, similar_companies in matching_data.items():
-                #     response[category] = [{
-                #         'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = company['exhibitor_id']).first(), request),
-                #         'similarity': company['similarity']
-                #     } for company in similar_companies]
-                
                 return JsonResponse(response, safe = False)
                  
             else:
@@ -117,14 +101,13 @@ def matching_choices(request):
         locations = CatalogueLocation.objects.filter(include_in_form=True).values('id', 'location')
 
         # We want to return a JSON object with the options the user has
-        response = {'options': [],
+        response = {
+                    'options': [],
                     'meta': {}
-                    }
+        }
 
-        # Indicates which order the questions come in.
-        # To change which order the questions are asked
-        # on armada.nu/matching, we only change this, as long
-        # as armada.nu does not ignore this information
+        # Indicates which order the questions/answers come in
+        # in the options list.
         response['meta']['order'] = ['values', 'industries', 'competences', 'employments', 'locations']
         
         current_fair_id = current_fair()

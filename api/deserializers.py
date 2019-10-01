@@ -38,8 +38,6 @@ def matching(data):
                     return False
 
                 if not "weight" in data[key]:
-                    return False
-                    
                     # The weight must be defined
                     return False
 
@@ -74,9 +72,9 @@ def matching(data):
         if non_empties == 0:
             return False
 
-        # The reponse_size variable must not be defined
+        # The reponse_size variable must not be defined...
         if "response_size" in data:
-        # but it can't be 0 or negative
+        # ... but it can't be 0 or negative
             if data["response_size"] <= 0:
                 return False
             else:
