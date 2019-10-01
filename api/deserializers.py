@@ -28,22 +28,50 @@ def matching(data):
         # they are subsets of the possible values.
         # Also check that the weights, if given,
         # don't sum to zero.
-        sum = 0
+        weight_sum = 0
+        non_empties = len(validation_multi_set) + 1 # Count cities too
         for key, value_list in validation_multi_set.items():
             # check if list
             if isinstance(data[key]["answer"], (list,)):
                 # can't be a subset if it's not an int
                 if not set(data[key]["answer"]).issubset(set(value_list)):
                     return False
-                sum += data[key]["weight"]
+
+                if not "weight" in data[key]:
+                    return False
+                    
+                    # The weight must be defined
+                    return False
+
+                if len(data[key]["answer"]) == 0:
+                    non_empties -= 1    
+                    # The weight will be forced to 0
+                else:
+                    weight_sum += data[key]["weight"] 
+
             else:
                 return False
 
-        if (sum + data["cities"]["weight"] == 0):
-            return False
-
         # The cities value must be a string of comma-separated cities
         if not isinstance(data["cities"]["answer"], str):
+            return False
+
+        if not "weight" in data["cities"]:
+            return False
+        
+        if data["cities"]["answer"] != "":
+            # There is actually an answer for cities
+            weight_sum += data["cities"]["weight"]
+        else:
+            # In this case, the weight will be forced to 0
+            non_empties -= 1
+
+        # Sum of weights must be non-zero for normalization to work
+        if weight_sum == 0:
+            return False
+
+        # At least SOME answer must provide information
+        if non_empties == 0:
             return False
 
         # The reponse_size variable must not be defined
