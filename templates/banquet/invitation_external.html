@@ -58,6 +58,12 @@
 					<form method="post">
 						{% csrf_token %}
 						{{ form | crispy }}
+						
+						{% if invitation.part_of_matching and form_catalogue_details %}
+							<h2>Seating</h2>
+							<p>The seating at the banquet will be made to match your interests and academic background with companies relevant to you. The questions below are optional but we encourage you to fill them out in order to let our table matching algorithm do it's magic! The collected data will only be used for the banquet seating placement.</p>
+							{{ form_catalogue_details | crispy }}
+						{% endif %}
 
 						{% if charge %}
 							<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ invitation.price }}</p>
