@@ -732,7 +732,7 @@ def external_invitation(request, token):
         existingTableMatching = TableMatching.objects.get(participant = participant)
     except ObjectDoesNotExist:
         existingTableMatching = None
-    
+
     tableMatching = existingTableMatching if existingTableMatching is not None else TableMatching()
     form = ParticipantForm(request.POST or None, instance=participant)
     tableMatchingForm = ParticipantTableMatchingForm(request.POST or None, instance=tableMatching)
@@ -745,32 +745,31 @@ def external_invitation(request, token):
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
     try:
-        intent = request.session['intent']
+        intent = request.session['intent'] # the user has paid and comes from the payments checkout
     except KeyError:
         intent = None
-
-
-    if invitation.participant is None and invitation.price > 0 and intent == None: # should pay a price and has not dne this already
-        stripe.api_key = settings.STRIPE_SECRET
-
-
-		# Create a Stripe payment intent https://stripe.com/docs/payments/payment-intents/we
-        intent = stripe.PaymentIntent.create(
-        amount = invitation.price * 100, # Stripe wants the price in öre
-        currency = 'sek',
-		description ='Banquet invitation token ' + str(invitation.token),
-        receipt_email = invitation.email_address,
-        )
-        request.session['intent'] = intent
 
     if can_edit:
         if request.POST and form.is_valid():
 
+            if invitation.participant is None and invitation.price > 0 and intent == None: # should pay a price and has not dne this already
+                stripe.api_key = settings.STRIPE_SECRET
+                # Create a Stripe payment intent https://stripe.com/docs/payments/payment-intents/we
+                intent = stripe.PaymentIntent.create(
+                amount = invitation.price * 100, # Stripe wants the price in öre
+                currency = 'sek',
+                description ='Banquet invitation token ' + str(invitation.token),
+                receipt_email = invitation.email_address,
+                )
+                request.session['intent'] = intent
+                request.session.set_expiry(0) # expires on browser close
+
             form.instance.name = invitation.name
             form.instance.email_address = invitation.email_address
             invitation.participant = form.save()
-            tableMatchingForm.instance.participant = invitation.participant
             invitation.save()
+
+            tableMatchingForm.instance.participant = invitation.participant
             if invitation.part_of_matching:
                 tableMatchingForm.save()
 
@@ -778,6 +777,7 @@ def external_invitation(request, token):
                 invitation.participant.charge_stripe = intent['id']
                 invitation.participant.save()
                 request.session['invitation_token'] = token
+                request.session.set_expiry(0) # expires on browser close
                 return redirect('../payments/checkout')
 
             form = None
@@ -789,7 +789,7 @@ def external_invitation(request, token):
         'invitation': invitation,
         'form': form,
         'charge': invitation.price > 0 and invitation.participant is None,
-        'intent': intent,
+        #'intent': intent,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
         'can_edit': can_edit,

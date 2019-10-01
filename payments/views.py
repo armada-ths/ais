@@ -9,7 +9,7 @@ from banquet.models import Participant, Invitation
 
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
-    stripe.api_version = '2019-09-09'
+    # stripe.api_version = '2019-09-09'
 
     try:
         intent = request.session['intent']
