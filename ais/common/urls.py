@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^unirel/', include('unirel.urls_external')),
     url(r'^', include('fair.urls_external')),
     url(r'^testpage/', include('testpage.urls')),
+    url(r'^payments/', include('payments.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

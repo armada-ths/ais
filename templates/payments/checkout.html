@@ -1,0 +1,97 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+
+<body>
+	<div class="container">
+		<div class="text-center headline">
+			<h2>THS Armada</h2>
+			<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ amount }}</p>
+		</div>
+		<div style="max-width: 400px; margin: auto;">
+			<div class="form-row">
+				<label for="cardholder-name" style="margin-top: 10px; margin-bottom: 10px">Cardholder's name</label>
+				<input id="cardholder-name" type="text" class="form-control">
+			</div>
+			<div id="name-error" role="alert" style="margin-bottom: 10px; margin-top: 10px"></div>
+			<div class="form-row">
+				<label for="card-element" style="margin-top: 10px; margin-bottom: 10px"	>Credit or debit card</label>
+				<div id="card-element"></div>
+			</div>
+			<div id="card-errors" role="alert" style="margin-bottom: 10px; margin-top: 10px"></div>
+		  <button class="btn btn-lg btn-success center-block" id="card-button" data-secret="{{ client_secret }}">
+		    Submit Payment
+		  </button>
+		</div>
+	</div>
+</body>
+
+<style>
+</style>
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+	<meta charset="utf-8" />
+	{% include "header.html" %}{% block head-extra %}{% endblock %}
+	<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
+	<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <script>
+    var stripe = Stripe("{{ stripe_publishable }}", {locale : 'en'});
+
+		var style = {
+		  base: {
+		    fontSize: '13px',
+		    color: "#32325d",
+		  }
+		};
+
+    var elements = stripe.elements();
+    var cardElement = elements.create('card', {style: style});
+    cardElement.mount('#card-element');
+
+    var cardholderName = document.getElementById('cardholder-name');
+    var cardButton = document.getElementById('card-button');
+    var clientSecret = cardButton.dataset.secret;
+
+    cardButton.addEventListener('click', function(ev) {
+			if (cardholderName.value) {
+				document.getElementById('name-error').style.visibility = "hidden";
+				stripe.handleCardPayment(
+					clientSecret, cardElement, {
+						payment_method_data: {
+							billing_details: {name: cardholderName.value}
+						}
+					}
+				).then(function(result) {
+					message_field = document.getElementById('card-errors')
+					if (result.error) {
+						var type = result.error.type;
+						var message;
+						if (type == 'invalid_request_error') {
+							message = result.error.message;
+						} else if (type == 'validation_error') {
+							message = result.error.message;
+						} else if (type == 'card_error') {
+							message = 'Your card could not be charged, please try another payment method.';
+						} else {
+							message = 'Your payment did not go through, please try again.';
+						}
+						message_field.className = "alert alert-danger"
+						message_field.innerHTML = '<span style="font-weight: bold;">Something went wrong:</span> '.concat(message);
+					} else {
+						message_field.className = "alert alert-success";
+						message_field.innerHTML = 'Payment suceeded, thank you!';
+						window.location.href="{% url 'confirm' %}";
+					}
+				});
+			} else {
+				document.getElementById('name-error').innerHTML = "Please provide a cardholder name.";
+				document.getElementById('name-error').className = "alert alert-danger";
+			}
+    });
+  </script>
+</head>
+
+</html>

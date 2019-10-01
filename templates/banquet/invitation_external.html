@@ -9,21 +9,21 @@
 		<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
 		<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
 	</head>
-	
+
 	<body>
 		<div class="container">
 			<div class="text-center headline">
 				<h2>{{ invitation.banquet.fair }}</h2>
 				<h1>{{ invitation.banquet.name }}</h1>
 			</div>
-			
+
 			<p>
 				<ul class="list-unstyled">
 					{% if invitation.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>{% endif %}
 					{% if invitation.banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ invitation.banquet.location }}</li>{% endif %}
 					{% if invitation.banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ invitation.banquet.dress_code }}</li>{% endif %}
 				</ul>
-				
+
 				<ul class="list-unstyled">
 					{% if invitation.deadline_smart %}<li><span style="font-weight: bold;">Deadline for answering:</span> {{ invitation.deadline_smart }}</li>{% endif %}
 					<li>
@@ -34,27 +34,27 @@
 					</li>
 				</ul>
 			</p>
-			
+
 			<p><br /></p>
-			
+
 			{% if form %}
 				{% if invitation.denied %}
 					<h2>Not attending</h2>
 					<p>You have chosen not to attend. If you change your mind, please press the button below.</p>
-					
+
 					<p><a href="{% url 'banquet_external_invitation_maybe' invitation.token %}" class="btn btn-default">I want to attend</a></p>
 				{% else %}
 					<h2>Not attending?</h2>
 					<p>If you wish not to attend the banquet, please push the button below.</p>
-					
+
 					<p><a href="{% url 'banquet_external_invitation_no' invitation.token %}" class="btn btn-default">I will not attend</a></p>
-					
+
 					<p><br /></p>
-					
+
 					<h2>If you are attending</h2>
 					{% if invitation.status == 'GOING' %}<p><span class="text-success">Your details have already been filled out and you have a spot on the banquet.</span> If you wish to change your details, you can do so here.</p>
 					{% else %}<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>{% endif %}
-				
+					{% if invitation.participant.has_paid %}<div class = "alert alert-success">We have received your payment of SEK {{ invitation.price }}.</div>{% endif %}
 					<form method="post">
 						{% csrf_token %}
 						{{ form | crispy }}
@@ -67,7 +67,9 @@
 
 						{% if charge %}
 							<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ invitation.price }}</p>
-							<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-currency="sek" data-key="{{ stripe_publishable }}" data-label="Proceed to payment" data-email="{{ invitation.email_address }}" data-allow-remember-me="false" data-name="THS Armada" data-description="{{ invitation.banquet.name }}" data-amount="{{ stripe_amount }}" data-locale="en"></script>
+							<button type="submit" class="btn btn-lg btn-success center-block">Proceed to payment</button>
+							<!--här vill vi skicka oss vidare till betalningsvyn-->
+							<!--<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" onclick="checkout" data-currency="sek" data-key="{{ stripe_publishable }}" data-label="Proceed to payment" data-email="{{ invitation.email_address }}" data-allow-remember-me="false" data-name="THS Armada" data-description="{{ invitation.banquet.name }}" data-amount="{{ stripe_amount }}" data-locale="en"></script>-->
 						{% else %}
 							<button type="submit" class="btn btn-lg btn-success center-block">{% if invitation.participant %}Save changes{% else %}Submit{% endif %}</button>
 						{% endif %}
@@ -76,7 +78,7 @@
 			{% else %}
 				{% if can_edit %}
 					<h1>Thank you!</h1>
-					<p>Your repsonse has been recorded. You can <a href="{% url 'banquet_external_invitation' invitation.token %}">return to the form</a> if you would like to edit your details.</p>
+					<p>Your response has been recorded. You can <a href="{% url 'banquet_external_invitation' invitation.token %}">return to the form</a> if you would like to edit your details.</p>
 				{% elif invitation.status == 'GOING' %}
 					<ul class="list-unstyled">
 						<li><span style="font-weight: bold;">Phone number:</span> {% if invitation.participant.phone_number %} {{ invitation.participant.phone_number }} {% else %} <span style="font-style: italic;">not given</span> {% endif %}</li>
