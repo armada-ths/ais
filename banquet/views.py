@@ -665,7 +665,8 @@ def invitation(request, year, token):
             invitation.participant = form.save()
             tableMatchingForm.instance.participant = invitation.participant
             invitation.save()
-            tableMatchingForm.save()
+            if invitation.part_of_matching:
+                tableMatchingForm.save()
             if charge is not None:
                 invitation.participant.charge_stripe = charge['id']
                 invitation.participant.save()
@@ -726,8 +727,14 @@ def external_invitation(request, token):
     participant.name = invitation.name
     participant.email_address = invitation.email_address
 
+    try:
+        existingTableMatching = TableMatching.objects.get(participant = participant)
+    except ObjectDoesNotExist:
+        existingTableMatching = None
+    
+    tableMatching = existingTableMatching if existingTableMatching is not None else TableMatching()
     form = ParticipantForm(request.POST or None, instance=participant)
-
+    tableMatchingForm = ParticipantTableMatchingForm(request.POST or None, instance=tableMatching)
     form.fields['phone_number'].required = True
 
     if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
@@ -754,7 +761,10 @@ def external_invitation(request, token):
             form.instance.name = invitation.name
             form.instance.email_address = invitation.email_address
             invitation.participant = form.save()
+            tableMatchingForm.instance.participant = invitation.participant
             invitation.save()
+            if invitation.part_of_matching:
+                tableMatchingForm.save()
 
             if charge is not None:
                 invitation.participant.charge_stripe = charge['id']
@@ -771,7 +781,8 @@ def external_invitation(request, token):
         'charge': invitation.price > 0 and invitation.participant is None,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
-        'can_edit': can_edit
+        'can_edit': can_edit,
+        'form_catalogue_details': tableMatchingForm
     })
 
 
