@@ -54,7 +54,7 @@
 					<h2>If you are attending</h2>
 					{% if invitation.status == 'GOING' %}<p><span class="text-success">Your details have already been filled out and you have a spot on the banquet.</span> If you wish to change your details, you can do so here.</p>
 					{% else %}<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>{% endif %}
-
+					{% if invitation.participant.has_paid %}<div class = "alert alert-success">We have received your payment of SEK {{ invitation.price }}.</div>{% endif %}
 					<form method="post">
 						{% csrf_token %}
 						{{ form | crispy }}
@@ -72,7 +72,7 @@
 			{% else %}
 				{% if can_edit %}
 					<h1>Thank you!</h1>
-					<p>Your repsonse has been recorded. You can <a href="{% url 'banquet_external_invitation' invitation.token %}">return to the form</a> if you would like to edit your details.</p>
+					<p>Your response has been recorded. You can <a href="{% url 'banquet_external_invitation' invitation.token %}">return to the form</a> if you would like to edit your details.</p>
 				{% elif invitation.status == 'GOING' %}
 					<ul class="list-unstyled">
 						<li><span style="font-weight: bold;">Phone number:</span> {% if invitation.participant.phone_number %} {{ invitation.participant.phone_number }} {% else %} <span style="font-style: italic;">not given</span> {% endif %}</li>

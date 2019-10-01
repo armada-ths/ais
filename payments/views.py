@@ -1,12 +1,21 @@
 import json
 import stripe
+import time
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from banquet.models import Participant, Invitation
 
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
     stripe.api_version = '2019-09-09'
-    intent = request.session['intent']
+
+    try:
+        intent = request.session['intent']
+    except KeyError:
+        raise Http404
+
     client_secret = intent['client_secret']
     template_name = 'payments/checkout.html'
 
@@ -18,53 +27,48 @@ def checkout(request):
 
 
 def confirm(request):
-	invitation_token = request.session['invitation_token']
-	# print("Confirm function")
-	# TODO: Check status on the paymentintent here.
-	# Maybe set a boolean on the participant? Or we redirect to checkout if it has not succeeded and redirect to banquet only if it is okay.
-	try:
-		del request.session['intent']
-	except KeyError:
-		pass
-	try:
-		del request.session['invitation_token']
-	except KeyError:
-		pass
-	return redirect('../banquet/' + invitation_token)
+    try:
+        invitation_token = request.session['invitation_token']
+    except KeyError:
+        raise Http404
 
-# below webhook might not have to be used
-#def check_payment_status
-#skicka med request och
-'''def webhook():
-  payload = request.get_data()
-  sig_header = request.headers.get('STRIPE_SIGNATURE')
-  event = None
+    try:
+        intent = request.session['intent']
+    except KeyError:
+        raise Http404
 
-  try:
-    event = stripe.Webhook.construct_event(
-      payload, sig_header, endpoint_secret
-    )
-  except ValueError as e:
-    # invalid payload
-    return "Invalid payload", 400
-  except stripe.error.SignatureVerificationError as e:
-    # invalid signature
-    return "Invalid signature", 400
+    invitation = get_object_or_404(Invitation, token=invitation_token)
+    id = intent['id']
 
-  event_dict = event.to_dict()
-  if event_dict['type'] == "payment_intent.succeeded":
-    intent = event_dict['data']['object']
-    print "Succeeded: ", intent['id']
-    # Fulfill the customer's purchase
-  elif event_dict['type'] == "payment_intent.payment_failed":
-    intent = event_dict['data']['object']
-    error_message = intent['last_payment_error']['message'] if intent.get('last_payment_error') else None
-    print "Failed: ", intent['id'], error_message
-    # Notify the customer that payment failed
+    test_status = 0
+    while stripe.PaymentIntent.retrieve(id)['status'] != 'succeeded' and test_status != 5:
+        time.sleep(3)
+        test_status += 1
 
-  return "OK", 200'''
-#kollar att status == suceeded hos payment intent objektet
-#kolla accounting vyn där kallar vi på export order
-#return render(request, 'url till banque.html',
-#{
-#})
+    if stripe.PaymentIntent.retrieve(id)['status'] != 'succeeded':
+        invitation.participant.has_paid = False
+        invitation.participant.save()
+
+        send_mail(
+        'Problem with a payment in Stripe',
+        'There have been a problem with the charge for the token ' + invitation_token + ' and the intent id ' + id,
+        'noreply@armada.nu',
+        ['support@armada.nu'],
+        fail_silently=False,
+        )
+
+    else:
+        invitation.participant.has_paid = True
+        invitation.participant.save()
+
+
+    try:
+        del request.session['intent']
+    except KeyError:
+        pass
+    try:
+        del request.session['invitation_token']
+    except KeyError:
+        pass
+
+    return redirect('../banquet/' + invitation_token)

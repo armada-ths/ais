@@ -720,7 +720,6 @@ def invitation_maybe(request, year, token):
 
 
 def external_invitation(request, token):
-    # TODO somewhee in this function: check if payment has suceeded if a payment intent exist on the participant
     invitation = get_object_or_404(Invitation, token=token, user=None)
 	# get participant or create a new one with correct name and email prefilled in participant form
     participant = invitation.participant if invitation.participant is not None else Participant(banquet=invitation.banquet, user=None)
@@ -747,24 +746,15 @@ def external_invitation(request, token):
     if invitation.participant is None and invitation.price > 0 and intent == None: # should pay a price and has not dne this already
         stripe.api_key = settings.STRIPE_SECRET
 
-        '''charge = stripe.Charge.create(
-        amount=invitation.price * 100,  # Stripe wants the price in ören
-        currency='SEK',
-        description='Banquet invitation token ' + invitation.token,
-        source=request.POST['stripeToken']
-        )'''
 
-		# Create a Stripe payment intent
-        # print("****Creating PaymentIntent****")
+		# Create a Stripe payment intent https://stripe.com/docs/payments/payment-intents/we
         intent = stripe.PaymentIntent.create(
         amount = invitation.price * 100, # Stripe wants the price in öre
         currency = 'sek',
-		description='Banquet invitation token ' + str(invitation.token),
+		description ='Banquet invitation token ' + str(invitation.token),
+        receipt_email = invitation.email_address,
         )
-        request.session['intent'] = intent # Should we clear the session values somwehere?
-
-    # else:
-    #     intent = None
+        request.session['intent'] = intent
 
     if can_edit:
         if request.POST and form.is_valid():
@@ -777,7 +767,7 @@ def external_invitation(request, token):
             if intent is not None:
                 invitation.participant.charge_stripe = intent['id']
                 invitation.participant.save()
-                request.session['invitation_token'] = token # Should we clear the session values somwehere?
+                request.session['invitation_token'] = token
                 return redirect('../payments/checkout')
 
             form = None
@@ -788,7 +778,7 @@ def external_invitation(request, token):
     return render(request, 'banquet/invitation_external.html', {
         'invitation': invitation,
         'form': form,
-        'charge': invitation.price > 0 and invitation.participant is None, # not necessary anymore - check on intent instead
+        'charge': invitation.price > 0 and invitation.participant is None,
         'intent': intent,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
@@ -819,7 +809,7 @@ def external_invitation_no(request, token):
             stripe.api_key = settings.STRIPE_SECRET
             intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
             intent['charges']['data'][0].refund()
-            #refund = stripe.Refund.create(charge=invitation.participant.charge_stripe)
+
 
         invitation.participant.delete()
         invitation.participant = None
