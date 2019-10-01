@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Continent, SwedenRegion, \
 StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
 from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence#CatalogueBenefit
+from fair.models import current_fair
 
 def matching(data):
     '''
@@ -44,6 +45,20 @@ def matching(data):
         # The cities value must be a string of comma-separated cities
         if not isinstance(data["cities"]["answer"], str):
             return False
+
+        # The reponse_size variable must not be defined
+        if "response_size" in data:
+        # but it can't be 0 or negative
+            if data["response_size"] <= 0:
+                return False
+            else:
+                # It also can't be bigger than the number of exhibitors
+                # in the current fair
+                current_fair_id = current_fair()
+                if current_fair_id is None: current_fair_id = 4 # Default to 2019
+                max_response_size = Exhibitor.objects.filter(fair_id = current_fair_id).count()
+                if data["response_size"] > max_response_size:
+                    return False
 
         return True
     else:

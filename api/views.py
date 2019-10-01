@@ -126,6 +126,11 @@ def matching_choices(request):
         # on armada.nu/matching, we only change this, as long
         # as armada.nu does not ignore this information
         response['meta']['order'] = ['values', 'industries', 'competences', 'employments', 'locations']
+        
+        current_fair_id = current_fair()
+        if current_fair() is None: current_fair_id = 4 # Default to 2019
+        
+        response['meta']['max_response_size'] = Exhibitor.objects.filter(fair_id = current_fair_id).count()
 
         def append_component(key):
             if key == 'competences':
