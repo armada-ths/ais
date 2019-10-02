@@ -752,7 +752,7 @@ def external_invitation(request, token):
     if can_edit:
         if request.POST and form.is_valid():
 
-            if invitation.participant is None and invitation.price > 0 and intent == None: # should pay a price and has not dne this already
+            if invitation.price > 0 and (invitation.participant is None or invitation.participant_has_paid == False) and intent == None: # should pay a price and has not dne this already
                 stripe.api_key = settings.STRIPE_SECRET
                 # Create a Stripe payment intent https://stripe.com/docs/payments/payment-intents/we
                 intent = stripe.PaymentIntent.create(
@@ -788,7 +788,7 @@ def external_invitation(request, token):
     return render(request, 'banquet/invitation_external.html', {
         'invitation': invitation,
         'form': form,
-        'charge': invitation.price > 0 and invitation.participant is None,
+        'charge': invitation.price > 0 and (invitation.participant is None or invitation.participant.has_paid == False),
         #'intent': intent,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
@@ -819,8 +819,12 @@ def external_invitation_no(request, token):
             # Stripe refund: https://stripe.com/docs/payments/cards/refunds
             stripe.api_key = settings.STRIPE_SECRET
             intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
-            intent['charges']['data'][0].refund()
-
+            if invitation.participant.has_paid:
+                intent['charges']['data'][0].refund()
+                print("Proper refund")
+            else:
+                intent.cancel(cancellation_reason = "requested_by_customer")
+                print("Proper refund")
 
         invitation.participant.delete()
         invitation.participant = None
