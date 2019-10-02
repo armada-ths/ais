@@ -752,7 +752,7 @@ def external_invitation(request, token):
     if can_edit:
         if request.POST and form.is_valid():
 
-            if invitation.price > 0 and (invitation.participant is None or invitation.participant_has_paid == False) and intent == None: # should pay a price and has not dne this already
+            if invitation.price > 0 and (invitation.participant is None or invitation.participant.has_paid == False) and intent == None: # should pay a price and has not dne this already
                 stripe.api_key = settings.STRIPE_SECRET
                 # Create a Stripe payment intent https://stripe.com/docs/payments/payment-intents/we
                 intent = stripe.PaymentIntent.create(

@@ -39,6 +39,7 @@
 
   <script>
     var stripe = Stripe("{{ stripe_publishable }}", {locale : 'en'});
+		var payment_submission = false;
 
 		var style = {
 		  base: {
@@ -81,6 +82,7 @@
 						message_field.className = "alert alert-danger"
 						message_field.innerHTML = '<span style="font-weight: bold;">Something went wrong:</span> '.concat(message);
 					} else {
+						payment_submission = true;
 						message_field.className = "alert alert-success";
 						message_field.innerHTML = 'Payment suceeded, thank you!';
 						window.location.href="{% url 'confirm' %}";
@@ -91,6 +93,16 @@
 				document.getElementById('name-error').className = "alert alert-danger";
 			}
     });
+
+		window.onbeforeunload = function(){
+			if (!payment_submission) {
+				// OBS - NOT WORKING ATM
+				console.log("Inside onbeforeunload function");
+				// window.location.href="{% url 'cancel' %}";
+				// window.location.href="https://google.com";
+				return ('Are you sure you want to leave?');
+			}
+		};
   </script>
 </head>
 

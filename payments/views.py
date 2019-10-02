@@ -72,3 +72,11 @@ def confirm(request):
         pass
 
     return redirect('../banquet/' + invitation_token)
+
+def cancel(request):
+    try:
+        invitation_token = request.session['invitation_token']
+    except KeyError:
+        raise Http404
+    print("inside cancel function YAY")
+    return redirect('../banquet/' + invitation_token)
