@@ -732,7 +732,7 @@ def external_invitation(request, token):
         existingTableMatching = TableMatching.objects.get(participant = participant)
     except ObjectDoesNotExist:
         existingTableMatching = None
-    
+
     tableMatching = existingTableMatching if existingTableMatching is not None else TableMatching()
     form = ParticipantForm(request.POST or None, instance=participant)
     tableMatchingForm = ParticipantTableMatchingForm(request.POST or None, instance=tableMatching)
@@ -744,40 +744,36 @@ def external_invitation(request, token):
 
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
-    try:
-        intent = request.session['intent']
-    except KeyError:
-        intent = None
-
-
-    if invitation.participant is None and invitation.price > 0 and intent == None: # should pay a price and has not dne this already
-        stripe.api_key = settings.STRIPE_SECRET
-
-
-		# Create a Stripe payment intent https://stripe.com/docs/payments/payment-intents/we
-        intent = stripe.PaymentIntent.create(
-        amount = invitation.price * 100, # Stripe wants the price in öre
-        currency = 'sek',
-		description ='Banquet invitation token ' + str(invitation.token),
-        receipt_email = invitation.email_address,
-        )
-        request.session['intent'] = intent
-
     if can_edit:
         if request.POST and form.is_valid():
 
             form.instance.name = invitation.name
             form.instance.email_address = invitation.email_address
             invitation.participant = form.save()
-            tableMatchingForm.instance.participant = invitation.participant
             invitation.save()
+
+            tableMatchingForm.instance.participant = invitation.participant
             if invitation.part_of_matching:
                 tableMatchingForm.save()
 
-            if intent is not None:
-                invitation.participant.charge_stripe = intent['id']
-                invitation.participant.save()
+            if invitation.price > 0 and invitation.participant.has_paid == False: # should pay a price and has not done this already
+                stripe.api_key = settings.STRIPE_SECRET
+                # Create or retrieve a Stripe payment intent https://stripe.com/docs/payments/payment-intents/web
+                if invitation.participant.charge_stripe == None:
+                    intent = stripe.PaymentIntent.create(
+                        amount = invitation.price * 100, # Stripe wants the price in öre
+                        currency = 'sek',
+                        description ='Banquet invitation token ' + str(invitation.token),
+                        receipt_email = invitation.email_address,
+                    )
+                    invitation.participant.charge_stripe = intent['id']
+                    invitation.participant.save()
+                else: # retrieve existing payment intent
+                    intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
+
+                request.session['intent'] = intent
                 request.session['invitation_token'] = token
+                request.session.set_expiry(0) # session expires on browser close
                 return redirect('../payments/checkout')
 
             form = None
@@ -788,8 +784,7 @@ def external_invitation(request, token):
     return render(request, 'banquet/invitation_external.html', {
         'invitation': invitation,
         'form': form,
-        'charge': invitation.price > 0 and invitation.participant is None,
-        'intent': intent,
+        'charge': invitation.price > 0 and (invitation.participant is None or invitation.participant.has_paid == False),
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
         'can_edit': can_edit,
@@ -819,8 +814,10 @@ def external_invitation_no(request, token):
             # Stripe refund: https://stripe.com/docs/payments/cards/refunds
             stripe.api_key = settings.STRIPE_SECRET
             intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
-            intent['charges']['data'][0].refund()
-
+            if invitation.participant.has_paid:
+                intent['charges']['data'][0].refund()
+            else:
+                intent.cancel(cancellation_reason = "requested_by_customer")
 
         invitation.participant.delete()
         invitation.participant = None

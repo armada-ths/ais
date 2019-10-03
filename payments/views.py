@@ -9,7 +9,7 @@ from banquet.models import Participant, Invitation
 
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
-    stripe.api_version = '2019-09-09'
+    # stripe.api_version = '2019-09-09'
 
     try:
         intent = request.session['intent']
@@ -48,19 +48,18 @@ def confirm(request):
     if stripe.PaymentIntent.retrieve(id)['status'] != 'succeeded':
         invitation.participant.has_paid = False
         invitation.participant.save()
-
+        # if we are unable to get status succeeded we send an email to support, the issue then has to be handled manually
         send_mail(
-        'Problem with a payment in Stripe',
-        'There have been a problem with the charge for the token ' + invitation_token + ' and the intent id ' + id,
-        'noreply@armada.nu',
-        ['support@armada.nu'],
-        fail_silently=False,
+            'Problem with a payment in Stripe',
+            'There have been a problem with the charge for the token ' + invitation_token + ' and the intent id ' + id,
+            'noreply@armada.nu',
+            ['support@armada.nu'],
+            fail_silently=False,
         )
 
     else:
         invitation.participant.has_paid = True
         invitation.participant.save()
-
 
     try:
         del request.session['intent']

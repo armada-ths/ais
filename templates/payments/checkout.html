@@ -38,7 +38,9 @@
   <script src="https://js.stripe.com/v3/"></script>
 
   <script>
+		// Client side of Stripe payment intent https://stripe.com/docs/payments/payment-intents/web
     var stripe = Stripe("{{ stripe_publishable }}", {locale : 'en'});
+		var payment_submission = false;
 
 		var style = {
 		  base: {
@@ -81,6 +83,7 @@
 						message_field.className = "alert alert-danger"
 						message_field.innerHTML = '<span style="font-weight: bold;">Something went wrong:</span> '.concat(message);
 					} else {
+						payment_submission = true;
 						message_field.className = "alert alert-success";
 						message_field.innerHTML = 'Payment suceeded, thank you!';
 						window.location.href="{% url 'confirm' %}";
