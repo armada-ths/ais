@@ -38,6 +38,7 @@
   <script src="https://js.stripe.com/v3/"></script>
 
   <script>
+		// Client side of Stripe payment intent https://stripe.com/docs/payments/payment-intents/web
     var stripe = Stripe("{{ stripe_publishable }}", {locale : 'en'});
 		var payment_submission = false;
 
@@ -93,16 +94,6 @@
 				document.getElementById('name-error').className = "alert alert-danger";
 			}
     });
-
-		window.onbeforeunload = function(){
-			if (!payment_submission) {
-				// OBS - NOT WORKING ATM
-				console.log("Inside onbeforeunload function");
-				// window.location.href="{% url 'cancel' %}";
-				// window.location.href="https://google.com";
-				return ('Are you sure you want to leave?');
-			}
-		};
   </script>
 </head>
 
