@@ -744,25 +744,8 @@ def external_invitation(request, token):
 
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
-    try:
-        intent = request.session['intent'] # the user has paid and comes from the payments checkout
-    except KeyError:
-        intent = None
-
     if can_edit:
         if request.POST and form.is_valid():
-
-            if invitation.price > 0 and (invitation.participant is None or invitation.participant.has_paid == False) and intent == None: # should pay a price and has not dne this already
-                stripe.api_key = settings.STRIPE_SECRET
-                # Create a Stripe payment intent https://stripe.com/docs/payments/payment-intents/we
-                intent = stripe.PaymentIntent.create(
-                amount = invitation.price * 100, # Stripe wants the price in öre
-                currency = 'sek',
-                description ='Banquet invitation token ' + str(invitation.token),
-                receipt_email = invitation.email_address,
-                )
-                request.session['intent'] = intent
-                request.session.set_expiry(0) # expires on browser close
 
             form.instance.name = invitation.name
             form.instance.email_address = invitation.email_address
@@ -773,11 +756,24 @@ def external_invitation(request, token):
             if invitation.part_of_matching:
                 tableMatchingForm.save()
 
-            if intent is not None:
-                invitation.participant.charge_stripe = intent['id']
-                invitation.participant.save()
+            if invitation.price > 0 and invitation.participant.has_paid == False: # should pay a price and has not done this already
+                stripe.api_key = settings.STRIPE_SECRET
+                # Create or retrieve a Stripe payment intent https://stripe.com/docs/payments/payment-intents/web
+                if invitation.participant.charge_stripe == None:
+                    intent = stripe.PaymentIntent.create(
+                        amount = invitation.price * 100, # Stripe wants the price in öre
+                        currency = 'sek',
+                        description ='Banquet invitation token ' + str(invitation.token),
+                        receipt_email = invitation.email_address,
+                    )
+                    invitation.participant.charge_stripe = intent['id']
+                    invitation.participant.save()
+                else: # retrieve existing payment intent
+                    intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
+
+                request.session['intent'] = intent
                 request.session['invitation_token'] = token
-                request.session.set_expiry(0) # expires on browser close
+                request.session.set_expiry(0) # session expires on browser close
                 return redirect('../payments/checkout')
 
             form = None
@@ -789,7 +785,6 @@ def external_invitation(request, token):
         'invitation': invitation,
         'form': form,
         'charge': invitation.price > 0 and (invitation.participant is None or invitation.participant.has_paid == False),
-        #'intent': intent,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
         'can_edit': can_edit,
@@ -821,10 +816,8 @@ def external_invitation_no(request, token):
             intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
             if invitation.participant.has_paid:
                 intent['charges']['data'][0].refund()
-                print("Proper refund")
             else:
                 intent.cancel(cancellation_reason = "requested_by_customer")
-                print("Proper refund")
 
         invitation.participant.delete()
         invitation.participant = None
