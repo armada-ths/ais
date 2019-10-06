@@ -42,7 +42,8 @@ def obj_name(obj):
 def names(objects):
     return [obj_name(obj) for obj in objects.all()]
 
-
+# This seems unused. Seems like exhibitors/api.py is 
+# preferred. They are very similar.
 def exhibitor(request, exhibitor, company):
 	img_placeholder = request.GET.get('img_placeholder') == 'true'
 	
@@ -62,11 +63,13 @@ def exhibitor(request, exhibitor, company):
 		('values', [{'id': value.pk, 'name': value.value} for value in exhibitor.catalogue_values.all()]),
 		('employments', [{'id': employment.pk, 'name': employment.employment} for employment in exhibitor.catalogue_employments.all()]),
 		('locations', [{'id': location.pk, 'name': location.location} for location in exhibitor.catalogue_locations.all()]),
+        ('competences', [{'id': competence.pk, 'name': competence.competence} for competence in exhibitor.catalogue_competences.all()]),
+        ('cities', exhibitor.catalogue_cities if exhibitor.catalogue_cities is not None else ''),
 		('benefits', [{'id': benefit.pk, 'name': benefit.benefit} for benefit in exhibitor.catalogue_benefits.all()]),
 		('average_age', exhibitor.catalogue_average_age),
 		('founded', exhibitor.catalogue_founded),
 		('groups', [{'id': group.pk, 'name': group.name} for group in company.groups.filter(fair = exhibitor.fair, allow_exhibitors = True)]),
-		('fair_locations', [])
+		('fair_locations', []) # Shouldn't this be something...?
 	])
 
 

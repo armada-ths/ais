@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Continent, SwedenRegion, \
 StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
-from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueBenefit
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence#CatalogueBenefit
+from fair.models import current_fair
 
 def matching(data):
     '''
@@ -11,25 +12,80 @@ def matching(data):
         industries = CatalogueIndustry.objects.values_list('pk', flat=True)
         values = CatalogueValue.objects.values_list('pk', flat=True)
         employments = CatalogueEmployment.objects.values_list('pk', flat=True)
-        locations = CatalogueEmployment.objects.values_list('pk', flat=True)
-        benefits = CatalogueValue.objects.values_list('pk', flat=True)
+        locations = CatalogueLocation.objects.values_list('pk', flat=True)
+        competences = CatalogueCompetence.objects.values_list('pk', flat=True)
+
 
         validation_multi_set = {
             "industries" : industries,
             "values" : values,
             "employments" : employments,
             "locations" : locations,
-            "benefits" : benefits
+            "competences": competences,
         }
 
+        # Check that the values are lists and that
+        # they are subsets of the possible values.
+        # Also check that the weights, if given,
+        # don't sum to zero.
+        weight_sum = 0
+        non_empties = len(validation_multi_set) + 1 # Count cities too
         for key, value_list in validation_multi_set.items():
             # check if list
-            if isinstance(data[key], (list,)):
+            if isinstance(data[key]["answer"], (list,)):
                 # can't be a subset if it's not an int
-                if not set(data[key]).issubset(set(value_list)):
+                if not set(data[key]["answer"]).issubset(set(value_list)):
                     return False
+
+                if not "weight" in data[key]:
+                    # The weight must be defined
+                    return False
+
+                if len(data[key]["answer"]) == 0:
+                    non_empties -= 1    
+                    # The weight will be forced to 0
+                else:
+                    weight_sum += data[key]["weight"] 
+
             else:
                 return False
+
+        # The cities value must be a string of comma-separated cities
+        if not isinstance(data["cities"]["answer"], str):
+            return False
+
+        if not "weight" in data["cities"]:
+            return False
+        
+        if data["cities"]["answer"] != "":
+            # There is actually an answer for cities
+            weight_sum += data["cities"]["weight"]
+        else:
+            # In this case, the weight will be forced to 0
+            non_empties -= 1
+
+        # Sum of weights must be non-zero for normalization to work
+        if weight_sum == 0:
+            return False
+
+        # At least SOME answer must provide information
+        if non_empties == 0:
+            return False
+
+        # The reponse_size variable must not be defined...
+        if "response_size" in data:
+        # ... but it can't be 0 or negative
+            if data["response_size"] <= 0:
+                return False
+            else:
+                # It also can't be bigger than the number of exhibitors
+                # in the current fair
+                current_fair_id = current_fair()
+                if current_fair_id is None: current_fair_id = 4 # Default to 2019
+                max_response_size = Exhibitor.objects.filter(fair_id = current_fair_id).count()
+                if data["response_size"] > max_response_size:
+                    return False
+
         return True
     else:
         return False

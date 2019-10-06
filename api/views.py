@@ -19,9 +19,9 @@ from django.utils.crypto import get_random_string
 import api.deserializers as deserializers
 import api.serializers as serializers
 
-from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueBenefit
+from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence #CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
-from fair.models import Partner, Fair
+from fair.models import Partner, Fair, current_fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
@@ -33,7 +33,7 @@ def root(request):
 
 @csrf_exempt
 def matching(request):
-    # validera POST-indata så att de givna svaren faktiskt existerar
+    # Validate POST-input to make sure the given answers exist
     if request.method == 'POST':
         if request.body:
             try:
@@ -50,27 +50,144 @@ def matching(request):
 
                 with open(random_doc_name, 'w') as outfile:
                     json.dump(data, outfile)
-                retrieved = subprocess.Popen(["python3", matching_script_loc, docID, random_doc_name],stdout=subprocess.PIPE)
+                fair_id = current_fair()
+                if current_fair() is None: fair_id = 4 # Default to 2019
+                
+                retrieved = subprocess.Popen(["python3", matching_script_loc, docID, random_doc_name, str(fair_id)],stdout=subprocess.PIPE)
                 # have to wait for subprocess to finish
                 retrieved.wait()
                 matching_path = os.path.join("/tmp/", docID + "_output.json")
                 with open(matching_path, 'r') as matching_file:
                     matching_data = json.load(matching_file)
                 
-                for i in matching_data:
-                    print(matching_data[i])
-                
-                response = [{
-                    'exhibitor': serialize_exhibitor(Exhibitor.objects.filter(pk = matching_data[i]['exhibitor_id']).first(), request),
-                    'distance': matching_data[i]['distance']
-                } for i in matching_data]
-                
+                #print(matching_data) # Leaving this for debugging purposes
+
+                # Only serialize each exhibitor once, even if
+                # one exhibitor appears as a top choice in several cateogories.
+                exhibitors = {}
+                for category, similar_companies in matching_data.items():
+                    for company in similar_companies:
+                        exhibitor_id = company['exhibitor_id']
+                        if exhibitor_id not in exhibitors:
+                            exhibitors[exhibitor_id] = serialize_exhibitor(Exhibitor.objects.filter(pk = exhibitor_id).first(), request)
+
+                response = {
+                    "similarities": matching_data,
+                    "exhibitors": exhibitors
+                }
+
                 return JsonResponse(response, safe = False)
+                 
             else:
                 return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
     else:
         return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
+
+# When using the matching function, this api can be used
+# to present the questions that the user should answer.
+# the response holds the questions, as well as 
+# the order in which they come.
+@cache_page(60*15)
+@csrf_exempt
+def matching_choices(request):
+    if request.method == 'GET':
+
+        # Get the choices that we include in the company forms
+        competences = CatalogueCompetence.objects.filter(include_in_form=True).values('id', 'competence')
+        employments = CatalogueEmployment.objects.filter(include_in_form=True).values('id', 'employment')
+        values = CatalogueValue.objects.filter(include_in_form=True).values('id', 'value')
+        industries = CatalogueIndustry.objects.filter(include_in_form=True).values('id', 'industry')
+        locations = CatalogueLocation.objects.filter(include_in_form=True).values('id', 'location')
+
+        # We want to return a JSON object with the options the user has
+        response = {
+                    'options': [],
+                    'meta': {}
+        }
+
+        # Indicates which order the questions/answers come in
+        # in the options list.
+        response['meta']['order'] = ['values', 'industries', 'competences', 'employments', 'locations']
+        
+        current_fair_id = current_fair()
+        if current_fair() is None: current_fair_id = 4 # Default to 2019
+        
+        response['meta']['max_response_size'] = Exhibitor.objects.filter(fair_id = current_fair_id).count()
+
+        def append_component(key):
+            if key == 'competences':
+                # Append competence choices to response
+                comp = {}
+                comp['question'] = "What competencies do you have?"
+                comp['answers'] = []
+                for competence in competences:
+                    comp['answers'].append({
+                        'value': competence['competence'],
+                        'label': competence['competence'],
+                        'id': competence['id']
+                    })
+                response['options'].append(comp)
+
+            elif key == 'employments':
+                # Append employment choices to results
+                emp = {}
+                emp['question'] = "What employment types are you interested in?"
+                emp['answers'] = []
+                for employment in employments:
+                    emp['answers'].append({
+                        'value': employment['employment'],
+                        'label': employment['employment'],
+                        'id': employment['id']
+                    })
+                response['options'].append(emp)
+
+            elif key == 'values':
+                # Append value choices to results
+                val = {}
+                val['question'] = "What values are important to you?"
+                val['answers'] = []
+                for value in values:
+                    val['answers'].append({
+                        'value': value['value'],
+                        'label': value['value'],
+                        'id': value['id']
+                    })
+                response['options'].append(val)
+
+            elif key == 'industries':
+                # # Append industry choices to results
+                ind = {}
+                ind['question'] = "What industries are you interested in?"
+                ind['answers'] = []
+                for industry in industries:
+                    ind['answers'].append({
+                        'value': industry['industry'],
+                        'label': industry['industry'],
+                        'id': industry['id']
+                    })
+                response['options'].append(ind)
+
+            elif key == 'locations':
+                # # Append location choices to results
+                loc = {}
+                loc['question'] = "Where in the world?"
+                loc['answers'] = []
+                for location in locations:
+                    loc['answers'].append({
+                        'value': location['location'],
+                        'label': location['location'],
+                        'id': location['id']
+                    })
+                response['options'].append(loc)
+
+        for key in response['meta']['order']:
+            append_component(key)
+
+        return JsonResponse(response, safe=False)
+
+    else:
+        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
 
 @cache_page(60 * 5)
 def catalogueselections(request):
