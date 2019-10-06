@@ -15,7 +15,7 @@ def external_create_account(request, template_name='accounts/create_external_use
     if request.user.is_authenticated():
         # TODO: this line needs to be changed for next years banquet signup.
         # Now it redirects to placement
-        return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year': 2018}))
+        return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year': 2019}))
     else:
         form = ExternalUserForm(request.POST or None, prefix='user')
         if form.is_valid():
@@ -31,8 +31,8 @@ def external_create_account(request, template_name='accounts/create_external_use
             )
             login(request, user)
 
-            return HttpResponseRedirect(reverse('banquet/signup', kwargs={'year': 2018}))
-    return render(request, template_name, dict(form=form, year=2018))
+            return HttpResponseRedirect(reverse('banquet/signup', kwargs={'year': 2019}))
+    return render(request, template_name, dict(form=form, year=2019))
 
 def external_login(request, template_name='accounts/external_login.html'):
     """
@@ -47,6 +47,6 @@ def external_login(request, template_name='accounts/external_login.html'):
         )
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year':2018}))
+            return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year':2019}))
 
-    return render(request, template_name, dict(form=form, year=2018))
+    return render(request, template_name, dict(form=form, year=2019))
