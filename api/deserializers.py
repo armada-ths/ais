@@ -3,12 +3,24 @@ from matching.models import StudentQuestionBase, StudentQuestionType, StudentAns
 StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
 from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence#CatalogueBenefit
 from fair.models import current_fair
+import numbers
 
 def matching(data):
     '''
     check the student answers data, validating the data on the way
     '''
     if type(data) is dict:
+        # Check that all necessary first-level key-value pairs are 
+        # present and of the right type, i.e.
+        # <category>: {"answers": ..., "weight": ...}
+        for category in ["industries", "values", "employments", "locations", "competences", "cities"]:
+            if not category in data:
+                return False
+            elif not type(data[category]) is dict:
+                return False
+            elif not "answer" in data[category] or not "weight" in data[category]:
+                return False
+
         industries = CatalogueIndustry.objects.values_list('pk', flat=True)
         values = CatalogueValue.objects.values_list('pk', flat=True)
         employments = CatalogueEmployment.objects.values_list('pk', flat=True)
@@ -37,15 +49,15 @@ def matching(data):
                 if not set(data[key]["answer"]).issubset(set(value_list)):
                     return False
 
-                if not "weight" in data[key]:
-                    # The weight must be defined
-                    return False
-
                 if len(data[key]["answer"]) == 0:
                     non_empties -= 1    
                     # The weight will be forced to 0
                 else:
-                    weight_sum += data[key]["weight"] 
+                    # Weight must be a number
+                    if isinstance(data[key]["weight"], numbers.Number):
+                        weight_sum += data[key]["weight"] 
+                    else:
+                        return False
 
             else:
                 return False
@@ -53,13 +65,14 @@ def matching(data):
         # The cities value must be a string of comma-separated cities
         if not isinstance(data["cities"]["answer"], str):
             return False
-
-        if not "weight" in data["cities"]:
-            return False
         
         if data["cities"]["answer"] != "":
             # There is actually an answer for cities
-            weight_sum += data["cities"]["weight"]
+            # Just check that it is numeric
+            if isinstance(data["cities"]["weight"], numbers.Number):
+                weight_sum += data["cities"]["weight"]
+            else:
+                return False
         else:
             # In this case, the weight will be forced to 0
             non_empties -= 1
