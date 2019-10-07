@@ -675,6 +675,7 @@ def invitation(request, year, token):
 
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
+                request.session['url_path'] = '/fairs/' + str(fair.year) + '/banquet/invitation/' + token
                 request.session.set_expiry(0) # session expires on browser close
                 return redirect('/payments/checkout')
 
@@ -703,8 +704,17 @@ def invitation_no(request, year, token):
 
     if invitation.participant is not None:
         if invitation.participant.charge_stripe is not None:
+            try:
+                del request.session['intent']
+            except KeyError:
+                pass
+            # Stripe refund: https://stripe.com/docs/payments/cards/refunds
             stripe.api_key = settings.STRIPE_SECRET
-            refund = stripe.Refund.create(charge=invitation.participant.charge_stripe)
+            intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
+            if invitation.participant.has_paid:
+                intent['charges']['data'][0].refund()
+            else:
+                intent.cancel(cancellation_reason = "requested_by_customer")
 
         invitation.participant.delete()
         invitation.participant = None
@@ -780,6 +790,7 @@ def external_invitation(request, token):
 
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
+                request.session['url_path'] = '../banquet/' + token
                 request.session.set_expiry(0) # session expires on browser close
                 return redirect('../payments/checkout')
 
