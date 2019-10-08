@@ -97,19 +97,20 @@ def payment(request, event_pk):
     if participant.fee_payed_s:
         return JsonResponse({'message': 'Fee has already been paid.'}, status=400)
 
-    data = json.loads(request.body)
+    # data = json.loads(request.body)
 
     # Stripe expects the amount in ören
-    amount = event.fee_s * 100
-    token = data['token']
+    # token = data['token']
 
     stripe.api_version = '2019-09-09'
 
     stripe.api_key = settings.STRIPE_SECRET
 
+	# session = None
     # # ---- New version of Stripe checkout
     # session = stripe.checkout.Session.create(
     #     payment_method_types=['card'],
+	# 	locale='en',
     #     line_items=[{
     #         name: 'THS Armada Event',
     #         description: event.name,
@@ -120,20 +121,36 @@ def payment(request, event_pk):
     #     success_url='https://google.com',
     #     cancel_url='https://bing.com',
     # )
-    # # ----- End of new version
-    # Old version of Stripe checkout
-    charge = stripe.Charge.create(
-        amount=amount,
-        currency='sek',
-        description=event.name,
-        source=token
-    )
+	intent = None
 
-    participant.stripe_charge_id = charge['id']
-    # participant.fee_payed_s = True
-    participant.save()
-    # return JsonResponse({'session_id': session['id']},
-    return HttpResponse(status=204)
+	if participant.stripe_charge_id == None:
+		intent = stripe.PaymentIntent.create(
+			amount = event.fee_s * 100, # Stripe wants the price in öre
+			currency = 'sek',
+			description = event.name,
+			# receipt_email = invitation.email_address,
+		)
+		participant.stripe_charge_id = intent['id']
+		participant.save()
+	else: # retrieve existing payment intent
+		intent = stripe.PaymentIntent.retrieve(participant.stripe_charge_id)
+    # # ----- End of new version
+
+    # Old version of Stripe checkout
+    # charge = stripe.Charge.create(
+    #     amount=amount,
+    #     currency='sek',
+    #     description=event.name,
+    #     source=token
+    # )
+	if intent:
+	    # participant.stripe_charge_id = session['id']
+	    # participant.fee_payed_s = True
+	    # participant.save()
+	    return JsonResponse({'client_secret': intent.client_secret}, status=200),
+	    # return HttpResponse(status=204)
+	else:
+		return JsonResponse({'error': 'Unable to create Stripe payment intent'}, status=503)
 
 @require_POST
 def join_team(request, event_pk, team_pk):

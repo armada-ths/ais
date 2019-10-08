@@ -138,9 +138,11 @@ class SignupForm extends Component {
 															<Elements>
                                 <Stripe
                                     handleToken={this.handleStripeToken}
+																		createPaymentIntent={this.createPaymentIntent}
                                     stripe_publishable={stripe_publishable}
                                     description={event.name}
                                     amount={event.fee}
+																		paymentUrl={this.paymentUrl}
                                 />
 															</Elements>
 															</StripeProvider>
