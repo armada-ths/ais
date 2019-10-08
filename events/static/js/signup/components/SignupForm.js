@@ -9,6 +9,7 @@ import isEmpty from 'lodash/isEmpty';
 import find from 'lodash/find';
 import mapValues from 'lodash/mapValues';
 import {updateParticipant} from '../actions';
+import {Elements, StripeProvider} from 'react-stripe-elements';
 
 import Question from "./Question";
 import Stripe from "./Stripe";
@@ -71,7 +72,7 @@ class SignupForm extends Component {
     }
   }
 
-  handleStripeToken(token) {
+  handleStripeToken(token, error_callback) {
     const {paymentUrl} = this.props;
 
     axios.post(paymentUrl, {
@@ -81,6 +82,10 @@ class SignupForm extends Component {
         "X-CSRFToken": Cookie.get('csrftoken')
       }
     }).then(response => {
+			if (response['error']) {
+				console.log(response['error']);
+				//error_callback(errors);
+			}
       const errors = {...this.state, payed: true};
       this.setState({
         errors,
@@ -109,7 +114,7 @@ class SignupForm extends Component {
   }
 
   render() {
-    const {event, stripe_publishable} = this.props;
+    const {event, stripe_publishable, payment_url} = this.props;
     const {answers, errors, payed} = this.state;
 
     return (
@@ -127,14 +132,18 @@ class SignupForm extends Component {
                       ) : (
                           <Fragment>
                             This event has a fee of {event.fee} SEK to sign up.
-                            
+
                             {event.open_for_signup && (
+															<StripeProvider apiKey={this.props.stripe_publishable}>
+															<Elements>
                                 <Stripe
                                     handleToken={this.handleStripeToken}
                                     stripe_publishable={stripe_publishable}
                                     description={event.name}
                                     amount={event.fee}
                                 />
+															</Elements>
+															</StripeProvider>
                             )}
                           </Fragment>
                       )}

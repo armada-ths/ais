@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
 import Button from "@material-ui/core/es/Button/Button";
+import {CardElement, injectStripe} from 'react-stripe-elements';
 
 class Stripe extends Component {
   constructor(props) {
     super(props);
 
-    this.handler = StripeCheckout.configure({
-      key: props.stripe_publishable,
-      image: 'https://ais.armada.nu/static/images/armadalogo.svg',
-      locale: 'auto',
-      token: props.handleScannedToken,
-    });
+		this.nameInput = React.createRef();
+
+		this.state = {
+			processingPayment: false,
+			error: null
+		}
 
     this.handleClick = this.handleClick.bind(this);
   }
@@ -18,23 +19,40 @@ class Stripe extends Component {
   handleClick(event) {
     const {description, amount} = this.props;
 
-    // This is safe to do in the frontend since this is just what's presented to the user, not what will actually be withdrawn from the
-    // users card
-    const amountInOren = parseInt(amount) * 100;
+		this.setState({
+			processingPayment: true,
+			error: null
+		})
 
-    this.handler.open({
-      name: 'THS Armada',
-      description: description,
-      currency: 'sek',
-      amount: amountInOren
-    });
+		this.props.stripe.createToken({name: this.nameInput.current.value})
+			.then((result) => {
+				if (result.error) {
+					this.setState({
+						processingPayment: false,
+						error: result.error
+					})
+				} else {
+					this.props.handleToken(result.token, (error) => {
+						this.setState({
+							processingPayment: false,
+							error: error
+						})
+					});
+				}
+			})
     event.preventDefault();
   }
 
   render() {
-    return <Button color="primary" onClick={this.handleClick}>Pay</Button>
-
+    return (
+			<div>
+				<input ref={this.nameInput} type="text" className="form-control" />
+				<CardElement />
+				<div>{this.state.error ? this.state.error.message : ""}</div>
+				{ this.state.processingPayment ? "processing payment" : <Button color="primary" onClick={this.handleClick}>Pay</Button> }
+			</div>
+		)
   }
 }
 
-export default Stripe;
+export default injectStripe(Stripe);

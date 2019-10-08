@@ -103,7 +103,25 @@ def payment(request, event_pk):
     amount = event.fee_s * 100
     token = data['token']
 
+    stripe.api_version = '2019-09-09'
+
     stripe.api_key = settings.STRIPE_SECRET
+
+    # # ---- New version of Stripe checkout
+    # session = stripe.checkout.Session.create(
+    #     payment_method_types=['card'],
+    #     line_items=[{
+    #         name: 'THS Armada Event',
+    #         description: event.name,
+    #         amount: event.fee_s * 100,
+    #         currency: 'sek',
+    #         quantity: 1,
+    #     }],
+    #     success_url='https://google.com',
+    #     cancel_url='https://bing.com',
+    # )
+    # # ----- End of new version
+    # Old version of Stripe checkout
     charge = stripe.Charge.create(
         amount=amount,
         currency='sek',
@@ -112,11 +130,10 @@ def payment(request, event_pk):
     )
 
     participant.stripe_charge_id = charge['id']
-    participant.fee_payed_s = True
+    # participant.fee_payed_s = True
     participant.save()
-
+    # return JsonResponse({'session_id': session['id']},
     return HttpResponse(status=204)
-
 
 @require_POST
 def join_team(request, event_pk, team_pk):
