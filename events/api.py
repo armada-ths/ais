@@ -56,6 +56,11 @@ def signup(request, event_pk):
         event=event
     )
 
+    payment_intent = participant.stripe_charge_id
+    payment_status = stripe.PaymentIntent.retrieve(payment_intent)['status']
+    if payment_status == 'succeeded':
+        participant.fee_payed_s = True
+
     if event.fee_s > 0 and not participant.fee_payed_s:
         return JsonResponse({'message': 'Fee has not been payed'}, status=400)
 
@@ -87,7 +92,7 @@ def payment(request, event_pk):
     event = get_object_or_404(Event, pk=event_pk)
 
     if not request.user:
-        return JsonResponse({'message': 'Authentication required.'}, status=403)
+        return JsonResponse({'error': 'Authentication required.'}, status=403)
 
     participant, _created = Participant.objects.get_or_create(
         user_s=request.user,
@@ -95,7 +100,7 @@ def payment(request, event_pk):
     )
 
     if participant.fee_payed_s:
-        return JsonResponse({'message': 'Fee has already been paid.'}, status=400)
+        return JsonResponse({'error': 'Fee has already been paid.'}, status=400)
 
     # data = json.loads(request.body)
 
@@ -121,19 +126,27 @@ def payment(request, event_pk):
     #     success_url='https://google.com',
     #     cancel_url='https://bing.com',
     # )
-	intent = None
+    intent = None
 
-	if participant.stripe_charge_id == None:
-		intent = stripe.PaymentIntent.create(
-			amount = event.fee_s * 100, # Stripe wants the price in öre
-			currency = 'sek',
-			description = event.name,
-			# receipt_email = invitation.email_address,
-		)
-		participant.stripe_charge_id = intent['id']
-		participant.save()
-	else: # retrieve existing payment intent
-		intent = stripe.PaymentIntent.retrieve(participant.stripe_charge_id)
+    if participant.stripe_charge_id == None:
+        intent = stripe.PaymentIntent.create(
+            amount = event.fee_s * 100, # Stripe wants the price in öre
+            currency = 'sek',
+            description = event.name,
+            # receipt_email = invitation.email_address,
+        )
+        participant.stripe_charge_id = intent['id']
+        participant.save()
+    else: # retrieve existing payment intent
+        # intent = stripe.PaymentIntent.retrieve(participant.stripe_charge_id)
+        intent = stripe.PaymentIntent.create(
+            amount = event.fee_s * 100, # Stripe wants the price in öre
+            currency = 'sek',
+            description = event.name,
+            # receipt_email = invitation.email_address,
+        )
+        participant.stripe_charge_id = intent['id']
+        participant.save()
     # # ----- End of new version
 
     # Old version of Stripe checkout
@@ -143,14 +156,14 @@ def payment(request, event_pk):
     #     description=event.name,
     #     source=token
     # )
-	if intent:
-	    # participant.stripe_charge_id = session['id']
-	    # participant.fee_payed_s = True
-	    # participant.save()
-	    return JsonResponse({'client_secret': intent.client_secret}, status=200),
-	    # return HttpResponse(status=204)
-	else:
-		return JsonResponse({'error': 'Unable to create Stripe payment intent'}, status=503)
+    if intent:
+        # participant.stripe_charge_id = session['id']
+        # participant.fee_payed_s = True
+        # participant.save()
+        return JsonResponse({'client_secret': intent.client_secret}, status=200)
+        # return HttpResponse(status=204)
+    else:
+        return JsonResponse({'error': 'Unable to create Stripe payment intent'}, status=503)
 
 @require_POST
 def join_team(request, event_pk, team_pk):

@@ -36,7 +36,7 @@ class SignupForm extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleStripeToken = this.handleStripeToken.bind(this);
+    // this.handleStripeToken = this.handleStripeToken.bind(this);
     this.validate = this.validate.bind(this);
   }
 
@@ -51,7 +51,7 @@ class SignupForm extends Component {
   }
 
   handleSubmit() {
-    const errors = this.validate(this.state);
+    const errors = this.validate();
     const {signupUrl, dispatcher} = this.props;
 
     const answers = mapValues(this.state.answers, answer => Array.isArray(answer) ? answer.join(',') : answer);
@@ -72,35 +72,36 @@ class SignupForm extends Component {
     }
   }
 
-  handleStripeToken(token, error_callback) {
-    const {paymentUrl} = this.props;
+  // handleStripeToken(token, error_callback) {
+  //   const {paymentUrl} = this.props;
+	//
+  //   axios.post(paymentUrl, {
+  //     token: token['id']
+  //   }, {
+  //     headers: {
+  //       "X-CSRFToken": Cookie.get('csrftoken')
+  //     }
+  //   }).then(response => {
+	// 		if (response['error']) {
+	// 			console.log(response['error']);
+	// 			//error_callback(errors);
+	// 		}
+  //     const errors = {...this.state, payed: true};
+  //     this.setState({
+  //       errors,
+  //       payed: true
+  //     });
+  //   });
+  // }
 
-    axios.post(paymentUrl, {
-      token: token['id']
-    }, {
-      headers: {
-        "X-CSRFToken": Cookie.get('csrftoken')
-      }
-    }).then(response => {
-			if (response['error']) {
-				console.log(response['error']);
-				//error_callback(errors);
-			}
-      const errors = {...this.state, payed: true};
-      this.setState({
-        errors,
-        payed: true
-      });
-    });
-  }
-
-  validate({answers, payed}) {
+  validate() {
+		const {answers, payed}=this.state;
     const {signup_questions, fee} = this.props.event;
     let errors = {};
 
-    if (fee > 0 && !payed) {
-      errors['payment'] = true;
-    }
+    // if (fee > 0 && !payed) {
+    //   errors['payment'] = true;
+    // }
 
     forEach(answers, (answer, id) => {
       const question = find(signup_questions, {id: parseInt(id)});
@@ -112,6 +113,12 @@ class SignupForm extends Component {
 
     return errors;
   }
+
+	showErrors(errors) {
+		this.setState({
+			errors: errors
+		})
+	}
 
   render() {
     const {event, stripe_publishable, payment_url} = this.props;
@@ -137,12 +144,15 @@ class SignupForm extends Component {
 															<StripeProvider apiKey={this.props.stripe_publishable}>
 															<Elements>
                                 <Stripe
-                                    handleToken={this.handleStripeToken}
-																		createPaymentIntent={this.createPaymentIntent}
+                                    //handleToken={this.handleStripeToken}
+																		//createPaymentIntent={this.createPaymentIntent}
                                     stripe_publishable={stripe_publishable}
-                                    description={event.name}
-                                    amount={event.fee}
-																		paymentUrl={this.paymentUrl}
+                                    // description={event.name}
+                                    // amount={event.fee}
+																		paymentUrl={this.props.paymentUrl}
+																		handleSubmit={this.handleSubmit}
+																		validator={this.validate}
+																		showErrors={this.showErrors}
                                 />
 															</Elements>
 															</StripeProvider>
