@@ -70,6 +70,7 @@ def confirm(request):
         del request.session['intent']
     except KeyError:
         pass
+        
     try:
         del request.session['invitation_token']
     except KeyError:
@@ -81,3 +82,4 @@ def confirm(request):
         pass
 
     return redirect(url_path)
+    #return redirect('../banquet/' + invitation_token)

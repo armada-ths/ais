@@ -688,7 +688,7 @@ def invitation(request, year, token):
         'fair': fair,
         'invitation': invitation,
         'form': form,
-        'charge': invitation.price > 0 and  (invitation.participant is None or invitation.participant.has_paid == False),
+        'charge': invitation.price > 0 and (invitation.participant is None or invitation.participant.has_paid == False),
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
         'can_edit': can_edit,
