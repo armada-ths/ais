@@ -28,7 +28,7 @@ class QRCode extends Component {
             </Grid>
             <Grid item>
               <Typography variant="subtitle1">
-                📸 Show this code when checking in to the event! 🤳
+                📸 Show this QR code or say your name when checking in to the event! 🤳
               </Typography>
             </Grid>
           </Grid>
