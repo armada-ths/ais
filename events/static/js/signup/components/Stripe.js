@@ -19,6 +19,9 @@ class Stripe extends Component {
 		}
 
     this.handleClick = this.handleClick.bind(this);
+		this.fetch_payment_intent = this.fetch_payment_intent.bind(this);
+		this.handle_stripe_payment = this.handle_stripe_payment.bind(this);
+		this.setState = this.setState.bind(this);
   }
 
   handleClick(event) {
@@ -60,16 +63,9 @@ class Stripe extends Component {
 	}
 
 	handle_stripe_payment (client_secret) {
-		const name = this.nameInput.current.value;
-		debugger;
 		this.props.stripe.handleCardPayment(
 			client_secret,
-			this.cardElement.current,
-			{
-				payment_method_data: {
-					billing_details: {name: name}
-				}
-			}
+			this.cardElement.current
 		).then((result) => {
 			if (result.error) {
 				this.setState({
@@ -85,7 +81,6 @@ class Stripe extends Component {
   render() {
     return (
 			<div>
-				<input ref={this.nameInput} type="text" className="form-control" />
 				<CardElement onReady={this.cardElement}/>
 				<div>{this.state.error ? this.state.error.message : ""}</div>
 				{ this.state.processingPayment ? "processing payment" : <Button color="primary" onClick={this.handleClick}>Pay</Button> }

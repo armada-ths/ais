@@ -36,8 +36,9 @@ class SignupForm extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    // this.handleStripeToken = this.handleStripeToken.bind(this);
     this.validate = this.validate.bind(this);
+		this.showErrors = this.showErrors.bind(this);
+
   }
 
   handleChange(id, value) {
@@ -57,7 +58,7 @@ class SignupForm extends Component {
     const answers = mapValues(this.state.answers, answer => Array.isArray(answer) ? answer.join(',') : answer);
 
     this.setState({
-      errors
+      errors: errors
     });
 
     if (isEmpty(errors)) {
@@ -72,36 +73,10 @@ class SignupForm extends Component {
     }
   }
 
-  // handleStripeToken(token, error_callback) {
-  //   const {paymentUrl} = this.props;
-	//
-  //   axios.post(paymentUrl, {
-  //     token: token['id']
-  //   }, {
-  //     headers: {
-  //       "X-CSRFToken": Cookie.get('csrftoken')
-  //     }
-  //   }).then(response => {
-	// 		if (response['error']) {
-	// 			console.log(response['error']);
-	// 			//error_callback(errors);
-	// 		}
-  //     const errors = {...this.state, payed: true};
-  //     this.setState({
-  //       errors,
-  //       payed: true
-  //     });
-  //   });
-  // }
-
   validate() {
 		const {answers, payed}=this.state;
     const {signup_questions, fee} = this.props.event;
     let errors = {};
-
-    // if (fee > 0 && !payed) {
-    //   errors['payment'] = true;
-    // }
 
     forEach(answers, (answer, id) => {
       const question = find(signup_questions, {id: parseInt(id)});
@@ -142,13 +117,9 @@ class SignupForm extends Component {
 
                             {event.open_for_signup && (
 															<StripeProvider apiKey={this.props.stripe_publishable}>
-															<Elements>
+															<Elements locale='en'>
                                 <Stripe
-                                    //handleToken={this.handleStripeToken}
-																		//createPaymentIntent={this.createPaymentIntent}
                                     stripe_publishable={stripe_publishable}
-                                    // description={event.name}
-                                    // amount={event.fee}
 																		paymentUrl={this.props.paymentUrl}
 																		handleSubmit={this.handleSubmit}
 																		validator={this.validate}
