@@ -37,6 +37,11 @@ def confirm(request):
     except KeyError:
         raise Http404
 
+    try:
+        url_path = request.session['url_path']
+    except KeyError:
+        raise Http404
+
     invitation = get_object_or_404(Invitation, token=invitation_token)
     id = intent['id']
 
@@ -65,9 +70,16 @@ def confirm(request):
         del request.session['intent']
     except KeyError:
         pass
+        
     try:
         del request.session['invitation_token']
     except KeyError:
         pass
 
-    return redirect('../banquet/' + invitation_token)
+    try:
+        del request.session['url_path']
+    except KeyError:
+        pass
+
+    return redirect(url_path)
+    #return redirect('../banquet/' + invitation_token)
