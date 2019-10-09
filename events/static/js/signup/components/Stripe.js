@@ -82,8 +82,17 @@ class Stripe extends Component {
     return (
 			<div>
 				<CardElement onReady={this.cardElement}/>
-				<div>{this.state.error ? this.state.error.message : ""}</div>
-				{ this.state.processingPayment ? "processing payment" : <Button color="primary" onClick={this.handleClick}>Pay</Button> }
+				<div style={{marginTop: 10, color: 'red'}}>{this.state.error ? this.state.error.message : ""}</div>
+				<Button
+						disabled={!this.props.openForSignup || this.state.processingPayment}
+						onClick={this.handleClick}
+						variant="contained"
+						color="primary"
+						style={{marginTop: 10}}
+				>
+					{this.props.openForSignup ? "Pay and Sign Up" : "Not open for sign up"}
+				</Button>
+				<div style={{marginTop: 10, }}>{this.state.processingPayment ? <em>Processing payment - almost done... </em> : ""}</div>
 			</div>
 		)
   }

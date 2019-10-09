@@ -102,6 +102,14 @@ class SignupForm extends Component {
     return (
         <Grid container spacing={16}>
           <Grid item>
+						<Grid container spacing={16}>
+							{event.signup_questions.map(question => <Question
+									key={question.id}
+									handleChange={this.handleChange}
+									value={answers[question.id]}
+									error={errors[question.id]}
+									{...question}/>)}
+						</Grid>
             <Grid container spacing={16}>
               {event.fee > 0 && (
                   <Grid item sm={12}>
@@ -114,46 +122,38 @@ class SignupForm extends Component {
                       ) : (
                           <Fragment>
                             This event has a fee of {event.fee} SEK to sign up.
-
-                            {event.open_for_signup && (
 															<StripeProvider apiKey={this.props.stripe_publishable}>
 															<Elements locale='en'>
                                 <Stripe
                                     stripe_publishable={stripe_publishable}
 																		paymentUrl={this.props.paymentUrl}
+																		openForSignup={event.open_for_signup}
 																		handleSubmit={this.handleSubmit}
 																		validator={this.validate}
 																		showErrors={this.showErrors}
                                 />
 															</Elements>
 															</StripeProvider>
-                            )}
                           </Fragment>
                       )}
                     </Typography>
                   </Grid>
-              )}
-            </Grid>
-
-            <Grid container spacing={16}>
-              {event.signup_questions.map(question => <Question
-                  key={question.id}
-                  handleChange={this.handleChange}
-                  value={answers[question.id]}
-                  error={errors[question.id]}
-                  {...question}/>)}
+								)}
             </Grid>
           </Grid>
-          <Grid item sm={12}>
-            <Button
-                disabled={!event.open_for_signup}
-                onClick={this.handleSubmit}
-                variant="contained"
-                color="primary"
-            >
-              {event.open_for_signup ? "Sign Up" : "Not open for sign up"}
-            </Button>
-          </Grid>
+					{event.fee == 0 && (
+	          <Grid item sm={12}>
+	            <Button
+	                disabled={!event.open_for_signup}
+	                onClick={this.handleSubmit}
+	                variant="contained"
+	                color="primary"
+									style={{marginTop: 10}}
+	            >
+	              {event.open_for_signup ? "Sign Up" : "Not open for sign up"}
+	            </Button>
+	          </Grid>
+					)}
         </Grid>
     )
   }
