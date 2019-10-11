@@ -35,6 +35,7 @@ class SignupForm extends Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
+		this.handleClick = this.handleClick.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.validate = this.validate.bind(this);
 		this.showErrors = this.showErrors.bind(this);
@@ -51,7 +52,11 @@ class SignupForm extends Component {
     }));
   }
 
-  handleSubmit() {
+	handleClick() {
+		this.handleSubmit("");
+	}
+
+  handleSubmit(intent_id) {
     const errors = this.validate();
     const {signupUrl, dispatcher} = this.props;
 
@@ -62,7 +67,7 @@ class SignupForm extends Component {
     });
 
     if (isEmpty(errors)) {
-      axios.post(signupUrl, {answers}, {
+      axios.post(signupUrl, {answers, intent_id}, {
         headers: {
           "X-CSRFToken": Cookie.get('csrftoken')
         }
@@ -145,7 +150,7 @@ class SignupForm extends Component {
 	          <Grid item sm={12}>
 	            <Button
 	                disabled={!event.open_for_signup}
-	                onClick={this.handleSubmit}
+	                onClick={this.handleClick}
 	                variant="contained"
 	                color="primary"
 									style={{marginTop: 10}}

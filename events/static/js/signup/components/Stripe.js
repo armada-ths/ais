@@ -57,12 +57,12 @@ class Stripe extends Component {
 					error: response.error
 				})
 			} else if (response['client_secret']) {
-				this.handle_stripe_payment(response['client_secret'])
+				this.handle_stripe_payment(response['client_secret'], response['intent_id'])
 			}
 		});
 	}
 
-	handle_stripe_payment (client_secret) {
+	handle_stripe_payment (client_secret, intent_id) {
 		this.props.stripe.handleCardPayment(
 			client_secret,
 			this.cardElement.current
@@ -73,7 +73,7 @@ class Stripe extends Component {
 					error: result.error
 				})
 			} else {
-				this.props.handleSubmit()
+				this.props.handleSubmit(intent_id)
 			}
 		});
 	}

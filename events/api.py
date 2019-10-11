@@ -56,6 +56,10 @@ def signup(request, event_pk):
         event=event
     )
 
+    data = json.loads(request.body)
+    answers = data['answers']
+    participant.stripe_charge_id = data['intent_id']
+
     # check if the user has paid successfully by checking the status of the Stripe payment intent
     if event.fee_s > 0:
         if participant.stripe_charge_id:
@@ -74,10 +78,7 @@ def signup(request, event_pk):
             participant.fee_payed_s = False
 
     if event.fee_s > 0 and not participant.fee_payed_s:
-        return JsonResponse({'error': 'Fee has not been payed'}, status=400)
-
-    data = json.loads(request.body)
-    answers = data['answers']
+        return JsonResponse({'error': 'Fee has not been payed.'}, status=400)
 
     questions = SignupQuestion.objects.filter(event=event).all()
 
@@ -109,32 +110,19 @@ def payment(request, event_pk):
     if not request.user:
         return JsonResponse({'error': 'Authentication required.'}, status=403)
 
-    participant, _created = Participant.objects.get_or_create(
-        user_s=request.user,
-        event=event
-    )
-
-    if participant.fee_payed_s:
-        return JsonResponse({'error': 'Fee has already been paid.'}, status=400)
-
     stripe.api_key = settings.STRIPE_SECRET
     intent = None
 
-    if participant.stripe_charge_id == None:
-        intent = stripe.PaymentIntent.create(
-            amount = event.fee_s * 100, # Stripe wants the price in öre
-            currency = 'sek',
-            description = event.name,
-        )
-        participant.stripe_charge_id = intent['id']
-        participant.save()
-    else: # retrieve existing payment intent
-        try:
-            intent = stripe.PaymentIntent.retrieve(participant.stripe_charge_id)
-        except:
-            return JsonResponse({'error': 'Unable to create Stripe payment intent'}, status=503)
+    # if participant.stripe_charge_id == None:
+    intent = stripe.PaymentIntent.create(
+        amount = event.fee_s * 100, # Stripe wants the price in öre
+        currency = 'sek',
+        description = event.name,
+    )
+    if intent == None:
+        return JsonResponse({'error': 'Unable to reach the external payment serivce provider.'}, status=503)
 
-    return JsonResponse({'client_secret': intent.client_secret}, status=200)
+    return JsonResponse({'client_secret': intent.client_secret, 'intent_id': intent.id}, status=200)
 
 
 @require_POST
