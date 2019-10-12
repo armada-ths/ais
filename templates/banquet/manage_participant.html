@@ -34,6 +34,9 @@
 	{% else %}
 		<p class="text-danger">The participant has no seat.</p>
 	{% endif %}
+	{% if participant.invitation_status == 'HAS_NOT_PAID' %}
+		<p class="text-danger"><span style="font-weight: bold;">The participant has not paid yet.</span></p>
+	{% endif %}
 
 	<p>
 		<a href="{% url 'banquet_manage_participant_remove' fair.year banquet.pk participant.pk %}" class="btn btn-danger" onclick="return confirm('Confirm the removal of {{ participant.name }}.');">Remove participant</a>

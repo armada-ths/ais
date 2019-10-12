@@ -8,15 +8,15 @@
 
 {% block content %}
 	<h1>{{ banquet.name }} – Invitations</h1>
-	
+
 	<p>
 		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
 		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
 		{% if banquet.background %} <a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a> {% endif %}
-		
+
 		<a style="float: right;" class="btn btn-default" href="{% url 'banquet_manage_invitation_new' fair.year banquet.pk %}">New invitation</a>
 	</p>
-	
+
 	<style type="text/css">
 		.form_no_ul ul
 		{
@@ -24,27 +24,27 @@
 			padding: 0;
 			margin: 0 0 20px 15px;
 		}
-		
+
 		.form_no_ul ul li
 		{
 			list-style-type: none;
 		}
-		
+
 		.form_no_ul ul li label
 		{
 			font-weight: 400;
 		}
 	</style>
-	
+
 	<form method="post" class="form_no_ul" enctype="multipart/form-data">
 		{% csrf_token %}
-		
+
 		<div class="row">
 			<div class="col-md-6">
 				<label for="{{ form.statuses.id_for_label }}">{{ form.statuses.label }}</label>
 				{{ form.statuses }}
 			</div>
-			
+
 			<div class="col-md-6">
 				<label for="{{ form.groups.id_for_label }}">{{ form.groups.label }}</label>
 				{{ form.groups }}
@@ -55,10 +55,10 @@
 				{{ form.matching_statuses }}
 			</div>
 		</div>
-		
+
 		<input class="btn btn-primary" type="submit" value="Refine search" />
 	</form>
-	
+
 	<div class="table-responsive">
 		<table class="table" id="invitation_table">
 			<thead>
@@ -72,7 +72,7 @@
 					<th></th>
 				</tr>
 			</thead>
-			
+
 			<tbody>
 				{% for invitation in invitiations %}
 					<tr>
@@ -80,8 +80,9 @@
 						<td>{% if invitation.deadline_smart is not None %} <span style="display: none;">{{ invitation.deadline_smart|date:"U" }}</span> {{ invitation.deadline_smart }} {% else %} <span style="font-style: italic;">no deadline</span> {% endif %}</td>
 						<td>
 							{% if invitation.user %} <a href="{% url 'people:profile' fair.year invitation.user.pk %}">{{ invitation.name }}</a> {% else %} {{ invitation.name }} {% endif %}
-							
+
 							{% if invitation.status == 'GOING' %}<span class="label label-success">Going</span>{% endif %}
+							{% if invitation.status == 'HAS_NOT_PAID' %}<span class="label label-warning">Has not paid</span>{% endif %}
 							{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">Not going</span>{% endif %}
 							{% if invitation.status == 'PENDING' %}<span class="label label-default">Pending</span>{% endif %}
 						</td>

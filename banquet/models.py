@@ -119,7 +119,10 @@ class Invitation(models.Model):
     @property
     def status(self):
         if self.participant is not None:
-            return 'GOING'
+            if  (self.price > 0) and (not self.participant.has_paid):
+                return 'HAS_NOT_PAID'
+            else:
+                return 'GOING'
         elif self.denied:
             return 'NOT_GOING'
         else:
