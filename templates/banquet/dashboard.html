@@ -42,6 +42,15 @@
     </table>
   </div>
 
+    <h1>Invite your friends</h1>
+    {% if after_party_invites %}
+      {% for invite in after_party_invites %}
+      {% endfor %}
+    {% else %}
+      <h2>You have not invited anybody yet, what are you waiting for?</h2>
+    {% endif %}
+
+
   {% if perms.banquet.base %}
     <h1>Manage banquets</h1>
 

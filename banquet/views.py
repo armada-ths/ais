@@ -315,11 +315,22 @@ def dashboard(request, year):
             'count_not_going': Invitation.objects.filter(banquet=banquet, denied=True).count(),
             'count_pending': Invitation.objects.filter(banquet=banquet, participant=None).exclude(denied=True).count()
         })
+    
+    after_party_invites = []
+    # All the people this person has invited to the after party
+    for invite in AfterPartyInvite in AfterPartyInvites.objects.filter(inviter=request.user, banquet__fair=fair):
+        after_party_invites.append({
+            'name': invite.name,
+            'email': invite.email_address
+        })
 
+    # TODO: How do we make sure the user has permissions to make invites?
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
         'invitiations': Invitation.objects.filter(user=request.user),
-        'banquets': banquets
+        'banquets': banquets,
+        'after_party_invites': after_party_invites,
+        'can_invite': len(after_party_invites) < 5 # Can be used in the template to check whether invitation form should be presented
     })
 
 

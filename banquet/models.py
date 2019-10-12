@@ -140,6 +140,16 @@ class Invitation(models.Model):
     def __str__(self):
         return (self.name if self.name is not None else str(self.user))
 
+class AfterPartyInvitation(models.Model):
+    banquet = models.ForeignKey(Banquet, on_delete=models.CASCADE)
+    inviter = models.ForeignKey(User) # ON_DELETE?
+    name = models.CharField(max_length = 75, verbose_name='Full name')
+    email_address = models.EmailField(max_length=75, unique=True, verbose_name='E-mail address')
+    used = models.BooleanField(default=False)
+
+    def __str__(self): 
+        return str(name)
+
 
 class AfterPartyTicket(models.Model):
     token = models.CharField(max_length=255, null=False, blank=False, default=uuid.uuid4, unique=True)
