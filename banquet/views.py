@@ -18,7 +18,7 @@ from fair.models import Fair
 from people.models import Profile
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, \
-    ParticipantForm, ParticipantAdminForm, AfterPartyTicketForm, ParticipantTableMatchingForm
+    ParticipantForm, ParticipantAdminForm, AfterPartyInvitation, AfterPartyTicketForm, ParticipantTableMatchingForm
 from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, Table, Seat, TableMatching
 
 
@@ -318,7 +318,7 @@ def dashboard(request, year):
     
     after_party_invites = []
     # All the people this person has invited to the after party
-    for invite in AfterPartyInvite in AfterPartyInvites.objects.filter(inviter=request.user, banquet__fair=fair):
+    for invite in AfterPartyInvitation.objects.filter(inviter=request.user, banquet__fair=fair):
         after_party_invites.append({
             'name': invite.name,
             'email': invite.email_address
