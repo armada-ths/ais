@@ -6,13 +6,13 @@
 
 {% block content %}
 	<h1>{{ banquet.name }} – Participants ({{ participants | length }})</h1>
-	
+
 	<p>
 		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
 		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
 		{% if banquet.background %} <a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a> {% endif %}
 	</p>
-	
+
 	<div class="table-responsive">
 		<table class="table" id="participation_table">
 			<thead>
@@ -25,12 +25,21 @@
 					<th style="text-align: right;">Options</th>
 				</tr>
 			</thead>
-			
+
 			<tbody>
 				{% for participant in participants %}
 					<tr>
 						<td>{% if participant.company %} {{ participant.company }} {% endif %}</td>
-						<td>{% if participant.user %} <a href="{% url 'people:profile' fair.year participant.user.pk %}">{{ participant.name }}</a> {% else %} {{ participant.name }} {% endif %}</td>
+						<td>
+							{% if participant.user %}
+								<a href="{% url 'people:profile' fair.year participant.user.pk %}">{{ participant.name }}</a>
+							{% else %}
+								{{ participant.name }}
+							{% endif %}
+							{% if participant.invitation.status == 'HAS_NOT_PAID' %}
+								<span class="label label-warning">Has not paid</span>
+							{% endif %}
+						</td>
 						<td><a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></td>
 						<td>{% if participant.alcohol %} Yes {% else %} No {% endif %}</td>
 						<td style="white-space: nowrap;">{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td>

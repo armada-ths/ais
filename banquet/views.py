@@ -523,7 +523,8 @@ def manage_participant(request, year, banquet_pk, participant_pk):
 			'alcohol': participant.get_alcohol_display,
 			'giveaway': participant.get_giveaway_display,
             'token': participant.token,
-            'seat': participant.seat
+            'seat': participant.seat,
+			'invitation_status': participant.invitation_set.first().status,
         }
     })
 
@@ -540,7 +541,8 @@ def manage_participants(request, year, banquet_pk):
         'name': participant.user.get_full_name() if participant.user else participant.name,
         'email_address': participant.user.email if participant.user else participant.email_address,
         'alcohol': participant.alcohol,
-        'seat': participant.seat
+        'seat': participant.seat,
+        'invitation': participant.invitation_set.first(),
     } for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet)]
 
     return render(request, 'banquet/manage_participants.html', {
