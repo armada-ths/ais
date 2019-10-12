@@ -58,6 +58,7 @@
     var clientSecret = cardButton.dataset.secret;
 
     cardButton.addEventListener('click', function(ev) {
+			cardButton.disabled = true;
 			if (cardholderName.value) {
 				document.getElementById('name-error').style.visibility = "hidden";
 				stripe.handleCardPayment(
@@ -82,6 +83,7 @@
 						}
 						message_field.className = "alert alert-danger"
 						message_field.innerHTML = '<span style="font-weight: bold;">Something went wrong:</span> '.concat(message);
+						cardButton.disabled = false;
 					} else {
 						payment_submission = true;
 						message_field.className = "alert alert-success";
@@ -92,8 +94,9 @@
 			} else {
 				document.getElementById('name-error').innerHTML = "Please provide a cardholder name.";
 				document.getElementById('name-error').className = "alert alert-danger";
+				cardButton.disabled = false;
 			}
-    });
+  	});
   </script>
 </head>
 
