@@ -20,6 +20,7 @@
 		<li>
 			<span style="font-weight: bold;">Invitation status:</span>
 			{% if invitation.status == 'GOING' %}<span class="label label-success">You are going</span>{% endif %}
+			{% if invitation.status == 'HAS_NOT_PAID' %}<span class="label label-warning">Has not paid</span>{% endif %}
 			{% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">You are not going</span>{% endif %}
 			{% if invitation.status == 'PENDING' %}<span class="label label-default">Your invitation is pending response</span>{% endif %}
 		</li>

@@ -387,7 +387,6 @@ def manage_invitations(request, year, banquet_pk):
             'reason': invitation.reason,
             'status': invitation.status,
             'price': invitation.price,
-            'status': invitation.status,
             'deadline_smart': invitation.deadline_smart,
             'matching_status': invitation.part_of_matching
         })
