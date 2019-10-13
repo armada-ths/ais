@@ -48,3 +48,5 @@ class CatalogueCategoryAdmin(admin.ModelAdmin):
 admin.site.register(Location)
 admin.site.register(Booth)
 admin.site.register(ExhibitorInBooth)
+admin.site.register(LocationSpecial)
+admin.site.register(ClimateCompensation)
