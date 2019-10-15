@@ -208,7 +208,7 @@ class Exhibitor(models.Model):
             
     @property
     def climate_compensation(self):
-        for order in Order.objects.filter(purchasing_company = self.company, name = "Climate compensation"):
+        for order in Order.objects.filter(purchasing_company = self.company, product__name = "Climate compensation"):
             return True
         return False
 
@@ -260,8 +260,8 @@ class ExhibitorView(models.Model):
 		'count_banquet_tickets': 'Banquet tickets',
 		'check_in_timestamp': 'Check in',
 		'booths': 'Booths',
-        # 'fair_location_special': 'Special Location',
-        # 'climate_compensation': 'Climate compensation'
+        'fair_location': 'Fair location',
+        'fair_location_special': 'Special Location'
 	}
 
 	user = models.ForeignKey(User, on_delete = models.CASCADE)
