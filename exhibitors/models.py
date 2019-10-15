@@ -83,6 +83,20 @@ class CatalogueCategory(models.Model):
         default_permissions = []
         ordering = ['category']
 
+class Location(models.Model):
+	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
+	parent = models.ForeignKey('exhibitors.Location', on_delete = models.CASCADE, null = True, blank = True)
+	name = models.CharField(blank = False, null = False, max_length = 255)
+	background = models.ImageField(upload_to = UploadToDirUUID('locations'), null = True, blank = True)
+	people_count_enabled = models.BooleanField(default = False)
+	people_count = models.IntegerField(null = True, blank = True)
+
+	class Meta:
+		ordering = ['fair', 'parent__name', 'name']
+		unique_together = [['fair', 'name']]
+
+	def __str__(self): return ((str(self.parent) + ' -> ') if self.parent else '') + self.name
+
 
 # A company (or organisation) participating in a fair
 class Exhibitor(models.Model):
@@ -113,6 +127,9 @@ class Exhibitor(models.Model):
     catalogue_cities = models.TextField(blank = True, null = True, max_length = 400)
     catalogue_average_age = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Average age of employees')
     catalogue_founded = models.PositiveIntegerField(blank = True, null = True)
+    fair_location = models.ForeignKey(Location, blank = True, null = True)
+    vyer_position = models.CharField(blank = True, null = True, max_length = 255)
+    flyer = models.FileField(upload_to = 'exhibitors/flyers/%Y%m%d/', default= None, blank = True, null = True)
 
     deadline_complete_registration = models.DateTimeField(blank = True, null = True, verbose_name = 'Deviating deadline for complete registration')
 
@@ -180,6 +197,22 @@ class Exhibitor(models.Model):
     		'created': count_created
     	}
 
+    @property
+    def fair_location_special(self):
+        for locationSpecial in FairLocationSpecial.objects.filter(fair = self.fair):
+            allExhibitors = locationSpecial.exhibitors.all()
+            for exh in allExhibitors:
+                if(exh == self):
+                    return locationSpecial
+        return None
+            
+    @property
+    def climate_compensation(self):
+        for order in Order.objects.filter(purchasing_company = self.company, name = "Climate compensation"):
+            return True
+        return False
+
+
     def __str__(self): return '%s at %s' % (self.company.name, self.fair.name)
 
     class Meta:
@@ -196,6 +229,16 @@ class Exhibitor(models.Model):
     		('modify_booths', 'Modify booths'),
     		('people_count', 'Count people in locations')
     	]
+
+
+class FairLocationSpecial(models.Model):
+    name = models.CharField(blank = True, null = True, max_length = 255)
+    fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
+    exhibitors = models.ManyToManyField(Exhibitor, blank = True)
+    def __str__(self): return self.name
+    class Meta:
+        verbose_name = 'Special location'
+        default_permissions = []
 
 
 class ExhibitorView(models.Model):
@@ -216,7 +259,9 @@ class ExhibitorView(models.Model):
 		'count_lunch_tickets': 'Lunch tickets',
 		'count_banquet_tickets': 'Banquet tickets',
 		'check_in_timestamp': 'Check in',
-		'booths': 'Booths'
+		'booths': 'Booths',
+        # 'fair_location_special': 'Special Location',
+        # 'climate_compensation': 'Climate compensation'
 	}
 
 	user = models.ForeignKey(User, on_delete = models.CASCADE)
@@ -231,20 +276,6 @@ class ExhibitorView(models.Model):
 	class Meta:
 		default_permissions = []
 
-
-class Location(models.Model):
-	fair = models.ForeignKey(Fair, on_delete = models.CASCADE)
-	parent = models.ForeignKey('exhibitors.Location', on_delete = models.CASCADE, null = True, blank = True)
-	name = models.CharField(blank = False, null = False, max_length = 255)
-	background = models.ImageField(upload_to = UploadToDirUUID('locations'), null = True, blank = True)
-	people_count_enabled = models.BooleanField(default = False)
-	people_count = models.IntegerField(null = True, blank = True)
-
-	class Meta:
-		ordering = ['fair', 'parent__name', 'name']
-		unique_together = [['fair', 'name']]
-
-	def __str__(self): return ((str(self.parent) + ' -> ') if self.parent else '') + self.name
 
 
 class LocationTick(models.Model):
