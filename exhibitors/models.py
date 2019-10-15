@@ -260,8 +260,8 @@ class ExhibitorView(models.Model):
 		'count_banquet_tickets': 'Banquet tickets',
 		'check_in_timestamp': 'Check in',
 		'booths': 'Booths',
-        'fair_location_special': 'Special Location',
-        'climate_compensation': 'Climate compensation'
+        # 'fair_location_special': 'Special Location',
+        # 'climate_compensation': 'Climate compensation'
 	}
 
 	user = models.ForeignKey(User, on_delete = models.CASCADE)
