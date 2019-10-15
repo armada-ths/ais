@@ -43,6 +43,12 @@ def serialize_exhibitor(exhibitor, request):
         ('founded', exhibitor.catalogue_founded),
         ('groups',
          [{'id': group.pk, 'name': group.name} for group in exhibitor.company.groups.filter(fair=exhibitor.fair, allow_exhibitors=True)]),
+        ('fair_location', str(exhibitor.fair_location) if exhibitor.fair_location else ''), 
+        ('vyer_position', exhibitor.vyer_position if exhibitor.vyer_position else ''),
+        ('location_special', str(exhibitor.fair_location_special) if exhibitor.fair_location_special else ''),
+        ('climate_compensation', exhibitor.climate_compensation),
+        ('flyer', (exhibitor.flyer.url) if exhibitor.flyer else (MISSING_IMAGE if img_placeholder else None)),
+
         ('booths', [{
             'id': eib.booth.pk,
             'location': {
