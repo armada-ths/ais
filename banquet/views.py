@@ -324,13 +324,19 @@ def dashboard(request, year):
             'email': invite.email_address
         })
 
-    # TODO: How do we make sure the user has permissions to make invites?
+    # Only people who are currently part of armada may invite other people
+    auth_users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair)]
+    invite_permission = request.user in auth_users
+
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
         'invitiations': Invitation.objects.filter(user=request.user),
         'banquets': banquets,
         'after_party_invites': after_party_invites,
-        'can_invite': len(after_party_invites) < 5 # Can be used in the template to check whether invitation form should be presented
+        'invitation_permissions': {
+            'invite': invite_permission,
+            'invites_left': len(after_party_invites) < 5 # Can be used in the template to check whether invitation form should be presented
+        } 
     })
 
 
