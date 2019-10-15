@@ -99,6 +99,8 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
             if choice == 'electricity_equipment': value = e.electricity_equipment
             if choice == 'booth_height': value = e.booth_height
             if choice == 'check_in_timestamp': value = e.check_in_timestamp
+            if choice == 'fair_location': value = e.fair_location
+            if choice == 'fair_location_special': value = e.fair_location_special
 
             if choice == 'count_lunch_tickets':
                 ordered = 0
@@ -341,7 +343,9 @@ def exhibitor(request, year, pk):
         'banquet_tickets_count_created': banquet_tickets_count_created,
         'banquets': banquets,
         'deadline_complete_registration': exhibitor.deadline_complete_registration or fair.complete_registration_close_date,
-        'booths': [eib.booth for eib in ExhibitorInBooth.objects.select_related('booth').filter(exhibitor = exhibitor)]
+        'booths': [eib.booth for eib in ExhibitorInBooth.objects.select_related('booth').filter(exhibitor = exhibitor)],
+        'fair_location': exhibitor.fair_location,
+        'fair_location_special': exhibitor.fair_location_special
     })
 
 
