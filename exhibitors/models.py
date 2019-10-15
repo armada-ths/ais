@@ -129,7 +129,7 @@ class Exhibitor(models.Model):
     catalogue_founded = models.PositiveIntegerField(blank = True, null = True)
     fair_location = models.ForeignKey(Location, blank = True, null = True)
     vyer_position = models.CharField(blank = True, null = True, max_length = 255)
-    flyer = models.FileField(upload_to = 'flyers/%Y%m%d/', default= None, blank = True, null = True)
+    flyer = models.FileField(upload_to = 'exhibitors/flyers/%Y%m%d/', default= None, blank = True, null = True)
 
     deadline_complete_registration = models.DateTimeField(blank = True, null = True, verbose_name = 'Deviating deadline for complete registration')
 
@@ -198,8 +198,8 @@ class Exhibitor(models.Model):
     	}
 
     @property
-    def location_special(self):
-        for locationSpecial in LocationSpecial.objects.filter(fair = self.fair):
+    def fair_location_special(self):
+        for locationSpecial in FairLocationSpecial.objects.filter(fair = self.fair):
             allExhibitors = locationSpecial.exhibitors.all()
             for exh in allExhibitors:
                 if(exh == self):
@@ -208,11 +208,8 @@ class Exhibitor(models.Model):
             
     @property
     def climate_compensation(self):
-        for climateCompensation in ClimateCompensation.objects.filter(fair = self.fair):
-            allExhibitors = climateCompensation.exhibitors.all()
-            for exh in allExhibitors:
-                if(exh == self):
-                    return True
+        for order in Order.objects.filter(purchasing_company = self.company, name = "Climate compensation"):
+            return True
         return False
 
 
@@ -234,15 +231,7 @@ class Exhibitor(models.Model):
     	]
 
 
-class ClimateCompensation(models.Model):
-    fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
-    exhibitors = models.ManyToManyField(Exhibitor, blank = True)
-    class Meta:
-        verbose_name = 'Climate Compensation'
-        default_permissions = []
-
-
-class LocationSpecial(models.Model):
+class FairLocationSpecial(models.Model):
     name = models.CharField(blank = True, null = True, max_length = 255)
     fair = models.ForeignKey('fair.Fair', on_delete=models.CASCADE)
     exhibitors = models.ManyToManyField(Exhibitor, blank = True)
@@ -271,7 +260,7 @@ class ExhibitorView(models.Model):
 		'count_banquet_tickets': 'Banquet tickets',
 		'check_in_timestamp': 'Check in',
 		'booths': 'Booths',
-        'location_special': 'Special Location',
+        'fair_location_special': 'Special Location',
         'climate_compensation': 'Climate compensation'
 	}
 
