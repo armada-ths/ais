@@ -208,7 +208,7 @@ class Exhibitor(models.Model):
             
     @property
     def climate_compensation(self):
-        for order in Order.objects.filter(purchasing_company = self.company, name = "Climate compensation"):
+        for order in Order.objects.filter(purchasing_company = self.company, product__name = "Climate compensation"):
             return True
         return False
 
