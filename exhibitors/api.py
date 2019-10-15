@@ -48,7 +48,6 @@ def serialize_exhibitor(exhibitor, request):
         ('location_special', str(exhibitor.fair_location_special) if exhibitor.fair_location_special else ''),
         ('climate_compensation', exhibitor.climate_compensation),
         ('flyer', (exhibitor.flyer.url) if exhibitor.flyer else (MISSING_IMAGE if img_placeholder else None)),
-
         ('booths', [{
             'id': eib.booth.pk,
             'location': {
