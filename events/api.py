@@ -143,7 +143,7 @@ def join_team(request, event_pk, team_pk):
 
     TeamMember.objects.update_or_create(participant=participant, defaults={'team': team, 'leader': False})
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
 
     return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=201)
 
@@ -160,7 +160,7 @@ def leave_team(request, event_pk):
 
     Participant.objects.get(user_s=request.user, event=event).teammember_set.all().delete()
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
 
     return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)
 
@@ -188,7 +188,7 @@ def create_team(request, event_pk):
 
     TeamMember.objects.update_or_create(participant=participant, defaults={'team': team, 'leader': True})
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
 
     return JsonResponse({
         'teams': [serializers.team(team) for team in teams],
@@ -224,7 +224,7 @@ def update_team(request, event_pk, team_pk):
 
     team.teammember_set.exclude(id__in=ids).delete()
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
     participant = Participant.objects.get(user_s=request.user, event=event)
 
     return JsonResponse({
