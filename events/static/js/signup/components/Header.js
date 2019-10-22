@@ -32,13 +32,13 @@ class Header extends Component {
                   </Typography>
                 </Grid>
             )}
-						{event.event_start && (
+						{event.event_start_string && (
 								<Grid item sm={6}>
 									<Typography variant="caption" gutterBottom>
 										Time
 									</Typography>
 									<Typography>
-										{event.event_start} 
+										{event.event_start_string} 
 									</Typography>
 								</Grid>
 						)}
