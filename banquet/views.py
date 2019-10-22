@@ -674,7 +674,6 @@ def invitation(request, year, token):
                 else: # retrieve existing payment intent
                     intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
 
-                request.session['event'] = 'Banquet'
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
                 request.session['url_path'] = '/fairs/' + str(fair.year) + '/banquet/invitation/' + token
@@ -790,7 +789,6 @@ def external_invitation(request, token):
                 else: # retrieve existing payment intent
                     intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
 
-                request.session['event'] = 'Banquet'
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
                 request.session['url_path'] = '../banquet/' + token
@@ -872,41 +870,31 @@ def external_banquet_afterparty(request, token=None):
 
         if request.POST and form.is_valid():
             ticket = form.save()
-            ticket.save()
-            #return redirect('banquet_external_afterparty_token', ticket.token)
+            return redirect('banquet_external_afterparty_token', ticket.token)
 
-        if request.POST and ticket.paid_price is None:
-            stripe.api_key = settings.STRIPE_SECRET
+    elif request.POST and ticket.paid_price is None:
+        stripe.api_key = settings.STRIPE_SECRET
 
-            intent = stripe.PaymentIntent.create(
-                amount = amount * 100, # Stripe wants the price in öre
-                currency = 'sek',
-                description ='After party ticket ' + str(ticket.token),
-                receipt_email = ticket.email_address,
-                )
+        charge = stripe.Charge.create(
+            amount=amount * 100,  # Stripe wants the price in ören
+            currency='SEK',
+            description='After party ticket ' + str(ticket.token),
+            source=request.POST['stripeToken']
+        )
 
-            ticket.charge_stripe = intent['id']
-            ticket.paid_timestamp = datetime.datetime.now()
-            ticket.paid_price = amount
-            ticket.save()
+        ticket.charge_stripe = charge['id']
+        ticket.paid_timestamp = datetime.datetime.now()
+        ticket.paid_price = amount
+        ticket.save()
 
-            request.session['event'] = 'AfterParty'
-            request.session['url_path'] = '/banquet/afterparty/' + str(ticket.token)
-            request.session['intent'] = intent
-            request.session['invitation_token'] = str(ticket.token)
-
-            return redirect('/payments/checkout')
-
-            #return redirect('banquet_external_afterparty_token', ticket.token)
-
-        '''send_mail(
+        send_mail(
             'Your ticket for the After Party',
             'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
                 ticket.token) + '\n\nTime and date: November 20, 22:00\nLocation: Münchenbryggeriet\n\nWelcome!',
             'noreply@armada.nu',
             [ticket.email_address],
             fail_silently=True,
-        )'''
+        )
 
     return render(request, 'banquet/afterparty.html', {
         'fair': fair,
@@ -916,6 +904,7 @@ def external_banquet_afterparty(request, token=None):
         'amount': amount,
         'ticket': ticket
     })
+
 
 @permission_required('banquet.base')
 def scan_tickets(request, year):

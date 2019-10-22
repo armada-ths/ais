@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from banquet.models import Participant, Invitation, AfterPartyTicket
+from banquet.models import Participant, Invitation
 
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
@@ -27,7 +27,6 @@ def checkout(request):
 
 
 def confirm(request):
-
     try:
         invitation_token = request.session['invitation_token']
     except KeyError:
@@ -43,22 +42,7 @@ def confirm(request):
     except KeyError:
         raise Http404
 
-    try:
-        event = request.session['event']
-    except KeyError:
-        raise Http404
-
-    if event == 'AfterParty':
-        ticket = get_object_or_404(AfterPartyTicket, token=invitation_token)
-
-        try:
-            ticket_token = request.session['ticket_token']
-        except KeyError:
-            raise Http404
-
-    elif event == 'Banquet':
-        invitation = get_object_or_404(Invitation, token=invitation_token)
-
+    invitation = get_object_or_404(Invitation, token=invitation_token)
     id = intent['id']
 
     test_status = 0
@@ -67,15 +51,8 @@ def confirm(request):
         test_status += 1
 
     if stripe.PaymentIntent.retrieve(id)['status'] != 'succeeded':
-
-        if event == 'AfterParty':
-            ticket.paid_price = None
-            ticket.save()
-
-        elif event == 'Banquet':
-            invitation.participant.has_paid = False
-            invitation.participant.save()
-
+        invitation.participant.has_paid = False
+        invitation.participant.save()
         # if we are unable to get status succeeded we send an email to support, the issue then has to be handled manually
         send_mail(
             'Problem with a payment in Stripe',
@@ -86,20 +63,14 @@ def confirm(request):
         )
 
     else:
-
-        if event == 'AfterParty':
-            ticket.paid_price = 75 #måste hämta price eller göra boolean
-            ticket.save()
-
-        elif event == 'Banquet':
-            invitation.participant.has_paid = True
-            invitation.participant.save()
+        invitation.participant.has_paid = True
+        invitation.participant.save()
 
     try:
         del request.session['intent']
     except KeyError:
         pass
-
+        
     try:
         del request.session['invitation_token']
     except KeyError:
@@ -110,15 +81,5 @@ def confirm(request):
     except KeyError:
         pass
 
-    try:
-        del request.session['event']
-    except KeyError:
-        pass
-
-
-    if event == 'AfterParty':
-        return redirect(url_path, ticket_token)
-
-    elif event == 'Banquet':
-        return redirect(url_path)
+    return redirect(url_path)
     #return redirect('../banquet/' + invitation_token)

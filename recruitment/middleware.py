@@ -31,8 +31,7 @@ class LoginRequiredMiddleware:
             '/',
             '/register/', '/register/user', '/register/company',
             '/register/password_reset/', '/register/password_reset/done/',
-            '/register/external/signup', '/payments/checkout', '/payments/confirm',
-            '/banquet/afterparty/', '/banquet/afterparty/...'
+            '/register/external/signup', '/payments/checkout', '/payments/confirm'
         }
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
