@@ -126,7 +126,7 @@ class SignupForm extends Component {
                           'The event fee has been paid!  🎉'
                       ) : (
                           <Fragment>
-														<Typography style={{marginTop: 8, marginBottom: 8}}>This event has a fee of {event.fee} SEK to sign up. By signing up you agree to THS Armadas <a href="https://www.google.se" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>GDPR policy</a>.</Typography>
+														<Typography style={{marginTop: 8, marginBottom: 8}}>This event has a fee of {event.fee} SEK to sign up. By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
 															<StripeProvider apiKey={this.props.stripe_publishable}>
 															<Elements locale='en'>
                                 <Stripe
@@ -148,7 +148,7 @@ class SignupForm extends Component {
           </Grid>
 					{event.fee == 0 && (
 	          <Grid item sm={12}>
-							<Typography style={{marginTop: 8}}>By signing up you agree to THS Armadas <a href="https://www.google.se" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>GDPR policy</a>.</Typography>
+							<Typography style={{marginTop: 8}}>By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
 	            <Button
 	                disabled={!event.open_for_signup}
 	                onClick={this.handleClick}
