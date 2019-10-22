@@ -38,7 +38,7 @@ class Table(models.Model):
         unique_together = [['banquet', 'name']]
         ordering = ['banquet', 'name']
 
-    def __str__(self): return self.name
+    def __str__(self): return str(self.banquet) + ' - ' + self.name
 
 
 class Seat(models.Model):

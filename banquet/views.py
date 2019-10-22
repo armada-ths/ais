@@ -572,7 +572,7 @@ def manage_participant_form(request, year, banquet_pk, participant_pk):
         for table_seat in Seat.objects.filter(table=table):
             if table_seat not in seats_taken: table_seats.append((table_seat.pk, table_seat.name))
 
-        seats.append([table, table_seats])
+        seats.append([table.name, table_seats])
 
     form.fields['seat'].choices = [('', '---------')] + seats
 
