@@ -1,6 +1,7 @@
 import json
 import stripe
 import time
+import datetime
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, Http404
@@ -51,11 +52,6 @@ def confirm(request):
     if event == 'AfterParty':
         ticket = get_object_or_404(AfterPartyTicket, token=invitation_token)
 
-        try:
-            ticket_token = request.session['ticket_token']
-        except KeyError:
-            raise Http404
-
     elif event == 'Banquet':
         invitation = get_object_or_404(Invitation, token=invitation_token)
 
@@ -89,6 +85,7 @@ def confirm(request):
 
         if event == 'AfterParty':
             ticket.paid_price = 75 #måste hämta price eller göra boolean
+            ticket.paid_timestamp = datetime.datetime.now()
             ticket.save()
 
         elif event == 'Banquet':
@@ -117,8 +114,7 @@ def confirm(request):
 
 
     if event == 'AfterParty':
-        return redirect(url_path, ticket_token)
+        return redirect(url_path, invitation_token)
 
     elif event == 'Banquet':
         return redirect(url_path)
-    #return redirect('../banquet/' + invitation_token)

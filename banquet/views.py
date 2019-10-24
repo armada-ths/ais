@@ -875,38 +875,43 @@ def external_banquet_afterparty(request, token=None):
             ticket.save()
             #return redirect('banquet_external_afterparty_token', ticket.token)
 
-        if request.POST and ticket.paid_price is None:
+            if amount > 0 and ticket.paid_price is None:
+                stripe.api_key = settings.STRIPE_SECRET
+
+                intent = stripe.PaymentIntent.create(
+                    amount = amount * 100, # Stripe wants the price in öre
+                    currency = 'sek',
+                    description ='After party ticket ' + str(ticket.token),
+                    receipt_email = ticket.email_address,
+                    )
+
+                ticket.charge_stripe = intent['id']
+                ticket.save()
+
+                request.session['event'] = 'AfterParty'
+                request.session['url_path'] = 'banquet_external_afterparty_token'
+                #request.session['url_path'] = '/banquet/afterparty/' + str(ticket.token)
+                request.session['intent'] = intent
+                request.session['invitation_token'] = str(ticket.token)
+                request.session.set_expiry(0)
+
+                return redirect('/payments/checkout')
+
+    if ticket is not None:
+
+        if ticket.charge_stripe is not None:
             stripe.api_key = settings.STRIPE_SECRET
 
-            intent = stripe.PaymentIntent.create(
-                amount = amount * 100, # Stripe wants the price in öre
-                currency = 'sek',
-                description ='After party ticket ' + str(ticket.token),
-                receipt_email = ticket.email_address,
+            if stripe.PaymentIntent.retrieve(ticket.charge_stripe)['status'] == 'succeeded' and ticket.email_sent is False:
+                send_mail(
+                    'Your ticket for the After Party',
+                    'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
+                        ticket.token) + '\n\nTime and date: November 20, 22:00\nLocation: Münchenbryggeriet\n\nWelcome!',
+                    'noreply@armada.nu',
+                    [ticket.email_address],
+                    fail_silently=True,
                 )
-
-            ticket.charge_stripe = intent['id']
-            ticket.paid_timestamp = datetime.datetime.now()
-            ticket.paid_price = amount
-            ticket.save()
-
-            request.session['event'] = 'AfterParty'
-            request.session['url_path'] = '/banquet/afterparty/' + str(ticket.token)
-            request.session['intent'] = intent
-            request.session['invitation_token'] = str(ticket.token)
-
-            return redirect('/payments/checkout')
-
-            #return redirect('banquet_external_afterparty_token', ticket.token)
-
-        '''send_mail(
-            'Your ticket for the After Party',
-            'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
-                ticket.token) + '\n\nTime and date: November 20, 22:00\nLocation: Münchenbryggeriet\n\nWelcome!',
-            'noreply@armada.nu',
-            [ticket.email_address],
-            fail_silently=True,
-        )'''
+                ticket.email_sent = True
 
     return render(request, 'banquet/afterparty.html', {
         'fair': fair,
@@ -915,7 +920,7 @@ def external_banquet_afterparty(request, token=None):
         'stripe_amount': amount * 100,
         'amount': amount,
         'ticket': ticket
-    })
+        })
 
 @permission_required('banquet.base')
 def scan_tickets(request, year):

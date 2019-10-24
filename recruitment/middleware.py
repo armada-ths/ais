@@ -32,7 +32,7 @@ class LoginRequiredMiddleware:
             '/register/', '/register/user', '/register/company',
             '/register/password_reset/', '/register/password_reset/done/',
             '/register/external/signup', '/payments/checkout', '/payments/confirm',
-            '/banquet/afterparty/', '/banquet/afterparty/...'
+            '/banquet/afterparty'
         }
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
@@ -51,7 +51,10 @@ class LoginRequiredMiddleware:
 
         if re.match(r'/banquet/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$', path): return
 
+
         if re.match(r'/banquet/[0-9A-Za-z]+$', path): return
+
+        if re.match(r'/banquet/afterparty/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', path): return
 
         if re.match(r'/unirel/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$', path): return
 
