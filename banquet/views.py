@@ -6,6 +6,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -18,7 +19,7 @@ from fair.models import Fair
 from people.models import Profile
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, \
-    ParticipantForm, ParticipantAdminForm, AfterPartyInvitation, AfterPartyTicketForm, ParticipantTableMatchingForm
+    ParticipantForm, ParticipantAdminForm, AfterPartyInvitationForm, AfterPartyInvitation, AfterPartyTicketForm, ParticipantTableMatchingForm
 from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, Table, Seat, TableMatching
 
 
@@ -302,7 +303,28 @@ def export_invitations(request, year):
 
 def dashboard(request, year):
     fair = get_object_or_404(Fair, year=year)
+    current_banquet = Banquet.objects.filter(fair=fair).first() # This might be dangerous, assumes there is only one banquet per fair
+    invite_form = AfterPartyInvitationForm()
+    invite_errors = []
 
+    # Handle invitation request
+    if request.method == 'POST':
+        invite_form = AfterPartyInvitationForm(
+            request.POST
+        )
+
+        if invite_form.is_valid():
+            invite = invite_form.save(commit = False)
+            # Set the banquet and inviter manually before saving to the database
+            invite.banquet = current_banquet
+            invite.inviter = request.user
+            
+            try:
+                invite.save()
+            except IntegrityError as e: # This will catch the uniqueness constraint between banquet/email
+                invite_form.add_error('email_address', "This person's e-mail address has already been invited to the banquet!")
+                
+            
     banquets = []
 
     for banquet in Banquet.objects.filter(fair=fair):
@@ -316,8 +338,19 @@ def dashboard(request, year):
             'count_pending': Invitation.objects.filter(banquet=banquet, participant=None).exclude(denied=True).count()
         })
     
+    # Any Armada member can invite friends to the after-party
+    # during a time period before the current fair
+    invitation_period = False
+    fair_date = current_banquet.date if current_banquet else None 
+    now = datetime.date.today()
+    if fair_date:
+        days_until_fair = (fair_date.date() - now).days
+        if 0 <= days_until_fair <= 30: # Invitations are allowed 30 days before the fair (if there is a fair by then...)
+            invitation_period = True
+    
     after_party_invites = []
     # All the people this person has invited to the after party
+    # We don't really need to do this if invitation_period = False
     for invite in AfterPartyInvitation.objects.filter(inviter=request.user, banquet__fair=fair):
         after_party_invites.append({
             'name': invite.name,
@@ -328,14 +361,19 @@ def dashboard(request, year):
     auth_users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair)]
     invite_permission = request.user in auth_users
 
+    max_invites = 5
+    print(invite_errors)
+
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
         'invitiations': Invitation.objects.filter(user=request.user),
         'banquets': banquets,
+        'after_party_invite_form': invite_form,
         'after_party_invites': after_party_invites,
-        'invitation_permissions': {
-            'invite': invite_permission,
-            'invites_left': len(after_party_invites) < 5 # Can be used in the template to check whether invitation form should be presented
+        'meta': {
+            'show_after_party_invites': invite_permission and invitation_period,
+            'show_form': len(after_party_invites) < max_invites, # Can be used in the template to check whether invitation form should be presented
+            'invites_left': max_invites - len(after_party_invites),
         } 
     })
 

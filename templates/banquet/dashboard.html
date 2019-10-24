@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block nav-banquet %}
   <li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
@@ -41,16 +42,49 @@
       </tbody>
     </table>
   </div>
-  {% if invitation_permissions.invite %}
-    <h1>Invite your friends</h1>
-    {% if invitation_permissions.invites_left %}
-      {% if after_party_invites %}
-        {% for invite in after_party_invites %}
-        {% endfor %}
-      {% else %}
-        <h2>You have not invited anybody yet, what are you waiting for?</h2>
-      {% endif %}
+
+
+
+  {% if meta.show_after_party_invites %}
+    <h1>Invite your friends to the after party</h1>
+    Any Armada member can invite up to five friends to buy banquet after party tickets at a reduced price.
+    The people you invite will receive an email with a link to purchase their ticket. They need to sign 
+    up for the after party with the same email that you write here to get their discount.
+
+    {% if meta.show_form %}
+      <h3>You have {{ meta.invites_left }} invites left</h3>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+          {{ after_party_invite_form | crispy }}
+        </div>
+        <button class="btn btn-primary"><span class="glyphicon glyphicon-send"></span> Invite</button>
+      </form>
+    {% else %}
+      <h3>You have made all your invites already, good job!</h3>
     {% endif %}
+
+    {% if after_party_invites %}
+      <h3> Your invites </h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>E-Mail</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for invite in after_party_invites %}
+            <tr>
+              <td>{{ invite.name }}</td>
+              <td>{{ invite.email }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        
+      </table>
+    {% endif %}
+
   {% endif %}
 
 
