@@ -322,10 +322,9 @@ def dashboard(request, year):
                 invite.save()
                 send_mail(
                     'Your invite to the After Party',
-                    'Hello ' + invite.name + """! You have been invited to the After Party to the Grand Banquet of THS Armada. 
-                    Your ticket can be purchased at a discount here: \nLINK'
-                    \nThe discount is only valid for this e-mail address. 
-                    \n\nSee you at the party!""",
+                    'Hello ' + invite.name +  '! ' + invite.inviter.get_full_name() + 
+                    """ has invited you to the After Party to the Grand Banquet of THS Armada. Your ticket can be purchased at a discount here: 
+                    \nLINK\nThe discount is only valid for this e-mail address.\n\nSee you at the party!""",
                     'noreply@armada.nu',
                     [invite.email_address],
                     fail_silently=True,
