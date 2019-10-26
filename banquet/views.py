@@ -305,7 +305,6 @@ def dashboard(request, year):
     fair = get_object_or_404(Fair, year=year)
     current_banquet = Banquet.objects.filter(fair=fair).first() # This might be dangerous, assumes there is only one banquet per fair
     invite_form = AfterPartyInvitationForm()
-    invite_errors = []
 
     # Handle invitation request
     if request.method == 'POST':
@@ -321,7 +320,18 @@ def dashboard(request, year):
             
             try:
                 invite.save()
-            except IntegrityError as e: # This will catch the uniqueness constraint between banquet/email
+                send_mail(
+                    'Your invite to the After Party',
+                    'Hello ' + invite.name + """! You have been invited to the After Party to the Grand Banquet of THS Armada. 
+                    Your ticket can be purchased at a discount here: \nLINK'
+                    \nThe discount is only valid for this e-mail address. 
+                    \n\nSee you at the party!""",
+                    'noreply@armada.nu',
+                    [invite.email_address],
+                    fail_silently=True,
+                )
+            except IntegrityError as e: 
+                # This will catch the uniqueness constraint between banquet/email
                 invite_form.add_error('email_address', "This person's e-mail address has already been invited to the banquet!")
                 
             
@@ -362,7 +372,6 @@ def dashboard(request, year):
     invite_permission = request.user in auth_users
 
     max_invites = 5
-    print(invite_errors)
 
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
