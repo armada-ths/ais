@@ -306,7 +306,7 @@ def dashboard(request, year):
     current_banquet = Banquet.objects.filter(fair=fair).first() # This might be dangerous, assumes there is only one banquet per fair
     invite_form = AfterPartyInvitationForm()
 
-    # Handle invitation request
+    # Handle after party invitation request
     if request.method == 'POST':
         invite_form = AfterPartyInvitationForm(
             request.POST
@@ -323,8 +323,10 @@ def dashboard(request, year):
                 send_mail(
                     'Your invite to the After Party',
                     'Hello ' + invite.name +  '! ' + invite.inviter.get_full_name() + 
-                    """ has invited you to the After Party to the Grand Banquet of THS Armada. Your ticket can be purchased at a discount here: 
-                    \nLINK\nThe discount is only valid for this e-mail address.\n\nSee you at the party!""",
+                    """ has invited you to the After Party to the Grand Banquet of THS Armada. Your ticket can be purchased at a discounted price of only 50kr. You can get your ticket here: 
+                    \nhttps://ais.armada.nu/banquet/afterparty
+                    \nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of 50kr will appear at checkout.
+                    \nSee you at the party!""",
                     'noreply@armada.nu',
                     [invite.email_address],
                     fail_silently=True,
@@ -354,35 +356,35 @@ def dashboard(request, year):
     now = datetime.date.today()
     if fair_date:
         days_until_fair = (fair_date.date() - now).days
-        if 0 <= days_until_fair <= 30: # Invitations are allowed 30 days before the fair (if there is a fair by then...)
+        if 0 <= days_until_fair <= 30: # Invitations are allowed 30 days before the fair (if a banquet has been created...)
             invitation_period = True
     
     after_party_invites = []
     # All the people this person has invited to the after party
     # We don't really need to do this if invitation_period = False
-    for invite in AfterPartyInvitation.objects.filter(inviter=request.user, banquet__fair=fair):
+    for invite in AfterPartyInvitation.objects.filter(inviter=request.user, banquet=current_banquet):
         after_party_invites.append({
             'name': invite.name,
             'email': invite.email_address
         })
 
-    # Only people who are currently part of armada may invite other people
+    # Only people who are currently part of Armada may invite other people
     auth_users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair)]
     invite_permission = request.user in auth_users
 
-    max_invites = 5
+    max_invites = 5 # The number of people someone may invite to the after party
 
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
         'invitiations': Invitation.objects.filter(user=request.user),
         'banquets': banquets,
-        'after_party_invite_form': invite_form,
-        'after_party_invites': after_party_invites,
-        'meta': {
-            'show_after_party_invites': invite_permission and invitation_period,
+        'after_party_invites': {
+            'invites': after_party_invites,
+            'form': invite_form,
+            'show': invite_permission and invitation_period,
             'show_form': len(after_party_invites) < max_invites, # Can be used in the template to check whether invitation form should be presented
-            'invites_left': max_invites - len(after_party_invites),
-        } 
+            'left': max_invites - len(after_party_invites)
+        }
     })
 
 
