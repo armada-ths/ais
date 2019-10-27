@@ -27,7 +27,8 @@ class Banquet(models.Model):
     product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Product to link the banquet with')
     background = models.ImageField(upload_to=UploadToDirUUID('banquets', 'map'), blank=True, null=True)
     point_size = models.DecimalField(blank=True, null=True, max_digits=11, decimal_places=10)
-    afterparty_price = models.PositiveIntegerField(default = 75, verbose_name = 'Price (SEK)')  # can be zero
+    afterparty_price = models.PositiveIntegerField(default = 75, verbose_name = 'After Party Price (SEK)')  # can be zero
+    afterparty_price_discount = models.PositiveIntegerField(default = 50, verbose_name = 'After Party Discounted Price (SEK)')  # can be zero
 
     def __str__(self): return self.name
 
@@ -166,6 +167,7 @@ class AfterPartyTicket(models.Model):
     charge_stripe = models.CharField(max_length=255, blank=True, null=True)
     paid_timestamp = models.DateTimeField(null=True, blank=True)
     paid_price = models.PositiveIntegerField(null=True, blank=True)
+    has_paid = models.BooleanField(default = False, blank=False, null=False)
     email_sent = models.BooleanField(default = False, blank=False, null=False)
     inviter = models.CharField(max_length=75, null=True, blank=True, verbose_name='Full name of the inviter')
 

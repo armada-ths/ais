@@ -31,13 +31,14 @@
 
 					<button type="submit" class="btn btn-lg btn-success center-block">Continue</button>
 				</form>
-			{% elif ticket.paid_price is None %}
+
+			{% elif ticket is None  %}
 				<form method="post">
 					{% csrf_token %}
-
 					<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ amount }}</p>
-					<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" data-currency="sek" data-key="{{ stripe_publishable }}" data-label="Proceed to payment" data-email="{{ ticket.email_address }}" data-allow-remember-me="false" data-name="THS Armada" data-description="The After Party" data-amount="{{ stripe_amount }}" data-locale="en"></script>
+					<button type="submit" class="btn btn-lg btn-success center-block">Proceed to Payment</button>
 				</form>
+
 			{% else %}
 				<h2>You have a ticket!</h2>
 				<p>Please look in your inbox; your ticket should be delivered electronically within an hour. If you have any questions, don't hesitate to write to <a href="mailto:support@armada.nu">support@armada.nu</a>.</p>
@@ -45,7 +46,19 @@
 				<p><span style="font-weight: bold;">Ticket reference:</span> <span class="bg-info">{{ ticket.token }}</span></p>
 
 				<p>Welcome to the After Party!</p>
-			{% endif %}
+
+				{% if has_paid is not True %}
+					<div class="alert alert-warning" role="alert">We haven't received your payment of SEK {{ amount }}. If you haven't paid before the After Party, this ticket is invalid.</div>
+						<form method="post">
+							{% csrf_token %}
+							<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ amount }}</p>
+							<button type="submit" class="btn btn-lg btn-success center-block">Proceed to Payment</button>
+						</form>
+
+				{% else %}
+					<div class = "alert alert-success">We have received your payment of SEK {{ amount }}.</div>{% endif %}
+				{% endif %}
+
 		</div>
 	</body>
 </html>

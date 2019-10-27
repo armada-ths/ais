@@ -924,6 +924,7 @@ def external_banquet_afterparty(request, token=None):
     location = current_banquet.location
     amount = current_banquet.afterparty_price
     form = None
+    has_paid = False
 
     if ticket is None:
         form = AfterPartyTicketForm(request.POST or None)
@@ -938,7 +939,7 @@ def external_banquet_afterparty(request, token=None):
                 discounted_invitation = None
 
             if discounted_invitation is not None:
-                amount = current_banquet.afterparty_price - 25 # Perhaps we should add the discounted price in the models too?
+                amount = current_banquet.afterparty_price_discount
 
             if amount > 0 and ticket.paid_price is None:
                 stripe.api_key = settings.STRIPE_SECRET
@@ -962,6 +963,20 @@ def external_banquet_afterparty(request, token=None):
                 return redirect('/payments/checkout')
 
     if ticket is not None:
+        has_paid = ticket.has_paid
+
+        if request.POST and ticket.has_paid is False:
+            stripe.api_key = settings.STRIPE_SECRET
+
+            id = ticket.charge_stripe
+            request.session['event'] = 'AfterParty'
+            request.session['url_path'] = 'banquet_external_afterparty_token'
+            request.session['intent'] = stripe.PaymentIntent.retrieve(id)
+            request.session['invitation_token'] = str(ticket.token)
+            request.session.set_expiry(0)
+
+            return redirect('/payments/checkout')
+
 
         if ticket.charge_stripe is not None:
             stripe.api_key = settings.STRIPE_SECRET
@@ -983,9 +998,9 @@ def external_banquet_afterparty(request, token=None):
         'date': date,
         'location': location,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-        'stripe_amount': amount * 100,
         'amount': amount,
-        'ticket': ticket
+        'ticket': ticket,
+        'has_paid': has_paid
         })
 
 @permission_required('banquet.base')

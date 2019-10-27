@@ -84,7 +84,7 @@ def confirm(request):
     else:
 
         if event == 'AfterParty':
-            ticket.paid_price = 75 #måste hämta price eller göra boolean
+            ticket.has_paid = True
             ticket.paid_timestamp = datetime.datetime.now()
             ticket.save()
 
