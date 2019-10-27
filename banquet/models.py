@@ -154,7 +154,7 @@ class AfterPartyInvitation(models.Model):
         unique_together = ['banquet', 'email_address'] # One person can only have one invite to each banquet
 
     def __str__(self): 
-        return str(name)
+        return str(self.name)
 
 
 class AfterPartyTicket(models.Model):
