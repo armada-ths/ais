@@ -119,6 +119,7 @@
 			</div>
 		</div>
 
+		{% if form_catalogue_details %}
 		<div class="expandable">
 			<h2>Catalogue and student matching</h2>
 
@@ -133,6 +134,7 @@
 				</form>
 			</div>
 		</div>
+		{% endif %}
 
 		{% for registration_section in registration_sections %}
 			<div class="expandable">

@@ -282,6 +282,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
 	registration_sections = []
 
+	# for registration_section_raw in RegistrationSection.objects.filter(include_in_registration = True):
 	for registration_section_raw in RegistrationSection.objects.all():
 		registration_section = {
 			'name': registration_section_raw.name,
@@ -411,6 +412,8 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
 		for field in form_logistics_details.fields: form_logistics_details.fields[field].disabled = True
 		for field in form_catalogue_details.fields: form_catalogue_details.fields[field].disabled = True
+
+	form_catalogue_details = None # NOTE: this is only a quick fix to hide the catalogue and student matching form from the companies since they cannot edit it anyway, for the future one might want to think about if all forms should be removed entirely after deadline. Uncomment this row to make everything work as normal.
 
 	return render(request, 'register/inside/registration_complete.html',
 	{
