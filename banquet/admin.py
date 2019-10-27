@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Banquet, Participant, InvitationGroup, Invitation, Table, Seat, AfterPartyTicket, TableMatching
+from .models import Banquet, Participant, InvitationGroup, Invitation, Table, Seat, AfterPartyInvitation, AfterPartyTicket, TableMatching
 
 
 admin.site.register(Banquet)
@@ -19,3 +19,8 @@ class TableAdmin(admin.ModelAdmin):
 @admin.register(TableMatching)
 class TableMatchingAdmin(admin.ModelAdmin):
     list_filter = ['participant__banquet']
+
+@admin.register(AfterPartyInvitation)
+class AfterPartyInvitationAdmin(admin.ModelAdmin):
+	list_filter = ['banquet']
+	ordering = ['name', 'email_address']
