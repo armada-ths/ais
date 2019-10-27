@@ -963,12 +963,15 @@ def external_banquet_afterparty(request, token=None):
                 return redirect('/payments/checkout')
 
     if ticket is not None:
+        stripe.api_key = settings.STRIPE_SECRET
+
+        id = ticket.charge_stripe
+        amount = (stripe.PaymentIntent.retrieve(id)['amount'])/100
         has_paid = ticket.has_paid
 
-        if request.POST and ticket.has_paid is False:
-            stripe.api_key = settings.STRIPE_SECRET
 
-            id = ticket.charge_stripe
+        if request.POST and ticket.has_paid is False:
+
             request.session['event'] = 'AfterParty'
             request.session['url_path'] = 'banquet_external_afterparty_token'
             request.session['intent'] = stripe.PaymentIntent.retrieve(id)

@@ -161,6 +161,7 @@ class AfterPartyInvitation(models.Model):
 
 
 class AfterPartyTicket(models.Model):
+    banquet = models.ForeignKey(Banquet, on_delete=models.CASCADE, null = True, blank = True)
     token = models.CharField(max_length=255, null=False, blank=False, default=uuid.uuid4, unique=True)
     name = models.CharField(max_length=75, blank=False, null=False)
     email_address = models.EmailField(max_length=75, blank=False, null=False, verbose_name='E-mail address')
