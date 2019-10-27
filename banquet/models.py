@@ -19,6 +19,7 @@ class Banquet(models.Model):
     fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
     name = models.CharField(max_length=75, blank=False, null=False)
     date = models.DateTimeField()
+    afterparty_date = models.DateTimeField(blank = True, null = True)
     location = models.CharField(max_length=75, blank=True, null=True)
     dress_code = models.CharField(max_length=255, blank=True, null=True)
     caption_phone_number = models.CharField(max_length=255, blank=True, null=True, verbose_name='Caption for the phone number field')
@@ -26,6 +27,7 @@ class Banquet(models.Model):
     product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Product to link the banquet with')
     background = models.ImageField(upload_to=UploadToDirUUID('banquets', 'map'), blank=True, null=True)
     point_size = models.DecimalField(blank=True, null=True, max_digits=11, decimal_places=10)
+    afterparty_price = models.PositiveIntegerField(default = 75, verbose_name = 'Price (SEK)')  # can be zero
 
     def __str__(self): return self.name
 
@@ -143,6 +145,19 @@ class Invitation(models.Model):
     def __str__(self):
         return (self.name if self.name is not None else str(self.user))
 
+class AfterPartyInvitation(models.Model):
+    banquet = models.ForeignKey(Banquet, on_delete=models.CASCADE)
+    inviter = models.ForeignKey(User) # ON_DELETE?
+    name = models.CharField(max_length = 75, verbose_name='Full name')
+    email_address = models.EmailField(max_length=75, verbose_name='E-mail address')
+    used = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ['banquet', 'email_address'] # One person can only have one invite to each banquet
+
+    def __str__(self):
+        return str(name)
+
 
 class AfterPartyTicket(models.Model):
     token = models.CharField(max_length=255, null=False, blank=False, default=uuid.uuid4, unique=True)
@@ -152,5 +167,6 @@ class AfterPartyTicket(models.Model):
     paid_timestamp = models.DateTimeField(null=True, blank=True)
     paid_price = models.PositiveIntegerField(null=True, blank=True)
     email_sent = models.BooleanField(default = False, blank=False, null=False)
+    inviter = models.CharField(max_length=75, null=True, blank=True, verbose_name='Full name of the inviter')
 
     def __str__(self): return str(self.name) + ' <' + str(self.email_address) + '> -- ' + str(self.token)

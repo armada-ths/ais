@@ -6,6 +6,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -18,7 +19,7 @@ from fair.models import Fair
 from people.models import Profile
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, \
-    ParticipantForm, ParticipantAdminForm, AfterPartyTicketForm, ParticipantTableMatchingForm
+    ParticipantForm, ParticipantAdminForm, AfterPartyInvitationForm, AfterPartyInvitation, AfterPartyTicketForm, ParticipantTableMatchingForm
 from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, Table, Seat, TableMatching
 
 
@@ -302,6 +303,27 @@ def export_invitations(request, year):
 
 def dashboard(request, year):
     fair = get_object_or_404(Fair, year=year)
+    current_banquet = Banquet.objects.filter(fair=fair).first() # This might be dangerous, assumes there is only one banquet per fair
+    invite_form = AfterPartyInvitationForm()
+    invite_errors = []
+
+    # Handle invitation request
+    if request.method == 'POST':
+        invite_form = AfterPartyInvitationForm(
+            request.POST
+        )
+
+        if invite_form.is_valid():
+            invite = invite_form.save(commit = False)
+            # Set the banquet and inviter manually before saving to the database
+            invite.banquet = current_banquet
+            invite.inviter = request.user
+
+            try:
+                invite.save()
+            except IntegrityError as e: # This will catch the uniqueness constraint between banquet/email
+                invite_form.add_error('email_address', "This person's e-mail address has already been invited to the banquet!")
+
 
     banquets = []
 
@@ -316,10 +338,43 @@ def dashboard(request, year):
             'count_pending': Invitation.objects.filter(banquet=banquet, participant=None).exclude(denied=True).count()
         })
 
+    # Any Armada member can invite friends to the after-party
+    # during a time period before the current fair
+    invitation_period = False
+    fair_date = current_banquet.date if current_banquet else None
+    now = datetime.date.today()
+    if fair_date:
+        days_until_fair = (fair_date.date() - now).days
+        if 0 <= days_until_fair <= 30: # Invitations are allowed 30 days before the fair (if there is a fair by then...)
+            invitation_period = True
+
+    after_party_invites = []
+    # All the people this person has invited to the after party
+    # We don't really need to do this if invitation_period = False
+    for invite in AfterPartyInvitation.objects.filter(inviter=request.user, banquet__fair=fair):
+        after_party_invites.append({
+            'name': invite.name,
+            'email': invite.email_address
+        })
+
+    # Only people who are currently part of armada may invite other people
+    auth_users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair)]
+    invite_permission = request.user in auth_users
+
+    max_invites = 5
+    print(invite_errors)
+
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
         'invitiations': Invitation.objects.filter(user=request.user),
-        'banquets': banquets
+        'banquets': banquets,
+        'after_party_invite_form': invite_form,
+        'after_party_invites': after_party_invites,
+        'meta': {
+            'show_after_party_invites': invite_permission and invitation_period,
+            'show_form': len(after_party_invites) < max_invites, # Can be used in the template to check whether invitation form should be presented
+            'invites_left': max_invites - len(after_party_invites),
+        }
     })
 
 
@@ -862,9 +917,12 @@ def external_invitation_maybe(request, token):
 
 def external_banquet_afterparty(request, token=None):
     fair = get_object_or_404(Fair, current=True)
+    current_banquet = Banquet.objects.filter(fair=fair).first()
     ticket = get_object_or_404(AfterPartyTicket, token=token) if token is not None else None
 
-    amount = 75
+    date = current_banquet.afterparty_date
+    location = current_banquet.location
+    amount = current_banquet.afterparty_price
     form = None
 
     if ticket is None:
@@ -873,7 +931,14 @@ def external_banquet_afterparty(request, token=None):
         if request.POST and form.is_valid():
             ticket = form.save()
             ticket.save()
-            #return redirect('banquet_external_afterparty_token', ticket.token)
+
+            try:
+                discounted_invitation = AfterPartyInvitation.objects.get(email_address = ticket.email_address, banquet=current_banquet)
+            except:
+                discounted_invitation = None
+
+            if discounted_invitation is not None:
+                amount = current_banquet.afterparty_price - 25 # Perhaps we should add the discounted price in the models too?
 
             if amount > 0 and ticket.paid_price is None:
                 stripe.api_key = settings.STRIPE_SECRET
@@ -890,7 +955,6 @@ def external_banquet_afterparty(request, token=None):
 
                 request.session['event'] = 'AfterParty'
                 request.session['url_path'] = 'banquet_external_afterparty_token'
-                #request.session['url_path'] = '/banquet/afterparty/' + str(ticket.token)
                 request.session['intent'] = intent
                 request.session['invitation_token'] = str(ticket.token)
                 request.session.set_expiry(0)
@@ -906,7 +970,7 @@ def external_banquet_afterparty(request, token=None):
                 send_mail(
                     'Your ticket for the After Party',
                     'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
-                        ticket.token) + '\n\nTime and date: November 20, 22:00\nLocation: Münchenbryggeriet\n\nWelcome!',
+                        ticket.token) + '\n\nTime and date: ' + str(date) + '\nLocation: ' + str(location) + '\n\nWelcome!',
                     'noreply@armada.nu',
                     [ticket.email_address],
                     fail_silently=True,
@@ -916,6 +980,8 @@ def external_banquet_afterparty(request, token=None):
     return render(request, 'banquet/afterparty.html', {
         'fair': fair,
         'form': form,
+        'date': date,
+        'location': location,
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': amount * 100,
         'amount': amount,
