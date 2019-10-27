@@ -984,7 +984,7 @@ def external_banquet_afterparty(request, token=None):
         if ticket.charge_stripe is not None:
             stripe.api_key = settings.STRIPE_SECRET
 
-            if stripe.PaymentIntent.retrieve(ticket.charge_stripe)['status'] == 'succeeded' and ticket.email_sent is False:
+            if stripe.PaymentIntent.retrieve(ticket.charge_stripe)['status'] == 'succeeded' and ticket.email_sent == False:
                 send_mail(
                     'Your ticket for the After Party',
                     'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
@@ -994,6 +994,7 @@ def external_banquet_afterparty(request, token=None):
                     fail_silently=True,
                 )
                 ticket.email_sent = True
+                ticket.save()
 
     return render(request, 'banquet/afterparty.html', {
         'fair': fair,
