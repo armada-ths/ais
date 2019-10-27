@@ -333,7 +333,7 @@ def dashboard(request, year):
                 )
             except IntegrityError as e: 
                 # This will catch the uniqueness constraint between banquet/email
-                invite_form.add_error('email_address', "This person's e-mail address has already been invited to the banquet!")
+                invite_form.add_error('email_address', "An invitation to this year's after party has already been sent to this e-mail address!")
                 
             
     banquets = []
