@@ -56,19 +56,30 @@
 			
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Booths</h3>
+					<h3 class="panel-title">Fair location</h3>
 				</div>
 				
 				<div class="panel-body">
 					{% if booths %}
 						<ul class="list-unstyled">
+							<span style="font-weight: 700;">Booths:</span>
 							{% for booth in booths %}
 								<li><a href="//maps.armada.nu/?location={{ booth.location.pk }}&booth={{ booth.pk }}" target="_blank">{% if booth.location.parent %}{{ booth.location.parent.name }} – {% endif %} {{ booth.location.name }} – {{ booth.name }}</a></li>
 							{% endfor %}
 						</ul>
 					{% else %}
-						<p>No booth(s) assigned.</p>
+						<p><span style="font-weight: 700;">Booths:</span> No booth(s) assigned.</p>
 					{% endif %}
+					{%if fair_location %}
+						<p><span style="font-weight: 700;">Location:</span> {{fair_location}}</p>
+					{% else %}
+					<p><span style="font-weight: 700;">Location:</span> No location specified.</p>
+					{% endif %}
+					{% if fair_location_special %}
+						<p><span style="font-weight: 700;">Special location:</span> {{fair_location_special}}</p>
+					{% else %}
+						<p><span style="font-weight: 700;">Special location:</span> No special location specified.</p>
+					{%endif%}
 				</div>
 			</div>
 			

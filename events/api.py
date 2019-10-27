@@ -46,21 +46,39 @@ def signup(request, event_pk):
 
     event = get_object_or_404(Event, pk=event_pk)
     if not request.user:
-        return JsonResponse({'message': 'Authentication required.'}, status=403)
+        return JsonResponse({'error': 'Authentication required.'}, status=403)
 
     if not event.open_for_signup:
-        return JsonResponse({'message': 'Event not open for sign ups.'}, status=403)
+        return JsonResponse({'error': 'Event not open for sign ups.'}, status=403)
 
     participant, _created = Participant.objects.get_or_create(
         user_s=request.user,
         event=event
     )
 
-    if event.fee_s > 0 and not participant.fee_payed_s:
-        return JsonResponse({'message': 'Fee has not been payed'}, status=400)
-
     data = json.loads(request.body)
     answers = data['answers']
+    participant.stripe_charge_id = data['intent_id']
+
+    # check if the user has paid successfully by checking the status of the Stripe payment intent
+    if event.fee_s > 0:
+        if participant.stripe_charge_id:
+            try:
+                payment_intent = stripe.PaymentIntent.retrieve(participant.stripe_charge_id)
+            except:
+                payment_intent = None
+                participant.fee_payed_s = False
+
+            if payment_intent:
+                if payment_intent['status'] == 'succeeded':
+                    participant.fee_payed_s = True
+                else:
+                    participant.fee_payed_s = False
+        else: # no stripe_charge_id
+            participant.fee_payed_s = False
+
+    if event.fee_s > 0 and not participant.fee_payed_s:
+        return JsonResponse({'error': 'Fee has not been payed.'}, status=400)
 
     questions = SignupQuestion.objects.filter(event=event).all()
 
@@ -82,40 +100,29 @@ def signup(request, event_pk):
 def payment(request, event_pk):
     """
     Endpoint to process Stripe card tokens
+
+	Payment Intents: https://stripe.com/docs/payments/payment-intents/web
+	Stripe frontend in React: https://stripe.com/docs/recipes/elements-react#using-stripe-elements-in-react
     """
 
     event = get_object_or_404(Event, pk=event_pk)
 
     if not request.user:
-        return JsonResponse({'message': 'Authentication required.'}, status=403)
-
-    participant, _created = Participant.objects.get_or_create(
-        user_s=request.user,
-        event=event
-    )
-
-    if participant.fee_payed_s:
-        return JsonResponse({'message': 'Fee has already been paid.'}, status=400)
-
-    data = json.loads(request.body)
-
-    # Stripe expects the amount in ören
-    amount = event.fee_s * 100
-    token = data['token']
+        return JsonResponse({'error': 'Authentication required.'}, status=403)
 
     stripe.api_key = settings.STRIPE_SECRET
-    charge = stripe.Charge.create(
-        amount=amount,
-        currency='sek',
-        description=event.name,
-        source=token
+    intent = None
+
+    # if participant.stripe_charge_id == None:
+    intent = stripe.PaymentIntent.create(
+        amount = event.fee_s * 100, # Stripe wants the price in öre
+        currency = 'sek',
+        description = event.name,
     )
+    if intent == None:
+        return JsonResponse({'error': 'Unable to reach the external payment serivce provider.'}, status=503)
 
-    participant.stripe_charge_id = charge['id']
-    participant.fee_payed_s = True
-    participant.save()
-
-    return HttpResponse(status=204)
+    return JsonResponse({'client_secret': intent.client_secret, 'intent_id': intent.id}, status=200)
 
 
 @require_POST
@@ -136,7 +143,7 @@ def join_team(request, event_pk, team_pk):
 
     TeamMember.objects.update_or_create(participant=participant, defaults={'team': team, 'leader': False})
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
 
     return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=201)
 
@@ -153,7 +160,7 @@ def leave_team(request, event_pk):
 
     Participant.objects.get(user_s=request.user, event=event).teammember_set.all().delete()
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
 
     return JsonResponse({'teams': [serializers.team(team) for team in teams]}, status=200)
 
@@ -181,7 +188,7 @@ def create_team(request, event_pk):
 
     TeamMember.objects.update_or_create(participant=participant, defaults={'team': team, 'leader': True})
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
 
     return JsonResponse({
         'teams': [serializers.team(team) for team in teams],
@@ -217,7 +224,7 @@ def update_team(request, event_pk, team_pk):
 
     team.teammember_set.exclude(id__in=ids).delete()
 
-    teams = Team.objects.filter(event=event).all()
+    teams = Team.objects.filter(event=event, allow_join_s=True).all()
     participant = Participant.objects.get(user_s=request.user, event=event)
 
     return JsonResponse({

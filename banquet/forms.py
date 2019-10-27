@@ -194,6 +194,7 @@ class InvitationForm(forms.ModelForm):
 class InvitationSearchForm(forms.Form):
 	status_choices = [
 		('GOING', 'Going'),
+		('HAS_NOT_PAID', 'Has not paid'),
 		('NOT_GOING', 'Not going'),
 		('PENDING', 'Pending')
 	]

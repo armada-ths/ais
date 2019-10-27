@@ -42,6 +42,7 @@
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
     "react-jss": "^8.6.1",
+    "react-stripe-elements": "^5.0.1",
     "recompose": "^0.30.0"
   }
 }

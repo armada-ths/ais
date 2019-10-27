@@ -452,7 +452,6 @@ def manage_invitations(request, year, banquet_pk):
             'reason': invitation.reason,
             'status': invitation.status,
             'price': invitation.price,
-            'status': invitation.status,
             'deadline_smart': invitation.deadline_smart,
             'matching_status': invitation.part_of_matching
         })
@@ -589,7 +588,8 @@ def manage_participant(request, year, banquet_pk, participant_pk):
 			'alcohol': participant.get_alcohol_display,
 			'giveaway': participant.get_giveaway_display,
             'token': participant.token,
-            'seat': participant.seat
+            'seat': participant.seat,
+			'invitation_status': participant.invitation_set.first().status,
         }
     })
 
@@ -606,7 +606,8 @@ def manage_participants(request, year, banquet_pk):
         'name': participant.user.get_full_name() if participant.user else participant.name,
         'email_address': participant.user.email if participant.user else participant.email_address,
         'alcohol': participant.alcohol,
-        'seat': participant.seat
+        'seat': participant.seat,
+        'invitation': participant.invitation_set.first(),
     } for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet)]
 
     return render(request, 'banquet/manage_participants.html', {
@@ -636,7 +637,7 @@ def manage_participant_form(request, year, banquet_pk, participant_pk):
         for table_seat in Seat.objects.filter(table=table):
             if table_seat not in seats_taken: table_seats.append((table_seat.pk, table_seat.name))
 
-        seats.append([table, table_seats])
+        seats.append([table.name, table_seats])
 
     form.fields['seat'].choices = [('', '---------')] + seats
 
@@ -697,6 +698,7 @@ def invitation(request, year, token):
         existingTableMatching = TableMatching.objects.get(participant = participant)
     except ObjectDoesNotExist:
         existingTableMatching = None
+
     tableMatching = existingTableMatching if existingTableMatching is not None else TableMatching()
     participant.name = request.user.get_full_name()
     participant.email_address = request.user.email
@@ -706,35 +708,42 @@ def invitation(request, year, token):
     form.fields['phone_number'].required = True
 
     if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
-    if invitation.banquet.caption_dietary_restrictions is not None: form.fields[
-        'dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
+    if invitation.banquet.caption_dietary_restrictions is not None: form.fields['dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
 
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
     if can_edit:
-        if request.POST and form.is_valid() and can_edit:
-            if invitation.participant is None and invitation.price > 0:
-                stripe.api_key = settings.STRIPE_SECRET
-
-                charge = stripe.Charge.create(
-                    amount=invitation.price * 100,  # Stripe wants the price in ören
-                    currency='SEK',
-                    description='Banquet invitation token ' + str(invitation.token),
-                    source=request.POST['stripeToken']
-                )
-            else:
-                charge = None
+        if request.POST and form.is_valid():
 
             form.instance.name = None
             form.instance.email_address = None
             invitation.participant = form.save()
-            tableMatchingForm.instance.participant = invitation.participant
             invitation.save()
+
+            tableMatchingForm.instance.participant = invitation.participant
             if invitation.part_of_matching:
                 tableMatchingForm.save()
-            if charge is not None:
-                invitation.participant.charge_stripe = charge['id']
-                invitation.participant.save()
+
+            if invitation.price > 0 and invitation.participant.has_paid == False: # should pay a price and has not done this already
+                stripe.api_key = settings.STRIPE_SECRET
+                # Create or retrieve a Stripe payment intent https://stripe.com/docs/payments/payment-intents/web
+                if invitation.participant.charge_stripe == None:
+                    intent = stripe.PaymentIntent.create(
+                        amount = invitation.price * 100, # Stripe wants the price in öre
+                        currency = 'sek',
+                        description ='Banquet invitation token ' + str(invitation.token),
+                        receipt_email = invitation.email_address,
+                        )
+                    invitation.participant.charge_stripe = intent['id']
+                    invitation.participant.save()
+                else: # retrieve existing payment intent
+                    intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
+
+                request.session['intent'] = intent
+                request.session['invitation_token'] = token
+                request.session['url_path'] = '/fairs/' + str(fair.year) + '/banquet/invitation/' + token
+                request.session.set_expiry(0) # session expires on browser close
+                return redirect('/payments/checkout')
 
             form = None
 
@@ -745,7 +754,7 @@ def invitation(request, year, token):
         'fair': fair,
         'invitation': invitation,
         'form': form,
-        'charge': invitation.price > 0 and invitation.participant is None,
+        'charge': invitation.price > 0 and (invitation.participant is None or invitation.participant.has_paid == False),
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'stripe_amount': invitation.price * 100,
         'can_edit': can_edit,
@@ -761,8 +770,17 @@ def invitation_no(request, year, token):
 
     if invitation.participant is not None:
         if invitation.participant.charge_stripe is not None:
+            try:
+                del request.session['intent']
+            except KeyError:
+                pass
+            # Stripe refund: https://stripe.com/docs/payments/cards/refunds
             stripe.api_key = settings.STRIPE_SECRET
-            refund = stripe.Refund.create(charge=invitation.participant.charge_stripe)
+            intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
+            if invitation.participant.has_paid:
+                intent['charges']['data'][0].refund()
+            else:
+                intent.cancel(cancellation_reason = "requested_by_customer")
 
         invitation.participant.delete()
         invitation.participant = None
@@ -838,6 +856,7 @@ def external_invitation(request, token):
 
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
+                request.session['url_path'] = '../banquet/' + token
                 request.session.set_expiry(0) # session expires on browser close
                 return redirect('../payments/checkout')
 

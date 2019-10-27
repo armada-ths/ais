@@ -6,13 +6,13 @@
 
 {% block content %}
 	<h1>{{ banquet.name }} – Invitation</h1>
-	
+
 	<p>
 		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
 		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
 		{% if banquet.background %} <a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a> {% endif %}
 	</p>
-	
+
 	<ul class="list-unstyled">
 		<li><span style="font-weight: bold;">Group:</span> {{ invitation.group }}</li>
 		<li><span style="font-weight: bold;">Deadline:</span> {% if invitation.deadline_smart %} {{ invitation.deadline_smart }} {% else %} <span style="font-style: italic;">no deadline</span> {% endif %}</li>
@@ -20,20 +20,21 @@
 		<li><span style="font-weight: bold;">E-mail address:</span> {% if invitation.user is None %} <a href="mailto:{{ invitation.email_address }}">{{ invitation.email_address }}</a> {% else %} <a href="mailto:{{ invitation.user.email }}">{{ invitation.user.email }}</a> {% endif %}</li>
 		<li
 			><span style="font-weight: bold;">Status:</span>
-			
+
 			{% if invitation.status == 'GOING' %}<span class="text-success">Going</span> <!--– <a href="#">view participation data</a>-->{% endif %}
+			{% if invitation.status == 'HAS_NOT_PAID' %}<span class="text-warning">Has not paid</span>{% endif %}
 			{% if invitation.status == 'NOT_GOING' %}<span class="text-danger">Not going</span>{% endif %}
 			{% if invitation.status == 'PENDING' %}<span class="text-default">Pending</span>{% endif %}
 		</li>
 		<li><span style="font-weight: bold;">Part of matching:</span> {{ invitation.get_part_of_matching_display }}</li>
 	</ul>
-	
+
 	<a href="{% url 'banquet_manage_invitation_edit' fair.year banquet.pk invitation.pk %}" class="btn btn-default">Edit invitation</a>
-	
+
 	<h2>Invitation link</h2>
 	{% if invitation.user is None %}
 		<p>Give the following link to the invitee.</p>
-		
+
 		<input type="text" value="https://ais.armada.nu{% url 'banquet_external_invitation' invitation.token %}" />
 	{% else %}
 		<p>This invitation is tied to a user account. Ask {{ invitation.user.get_full_name }} to sign in to the AIS and click Banquet in the menu.</p>

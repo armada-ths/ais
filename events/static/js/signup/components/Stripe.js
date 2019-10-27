@@ -1,40 +1,101 @@
 import React, {Component} from 'react';
 import Button from "@material-ui/core/es/Button/Button";
+import {CardElement, injectStripe} from 'react-stripe-elements';
+import axios from 'axios';
+import Cookie from 'js-cookie';
+import isEmpty from 'lodash/isEmpty';
 
 class Stripe extends Component {
   constructor(props) {
     super(props);
 
-    this.handler = StripeCheckout.configure({
-      key: props.stripe_publishable,
-      image: 'https://ais.armada.nu/static/images/armadalogo.svg',
-      locale: 'auto',
-      token: props.handleScannedToken,
-    });
+		this.nameInput = React.createRef();
+		this.cardElement = React.createRef();
+
+		this.state = {
+			processingPayment: false,
+			error: null,
+			payed: false
+		}
 
     this.handleClick = this.handleClick.bind(this);
+		this.fetch_payment_intent = this.fetch_payment_intent.bind(this);
+		this.handle_stripe_payment = this.handle_stripe_payment.bind(this);
+		this.setState = this.setState.bind(this);
   }
 
   handleClick(event) {
-    const {description, amount} = this.props;
+		const errors = this.props.validator();
+		if (!isEmpty(errors)) {
+			this.props.showErrors(errors);
+			return;
+		}
 
-    // This is safe to do in the frontend since this is just what's presented to the user, not what will actually be withdrawn from the
-    // users card
-    const amountInOren = parseInt(amount) * 100;
+		this.setState({
+			processingPayment: true,
+			error: null
+		})
 
-    this.handler.open({
-      name: 'THS Armada',
-      description: description,
-      currency: 'sek',
-      amount: amountInOren
-    });
+		const {paymentUrl} = this.props;
+
+		this.fetch_payment_intent(paymentUrl)
+
     event.preventDefault();
   }
 
-  render() {
-    return <Button color="primary" onClick={this.handleClick}>Pay</Button>
+	fetch_payment_intent (paymentUrl) {
+		axios.post(paymentUrl, {
+		}, {
+			headers: {
+				"X-CSRFToken": Cookie.get('csrftoken')
+			}
+		}).then((response) => {
+			response=response.data;
+			if (response['error']) {
+				this.setState({
+					processingPayment: false,
+					error: response.error
+				})
+			} else if (response['client_secret']) {
+				this.handle_stripe_payment(response['client_secret'], response['intent_id'])
+			}
+		});
+	}
 
+	handle_stripe_payment (client_secret, intent_id) {
+		this.props.stripe.handleCardPayment(
+			client_secret,
+			this.cardElement.current
+		).then((result) => {
+			if (result.error) {
+				this.setState({
+					processingPayment: false,
+					error: result.error
+				})
+			} else {
+				this.props.handleSubmit(intent_id)
+			}
+		});
+	}
+
+  render() {
+    return (
+			<div>
+				<CardElement onReady={this.cardElement}/>
+				<div style={{marginTop: 10, color: 'red'}}>{this.state.error ? this.state.error.message : ""}</div>
+				<Button
+						disabled={!this.props.openForSignup || this.state.processingPayment}
+						onClick={this.handleClick}
+						variant="contained"
+						color="primary"
+						style={{marginTop: 10}}
+				>
+					{this.props.openForSignup ? "Pay and Sign Up" : "Not open for sign up"}
+				</Button>
+				<div style={{marginTop: 10, }}>{this.state.processingPayment ? <em>Processing payment - almost done... </em> : ""}</div>
+			</div>
+		)
   }
 }
 
-export default Stripe;
+export default injectStripe(Stripe);
