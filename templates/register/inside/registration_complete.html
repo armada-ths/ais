@@ -18,7 +18,7 @@
 
 		<p>Please note that <span style="font-weight: 700;">the complete registration is binding</span> and that you will be liable for all additional services selected at the last date of the registration, provided that THS Armada is able to supply your organization with your choices.</p>
 
-		<h4 style="text-align: center;">Registration closes: <span style="font-weight: 700;">{{ deadline|date:"F j, Y" }}</span></h4>
+		<h4 style="text-align: center;">Registration {% if after_deadline %}closed{% else %}closes{% endif %}: <span style="font-weight: 700;">{{ deadline|date:"F j, Y" }}</span></h4>
 
 		<div class="expandable" style="margin-top: 10px; border-top: none;">
 			<h2>Company and invoice details</h2>

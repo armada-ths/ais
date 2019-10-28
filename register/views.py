@@ -282,8 +282,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
 	registration_sections = []
 
-	# for registration_section_raw in RegistrationSection.objects.filter(include_in_registration = True):
-	for registration_section_raw in RegistrationSection.objects.all():
+	for registration_section_raw in RegistrationSection.objects.filter(include_in_registration = True):
 		registration_section = {
 			'name': registration_section_raw.name,
 			'description': registration_section_raw.description,
@@ -413,7 +412,11 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		for field in form_logistics_details.fields: form_logistics_details.fields[field].disabled = True
 		for field in form_catalogue_details.fields: form_catalogue_details.fields[field].disabled = True
 
-	form_catalogue_details = None # NOTE: this is only a quick fix to hide the catalogue and student matching form from the companies since they cannot edit it anyway, for the future one might want to think about if all forms should be removed entirely after deadline. Uncomment this row to make everything work as normal.
+	''' NOTE/WARNING:
+		The code line below is only a quick fix to hide the catalogue and student matching form from the companies if needed - e.g. after edits can be made
+		(for the future one might want to think about if all forms should be removed entirely after deadline instead of just being deactivated).
+		Uncomment/remove the row below (setting the form to None) to make everything work as normal.'''
+	form_catalogue_details = None
 
 	return render(request, 'register/inside/registration_complete.html',
 	{
@@ -432,7 +435,8 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		'form_final_submission': form_final_submission,
 		'signature': signature,
 		'deadline': deadline,
-		'is_editable': is_editable
+		'is_editable': is_editable,
+		'after_deadline': timezone.now() > deadline,
 	})
 
 
