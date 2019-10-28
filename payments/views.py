@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from banquet.models import Participant, Invitation
+from banquet.models import Participant, Invitation, AfterPartyTicket
 
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
@@ -87,7 +87,7 @@ def confirm(request):
         del request.session['intent']
     except KeyError:
         pass
-        
+
     try:
         del request.session['invitation_token']
     except KeyError:
@@ -109,4 +109,3 @@ def confirm(request):
 
     elif event == 'Banquet':
         return redirect(url_path)
-
