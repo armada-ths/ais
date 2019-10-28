@@ -320,13 +320,13 @@ def dashboard(request, year):
 
             try:
                 invite.save()
+                price = str(current_banquet.afterparty_price_discount)
+                location = current_banquet.location
+                date = current_banquet.afterparty_date
                 send_mail(
                     'Your invite to the After Party',
                     'Hello ' + invite.name +  '! ' + invite.inviter.get_full_name() +
-                    """ has invited you to the After Party to the Grand Banquet of THS Armada. Your ticket can be purchased at a discounted price of only 50kr. You can get your ticket here:
-                    \nhttps://ais.armada.nu/banquet/afterparty
-                    \nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of 50kr will appear at checkout.
-                    \nSee you at the party!""",
+                    ' has invited you to the After Party to the Grand Banquet of THS Armada. The After Party takes place ' + str(date) + ' at ' + str(location) + '. Your ticket can be purchased at a discounted price of only ' + price + 'kr. You can get your ticket here:\nhttps://ais.armada.nu/banquet/afterparty\nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of '+ price + 'kr will appear at checkout.\nSee you at the party!',
                     'noreply@armada.nu',
                     [invite.email_address],
                     fail_silently=True,
