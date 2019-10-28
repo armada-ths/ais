@@ -3,7 +3,7 @@ from django.forms import ModelForm, Form, ModelMultipleChoiceField
 from django.contrib.auth.models import User
 import re
 
-from .models import Participant, InvitationGroup, Invitation, AfterPartyTicket, TableMatching
+from .models import Participant, InvitationGroup, Invitation, AfterPartyInvitation, AfterPartyTicket, TableMatching
 from exhibitors.models import CatalogueIndustry, CatalogueCompetence, CatalogueValue, CatalogueLocation, CatalogueEmployment, CatalogueCategory
 
 
@@ -208,6 +208,16 @@ class InvitationSearchForm(forms.Form):
 	statuses = forms.MultipleChoiceField(choices = status_choices, widget = forms.CheckboxSelectMultiple(), required = False)
 	groups = forms.ModelMultipleChoiceField(queryset = InvitationGroup.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only invitations belonging to any of these groups', required = False)
 	matching_statuses = forms.ChoiceField(choices = matching_status_choices, widget = forms.RadioSelect(), label = 'Show only invitations that are / are not subject to the matching functionality', required = False)
+
+class AfterPartyInvitationForm(forms.ModelForm):
+	class Meta:
+		model = AfterPartyInvitation
+		fields = ['name', 'email_address']
+
+		labels = {
+			'name': "Friend's full name",
+			'email_address': "Friend's email address"
+		}
 
 class AfterPartyTicketForm(forms.ModelForm):
 	class Meta:
