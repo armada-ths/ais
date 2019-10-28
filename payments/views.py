@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from banquet.models import Participant, Invitation, AfterPartyTicket
+from banquet.models import Participant, Invitation
 
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
@@ -28,7 +28,6 @@ def checkout(request):
 
 
 def confirm(request):
-
     try:
         invitation_token = request.session['invitation_token']
     except KeyError:
@@ -63,15 +62,8 @@ def confirm(request):
         test_status += 1
 
     if stripe.PaymentIntent.retrieve(id)['status'] != 'succeeded':
-
-        if event == 'AfterParty':
-            ticket.paid_price = None
-            ticket.save()
-
-        elif event == 'Banquet':
-            invitation.participant.has_paid = False
-            invitation.participant.save()
-
+        invitation.participant.has_paid = False
+        invitation.participant.save()
         # if we are unable to get status succeeded we send an email to support, the issue then has to be handled manually
         send_mail(
             'Problem with a payment in Stripe',
@@ -82,7 +74,6 @@ def confirm(request):
         )
 
     else:
-
         if event == 'AfterParty':
             ticket.has_paid = True
             ticket.paid_timestamp = datetime.datetime.now()
@@ -96,7 +87,7 @@ def confirm(request):
         del request.session['intent']
     except KeyError:
         pass
-
+        
     try:
         del request.session['invitation_token']
     except KeyError:
@@ -118,3 +109,4 @@ def confirm(request):
 
     elif event == 'Banquet':
         return redirect(url_path)
+

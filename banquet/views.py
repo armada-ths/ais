@@ -305,9 +305,8 @@ def dashboard(request, year):
     fair = get_object_or_404(Fair, year=year)
     current_banquet = Banquet.objects.filter(fair=fair).first() # This might be dangerous, assumes there is only one banquet per fair
     invite_form = AfterPartyInvitationForm()
-    invite_errors = []
 
-    # Handle invitation request
+    # Handle after party invitation request
     if request.method == 'POST':
         invite_form = AfterPartyInvitationForm(
             request.POST
@@ -318,13 +317,24 @@ def dashboard(request, year):
             # Set the banquet and inviter manually before saving to the database
             invite.banquet = current_banquet
             invite.inviter = request.user
-
+            
             try:
                 invite.save()
-            except IntegrityError as e: # This will catch the uniqueness constraint between banquet/email
-                invite_form.add_error('email_address', "This person's e-mail address has already been invited to the banquet!")
-
-
+                send_mail(
+                    'Your invite to the After Party',
+                    'Hello ' + invite.name +  '! ' + invite.inviter.get_full_name() + 
+                    """ has invited you to the After Party to the Grand Banquet of THS Armada. Your ticket can be purchased at a discounted price of only 50kr. You can get your ticket here: 
+                    \nhttps://ais.armada.nu/banquet/afterparty
+                    \nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of 50kr will appear at checkout.
+                    \nSee you at the party!""",
+                    'noreply@armada.nu',
+                    [invite.email_address],
+                    fail_silently=True,
+                )
+            except IntegrityError as e: 
+                # This will catch the uniqueness constraint between banquet/email
+                invite_form.add_error('email_address', "An invitation to this year's after party has already been sent to this e-mail address!")
+                
     banquets = []
 
     for banquet in Banquet.objects.filter(fair=fair):
@@ -337,6 +347,31 @@ def dashboard(request, year):
             'count_not_going': Invitation.objects.filter(banquet=banquet, denied=True).count(),
             'count_pending': Invitation.objects.filter(banquet=banquet, participant=None).exclude(denied=True).count()
         })
+    
+    # Any Armada member can invite friends to the after-party
+    # during a time period before the current fair
+    invitation_period = False
+    fair_date = current_banquet.date if current_banquet else None 
+    now = datetime.date.today()
+    if fair_date:
+        days_until_fair = (fair_date.date() - now).days
+        if 0 <= days_until_fair <= 30: # Invitations are allowed 30 days before the fair (if a banquet has been created...)
+            invitation_period = True
+    
+    after_party_invites = []
+    # All the people this person has invited to the after party
+    # We don't really need to do this if invitation_period = False
+    for invite in AfterPartyInvitation.objects.filter(inviter=request.user, banquet=current_banquet):
+        after_party_invites.append({
+            'name': invite.name,
+            'email': invite.email_address
+        })
+
+    # Only people who are currently part of Armada may invite other people
+    auth_users = [recruitment_application.user for recruitment_application in RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair)]
+    invite_permission = request.user in auth_users
+
+    max_invites = 5 # The number of people someone may invite to the after party
 
     # Any Armada member can invite friends to the after-party
     # during a time period before the current fair
@@ -368,12 +403,12 @@ def dashboard(request, year):
         'fair': fair,
         'invitiations': Invitation.objects.filter(user=request.user),
         'banquets': banquets,
-        'after_party_invite_form': invite_form,
-        'after_party_invites': after_party_invites,
-        'meta': {
-            'show_after_party_invites': invite_permission and invitation_period,
+        'after_party_invites': {
+            'invites': after_party_invites,
+            'form': invite_form,
+            'show': invite_permission and invitation_period,
             'show_form': len(after_party_invites) < max_invites, # Can be used in the template to check whether invitation form should be presented
-            'invites_left': max_invites - len(after_party_invites),
+            'left': max_invites - len(after_party_invites)
         }
     })
 
@@ -627,7 +662,7 @@ def manage_participant_form(request, year, banquet_pk, participant_pk):
         for table_seat in Seat.objects.filter(table=table):
             if table_seat not in seats_taken: table_seats.append((table_seat.pk, table_seat.name))
 
-        seats.append([table, table_seats])
+        seats.append([table.name, table_seats])
 
     form.fields['seat'].choices = [('', '---------')] + seats
 
@@ -729,7 +764,6 @@ def invitation(request, year, token):
                 else: # retrieve existing payment intent
                     intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
 
-                request.session['event'] = 'Banquet'
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
                 request.session['url_path'] = '/fairs/' + str(fair.year) + '/banquet/invitation/' + token
@@ -845,7 +879,6 @@ def external_invitation(request, token):
                 else: # retrieve existing payment intent
                     intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
 
-                request.session['event'] = 'Banquet'
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
                 request.session['url_path'] = '../banquet/' + token
@@ -1006,6 +1039,7 @@ def external_banquet_afterparty(request, token=None):
         'ticket': ticket,
         'has_paid': has_paid
         })
+
 
 @permission_required('banquet.base')
 def scan_tickets(request, year):

@@ -149,7 +149,8 @@ class Exhibitor(models.Model):
     	('EXCEPTION', 'Exception'),
     	('IN_CONTACT', 'In contact'),
     	('IN_CONTACT_ARMADA', 'In contact by Armada'),
-    	('STURE', 'Sture')
+    	('STURE', 'Sture'),
+    	('BY_HAND', 'Carried by hand')
     ]
 
     transport_to = models.CharField(choices = transport_to_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
@@ -160,7 +161,8 @@ class Exhibitor(models.Model):
     	('NOT_APPLICABLE', 'Not applicable'),
     	('EXCEPTION', 'Exception'),
     	('IN_CONTACT', 'In contact'),
-    	('STURE', 'Sture')
+    	('STURE', 'Sture'),
+    	('BY_HAND', 'Carried by hand')
     ]
 
     transport_from = models.CharField(choices = transport_from_statuses, null = False, blank = False, default = 'NOT_BOOKED', max_length = 30)
@@ -205,7 +207,7 @@ class Exhibitor(models.Model):
                 if(exh == self):
                     return locationSpecial
         return None
-            
+
     @property
     def climate_compensation(self):
         for order in Order.objects.filter(purchasing_company = self.company, product__name = "Climate compensation"):

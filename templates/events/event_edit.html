@@ -18,6 +18,8 @@
       ({{ event.team_set.count }})</a>
     </li>
 
+    <li role="presentation"><a href="#emails" aria-controls="emails" role="tab" data-toggle="tab">Emails</a></li>
+
   </ul>
 
   <div class="tab-content">
@@ -32,6 +34,9 @@
         <a href="{% url 'events:team_new' fair.year event.id %}" class="btn btn-default">New team</a>
       </div>
       {% include 'events/team_list.html' with teams=event.team_set.all event=event %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="emails">
+        {% include 'events/emails.html' %}
     </div>
   </div>
 {% endblock %}
