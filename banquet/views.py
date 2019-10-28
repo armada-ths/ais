@@ -966,12 +966,14 @@ def external_banquet_afterparty(request, token=None):
             ticket.save()
 
             try:
-                discounted_invitation = AfterPartyInvitation.objects.get(email_address = ticket.email_address, banquet=current_banquet)
+                discounted_invitation = AfterPartyInvitation.objects.get(email_address = ticket.email_address, banquet=current_banquet, used=False)
             except:
                 discounted_invitation = None
 
             if discounted_invitation is not None:
                 amount = current_banquet.afterparty_price_discount
+                discounted_invitation.used = True
+                discounted_invitation.save()
 
             if amount > 0 and ticket.paid_price is None:
                 stripe.api_key = settings.STRIPE_SECRET
