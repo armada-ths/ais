@@ -14,6 +14,10 @@
 		<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
 	</p>
 
+	<h2>Grand total:
+		{{grandTotalPrice | intcomma}} SEK
+	</h2>
+
 	<p>The following tables summarize all orders for all products at this fair.</p>
 
 	<ul>

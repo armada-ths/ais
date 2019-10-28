@@ -192,10 +192,15 @@ def product_summary(request, year):
 
 		products.append(product)
 
+	grandTotalPrice = 0
+	for product in products:
+		grandTotalPrice = grandTotalPrice + product['total_price']
+		
 	return render(request, 'accounting/product_summary.html',
 	{
 		'fair': fair,
-		'products': products
+		'products': products,
+		'grandTotalPrice': grandTotalPrice
 	})
 
 
