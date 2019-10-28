@@ -222,10 +222,11 @@ class AfterPartyInvitationForm(forms.ModelForm):
 class AfterPartyTicketForm(forms.ModelForm):
 	class Meta:
 		model = AfterPartyTicket
-		fields = ['name', 'email_address']
+		fields = ['name', 'email_address', 'inviter']
 
 		labels = {
-			'name': 'Your full name'
+			'name': 'Your full name',
+			'inviter': 'Who has recomended the after party to you? Write first name and last name.'
 		}
 
 

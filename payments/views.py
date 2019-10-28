@@ -1,6 +1,7 @@
 import json
 import stripe
 import time
+import datetime
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, Http404
@@ -42,7 +43,17 @@ def confirm(request):
     except KeyError:
         raise Http404
 
-    invitation = get_object_or_404(Invitation, token=invitation_token)
+    try:
+        event = request.session['event']
+    except KeyError:
+        raise Http404
+
+    if event == 'AfterParty':
+        ticket = get_object_or_404(AfterPartyTicket, token=invitation_token)
+
+    elif event == 'Banquet':
+        invitation = get_object_or_404(Invitation, token=invitation_token)
+
     id = intent['id']
 
     test_status = 0
@@ -63,8 +74,14 @@ def confirm(request):
         )
 
     else:
-        invitation.participant.has_paid = True
-        invitation.participant.save()
+        if event == 'AfterParty':
+            ticket.has_paid = True
+            ticket.paid_timestamp = datetime.datetime.now()
+            ticket.save()
+
+        elif event == 'Banquet':
+            invitation.participant.has_paid = True
+            invitation.participant.save()
 
     try:
         del request.session['intent']
@@ -81,5 +98,15 @@ def confirm(request):
     except KeyError:
         pass
 
-    return redirect(url_path)
-    #return redirect('../banquet/' + invitation_token)
+    try:
+        del request.session['event']
+    except KeyError:
+        pass
+
+
+    if event == 'AfterParty':
+        return redirect(url_path, invitation_token)
+
+    elif event == 'Banquet':
+        return redirect(url_path)
+
