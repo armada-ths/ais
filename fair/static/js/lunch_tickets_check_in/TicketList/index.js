@@ -81,8 +81,16 @@ class TicketList extends Component {
       API.search(searchQuery)
           .then(response => {
             const sortedTickets = sortBy(response.data.result, 'date');
+            let finalTickets = []
+            for(const ticket of sortedTickets){
+              // const fair = ticket.fair  // where is the model for the ticket in react? 
+              // if(fair.current == true){   
+              if(ticket.date.includes('2019')){
+                finalTickets.push(ticket)
+              }
+            }
             this.setState({
-              tickets: sortedTickets,
+              tickets: finalTickets,
               loading: false
             })
           });
