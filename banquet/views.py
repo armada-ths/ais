@@ -962,7 +962,8 @@ def external_banquet_afterparty(request, token=None):
         form = AfterPartyTicketForm(request.POST or None)
 
         if request.POST and form.is_valid():
-            ticket = form.save()
+            ticket = form.save(commit=False)
+            ticket.banquet = current_banquet
             ticket.save()
 
             try:
