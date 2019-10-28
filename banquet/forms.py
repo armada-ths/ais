@@ -226,7 +226,7 @@ class AfterPartyTicketForm(forms.ModelForm):
 
 		labels = {
 			'name': 'Your full name',
-			'inviter': 'Who has recomended the after party to you? Write first name and last name.'
+			'inviter': 'Did someone in Armada recommend you about this after party? Write first name and last name.'
 		}
 
 
