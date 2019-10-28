@@ -317,13 +317,13 @@ def dashboard(request, year):
             # Set the banquet and inviter manually before saving to the database
             invite.banquet = current_banquet
             invite.inviter = request.user
-            
+
             try:
                 invite.save()
                 send_mail(
                     'Your invite to the After Party',
-                    'Hello ' + invite.name +  '! ' + invite.inviter.get_full_name() + 
-                    """ has invited you to the After Party to the Grand Banquet of THS Armada. Your ticket can be purchased at a discounted price of only 50kr. You can get your ticket here: 
+                    'Hello ' + invite.name +  '! ' + invite.inviter.get_full_name() +
+                    """ has invited you to the After Party to the Grand Banquet of THS Armada. Your ticket can be purchased at a discounted price of only 50kr. You can get your ticket here:
                     \nhttps://ais.armada.nu/banquet/afterparty
                     \nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of 50kr will appear at checkout.
                     \nSee you at the party!""",
@@ -331,10 +331,10 @@ def dashboard(request, year):
                     [invite.email_address],
                     fail_silently=True,
                 )
-            except IntegrityError as e: 
+            except IntegrityError as e:
                 # This will catch the uniqueness constraint between banquet/email
                 invite_form.add_error('email_address', "An invitation to this year's after party has already been sent to this e-mail address!")
-                
+
     banquets = []
 
     for banquet in Banquet.objects.filter(fair=fair):
@@ -347,17 +347,17 @@ def dashboard(request, year):
             'count_not_going': Invitation.objects.filter(banquet=banquet, denied=True).count(),
             'count_pending': Invitation.objects.filter(banquet=banquet, participant=None).exclude(denied=True).count()
         })
-    
+
     # Any Armada member can invite friends to the after-party
     # during a time period before the current fair
     invitation_period = False
-    fair_date = current_banquet.date if current_banquet else None 
+    fair_date = current_banquet.date if current_banquet else None
     now = datetime.date.today()
     if fair_date:
         days_until_fair = (fair_date.date() - now).days
         if 0 <= days_until_fair <= 30: # Invitations are allowed 30 days before the fair (if a banquet has been created...)
             invitation_period = True
-    
+
     after_party_invites = []
     # All the people this person has invited to the after party
     # We don't really need to do this if invitation_period = False
@@ -397,7 +397,6 @@ def dashboard(request, year):
     invite_permission = request.user in auth_users
 
     max_invites = 5
-    print(invite_errors)
 
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
