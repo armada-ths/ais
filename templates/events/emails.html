@@ -1,1 +1,16 @@
-<h1>HEJ</h1>
+<h1>E-mail addresses</h1>
+<p>Make sure to use blind carbon copies (BCC) when sending e-mail messages to the people below.</p>
+
+<style type="text/css">
+	textarea
+	{
+		height: 200px;
+		width: 100%;
+		box-sizing: border-box;
+		font-size: 12pt;
+	}
+</style>
+
+<textarea>
+{% for participant in participants|dictsort:"timestamp" %}{{ participant.assigned_name }} <{{ participant.assigned_email }}> {% if not forloop.last %}, {% endif %}{% endfor %}
+</textarea>
