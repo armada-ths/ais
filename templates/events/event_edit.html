@@ -18,7 +18,7 @@
       ({{ event.team_set.count }})</a>
     </li>
 
-    <li role="presentation"><a href="#emails" aria-controls="emails" role="tab" data-toggle="tab">Emails</a></li>
+    <li role="presentation"><a href="#emails" aria-controls="emails" role="tab" data-toggle="tab">E-mails</a></li>
 
   </ul>
 
@@ -36,7 +36,7 @@
       {% include 'events/team_list.html' with teams=event.team_set.all event=event %}
     </div>
     <div role="tabpanel" class="tab-pane" id="emails">
-        {% include 'events/emails.html' %}
+        {% include 'events/emails.html' with participants=participants %}
     </div>
   </div>
 {% endblock %}
