@@ -12,7 +12,5 @@
 </style>
 
 <textarea>
-{% spaceless %}
-    {% for participant in participants|dictsort:"timestamp" %}{{ participant.assigned_name }} <{{ participant.assigned_email }}> {% if not forloop.last %}, {% endif %}{% endfor %}
-{% endspaceless %}
+{% for participant in participants|dictsort:"timestamp" %}{{ participant.assigned_name }} <{{ participant.assigned_email }}> {% if not forloop.last %}, {% endif %}{% endfor %}
 </textarea>
