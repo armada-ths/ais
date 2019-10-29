@@ -1,9 +1,15 @@
 from django import forms
 
-from .models import FairDay, LunchTicket
+from .models import FairDay, LunchTicket, Fair, LunchTicketTime
 
 
 class LunchTicketForm(forms.ModelForm):
+	currentFair = Fair.objects.filter(current=True).first()
+	day = forms.ModelChoiceField(queryset = FairDay.objects.filter(fair = currentFair), required = True)
+	allDays = []
+	for fairDay in FairDay.objects.filter(fair = currentFair):
+		allDays.append(fairDay)
+	time = forms.ModelChoiceField(queryset = LunchTicketTime.objects.filter(day__in = allDays), required = False)
 	def is_valid(self):
 		valid = super(LunchTicketForm, self).is_valid()
 
@@ -48,8 +54,6 @@ class LunchTicketForm(forms.ModelForm):
 		}
 
 		widgets = {
-			'day': forms.RadioSelect(),
-			'time': forms.RadioSelect(),
 			'dietary_restrictions': forms.CheckboxSelectMultiple(),
 			'other_dietary_restrictions' : forms.TextInput(),
 		}
