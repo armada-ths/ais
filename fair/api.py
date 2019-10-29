@@ -29,9 +29,9 @@ def lunchtickets_search(request):
 
     lunch_tickets = LunchTicket.objects.filter(
         Q(fair=fair) &
-        Q(company__name__icontains=search_query) |
+        (Q(company__name__icontains=search_query) |
         Q(email_address__icontains=search_query) |
-        name_query
+        name_query)
     ).all()
 
     data = {
