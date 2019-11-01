@@ -356,9 +356,9 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		form_logistics_details.fields['booth_height'].required = True
 		form_logistics_details.fields['electricity_total_power'].required = True
 		form_logistics_details.fields['electricity_socket_count'].required = True
-		form_catalogue_details.fields['catalogue_about'].required = True
-		#form_catalogue_details.fields['catalogue_purpose'].required = True # REMOVED FOR 2019
-		form_catalogue_details.fields['catalogue_logo_squared'].required = True
+		# form_catalogue_details.fields['catalogue_about'].required = True # WARNING: Should not be uncommented - special for company 1st of Nov 2019
+		# form_catalogue_details.fields['catalogue_purpose'].required = True # REMOVED FOR 2019
+		# form_catalogue_details.fields['catalogue_logo_squared'].required = True # WARNING: Should not be uncommented - special for company 1st of Nov 2019
 
 	orders = []
 	orders_total = 0
@@ -403,9 +403,9 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if not exhibitor.booth_height: errors.append('Height of the booth (cm)')
 	if exhibitor.electricity_total_power is None: errors.append('Estimated power consumption (W)')
 	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets')
-	if not exhibitor.catalogue_about: errors.append('Text about your organisation')
-	#if not exhibitor.catalogue_purpose: errors.append('Your organisation\'s purpose') # REMOVED FOR 2019
-	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
+	# if not exhibitor.catalogue_about: errors.append('Text about your organisation') # WARNING: Should not be uncommented - special for company 1st of Nov 2019
+	# if not exhibitor.catalogue_purpose: errors.append('Your organisation\'s purpose') # REMOVED FOR 2019
+	# if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype') # WARNING: Should not be uncommented - special for company 1st of Nov 2019
 
 	if not is_editable:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
