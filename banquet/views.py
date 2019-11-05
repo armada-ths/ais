@@ -19,8 +19,8 @@ from fair.models import Fair
 from people.models import Profile
 from recruitment.models import OrganizationGroup, RecruitmentApplication
 from .forms import InternalParticipantForm, ExternalParticipantForm, SendInvitationForm, InvitationForm, InvitationSearchForm, \
-    ParticipantForm, ParticipantAdminForm, AfterPartyInvitationForm, AfterPartyInvitation, AfterPartyTicketForm, ParticipantTableMatchingForm
-from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, Table, Seat, TableMatching
+    ParticipantForm, ParticipantAdminForm, AfterPartyInvitationForm, AfterPartyTicketForm, ParticipantTableMatchingForm
+from .models import Banquet, Participant, InvitationGroup, Invitation, AfterPartyTicket, AfterPartyInvitation, Table, Seat, TableMatching
 
 
 # External Invite
@@ -431,7 +431,10 @@ def manage(request, year, banquet_pk):
         'count_pending': Invitation.objects.filter(banquet=banquet, denied=False, participant=None).count(),
         'count_ordered': count_ordered,
         'count_created': Participant.objects.filter(banquet=banquet).exclude(company=None).count(),
-        'count_participants': Participant.objects.filter(banquet=banquet).count()
+        'count_participants': Participant.objects.filter(banquet=banquet).count(),
+        'count_after_party': AfterPartyTicket.objects.filter(banquet=banquet, has_paid=True).count(),
+        'count_after_party_invited_total': AfterPartyInvitation.objects.filter(banquet=banquet).count(),
+        'count_after_party_invited_used': AfterPartyInvitation.objects.filter(banquet=banquet, used=True).count(),
     })
 
 
