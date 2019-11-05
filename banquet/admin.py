@@ -26,4 +26,5 @@ class AfterPartyInvitationAdmin(admin.ModelAdmin):
 
 @admin.register(AfterPartyTicket)
 class AfterPartyTicketAdmin(admin.ModelAdmin):
-	list_filter = ['banquet']
+	list_filter = ['banquet', 'has_paid']
+	list_display = ['name', 'email_address', 'has_paid']
