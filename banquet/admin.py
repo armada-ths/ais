@@ -6,7 +6,6 @@ admin.site.register(Banquet)
 admin.site.register(Participant)
 admin.site.register(InvitationGroup)
 admin.site.register(Invitation)
-admin.site.register(AfterPartyTicket)
 
 @admin.register(Seat)
 class SeatAdmin(admin.ModelAdmin):
@@ -24,3 +23,7 @@ class TableMatchingAdmin(admin.ModelAdmin):
 class AfterPartyInvitationAdmin(admin.ModelAdmin):
 	list_filter = ['banquet']
 	ordering = ['name', 'email_address']
+
+@admin.register(AfterPartyTicket)
+class AfterPartyTicketAdmin(admin.ModelAdmin):
+	list_filter = ['banquet']
