@@ -418,9 +418,15 @@ def manage(request, year, banquet_pk):
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
 
     count_ordered = 0
-
     for order in Order.objects.filter(product=banquet.product):
         count_ordered += order.quantity
+
+    count_after_party_invited_sold = 0
+    used_invitations = AfterPartyInvitation.objects.filter(banquet=banquet, used=True)
+    for invitation in used_invitations:
+        ticket = AfterPartyTicket.objects.filter(banquet=banquet, email_address=invitation.email_address, has_paid=True).count()
+        if ticket > 0:
+            count_after_party_invited_sold += 1
 
     return render(request, 'banquet/manage.html', {
         'fair': fair,
@@ -434,7 +440,7 @@ def manage(request, year, banquet_pk):
         'count_participants': Participant.objects.filter(banquet=banquet).count(),
         'count_after_party': AfterPartyTicket.objects.filter(banquet=banquet, has_paid=True).count(),
         'count_after_party_invited_total': AfterPartyInvitation.objects.filter(banquet=banquet).count(),
-        'count_after_party_invited_used': AfterPartyInvitation.objects.filter(banquet=banquet, used=True).count(),
+        'count_after_party_invited_sold': count_after_party_invited_sold,
     })
 
 
