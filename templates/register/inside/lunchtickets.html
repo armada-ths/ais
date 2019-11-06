@@ -8,7 +8,7 @@
 
 {% block content %}
 	<h1>Lunch tickets</h1>
-	<p>Here you can create and edit your ordered lunch tickets. You can create and edit tickets until <span style="font-weight: 700;">{{ lunch_ticket_deadline|date:"F j, H: I" }}</span>.</p>
+	<p>Here you can create and edit your ordered lunch tickets. You can create and edit tickets until {{ lunch_ticket_deadline|date:"F j, H:i" }}.</p>
 
 	<ul class="no-bullets">
 		<li><span class="information_label">Ordered lunch tickets:</span> {{ count_ordered }}</li>
