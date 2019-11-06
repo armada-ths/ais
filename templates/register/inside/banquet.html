@@ -8,7 +8,7 @@
 
 {% block content %}
 	<h1>Banquet</h1>
-	<p>Here you can create and edit your ordered banquet tickets.</p>
+	<p>Here you can create and edit your ordered banquet tickets. You can create and edit tickets until {{ banquet_ticket_deadline|date:"F j, H: I" }}</p>
 
 	<ul class="no-bullets">
 		<li><span class="information_label">Ordered banquet tickets:</span> {{ count_ordered }}</li>

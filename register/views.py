@@ -1,5 +1,6 @@
 import requests as r
 import json
+import datetime
 
 from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.urls import reverse
@@ -585,6 +586,7 @@ def lunchtickets(request, company_pk):
 
 		if not company_contact: return redirect('anmalan:choose_company')
 
+	lunch_ticket_deadline = datetime.datetime(2019,11,12,23,59,0,0)
 	count_ordered = 0
 
 	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
@@ -610,6 +612,8 @@ def lunchtickets(request, company_pk):
 		'exhibitor': exhibitor,
 		'days': days,
 		'can_create': count_ordered > count_created,
+		'past_deadline': timezone.now() > lunch_ticket_deadline,
+		'lunch_ticket_deadline': lunch_ticket_deadline,
 		'count_ordered': count_ordered,
 		'count_created': count_created
 	})
@@ -631,6 +635,9 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 		if not company_contact: return redirect('anmalan:choose_company')
 
 	is_editable = company_contact is not None or request.user.has_perm('companies.base')
+	lunch_ticket_deadline = datetime.datetime(2019,11,12,23,59,00)
+	if timezone.now() > lunch_ticket_deadline:
+		is_editable = False
 
 	lunch_ticket = get_object_or_404(LunchTicket, pk = lunch_ticket_pk, company = company) if lunch_ticket_pk is not None else None
 
@@ -688,6 +695,7 @@ def banquet(request, company_pk):
 
 		if not company_contact: return redirect('anmalan:choose_company')
 
+	banquet_ticket_deadline = datetime.datetime(2019,11,7,23,59,00)
 	count_ordered = 0
 
 	for banquet in Banquet.objects.filter(fair = fair).exclude(product = None):
@@ -714,6 +722,8 @@ def banquet(request, company_pk):
 		'exhibitor': exhibitor,
 		'banquets': banquets,
 		'can_create': count_ordered > count_created,
+		'past_deadline': timezone.now() > banquet_ticket_deadline,
+		'banquet_ticket_deadline': banquet_ticket_deadline,
 		'count_ordered': count_ordered,
 		'count_created': count_created
 	})
@@ -735,6 +745,9 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 		if not company_contact: return redirect('anmalan:choose_company')
 
 	is_editable = company_contact is not None or request.user.has_perm('companies.base')
+	banquet_ticket_deadline = datetime.datetime(2019,11,7,23,59,00)
+	if timezone.now() > banquet_ticket_deadline:
+		is_editable = False
 
 	banquet_participant = get_object_or_404(BanquetParticipant, pk = banquet_participant_pk, company = company) if banquet_participant_pk is not None else None
 
@@ -788,7 +801,7 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 		'is_editable': is_editable
 	})
 
-
+# Has not been used in 2019 or the years before. Would be nice to implement an events tab where companies can add participants to events (mainly for Armada Run).
 def events(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
 
