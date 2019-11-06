@@ -8,15 +8,14 @@
 
 {% block content %}
 	<h1>Banquet</h1>
-	<p>Here you can create and edit your ordered banquet tickets.</p>
-	<p>You can edit your banquet tickets until 2019-11-07 23:59.</p>
+	<p>Here you can create and edit your ordered banquet tickets. You can do this until {{ banquet_ticket_deadline|date:"F j H:i" }}.</p>
 
 	<ul class="no-bullets">
 		<li><span class="information_label">Ordered banquet tickets:</span> {{ count_ordered }}</li>
 		<li><span class="information_label">Created banquet tickets:</span> {{ count_created }}</li>
 	</ul>
 
-	{% if can_create %}
+	{% if can_create and not past_deadline %}
 		<h3>Create new banquet ticket</h3>
 		<p>You have ordered more banquet tickets than you have created.</p>
 		<p><a class="btn btn-armada-green" href="{% url 'anmalan:banquet_new' company.pk %}">Create new banquet ticket</a></p>
@@ -34,7 +33,7 @@
 
 			{% for banquet_ticket in banquet.banquet_tickets %}
 				<div class="banquet_ticket">
-					<a class="btn btn-armada-green" style="float: right;" href="{% url 'anmalan:banquet_edit' company.pk banquet_ticket.pk %}">Edit</a>
+					{% if not past_deadline %}<a class="btn btn-armada-green" style="float: right;" href="{% url 'anmalan:banquet_edit' company.pk banquet_ticket.pk %}">Edit</a>{% endif %}
 
 					<ul class="no-bullets">
 						<li><span class="information_label">Name:</span> {{ banquet_ticket.name }}</li>
