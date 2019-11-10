@@ -11,39 +11,39 @@
 	<ol class="breadcrumb">
 		<li class="active">Exhibitors</li>
 	</ol>
-	
+
 	<h1>Exhibitors ({{ exhibitors|length }})</h1>
-	
+
 	<p>
 		{% if perms.exhibitors.modify_booths %}<a href="{% url 'booths' fair.year %}" class="btn btn-default">Booths</a>{% endif %}
 		<a href="{% url 'edit_view' fair.year %}" class="btn btn-default">Edit view</a>
 		{% if perms.exhibitors.create %}<a href="{% url 'create' fair.year %}" class="btn btn-default">Create exhibitor</a>{% endif %}
 		<a href="{% url 'export' fair.year %}" class="btn btn-default">Export exhibitors</a>
 	</p>
-	
+
 	<form method="post">
 		{% csrf_token %}
 		{{ form | crispy }}
 		<input class="btn btn-primary" type="submit" value="Refine search" />
 	</form>
-	
+
 	<div class="table-responsive">
 		<table class="table" id="exhibitor_table">
 			<thead>
 			<tr>
 				<th>Exhibitor</th>
-				
+
 				{% for field in fields %}
 					<th style="white-space: nowrap;">{% get_field_name field %}</th>
 				{% endfor %}
 				</tr>
 			</thead>
-			
+
 			<tbody>
 				{% for exhibitor in exhibitors %}
 					<tr>
 						<td style="white-space: nowrap;"><a href="{% url 'exhibitor' fair.year exhibitor.id %}">{{ exhibitor.name }}</a></td>
-						
+
 						{% for field in exhibitor.fields %}
 							{% if field.field == 'contact_persons' %}
 								<td style="white-space: nowrap;">
@@ -80,6 +80,8 @@
 							{% elif field.field == 'check_in_timestamp' %}
 								{% if field.value is None %}<td class="bg-danger"></td>
 								{% else %}<td style="white-space: nowrap;"><span style="display: none;">{{ field.value|date:"U" }}</span>{{ field.value }}</td>{% endif %}
+							{% elif field.field == 'check_in_comment' %}
+								<td style="white-space: nowrap;">{% if field.value %}{{field.value}}{% endif %}</td>
 							{% elif field.field == 'booths' %}
 								<td style="white-space: nowrap;">
 									<ul class="list-unstyled">
@@ -111,4 +113,3 @@
 		});
 	</script>
 {% endblock %}
-

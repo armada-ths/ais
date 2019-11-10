@@ -261,6 +261,7 @@ class ExhibitorView(models.Model):
 		'count_lunch_tickets': 'Lunch tickets',
 		'count_banquet_tickets': 'Banquet tickets',
 		'check_in_timestamp': 'Check in',
+		'check_in_comment': 'Check in comment',
 		'booths': 'Booths',
         'fair_location': 'Fair location',
         'fair_location_special': 'Special Location'
