@@ -99,6 +99,7 @@ def exhibitors(request, year, template_name='exhibitors/exhibitors.html'):
             if choice == 'electricity_equipment': value = e.electricity_equipment
             if choice == 'booth_height': value = e.booth_height
             if choice == 'check_in_timestamp': value = e.check_in_timestamp
+            if choice == 'check_in_comment': value = e.check_in_comment
             if choice == 'fair_location': value = e.fair_location
             if choice == 'fair_location_special': value = e.fair_location_special
 
