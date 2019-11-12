@@ -334,7 +334,7 @@ def exhibitor(request, year, pk):
         'exhibitor': exhibitor,
         'contacts': CompanyContact.objects.filter(company=exhibitor.company, active=True),
         'orders': orders,
-        'comments': CompanyCustomerComment.objects.filter(company=exhibitor.company, show_in_exhibitors=True),
+        'comments': CompanyCustomerComment.objects.filter(company=exhibitor.company, show_in_exhibitors=True , timestamp__year=fair.year),
         'form_comment': form_comment,
         'contact_persons': contact_persons,
         'lunch_tickets_count_ordered': lunch_tickets_count_ordered,
