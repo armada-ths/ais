@@ -107,17 +107,23 @@ class ParticipantAdminForm(forms.ModelForm):
 
 	class Meta:
 		model = Participant
-		fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'other_dietary_restrictions', 'alcohol']
+		fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'other_dietary_restrictions', 'alcohol', 'giveaway']
 
 		help_texts = {
 			'name': 'Only enter a name if you do not select a user.',
-			'email_address': 'Only enter an e-mail address if you do not select a user.'
+			'email_address': 'Only enter an e-mail address if you do not select a user.',
+			'giveaway': 'Only applies to company tickets, default should be No for all other tickets.',
+		}
+
+		labels = {
+			'giveaway': 'The company plan to give this ticket to a student',
 		}
 
 		widgets = {
 			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
 			'other_dietary_restrictions' : forms.TextInput(),
-			'alcohol': forms.RadioSelect()
+			'alcohol': forms.RadioSelect(),
+			'giveaway': forms.RadioSelect(),
 		}
 
 
