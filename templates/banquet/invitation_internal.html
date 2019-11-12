@@ -45,7 +45,7 @@
 			{% else %}<p>Please fill out your personal information as well as dietary preferences to confirm your spot at the banquet.</p>{% endif %}
 			{% if invitation.participant.has_paid %}<div class = "alert alert-success">We have received your payment of SEK {{ invitation.price }}.</div>{% endif %}
 			<p>
-				<span style="font-weight: normal;">By buying a ticket you agree to THS Armadas </span><a href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing" target="_blank">Privacy Notice.</a><br/>
+				<span style="font-weight: normal;">By signing up you agree to THS Armada's </span><a href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing" target="_blank">Privacy Notice.</a><br/>
 			</p><br />
 			<form method="post">
 				{% csrf_token %}
