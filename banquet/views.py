@@ -608,6 +608,11 @@ def manage_participant(request, year, banquet_pk, participant_pk):
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
     participant = get_object_or_404(Participant, banquet=banquet, pk=participant_pk)
 
+    try:
+        invitation_status = participant.invitation_set.first().status
+    except:
+        invitation_status = None
+
     return render(request, 'banquet/manage_participant.html', {
         'fair': fair,
         'banquet': banquet,
@@ -622,7 +627,7 @@ def manage_participant(request, year, banquet_pk, participant_pk):
 			'giveaway': participant.get_giveaway_display,
             'token': participant.token,
             'seat': participant.seat,
-			'invitation_status': participant.invitation_set.first().status,
+            'invitation_status': invitation_status,
         }
     })
 
