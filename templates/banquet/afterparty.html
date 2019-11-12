@@ -28,7 +28,9 @@
 				<form method="post">
 					{% csrf_token %}
 					{{ form | crispy }}
-
+					<p>
+						<span style="font-weight: bold;">By buying a ticket you agree to THS Armada's </span><a href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing" target="_blank">Privacy Notice.</a><br/>
+					</p><br />
 					<button type="submit" class="btn btn-lg btn-success center-block">Continue</button>
 				</form>
 
