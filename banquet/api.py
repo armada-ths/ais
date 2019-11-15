@@ -48,8 +48,8 @@ def ticket_search(request):
 
     tickets = Participant.objects.filter(
         Q(banquet=banquet) &
-        Q(company__name__icontains=search_query) |
-        name_query
+        (Q(company__name__icontains=search_query) |
+        name_query)
     ).all()
 
     data = {
