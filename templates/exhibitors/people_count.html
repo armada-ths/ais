@@ -9,15 +9,16 @@
 		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
 		<li class="active">People count for {{ location.name }}</li>
 	</ol>
-	
+
 	<h1>People count for {{ location.name }}</h1>
-	
+
 	<p>
-		<button class="change" data-change="1">Add 1</button>
-		<button class="change" data-change="-1">Remove 1</button>
+		<button style="touch-action:manipulation; height:50px; width:150px;" class="change" data-change="1">Add 1</button>
+		<button style="touch-action:manipulation; height:50px; width:150px;" class="change" data-change="-1">Remove 1</button>
 	</p>
-	
-	<div id="people_count">{% if location.people_count %} {{ location.people_count }} {% else %} 0 {% endif %}</div>
+	<div><span style="font-weight: 700;">Current count:<span></div>
+	<div id="people_count" style="font-weight: 700; font-size: 20px" >{% if location.people_count %} {{ location.people_count }} {% else %} 0 {% endif %}</div>
+	<p>Refresh the page to see the real updated number - several people are using this system at the same time and you will not see their updates unless you refresh your page.</p>
 {% endblock %}
 
 {% block scripts %}
