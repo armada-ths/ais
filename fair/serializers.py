@@ -7,7 +7,9 @@ def lunch_ticket(lunch_ticket):
         'date': lunch_ticket.time.__str__() if lunch_ticket.time else lunch_ticket.day.__str__(),
         'used': lunch_ticket.used,
         'type': lunch_ticket.get_ticket_type(),
-        'token': lunch_ticket.token
+        'token': lunch_ticket.token,
+		'dietary_restrictions': [dietary_restriction.name for dietary_restriction in lunch_ticket.dietary_restrictions.all()],
+		'other_dietary_restrictions': lunch_ticket.other_dietary_restrictions,
     }
 
     return data

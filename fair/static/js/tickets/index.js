@@ -61,6 +61,8 @@ class App extends Component {
                             openPanel={this.handleChange}
                             token={ticket.token}
                             title={`Lunch ticket - ${ticket.date}`}
+														dietary_restrictions={ticket.dietary_restrictions}
+														other_dietary_restrictions={ticket.other_dietary_restrictions}
                         />
                     )}
                     {banquet_participant && (

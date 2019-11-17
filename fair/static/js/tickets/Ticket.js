@@ -13,7 +13,8 @@ class Ticket extends PureComponent {
   }
 
   render() {
-    const {title, token, expanded, id, openPanel} = this.props;
+    const {title, token, expanded, id, openPanel, dietary_restrictions, other_dietary_restrictions} = this.props;
+
     return (
         <Fragment>
           <ExpansionPanel expanded={expanded} onChange={() => openPanel(id)}>
@@ -21,7 +22,18 @@ class Ticket extends PureComponent {
               <Typography>{title}</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              <Grid container justify="center" alignItems="center" direction="row">
+              <Grid container justify="center" alignItems="center" direction="column">
+							  <Grid item>
+								  { dietary_restrictions.length > 0 || other_dietary_restrictions ?
+										<p>
+											Dietary restrictions: { dietary_restrictions.join(', ') }
+											{ dietary_restrictions.length > 0 && other_dietary_restrictions ? ", " : null }
+											{ other_dietary_restrictions }
+										</p>
+										:
+										<p>No dietary restrictions</p>
+									}
+								</Grid>
                 <Grid item>
                   <QRCodeReact
                       size={256}
