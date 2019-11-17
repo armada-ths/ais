@@ -19,7 +19,9 @@ def banquet_participant(banquet_participant):
     data = {
         'id': banquet_participant.pk,
         'token': str(banquet_participant.token),
-        'title': banquet_participant.banquet.name
+        'title': banquet_participant.banquet.name,
+		'dietary_restrictions': [dietary_restriction.name for dietary_restriction in banquet_participant.dietary_restrictions.all()],
+		'other_dietary_restrictions': banquet_participant.other_dietary_restrictions,
     }
 
     return data

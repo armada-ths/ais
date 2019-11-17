@@ -72,6 +72,8 @@ class App extends Component {
                             openPanel={this.handleChange}
                             token={banquet_participant.token}
                             title={banquet_participant.title}
+														dietary_restrictions={banquet_participant.dietary_restrictions}
+														other_dietary_restrictions={banquet_participant.other_dietary_restrictions}
                         />
                     )}
                   </Fragment>
