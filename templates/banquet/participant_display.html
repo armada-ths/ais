@@ -9,7 +9,7 @@
 		<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
 		<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
 	</head>
-	
+
 	<body>
 		<div class="container" style="max-width: 900px;">
 			<style type="text/css">
@@ -21,7 +21,7 @@
 					height: 300px;
 					position: relative;
 				}
-				
+
 				#ticket_seat
 				{
 					background: red;
@@ -30,48 +30,49 @@
 					position: absolute;
 				}
 			</style>
-			
+
 			<div class="text-center headline">
 				<h2>{{ participant.banquet }}</h2>
 				<h1>Ticket</h1>
 			</div>
-			
+
 			<ul class="list-unstyled">
 				{% if participant.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ participant.banquet.date }}</li>{% endif %}
 				{% if participant.banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ participant.banquet.location }}</li>{% endif %}
 				{% if participant.banquet.dress_code %}<li><span style="font-weight: bold;">Dress code:</span> {{ participant.banquet.dress_code }}</li>{% endif %}
 			</ul>
-			
+
 			<div id="qrcode" style="margin: 50px auto 50px; max-width: 256px;"></div>
-			
+
 			<script src="//static.kottnet.net/javascript/qrcode.min.js"></script>
 			<script>
 				new QRCode(document.getElementById('qrcode'), '{{ participant.token }}');
 			</script>
-			
+
 			{% if participant.seat %}
 				<ul class="list-unstyled">
+					<li>This year the IT team has reprogrammed the sorting hat to make the seating arrangement. Students and company representatives are matched based on shared industries, competences and values.</li>
 					<li><span style="font-weight: bold;">Table:</span> {{ participant.seat.table.name }}</li>
 					<li><span style="font-weight: bold;">Seat:</span> {{ participant.seat.name }}</li>
 				</ul>
-				
+
 				{% if participant.seat.top %}
 					<div id="map">
 						<div id="ticket_seat"></div>
 					</div>
-					
+
 					<script src="//static.kottnet.net/javascript/jquery.js"></script>
 					<script>
 						var width = {{ participant.banquet.background.width }};
 						var height = {{ participant.banquet.background.height }};
-						
+
 						$(function()
 						{
 							console.log($('#map').width());
 							var scaling =  $('#map').width() / width;
-							
+
 							$('#map').height(height * scaling);
-							
+
 							$('#ticket_seat').css(
 							{
 								'top': ({{ participant.seat.top }} * scaling) + 'px',
