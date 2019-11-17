@@ -200,7 +200,7 @@
 								<td style="text-align: right;">{% if order.unit_price is not None %}<span style="color: #000000;">{{ order.unit_price | intcomma }}</span>{% else %}<span style="color: #999999;">{{ order.product.unit_price | intcomma }}</span>{% endif %}</td>
 								<td>
 									{% if order.export_batch is None %}
-										<a onclick="confirm('Do you want to remove the order?');" href="{% url 'companies_orders_remove' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+										<a onclick="return confirm('Do you want to remove the order?');" href="{% url 'companies_orders_remove' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
 										<a href="{% url 'companies_orders_edit' fair.year company.pk order.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
 									{% endif %}
 								</td>
@@ -233,7 +233,7 @@
 			<div class="panel panel-{% if comment.show_in_exhibitors %}info{% else %}default{% endif %}">
 				<div class="panel-heading">
 					<div class="pull-right">
-						<a onclick="confirm('Do you want to remove the comment?');" href="{% url 'companies_comments_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+						<a onclick="return confirm('Do you want to remove the comment?');" href="{% url 'companies_comments_remove' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
 						<a href="{% url 'companies_comments_edit' fair.year company.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
 					</div>
 
