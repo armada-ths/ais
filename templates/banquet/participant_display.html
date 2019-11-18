@@ -33,7 +33,7 @@
 
 			<div class="text-center headline">
 				<h2>{{ participant.banquet }}</h2>
-				<h1>Ticket</h1>
+				<h2>Ticket for {% if participant.name %} {{ participant.name }} {% else %} {{ participant.user.first_name }} {% endif %}</h2>
 			</div>
 
 			<ul class="list-unstyled">
