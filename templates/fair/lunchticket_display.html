@@ -19,6 +19,8 @@
 
 			<p><span style="font-weight: bold;">Date:</span> {% if lunch_ticket.time %} {{ lunch_ticket.time }} {% else %} {{ lunch_ticket.day }} {% endif %}</p>
 
+			<p><span style="font-weight: bold;">Ticket originally sent to:</span><br />{% if lunch_ticket.email_address %} {{ lunch_ticket.email_address }} {% else %} {{ lunch_ticket.user.email }}{% endif %}</p>
+
 			<p><span style="font-weight: bold;">Comment:</span><br />{% if lunch_ticket.comment %}{{ lunch_ticket.comment }}{% else %}<span style="font-style: italic;">(no comment)</span>{% endif %}</p>
 
 			<p><span style="font-weight: bold;">Dietary restrictions:</span><br />
