@@ -6,6 +6,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.core.mail import send_mail
+from django.utils import timezone
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
@@ -972,44 +973,48 @@ def external_banquet_afterparty(request, token=None):
     form = None
     has_paid = False
 
+    day_string = date.date().strftime('%Y-%m-%d')
+    purchase_deadline = datetime.datetime.strptime(day_string + ' 17:00', '%Y-%m-%d %H:%M')
+
     if ticket is None:
-        form = AfterPartyTicketForm(request.POST or None)
+        if timezone.now() <= purchase_deadline:
+            form = AfterPartyTicketForm(request.POST or None)
 
-        if request.POST and form.is_valid():
-            ticket = form.save(commit=False)
-            ticket.banquet = current_banquet
-            ticket.save()
-
-            try:
-                discounted_invitation = AfterPartyInvitation.objects.get(email_address = ticket.email_address, banquet=current_banquet, used=False)
-            except:
-                discounted_invitation = None
-
-            if discounted_invitation is not None:
-                amount = current_banquet.afterparty_price_discount
-                discounted_invitation.used = True
-                discounted_invitation.save()
-
-            if amount > 0 and ticket.paid_price is None:
-                stripe.api_key = settings.STRIPE_SECRET
-
-                intent = stripe.PaymentIntent.create(
-                    amount = amount * 100, # Stripe wants the price in öre
-                    currency = 'sek',
-                    description ='After party ticket ' + str(ticket.token),
-                    receipt_email = ticket.email_address,
-                    )
-
-                ticket.charge_stripe = intent['id']
+            if request.POST and form.is_valid():
+                ticket = form.save(commit=False)
+                ticket.banquet = current_banquet
                 ticket.save()
 
-                request.session['event'] = 'AfterParty'
-                request.session['url_path'] = 'banquet_external_afterparty_token'
-                request.session['intent'] = intent
-                request.session['invitation_token'] = str(ticket.token)
-                request.session.set_expiry(0)
+                try:
+                    discounted_invitation = AfterPartyInvitation.objects.get(email_address = ticket.email_address, banquet=current_banquet, used=False)
+                except:
+                    discounted_invitation = None
 
-                return redirect('/payments/checkout')
+                if discounted_invitation is not None:
+                    amount = current_banquet.afterparty_price_discount
+                    discounted_invitation.used = True
+                    discounted_invitation.save()
+
+                if amount > 0 and ticket.paid_price is None:
+                    stripe.api_key = settings.STRIPE_SECRET
+
+                    intent = stripe.PaymentIntent.create(
+                        amount = amount * 100, # Stripe wants the price in öre
+                        currency = 'sek',
+                        description ='After party ticket ' + str(ticket.token),
+                        receipt_email = ticket.email_address,
+                        )
+
+                    ticket.charge_stripe = intent['id']
+                    ticket.save()
+
+                    request.session['event'] = 'AfterParty'
+                    request.session['url_path'] = 'banquet_external_afterparty_token'
+                    request.session['intent'] = intent
+                    request.session['invitation_token'] = str(ticket.token)
+                    request.session.set_expiry(0)
+
+                    return redirect('/payments/checkout')
 
     if ticket is not None:
         stripe.api_key = settings.STRIPE_SECRET
@@ -1018,17 +1023,16 @@ def external_banquet_afterparty(request, token=None):
         amount = (stripe.PaymentIntent.retrieve(id)['amount'])/100
         has_paid = ticket.has_paid
 
-
         if request.POST and ticket.has_paid is False:
+            if timezone.now() <= purchase_deadline:
 
-            request.session['event'] = 'AfterParty'
-            request.session['url_path'] = 'banquet_external_afterparty_token'
-            request.session['intent'] = stripe.PaymentIntent.retrieve(id)
-            request.session['invitation_token'] = str(ticket.token)
-            request.session.set_expiry(0)
+                request.session['event'] = 'AfterParty'
+                request.session['url_path'] = 'banquet_external_afterparty_token'
+                request.session['intent'] = stripe.PaymentIntent.retrieve(id)
+                request.session['invitation_token'] = str(ticket.token)
+                request.session.set_expiry(0)
 
-            return redirect('/payments/checkout')
-
+                return redirect('/payments/checkout')
 
         if ticket.charge_stripe is not None:
             stripe.api_key = settings.STRIPE_SECRET
@@ -1053,7 +1057,8 @@ def external_banquet_afterparty(request, token=None):
         'stripe_publishable': settings.STRIPE_PUBLISHABLE,
         'amount': amount,
         'ticket': ticket,
-        'has_paid': has_paid
+        'has_paid': has_paid,
+        'purchase_open': timezone.now() <= purchase_deadline
         })
 
 

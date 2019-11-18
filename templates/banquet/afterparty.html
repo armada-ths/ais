@@ -25,21 +25,27 @@
 			<p><br /></p>
 
 			{% if form %}
-				<form method="post">
-					{% csrf_token %}
-					{{ form | crispy }}
-					<p>
-						<span style="font-weight: bold;">By buying a ticket you agree to THS Armada's </span><a href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing" target="_blank">Privacy Notice.</a><br/>
-					</p><br />
-					<button type="submit" class="btn btn-lg btn-success center-block">Continue</button>
-				</form>
+				{% if purchase_open %}
+					<form method="post">
+						{% csrf_token %}
+						{{ form | crispy }}
+						<p>
+							<span style="font-weight: bold;">By buying a ticket you agree to THS Armada's </span><a href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing" target="_blank">Privacy Notice.</a><br/>
+						</p><br />
+						<button type="submit" class="btn btn-lg btn-success center-block">Continue</button>
+					</form>
+				{% endif %}
 
 			{% elif ticket is None  %}
-				<form method="post">
-					{% csrf_token %}
-					<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ amount }}</p>
-					<button type="submit" class="btn btn-lg btn-success center-block">Proceed to Payment</button>
-				</form>
+				{% if purchase_open %}
+					<form method="post">
+						{% csrf_token %}
+						<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ amount }}</p>
+						<button type="submit" class="btn btn-lg btn-success center-block">Proceed to Payment</button>
+					</form>
+				{% else %}
+					<p>The online purchase site is closed. You may still get your after party ticket at the door for SEK 100.</p>
+				{% endif %}
 
 			{% else %}
 				<h2>You have a ticket!</h2>
@@ -50,13 +56,16 @@
 				<p>Welcome to the After Party!</p>
 
 				{% if has_paid is not True %}
-					<div class="alert alert-warning" role="alert">We haven't received your payment of SEK {{ amount }}. If you haven't paid before the After Party, this ticket is invalid.</div>
+					{% if purchase_open %}
+						<div class="alert alert-warning" role="alert">We haven't received your payment of SEK {{ amount }}. If you haven't paid before the After Party, this ticket is invalid.</div>
 						<form method="post">
 							{% csrf_token %}
 							<p><span style="font-weight: bold;">Total to pay:</span> SEK {{ amount }}</p>
 							<button type="submit" class="btn btn-lg btn-success center-block">Proceed to Payment</button>
 						</form>
-
+					{% else %}
+						<div class="alert alert-warning" role="alert">We haven't received your payment of SEK {{ amount }} and we have closed the online purchase. You may still buy a ticket at the door!.</div>
+					{% endif %}
 				{% else %}
 					<div class = "alert alert-success">We have received your payment of SEK {{ amount }}.</div>{% endif %}
 				{% endif %}
