@@ -21,7 +21,20 @@
 
 			<p><span style="font-weight: bold;">Comment:</span><br />{% if lunch_ticket.comment %}{{ lunch_ticket.comment }}{% else %}<span style="font-style: italic;">(no comment)</span>{% endif %}</p>
 
-			<p><span style="font-weight: bold;">Dietary restrictions:</span><br />{% if lunch_ticket.dietary_restrictions.all %}{{ lunch_ticket.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">(no dietary restrictions)</span>{% endif %}</p>
+			<p><span style="font-weight: bold;">Dietary restrictions:</span><br />
+				{% if lunch_ticket.dietary_restrictions.all or lunch_ticket.other_dietary_restrictions %}
+					{% if lunch_ticket.dietary_restrictions.all %}
+						{{ lunch_ticket.dietary_restrictions.all | join:', ' }}
+						{% if lunch_ticket.other_dietary_restrictions %}
+							, {{ lunch_ticket.other_dietary_restrictions }}
+						{% endif %}
+					{% else %}
+						{{ lunch_ticket.other_dietary_restrictions }}
+					{% endif %}
+				{% else %}
+					<span style="font-style: italic;">(no dietary restrictions)</span>
+				{% endif %}
+			</p>
 			<p>Please notify the restaurant about any dietary restrictions stated above.</p>
 
 			{% if lunch_ticket.used %}
