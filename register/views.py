@@ -29,6 +29,7 @@ from .help.methods import get_time_flag
 
 
 # This function returns the correct contract based on the company type or contract groups connected to the company
+# The registration_type refers to complete or initial contract
 def get_contract(company, fair, registration_type):
 	contract = None
 	# If the company has been tagged with a group connected to a contract in the CRM this contract should be used. This is used for special contracts or potentially for startups.
@@ -128,6 +129,8 @@ def choose_company(request):
 	return render(request, 'register/choose_company.html', {'company_contacts': company_contacts})
 
 
+# This function serves the correct template according to the current time of the Armada year and status of the company or user
+# It either calls form_initial, form_complete or it renders a "betweeen" template
 def form(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
 
@@ -283,7 +286,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
 	registration_sections = []
 
-	for registration_section_raw in RegistrationSection.objects.filter(include_in_registration = True):
+	for registration_section_raw in RegistrationSection.objects.exclude(hide_from_registration = True):
 		registration_section = {
 			'name': registration_section_raw.name,
 			'description': registration_section_raw.description,
@@ -357,9 +360,9 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 		form_logistics_details.fields['booth_height'].required = True
 		form_logistics_details.fields['electricity_total_power'].required = True
 		form_logistics_details.fields['electricity_socket_count'].required = True
-		# form_catalogue_details.fields['catalogue_about'].required = True # WARNING: Should not be uncommented - special for company 1st of Nov 2019
-		# form_catalogue_details.fields['catalogue_purpose'].required = True # REMOVED FOR 2019
-		# form_catalogue_details.fields['catalogue_logo_squared'].required = True # WARNING: Should not be uncommented - special for company 1st of Nov 2019
+		form_catalogue_details.fields['catalogue_about'].required = True
+		# form_catalogue_details.fields['catalogue_purpose'].required = True # Not collected at all in 2019
+		form_catalogue_details.fields['catalogue_logo_squared'].required = True
 
 	orders = []
 	orders_total = 0
@@ -404,20 +407,15 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	if not exhibitor.booth_height: errors.append('Height of the booth (cm)')
 	if exhibitor.electricity_total_power is None: errors.append('Estimated power consumption (W)')
 	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets')
-	# if not exhibitor.catalogue_about: errors.append('Text about your organisation') # WARNING: Should not be uncommented - special for company 1st of Nov 2019
-	# if not exhibitor.catalogue_purpose: errors.append('Your organisation\'s purpose') # REMOVED FOR 2019
-	# if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype') # WARNING: Should not be uncommented - special for company 1st of Nov 2019
+	if not exhibitor.catalogue_about: errors.append('Text about your organisation')
+	# if not exhibitor.catalogue_purpose: errors.append('Your organisation\'s purpose') # Not collected at all in 2019
+	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
 
 	if not is_editable:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
 		for field in form_logistics_details.fields: form_logistics_details.fields[field].disabled = True
 		for field in form_catalogue_details.fields: form_catalogue_details.fields[field].disabled = True
 
-	''' NOTE/WARNING:
-		The code line below is only a quick fix to hide the catalogue and student matching form from the companies if needed - e.g. after edits can be made
-		(for the future one might want to think about if all forms should be removed entirely after deadline instead of just being deactivated).
-		Uncomment/remove the row below (setting the form to None) to make everything work as normal.'''
-	form_catalogue_details = None
 
 	return render(request, 'register/inside/registration_complete.html',
 	{
@@ -497,17 +495,18 @@ def change_password(request, template_name='register/change_password.html'):
 	return render(request, template_name, {'registration': form})
 
 
-def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving):
-	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company)
-
-	if not signed_up and form.is_valid():
-		form.cleaned_data["groups"] = company.groups.filter(fair = fair).union(form.cleaned_data["groups"])
-		form.save()
-		SignupLog.objects.create(company_contact = contact, contract = contract, company = contact.company)
-
-		return redirect('anmalan:choose_company')
-
-	return ('register/registration.html', dict(registration_open = True, signed_up = signed_up, contact = contact, company=company, exhibitor = exhibitor, fair=fair, form = form, contract_url = contract.contract.url if contract else None ))
+# Not used in 2019 (or before either?). To be removed if no errors encountered after commenting this out.
+# def preliminary_registration(request, fair, company, contact, contract, exhibitor, signed_up, allow_saving):
+# 	form = RegistrationForm((request.POST or None) if allow_saving else None, prefix = 'registration', instance = company)
+#
+# 	if not signed_up and form.is_valid():
+# 		form.cleaned_data["groups"] = company.groups.filter(fair = fair).union(form.cleaned_data["groups"])
+# 		form.save()
+# 		SignupLog.objects.create(company_contact = contact, contract = contract, company = contact.company)
+#
+# 		return redirect('anmalan:choose_company')
+#
+# 	return ('register/registration.html', dict(registration_open = True, signed_up = signed_up, contact = contact, company=company, exhibitor = exhibitor, fair=fair, form = form, contract_url = contract.contract.url if contract else None ))
 
 
 def transport(request, company_pk):
@@ -534,7 +533,7 @@ def transport(request, company_pk):
 
 	form = TransportForm(request.POST or None, initial = initial)
 
-	if request.POST and form.is_valid() and True == False: # TODO: not used in 2018, but perhaps in 2019?
+	if request.POST and form.is_valid() and True == False: # TODO: written in 2018 but not used in either 2018 or 2019.
 		body = [
 			'Company name: ' + company.name + ' (' + str(company.pk) + ')',
 			'Contact person: ' + form.cleaned_data['contact_name'],
@@ -801,7 +800,7 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 		'is_editable': is_editable
 	})
 
-# Has not been used in 2019 or the years before. Would be nice to implement an events tab where companies can add participants to events (mainly for Armada Run).
+# Has not been used in 2019 or the years before. Would be nice to implement an events tab where companies can add participants to events (mainly for Armada Run though).
 def events(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
 

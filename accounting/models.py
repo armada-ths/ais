@@ -31,8 +31,8 @@ class Category(models.Model):
 class RegistrationSection(models.Model):
 	name = models.CharField(max_length = 100, blank = False)
 	description = models.TextField(blank = True, null = True)
-	include_in_registration = models.BooleanField(default = True)
-	include_in_registration.help_text = "The section is only visible in the registration if this attribute is checked."
+	hide_from_registration = models.BooleanField(default = False)
+	hide_from_registration.help_text = "If this box is ticked the section will not be visible for the companies in the registration."
 
 	class Meta:
 		verbose_name_plural = 'Registration sections'
