@@ -4,12 +4,12 @@ from .models import FairDay, LunchTicket, Fair, LunchTicketTime
 
 
 class LunchTicketForm(forms.ModelForm):
-	currentFair = Fair.objects.filter(current=True).first()
-	day = forms.ModelChoiceField(queryset = FairDay.objects.filter(fair = currentFair), required = True)
+	day = forms.ModelChoiceField(queryset = FairDay.objects.filter(fair__current = True), required = True)
 	allDays = []
-	for fairDay in FairDay.objects.filter(fair = currentFair):
+	for fairDay in FairDay.objects.filter(fair__current = True):
 		allDays.append(fairDay)
 	time = forms.ModelChoiceField(queryset = LunchTicketTime.objects.filter(day__in = allDays), required = False)
+
 	def is_valid(self):
 		valid = super(LunchTicketForm, self).is_valid()
 

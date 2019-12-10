@@ -570,6 +570,16 @@ def transport(request, company_pk):
 	})
 
 
+def get_ticket_deadline(fair):
+	if fair.companies_ticket_deadline:
+		ticket_deadline = fair.companies_ticket_deadline
+	else:
+		fairday = fair.fairday_set.first()
+		day_string = fairday.date.strftime('%Y-%m-%d')
+		ticket_deadline = datetime.datetime.strptime(day_string + ' 08:00', '%Y-%m-%d %H:%M')
+	return ticket_deadline
+
+
 def lunchtickets(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
 
@@ -585,7 +595,8 @@ def lunchtickets(request, company_pk):
 
 		if not company_contact: return redirect('anmalan:choose_company')
 
-	lunch_ticket_deadline = datetime.datetime(2019,11,12,23,59,0,0)
+	lunch_ticket_deadline = get_ticket_deadline(fair)
+
 	count_ordered = 0
 
 	for order in Order.objects.filter(purchasing_company = exhibitor.company, product = exhibitor.fair.product_lunch_ticket):
@@ -634,7 +645,7 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 		if not company_contact: return redirect('anmalan:choose_company')
 
 	is_editable = company_contact is not None or request.user.has_perm('companies.base')
-	lunch_ticket_deadline = datetime.datetime(2019,11,12,23,59,0,0)
+	lunch_ticket_deadline = get_ticket_deadline(fair)
 	if timezone.now() > lunch_ticket_deadline:
 		is_editable = False
 
@@ -694,7 +705,7 @@ def banquet(request, company_pk):
 
 		if not company_contact: return redirect('anmalan:choose_company')
 
-	banquet_ticket_deadline = datetime.datetime(2019,11,7,23,59,00)
+	banquet_ticket_deadline = get_ticket_deadline(fair)
 	count_ordered = 0
 
 	for banquet in Banquet.objects.filter(fair = fair).exclude(product = None):
@@ -744,7 +755,7 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 		if not company_contact: return redirect('anmalan:choose_company')
 
 	is_editable = company_contact is not None or request.user.has_perm('companies.base')
-	banquet_ticket_deadline = datetime.datetime(2019,11,7,23,59,00)
+	banquet_ticket_deadline = get_ticket_deadline(fair)
 	if timezone.now() > banquet_ticket_deadline:
 		is_editable = False
 

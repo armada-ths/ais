@@ -41,9 +41,8 @@ class CompanyAddressForm(ModelForm):
 
 
 class GroupForm(ModelForm):
-	fair = Fair.objects.filter(current = True).first()
-	parent = forms.ModelChoiceField(queryset = Group.objects.filter(fair = fair), required = False)
-	contract = forms.ModelChoiceField(queryset = SignupContract.objects.filter(fair = fair), required = False)
+	parent = forms.ModelChoiceField(queryset = Group.objects.filter(fair__current = True), required = False)
+	contract = forms.ModelChoiceField(queryset = SignupContract.objects.filter(fair__current = True), required = False)
 
 	class Meta:
 		model = Group
@@ -125,8 +124,7 @@ class CompanyCustomerResponsibleForm(ModelForm):
 
 
 class CompanyCustomerCommentForm(ModelForm):
-	fair = Fair.objects.filter(current = True).first()
-	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_comments = True, fair = fair), widget = forms.CheckboxSelectMultiple(), required = False)
+	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_comments = True, fair__current = True), widget = forms.CheckboxSelectMultiple(), required = False)
 
 	class Meta:
 		model = CompanyCustomerComment

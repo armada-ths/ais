@@ -44,6 +44,9 @@ class Fair(models.Model):
 
     product_lunch_ticket = models.ForeignKey('accounting.Product', blank=True, null=True)
 
+    companies_ticket_deadline = models.DateTimeField(null=True, blank=True)
+    companies_ticket_deadline.help_text = 'After this date the companies will no longer be able to create or edit their lunch or banquet tickets on their registration page.'
+
     def is_member_of_fair(self, user):
         if user.is_superuser: return True
 

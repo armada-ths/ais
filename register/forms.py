@@ -35,8 +35,7 @@ def fix_url(url):
 
 
 class InitialInterestsRegistrationForm(Form):
-	fair = Fair.objects.filter(current = True).first()
-	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_registration = True, fair = fair), widget = forms.CheckboxSelectMultiple(), required = False, label = "")
+	groups = forms.ModelMultipleChoiceField(queryset = Group.objects.filter(allow_registration = True, fair__current = True), widget = forms.CheckboxSelectMultiple(), required = False, label = "")
 
 
 class InitialCommentForm(Form):
