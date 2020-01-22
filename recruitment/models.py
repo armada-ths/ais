@@ -23,6 +23,17 @@ class ExtraField(models.Model):
             questions_with_answers.append((custom_field, answer))
         return questions_with_answers
 
+    def remove_answers_for_user(self, user):
+        for custom_field in self.customfield_set.filter(required = False).order_by('position'):
+            skip = False
+            try:
+                custom_field_answer = CustomFieldAnswer.objects.get(custom_field=custom_field, user=user)
+            except CustomFieldAnswer.DoesNotExist:
+                skip = True
+            if not skip:
+                custom_field_answer.answer = '-'
+                custom_field_answer.save()
+
     def handle_questions_from_request(self, request, field_name):
         if not request.POST:
             return
