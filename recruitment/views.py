@@ -791,9 +791,9 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
 
 def send_confirmation_email(user, recruitment_period):
-	hr_contact_name = 'Daniel Aston'
-	hr_contact_role = 'Project Manager'
-	hr_contact_email = 'a@armada.nu'
+	hr_contact_name = 'Arvid Nilsson'
+	hr_contact_role = 'Head of Human Resources'
+	hr_contact_email = 'arvid.nilsson@armada.nu'
 	url_to_application = 'https://ais.armada.nu/fairs/%s/recruitment/%s' % (str(recruitment_period.fair.year), str(recruitment_period.pk))
 
 	html_message = '''
