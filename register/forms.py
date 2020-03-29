@@ -45,10 +45,10 @@ class InitialCommentForm(Form):
 
 class InitialRegistrationForm(Form):
 	agreement_accepted = BooleanField(required = True)
-	agreement_accepted.label = "I have read the binding contract and agree to terms, and I am also authorized to register my organization for THS Armada 2019 and sign this contract.*"
+	agreement_accepted.label = "I have read the binding contract and agree to terms, and I am also authorized to register my organization for THS Armada 2020 and sign this contract.*"
 
 	gdpr_accepted = BooleanField(required = True)
-	gdpr_accepted.label = "THS Armada would like to process personal data about you and your organization to be able to contact you in conjunction with complete registration and send you information regarding the fair of 2019. The data we intend to collect and process is forename, surname, title of your organization, phone number and email adress. You decide for yourself if you want to leave any information to us. The data will only be processed by the project group in THS Armada and by THS Management. The data will be saved until 2020-06-24 in Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request correction as to what personal data we are processing about you. I consent for THS Armada to process my personal data in accordance with the above.*"
+	gdpr_accepted.label = "THS Armada would like to process personal data about you and your organization to be able to contact you in conjunction with complete registration and send you information regarding the fair of 2020. The data we intend to collect and process is forename, surname, title of your organization, phone number and email adress. You decide for yourself if you want to leave any information to us. The data will only be processed by the project group in THS Armada and by THS Management. The data will be saved until 2020-06-24 in Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request correction as to what personal data we are processing about you. I consent for THS Armada to process my personal data in accordance with the above.*"
 
 
 class CompleteCompanyDetailsForm(ModelForm):
@@ -282,10 +282,10 @@ class CompleteProductBooleanForm(Form):
 class CompleteFinalSubmissionForm(Form):
 
 	contract = BooleanField(required = True)
-	contract.label = 'I have read the binding contract and agree to the terms. I am also authorized to register my organization for THS Armada 2019 and sign this contract.'
+	contract.label = 'I have read the binding contract and agree to the terms. I am also authorized to register my organization for THS Armada 2020 and sign this contract.'
 
 	gdpr = BooleanField(required = True)
-	gdpr.label = 'THS Armada would like to process data about your organization in conjunction with complete registration to be able to create the career fair of 2019. The data will be processed by members of the THS Armada organization, our external transport partner Ryska Posten and Sture Exhibitions & Events AB. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what data we process and how we process these. You also have the right to request correction as to what data we are processing about your organization. I consent for THS Armada to process the data in accordance with the above.'
+	gdpr.label = 'THS Armada would like to process data about your organization in conjunction with complete registration to be able to create the career fair of 2020. The data will be processed by members of the THS Armada organization, our external transport partner Ryska Posten and Sture Exhibitions & Events AB. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what data we process and how we process these. You also have the right to request correction as to what data we are processing about your organization. I consent for THS Armada to process the data in accordance with the above.'
 
 # form is also used to edit company info during initial registration
 class NewCompanyForm(ModelForm):
@@ -365,7 +365,7 @@ class RegistrationForm(ModelForm):
 	agreement_accepted.label = "I have read the contract and agree to terms*"
 
 	gdpr_accepted = BooleanField(required = True)
-	gdpr_accepted.label = "THS Armada would like to process personal data about you and your organization to be able to contact you in conjunction with initial registration, complete registration and send you information regarding the fair of 2018. The data we intend to collect and process is forename, surname, title of your organization, phone number and email adress. You decide for yourself if you want to leave any information to us. The data will only be processed by the project group in Armada, which consists of a total of 18 people, and will be saved until 2020-04-03 in Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request correction as to what personal data we are processing about you.\nI consent for THS Armada to process my personal data in accordance with the above.*"
+	gdpr_accepted.label = "THS Armada would like to process personal data about you and your organization to be able to contact you in conjunction with initial registration, complete registration and send you information regarding the fair of 2020. The data we intend to collect and process is forename, surname, title of your organization, phone number and email adress. You decide for yourself if you want to leave any information to us. The data will only be processed by the project group in Armada, which consists of a total of 18 people, and will be saved until 2020-04-03 in Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request correction as to what personal data we are processing about you.\nI consent for THS Armada to process my personal data in accordance with the above.*"
 
 	authorized_accepted = BooleanField(required = True)
 	authorized_accepted.label = "I am authorized to register my company for Armada 2018 and sign this contract*"
