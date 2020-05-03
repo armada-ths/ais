@@ -1,4 +1,4 @@
-Django==1.11
+Django==1.11.28
 django-cas-client
 psycopg2
 psycopg2-binary
