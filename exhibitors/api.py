@@ -67,9 +67,11 @@ def serialize_exhibitor(exhibitor, request):
 
 @cache_page(60 * 5)
 def exhibitors(request):
+    f = Fair.objects.get(year = request.GET['year']) if 'year' in request.GET else Fair.objects.get(current = true)
+
     data = []
 
-    for exhibitor in Exhibitor.objects.filter(fair=Fair.objects.get(current = True)):
+    for exhibitor in Exhibitor.objects.filter(fair=f):
         data.append(serialize_exhibitor(exhibitor, request))
 
     return JsonResponse(data, safe=False)
