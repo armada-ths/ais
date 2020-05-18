@@ -67,7 +67,7 @@ def serialize_exhibitor(exhibitor, request):
 
 @cache_page(60 * 5)
 def exhibitors(request):
-    f = Fair.objects.get(year = request.GET['year']) if 'year' in request.GET else Fair.objects.get(current = true)
+    f = Fair.objects.get(year = request.GET['year']) if 'year' in request.GET else Fair.objects.get(current = True)
 
     data = []
 
