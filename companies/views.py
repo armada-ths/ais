@@ -388,10 +388,10 @@ def companies_view(request, year, pk):
 
 	fairs = []
 
-	for fair in Fair.objects.all():
+	for f in Fair.objects.all():
 		fairs.append({
-			'fair': fair,
-			'exhibitor': Exhibitor.objects.filter(fair = fair, company = company).count() == 1
+			'fair': f,
+			'exhibitor': Exhibitor.objects.filter(fair = f, company = company).count() == 1
 		})
 
 	return render(request, 'companies/companies_view.html',
