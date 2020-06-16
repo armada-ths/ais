@@ -22,6 +22,16 @@ class Header extends Component {
             {event.description}
           </Typography>
           <Grid container spacing={16}>
+          {event.contact_person && (
+              <Grid item sm={12}>
+                <Typography variant="caption" gutterBottom>
+                  Contact
+                </Typography>
+                <Typography>
+                  {event.contact_person.name} - {event.contact_person.email}
+                </Typography>
+              </Grid>
+            )}
             {event.location && (
                 <Grid item sm={6}>
                   <Typography variant="caption" gutterBottom>

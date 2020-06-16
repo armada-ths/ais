@@ -22,6 +22,7 @@ def event(event, request):
         'image_url': request.build_absolute_uri(event.picture.url) if event.picture else None,
         'fee': event.fee_s,
         'registration_required': True,
+        'contact_person': {'name': event.contact_person.get_full_name(), 'email': event.contact_person.email},
         'external_event_link': event.external_event_link,
         'signup_questions': [signup_question(question) for question in event.signupquestion_set.all()],
         'signup_link': signup_url,
