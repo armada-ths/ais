@@ -1,12 +1,13 @@
 import re, datetime
 
-from django.forms import ModelForm, HiddenInput, BaseModelFormSet
+from django.forms import ModelForm, HiddenInput, BaseModelFormSet, ModelChoiceField
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
 
 from register.models import SignupContract
 from accounting.models import Product, Order
+from people.models import Language
 from .models import Company, CompanyAddress, CompanyCustomer, CompanyCustomerResponsible, CompanyContact, CompanyCustomerComment, Group
 from fair.models import Fair
 
@@ -145,6 +146,9 @@ def fix_phone_number(n):
 
 # form to be used for intital registration, excludes user, company, active, confirmed as the contact person should not see this
 class InitialCompanyContactForm(ModelForm):
+	# Set "None" to be displayed as "No Preference"
+	preferred_language = ModelChoiceField(queryset=Language.objects.all(), empty_label=Language.EMPTY_DISPLAY_VALUE)
+
 	def clean(self):
 		super(InitialCompanyContactForm, self).clean()
 
@@ -184,6 +188,9 @@ class InitialCompanyContactForm(ModelForm):
 
 
 class CompanyContactForm(ModelForm):
+	# Set "None" to be displayed as "No Preference"
+	preferred_language = ModelChoiceField(queryset=Language.objects.all(), empty_label=Language.EMPTY_DISPLAY_VALUE)
+
 	def clean(self):
 		super(CompanyContactForm, self).clean()
 
@@ -229,6 +236,9 @@ class UserForm(UserCreationForm):
 
 
 class CreateCompanyContactForm(ModelForm):
+	# Set "None" to be displayed as "No Preference"
+	preferred_language = ModelChoiceField(queryset=Language.objects.all(), empty_label=Language.EMPTY_DISPLAY_VALUE)
+
 	def clean(self):
 		super(CreateCompanyContactForm, self).clean()
 

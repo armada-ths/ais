@@ -5,6 +5,9 @@ from django.db import models
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 
 class Language(models.Model):
+	# Displayed in place of None/null
+	EMPTY_DISPLAY_VALUE = "No preference"
+
 	name = models.CharField(max_length = 100)
 	short = models.CharField(max_length = 100)
 
