@@ -134,6 +134,7 @@ class Exhibitor(models.Model):
     deadline_complete_registration = models.DateTimeField(blank = True, null = True, verbose_name = 'Deviating deadline for complete registration')
 
     placement_wishes = [
+        (None, 'No preference'),
         ('MIXED', 'Mixed with companies from other industries'),
         ('SIMILAR', 'Next to similar companies'),
     ]
