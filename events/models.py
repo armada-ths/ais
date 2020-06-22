@@ -33,6 +33,7 @@ class Event(models.Model):
     published = models.BooleanField(blank=False, null=False, verbose_name='The event is published on the website')
     requires_invitation = models.BooleanField(blank=False, null=False, verbose_name='Participants need an invitation to sign up')
     contact_person = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    contact_email = models.EmailField(max_length=75, blank=True, null=True, verbose_name='Contact e-mail')
     external_event_link = models.CharField(max_length=255, blank=True, null=True)
     picture = models.ImageField(upload_to=UploadToDirUUID('events', 'pictures'), blank=True, null=True)
 
