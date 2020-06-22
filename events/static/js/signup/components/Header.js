@@ -45,7 +45,7 @@ class Header extends Component {
             {event.contact_email && (
               <Grid item sm={6}>
                 <Typography variant="caption" gutterBottom>
-                  Contact email
+                  Contact e-mail
                 </Typography>
                 <Typography component="a" target="_blank" href={"mailto:"+event.contact_email} color="primary">
                   {event.contact_email}
