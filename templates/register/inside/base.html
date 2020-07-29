@@ -132,7 +132,8 @@
 				</p>
 			{% endif %}
 			{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}">{{ company.name }}</a></li>{% endblock %}
-			{% if exhibitor is not None %}
+		<!-- For physical fair, remove "and true == false" -->
+			{% if exhibitor is not None and True == False %}
 				{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
 				{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
 				{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
