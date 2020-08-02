@@ -355,14 +355,15 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 			registration_section['products'].append(product)
 
 		registration_sections.append(registration_section)
-
-	if signature:
+		"""
+		Uncomment this for a physical fair
+		if signature: 
 		form_logistics_details.fields['booth_height'].required = True
 		form_logistics_details.fields['electricity_total_power'].required = True
 		form_logistics_details.fields['electricity_socket_count'].required = True
 		form_catalogue_details.fields['catalogue_about'].required = True
 		# form_catalogue_details.fields['catalogue_purpose'].required = True # Not collected at all in 2019
-		form_catalogue_details.fields['catalogue_logo_squared'].required = True
+		form_catalogue_details.fields['catalogue_logo_squared'].required = True"""
 
 	orders = []
 	orders_total = 0
@@ -404,12 +405,12 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 	errors = []
 
 	if not company.has_invoice_address(): errors.append('Invoice address, zip code, city and country')
-	if not exhibitor.booth_height: errors.append('Height of the booth (cm)')
-	if exhibitor.electricity_total_power is None: errors.append('Estimated power consumption (W)')
-	if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets')
-	if not exhibitor.catalogue_about: errors.append('Text about your organisation')
-	# if not exhibitor.catalogue_purpose: errors.append('Your organisation\'s purpose') # Not collected at all in 2019
-	if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype')
+	#if not exhibitor.booth_height: errors.append('Height of the booth (cm)') Uncomment this for a physical fair
+	#if exhibitor.electricity_total_power is None: errors.append('Estimated power consumption (W)') Uncomment this for a physical fair
+	#if exhibitor.electricity_socket_count is None: errors.append('Number of power sockets') Uncomment this for a physical fair
+	#if not exhibitor.catalogue_about: errors.append('Text about your organisation') Uncomment this for a physical fair
+	# if not exhibitor.catalogue_purpose: errors.append('Your organisation\'s purpose') # Not collected at all in 2019 
+	#if not exhibitor.catalogue_logo_squared: errors.append('Squared logotype') Uncomment this for a physical fair
 
 	if not is_editable:
 		for field in form_company_details.fields: form_company_details.fields[field].disabled = True
@@ -508,6 +509,8 @@ def change_password(request, template_name='register/change_password.html'):
 #
 # 	return ('register/registration.html', dict(registration_open = True, signed_up = signed_up, contact = contact, company=company, exhibitor = exhibitor, fair=fair, form = form, contract_url = contract.contract.url if contract else None ))
 
+""" 
+UNCOMMENT THIS PART FOR A PHYSICAL FAIR
 
 def transport(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
@@ -567,7 +570,7 @@ def transport(request, company_pk):
 		'company_contact': company_contact,
 		'exhibitor': exhibitor,
 		'form': form
-	})
+	})"""
 
 
 def get_ticket_deadline(fair):
@@ -579,7 +582,8 @@ def get_ticket_deadline(fair):
 		ticket_deadline = datetime.datetime.strptime(day_string + ' 08:00', '%Y-%m-%d %H:%M')
 	return ticket_deadline
 
-
+"""
+UNCOMMENT THIS PART FOR A PHYSICAL FAIR
 def lunchtickets(request, company_pk):
 	if not request.user.is_authenticated(): return redirect('anmalan:logout')
 
@@ -810,6 +814,7 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 		'form': form,
 		'is_editable': is_editable
 	})
+"""
 
 # Has not been used in 2019 or the years before. Would be nice to implement an events tab where companies can add participants to events (mainly for Armada Run though).
 def events(request, company_pk):

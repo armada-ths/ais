@@ -5,9 +5,7 @@ from .forms import LoginForm, ResetPasswordForm, SetNewPasswordForm
 
 app_name = 'anmalan'
 
-urlpatterns = [
-	url(r'^$', views.choose_company, name = 'choose_company'),
-	url(r'^(?P<company_pk>[0-9]+)/registration$', views.form, name = 'registration'),
+""" For physical fair, add following lines to urlpatterns below:
 	url(r'^(?P<company_pk>[0-9]+)/transport$', views.transport, name = 'transport'),
 	url(r'^(?P<company_pk>[0-9]+)/lunchtickets$', views.lunchtickets, name = 'lunchtickets'),
 	url(r'^(?P<company_pk>[0-9]+)/lunchtickets/new$', views.lunchtickets_form, name = 'lunchtickets_new'),
@@ -15,6 +13,11 @@ urlpatterns = [
 	url(r'^(?P<company_pk>[0-9]+)/banquet$', views.banquet, name = 'banquet'),
 	url(r'^(?P<company_pk>[0-9]+)/banquet/new$', views.banquet_form, name = 'banquet_new'),
 	url(r'^(?P<company_pk>[0-9]+)/banquet/(?P<banquet_participant_pk>[0-9]+)$', views.banquet_form, name = 'banquet_edit'),
+"""
+
+urlpatterns = [
+	url(r'^$', views.choose_company, name = 'choose_company'),
+	url(r'^(?P<company_pk>[0-9]+)/registration$', views.form, name = 'registration'),
 	url(r'^(?P<company_pk>[0-9]+)/events$', views.events, name = 'events'),
 	url(r'^user', views.create_user, name = 'create_user'),
 	url(r'^company', views.create_company, name = 'create_company'),
