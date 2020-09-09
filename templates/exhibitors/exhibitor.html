@@ -169,6 +169,15 @@
 								</tr>
 							{% endfor %}
 						</table>
+						<!-- Send order confirmation with script -->
+						<!-- TODO: 
+							1. Create an html template to run the script (base on exhibitors/export.html)
+							2. Create a view in views.py that runs the script for emails
+							3. Set up urls.py (add new views)
+							4. Adapt script for sending order confirmations for one company only
+							5. Add same functionality to exhibitors.html WITH warning "sending to ALL"
+						-->
+						<a href="{% url 'anmalan:registration' exhibitor.company.pk %}" class="btn btn-warning pull-right"><span class="glyphicon glyphicon-envelope"></span> Skicka bekräftelse för ordrar</a>
 					{% else %}
 						<p>The company has no orders for {{ fair }}.</p>
 					{% endif %}
