@@ -4,9 +4,15 @@ import csv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.conf import settings
+
+from email.mime.multipart import MIMEMultipart
+from email.utils import formatdate
+from email.mime.text import MIMEText
+import smtplib
 
 from companies.models import Company, CompanyAddress, CompanyCustomerResponsible, Group, CompanyContact, CompanyCustomerComment
 from fair.models import Fair
@@ -343,6 +349,7 @@ def companies_list(request, year):
 	{
 		'fair': fair,
 		'companies': companies_modified,
+		'companies_ids': [x['pk'] for x in companies_modified],
 		'form': form
 	})
 
@@ -676,6 +683,153 @@ def companies_orders_remove(request, year, pk, order_pk):
 	order.delete()
 
 	return redirect('companies_view', fair.year, company.pk)
+
+
+@permission_required('companies.base')
+def send_order_summaries(request, year):
+	fair = get_object_or_404(Fair, year = year)
+
+	user = settings.MAIL_SERVER_USERNAME
+	pwd = settings.MAIL_SERVER_PASSWORD
+
+
+	recipients = {}
+
+	for company_id in request.GET.getlist('id'):
+		company_id = int(company_id)
+
+		recipients[company_id] = {
+			'people': [],
+		}
+
+
+	for signature in SignupLog.objects.select_related('company').select_related('company_contact').filter(contract__fair = fair, company__id__in = recipients.keys()):
+		recipients[signature.company.id]['people'].append(signature.company_contact)
+		recipients[signature.company.id]['company'] = signature.company
+
+	for company_id in recipients:
+		if len(recipients[company_id]['people']) == 0:
+			del recipients[company_id]
+
+		else:
+			recipients[company_id]['people'] = list(set(recipients[company_id]['people']))
+			recipients[company_id]['orders'] = []
+
+	for order in Order.objects.filter(purchasing_company__in = [recipients[x]['company'] for x in recipients], product__revenue__fair = fair):
+		recipients[order.purchasing_company.id]['orders'].append(order)
+
+	orders_total = 0;
+
+	for company_id in recipients:
+		if len(recipients[company_id]['orders']) == 0:
+			del recipients[company_id]
+
+		else:
+			recipient = recipients[company_id]
+
+			order_string = ''
+
+			for order in recipient['orders']:
+				if order.quantity == 1:
+					order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.product.unit_price) + " kr\n")
+					orders_total += order.product.unit_price
+				else:
+					order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.quantity*order.product.unit_price) + " kr " + "(" + str(order.product.unit_price) + " kr each)\n")
+					orders_total += order.quantity*order.product.unit_price
+			order_string += ("\n")
+
+			for person in recipient['people']:
+
+				html_message = '''
+			<html>
+	        	<body>
+	        		<style>
+	        			* {
+	        			  font-family: sans-serif;
+	        			  font-size: 12px;
+	        			}
+	        		</style>
+	        		<div>
+	        		      Hi %s,
+
+	        		      Here follows a summary of %s current orders for THS Armada %s. You can always view your orders at https://register.armada.nu.
+	                      <br/><br/>
+	                      %s
+	                      <br/><br/>
+	                      Total: %d kr                      
+	                      <br/><br/>
+	                      You will receive your invoice after the fair. If you have any special requests regarding your invoice please let us know.
+
+	                      If you wish to make any amendments to your orders or have any questions, please contact your THS Armada contact.
+
+	                      Best regards,
+
+	                      The THS Armada team
+	                      https://armada.nu/contact/        		
+	                </div>
+	        	</body>
+	        </html>
+			''' %(
+					person.first_name,
+					recipients[company_id]['company'].name, 
+					year, 
+					order_string, 
+					orders_total
+				)
+
+
+				email_content = '''Hi %s,
+
+Here follows a summary of %s current orders for THS Armada %s. You can always view your orders at https://register.armada.nu.
+%s
+
+Total: %d kr
+
+You will receive your invoice after the fair. If you have any special requests regarding your invoice please let us know.
+
+If you wish to make any amendments to your orders or have any questions, please contact your THS Armada contact.
+
+Best regards,
+
+The THS Armada team
+https://armada.nu/contact/''' % (
+					person.first_name,
+					recipients[company_id]['company'].name, 
+					year, 
+					order_string, 
+					orders_total
+				)
+
+
+				recipients[company_id]['email_content'] = email_content
+
+
+
+				msg = MIMEMultipart()
+		
+				message = email_content
+		
+				msg['From'] = 'THS Armada <armada@ais.armada.nu>'
+				msg['To'] = '%s %s <%s>' % (person.first_name, person.last_name, person.email_address)
+				msg['Subject'] = 'Order confirmation for THS Armada %s' %(year)
+				msg['Date'] = formatdate(localtime = True)
+		
+				msg.attach(MIMEText(message, 'plain'))
+				try:
+					server = smtplib.SMTP(settings.MAIL_SERVER_HOST, settings.MAIL_SERVER_PORT)
+					server.login(user, pwd)
+					server.sendmail(msg['From'], msg['To'], msg.as_string())
+					server.quit()
+					print('successfully sent the mail')
+				except Exception as e:
+					print(e)
+					print('failed to send mail')
+
+	return render(request, 'companies/confirmation_email.html',
+	{
+		'fair': fair,
+	})
+
 
 
 @permission_required('companies.base')

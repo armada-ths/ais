@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Confirmation e-mail was successfully sent. Great job! :)</h1>
+
+	
+{% endblock %}

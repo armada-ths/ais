@@ -156,6 +156,10 @@
 		{% endfor %}
 	</table>
 </div>
+
+<a href="{% url 'send_order_summaries' fair.year %}?id={{ companies_ids | join:"&id=" }}" class="btn btn-primary pull-right"onclick="return confirm('Press OK to send out e-mail messages with confirmations to all companies in list above.')">Send order confirmations</a>
+
+
 {% endblock %}
 
 {% block scripts %}

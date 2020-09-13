@@ -169,6 +169,8 @@
 								</tr>
 							{% endfor %}
 						</table>
+
+						<a href="{% url 'send_order_summaries' fair.year %}?id={{ exhibitor.company.pk }}" class="btn btn-primary pull-right"onclick="return confirm('Press OK to send out e-mail messages with confirmations.')">Send order confirmation</a>
 					{% else %}
 						<p>The company has no orders for {{ fair }}.</p>
 					{% endif %}
