@@ -707,7 +707,7 @@ def send_order_summaries(request, year):
 		recipients[signature.company.id]['people'].append(signature.company_contact)
 		recipients[signature.company.id]['company'] = signature.company
 
-	for company_id in recipients:
+	for company_id in list(recipients):
 		if len(recipients[company_id]['people']) == 0:
 			del recipients[company_id]
 
@@ -718,13 +718,14 @@ def send_order_summaries(request, year):
 	for order in Order.objects.filter(purchasing_company__in = [recipients[x]['company'] for x in recipients], product__revenue__fair = fair):
 		recipients[order.purchasing_company.id]['orders'].append(order)
 
-	orders_total = 0;
 
-	for company_id in recipients:
+	for company_id in list(recipients):
 		if len(recipients[company_id]['orders']) == 0:
 			del recipients[company_id]
 
 		else:
+			orders_total = 0;
+
 			recipient = recipients[company_id]
 
 			order_string = ''
@@ -804,21 +805,20 @@ https://armada.nu/contact/''' % (
 				recipients[company_id]['email_content'] = email_content
 
 
-
 				msg = MIMEMultipart()
 		
 				message = email_content
-		
 				msg['From'] = 'THS Armada <armada@ais.armada.nu>'
 				msg['To'] = '%s %s <%s>' % (person.first_name, person.last_name, person.email_address)
 				msg['Subject'] = 'Order confirmation for THS Armada %s' %(year)
 				msg['Date'] = formatdate(localtime = True)
+				msg['Bcc'] = 'armada@ais.armada.nu'
 		
 				msg.attach(MIMEText(message, 'plain'))
 				try:
 					server = smtplib.SMTP(settings.MAIL_SERVER_HOST, settings.MAIL_SERVER_PORT)
 					server.login(user, pwd)
-					server.sendmail(msg['From'], msg['To'], msg.as_string())
+					server.sendmail(msg['From'], [msg['To'], msg['Bcc']], msg.as_string())
 					server.quit()
 					print('successfully sent the mail')
 				except Exception as e:
