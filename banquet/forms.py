@@ -3,7 +3,7 @@ from django.forms import ModelForm, Form, ModelMultipleChoiceField
 from django.contrib.auth.models import User
 import re
 
-from .models import Participant, InvitationGroup, Invitation, AfterPartyInvitation, AfterPartyTicket, TableMatching
+from .models import Participant, InvitationGroup, Invitation, AfterPartyInvitation, AfterPartyTicket, TableMatching, MatchingProgram, MatchingInterest, MatchingYear
 from exhibitors.models import CatalogueIndustry, CatalogueCompetence, CatalogueValue, CatalogueLocation, CatalogueEmployment, CatalogueCategory
 
 
@@ -24,7 +24,8 @@ class ParticipantForm(forms.ModelForm):
 		super(ParticipantForm, self).clean()
 
 		if 'phone_number' in self.cleaned_data:
-			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+			self.cleaned_data['phone_number'] = fix_phone_number(
+			    self.cleaned_data['phone_number'])
 
 		return self.cleaned_data
 
@@ -36,25 +37,27 @@ class ParticipantForm(forms.ModelForm):
 		phone_number = self.cleaned_data.get('phone_number')
 
 		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
-			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
+			self.add_error(
+			    'phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
 
 		return valid
 
 	class Meta:
 		model = Participant
-		fields = ['name', 'email_address', 'phone_number', 'dietary_restrictions', 'other_dietary_restrictions', 'alcohol']
+		fields = ['name', 'email_address', 'phone_number',
+		    'dietary_restrictions', 'other_dietary_restrictions', 'alcohol']
 
 		widgets = {
-			'name' : forms.TextInput(attrs={'readonly':'readonly'}),
-			'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
-			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-			'other_dietary_restrictions' : forms.TextInput(),
+			'name': forms.TextInput(attrs={'readonly': 'readonly'}),
+			'email_address': forms.TextInput(attrs={'readonly': 'readonly'}),
+			'dietary_restrictions': forms.CheckboxSelectMultiple(),
+			'other_dietary_restrictions': forms.TextInput(),
 			'alcohol': forms.RadioSelect()
 		}
 
 		help_texts = {
-			'other_dietary_restrictions' : 'Please leave empty if no other restrictions.',
+			'other_dietary_restrictions': 'Please leave empty if no other restrictions.',
 		}
 
 
@@ -63,7 +66,8 @@ class ParticipantAdminForm(forms.ModelForm):
 		super(ParticipantAdminForm, self).clean()
 
 		if 'phone_number' in self.cleaned_data:
-			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+			self.cleaned_data['phone_number'] = fix_phone_number(
+			    self.cleaned_data['phone_number'])
 
 		return self.cleaned_data
 
@@ -84,7 +88,8 @@ class ParticipantAdminForm(forms.ModelForm):
 			valid = False
 
 		if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
-			self.add_error('phone_number', 'Must only contain numbers and a leading plus.')
+			self.add_error(
+			    'phone_number', 'Must only contain numbers and a leading plus.')
 			valid = False
 
 		if user is not None and name is not None:
@@ -107,7 +112,8 @@ class ParticipantAdminForm(forms.ModelForm):
 
 	class Meta:
 		model = Participant
-		fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number', 'dietary_restrictions', 'other_dietary_restrictions', 'alcohol', 'giveaway']
+		fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number',
+		    'dietary_restrictions', 'other_dietary_restrictions', 'alcohol', 'giveaway']
 
 		help_texts = {
 			'name': 'Only enter a name if you do not select a user.',
@@ -120,8 +126,8 @@ class ParticipantAdminForm(forms.ModelForm):
 		}
 
 		widgets = {
-			'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-			'other_dietary_restrictions' : forms.TextInput(),
+			'dietary_restrictions': forms.CheckboxSelectMultiple(),
+			'other_dietary_restrictions': forms.TextInput(),
 			'alcohol': forms.RadioSelect(),
 			'giveaway': forms.RadioSelect(),
 		}
@@ -132,7 +138,8 @@ class InvitationForm(forms.ModelForm):
 		super(InvitationForm, self).clean()
 
 		if 'phone_number' in self.cleaned_data:
-			self.cleaned_data['phone_number'] = fix_phone_number(self.cleaned_data['phone_number'])
+			self.cleaned_data['phone_number'] = fix_phone_number(
+			    self.cleaned_data['phone_number'])
 
 		return self.cleaned_data
 
@@ -160,7 +167,8 @@ class InvitationForm(forms.ModelForm):
 				valid = False
 
 			if email_address is None or len(email_address) == 0:
-				self.add_error('email_address', 'Either select a user or provide an e-mail address.')
+				self.add_error('email_address',
+				               'Either select a user or provide an e-mail address.')
 				valid = False
 
 		return valid
@@ -183,7 +191,8 @@ class InvitationForm(forms.ModelForm):
 
 	class Meta:
 		model = Invitation
-		fields = ['group', 'user', 'name', 'email_address', 'reason', 'deadline', 'price', 'part_of_matching']
+		fields = ['group', 'user', 'name', 'email_address',
+		    'reason', 'deadline', 'price', 'part_of_matching']
 
 		help_texts = {
 			'reason': 'Not shown to the invitee.',
@@ -193,7 +202,7 @@ class InvitationForm(forms.ModelForm):
 		}
 
 		widgets = {
-			'deadline': forms.DateInput(attrs = {'type': 'date'})
+			'deadline': forms.DateInput(attrs={'type': 'date'})
 		}
 
 
@@ -211,9 +220,13 @@ class InvitationSearchForm(forms.Form):
 		(False, 'Not part of matching')
 	]
 
-	statuses = forms.MultipleChoiceField(choices = status_choices, widget = forms.CheckboxSelectMultiple(), required = False)
-	groups = forms.ModelMultipleChoiceField(queryset = InvitationGroup.objects.none(), widget = forms.CheckboxSelectMultiple(), label = 'Show only invitations belonging to any of these groups', required = False)
-	matching_statuses = forms.ChoiceField(choices = matching_status_choices, widget = forms.RadioSelect(), label = 'Show only invitations that are / are not subject to the matching functionality', required = False)
+	statuses = forms.MultipleChoiceField(
+	    choices=status_choices, widget=forms.CheckboxSelectMultiple(), required=False)
+	groups = forms.ModelMultipleChoiceField(queryset=InvitationGroup.objects.none(), widget=forms.CheckboxSelectMultiple(
+	), label='Show only invitations belonging to any of these groups', required=False)
+	matching_statuses = forms.ChoiceField(choices=matching_status_choices, widget=forms.RadioSelect(
+	), label='Show only invitations that are / are not subject to the matching functionality', required=False)
+
 
 class AfterPartyInvitationForm(forms.ModelForm):
 	class Meta:
@@ -224,6 +237,7 @@ class AfterPartyInvitationForm(forms.ModelForm):
 			'name': "Friend's full name",
 			'email_address': "Friend's email address"
 		}
+
 
 class AfterPartyTicketForm(forms.ModelForm):
 	class Meta:
@@ -244,23 +258,52 @@ class InternalParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
         # Is still something we send back in view but handled without user input
-        exclude = ['banquet','company','user']
+        exclude = ['banquet', 'company', 'user']
 
         widgets = {
-            'name' : forms.TextInput(attrs={'readonly':'readonly'}),
-            'email_address' : forms.TextInput(attrs={'readonly':'readonly'}),
-            'phone_number' : forms.TextInput(attrs={'readonly':'readonly'}),
-            'dietary_restrictions' : forms.CheckboxSelectMultiple(),
-            'other_dietary_restrictions' : forms.TextInput(),
-            'alcohol' : forms.RadioSelect()
+            'name': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'email_address': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'phone_number': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'dietary_restrictions': forms.CheckboxSelectMultiple(),
+            'other_dietary_restrictions': forms.TextInput(),
+            'alcohol': forms.RadioSelect()
         }
 
         help_texts = {
-            'other_dietary_restrictions' : 'Please leave empty if no other restrictions.',
+            'other_dietary_restrictions': 'Please leave empty if no other restrictions.',
         }
 
 
 class ParticipantTableMatchingForm(ModelForm):
+    # custom defined field subclass to overwrite string representation
+    class IncludeCategoryChoiceField(ModelMultipleChoiceField):
+        def label_from_instance(self, choice):
+                return str(choice)
+
+    matching_program = IncludeCategoryChoiceField(
+        queryset = MatchingProgram.objects.filter(include_in_form = True),
+        widget = forms.RadioSelect, 
+        label = 'What degree are you currently pursuing?',
+        required = False)
+
+    matching_interests = IncludeCategoryChoiceField(
+        queryset = MatchingInterest.objects.filter(include_in_form = True),
+        widget = forms.CheckboxSelectMultiple,
+        label = 'What are your interests you?',
+        required = False)
+
+    matching_year = IncludeCategoryChoiceField(
+        queryset = MatchingYear.objects.filter(include_in_form = True),
+        widget = forms.RadioSelect,
+        label = 'What year will you graduate?',
+        required = False)
+
+    class Meta:
+        model = TableMatching
+        fields = ['matching_program', 'matching_interests', 'matching_year']
+
+#Previous implementation of the MatchingForm
+""" class ParticipantTableMatchingForm(ModelForm):
 	# custom defined field subclass to overwrite string representation
 	class IncludeCategoryChoiceField(ModelMultipleChoiceField):
 		def label_from_instance(self, choice):
@@ -268,8 +311,10 @@ class ParticipantTableMatchingForm(ModelForm):
 				return str(choice.category) + ' - ' + str(choice)
 			else:
 				return str(choice)
+    matching = 2
 
-	catalogue_industries = IncludeCategoryChoiceField(
+
+    catalogue_industries = IncludeCategoryChoiceField(
 		queryset = CatalogueIndustry.objects.filter(include_in_form = True),
 		widget = forms.CheckboxSelectMultiple,
 		label = 'Which industries would you like to work in?',
@@ -293,11 +338,7 @@ class ParticipantTableMatchingForm(ModelForm):
 		queryset = CatalogueLocation.objects.filter(include_in_form = True),
 		widget = forms.CheckboxSelectMultiple,
 		label = 'Where would you like to work?',
-		required = False)
-
-	class Meta:
-		model =TableMatching
-		fields = ['catalogue_industries', 'catalogue_competences', 'catalogue_values', 'catalogue_employments', 'catalogue_locations']
+		required = False)"""
 
 
 class ExternalParticipantForm(forms.ModelForm):
@@ -320,8 +361,8 @@ class SendInvitationForm(forms.ModelForm):
 	Banquet administrator sends out invite
 	"""
 	def __init__(self, *args, **kwargs):
-		## would like to do as in conact list however I can't get user object in that case
-		## but this works also although not pretty
+		# would like to do as in conact list however I can't get user object in that case
+		# but this works also although not pretty
 		super(SendInvitationForm, self).__init__(*args, **kwargs)
 		self.fields['user'].queryset = User.objects.exclude(groups__isnull=True).order_by('last_name')
 
