@@ -283,13 +283,13 @@ class ParticipantTableMatchingForm(ModelForm):
     matching_program = IncludeCategoryChoiceField(
         queryset = MatchingProgram.objects.filter(include_in_form = True),
         widget = forms.RadioSelect, 
-        label = 'What degree are you currently pursuing?',
+        label = 'What are you studying?',
         required = False)
 
     matching_interests = IncludeCategoryChoiceField(
         queryset = MatchingInterest.objects.filter(include_in_form = True),
         widget = forms.CheckboxSelectMultiple,
-        label = 'What are your interests you?',
+        label = 'What are your interests?',
         required = False)
 
     matching_year = IncludeCategoryChoiceField(
