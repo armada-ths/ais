@@ -289,13 +289,13 @@ class ParticipantTableMatchingForm(ModelForm):
     matching_interests = IncludeCategoryChoiceField(
         queryset = MatchingInterest.objects.filter(include_in_form = True),
         widget = forms.CheckboxSelectMultiple,
-        label = 'What interests you?',
+        label = 'What are your interests you?',
         required = False)
 
     matching_year = IncludeCategoryChoiceField(
         queryset = MatchingYear.objects.filter(include_in_form = True),
         widget = forms.RadioSelect,
-        label = 'Which year are you currently studying?',
+        label = 'What year will you graduate?',
         required = False)
 
     class Meta:
