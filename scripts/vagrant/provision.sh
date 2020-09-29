@@ -36,14 +36,14 @@ silent sudo service postgresql reload
 echo "CREATE USER ais_dev PASSWORD 'ais_dev';" | silent sudo -u postgres psql
 # Allow ais_dev to create databases in order to create test databases
 echo "ALTER USER ais_dev CREATEDB;" | silent sudo -u postgres psql
-silent sudo -u postgres createdb ais_dev
+#silent sudo -u postgres createdb ais_dev
 echo "GRANT ALL PRIVILEGES ON DATABASE ais_dev TO ais_dev;" | silent sudo -u postgres psql
 echo "ALTER USER ais_dev WITH SUPERUSER;"| silent sudo -u postgres psql
 
 echo "Configuring..."
-silent python manage.py migrate --settings local_settings
-silent python manage.py makemigrations --settings local_settings
-silent python manage.py migrate --settings local_settings
+#silent python manage.py migrate --settings local_settings
+#silent python manage.py makemigrations --settings local_settings
+#silent python manage.py migrate --settings local_settings
 silent npm install
 
 echo "Sprinkling magic..."

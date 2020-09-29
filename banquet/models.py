@@ -56,6 +56,30 @@ class Seat(models.Model):
 
     def __str__(self): return self.table.name + ' ' + self.name
 
+class MatchingProgram(models.Model):
+    program = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(blank = True)
+    def __str__(self): return self.program
+    class Meta:
+        default_permissions = []
+        ordering = ['program']
+    
+class MatchingInterest(models.Model):
+    interest = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(blank = True)
+    def __str__(self): return self.interest
+    class Meta:
+        default_permissions = []
+        ordering = ['interest']
+
+class MatchingYear(models.Model):
+    year = models.CharField(blank = False, max_length = 255)
+    include_in_form = models.BooleanField(blank = True)
+    def __str__(self): return self.year
+    class Meta:
+        default_permissions = []
+        ordering = ['year']
+
 
 class Participant(models.Model):
     token = models.CharField(max_length=32, unique=True, default=get_random_32_length_string)
@@ -79,11 +103,16 @@ class Participant(models.Model):
 
 
 class TableMatching(models.Model):
+    '''
     catalogue_industries = models.ManyToManyField('exhibitors.CatalogueIndustry', blank = True)
     catalogue_competences = models.ManyToManyField('exhibitors.CatalogueCompetence', blank = True)
     catalogue_values = models.ManyToManyField('exhibitors.CatalogueValue', blank = True)
     catalogue_employments = models.ManyToManyField('exhibitors.CatalogueEmployment', blank = True)
     catalogue_locations = models.ManyToManyField('exhibitors.CatalogueLocation', blank = True)
+    '''
+    matching_interests = models.ManyToManyField(MatchingInterest, blank = True)
+    matching_program = models.ManyToManyField(MatchingProgram, blank = True)
+    matching_year = models.ManyToManyField(MatchingYear, blank = True)
     participant = models.ForeignKey(Participant, blank=True, null=True,
                                     on_delete=models.CASCADE)  # filled in when the participant has been created from this invitation
 
