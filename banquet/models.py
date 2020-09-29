@@ -103,6 +103,7 @@ class Participant(models.Model):
 
 
 class TableMatching(models.Model):
+    #Previous year of tablematching
     '''
     catalogue_industries = models.ManyToManyField('exhibitors.CatalogueIndustry', blank = True)
     catalogue_competences = models.ManyToManyField('exhibitors.CatalogueCompetence', blank = True)

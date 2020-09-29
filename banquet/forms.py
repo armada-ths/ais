@@ -282,7 +282,7 @@ class ParticipantTableMatchingForm(ModelForm):
 
     matching_program = IncludeCategoryChoiceField(
         queryset = MatchingProgram.objects.filter(include_in_form = True),
-        widget = forms.CheckboxInput, 
+        widget = forms.RadioSelect, 
         label = 'What degree are you currently pursuing?',
         required = False)
 
@@ -292,10 +292,17 @@ class ParticipantTableMatchingForm(ModelForm):
         label = 'What interests you?',
         required = False)
 
+    matching_year = IncludeCategoryChoiceField(
+        queryset = MatchingYear.objects.filter(include_in_form = True),
+        widget = forms.RadioSelect,
+        label = 'Which year are you currently studying?',
+        required = False)
+
     class Meta:
         model = TableMatching
-        fields = ['matching_program', 'matching_interests']
+        fields = ['matching_program', 'matching_interests', 'matching_year']
 
+#Previous implementation of the MatchingForm
 """ class ParticipantTableMatchingForm(ModelForm):
 	# custom defined field subclass to overwrite string representation
 	class IncludeCategoryChoiceField(ModelMultipleChoiceField):
@@ -307,23 +314,31 @@ class ParticipantTableMatchingForm(ModelForm):
     matching = 2
 
 
-
-    matching_program = IncludeCategoryChoiceField(
-        queryset = MatchingProgram.objects.filter(include_in_form = True)
-        widget = forms.CheckboxInput, 
-        label = 'What degree are you currently pursuing?',
-        required = False)
-
-    matching_interests = IncludeCategoryChoiceField(
-        queryset = MatchingInterest.objects.filter(include_in_form = True),
-        widget = forms.CheckboxSelectMultiple,
-        label = 'What interests you?',
-        required = False)
-    
-	class Meta:
-		model = TableMatching
-	    # fields = ['catalogue_industries', 'catalogue_competences', 'catalogue_values', 'catalogue_employments', 'catalogue_locations']
-        fields = ['matching_program', 'matching_interests'] """
+    catalogue_industries = IncludeCategoryChoiceField(
+		queryset = CatalogueIndustry.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Which industries would you like to work in?',
+		required = False)
+	catalogue_competences = IncludeCategoryChoiceField(
+		queryset = CatalogueCompetence.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'What competences do you have?',
+		required = False)
+	catalogue_values = forms.ModelMultipleChoiceField(
+		queryset = CatalogueValue.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Select up to three values that you are interested in.',
+		required = False)
+	catalogue_employments = forms.ModelMultipleChoiceField(
+		queryset = CatalogueEmployment.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'What kind of employments are you looking for?',
+		required = False)
+	catalogue_locations = forms.ModelMultipleChoiceField(
+		queryset = CatalogueLocation.objects.filter(include_in_form = True),
+		widget = forms.CheckboxSelectMultiple,
+		label = 'Where would you like to work?',
+		required = False)"""
 
 
 class ExternalParticipantForm(forms.ModelForm):
