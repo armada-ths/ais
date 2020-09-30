@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, Form, ModelMultipleChoiceField
+from django.forms import ModelForm, Form, ModelMultipleChoiceField, ModelChoiceField, ChoiceField
 from django.contrib.auth.models import User
 import re
 
@@ -276,23 +276,27 @@ class InternalParticipantForm(forms.ModelForm):
 
 class ParticipantTableMatchingForm(ModelForm):
     # custom defined field subclass to overwrite string representation
-    class IncludeCategoryChoiceField(ModelMultipleChoiceField):
+    class IncludeCategoryChoiceFieldMultiple(ModelMultipleChoiceField):
         def label_from_instance(self, choice):
                 return str(choice)
 
-    matching_program = IncludeCategoryChoiceField(
+    class IncludeCategoryChoiceFieldSingle(ModelChoiceField):
+        def label_from_instance(self, choice):
+                return str(choice)
+
+    matching_program = IncludeCategoryChoiceFieldSingle(
         queryset = MatchingProgram.objects.filter(include_in_form = True),
         widget = forms.RadioSelect, 
         label = 'What are you studying?',
         required = False)
 
-    matching_interests = IncludeCategoryChoiceField(
+    matching_interests = IncludeCategoryChoiceFieldMultiple(
         queryset = MatchingInterest.objects.filter(include_in_form = True),
         widget = forms.CheckboxSelectMultiple,
         label = 'What are your interests?',
         required = False)
 
-    matching_year = IncludeCategoryChoiceField(
+    matching_year = IncludeCategoryChoiceFieldSingle(
         queryset = MatchingYear.objects.filter(include_in_form = True),
         widget = forms.RadioSelect,
         label = 'What year will you graduate?',
@@ -301,6 +305,7 @@ class ParticipantTableMatchingForm(ModelForm):
     class Meta:
         model = TableMatching
         fields = ['matching_program', 'matching_interests', 'matching_year']
+
 
 #Previous implementation of the MatchingForm
 """ class ParticipantTableMatchingForm(ModelForm):
