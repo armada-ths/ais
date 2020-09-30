@@ -741,9 +741,10 @@ def invitation(request, year, token):
     tableMatching = existingTableMatching if existingTableMatching is not None else TableMatching()
     participant.name = request.user.get_full_name()
     participant.email_address = request.user.email
+    tableMatchingForm = ParticipantTableMatchingForm(request.POST or None, instance=tableMatching)
+
 
     form = ParticipantForm(request.POST or None, instance=participant)
-    tableMatchingForm = ParticipantTableMatchingForm(request.POST or None, instance=tableMatching)
     form.fields['phone_number'].required = True
 
     if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
@@ -753,13 +754,13 @@ def invitation(request, year, token):
 
     if can_edit:
         if request.POST and form.is_valid():
-
             form.instance.name = None
             form.instance.email_address = None
             invitation.participant = form.save()
             invitation.save()
 
             tableMatchingForm.instance.participant = invitation.participant
+
             if invitation.part_of_matching:
                 tableMatchingForm.save()
 

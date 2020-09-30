@@ -59,6 +59,7 @@ class Seat(models.Model):
 class MatchingProgram(models.Model):
     program = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(blank = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.program
     class Meta:
         default_permissions = []
@@ -67,6 +68,7 @@ class MatchingProgram(models.Model):
 class MatchingInterest(models.Model):
     interest = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(blank = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.interest
     class Meta:
         default_permissions = []
@@ -75,6 +77,7 @@ class MatchingInterest(models.Model):
 class MatchingYear(models.Model):
     year = models.CharField(blank = False, max_length = 255)
     include_in_form = models.BooleanField(blank = True)
+    include_in_form.help_text = "The alternative is only visible in forms if this attribute is checked."
     def __str__(self): return self.year
     class Meta:
         default_permissions = []
@@ -112,8 +115,8 @@ class TableMatching(models.Model):
     catalogue_locations = models.ManyToManyField('exhibitors.CatalogueLocation', blank = True)
     '''
     matching_interests = models.ManyToManyField(MatchingInterest, blank = True)
-    matching_program = models.ManyToManyField(MatchingProgram, blank = True)
-    matching_year = models.ManyToManyField(MatchingYear, blank = True)
+    matching_program = models.ForeignKey(MatchingProgram, blank = True, null = True)
+    matching_year = models.ForeignKey(MatchingYear, null = True)
     participant = models.ForeignKey(Participant, blank=True, null=True,
                                     on_delete=models.CASCADE)  # filled in when the participant has been created from this invitation
 
