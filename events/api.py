@@ -1,10 +1,16 @@
+import os
 import json
+import requests
+import base64
 
 import stripe
+import swish
+
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
+from django.urls import reverse
 
 from events import serializers
 from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer, Team, TeamMember, ParticipantCheckIn
@@ -58,7 +64,12 @@ def signup(request, event_pk):
 
     data = json.loads(request.body)
     answers = data['answers']
-    participant.stripe_charge_id = data['intent_id']
+    payment_system = data['payment_system']
+
+    if payment_system == "stripe":
+        participant.stripe_charge_id = data['payment_id']
+    else: # swish
+        participant.swish_charge_id = data['payment_id']
 
     # check if the user has paid successfully by checking the status of the Stripe payment intent
     if event.fee_s > 0:
@@ -74,7 +85,19 @@ def signup(request, event_pk):
                     participant.fee_payed_s = True
                 else:
                     participant.fee_payed_s = False
-        else: # no stripe_charge_id
+        elif participant.swish_charge_id: # no stripe charge id
+            try:
+                payment = get_swish_payment(participant.swish_charge_id)
+            except:
+                payment = None
+                participant.fee_payed_s = False
+            
+            if payment:
+                if payment.status == "PAID":
+                    participant.fee_payed_s = True
+                else:
+                    participant.fee_payed_s = False
+        else: # neither stripe nor swish
             participant.fee_payed_s = False
 
     if event.fee_s > 0 and not participant.fee_payed_s:
@@ -99,17 +122,32 @@ def signup(request, event_pk):
 @require_POST
 def payment(request, event_pk):
     """
-    Endpoint to process Stripe card tokens
+    Endpoint to process payments via Stripe or Swish.
 
-	Payment Intents: https://stripe.com/docs/payments/payment-intents/web
-	Stripe frontend in React: https://stripe.com/docs/recipes/elements-react#using-stripe-elements-in-react
+    When Swish payer alias is not specified, a Stripe payment is processed. Otherwise, a Swish payment is considered.
     """
-
     event = get_object_or_404(Event, pk=event_pk)
 
     if not request.user:
         return JsonResponse({'error': 'Authentication required.'}, status=403)
 
+    data = json.loads(request.body)
+
+    # check swish payment by looking for swish_payer_alias in the request body
+    swish_payer_alias = data.get('swish_payer_alias')
+    if swish_payer_alias is not None:
+        return payment_swish(request, event, swish_payer_alias)
+
+    return payment_stripe(request, event)
+
+
+def payment_stripe(request, event):
+    """
+    Process Stripe card tokens
+
+	Payment Intents: https://stripe.com/docs/payments/payment-intents/web
+	Stripe frontend in React: https://stripe.com/docs/recipes/elements-react#using-stripe-elements-in-react
+    """
     stripe.api_key = settings.STRIPE_SECRET
     intent = None
 
@@ -120,9 +158,78 @@ def payment(request, event_pk):
         description = event.name,
     )
     if intent == None:
-        return JsonResponse({'error': 'Unable to reach the external payment serivce provider.'}, status=503)
+        return JsonResponse({'error': 'Unable to reach the external payment service provider.'}, status=503)
 
     return JsonResponse({'client_secret': intent.client_secret, 'intent_id': intent.id}, status=200)
+
+
+def payment_swish(request, event, payer_alias):
+    """
+    Process Swish payments using a given payer alias.
+    """
+    payment = create_swish_payment(event.name, event.fee_s, payer_alias)
+
+    if payment.id is None:
+        return JsonResponse({'error': 'Unable to retrieve the payment'}, status=200)
+    if payment.status == "ERROR":
+        return JsonResponse({'error': payment.error_message, 'status': payment.status}, status=200)
+    if payment.status == "TIMEOUT":
+        return JsonResponse({'error': "Timeout period exceeded. Please, try again.", 'status': payment.status}, status=200)
+    return JsonResponse({'payment_id': payment.id, 'status': payment.status}, status=200)
+
+
+@require_POST
+def payment_callback(request, event_pk):
+    """
+    Callback for Swish payments
+    """
+
+    return JsonResponse({}, status=200)
+    # TODO: Confirm payment and sign user. Front-end will check periodically or on-demand if the user is already signed up.
+
+
+@require_GET
+def payment_qr_code(request, event_pk):
+    """
+    Retrieve a QR Code for a Swish payment
+    """
+    event = get_object_or_404(Event, pk=event_pk)
+
+    if not request.user:
+        return JsonResponse({'error': 'Authentication required.'}, status=403)
+
+    # Create m-commerce payment
+    payment = create_swish_payment(event.name, event.fee_s, payer_alias=None)
+
+    if payment.id is None:
+        return JsonResponse({'error': 'Unable to create payment request', 'status': payment.status}, status=503)
+
+    # Get QR Code
+    qrHost = "https://mpc.getswish.net/qrg-swish"
+    data = { "token": payment.request_token, "size": "600", "format": "png", "border": "0"}
+    response = requests.post(url = qrHost + '/api/v1/commerce', json = data, stream = True)
+
+    if response.status_code == 200:
+        # return HttpResponse(response.raw, content_type='image/png')
+        return JsonResponse({ 'payment_id': payment.id, 'qr_code': base64.b64encode(response.content).decode()}, status=200)
+    else:
+        return JsonResponse({'error': 'Unable to generate QR Code', 'response': response.reason}, status=503)
+
+
+@require_GET
+def get_payment(request, event_pk, payment_id):
+    """
+    Get Swish payment by id
+    """
+    payment = get_swish_payment(payment_id)
+
+    if payment.id is None:
+        return JsonResponse({'error': 'Unable to retrieve the payment'}, status=200)
+    if payment.status == "ERROR":
+        return JsonResponse({'error': payment.error_message, 'status': payment.status}, status=200)
+    if payment.status == "TIMEOUT":
+        return JsonResponse({'error': "Timeout period exceeded. Please, try again.", 'status': payment.status}, status=200)
+    return JsonResponse({'payment_id': payment.id, 'status': payment.status}, status=200)
 
 
 @require_POST
@@ -272,3 +379,34 @@ def get_by_token(request, event_pk, check_in_token):
         return JsonResponse({'message': 'No participant with that check_in_token.'}, status=404)
 
     return JsonResponse({'participant': serializers.participant(participant)}, status=200)
+
+
+def create_swish_payment(name, fee, payer_alias=None):
+    swish_client = get_swish_client()
+    return swish_client.create_payment(
+        payee_payment_reference = '0123456789',
+        callback_url = 'https://localhost:8080/api/events/67/payment/callback', #reverse('events_api:payment_callback', args=[event.id]),
+        payer_alias = payer_alias,
+        amount = fee,
+        currency = 'SEK',
+        message = name
+    )
+
+
+def get_swish_payment(payment_id):
+    swish_client = get_swish_client()
+    return swish_client.get_payment(payment_id)
+
+
+def get_swish_client():
+    ssl_folder = "/usr/src/app/ais/local/ssl/swish"
+    cert_file_path = os.path.join(ssl_folder, "cert.pem")
+    key_file_path = os.path.join(ssl_folder, "key.pem")
+    cert = (cert_file_path, key_file_path)
+    verify = os.path.join(ssl_folder, "swish.pem")
+    return swish.SwishClient(
+        environment=swish.Environment.Test,
+        merchant_swish_number='1231181189',
+        cert = cert,
+        verify = verify
+    )

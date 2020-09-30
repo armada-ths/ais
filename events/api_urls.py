@@ -13,6 +13,10 @@ urlpatterns = [
     url(r'^(?P<event_pk>\d+)/get_by_token/(?P<check_in_token>\w+)$', api.get_by_token, name='get_by_token'),
 
     url(r'^(?P<event_pk>\d+)/payment$', api.payment, name='payment'),
+    url(r'^(?P<event_pk>\d+)/payment/(?P<payment_id>\w+)/$', api.get_payment, name='get_payment'),
+    url(r'^(?P<event_pk>\d+)/payment/callback$', api.payment_callback, name='payment_callback'),
+    url(r'^(?P<event_pk>\d+)/payment/qr-code$', api.payment_qr_code, name='payment_qr_code'),
+
     url(r'^(?P<event_pk>\d+)/signup$', api.signup, name='signup'),
     url(r'^(?P<event_pk>\d+)/teams/create$', api.create_team, name='create_team'),
     url(r'^(?P<event_pk>\d+)/teams/leave$', api.leave_team, name='leave_team'),

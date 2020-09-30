@@ -89,6 +89,8 @@ class Participant(models.Model):
     user_s = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE, related_name='user_s')  # ...or this one
     stripe_charge_id = models.CharField(max_length=50, blank=True, null=True)  # None for company representatives, filled in if the
     # student has payed using Stripe
+    swish_charge_id = models.CharField(max_length=50, blank=True, null=True)  # None for company representatives, filled in if the
+    # student has payed using Swish
     fee_payed_s = models.BooleanField(default=False)
     attended = models.NullBooleanField(blank=True, null=True, verbose_name='The participant showed up to the event')
     signup_complete = models.BooleanField(blank=False, null=False, default=False, verbose_name='The participant has completed signup')
