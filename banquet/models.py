@@ -115,8 +115,8 @@ class TableMatching(models.Model):
     catalogue_locations = models.ManyToManyField('exhibitors.CatalogueLocation', blank = True)
     '''
     matching_interests = models.ManyToManyField(MatchingInterest, blank = True)
-    matching_program = models.ForeignKey(MatchingProgram, blank = True)
-    matching_year = models.ForeignKey(MatchingYear)
+    matching_program = models.ForeignKey(MatchingProgram, blank = True, null = True)
+    matching_year = models.ForeignKey(MatchingYear, null = True)
     participant = models.ForeignKey(Participant, blank=True, null=True,
                                     on_delete=models.CASCADE)  # filled in when the participant has been created from this invitation
 
