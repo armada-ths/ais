@@ -45,13 +45,9 @@
 
 	<h2>Ticket link</h2>
 	{% if banquet.background %}
-	{% if participant.seat %}
 	<p>Give the following link to the participant.</p>
 	
 	<input type="text" value="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}" />
-	{% else %}
-	<p>Before the generated link for a participant can work, they must be assigned a seat.</p>
-	{% endif %}
 	{% else %}
 	<p>Before the generated links can work, a background image needs to be uploaded (ask an IT admin) for the banquet.</p>
 	{% endif %}
