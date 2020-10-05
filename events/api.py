@@ -97,6 +97,10 @@ def signup(request, event_pk):
                     participant.fee_payed_s = True
                 else:
                     participant.fee_payed_s = False
+                    # Payment states: Created, Paid, Cancelled, Timeout or Error.
+                    # Created is a transient state
+                    if payment.status != "CREATED": # if payment has reached a non-successful final state, remove swish_charge_id
+                        participant.swish_charge_id = None
         else: # neither stripe nor swish
             participant.fee_payed_s = False
 
@@ -172,20 +176,10 @@ def payment_swish(request, event, payer_alias):
     if payment.id is None:
         return JsonResponse({'error': 'Unable to retrieve the payment'}, status=200)
     if payment.status == "ERROR":
-        return JsonResponse({'error': payment.error_message, 'status': payment.status}, status=200)
+        return JsonResponse({'error': payment['error_message'], 'status': payment.status}, status=200)
     if payment.status == "TIMEOUT":
         return JsonResponse({'error': "Timeout period exceeded. Please, try again.", 'status': payment.status}, status=200)
     return JsonResponse({'payment_id': payment.id, 'status': payment.status}, status=200)
-
-
-@require_POST
-def payment_callback(request, event_pk):
-    """
-    Callback for Swish payments
-    """
-
-    return JsonResponse({}, status=200)
-    # TODO: Confirm payment and sign user. Front-end will check periodically or on-demand if the user is already signed up.
 
 
 @require_GET
@@ -226,10 +220,10 @@ def get_payment(request, event_pk, payment_id):
     if payment.id is None:
         return JsonResponse({'error': 'Unable to retrieve the payment'}, status=200)
     if payment.status == "ERROR":
-        return JsonResponse({'error': payment.error_message, 'status': payment.status}, status=200)
+        return JsonResponse({'error': payment['error_message'], 'status': payment.status}, status=200)
     if payment.status == "TIMEOUT":
         return JsonResponse({'error': "Timeout period exceeded. Please, try again.", 'status': payment.status}, status=200)
-    return JsonResponse({'payment_id': payment.id, 'status': payment.status}, status=200)
+    return JsonResponse({'payment_id': payment.id, 'status': payment.status, 'payer_alias': payment['payer_alias']}, status=200)
 
 
 @require_POST
@@ -384,7 +378,7 @@ def get_by_token(request, event_pk, check_in_token):
 def create_swish_payment(name, fee, payer_alias=None):
     swish_client = get_swish_client()
     return swish_client.create_payment(
-        payee_payment_reference = '0123456789',
+        payee_payment_reference = settings.SWISH_PAYEE_PAYMENT_REF,
         callback_url = 'https://localhost:8080/api/events/67/payment/callback', #reverse('events_api:payment_callback', args=[event.id]),
         payer_alias = payer_alias,
         amount = fee,
@@ -392,21 +386,17 @@ def create_swish_payment(name, fee, payer_alias=None):
         message = name
     )
 
-
 def get_swish_payment(payment_id):
     swish_client = get_swish_client()
     return swish_client.get_payment(payment_id)
 
 
 def get_swish_client():
-    ssl_folder = "/usr/src/app/ais/local/ssl/swish"
-    cert_file_path = os.path.join(ssl_folder, "cert.pem")
-    key_file_path = os.path.join(ssl_folder, "key.pem")
-    cert = (cert_file_path, key_file_path)
-    verify = os.path.join(ssl_folder, "swish.pem")
     return swish.SwishClient(
-        environment=swish.Environment.Test,
-        merchant_swish_number='1231181189',
-        cert = cert,
-        verify = verify
+        environment=settings.SWISH_ENVIRONMENT,
+        merchant_swish_number=settings.SWISH_MERCHANT_NUMBER,
+        cert = (settings.SWISH_CERT_FILE_PATH, settings.SWISH_KEY_FILE_PATH),
+        verify = settings.SWISH_VERIFY_FILE_PATH
     )
+
+    

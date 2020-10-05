@@ -8,6 +8,7 @@ import os
 from os import environ as env
 from ais.common.settings import *
 from ais.secrets import *
+import swish
 
 # This is important so other people can't set their own domains
 # to point to AIS (which would be a security concern).
@@ -98,3 +99,10 @@ ADMINS = MANAGERS = (
    ('System', 'system@armada.nu'),
 )
 
+# Swish test settings
+SWISH_ENVIRONMENT = swish.Environment.Production
+SWISH_PAYEE_PAYMENT_REF = ''
+SWISH_MERCHANT_NUMBER = ''
+SWISH_CERT_FILE_PATH = ''
+SWISH_KEY_FILE_PATH = ''
+SWISH_VERIFY_FILE_PATH = ''

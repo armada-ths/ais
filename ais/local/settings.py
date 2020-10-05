@@ -6,6 +6,7 @@ and is generally easier to work with.
 
 import os
 from ais.common.settings import *
+import swish
 
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
@@ -28,6 +29,14 @@ CAS_RESPONSE_CALLBACKS = ('lib.CAS_callback.callback',)
 # Stripe test keys
 STRIPE_SECRET = 'sk_test_l4sPsGIoc2f8sD5N4D2fZkBY'
 STRIPE_PUBLISHABLE = 'pk_test_IzgUj9oJhednbt4EIf78esBE'
+
+# Swish test settings
+SWISH_ENVIRONMENT = swish.Environment.Test
+SWISH_PAYEE_PAYMENT_REF = '0123456789'
+SWISH_MERCHANT_NUMBER = '1231181189'
+SWISH_CERT_FILE_PATH = '/usr/src/app/ais/local/ssl/swish/cert.pem'
+SWISH_KEY_FILE_PATH = '/usr/src/app/ais/local/ssl/swish/key.pem'
+SWISH_VERIFY_FILE_PATH = '/usr/src/app/ais/local/ssl/swish/swish.pem'
 
 # We don't need performance here so use SQLite for ease of setup.
 DATABASES = {

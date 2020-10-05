@@ -31,9 +31,10 @@ class SignupForm extends Component {
 
     this.state = {
       payed: props.feePayed,
-      paymentSystemInProcess: '',
+      paymentSystemInProcess: !isEmpty(this.props.swishChargeId) ? 'swish' : '',
       errors: {},
-      answers
+      answers,
+      statusMessage: ''
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -94,16 +95,18 @@ class SignupForm extends Component {
     return errors;
   }
 
-  updateProcessingPayment(platform, inProcess, errors) {
+  updateProcessingPayment(platform, inProcess, message) {
     if (inProcess) {
       this.setState({
         paymentSystemInProcess: platform,
-        errors: {}
+        errors: {},
+        statusMessage: isEmpty(message) ? 'Processing payment...' : message
       })
     } else {
       this.setState({
         paymentSystemInProcess: '',
-        errors: errors
+        errors: message,
+        statusMessage: ''
       })
     }
   }
@@ -141,20 +144,22 @@ class SignupForm extends Component {
                   ) : (
                       <Fragment>
                         <Typography style={{ marginTop: 8, marginBottom: 8 }}>This event has a fee of {event.fee} SEK to sign up. By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
-                        <StripeProvider apiKey={this.props.stripe_publishable}>
-                          <Elements locale='en'>
-                            <Stripe
-                              stripe_publishable={stripe_publishable}
-                              paymentUrl={this.props.paymentUrl}
-                              openForSignup={event.open_for_signup}
-                              handleSubmit={this.handleSubmit}
-                              validator={this.validate}
-                              showErrors={this.showErrors}
-                              updateProcessingPayment={this.updateProcessingPayment}
-                              disabled={this.state.paymentSystemInProcess == 'swish'}
-                            />
-                          </Elements>
-                        </StripeProvider>
+                        <div style={{ width: '55%', display: 'inline-block', verticalAlign: 'top' }}>
+                          <StripeProvider apiKey={this.props.stripe_publishable}>
+                            <Elements locale='en'>
+                              <Stripe
+                                stripe_publishable={stripe_publishable}
+                                paymentUrl={this.props.paymentUrl}
+                                openForSignup={event.open_for_signup}
+                                handleSubmit={this.handleSubmit}
+                                validator={this.validate}
+                                showErrors={this.showErrors}
+                                updateProcessingPayment={this.updateProcessingPayment}
+                                disabled={!isEmpty(this.state.paymentSystemInProcess)}
+                              />
+                            </Elements>
+                          </StripeProvider>
+                        </div>
                         <Swish
                           paymentUrl={this.props.paymentUrl}
                           openForSignup={event.open_for_signup}
@@ -162,10 +167,11 @@ class SignupForm extends Component {
                           validator={this.validate}
                           showErrors={this.showErrors}
                           updateProcessingPayment={this.updateProcessingPayment}
-                          disabled={this.state.paymentSystemInProcess == 'stripe'}
+                          disabled={!isEmpty(this.state.paymentSystemInProcess)}
+                          swishChargeId={this.props.swishChargeId}
                         />
                         <div style={{ marginTop: 10, color: 'red' }}>{this.state.errors ? this.state.errors.message : ""}</div>
-                        <p style={{ marginTop: 10, }}>{!isEmpty(this.state.paymentSystemInProcess) ? <em>Processing payment... </em> : ""}</p>
+                        <p style={{ marginTop: 10, }}>{!isEmpty(this.state.paymentSystemInProcess) ? <em>{this.state.statusMessage}</em> : ""}</p>
                       </Fragment>
                     )}
                 </Typography>

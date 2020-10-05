@@ -14,7 +14,6 @@ urlpatterns = [
 
     url(r'^(?P<event_pk>\d+)/payment$', api.payment, name='payment'),
     url(r'^(?P<event_pk>\d+)/payment/(?P<payment_id>\w+)/$', api.get_payment, name='get_payment'),
-    url(r'^(?P<event_pk>\d+)/payment/callback$', api.payment_callback, name='payment_callback'),
     url(r'^(?P<event_pk>\d+)/payment/qr-code$', api.payment_qr_code, name='payment_qr_code'),
 
     url(r'^(?P<event_pk>\d+)/signup$', api.signup, name='signup'),

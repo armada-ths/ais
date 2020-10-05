@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Button from "@material-ui/core/es/Button/Button";
+import Input from "@material-ui/core/Input/Input";
 
 import axios from 'axios';
 import Cookie from 'js-cookie';
@@ -13,6 +14,7 @@ class Swish extends Component {
 			paymentId: null,
 			swishOptions: false,
 			payerAlias: '',
+			payerAliasError: null,
 			qrCode: null
 		}
 
@@ -21,7 +23,12 @@ class Swish extends Component {
 		this.handleChangePayerAlias = this.handleChangePayerAlias.bind(this);
 		this.createSwishPayment = this.createSwishPayment.bind(this);
 		this.generateQRCode = this.generateQRCode.bind(this);
+		this.resetOptions = this.resetOptions.bind(this);
 		this.setState = this.setState.bind(this);
+
+		if (!isEmpty(this.props.swishChargeId)) {
+			this.checkPayment()
+		}
 	}
 
 	// Handle Swish button click
@@ -44,8 +51,6 @@ class Swish extends Component {
 			return;
 		}
 
-		this.props.updateProcessingPayment('swish', true);
-
 		if (option === 'qr-code') {
 			// Show up QR Code
 			const generateQRCodeUrl = this.props.paymentUrl + "/qr-code";
@@ -63,11 +68,23 @@ class Swish extends Component {
 			qrCode: null
 		})
 
-		if (!/^46\d{8,15}$/.test(payerAlias)) { // Must be Swedish number with length of 8-15
-			this.props.updateProcessingPayment('swish', false, { message: 'Payer alias is not valid' });
+		// Validate payer alias
+		if (!/^46\d{8,15}$/.test(this.state.payerAlias)) { // Must be Swedish number with length of 8-15
+			this.props.updateProcessingPayment('swish', false, { message: 'The Swish number must be a Swedish number of 8-15 length' });
+			this.setState({
+				payerAliasError: 'Payer alias not valid'
+			})
 			return;
+		} else {
+			this.setState({
+				payerAliasError: null
+			})
 		}
 
+		// update processing state
+		this.props.updateProcessingPayment('swish', true, {});
+
+		// Create Swish payment
 		axios.post(paymentUrl, {
 			swish_payer_alias: payerAlias
 		}, {
@@ -77,16 +94,17 @@ class Swish extends Component {
 		}).then((response) => {
 			response = response.data;
 			if (response['error']) {
-				console.log(response.error)
 				this.props.updateProcessingPayment('swish', false, { message: response.error });
 			} else {
 				if (response.status == "PAID") {
 					this.props.handleSubmit(paymentId)
 				} else {
 					if (response.payment_id) {
+						this.props.updateProcessingPayment('swish', true, 'A payment has been created in your Swish app. Waiting until the payment is done...');
 						this.setState({
 							paymentId: response.payment_id
 						})
+						// Check the state of the payment periodically
 						this.checkPayment(this.props.paymentUrl + '/' + this.state.paymentId);
 					} else {
 						this.props.updateProcessingPayment('swish', false, { message: "Something went wrong. Please, try again." });
@@ -98,6 +116,10 @@ class Swish extends Component {
 
 	// Generate QR Code
 	generateQRCode(generateQRCodeUrl) {
+		// update processing state
+		this.props.updateProcessingPayment('swish', true, {});
+
+		// Generate qr code
 		axios.get(generateQRCodeUrl, {}, {
 			headers: {
 				"X-CSRFToken": Cookie.get('csrftoken')
@@ -107,22 +129,21 @@ class Swish extends Component {
 			if (response['error']) {
 				this.props.updateProcessingPayment('swish', false, { message: response.error })
 			} else {
+				this.props.updateProcessingPayment('swish', true, 'Scan the QR code with your Swish app to finish the payment');
 				this.setState({
 					qrCode: 'data:image/png;base64,' + response.qr_code,
 					paymentId: response.payment_id
 				});
-
+				// Check the state of the payment periodically
 				this.checkPayment(this.props.paymentUrl + '/' + this.state.paymentId);
 			}
 		});
 	}
 
-	// Check payment.
+	// Check payment state periodically
 	checkPayment(getPaymentUrl) {
-
-		// Retry each 5 seconds
-		setTimeout(function (getPaymentUrl, paymentId, props, checkPayment) {
-			console.log('Checking payment...') // TODO: Remove console.log
+		setTimeout(function (getPaymentUrl, that) {
+			console.log('Checking payment...')
 			axios.get(getPaymentUrl, {}, {
 				headers: {
 					"X-CSRFToken": Cookie.get('csrftoken')
@@ -131,68 +152,120 @@ class Swish extends Component {
 				response = response.data;
 				if (response['error']) {
 					if (response['status']) {
-						props.updateProcessingPayment('swish', false, { message: response.error });
+						that.props.updateProcessingPayment('swish', false, { message: response.error });
 					} else {
-						checkPayment(getPaymentUrl); // try again in 5 secs
+						that.checkPayment(getPaymentUrl);
 					}
 				} else {
+					if (isEmpty(that.state.payerAlias)) {
+						that.setState({
+							payerAlias: response.payer_alias
+						})
+					}
+
+					// Payment states: Created, Paid, Cancelled, Timeout or Error.
+					// Created is a transient state
 					if (response.status == "PAID") {
-						props.handleSubmit(paymentId)
+						that.props.handleSubmit(that.state.paymentId);
 					} else {
-						props.updateProcessingPayment('swish', false, { message: "Something went wrong. Please, try again." });
+						if (response.status == "CREATED") {
+							that.checkPayment(getPaymentUrl)
+						} else {
+							msg = 'Something went wrong. Please, try again.'
+							switch (response.status) {
+								case "CANCELLED":
+									msg = 'The payment was cancelled. Please, try again.'
+									break;
+								case "TIMEOUT":
+									msg = 'Payment timeout exceeded. Please, try again.'
+									break;
+							}
+							that.props.updateProcessingPayment('swish', false, { message: msg });
+						}
 					}
 				}
 			});
-		}, 5000, getPaymentUrl, this.state.paymentId, this.props, this.checkPayment);
+		}, 5000, getPaymentUrl, this);
 	}
 
 	handleChangePayerAlias(event) {
+		// Only numbers are allowed in a payer alias
+		if (/^\d+$/.test(event.target.value) || isEmpty(event.target.value)) {
+			this.setState({
+				payerAlias: event.target.value
+			})
+		}
+	}
+
+	resetOptions() {
+		this.props.updateProcessingPayment('swish', false, {})
 		this.setState({
-			payerAlias: event.target.value
+			paymentId: null,
+			qrCode: null,
+			swishOptions: false
 		})
 	}
 
 	render() {
-		return (
-			<div>
-				<Button
-					disabled={!this.props.openForSignup || this.props.disabled}
-					onClick={this.handleClick}
-					variant="contained"
-					color="primary"
-					style={{ marginTop: 10 }}>
-					Pay with Swish
-					{/* <img src='/static/images/swish_payment_button.png' alt='Swish payment' onClick={this.handleClick} /> */}
-				</Button>
+		return [
+			<div style={{ width: '45%', display: 'inline-block', textAlign: 'right', verticalAlign: 'bottom' }}>
 				{this.state.swishOptions ? (
 					<div>
 						<div>
-							<Button
-								onClick={(e) => this.handleOptionClick(e, 'qr-code')}
-								disabled={this.props.disabled}>
-								QR-Code
-							</Button>
-							{this.state.qrCode ? (
-								<img src={this.state.qrCode} style={{ width: '30%' }} />
-							) : null}
-						</div>
-						<div>
-							<input
+							<Input
+								type="text"
 								name="payerAlias"
-								type="number"
-								value={this.state.payerAlias}
+								placeholder="Swedish phone number"
 								onChange={this.handleChangePayerAlias}
-								disabled={this.props.disabled} />
+								error={this.state.payerAliasError}
+								value={this.state.payerAlias}
+								disabled={this.props.disabled}
+								disableUnderline={this.props.disabled} />
 							<Button
 								onClick={(e) => this.handleOptionClick(e, 'payer-alias')}
-								disabled={this.props.disabled}>
-								Payer alias
-						</Button>
+								disabled={this.props.disabled || this.state.qrCode}
+								variant="contained"
+								color="primary"
+								style={{ marginTop: 10 }}>
+								Use Swish number
+							</Button>
 						</div>
-					</div>) : null
-				}
-			</div>
-		)
+						<div>
+							<span style={{ marginRight: 10 }}>or</span>
+							<Button
+								onClick={(e) => this.handleOptionClick(e, 'qr-code')}
+								disabled={this.props.disabled || this.state.qrCode}
+								variant="contained"
+								color="primary"
+								style={{ marginTop: 10 }}>
+								Scan QR Code
+							</Button>
+						</div>
+					</div>
+				) : (
+						<Button
+							disabled={!this.props.openForSignup || this.props.disabled}
+							onClick={this.handleClick}
+							variant="contained"
+							color="primary"
+							style={{ marginTop: 10 }}>
+							Pay with Swish
+						</Button>
+					)}
+			</div>,
+			this.state.qrCode ? (
+				<div style={{ textAlign: 'center' }}>
+					<img src={this.state.qrCode} style={{ width: '35%', marginBottom: 12 }} />
+					<Button
+						onClick={this.resetOptions}
+						variant="contained"
+						color="secondary"
+						style={{ margin: '0 auto', display: 'block' }}>
+						Choose another option
+					</Button>
+				</div>
+			) : null
+		]
 	}
 }
 
