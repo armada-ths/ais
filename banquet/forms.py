@@ -299,7 +299,7 @@ class ParticipantTableMatchingForm(ModelForm):
     matching_interests = IncludeCategoryChoiceFieldMultiple(
         queryset=MatchingInterest.objects.filter(include_in_form=True),
         widget=forms.CheckboxSelectMultiple,
-        label='What are your interests?',
+        label='What are your interests? (Yes, all of them :) )',
         required=False)
 
     matching_year = IncludeCategoryChoiceFieldSingle(
