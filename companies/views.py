@@ -732,11 +732,19 @@ def send_order_summaries(request, year):
 
 			for order in recipient['orders']:
 				if order.quantity == 1:
-					order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.product.unit_price) + " kr\n")
-					orders_total += order.product.unit_price
+					if order.unit_price is None:
+						order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.product.unit_price) + " kr\n")
+						orders_total += order.product.unit_price
+					else:
+						order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.unit_price) + " kr\n")
+						orders_total += order.unit_price
 				else:
-					order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.quantity*order.product.unit_price) + " kr " + "(" + str(order.product.unit_price) + " kr each)\n")
-					orders_total += order.quantity*order.product.unit_price
+					if order.unit_price is None:
+						order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.quantity*order.product.unit_price) + " kr " + "(" + str(order.product.unit_price) + " kr each)\n")
+						orders_total += order.quantity*order.product.unit_price
+					else:
+						order_string += (str(order.quantity) + " " + str(order.product.name) + " for " + str(order.quantity*order.unit_price) + " kr " + "(" + str(order.unit_price) + " kr each)\n")
+						orders_total += order.quantity*order.unit_price
 			order_string += ("\n")
 
 			for person in recipient['people']:
@@ -829,8 +837,6 @@ https://armada.nu/contact/''' % (
 	{
 		'fair': fair,
 	})
-
-
 
 @permission_required('companies.base')
 def contracts_export(request, year):
