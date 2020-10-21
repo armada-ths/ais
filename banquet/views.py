@@ -399,6 +399,7 @@ def dashboard(request, year):
 
     max_invites = 5
 
+    # For using after party-invitations, change False to invitation_period
     return render(request, 'banquet/dashboard.html', {
         'fair': fair,
         'invitiations': Invitation.objects.filter(user=request.user),
@@ -406,7 +407,7 @@ def dashboard(request, year):
         'after_party_invites': {
             'invites': after_party_invites,
             'form': invite_form,
-            'show': invite_permission and invitation_period,
+            'show': invite_permission and False,
             'show_form': len(after_party_invites) < max_invites, # Can be used in the template to check whether invitation form should be presented
             'left': max_invites - len(after_party_invites)
         }
