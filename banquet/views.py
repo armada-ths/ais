@@ -780,6 +780,7 @@ def invitation(request, year, token):
                 else: # retrieve existing payment intent
                     intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
 
+                request.session['event'] = 'Banquet'
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
                 request.session['url_path'] = '/fairs/' + str(fair.year) + '/banquet/invitation/' + token
@@ -895,6 +896,7 @@ def external_invitation(request, token):
                 else: # retrieve existing payment intent
                     intent = stripe.PaymentIntent.retrieve(invitation.participant.charge_stripe)
 
+                request.session['event'] = 'Banquet'
                 request.session['intent'] = intent
                 request.session['invitation_token'] = token
                 request.session['url_path'] = '../banquet/' + token
