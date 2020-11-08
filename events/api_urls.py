@@ -18,4 +18,6 @@ urlpatterns = [
     url(r'^(?P<event_pk>\d+)/teams/leave$', api.leave_team, name='leave_team'),
     url(r'^(?P<event_pk>\d+)/teams/(?P<team_pk>\d+)$', api.join_team, name='join_team'),
     url(r'^(?P<event_pk>\d+)/teams/(?P<team_pk>\d+)/update$', api.update_team, name='update_team'),
+
+    url(r'^(?P<event_pk>\d+)/participants/fetch_details$', api.fetch_participants_details, name='fetch_participants_details'),
 ]
