@@ -5,11 +5,14 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
+from django.shortcuts import render
+from django.contrib.auth.decorators import permission_required, login_required
 
 from events import serializers
 from events.models import Event, Participant, SignupQuestion, SignupQuestionAnswer, Team, TeamMember, ParticipantCheckIn
 from fair.models import Fair
-
+from people.models import Profile
+from lib.KTH_Catalog import lookup_user_with_api, merge_user_info
 
 @require_GET
 def index(request):
@@ -272,3 +275,28 @@ def get_by_token(request, event_pk, check_in_token):
         return JsonResponse({'message': 'No participant with that check_in_token.'}, status=404)
 
     return JsonResponse({'participant': serializers.participant(participant)}, status=200)
+
+
+@require_GET
+@permission_required('events.base')
+@login_required
+def fetch_participants_details(request, event_pk):
+    """
+    Endpoint to fetch participants details including email, first name and last name.
+    """
+    event = get_object_or_404(Event, pk=event_pk)
+    
+    participants = Participant.objects.filter(event=event)
+
+    for participant in participants:
+        user = participant.user_s
+        if user is None:
+            continue
+        
+        username = user.username
+        details = lookup_user_with_api(username)
+
+        if merge_user_info(user, details):
+            user.save()
+
+    return HttpResponse(status=200)
