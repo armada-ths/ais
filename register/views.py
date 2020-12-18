@@ -104,7 +104,7 @@ Please note that this is an automatically generated email. If you have any quest
     email.attach_alternative(html_message, 'text/html')
 
     file_path = settings.MEDIA_ROOT + signature.contract.contract.url[6:]
-    email.attach_file(file_path) # NOTE: comment out if run locally
+    #email.attach_file(file_path) # NOTE: comment out if run locally
 
     email.send()
 
