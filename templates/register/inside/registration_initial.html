@@ -1,345 +1,269 @@
-{% extends "register/inside/base.html" %} {% load staticfiles %} {% load
-crispy_forms_tags %} {% load humanize %} {% block nav-registration %}
-<li>
-  <a href="{% url 'anmalan:registration' company.pk %}" class="active"
-    >{{ company.name }}</a
-  >
-</li>
-{% endblock %} {% block content %}
-<h1>Welcome to {{fair}}</h1>
+{% comment %} @prettier {% endcomment %}
+{% extends "register/inside/base.html" %}
 
-{% if contract %}
-<!-- TODO: double chack link to PDF - needs to be uodated for each year -->
-<p>
-  For information about participating in THS Armada read the invitation
-  <a
-    href="https://armada.nu/assets/invitation/invitationarmada2021.pdf"
-    target="_blank"
-  >
-    here!
-  </a>
-</p>
-<p>Registration closes: {{ deadline|date:"F j, Y" }}</p>
-<p style="font-weight: 700">
-  Please note that the initial registration is binding.
-</p>
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
 
-<div class="expandable always_opened">
-  <h3>Contract</h3>
-  <div class="expandable_content">
-    {% if signature %}
-    <p>
-      Your company {{company.name}} has signed the
-      <span class="lowercase">{{contract.type}}</span> registration contract.
-      Make sure your contact information is correct and we will contact you when
-      it is time for the next step of the registration.
-    </p>
-    <!-- TODO: update link to contract -->
-    <p>
-      <a
-        class="btn btn-armada-green"
-        target="_blank"
-        href="{{ contract.contract.url }}"
-        >Open the contract</a
-      >
-    </p>
+{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}" class="active">{{ company.name }}</a></li>{% endblock %}
 
-    <p>
-      <span style="font-weight: 700">Signed by:</span> {{
-      signature.company_contact.first_name }} {{
-      signature.company_contact.last_name }}<br />
-      <span style="font-weight: 700">Date:</span> {{ signature.timestamp }}
-    </p>
-    {% else %}
-    <!-- Contract not signed  -->
-    <p>Please read the contract below.</p>
-    <!-- TODO: double check that the contract url works -->
-    <p>
-      <a
-        class="btn btn-armada-green"
-        target="_blank"
-        href="{{ contract.contract.url }}"
-        >Open the contract</a
-      >
-    </p>
-    <!-- TODO: make sure company_contact is active? -->
-    {% if company_contact %}
-    <div class="row">
-      <div class="col-md-11">
-        <form class="room-form" enctype="multipart/form-data" method="post">
-          {% csrf_token %} {% if is_editable %}
-          <h3>Additional interests</h3>
-          <p style="font-style: italic">
-            Showing that you are interested in one of the following features by
-            selecting a check box is optional and not binding.
-          </p>
-          {{ form_initial_interests | crispy }} {{ form_initial_comment | crispy
-          }}
-          <h3>Sign up for Armada 2020</h3>
-          {{ form_initial_registration | crispy }}
-          <input
-            class="btn-green"
-            type="submit"
-            name="save_initial_registration"
-            value="Sign the contract"
-            {%
-            if
-            not
-            is_editable
-            or
-            not
-            is_authorized
-            %}
-            disabled{%
-            endif
-            %}
-          />
-          {% else %}
-          <h3>Initial registration not completed</h3>
-          <!-- For physical fair, un-comment this part and remove the section beneath the comment to % endif %
+{% block content %}
+	<h1>Welcome to {{fair}}</h1>
+
+  {% if contract %}
+    <!-- TODO: double chack link to PDF - needs to be uodated for each year -->
+	    <p>For information about participating in THS Armada read the invitation <a href="https://armada.nu/assets/invitation/invitationarmada2021.pdf" target="_blank"> here! </a> </p>
+		<p>Registration closes: {{ deadline|date:"F j, Y" }}</p>
+  	<p style="font-weight: 700;">Please note that the initial  registration is binding.</p>
+
+    <div class="expandable always_opened">
+			<h3>Contract</h3>
+      <div class="expandable_content">
+        {% if signature %}
+          <p> Your company {{company.name}} has signed the <span class='lowercase'>{{contract.type}}</span> registration contract. Make sure your contact information is correct and we will contact you when it is time for the next step of the registration.</p>
+          <!-- TODO: update link to contract -->
+          <p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+
+          <p><span style="font-weight: 700;">Signed by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
+          <span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
+        {% else %}
+          <!-- Contract not signed  -->
+          <p>Please read the contract below.</p>
+          <!-- TODO: double check that the contract url works -->
+          <p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+          <!-- TODO: make sure company_contact is active? -->
+          {% if company_contact %}
+            <div class="row">
+              <div class="col-md-11">
+                <form class="room-form" enctype="multipart/form-data" method="post">
+                  {% csrf_token %}
+									{% if is_editable %}
+										<h3>Additional interests</h3>
+										<p style="font-style: italic;">Showing that you are interested in one of the following features by selecting a check box is optional and not binding.</p>
+										{{ form_initial_interests | crispy }}
+										{{ form_initial_comment | crispy }}
+										<h3>Sign up for Armada 2020</h3>
+	                  {{ form_initial_registration | crispy }}
+	                  <input class="btn-green" type="submit" name="save_initial_registration" value="Sign the contract" {% if not is_editable or not is_authorized %} disabled{% endif %} />
+									{% else %}
+										<h3>Initial registration not completed</h3>
+										<!-- For physical fair, un-comment this part and remove the section beneath the comment to % endif %
 										<p>Your company did not complete the initial registration for this year's fair before the deadline. For late inquiries or if you have any questions, please contact one of the THS Armada project group members below or visit the <a href="https://armada.nu/contact">Contact Us</a> page.</p>
 										-->
-          <p>
-            Your company did not complete the initial registration for this
-            year's fair before the deadline, but don't worry! We need to add you
-            to the exhibitors list in order for you to register since you did
-            not sign the initial registration. Send us an
-            <a href="https://armada.nu/contact">email</a> and we will add you
-            straight away. Hang in there!
-          </p>
+										<p>Your company did not complete the initial registration for this year's fair before the deadline, but don't worry!
+										We need to add you to the exhibitors list in order for you to register since you did not sign the initial registration. Send us an <a href="https://armada.nu/contact">email</a> and we will add you straight away.
+										Hang in there!</p>
+									{% endif %}
+                </form>
+              </div>
+            </div>
+          {% else %}
+            <p style="font-style: italic;">Since you are logged in as an THS Armada representative, you cannot sign the contract.</p>
           {% endif %}
-        </form>
+        {% endif %}
       </div>
     </div>
-    {% else %}
-    <p style="font-style: italic">
-      Since you are logged in as an THS Armada representative, you cannot sign
-      the contract.
-    </p>
-    {% endif %} {% endif %}
-  </div>
-</div>
 
-<div class="expandable" style="margin-top: 5px">
-  <h2>Company details</h2>
+		<div class="expandable" style="margin-top: 5px;">
+			<h2>Company details</h2>
 
-  <div class="expandable_content">
-    <!-- TODO: make sure right access to edit is enforced -->
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %} {{ form_company_details | crispy }}
-      <input
-        type="submit"
-        name="save_company_details"
-        class="btn btn-armada-green"
-        value="Save changes"
-        {%
-        if
-        not
-        is_authorized
-        %}
-        disabled{%
-        endif
-        %}
-      />
-    </form>
-  </div>
-</div>
+			<div class="expandable_content">
+				<!-- TODO: make sure right access to edit is enforced -->
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ form_company_details | crispy }}
+					<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save changes"{% if not is_authorized  %} disabled{% endif %} />
+				</form>
+			</div>
+		</div>
 
-<div class="expandable" style="margin-top: 5px; border-top: none">
-  <h2>Contact person</h2>
+		<div class="expandable" style="margin-top: 5px; border-top: none;">
+			<h2>Contact person</h2>
 
-  <div class="expandable_content">
-    <!-- TODO: make sure right access to edit is enforced -->
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %} {{ form_company_contact | crispy }}
-      <input
-        type="submit"
-        name="save_contact_details"
-        class="btn btn-armada-green"
-        value="Save changes"
-        {%
-        if
-        not
-        is_authorized
-        %}
-        disabled{%
-        endif
-        %}
-      />
-    </form>
-  </div>
-</div>
-{% else %}
-<!-- Contract is not available -->
-<p>
-  We are working on constructing this years initial registration contract and it
-  will soon be available.
-</p>
-{% endif %}
+			<div class="expandable_content">
+				<!-- TODO: make sure right access to edit is enforced -->
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ form_company_contact | crispy }}
+					<input type="submit" name="save_contact_details" class="btn btn-armada-green" value="Save changes"{% if not is_authorized %} disabled{% endif %} />
+				</form>
+			</div>
+		</div>
+  {% else %}
+    <!-- Contract is not available -->
+    <p> We are working on constructing this years initial registration contract and it will soon be available. </p>
+  {% endif %}
 
-<br />
+	<br>
 
-<div id="contact_cards">
-  <div class="contact_card">
-    <span style="font-weight: 700">Josefine Havdelin</span><br />
-    Project manager<br />
-    <a href="mailto:a@armada.nu">a@armada.nu</a><br />
-    <a href="tel:+46705198582">+4670-519 85 82</a>
-  </div>
 
-  <div class="contact_card">
-    <span style="font-weight: 700">Anna Moustakas</span><br />
-    Head of Business Relations and Events<br />
-    <a href="mailto:anna.moustakas@armada.nu">anna.moustakas@armada.nu</a><br />
-    <a href="tel:+46730499226">+4673-049 92 26</a>
-  </div>
+	<div id="contact_cards">
 
-  <div class="contact_card">
-    <span style="font-weight: 700">Katrina Liang</span><br />
-    Head of Sales<br />
-    <a href="mailto:katrina.liang@armada.nu">katrina.liang@armada.nu</a><br />
-    <a href="tel:+46728589780">+4672-858 97 80</a>
-  </div>
+		<div class="contact_card">
+			<span style="font-weight: 700;">Josefine Havdelin</span><br />
+			Project manager<br />
+			<a href="mailto:a@armada.nu">a@armada.nu</a><br />
+			<a href="tel:+46705198582">+4670-519 85 82</a>
+		</div>
 
-  <div class="contact_card">
-    <span style="font-weight: 700">Leonard Hökby</span><br />
-    Head of Sales<br />
-    <a href="mailto:leonard.hokby@armada.nu">leonard.hokby@armada.nu</a><br />
-    <a href="tel:+46703908581">+4670-390 85 81</a>
-  </div>
+		<div class="contact_card">
+			<span style="font-weight: 700;">Anna Moustakas</span><br />
+			Head of Business Relations and Events<br />
+			<a href="mailto:anna.moustakas@armada.nu">anna.moustakas@armada.nu</a><br />
+			<a href="tel:+46730499226">+4673-049 92 26</a>
+		</div>
 
-  <div class="contact_card">
-    <span style="font-weight: 700">Erik Rompotti</span><br />
-    Head of Sales<br />
-    <a href="mailto:erik.rompotti@armada.nu">erik.rompotti@armada.nu</a><br />
-    <a href="tel:+46738464704">+4673-846 47 04</a>
-  </div>
-</div>
-{% endblock %} {% block scripts %}
-<style type="text/css">
-  .lowercase {
-    text-transform: lowercase;
-  }
+        <div class="contact_card">
+			<span style="font-weight: 700;">Katrina Liang</span><br />
+			Head of Sales<br />
+			<a href="mailto:katrina.liang@armada.nu">katrina.liang@armada.nu</a><br />
+			<a href="tel:+46728589780">+4672-858 97 80</a>
+		</div>
 
-  #contact_cards {
-    text-align: center;
-  }
+        <div class="contact_card">
+			<span style="font-weight: 700;">Leonard Hökby</span><br />
+			Head of Sales<br />
+			<a href="mailto:leonard.hokby@armada.nu">leonard.hokby@armada.nu</a><br />
+			<a href="tel:+46703908581">+4670-390 85 81</a>
+		</div>
 
-  #contact_cards .contact_card {
-    display: inline-block;
-    text-align: left;
-    padding: 8px;
-    margin: 7px 5px;
-    background: #353535;
-  }
+        <div class="contact_card">
+			<span style="font-weight: 700;">Erik Rompotti</span><br />
+			Head of Sales<br />
+			<a href="mailto:erik.rompotti@armada.nu">erik.rompotti@armada.nu</a><br />
+			<a href="tel:+46738464704">+4673-846 47 04</a>
+		</div>
+	</div>
+{% endblock %}
 
-  .expandable {
-    border-top: 1px dotted #ffffff;
-    padding: 15px;
-  }
+{% block scripts %}
+	<style type="text/css">
+		.lowercase {
+  		text-transform: lowercase;
+  	}
 
-  .expandable h2 {
-    margin: 10px 0;
-    padding: 0;
-    color: #ffffff;
-  }
+		#contact_cards
+		{
+			text-align: center;
+		}
 
-  .expandable:not(.always_opened):not(.active) {
-    padding: 5px 15px;
-  }
+		#contact_cards .contact_card
+		{
+			display: inline-block;
+			text-align: left;
+			padding: 8px;
+			margin: 7px 5px;
+			background: #353535;
+		}
 
-  .expandable:not(.always_opened):not(.active) h2 {
-    font-size: 20pt;
-  }
+		.expandable
+		{
+			border-top: 1px dotted #ffffff;
+			padding: 15px;
+		}
 
-  .expandable:not(.always_opened) h2 {
-    cursor: pointer;
-  }
+		.expandable h2
+		{
+			margin: 10px 0;
+			padding: 0;
+			color: #ffffff;
+		}
 
-  .expandable:not(.always_opened) h2:before {
-    content: "+ ";
-  }
+		.expandable:not(.always_opened):not(.active)
+		{
+			padding: 5px 15px;
+		}
 
-  .expandable.active:not(.always_opened) h2:before {
-    content: "- ";
-  }
+		.expandable:not(.always_opened):not(.active) h2
+		{
+			font-size: 20pt;
+		}
 
-  .expandable:not(.always_opened) .expandable_content {
-    display: none;
-  }
+		.expandable:not(.always_opened) h2
+		{
+			cursor: pointer;
+		}
 
-  .expandable_content {
-    overflow: hidden;
-  }
-</style>
-<script>
-  window.onscroll = function () {
-    myFunction();
-  };
+		.expandable:not(.always_opened) h2:before
+		{
+			content: '+ ';
+		}
 
-  var header = document.getElementById("menu");
-  var sticky = header.offsetTop;
+		.expandable.active:not(.always_opened) h2:before
+		{
+			content: '- ';
+		}
 
-  function myFunction() {
-    if (window.pageYOffset > sticky) {
-      header.classList.add("sticky");
-    } else {
-      header.classList.remove("sticky");
-    }
-  }
+		.expandable:not(.always_opened) .expandable_content
+		{
+			display: none;
+		}
 
-  $(function () {
-    if (window.location.hash.length !== 0) {
-      var s = window.location.hash.substring(1).split(/,/g);
-      var expandables = $(".expandable");
+		.expandable_content
+		{
+			overflow: hidden;
+		}
 
-      for (var i = 0; i < s.length; i++) {
-        $(expandables[parseInt(s[i])]).addClass("active");
-        $(expandables[parseInt(s[i])]).children(".expandable_content").show();
-      }
+	</style>
+	<script>
+		window.onscroll = function() {myFunction()};
 
-      if ($(".form-group.has-error").length !== 0) {
-        $("html, body").scrollTop(
-          $(".form-group.has-error").offset().top - 300
-        );
-      }
-    }
+		var header = document.getElementById("menu");
+		var sticky = header.offsetTop;
 
-    $(".expandable:not(.always_opened) h2").click(function () {
-      if ($(this).parent().hasClass("active")) {
-        $(this).parent().removeClass("active");
-        $(this).parent().children(".expandable_content").hide(50);
-      } else {
-        $(this)
-          .parent()
-          .parent()
-          .find(".expandable:not(.always_opened)")
-          .removeClass("active");
-        $(this)
-          .parent()
-          .parent()
-          .find(".expandable:not(.always_opened) .expandable_content")
-          .hide(50);
+		function myFunction() {
+			if (window.pageYOffset > sticky) {
+				header.classList.add("sticky");
+			} else {
+				header.classList.remove("sticky");
+			}
+		}
+		
+		$(function()
+		{
+			if (window.location.hash.length !== 0)
+			{
+				var s = window.location.hash.substring(1).split(/,/g);
+				var expandables = $('.expandable');
 
-        $(this).parent().addClass("active");
-        $(this).parent().children(".expandable_content").show(50);
-      }
+				for (var i = 0; i < s.length; i++)
+				{
+					$(expandables[parseInt(s[i])]).addClass('active');
+					$(expandables[parseInt(s[i])]).children('.expandable_content').show();
+				}
 
-      var anchor = "";
-      var expandables = $(".expandable");
+				if ($('.form-group.has-error').length !== 0) { $('html, body').scrollTop($('.form-group.has-error').offset().top - 300); }
+			}
 
-      for (var i = 0; i < expandables.length; i++) {
-        if ($(expandables[i]).hasClass("active")) {
-          anchor += "," + i;
-        }
-      }
+			$('.expandable:not(.always_opened) h2').click(function()
+			{
+				if ($(this).parent().hasClass('active'))
+				{
+					$(this).parent().removeClass('active');
+					$(this).parent().children('.expandable_content').hide(50);
+				}
 
-      if (anchor.length !== 0) {
-        anchor = anchor.substring(1);
-      }
+				else
+				{
+					$(this).parent().parent().find('.expandable:not(.always_opened)').removeClass('active');
+					$(this).parent().parent().find('.expandable:not(.always_opened) .expandable_content').hide(50);
 
-      document.location = "#" + anchor;
-    });
-  });
-</script>
+					$(this).parent().addClass('active');
+					$(this).parent().children('.expandable_content').show(50);
+				}
+
+				var anchor = '';
+				var expandables = $('.expandable');
+
+				for (var i = 0; i < expandables.length; i++)
+				{
+					if ($(expandables[i]).hasClass('active')) { anchor += ',' + i; }
+				}
+
+				if (anchor.length !== 0) { anchor = anchor.substring(1); }
+
+				document.location = '#' + anchor;
+			});
+		});
+	</script>
 {% endblock %}
