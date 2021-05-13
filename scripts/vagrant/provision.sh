@@ -37,7 +37,7 @@ silent sudo service postgresql reload
 echo "CREATE USER ais_dev PASSWORD 'ais_dev';" | silent sudo -u postgres psql
 # Allow ais_dev to create databases in order to create test databases
 echo "ALTER USER ais_dev CREATEDB;" | silent sudo -u postgres psql
-#silent sudo -u postgres createdb ais_dev
+silent sudo -u postgres createdb ais_dev
 echo "GRANT ALL PRIVILEGES ON DATABASE ais_dev TO ais_dev;" | silent sudo -u postgres psql
 echo "ALTER USER ais_dev WITH SUPERUSER;"| silent sudo -u postgres psql
 
@@ -52,9 +52,9 @@ echo "Configuring..."
 # @hotfix: Added these lines below. https://github.com/npm/cli/issues/681
 echo "Configuring npm install..."
 silent curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-silent sudo apt -y install nodejs make gcc g++
+silent sudo apt -y install gcc g++ make nodejs npm
 # @hotfix: Change user to current user.
-silent sudo chown -R $(whoami) ~/.npm
+silent sudo chown -R $(whoami) /usr/bin/npm # ~/.npm
 silent sudo npm -g install
 
 echo "Sprinkling magic..."
