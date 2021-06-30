@@ -1,0 +1,19 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgis/postgis
+    environment:
+      - POSTGRES_DB=ais_dev
+      - POSTGRES_USER=ais_dev
+      - POSTGRES_PASSWORD=ais_dev
+
+  ais:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8080 --settings local_settings
+    volumes:
+      - .:/ais
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
