@@ -68,4 +68,6 @@ class LoginRequiredMiddleware:
             return
 
         if not request.user.is_authenticated():
+            if 'oidc/kth/callback' in path:
+                return
             return HttpResponseRedirect("/?next=%s" % (urlquote(request.get_full_path())))
