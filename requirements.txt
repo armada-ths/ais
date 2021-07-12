@@ -1,6 +1,5 @@
 Authlib==0.15.4
 Django==1.11.29
-django-cas-client
 psycopg2
 psycopg2-binary
 setuptools
