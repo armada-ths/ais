@@ -6,10 +6,10 @@ and is generally easier to work with.
 
 import os
 from ais.common.settings import *
+from ais.secrets import ApplicationID, ClientSecret
 
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
-from ais.secrets import ApplicationID, ClientSecret
 
 DEBUG = True
 
@@ -20,12 +20,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ROOT_URLCONF = 'ais.local.urls'
 
-# Use KTH CAS for authentication
-INSTALLED_APPS += ('cas', 'kth_login', 'raven.contrib.django.raven_compat',)
-AUTHENTICATION_BACKENDS += ('cas.backends.CASBackend',)
-CAS_SERVER_URL = 'https://login.kth.se/'
-CAS_AUTO_CREATE_USER = False
-CAS_RESPONSE_CALLBACKS = ('lib.CAS_callback.callback',)
+# Use KTH OpenID Connect for authentication
+INSTALLED_APPS += ('kth_login', 'raven.contrib.django.raven_compat',)
 
 # Stripe test keys
 STRIPE_SECRET = 'sk_test_l4sPsGIoc2f8sD5N4D2fZkBY'
@@ -38,7 +34,7 @@ DATABASES = {
         'NAME': 'ais_dev',
         'USER': 'ais_dev',
         'PASSWORD': 'ais_dev',
-        # 'HOST': '127.0.0.1',
+        # 'HOST': '127.0.0.1', # For Vagrant
         'HOST': 'db',  # For docker
     }
 }
@@ -51,6 +47,10 @@ RECRUITMENT_HOOK_URL = 'https://hooks.slack.com/services/T49AUKM24/B4REPLABG/D9l
 # if used in production!
 SECRET_KEY = '..............¯\_(ツ)_/¯...............'
 
+
+# This is for AUTHLIB package for interacting with KTH OpenID Connect
+# ApplicationID is given from the 'secrets.py' file.
+# ClientSecret is given from the 'secrets.py' file.
 AUTHLIB_OAUTH_CLIENTS = {
     'kth': {
         'client_id': ApplicationID,

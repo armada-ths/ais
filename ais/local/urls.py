@@ -1,6 +1,5 @@
 from ais.common.urls import *
 from django.conf.urls import include, url
-from cas import views as cas_views
 from kth_login import views as kth_login_views
 
 urlpatterns += [
