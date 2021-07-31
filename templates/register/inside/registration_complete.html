@@ -244,43 +244,36 @@
 		<p> We are working on constructing this years complete registration contract and it will soon be available. </p>
 	{% endif %}
 
-<div id="contact_cards">
+    <div id="contact_cards">
 
-		<div class="contact_card">
-			<span style="font-weight: 700;">Josefine Havdelin</span><br />
-			Project manager<br />
-			<a href="mailto:a@armada.nu">a@armada.nu</a><br />
-			<a href="tel:+46707909844">+4670-790 98 44</a>
-		</div>
+	{% if contacts %}
 
-		<div class="contact_card">
-			<span style="font-weight: 700;">Anna Moustakas</span><br />
-			Head of Business Relations and Events<br />
-			<a href="mailto:anna.moustakas@armada.nu">anna.moustakas@armada.nu</a><br />
-			<a href="tel:+46730499226">+4673-049 92 26</a>
-		</div>
+	{% for contact in contacts %}
 
-        <div class="contact_card">
-			<span style="font-weight: 700;">Katrina Liang</span><br />
-			Head of Sales<br />
-			<a href="mailto:katrina.liang@armada.nu">katrina.liang@armada.nu</a><br />
-			<a href="tel:+46728589780">+4672-858 97 80</a>
-		</div>
-
-        <div class="contact_card">
-			<span style="font-weight: 700;">Leonard Hökby</span><br />
-			Head of Sales<br />
-			<a href="mailto:leonard.hokby@armada.nu">leonard.hokby@armada.nu</a><br />
-			<a href="tel:+46703908581">+4670-390 85 81</a>
-		</div>
-
-        <div class="contact_card">
-			<span style="font-weight: 700;">Erik Rompotti</span><br />
-			Head of Sales<br />
-			<a href="mailto:erik.rompotti@armada.nu">erik.rompotti@armada.nu</a><br />
-			<a href="tel:+46738464704">+4673-846 47 04</a>
-		</div>
+	<div class="contact_card">
+	    <span style="font-weight: 700;">{{ contact.name }}</span><br/>
+	    <span >{{ contact.role }}</span><br/>
+            <span ><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></span><br />
+            <span ><a href="tel:{{ contact.phone_number }}">{{ contact.phone_number }}</a></span><br />
 	</div>
+
+	{% endfor %}
+	{% else %}
+
+	<div class="contact_card">
+	    <span style="font-weight: 700;">THS Armada</span><br/>
+	    <span >Support</span><br/>
+            <span ><a href="mailto:support@armada.nu">support@armada.nu</a></span><br />
+	</div>
+
+	{% endif %}
+
+    </div>
+
+
+
+
+
 {% endblock %}
 
 {% block scripts %}
