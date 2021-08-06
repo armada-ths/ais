@@ -36,13 +36,15 @@ DATABASES = {
         'NAME': 'ais_dev',
         'USER': 'ais_dev',
         'PASSWORD': 'ais_dev',
-        'HOST': '127.0.0.1',
+        # 'HOST': '127.0.0.1',  # Vagrant
+        'HOST': 'db',  # Docker
     }
 }
 
 
 SALES_HOOK_URL = 'https://hooks.slack.com/services/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'
 RECRUITMENT_HOOK_URL = 'https://hooks.slack.com/services/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'
+
 
 # Always use the same secret key so we can resume sessions after
 # restarting the server. Again, this is a serious security flaw
