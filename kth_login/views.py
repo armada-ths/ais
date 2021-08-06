@@ -44,8 +44,6 @@ def authorize(request):
 
 
 def callback(request, kth_id):
-	# kth_id = tree[0][0].text
-
 	logging.info('KTH-ID: %s trying to login' %kth_id)
 	
 	user, user_created = User.objects.get_or_create(username = kth_id)
