@@ -371,8 +371,8 @@ class CompleteProductBooleanForm(Form):
 
 class CompleteFinalSubmissionForm(Form):
 
-    contract = BooleanField(required=True)
-    contract.label = 'I have read the binding contract and agree to the terms. I am also authorized to register my organization for THS Armada 2021 and sign this contract.'
+    # contract = BooleanField(required=True)
+    # contract.label = 'I have read the binding contract and agree to the terms. I am also authorized to register my organization for THS Armada 2021 and sign this contract.'
 
     gdpr = BooleanField(required=True)
     gdpr.label = 'THS Armada would like to process personal data about you and your organization to be able to contact you in conjunction with complete registration and send you information regarding the fair of 2021. The data we intend to collect and the process is forename, surname, the title of your organization, phone number, and email address. You decide for yourself if you want to leave any additional information to us. The data will only be processed by the project group in THS Armada and by THS Management. The data will be saved in the Armada Internal Systems, AIS. You are, according to GDPR (General Data Protection Regulation), entitled to receive information regarding what personal data we process and how we process these. You also have the right to request a correction as to what personal data we are processing about you. \nI consent for THS Armada to process my personal data in accordance with the above.'
