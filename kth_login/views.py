@@ -24,8 +24,8 @@ oauth.register(
 )
 
 def kth_login(request):
-	redirect_uri = request.build_absolute_uri(reverse('oidc/kth/callback'))
-	#redirect_uri = 'http://localhost:8080/oidc/kth/callback' # Local development (?)
+	request.path = '/' # Reset path
+	redirect_uri = request.build_absolute_uri('oidc/kth/callback')
 	return oauth.kth.authorize_redirect(request, redirect_uri)
 
 
