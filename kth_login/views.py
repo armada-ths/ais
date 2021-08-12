@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from authlib.integrations.django_client import OAuth
 import logging
 
@@ -23,7 +24,7 @@ oauth.register(
 )
 
 def kth_login(request):
-	redirect_uri = request.build_absolute_uri('oidc/kth/callback')
+	redirect_uri = request.build_absolute_uri(reverse('oidc/kth/callback'))
 	#redirect_uri = 'http://localhost:8080/oidc/kth/callback' # Local development (?)
 	return oauth.kth.authorize_redirect(request, redirect_uri)
 
