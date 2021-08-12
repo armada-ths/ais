@@ -23,8 +23,8 @@ oauth.register(
 )
 
 def kth_login(request):
-	# redirect_uri = request.build_absolute_uri('oidc/kth/callback')
-	redirect_uri = 'http://localhost:8080/oidc/kth/callback'
+	redirect_uri = request.build_absolute_uri('oidc/kth/callback')
+	#redirect_uri = 'http://localhost:8080/oidc/kth/callback' # Local development (?)
 	return oauth.kth.authorize_redirect(request, redirect_uri)
 
 
@@ -34,11 +34,7 @@ def authorize(request):
 	request.session['user'] = user
 	kth_id = user['kthid']
 
-	# Steps above (2 & 3)
 	callback(request, kth_id)
-	print(user)
-	#user = authenticate(user=request.session['user'])
-	#print(user)
 
 	return redirect('/')
 
