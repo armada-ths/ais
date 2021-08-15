@@ -6,7 +6,7 @@ and is generally easier to work with.
 
 import os
 from ais.common.settings import *
-from ais.secrets import ApplicationID, ClientSecret
+from ais.secrets import APPLICATION_ID, CLIENT_SECRET
 
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
@@ -49,12 +49,12 @@ SECRET_KEY = '..............¯\_(ツ)_/¯...............'
 
 
 # This is for AUTHLIB package for interacting with KTH OpenID Connect
-# ApplicationID is given from the 'secrets.py' file.
-# ClientSecret is given from the 'secrets.py' file.
+# APPLICATION_ID is given from the 'secrets.py' file.
+# CLIENT_SECRET is given from the 'secrets.py' file.
 AUTHLIB_OAUTH_CLIENTS = {
     'kth': {
-        'client_id': ApplicationID,
-        'client_secret': ClientSecret,
+        'client_id': APPLICATION_ID,
+        'client_secret': CLIENT_SECRET,
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
 }
