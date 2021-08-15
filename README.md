@@ -6,7 +6,7 @@ Contribution Guides
 - Please try to write clean, readable code
 - Please try to write tests for your code
 - Please try to write meaningful commit messages, PR descriptions etc.
-- Please try to help resolve any open PRs / issues
+- Please try to help resolve any open PRs / issues 
 
 Above all, be respectful towards others :)
 
