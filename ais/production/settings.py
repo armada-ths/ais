@@ -95,12 +95,12 @@ ADMINS = MANAGERS = (
 )
 
 # This is for AUTHLIB package for interacting with KTH OpenID Connect
-# ApplicationID is given from the 'secrets.py' file.
-# ClientSecret is given from the 'secrets.py' file.
+# APPLICATION_ID is given from the 'secrets.py' file.
+# CLIENT_SECRET is given from the 'secrets.py' file.
 AUTHLIB_OAUTH_CLIENTS = {
     'kth': {
-        'client_id': ApplicationID,
-        'client_secret': ClientSecret,
+        'client_id': APPLICATION_ID,
+        'client_secret': CLIENT_SECRET,
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
 }
