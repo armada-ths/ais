@@ -28,7 +28,7 @@ If you don't want to use Vagrant, instructions for getting started with [OSX](do
 
 Scripts
 ----------------------------
-A number of scripts are available in the scripts folder. Others can be run with ```manage.py [scriptname]```. Run ```manage.py help``` to list what scripts are available through manage.py
+A number of scripts are available in the scripts folder. Others can be run with ```manage.py [scriptname]```. Run ```manage.py help``` to list what scripts are available through manage.py 
 
 License Information
 -------------------
