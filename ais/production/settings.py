@@ -1,7 +1,7 @@
 """
 This is the settings file to be used in a production environment. It's
 more secure, more robust and more performant than the development setup
-and also configures AIS to talk to external services (e.g. CAS).
+and also configures AIS to talk to external services.
 """
 
 import os
@@ -16,15 +16,11 @@ ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 DEBUG = False
 
 # The URL scheme is slightly different in a production environment
-# since we need to accomodate the CAS integration.
+# since we need to accomodate the KTH OpenID Connect integration.
 ROOT_URLCONF = 'ais.production.urls'
 
-# Use KTH CAS for authentication
-INSTALLED_APPS += ('cas', 'raven.contrib.django.raven_compat',)
-AUTHENTICATION_BACKENDS += ('cas.backends.CASBackend',)
-CAS_SERVER_URL = 'https://login.kth.se/'
-CAS_AUTO_CREATE_USER = False
-CAS_RESPONSE_CALLBACKS = ('lib.CAS_callback.callback',)
+# Use KTH OpenID Connect for authentication
+INSTALLED_APPS += ('kth_login','raven.contrib.django.raven_compat',)
 
 # Use a full-fledged database instead of SQLite.
 DATABASES = {
@@ -98,3 +94,13 @@ ADMINS = MANAGERS = (
    ('System', 'system@armada.nu'),
 )
 
+# This is for AUTHLIB package for interacting with KTH OpenID Connect
+# ApplicationID is given from the 'secrets.py' file.
+# ClientSecret is given from the 'secrets.py' file.
+AUTHLIB_OAUTH_CLIENTS = {
+    'kth': {
+        'client_id': ApplicationID,
+        'client_secret': ClientSecret,
+        'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
+    }
+}
