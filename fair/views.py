@@ -20,6 +20,10 @@ from .models import Fair, LunchTicket, LunchTicketSend
 from .models import FairDay, OrganizationGroup
 
 
+from fair.selectors import get_fair, get_lunch_tickets, get_serialized_lunch_tickets, get_lunch_ticket, get_banquet_particiapnt
+from fair.services import send_lunch_ticket, create_lunch_ticket_form
+
+
 def login_redirect(request):
     next = request.GET.get('next')
     if next and next[-1] == '/':
@@ -68,8 +72,7 @@ def index(request, year=None):
 
 @permission_required('fair.lunchtickets')
 def lunchtickets(request, year):
-    fair = get_object_or_404(Fair, year=year)
-
+    fair = get_fair(year=year)
     form = LunchTicketSearchForm(request.POST or None)
 
     form.fields['days'].queryset = FairDay.objects.filter(fair=fair)
@@ -157,7 +160,7 @@ def lunchtickets(request, year):
 
     return render(request, 'fair/lunchtickets.html', {
         'fair': fair,
-        'my_lunchtickets': LunchTicket.objects.filter(fair=fair, user=request.user),
+        'my_lunchtickets': get_lunch_tickets(fair=fair, user=request.user),
         'form': form,
         'has_searched': request.POST and form.is_valid(),
         'lunchtickets': lunchtickets_filtered,
@@ -167,15 +170,17 @@ def lunchtickets(request, year):
 
 @permission_required('fair.lunchtickets')
 def lunchticket(request, year, token):
-    fair = get_object_or_404(Fair, year=year)
-    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+    fair = get_fair(year=year)
+    lunch_ticket = get_lunch_ticket(token=token)
 
-    if request.user != lunch_ticket.user and not request.user.has_perm('fair.lunchtickets'): return HttpResponseForbidden()
+    if request.user != lunch_ticket.user and not request.user.has_perm('fair.lunchtickets'):
+        return HttpResponseForbidden()
 
     if request.user.has_perm('fair.lunchtickets'):
         form = LunchTicketForm(request.POST or None, instance=lunch_ticket)
 
-        if request.POST and form.is_valid(): form.save()
+        if request.POST and form.is_valid(): 
+            form.save()
 
     else:
         form = None
@@ -190,9 +195,8 @@ def lunchticket(request, year, token):
 
 @permission_required('fair.lunchtickets')
 def lunchticket_remove(request, year, token):
-    fair = get_object_or_404(Fair, year=year)
-    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
-
+    fair = get_fair(year=year)
+    lunch_ticket = get_lunch_ticket(token=token)
     lunch_ticket.delete()
 
     return redirect('fair:lunchtickets', fair.year)
@@ -200,44 +204,18 @@ def lunchticket_remove(request, year, token):
 
 @permission_required('fair.lunchtickets')
 def lunchticket_send(request, year, token):
-    fair = get_object_or_404(Fair, year=year)
-    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+    fair = get_fair(year=year)
+    lunch_ticket = get_lunch_ticket(token=token)
+    lunch_ticket_token = send_lunch_ticket(lunch_ticket=lunch_ticket, user=request.user)
 
-    eat_by = str(lunch_ticket.time) if lunch_ticket.time else str(lunch_ticket.day)
-    email_address = lunch_ticket.user.email if lunch_ticket.user else lunch_ticket.email_address
-
-    send_mail(
-        'Lunch ticket ' + eat_by,
-        'Open the link below to redeem your lunch ticket at ' + lunch_ticket.fair.name + '.\n\nDate: ' + eat_by + '\n' + request.build_absolute_uri(reverse('lunchticket_display', args = [lunch_ticket.token])),
-        'noreply@armada.nu',
-        [email_address],
-        fail_silently = True
-    )
-
-    LunchTicketSend(lunch_ticket=lunch_ticket, user=request.user, email_address=email_address).save()
-
-    lunch_ticket.sent = True
-    lunch_ticket.save()
-
-    return redirect('fair:lunchticket', fair.year, lunch_ticket.token)
+    return redirect('fair:lunchticket', fair.year, lunch_ticket_token)
 
 
 @permission_required('fair.lunchtickets')
 def lunchticket_create(request, year):
-    fair = get_object_or_404(Fair, year=year)
-
-    form = LunchTicketForm(request.POST or None, initial={'fair': fair})
-
-    users = []
-
-    for organization_group in OrganizationGroup.objects.filter(fair=fair):
-        this_users_flat = [application.user for application in RecruitmentApplication.objects.select_related('user').filter(
-            delegated_role__organization_group=organization_group, status='accepted', recruitment_period__fair=fair).order_by(
-            'user__first_name', 'user__last_name')]
-        users.append([organization_group.name, [(user.pk, user.get_full_name()) for user in this_users_flat]])
-
-    form.fields['user'].choices = [('', '---------')] + users
-
+    fair = get_fair(year=year)
+    form = create_lunch_ticket_form(fair=fair)
+    
     if request.POST and form.is_valid():
         form.instance.fair = fair
         lunch_ticket = form.save()
@@ -251,32 +229,21 @@ def lunchticket_create(request, year):
 
 @permission_required('fair.lunchtickets')
 def lunchtickets_check_in(request, year):
-    fair = get_object_or_404(Fair, year=year)
-
-    react_props = {}
-
     return render(request, 'fair/lunch_ticket_check_in.html', {
-        'react_props': json.dumps(react_props)
+        'react_props': json.dumps({})
     })
 
 def lunchticket_display(request, token):
-    lunch_ticket = get_object_or_404(LunchTicket, fair__current=True, token=token)
-
     return render(request, 'fair/lunchticket_display.html', {
-        'lunch_ticket': lunch_ticket
+        'lunch_ticket': get_lunch_ticket(token=token)
     })
 
 
 def tickets(request, year):
-    fair = get_object_or_404(Fair, year=year)
-    banquet = Banquet.objects.filter(fair=fair).first()
-
-    lunch_tickets = LunchTicket.objects.filter(fair=fair, user=request.user)
-    banquet_participant = Participant.objects.filter(user=request.user, banquet=banquet).first()
-
+    fair = get_fair(year=year)
     react_props = {
-        'lunch_tickets': [serializers.lunch_ticket(lunch_ticket=lunch_ticket) for lunch_ticket in lunch_tickets],
-        'banquet_participant': serializers.banquet_participant(banquet_participant) if banquet_participant else None
+        'lunch_tickets': get_serialized_lunch_tickets(fair=fair, user=request.user),
+        'banquet_participant': get_banquet_particiapnt(fair=fair, user=request.user),
     }
 
     return render(request, 'fair/tickets.html', {
