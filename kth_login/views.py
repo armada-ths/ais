@@ -47,11 +47,14 @@ def callback(request, kth_id):
 	user_info = lookup_user(kth_id)
 
 	if merge_user_info(user, user_info):
-		user.save()
+            user.clean()
+            user.save()
 
 	profile = Profile.objects.filter(user = user).first()
 	if profile is None:
-		Profile(user = user, no_dietary_restrictions = False).save()
+	    profile = Profile(user = user, no_dietary_restrictions = False)
+	    profile.clean()
+	    profile.save()
 
 	login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
