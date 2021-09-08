@@ -36,8 +36,8 @@ DATABASES = {
         'NAME': 'ais_dev',
         'USER': 'ais_dev',
         'PASSWORD': 'ais_dev',
-        # 'HOST': '127.0.0.1',  # Vagrant
-        'HOST': 'db',  # Docker
+        # 'HOST': '127.0.0.1', # For Vagrant
+        'HOST': 'db',  # For docker
     }
 }
 
