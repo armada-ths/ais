@@ -584,10 +584,11 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
 def get_contact_cards():
     contact_cards = []
+    year = datetime.datetime.today().year
     roles = ['Project Manager', 'Head of Sales', 'Head of Business Relations and Events',
              'Head of Service and Sponsorship']
     for role in roles:
-        for applicant in RecruitmentApplication.objects.filter(status='accepted', delegated_role__name=role).all():
+        for applicant in RecruitmentApplication.objects.filter(status='accepted', delegated_role__name=role, recruitment_period__fair__year=year).all():
             contact_card = create_contact_card(applicant)
             contact_cards.append(contact_card)
 
