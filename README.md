@@ -6,7 +6,7 @@ Contribution Guides
 - Please try to write clean, readable code
 - Please try to write tests for your code
 - Please try to write meaningful commit messages, PR descriptions etc.
-- Please try to help resolve any open PRs / issues
+- Please try to help resolve any open PRs / issues 
 
 Above all, be respectful towards others :)
 
@@ -28,7 +28,7 @@ If you don't want to use Vagrant, instructions for getting started with [OSX](do
 
 Scripts
 ----------------------------
-A number of scripts are available in the scripts folder. Others can be run with ```manage.py [scriptname]```. Run ```manage.py help``` to list what scripts are available through manage.py
+A number of scripts are available in the scripts folder. Others can be run with ```manage.py [scriptname]```. Run ```manage.py help``` to list what scripts are available through manage.py 
 
 License Information
 -------------------

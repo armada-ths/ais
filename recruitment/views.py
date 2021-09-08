@@ -791,9 +791,8 @@ def recruitment_application_new(request, year, recruitment_period_pk, pk=None,
 
 
 def send_confirmation_email(user, recruitment_period):
-	hr_contact_name = 'Arvid Nilsson'
-	hr_contact_role = 'Head of Human Resources'
-	hr_contact_email = 'arvid.nilsson@armada.nu'
+
+	hr_profile = get_recruiter_information()
 	url_to_application = 'https://ais.armada.nu/fairs/%s/recruitment/%s' % (str(recruitment_period.fair.year), str(recruitment_period.pk))
 
 	html_message = '''
@@ -815,10 +814,10 @@ def send_confirmation_email(user, recruitment_period):
 		''' % 	(
 				str(recruitment_period.fair),
 				url_to_application,
-				hr_contact_name,
-				hr_contact_role,
-				hr_contact_email,
-				hr_contact_email,
+				hr_profile.get('name'),
+				hr_profile.get('role'),
+				hr_profile.get('email'),
+				hr_profile.get('email'),
 				)
 
 	plain_text_message = '''We have received your application for %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
@@ -827,9 +826,9 @@ If you have any questions, do not hesitate to contact %s, %s, at %s.
 ''' % 	(
 		str(recruitment_period.fair),
 		url_to_application,
-		hr_contact_name,
-		hr_contact_role,
-		hr_contact_email,
+		hr_profile.get('name'),
+		hr_profile.get('role'),
+		hr_profile.get('email'),
 		)
 
 	email = EmailMultiAlternatives(
@@ -841,6 +840,30 @@ If you have any questions, do not hesitate to contact %s, %s, at %s.
 
 	email.attach_alternative(html_message, 'text/html')
 	email.send()
+
+
+def get_recruiter_information():
+	roles = ['Head of Human Resources', 'Project Manager']
+	for role in roles:
+		for applicant in RecruitmentApplication.objects.filter(status='accepted', delegated_role__name=role).all():
+			hr_profile = create_profile(applicant)
+			if hr_profile is not None:
+				return hr_profile
+
+	return {
+		'name': 'Armada',
+		'role': 'support',
+		'email':'recruitment@armada.nu',
+	}
+
+
+def create_profile(applicant):
+	profile = Profile.objects.filter(user=applicant.user).first()
+	return {
+		'name': profile if profile else None,
+        'role': applicant.delegated_role.name if applicant else None,
+		'email': 'recruitment@armada.nu',
+	}
 
 
 def set_foreign_key_from_request(request, model, model_field, foreign_key_model):
