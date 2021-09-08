@@ -559,7 +559,7 @@ def form_complete(request, company, company_contact, fair, exhibitor):
             form_catalogue_details.fields[field].disabled = True
 
     contact_cards = get_contact_cards()
-    print(contact_cards)
+
     return render(
         request, 'register/inside/registration_complete.html', {
             'fair': fair,
