@@ -18,7 +18,8 @@ silent sudo apt-get update
 echo "Installing dependencies..."
 cd /vagrant
 silent sudo apt-get install -y libpq-dev python3-pip postgresql postgresql-contrib nodejs npm binutils libproj-dev gdal-bin postgresql-10-postgis-2.4
-silent sudo pip3 install virtualenv
+silent sudo -H pip3 install virtualenv
+export VIRTUALENV_ALWAYS_COPY=1
 silent virtualenv ais_venv
 silent source ais_venv/bin/activate
 silent pip3 install -r requirements.txt
@@ -44,7 +45,8 @@ echo "Configuring..."
 #silent python manage.py migrate --settings local_settings
 #silent python manage.py makemigrations --settings local_settings
 #silent python manage.py migrate --settings local_settings
-silent npm install
+curl -L https://www.npmjs.com/install.sh | sudo sh
+npm install --no-bin-links
 
 echo "Sprinkling magic..."
 echo "cd /vagrant" >> ~/.bashrc
