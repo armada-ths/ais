@@ -115,8 +115,8 @@ class TableMatching(models.Model):
     catalogue_locations = models.ManyToManyField('exhibitors.CatalogueLocation', blank = True)
     '''
     matching_interests = models.ManyToManyField(MatchingInterest, blank = True)
-    matching_program = models.ForeignKey(MatchingProgram, blank = True, null = True)
-    matching_year = models.ForeignKey(MatchingYear, null = True)
+    matching_program = models.ForeignKey(MatchingProgram, blank = True, null = True, on_delete=models.SET_NULL)
+    matching_year = models.ForeignKey(MatchingYear, null = True, on_delete=models.SET_NULL)
     participant = models.ForeignKey(Participant, blank=True, null=True,
                                     on_delete=models.CASCADE)  # filled in when the participant has been created from this invitation
 
@@ -181,7 +181,7 @@ class Invitation(models.Model):
 
 class AfterPartyInvitation(models.Model):
     banquet = models.ForeignKey(Banquet, on_delete=models.CASCADE)
-    inviter = models.ForeignKey(User) # ON_DELETE?
+    inviter = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length = 75, verbose_name='Full name')
     email_address = models.EmailField(max_length=75, verbose_name='E-mail address')
     used = models.BooleanField(default=False)
