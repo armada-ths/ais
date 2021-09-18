@@ -25,7 +25,8 @@ def login_redirect(request):
     if next and next[-1] == '/':
         next = next[:-1]
 
-    if request.user.is_authenticated():
+    print(request.user)
+    if request.user.is_authenticated:
         contact = CompanyContact.objects.filter(user=request.user).first()
         year = timezone.now().year
 
@@ -42,7 +43,7 @@ def index(request, year=None):
     if fair is None:
         fair = get_object_or_404(Fair, year=year)
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render(request, 'login.html', {
             'next': next,
             'fair': fair

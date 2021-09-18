@@ -12,7 +12,7 @@ def external_create_account(request, template_name='accounts/create_external_use
     """
     Sign up for external people meaning those who are not in Armada and not from KTH.
     """
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         # TODO: this line needs to be changed for next years banquet signup.
         # Now it redirects to placement
         return HttpResponseRedirect(reverse('banquet/placement', kwargs={'year': 2019}))
