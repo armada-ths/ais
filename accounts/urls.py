@@ -4,7 +4,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import  static
 
-from django.contrib.auth.views import login, logout
+from django.contrib.auth.views import LoginView, LogoutView
 
 app_name = 'accounts'
 
@@ -12,13 +12,13 @@ urlpatterns = [
     #url(r'^login/$', views.login, name='login'),
     url(
         r'^login/$',
-        login,
+        LoginView.as_view(),
         name='login',
         kwargs={'template_name': 'accounts/login.html'}
     ),
     url(
         r'^logout/$',
-        logout,
+        LogoutView.as_view(),
         name='logout',
         kwargs={'next_page': '/'}
     ),
