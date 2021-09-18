@@ -1,11 +1,20 @@
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.utils.http import urlquote
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import datetime, re
 
 
 class LoginRequiredMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+    
+
     """
     Middleware that requires a user to be authenticated to view any page other
     than LOGIN_URL. Exemptions to this requirement can optionally be specified
