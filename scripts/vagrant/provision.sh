@@ -37,25 +37,16 @@ silent sudo service postgresql reload
 echo "CREATE USER ais_dev PASSWORD 'ais_dev';" | silent sudo -u postgres psql
 # Allow ais_dev to create databases in order to create test databases
 echo "ALTER USER ais_dev CREATEDB;" | silent sudo -u postgres psql
-silent sudo -u postgres createdb ais_dev
+#silent sudo -u postgres createdb ais_dev
 echo "GRANT ALL PRIVILEGES ON DATABASE ais_dev TO ais_dev;" | silent sudo -u postgres psql
 echo "ALTER USER ais_dev WITH SUPERUSER;"| silent sudo -u postgres psql
-
-# @hotfix: Added this line below
-silent sudo psql -U postgres < scripts/vagrant/ais-developer-database.sql
 
 echo "Configuring..."
 #silent python manage.py migrate --settings local_settings
 #silent python manage.py makemigrations --settings local_settings
 #silent python manage.py migrate --settings local_settings
-
-# @hotfix: Added these lines below. https://github.com/npm/cli/issues/681
-echo "Configuring npm install..."
-silent curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-silent sudo apt -y install gcc g++ make nodejs npm
-# @hotfix: Change user to current user.
-silent sudo chown -R $(whoami) /usr/bin/npm # ~/.npm
-silent sudo npm -g install
+curl -L https://www.npmjs.com/install.sh | sudo sh
+npm install --no-bin-links
 
 echo "Sprinkling magic..."
 echo "cd /vagrant" >> ~/.bashrc
@@ -64,4 +55,3 @@ echo "source ais_venv/bin/activate" >> ~/.bashrc
 
 echo "All done, good job everybody!"
 rm -f $logfile
-
