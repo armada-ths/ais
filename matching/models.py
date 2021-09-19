@@ -33,7 +33,7 @@ CHOICES = (
 class Category(models.Model):
 
     name = models.CharField(max_length=400)
-    survey = models.ForeignKey(Survey, related_name="categories")
+    survey = models.ForeignKey(Survey, related_name="categories", on_delete=models.CASCADE)
     order = models.IntegerField(blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
 

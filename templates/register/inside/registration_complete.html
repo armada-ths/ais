@@ -11,10 +11,10 @@
 
 	{% if contract %}
 
-		<p>Please make sure that the mandatory information is provided and that you have signed the contract before the last date of the registration.</p>
+		<p>Please make sure that the mandatory information is provided and that you have made an order before the last date of the registration.</p>
 		<p>You can save your progress for each section and return later if you are unable to enter all information at once. <span style="font-weight: 700;">Please note that you must save each section individually before continuing with the next one,</span> otherwise your unsaved changes will be lost.</p>
-		<p><span style="font-weight: 700;">Your registration is completed when you have pushed the "Sign the contract" button at the bottom of this page.</span> When you have signed the contract, you will receive a confirmation email with the contract.</p>
-		<p>All fields and products are editable until the last date of the registration, also after the contract has been signed. You can view your total to pay at the bottom of this page.</p>
+		<p><span style="font-weight: 700;">Your registration is completed when you have pushed the "Order" button at the bottom of this page.</span> When you have made the order, you will receive a confirmation email and we will then contact you for the contract signing.</p>
+		<p>All fields and products are editable until the last date of the registration, also after the order has been made. You can view your total to pay at the bottom of this page. If you have any questions about the order or want to add a product after the registration is closed, please contact Sales or your representative.</p>
 
 		<p>Please note that <span style="font-weight: 700;">the complete registration is binding</span> and that you will be liable for all additional services selected at the last date of the registration, provided that THS Armada is able to supply your organization with your choices.</p>
 
@@ -202,21 +202,21 @@
 			<h4 style="text-align: right;">Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total | intcomma }}</span></h4>
 
 			<div class="expandable_content">
-				<h3>Contract</h3>
+				<h3>Order</h3>
 
 				{% if signature %}
-					<p>The contract has been signed.</p>
+					<p>An order has been made.</p>
 
-					<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+					{% comment %} <p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p> {% endcomment %}
 
-					<p><span style="font-weight: 700;">Signed by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
+					<p><span style="font-weight: 700;">Ordered by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
 					<span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
 				{% else %}
-					<p>Make sure that the information provided above is correct and that all sections have been saved. In addition, please open and read the contract below before signing the contract.</p>
-					<p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+					<p>Make sure that the information provided above is correct and that all sections have been saved.</p>
+					{% comment %} <p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p> {% endcomment %}
 
 					{% if errors %}
-						<p style="font-weight: 700;">In order to sign the contract and complete your registration, the following data needs to be provided:</p>
+						<p style="font-weight: 700;">In order to make the order and complete your registration, the following data needs to be provided:</p>
 						<ul>
 							{% for error in errors %}
 								<li>{{ error }}</li>
@@ -224,17 +224,25 @@
 						</ul>
 					{% endif %}
 
-					{% if company_contact %}
+					{% comment %} {% if company_contact %}
 						<form method="post" enctype="multipart/form-data">
 							{% csrf_token %}
 
 							{{ form_final_submission | crispy }}
 
-							<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Sign the contract"{% if errors %} disabled {% endif %} />
+							<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Order"{% if errors %} disabled {% endif %} />
 						</form>
 					{% else %}
-						<p style="font-style: italic;">Since you are logged in as an Armada representative, you cannot sign the contract.</p>
-					{% endif %}
+						<p style="font-style: italic;">Since you are logged in as an Armada representative, you cannot make an order.</p>
+					{% endif %} {% endcomment %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        {{ form_final_submission | crispy }}
+
+                        <input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Order"{% if errors %} disabled {% endif %} />
+                    </form>
 				{% endif %}
 			</div>
 		</div>
@@ -244,43 +252,24 @@
 		<p> We are working on constructing this years complete registration contract and it will soon be available. </p>
 	{% endif %}
 
-<div id="contact_cards">
-
-		<div class="contact_card">
-			<span style="font-weight: 700;">Josefine Havdelin</span><br />
-			Project manager<br />
-			<a href="mailto:a@armada.nu">a@armada.nu</a><br />
-			<a href="tel:+46707909844">+4670-790 98 44</a>
-		</div>
-
-		<div class="contact_card">
-			<span style="font-weight: 700;">Anna Moustakas</span><br />
-			Head of Business Relations and Events<br />
-			<a href="mailto:anna.moustakas@armada.nu">anna.moustakas@armada.nu</a><br />
-			<a href="tel:+46730499226">+4673-049 92 26</a>
-		</div>
-
-        <div class="contact_card">
-			<span style="font-weight: 700;">Katrina Liang</span><br />
-			Head of Sales<br />
-			<a href="mailto:katrina.liang@armada.nu">katrina.liang@armada.nu</a><br />
-			<a href="tel:+46728589780">+4672-858 97 80</a>
-		</div>
-
-        <div class="contact_card">
-			<span style="font-weight: 700;">Leonard Hökby</span><br />
-			Head of Sales<br />
-			<a href="mailto:leonard.hokby@armada.nu">leonard.hokby@armada.nu</a><br />
-			<a href="tel:+46703908581">+4670-390 85 81</a>
-		</div>
-
-        <div class="contact_card">
-			<span style="font-weight: 700;">Erik Rompotti</span><br />
-			Head of Sales<br />
-			<a href="mailto:erik.rompotti@armada.nu">erik.rompotti@armada.nu</a><br />
-			<a href="tel:+46738464704">+4673-846 47 04</a>
-		</div>
-	</div>
+    <div id="contact_cards">
+        {% if contacts %}
+            {% for contact in contacts %}
+                <div class="contact_card">
+                    <span style="font-weight: 700;">{{ contact.name }}</span><br/>
+                    <span >{{ contact.role }}</span><br/>
+                        <span ><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></span><br />
+                        <span ><a href="tel:{{ contact.phone_number }}">{{ contact.phone_number }}</a></span><br />
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="contact_card">
+                <span style="font-weight: 700;">THS Armada</span><br/>
+                <span >Support</span><br/>
+                <span ><a href="mailto:support@armada.nu">support@armada.nu</a></span><br />
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block scripts %}

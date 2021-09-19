@@ -110,7 +110,8 @@ class Exhibitor(models.Model):
     electricity_equipment = models.TextField(blank = True, null = True, verbose_name = 'Description of equipment')
     check_in_timestamp = models.DateTimeField(blank = True, null = True)
     check_in_comment = models.TextField(blank = True, null = True)
-    check_in_user = models.ForeignKey(User, blank = True, null = True, related_name = 'check_in_user')
+    check_in_user = models.ForeignKey(User, blank = True, null = True, related_name = 'check_in_user',
+            on_delete=models.SET_NULL)
     catalogue_about = models.TextField(blank = True, null = True, max_length = 600)
     catalogue_purpose = models.TextField(blank = True, null = True, max_length = 600)
     catalogue_logo_squared = models.ImageField(upload_to = UploadToDirUUID('exhibitors', 'catalogue_logo_squared'), blank = True)
@@ -127,7 +128,7 @@ class Exhibitor(models.Model):
     catalogue_cities = models.TextField(blank = True, null = True, max_length = 400)
     catalogue_average_age = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Average age of employees')
     catalogue_founded = models.PositiveIntegerField(blank = True, null = True)
-    fair_location = models.ForeignKey(Location, blank = True, null = True)
+    fair_location = models.ForeignKey(Location, blank = True, null = True, on_delete=models.SET_NULL)
     vyer_position = models.CharField(blank = True, null = True, max_length = 255)
     flyer = models.FileField(upload_to = 'exhibitors/flyers/%Y%m%d/', default= None, blank = True, null = True)
 

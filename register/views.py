@@ -21,7 +21,8 @@ from accounting.models import Product, Order, RegistrationSection
 from banquet.models import Participant as BanquetParticipant
 from banquet.models import Banquet
 from django.contrib.auth.models import User
-
+from people.models import Profile
+from recruitment.models import RecruitmentApplication
 from .models import SignupContract, SignupLog
 from .forms import InitialInterestsRegistrationForm, InitialCommentForm, InitialRegistrationForm, CompleteCompanyDetailsForm, CompleteLogisticsDetailsFormWithCheckbox, CompleteCatalogueDetailsForm, NewCompanyForm, CompleteProductQuantityForm, CompleteProductBooleanForm, CompleteFinalSubmissionForm, RegistrationForm, ChangePasswordForm, TransportForm, LunchTicketForm, BanquetParticipantForm
 
@@ -116,7 +117,7 @@ Please note that this is an automatically generated email. If you have any quest
 
 
 def choose_company(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         fair = Fair.objects.filter(current=True).first()
         initial_not_open = timezone.now() < fair.registration_start_date
 
@@ -141,7 +142,7 @@ def choose_company(request):
 # This function serves the correct template according to the current time of the Armada year and status of the company or user
 # It either calls form_initial, form_complete or it renders a "betweeen" template
 def form(request, company_pk):
-    if not request.user.is_authenticated(): return redirect('anmalan:logout')
+    if not request.user.is_authenticated: return redirect('anmalan:logout')
 
     company = get_object_or_404(Company, pk=company_pk)
     fair = Fair.objects.filter(current=True).first()
@@ -175,6 +176,7 @@ def form(request, company_pk):
     signature = SignupLog.objects.filter(company=company,
                                          contract__fair=fair,
                                          contract__type='INITIAL')
+    contact_cards = get_contact_cards()
     if exhibitor is None:
         if len(signature) == 0:
             return render(
@@ -183,6 +185,7 @@ def form(request, company_pk):
                     'fair': fair,
                     'company': company,
                     'company_contact': company_contact,
+                    'contacts':contact_cards,
                 })
         else:
             # ...or perhaps they weren't selected to participate in this year's fair?
@@ -192,6 +195,7 @@ def form(request, company_pk):
                     'fair': fair,
                     'company': company,
                     'company_contact': company_contact,
+                    'contacts':contact_cards,
                 })
 
     return form_complete(request, company, company_contact, fair, exhibitor)
@@ -289,6 +293,7 @@ def form_initial(request, company, company_contact, fair):
         for field in form_company_contact.fields:
             form_company_contact.fields[field].disabled = True
 
+    contact_cards = get_contact_cards()
     return render(
         request, 'register/inside/registration_initial.html', {
             'fair': fair,
@@ -304,6 +309,7 @@ def form_initial(request, company, company_contact, fair):
             'form_initial_comment': form_initial_comment,
             'is_editable': is_editable,
             'is_authorized': is_authorized,
+            'contacts':contact_cards,
         })
 
 
@@ -552,6 +558,8 @@ def form_complete(request, company, company_contact, fair, exhibitor):
         for field in form_catalogue_details.fields:
             form_catalogue_details.fields[field].disabled = True
 
+    contact_cards = get_contact_cards()
+
     return render(
         request, 'register/inside/registration_complete.html', {
             'fair': fair,
@@ -571,7 +579,36 @@ def form_complete(request, company, company_contact, fair, exhibitor):
             'deadline': deadline,
             'is_editable': is_editable,
             'after_deadline': timezone.now() > deadline,
+            'contacts':contact_cards,
         })
+
+def get_contact_cards():
+    contact_cards = []
+    year = datetime.datetime.today().year
+    roles = ['Project Manager', 'Head of Sales', 'Head of Business Relations and Events',
+             'Head of Service and Sponsorship']
+    for role in roles:
+        for applicant in RecruitmentApplication.objects.filter(status='accepted', delegated_role__name=role, recruitment_period__fair__year=year).all():
+            contact_card = create_contact_card(applicant)
+            contact_cards.append(contact_card)
+
+    return contact_cards
+
+
+def create_contact_card(applicant):
+    delegated_role = applicant.delegated_role if applicant else None
+    profile = Profile.objects.filter(user=applicant.user).first()
+    contact_card = to_dict_contact_card(delegated_role, profile)
+    return contact_card
+
+
+def to_dict_contact_card(delegated_role, profile):
+    return {
+        'name': profile if profile else None,
+        'role': delegated_role.name if delegated_role.name else None,
+        'phone_number': profile.phone_number if profile.phone_number else None,
+        'email': profile.user.email if profile.user.email else None,
+    }
 
 
 def create_user(request, template_name='register/outside/create_user.html'):
@@ -646,7 +683,7 @@ def change_password(request, template_name='register/change_password.html'):
 UNCOMMENT THIS PART FOR A PHYSICAL FAIR
 
 def transport(request, company_pk):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -720,7 +757,7 @@ def get_ticket_deadline(fair):
 """
 UNCOMMENT THIS PART FOR A PHYSICAL FAIR
 def lunchtickets(request, company_pk):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -769,7 +806,7 @@ def lunchtickets(request, company_pk):
 
 
 def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -830,7 +867,7 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 
 
 def banquet(request, company_pk):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -879,7 +916,7 @@ def banquet(request, company_pk):
 
 
 def banquet_form(request, company_pk, banquet_participant_pk = None):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -954,7 +991,7 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 
 # Has not been used in 2019 or the years before. Would be nice to implement an events tab where companies can add participants to events (mainly for Armada Run though).
 def events(request, company_pk):
-    if not request.user.is_authenticated(): return redirect('anmalan:logout')
+    if not request.user.is_authenticated: return redirect('anmalan:logout')
 
     company = get_object_or_404(Company, pk=company_pk)
     fair = Fair.objects.filter(current=True).first()

@@ -20,7 +20,7 @@ class Group(models.Model):
 	description = models.TextField(blank = True)
 	fair = models.ForeignKey(Fair, null = False, blank = False, on_delete = models.CASCADE)
 	parent = models.ForeignKey("Group", null = True, blank = True, on_delete = models.CASCADE)
-	contract = models.ForeignKey(SignupContract, null = True, blank = True)
+	contract = models.ForeignKey(SignupContract, null = True, blank = True, on_delete=models.SET_NULL)
 
 	colors = [
 		("BLUE", "Blue"),
@@ -189,7 +189,7 @@ class CompanyAddress(models.Model):
 class CompanyCustomer(models.Model):
 	company = models.ForeignKey(Company, null = False, blank = False, on_delete = models.CASCADE)
 	fair = models.ForeignKey("fair.Fair", null = False, blank = False, on_delete = models.CASCADE, db_index = True)
-	status = models.ForeignKey(Group, null = True, blank = True, related_name = "status")
+	status = models.ForeignKey(Group, null = True, blank = True, related_name = "status", on_delete=models.SET_NULL)
 	groups = models.ManyToManyField(Group)
 
 	@property
@@ -254,8 +254,8 @@ class CompanyCustomerResponsible(models.Model):
 
 # A "Contact" is a person working for a "Company"
 class CompanyContact(models.Model):
-	user = models.ForeignKey(User, null = True, blank = True, db_index = True)
-	company = models.ForeignKey(Company, null = False, blank = False)
+	user = models.ForeignKey(User, null = True, blank = True, db_index = True, on_delete=models.SET_NULL)
+	company = models.ForeignKey(Company, null = False, blank = False, on_delete=models.CASCADE)
 	first_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "First name")
 	last_name = models.CharField(max_length = 200, null = True, blank = False, verbose_name = "Last name")
 	email_address = models.EmailField(max_length = 200, null = False, blank = False, verbose_name = "E-mail address")
