@@ -12,15 +12,13 @@ urlpatterns = [
     #url(r'^login/$', views.login, name='login'),
     url(
         r'^login/$',
-        LoginView.as_view(),
-        name='login',
-        kwargs={'template_name': 'accounts/login.html'}
+        LoginView.as_view(template_name='accounts/login.html'),
+        name='login'
     ),
     url(
         r'^logout/$',
         LogoutView.as_view(),
-        name='logout',
-        kwargs={'next_page': '/'}
+        name='logout'
     ),
     #url(r'^logout$', views.logout, name='logout'),
 
