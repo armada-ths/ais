@@ -21,6 +21,7 @@ const config = {
 
   plugins: [
     new BundleTracker({
+      path: path.resolve(__dirname, '../../'),
       filename: './webpack-stats.js'
     }),
     new CleanWebpackPlugin([path.resolve('./ais_static/bundles/')], {
