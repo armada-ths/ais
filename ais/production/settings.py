@@ -20,7 +20,7 @@ DEBUG = False
 ROOT_URLCONF = 'ais.production.urls'
 
 # Use KTH OpenID Connect for authentication
-INSTALLED_APPS += ('kth_login','raven.contrib.django.raven_compat',)
+INSTALLED_APPS += ('kth_login','raven.contrib.django.raven_compat')
 
 # Use a full-fledged database instead of SQLite.
 DATABASES = {
@@ -103,4 +103,12 @@ AUTHLIB_OAUTH_CLIENTS = {
         'client_secret': CLIENT_SECRET,
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
+}
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
 }

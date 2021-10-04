@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^', include('fair.urls_external')),
     url(r'^testpage/', include('testpage.urls')),
     url(r'^payments/', include('payments.urls')),
+    url(r'^crm/', include('crm.urls'))
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
