@@ -117,7 +117,7 @@ Please note that this is an automatically generated email. If you have any quest
 
 
 def choose_company(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         fair = Fair.objects.filter(current=True).first()
         initial_not_open = timezone.now() < fair.registration_start_date
 
@@ -142,7 +142,7 @@ def choose_company(request):
 # This function serves the correct template according to the current time of the Armada year and status of the company or user
 # It either calls form_initial, form_complete or it renders a "betweeen" template
 def form(request, company_pk):
-    if not request.user.is_authenticated(): return redirect('anmalan:logout')
+    if not request.user.is_authenticated: return redirect('anmalan:logout')
 
     company = get_object_or_404(Company, pk=company_pk)
     fair = Fair.objects.filter(current=True).first()
@@ -683,7 +683,7 @@ def change_password(request, template_name='register/change_password.html'):
 UNCOMMENT THIS PART FOR A PHYSICAL FAIR
 
 def transport(request, company_pk):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -757,7 +757,7 @@ def get_ticket_deadline(fair):
 """
 UNCOMMENT THIS PART FOR A PHYSICAL FAIR
 def lunchtickets(request, company_pk):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -806,7 +806,7 @@ def lunchtickets(request, company_pk):
 
 
 def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -867,7 +867,7 @@ def lunchtickets_form(request, company_pk, lunch_ticket_pk = None):
 
 
 def banquet(request, company_pk):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -916,7 +916,7 @@ def banquet(request, company_pk):
 
 
 def banquet_form(request, company_pk, banquet_participant_pk = None):
-	if not request.user.is_authenticated(): return redirect('anmalan:logout')
+	if not request.user.is_authenticated: return redirect('anmalan:logout')
 
 	company = get_object_or_404(Company, pk = company_pk)
 	fair = Fair.objects.filter(current = True).first()
@@ -991,7 +991,7 @@ def banquet_form(request, company_pk, banquet_participant_pk = None):
 
 # Has not been used in 2019 or the years before. Would be nice to implement an events tab where companies can add participants to events (mainly for Armada Run though).
 def events(request, company_pk):
-    if not request.user.is_authenticated(): return redirect('anmalan:logout')
+    if not request.user.is_authenticated: return redirect('anmalan:logout')
 
     company = get_object_or_404(Company, pk=company_pk)
     fair = Fair.objects.filter(current=True).first()

@@ -166,7 +166,7 @@ class SignupQuestion(models.Model):
     type = models.CharField(blank=False, null=False, choices=QUESTION_TYPES, max_length=20)
     question = models.TextField(blank=False, null=False)
     required = models.BooleanField(blank=False, null=False)
-    options = ArrayField(models.TextField(blank=False, null=False), default=[])
+    options = ArrayField(models.TextField(blank=False, null=False), default=list)
 
 
 class SignupQuestionAnswer(models.Model):
