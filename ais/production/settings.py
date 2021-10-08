@@ -104,3 +104,4 @@ AUTHLIB_OAUTH_CLIENTS = {
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
 }
+LOGOUT_REDIRECT_URL = '/'
