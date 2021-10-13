@@ -67,7 +67,7 @@ class Product(models.Model):
 
 class ExportBatch(models.Model):
 	timestamp = models.DateTimeField(blank = False, null = False, auto_now_add = True)
-	user = models.ForeignKey(User, blank = False, null = False)
+	user = models.ForeignKey(User, blank = False, null = False, on_delete=models.CASCADE)
 
 	class Meta:
 		ordering = ['timestamp']
@@ -82,7 +82,7 @@ class Order(models.Model):
 	quantity = models.PositiveIntegerField(blank = False)
 	unit_price = models.IntegerField(blank = True, null = True)
 	comment = models.TextField(blank = True)
-	export_batch = models.ForeignKey(ExportBatch, blank = True, null = True)
+	export_batch = models.ForeignKey(ExportBatch, blank = True, null = True, on_delete=models.SET_NULL)
 
 	class Meta:
 		verbose_name_plural = 'Orders'

@@ -42,7 +42,7 @@ class Fair(models.Model):
 
     current = models.BooleanField(default=False)
 
-    product_lunch_ticket = models.ForeignKey('accounting.Product', blank=True, null=True)
+    product_lunch_ticket = models.ForeignKey('accounting.Product', blank=True, null=True, on_delete=models.SET_NULL)
 
     companies_ticket_deadline = models.DateTimeField(null=True, blank=True)
     companies_ticket_deadline.help_text = 'After this date the companies will no longer be able to create or edit their lunch or banquet tickets on their registration page.'
