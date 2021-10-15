@@ -39,9 +39,10 @@ def login_redirect(request):
 
 
 def index(request, year=None):
-    fair = Fair.objects.filter(current=True).first()
+    fair = Fair.objects.filter(year=year).first()
     if fair is None:
-        fair = get_object_or_404(Fair, year=year)
+        fair = Fair.objects.filter(current=True).first()
+        return redirect('fair:home', fair.year)
 
     if not request.user.is_authenticated:
         return render(request, 'login.html', {
