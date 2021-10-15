@@ -1,7 +1,10 @@
+from re import template
 from django.conf.urls import url
 from django.contrib.auth.views import (
         LoginView, LogoutView, PasswordResetView, 
-        PasswordResetDoneView,PasswordResetConfirmView)
+        PasswordResetDoneView,PasswordResetConfirmView,
+		PasswordResetCompleteView)
+from django.urls import reverse_lazy
 from . import views
 from .forms import LoginForm, ResetPasswordForm, SetNewPasswordForm
 
@@ -29,10 +32,13 @@ urlpatterns = [
 	url(r'^password_reset/$', PasswordResetView.as_view(
 		template_name='register/outside/reset_password.html',
 		form_class=ResetPasswordForm,
+		success_url=reverse_lazy('anmalan:password_reset_done'),
 		email_template_name='register/outside/reset_password_email.html'), name='password_reset'),
 	url(r'^password_reset/done/$', PasswordResetDoneView.as_view(template_name='register/outside/reset_password_done.html'), name='password_reset_done'),
 	url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', PasswordResetConfirmView.as_view(
 		template_name='register/outside/reset_password_confirm.html', 
+		success_url=reverse_lazy('anmalan:password_reset_complete'),
 		form_class=SetNewPasswordForm), name='password_reset_confirm'),
+	url(r'^reset/done/$', PasswordResetCompleteView.as_view(template_name='register/outside/reset_password_complete.html'), name='password_reset_complete'),
 
 ]
