@@ -14,6 +14,8 @@ import {Elements, StripeProvider} from 'react-stripe-elements';
 import Question from "./Question";
 import Stripe from "./Stripe";
 
+import "../../../../../static/events.css"
+
 class SignupForm extends Component {
   constructor(props) {
     super(props);
@@ -106,6 +108,10 @@ class SignupForm extends Component {
 
     return (
         <Grid container spacing={16}>
+          {/* TODO Image have no restriction */}
+        <div className='image-section' >
+          <img alt='' src={event.image_url}/>
+        </div>
           <Grid item>
 						<Grid container spacing={16}>
 							{event.signup_questions.map(question => <Question
