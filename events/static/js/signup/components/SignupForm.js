@@ -14,8 +14,6 @@ import {Elements, StripeProvider} from 'react-stripe-elements';
 import Question from "./Question";
 import Stripe from "./Stripe";
 
-import "../../../../../static/events.css"
-
 class SignupForm extends Component {
   constructor(props) {
     super(props);
