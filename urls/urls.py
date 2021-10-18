@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 
-urlpatterns = [
+ais_patterns = [
     url(r'^', include('fair.urls')),
     url(r'^events/', include('events.urls')),
     url(r'^people/', include('people.urls')),
@@ -12,4 +12,9 @@ urlpatterns = [
     url(r'^accounting/', include('accounting.urls')),
     url(r'^banquet/', include('banquet.urls')),
     url(r'^unirel/', include('unirel.urls'))
+]
+
+urlpatterns = [
+    url(r'(?P<year>\d+)/', include(ais_patterns)),
+    url(r'$', include('fair.urls')),
 ]

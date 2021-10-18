@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^api/', include('api.urls')),
     url(r'^banquet/', include('banquet.urls')),
     url(r'^$', login_redirect),
-    url(r'^fairs/(?P<year>\d+)/', include('urls.urls')),
+    url(r'^fairs/', include('urls.urls')),
     url(r'^journal/', include('journal.urls')),
     url(r'^banquet/', include('banquet.urls_external')),
     url(r'^unirel/', include('unirel.urls_external')),
