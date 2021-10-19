@@ -53,6 +53,9 @@ echo "cd /vagrant" >> ~/.bashrc
 echo "export DJANGO_SETTINGS_MODULE=ais.local.settings" >> ~/.bashrc
 echo "source ais_venv/bin/activate" >> ~/.bashrc
 
+echo "Give group permission to media" | sudo chgrp -R vagrant ~/../../media
+echo "Give rw permission to media" | sudo chmod -R 775 ~/../../media
+
 echo "All done, good job everybody!"
 rm -f $logfile
 
