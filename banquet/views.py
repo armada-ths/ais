@@ -4,7 +4,7 @@ import json
 
 import stripe
 from django.conf import settings
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.db import IntegrityError
@@ -301,7 +301,7 @@ def export_invitations(request, year):
         token = None
     return response
 
-
+@login_required
 def dashboard(request, year):
     fair = get_object_or_404(Fair, year=year)
     current_banquet = Banquet.objects.filter(fair=fair).first() # This might be dangerous, assumes there is only one banquet per fair
