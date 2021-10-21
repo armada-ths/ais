@@ -24,8 +24,8 @@ oauth.register(
 )
 
 def kth_login(request):
-	request.path = '/' # Reset path
-	redirect_uri = request.build_absolute_uri('oidc/kth/callback')
+	next = '/' if not request.GET.__contains__('next') else request.GET['next'] 
+	redirect_uri = request.build_absolute_uri(f'/oidc/kth/callback?next={next}')
 	return oauth.kth.authorize_redirect(request, redirect_uri)
 
 
@@ -37,7 +37,7 @@ def authorize(request):
 
 	callback(request, kth_id)
 
-	return redirect('/')
+	return redirect(request.GET['next'])
 
 
 def callback(request, kth_id):

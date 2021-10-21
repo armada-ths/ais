@@ -30,6 +30,10 @@
             {{ form|crispy }}
             <input type="hidden" name="next" value="/" />
             <button class="btn-signin btn-green">Log in</button>
+            <p>To continue, please click the KTH Single Sign-On button below to sign in with you KTH account.</p>
+            <a href="/login{% if next %}?next={{ next }}{% endif %}">
+              <img src="{% static "images/kth_login_button.png" %}" alt="Login with KTH">
+            </a>
         </form>
       </div>
     </div>
