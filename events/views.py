@@ -58,7 +58,7 @@ def event_new(request, year):
         'question_types': dict(SignupQuestion.QUESTION_TYPES)
     }
 
-    form = EventForm(request.POST or None)
+    form = EventForm(request.POST or None, request.FILES or None)
 
     users = [recruitment_application.user for recruitment_application in
              RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=fair).order_by('user__first_name',
@@ -92,8 +92,9 @@ def event_edit(request, year, pk):
         'questions': [serializers.signup_question(question) for question in signup_questions],
         'question_types': dict(SignupQuestion.QUESTION_TYPES)
     }
-
-    form = EventForm(request.POST or None, instance=event)
+    
+    print(request.FILES)
+    form = EventForm(request.POST or None, request.FILES or None, instance=event)
 
     users = [recruitment_application.user for recruitment_application in
              RecruitmentApplication.objects.filter(status='accepted', recruitment_period__fair=event.fair).order_by('user__first_name',
