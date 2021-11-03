@@ -70,6 +70,28 @@ def profile(request, year, pk):
 		'roles': RecruitmentApplication.objects.filter(user = user, status = 'accepted').order_by('recruitment_period__fair')
 	})
 
+def profile_delete(request, year, pk):
+	fair = get_object_or_404(Fair, year = year)
+	user = get_object_or_404(User, pk = pk)
+
+	profile = Profile.objects.filter(user = user).first()
+	if not profile: profile = Profile.objects.create(user = user, no_dietary_restrictions = False)
+	
+	application = RecruitmentApplication.objects.filter(user = user, status = 'accepted', recruitment_period__fair = fair).first()
+	
+
+	if request.method == 'POST':
+		Profile.objects.filter(user = request.user).delete()
+		user.delete()
+		return redirect('/accounts/logout?next=/register')
+	
+	return TemplateResponse(request, 'people/profile.html', {
+			'fair': fair,
+			'profile': profile,
+			'role': application.delegated_role if application else None,
+			'roles': RecruitmentApplication.objects.filter(user = user, status = 'accepted').order_by('recruitment_period__fair')
+		})
+
 
 def edit(request, year):
 	fair = get_object_or_404(Fair, year = year)
