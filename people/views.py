@@ -70,25 +70,21 @@ def profile(request, year, pk):
 		'roles': RecruitmentApplication.objects.filter(user = user, status = 'accepted').order_by('recruitment_period__fair')
 	})
 
-def profile_delete(request, year, pk):
+def profile_delete(request, year):
 	fair = get_object_or_404(Fair, year = year)
-	user = get_object_or_404(User, pk = pk)
-
-	profile = Profile.objects.filter(user = user).first()
-	if not profile: profile = Profile.objects.create(user = user, no_dietary_restrictions = False)
-	
-	application = RecruitmentApplication.objects.filter(user = user, status = 'accepted', recruitment_period__fair = fair).first()
-	
-
+	user = request.session['user']
+	#user = User.objects.filter(user = request.session['user']).first
+	print(request.session['user'])
 	if request.method == 'POST':
-		Profile.objects.filter(user = request.user).delete()
-		user.delete()
+		temp_user = User.objects.filter(username = user.username).first()
+		Profile.objects.filter(user = temp_user).delete()
+		User.objects.filter(user = user).delete()
 		return redirect('/accounts/logout?next=/register')
 	
+	profile = Profile.objects.filter(user = user).first()
 	return TemplateResponse(request, 'people/profile.html', {
 			'fair': fair,
 			'profile': profile,
-			'role': application.delegated_role if application else None,
 			'roles': RecruitmentApplication.objects.filter(user = user, status = 'accepted').order_by('recruitment_period__fair')
 		})
 

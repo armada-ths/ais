@@ -14,7 +14,7 @@
 	</form>
 
 	<br>
-	<form method="POST" action="{% url 'people:profile_delete' fair.year pk %}">
+	<form method="POST" action="{% url 'people:profile_delete' fair.year %}">
 	{% csrf_token %}
 	<input type="submit" class="btn btn-primary" value="Delete profile" onclick="return confirm('Are you sure that you want to delete your profile? This means that all data will be erased from Armada and cannot be restored. If you want to continue using Armada in the future it means that you will have to create a new profile.')" />
 	</form>
