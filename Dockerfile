@@ -12,13 +12,18 @@ RUN apt-get update -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /ais
-WORKDIR /ais/
+RUN mkdir /vagrant
+WORKDIR /vagrant/
 
 RUN npm install
-COPY requirements.txt /ais/
-RUN pip install -r requirements.txt
 
-COPY . /ais/
+RUN python -m pip install --upgrade pip
+RUN python -m venv ais_venv
+RUN . ais_venv/bin/activate
+
+COPY requirements.txt /vagrant/
+RUN ./ais_venv/bin/pip install -r requirements.txt
+
+COPY . /vagrant/
 
 RUN npm run build
