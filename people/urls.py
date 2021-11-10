@@ -7,5 +7,5 @@ urlpatterns = [
 	url(r'^$', views.list, name = 'list'),
 	url(r'^edit$', views.edit, name = 'edit'),
 	url(r'^(?P<pk>\d+)$', views.profile, name = 'profile'),
-	url(r'^profile_delete$', views.profile_delete, name = 'profile_delete')
+	url(r'^profile_delete/(?P<pk>\d+)$', views.profile_delete, name = 'profile_delete')
 ]
