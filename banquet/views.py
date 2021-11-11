@@ -407,7 +407,7 @@ def dashboard(request, year):
         'after_party_invites': {
             'invites': after_party_invites,
             'form': invite_form,
-            'show': invite_permission and False,
+            'show': invite_permission and invitation_period,
             'show_form': len(after_party_invites) < max_invites, # Can be used in the template to check whether invitation form should be presented
             'left': max_invites - len(after_party_invites)
         }
