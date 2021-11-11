@@ -55,3 +55,4 @@ echo "source ais_venv/bin/activate" >> ~/.bashrc
 
 echo "All done, good job everybody!"
 rm -f $logfile
+
