@@ -77,7 +77,7 @@ def profile_delete(request, year, pk):
 	if request.method == 'POST':
 		Profile.objects.filter(user = request.user).delete()
 		User.objects.filter(pk = pk).delete()
-		return redirect('/accounts/logout?next=/register')
+		return redirect('/accounts/logout?next=/')
 	
 	profile = Profile.objects.filter(user = user).first()
 	
