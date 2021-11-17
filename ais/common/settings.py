@@ -56,7 +56,7 @@ INSTALLED_APPS = (
     'journal',
     'markupfield',
     'testpage',
-    'crm.apps.CrmConfig', 
+    'crm', 
     'rest_framework'
 )
 
