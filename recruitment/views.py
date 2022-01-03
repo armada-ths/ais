@@ -11,7 +11,7 @@ from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.template.defaultfilters import date as date_filter
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -47,7 +47,7 @@ def assign_roles(request, year):
 
 	return redirect('recruitment', year)
 
-
+@login_required
 def recruitment(request, year, template_name='recruitment/recruitment.html'):
 	fair = get_object_or_404(Fair, year=year)
 	# raise Exception('hello')
