@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - 8080:8080
+    env_file:
+      - ./.env.local
+    depends_on:
+      - db
+      - node
+    command: python manage.py runserver 0.0.0.0:8080 --settings=local_settings
+
+  db:
+    image: postgres:9.6-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=ais_dev
+      - POSTGRES_PASSWORD=ais_dev
+      - POSTGRES_DB=ais_dev
+
+volumes:
+  postgres_data:
+   
