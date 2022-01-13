@@ -15,15 +15,14 @@ services:
     command: python manage.py runserver 0.0.0.0:8080 --settings=local_settings
 
   db:
-    # image: postgres:9.6-alpine
-    image: postgis/postgis:latest
+    image: postgis/postgis:10-2.5-alpine
     volumes:
-      # - postgres_data:/var/lib/postgresql/data/
-      - ./ais-developer-database.sql:/docker-entrypoint-initdb.d/init.sql
+      # - postgres_data:/var/lib/postgresql/data/ # Production Development
+      - ./ais-developer-database.sql:/docker-entrypoint-initdb.d/init.sql # Local Development
     environment:
       - POSTGRES_USER=ais_dev
       - POSTGRES_PASSWORD=ais_dev
-        #      - POSTGRES_DB=ais_dev
+      - POSTGRES_DB=ais_dev
 
 volumes:
   postgres_data:
