@@ -10,7 +10,7 @@ then
 
     echo "PostgreSQL started"
 fi
-
+python manage.py runserver 0.0.0.0:3000 --settings=local_settings
 # python manage.py flush --no-input --settings=local_settings
 # python manage.py migrate --settings=local_settings
 
