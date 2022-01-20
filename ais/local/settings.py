@@ -53,7 +53,7 @@ SECRET_KEY = '..............¯\_(ツ)_/¯...............'
 AUTHLIB_OAUTH_CLIENTS = {
     'kth': {
         'client_id': os.environ.get('APPLICATION_ID'),
-        'client_secret': os.environ.get('CLIENT_SECRET'),,
+        'client_secret': os.environ.get('CLIENT_SECRET'),
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
 }
