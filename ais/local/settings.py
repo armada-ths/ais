@@ -6,7 +6,6 @@ and is generally easier to work with.
 
 import os
 from ais.common.settings import *
-from ais.secrets import APPLICATION_ID, CLIENT_SECRET
 
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
@@ -53,8 +52,8 @@ SECRET_KEY = '..............¯\_(ツ)_/¯...............'
 # CLIENT_SECRET is given from the 'secrets.py' file.
 AUTHLIB_OAUTH_CLIENTS = {
     'kth': {
-        'client_id': APPLICATION_ID,
-        'client_secret': CLIENT_SECRET,
+        'client_id': os.environ.get('APPLICATION_ID'),
+        'client_secret': os.environ.get('CLIENT_SECRET'),,
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
 }
