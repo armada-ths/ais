@@ -29,12 +29,12 @@ STRIPE_PUBLISHABLE = 'pk_test_IzgUj9oJhednbt4EIf78esBE'
 # We don't need performance here so use SQLite for ease of setup.
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('SQL_ENGINE', 'django.contrib.gis.db.backends.postgis'),
-        'NAME': os.environ.get('SQL_NAME', 'ais_dev'),
-        'USER': os.environ.get('SQL_USER', 'ais_dev'),
-        'PASSWORD': os.environ.get('SQL_PASSWORD', 'ais_dev'),
-        'HOST': os.environ.get('SQL_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('SQL_PORT', '5432'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.environ.get('DB_NAME', 'ais_dev'),
+        'USER': os.environ.get('DB_USER', 'ais_dev'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'ais_dev'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
