@@ -5,15 +5,14 @@ and also configures AIS to talk to external services.
 """
 
 import os
-from os import environ as env
 from ais.common.settings import *
-from ais.secrets import *
 
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # This is important so other people can't set their own domains
 # to point to AIS (which would be a security concern).
 ALLOWED_HOSTS = ['.armada.nu', 'localhost']
 
-DEBUG = False
+DEBUG = True
 
 # The URL scheme is slightly different in a production environment
 # since we need to accomodate the KTH OpenID Connect integration.
@@ -26,16 +25,17 @@ INSTALLED_APPS += ('kth_login','raven.contrib.django.raven_compat',)
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': DB_NAME,
-            'USER': DB_USERNAME,
-            'PASSWORD': DB_PASSWORD,
-            'HOST': DB_HOST,
+            'NAME': os.environ.get('DB_NAME', 'ais_dev'),
+            'USER': os.environ.get('DB_USERNAME', 'ais_dev'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'ais_dev'),
+            'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
 # SENTRY
 RAVEN_CONFIG = {
-    'dsn': 'https://%s:%s@sentry.io/%s' % (env['SENTRY_USERNAME'], env['SENTRY_PASSWORD'], env['SENTRY_APPID']),
+    'dsn': 'https://%s:%s@sentry.io/%s' % (os.environ.get('SENTRY_USERNAME'), os.environ.get('SENTRY_PASSWORD'), os.environ.get('SENTRY_APPID')),
     'processors': ('raven.processors.Processor',)
 }
 
@@ -99,8 +99,8 @@ ADMINS = MANAGERS = (
 # CLIENT_SECRET is given from the 'secrets.py' file.
 AUTHLIB_OAUTH_CLIENTS = {
     'kth': {
-        'client_id': APPLICATION_ID,
-        'client_secret': CLIENT_SECRET,
+        'client_id': os.environ.get('APPLICATION_ID'),
+        'client_secret': os.environ.get('CLIENT_SECRET'),
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
 }

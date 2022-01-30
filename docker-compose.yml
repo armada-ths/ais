@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.3'
 
 services:
   web:
@@ -8,11 +8,10 @@ services:
     ports:
       - 8080:8080
     env_file:
-      - ./.env.local
+      - .env
     depends_on:
       - db
-      - node
-    command: python manage.py runserver 0.0.0.0:8080 --settings=local_settings
+    command: source ./entrypoint.sh
 
   db:
     image: postgis/postgis:10-2.5-alpine
