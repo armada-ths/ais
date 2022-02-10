@@ -1,5 +1,5 @@
 Authlib==0.15.4
-Django==2.2.24
+Django==2.2.27
 psycopg2
 psycopg2-binary
 setuptools
