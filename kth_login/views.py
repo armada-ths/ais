@@ -26,8 +26,7 @@ oauth.register(
 def kth_login(request):
 	next = '/' if not request.GET.__contains__('next') else request.GET['next'] 
 	redirect_uri = request.build_absolute_uri(f'/oidc/kth/callback?next={next}')
-	redirect_uri_https = redirect_uri.replace('http', 'https', 1)
-	return oauth.kth.authorize_redirect(request, redirect_uri_https)
+	return oauth.kth.authorize_redirect(request, redirect_uri)
 
 
 def authorize(request):
