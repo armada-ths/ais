@@ -10,7 +10,7 @@ from ais.common.settings import *
 SECRET_KEY = os.environ.get('SECRET_KEY')
 # This is important so other people can't set their own domains
 # to point to AIS (which would be a security concern).
-ALLOWED_HOSTS = ['.armada.nu', 'localhost']
+ALLOWED_HOSTS = ['.armada.nu', 'localhost', 'armada.nu']
 
 DEBUG = True
 
