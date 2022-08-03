@@ -45,6 +45,12 @@ echo "Configuring..."
 #silent python manage.py migrate --settings local_settings
 #silent python manage.py makemigrations --settings local_settings
 #silent python manage.py migrate --settings local_settings
+# -------------------------------------------------------------- #
+# FIX: "npm is known not to run on Node.js v8.10.0 ..."
+# Source: https://bit.ly/3OStrjT
+sudo npm install -g n --silent
+sudo n stable
+# -------------------------------------------------------------- #
 curl -L https://www.npmjs.com/install.sh | sudo sh
 npm install --no-bin-links
 
