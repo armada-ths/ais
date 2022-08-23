@@ -177,7 +177,7 @@ class CompleteLogisticsDetailsForm(ModelForm):
             'booth_height':
             '230 cm is included in the Base kit. If you want additional height, remember to add "Additional Booth Height" in the Products section below.',
             'placement_wish':
-            'We will use the industry information you provide in the section "Catalogue and student matching" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
+            'We will use the industry information you provide in the section "Exhibitor catalogue" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
         }
 
     def is_valid(self):
