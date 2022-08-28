@@ -232,18 +232,24 @@ class CompleteCatalogueDetailsForm(ModelForm):
     catalogue_industries = IncludeCategoryChoiceField(
         queryset=CatalogueIndustry.objects.filter(include_in_form=True),
         widget=forms.CheckboxSelectMultiple,
-        label='Which industries does your company work in?',
+        label='Which main fields of studies apply to your company’s business?',
         required=False)
-    catalogue_competences = IncludeCategoryChoiceField(
-        queryset=CatalogueCompetence.objects.filter(include_in_form=True),
-        widget=forms.CheckboxSelectMultiple,
-        label='What competences is your company looking for?',
-        required=False)
-    catalogue_values = forms.ModelMultipleChoiceField(
-        queryset=CatalogueValue.objects.filter(include_in_form=True),
-        widget=forms.CheckboxSelectMultiple,
-        label='Select up to three values that apply to the company.',
-        required=False)
+    # UNCOMMENT THE BELOW ONES IF YOU WANT TO INCLUDE THEM IN THE FINAL REGISTRATION PAGE (COMPLETE REGISTRATION), ALSO REMOVE THE ABOVE ONE TO AVOID DUPLICATE
+    #catalogue_industries = IncludeCategoryChoiceField(
+    #    queryset=CatalogueIndustry.objects.filter(include_in_form=True),
+    #    widget=forms.CheckboxSelectMultiple,
+    #    label='Which industries does your company work in?',
+    #    required=False)
+    #catalogue_competences = IncludeCategoryChoiceField(
+    #    queryset=CatalogueCompetence.objects.filter(include_in_form=True),
+    #    widget=forms.CheckboxSelectMultiple,
+    #    label='What competences is your company looking for?',
+    #    required=False)
+    #catalogue_values = forms.ModelMultipleChoiceField(
+    #    queryset=CatalogueValue.objects.filter(include_in_form=True),
+    #    widget=forms.CheckboxSelectMultiple,
+    #    label='Select up to three values that apply to the company.',
+    #    required=False)
     catalogue_employments = forms.ModelMultipleChoiceField(
         queryset=CatalogueEmployment.objects.filter(include_in_form=True),
         widget=forms.CheckboxSelectMultiple,
