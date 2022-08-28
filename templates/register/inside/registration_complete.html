@@ -7,7 +7,7 @@
 {% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}" class="active">{{ company.name }}</a></li>{% endblock %}
 
 {% block content %}
-	<h1>Complete registration for {{ company.name }}</h1>
+	<h1>Final registration for {{ company.name }}</h1>
 
 	{% if contract %}
 
@@ -16,7 +16,7 @@
 		<p><span style="font-weight: 700;">Your registration is completed when you have pushed the "Order" button at the bottom of this page.</span> When you have made the order, you will receive a confirmation email and we will then contact you for the contract signing.</p>
 		<p>All fields and products are editable until the last date of the registration, also after the order has been made. You can view your total to pay at the bottom of this page. If you have any questions about the order or want to add a product after the registration is closed, please contact Sales or your representative.</p>
 
-		<p>Please note that <span style="font-weight: 700;">the complete registration is binding</span> and that you will be liable for all additional services selected at the last date of the registration, provided that THS Armada is able to supply your organization with your choices.</p>
+		<p>Please note that <span style="font-weight: 700;">the final registration is binding</span> and that you will be liable for all additional services selected at the last date of the registration, provided that THS Armada is able to supply your organization with your choices.</p>
 
 		<h4 style="text-align: center;">Registration {% if after_deadline %}closed{% else %}closes{% endif %}: <span style="font-weight: 700;">{{ deadline|date:"F j, Y" }}</span></h4>
 
