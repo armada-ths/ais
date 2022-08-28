@@ -275,7 +275,6 @@ class CompleteCatalogueDetailsForm(ModelForm):
             'catalogue_logo_freesize', 'catalogue_contact_name',
             'catalogue_contact_email_address',
             'catalogue_contact_phone_number', 'catalogue_industries',
-            'catalogue_competences', 'catalogue_values',
             'catalogue_employments', 'catalogue_locations', 'catalogue_cities'
         ]
 
