@@ -10,7 +10,7 @@ from ais.common.settings import *
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
 
-DEBUG = True
+DEBUG = False
 
 # This lets us access AIS via its IP address (usually 127.0.0.1),
 # which you can't do in production for security reasons.
@@ -34,7 +34,8 @@ DATABASES = {
         'NAME': os.environ.get('DB_NAME', 'ais_dev'),
         'USER': os.environ.get('DB_USER', 'ais_dev'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'ais_dev'),
-        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'HOST': 'db',
+        #'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
@@ -67,3 +68,5 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 AWS_STORAGE_BUCKET_NAME='armada-ais-files'
+
+

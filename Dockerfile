@@ -22,6 +22,7 @@ RUN apk add tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
 RUN pip install --upgrade pip==21.3.1
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
+RUN pip install whitenoise 
 
 # COPY 'entrypoint.sh'
 COPY ./entrypoint.sh .
