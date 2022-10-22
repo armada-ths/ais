@@ -19,7 +19,6 @@ env/
 *.sql
 *.log
 
-
 # JS build artifacts
 node_modules/
 webpack-stats.js
