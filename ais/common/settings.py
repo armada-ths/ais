@@ -10,16 +10,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import os
 from os import path
 
 BASE_DIR = path.join(path.dirname(path.abspath(__file__)), '../../')
-
-# Email settings
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'noreply@armada.nu'
-DEFAULT_TO_EMAIL = 'info@armada.nu'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

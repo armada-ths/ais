@@ -16,7 +16,16 @@ DEBUG = True
 # which you can't do in production for security reasons.
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'noreply@armada.nu'
+DEFAULT_TO_EMAIL = 'info@armada.nu'
+EMAIL_HOST_USER = 'noreply@armada.nu'
+EMAIL_HOST_PASSWORD = os.environ.get('DUMMY', 'dummy')
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ROOT_URLCONF = 'ais.local.urls'
 
