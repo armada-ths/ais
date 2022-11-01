@@ -1002,10 +1002,10 @@ def external_banquet_afterparty(request, token=None):
 
                 send_mail(
                     'Your ticket for the After Party',
-                    'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' +
-                    str(ticket.token) + '\n\nTime and date: ' + str(date) + '\nLocation: ' +
+                    'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada.' + '\n\nTime and date: ' + str(date) + '\nLocation: ' +
                     str(location) + '\nThis ticket Costs: ' +
                     str(amount) + '\nPayments at the door!' +
+                    '\nPlease show this mail at the door!' +
                     '\n\nWelcome!',
                     'noreply@armada.nu',
                     [ticket.email_address],
@@ -1013,6 +1013,8 @@ def external_banquet_afterparty(request, token=None):
                 )
                 ticket.email_sent = True
                 ticket.save()
+                if ticket.email_sent is True:
+                    return redirect('https://armada.nu/')
 
 
     ###########################################Uncomment this block for payment#####################################################
@@ -1082,6 +1084,7 @@ def external_banquet_afterparty(request, token=None):
         'has_paid': has_paid,
         'purchase_open': timezone.now() <= purchase_deadline
     })
+    
 
 
 @permission_required('banquet.base')
