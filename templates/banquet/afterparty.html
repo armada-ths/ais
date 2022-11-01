@@ -32,9 +32,10 @@
 						<p>
 							<span style="font-weight: bold;">By buying a ticket you agree to THS Armada's </span><a href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing" target="_blank">Privacy Notice.</a><br/>
 						</p><br />
-						<button type="submit" class="btn btn-lg btn-success center-block">Continue</button>
+						<button onclick="alertFunction()" type="submit" class="btn btn-lg btn-success center-block">Submit</button>
 					</form>
 				{% endif %}
+			
 
 			{% elif ticket is None  %}
 				{% if purchase_open %}
@@ -69,7 +70,12 @@
 				{% else %}
 					<div class = "alert alert-success">We have received your payment of SEK {{ amount }}.</div>{% endif %}
 				{% endif %}
-
+				
+				<script>
+					function alertFunction() {
+					  alert("Thanks for submitting! \nPlease check your email!");
+					}
+				</script>
 		</div>
 	</body>
 </html>
