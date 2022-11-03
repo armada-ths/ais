@@ -133,10 +133,9 @@
 			{% endif %}
 			{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}">{{ company.name }}</a></li>{% endblock %}
 		<!-- For virtual fair, add "and true == false", i.e it should look like this "if exhibitor is not None and True == False" -->
-			<!-- {% if exhibitor is not None %} -->
-			{% if exhibitor is not None and True == False %}
+			{% if exhibitor is not None %}
 				{% block nav-transport %}<li><a href="{% url 'anmalan:transport' company.pk %}">Transport</a></li>{% endblock %}
-				{% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %}
+				<!-- {% block nav-lunchtickets %}<li><a href="{% url 'anmalan:lunchtickets' company.pk %}">Lunch tickets</a></li>{% endblock %} -->
 				{% block nav-banquet %}<li><a href="{% url 'anmalan:banquet' company.pk %}">Banquet</a></li>{% endblock %}
 			{% endif %}
 			{% if company.name == 'Kottnet' %}
