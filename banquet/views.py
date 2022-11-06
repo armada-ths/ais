@@ -648,8 +648,6 @@ def manage_participants(request, year, banquet_pk):
         'email_address': participant.user.email if participant.user else participant.email_address,
         'alcohol': participant.alcohol,
         'seat': participant.seat,
-        'dietary_restrictions': participant.dietary_restrictions,
-        'other_dietary_restrictions': participant.other_dietary_restrictions,
         'invitation': participant.invitation_set.first(),
     } for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet)]
 
