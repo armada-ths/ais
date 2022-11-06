@@ -1115,3 +1115,32 @@ class ParticipantsListView(GeneralMixin, ListView):
 
 class ThankYouView(TemplateView):
     template_name = 'banquet/thank_you.html'
+
+
+@permission_required('banquet.base')
+def export_participants(request, year, banquet_pk):
+     
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="banquet_participants.csv"'
+
+    participants = [{
+        'company': participant.company,
+        'user': participant.user,
+        'name': participant.user.get_full_name() if participant.user else participant.name,
+        'email_address': participant.user.email if participant.user else participant.email_address,
+        'alcohol': participant.alcohol,
+        'seat': participant.seat,
+        'dietary_restrictions': participant.dietary_restrictions,
+        'other_dietary_restrictions': participant.other_dietary_restrictions,
+        'invitation': participant.invitation_set.first(),
+    } for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet)]
+
+    writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
+    writer.writerow(['company', 'user', 'name', 'email_address', 'alcohol', 'seat','dietary_restrictions','other_dietary_restrictions'])
+    for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet):
+        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, participant.dietary_restrictions , participant.other_dietary_restrictions ])
+
+    return response
