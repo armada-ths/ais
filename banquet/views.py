@@ -1141,6 +1141,6 @@ def export_participants(request, year, banquet_pk):
     writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
     writer.writerow(['company', 'user', 'name', 'email_address', 'alcohol', 'seat','dietary_restrictions','other_dietary_restrictions'])
     for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet):
-        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, participant.dietary_restrictions , participant.other_dietary_restrictions ])
+        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, ", ".join(str(x) for x in participant.dietary_restrictions.all()) , participant.other_dietary_restrictions ])
 
     return response
