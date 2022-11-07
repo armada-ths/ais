@@ -1113,3 +1113,20 @@ class ParticipantsListView(GeneralMixin, ListView):
 
 class ThankYouView(TemplateView):
     template_name = 'banquet/thank_you.html'
+
+
+@permission_required('banquet.base')
+def export_participants(request, year, banquet_pk):
+     
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="banquet_participants.csv"'
+
+    writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
+    writer.writerow(['Company', 'User', 'Name', 'Email', 'Alcohol', 'Seat','Dietary restrictions','Other dietary restrictions'])
+    for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet):
+        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, ", ".join(str(x) for x in participant.dietary_restrictions.all()) , participant.other_dietary_restrictions ])
+
+    return response
