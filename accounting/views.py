@@ -1,10 +1,18 @@
+import csv
+import datetime
+import json
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.forms import modelformset_factory
 
 from fair.models import Fair
 from companies.models import Company
+from accounting.models import Product, Order
+from exhibitors.models import Exhibitor
+
+
 
 from .models import Order, Product, ExportBatch
 from .forms import GenerateCompanyInvoicesForm, BaseCompanyCustomerIdFormSet, CompanyCustomerIdForm
@@ -203,14 +211,27 @@ def product_summary(request, year):
 		'grandTotalPrice': grandTotalPrice
 	})
 
-
-def companies_with_orders(fair):
+def export_companys(request, year):
+	fair = get_object_or_404(Fair, year=year)
 	orders = Order.objects.filter(product__revenue__fair = fair).exclude(purchasing_company = None).exclude(unit_price = 0)
 	companies_with_orders = []
 
+
+	response = HttpResponse(content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename="companys.csv"'
+
+	writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
+	writer.writerow(['Company','LON','Org nr','Address line 1','Address line 2','Postnr','Postort','Country','FakturaRef','Mail','Kommentar'])
+	print("Hello")
+
+
+
+	
 	for order in orders:
 		if order.purchasing_company.pk not in companies_with_orders: companies_with_orders.append(order.purchasing_company.pk)
+	
+	for e in Exhibitor.objects.filter(fair__year = year):
+		writer.writerow([e.company.invoice_name if e.company.invoice_name else e.company.name, e.company.identity_number, e.company.invoice_address_line_1,e.company.invoice_address_line_2,e.company.invoice_address_line_3,e.company.invoice_zip_code,e.company.invoice_city,e.company.invoice_country,e.company.invoice_reference,e.company.invoice_email_address])
 
-	companies = Company.objects.filter(ths_customer_id = None, id__in = companies_with_orders)
+	return response
 
-	return companies
