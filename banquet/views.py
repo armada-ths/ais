@@ -648,8 +648,6 @@ def manage_participants(request, year, banquet_pk):
         'email_address': participant.user.email if participant.user else participant.email_address,
         'alcohol': participant.alcohol,
         'seat': participant.seat,
-        'dietary_restrictions': participant.dietary_restrictions,
-        'other_dietary_restrictions': participant.other_dietary_restrictions,
         'invitation': participant.invitation_set.first(),
     } for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet)]
 
@@ -1126,6 +1124,7 @@ def export_participants(request, year, banquet_pk):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="banquet_participants.csv"'
 
+
     participants = [{
         'token': participant.token,
         'company': participant.company,
@@ -1143,5 +1142,6 @@ def export_participants(request, year, banquet_pk):
     writer.writerow(['company', 'user', 'name', 'email_address', 'alcohol', 'seat','dietary_restrictions','other_dietary_restrictions', 'invitation','checked_in'])
     for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet):
         writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, participant.dietary_restrictions , participant.other_dietary_restrictions,'https://ais.armada.nu/banquet/' + participant.token, participant.ticket_scanned ])
+
 
     return response
