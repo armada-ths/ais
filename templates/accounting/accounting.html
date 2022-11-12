@@ -9,5 +9,6 @@
 		{% if perms.accounting.export_orders %} <a class="btn btn-default" type="button" href="{% url 'export_orders' fair.year %}">Export orders</a> {% endif %}
 		{% if perms.accounting.ths_customer_ids %} <a class="btn btn-default" type="button" href="{% url 'companies_without_ths_customer_ids' fair.year %}">Companies without THS customer IDs</a> {% endif %}
 		<a class="btn btn-default" type="button" href="{% url 'product_summary' fair.year %}">Product summary</a>
+		<a class="btn btn-default" type="button" href="{% url 'export_company' fair.year %}">Export Companies</a>
 	</p>
 {% endblock %}
