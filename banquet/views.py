@@ -1127,6 +1127,7 @@ def export_participants(request, year, banquet_pk):
     response['Content-Disposition'] = 'attachment; filename="banquet_participants.csv"'
 
     participants = [{
+        'token': participant.token,
         'company': participant.company,
         'user': participant.user,
         'name': participant.user.get_full_name() if participant.user else participant.name,
@@ -1139,8 +1140,8 @@ def export_participants(request, year, banquet_pk):
     } for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet)]
 
     writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
-    writer.writerow(['company', 'user', 'name', 'email_address', 'alcohol', 'seat','dietary_restrictions','other_dietary_restrictions'])
+    writer.writerow(['company', 'user', 'name', 'email_address', 'alcohol', 'seat','dietary_restrictions','other_dietary_restrictions', 'invitation','checked_in'])
     for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet):
-        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, participant.dietary_restrictions , participant.other_dietary_restrictions ])
+        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, participant.dietary_restrictions , participant.other_dietary_restrictions,'https://ais.armada.nu/banquet/' + participant.token, participant.ticket_scanned ])
 
     return response
