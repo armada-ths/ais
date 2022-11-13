@@ -1125,8 +1125,8 @@ def export_participants(request, year, banquet_pk):
     response['Content-Disposition'] = 'attachment; filename="banquet_participants.csv"'
 
     writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
-    writer.writerow(['Company', 'User', 'Name', 'Email', 'Alcohol', 'Seat','Dietary restrictions','Other dietary restrictions'])
+    writer.writerow(['Company', 'User', 'Name', 'Email', 'Alcohol', 'Seat','Dietary restrictions','Other dietary restrictions', 'invitation','checked_in'])
     for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet):
-        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, ", ".join(str(x) for x in participant.dietary_restrictions.all()) , participant.other_dietary_restrictions ])
+        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, ", ".join(str(x) for x in participant.dietary_restrictions.all()) , participant.other_dietary_restrictions,'https://ais.armada.nu/banquet/' + participant.token, participant.ticket_scanned ])
 
     return response
