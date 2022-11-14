@@ -1130,3 +1130,19 @@ def export_participants(request, year, banquet_pk):
         writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, ", ".join(str(x) for x in participant.dietary_restrictions.all()) , participant.other_dietary_restrictions,'https://ais.armada.nu/banquet/' + participant.token, participant.ticket_scanned ])
 
     return response
+
+@permission_required('banquet.base')
+def export_afterparty(request, year, banquet_pk):
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, pk=banquet_pk)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="afterparty_participants.csv"'
+
+    writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
+    writer.writerow(['Name', 'Email Sent'])
+    for participant in AfterPartyTicket.objects.filter(banquet=banquet):
+        writer.writerow([participant.name, participant.email_sent ])
+
+    return response
+
