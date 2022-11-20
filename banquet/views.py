@@ -1140,9 +1140,9 @@ def export_afterparty(request, year, banquet_pk):
     response['Content-Disposition'] = 'attachment; filename="afterparty_participants.csv"'
 
     writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
-    writer.writerow(['Name', 'Email Sent'])
-    for participant in AfterPartyTicket.objects.filter(banquet=banquet):
-        writer.writerow([participant.name, participant.email_sent ])
+    writer.writerow(['Name', 'Email Sent','Email','Inviter'])
+    for participant in AfterPartyInvitation.objects.filter(banquet=banquet):
+        writer.writerow([participant.name, participant.used, participant.email_address,participant.inviter ])
 
     return response
 
