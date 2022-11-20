@@ -229,12 +229,12 @@ def export_companys(request, year):
 	response['Content-Disposition'] = 'attachment; filename="companys.csv"'
 
 	writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
-	writer.writerow(['Company','Org nr','Address line 1','Address line 2','Postnr','Postort','Country','FakturaRef','Mail','Kommentar'])
+	writer.writerow(['Company','Org nr','Address line 1','Address line 2','Postnr','Postort','Country','FakturaRef','Mail','THS Customer ID', 'Kommentar'])
 	
 	for order in orders:
 		if order.purchasing_company.pk not in companies_with_orders: companies_with_orders.append(order.purchasing_company.pk)
 	
 	for e in Exhibitor.objects.filter(fair__year = year):
-		writer.writerow([e.company.invoice_name if e.company.invoice_name else e.company.name, e.company.identity_number, e.company.invoice_address_line_1,e.company.invoice_address_line_2,e.company.invoice_address_line_3,e.company.invoice_zip_code,e.company.invoice_city,e.company.invoice_country,e.company.invoice_email_address,e.company.invoice_reference])
+		writer.writerow([e.company.invoice_name if e.company.invoice_name else e.company.name, e.company.identity_number, e.company.invoice_address_line_1,e.company.invoice_address_line_2,e.company.invoice_address_line_3,e.company.invoice_zip_code,e.company.invoice_city,e.company.invoice_country,e.company.invoice_email_address,e.company.ths_customer_id,e.company.invoice_reference])
 
 	return response
