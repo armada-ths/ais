@@ -177,7 +177,7 @@ class CompleteLogisticsDetailsForm(ModelForm):
             'booth_height':
             '230 cm is included in the Base kit. If you want additional height, remember to add "Additional Booth Height" in the Products section below.',
             'placement_wish':
-            'We will use the industry information you provide in the section "Catalogue and student matching" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
+            'We will use the industry information you provide in the section "Exhibitor catalogue" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
         }
 
     def is_valid(self):
@@ -232,18 +232,24 @@ class CompleteCatalogueDetailsForm(ModelForm):
     catalogue_industries = IncludeCategoryChoiceField(
         queryset=CatalogueIndustry.objects.filter(include_in_form=True),
         widget=forms.CheckboxSelectMultiple,
-        label='Which industries does your company work in?',
+        label='Which main fields of studies apply to your company’s business?',
         required=False)
-    catalogue_competences = IncludeCategoryChoiceField(
-        queryset=CatalogueCompetence.objects.filter(include_in_form=True),
-        widget=forms.CheckboxSelectMultiple,
-        label='What competences is your company looking for?',
-        required=False)
-    catalogue_values = forms.ModelMultipleChoiceField(
-        queryset=CatalogueValue.objects.filter(include_in_form=True),
-        widget=forms.CheckboxSelectMultiple,
-        label='Select up to three values that apply to the company.',
-        required=False)
+    # UNCOMMENT THE BELOW ONES IF YOU WANT TO INCLUDE THEM IN THE FINAL REGISTRATION PAGE (COMPLETE REGISTRATION), ALSO REMOVE THE ABOVE ONE TO AVOID DUPLICATE
+    #catalogue_industries = IncludeCategoryChoiceField(
+    #    queryset=CatalogueIndustry.objects.filter(include_in_form=True),
+    #    widget=forms.CheckboxSelectMultiple,
+    #    label='Which industries does your company work in?',
+    #    required=False)
+    #catalogue_competences = IncludeCategoryChoiceField(
+    #    queryset=CatalogueCompetence.objects.filter(include_in_form=True),
+    #    widget=forms.CheckboxSelectMultiple,
+    #    label='What competences is your company looking for?',
+    #    required=False)
+    #catalogue_values = forms.ModelMultipleChoiceField(
+    #    queryset=CatalogueValue.objects.filter(include_in_form=True),
+    #    widget=forms.CheckboxSelectMultiple,
+    #    label='Select up to three values that apply to the company.',
+    #    required=False)
     catalogue_employments = forms.ModelMultipleChoiceField(
         queryset=CatalogueEmployment.objects.filter(include_in_form=True),
         widget=forms.CheckboxSelectMultiple,
@@ -269,7 +275,6 @@ class CompleteCatalogueDetailsForm(ModelForm):
             'catalogue_logo_freesize', 'catalogue_contact_name',
             'catalogue_contact_email_address',
             'catalogue_contact_phone_number', 'catalogue_industries',
-            'catalogue_competences', 'catalogue_values',
             'catalogue_employments', 'catalogue_locations', 'catalogue_cities'
         ]
 
@@ -339,8 +344,8 @@ class CompleteCatalogueDetailsForm(ModelForm):
             'catalogue_contact_phone_number')
         catalogue_logo_squared = self.cleaned_data.get(
             'catalogue_logo_squared')
-        catalogue_number_values = self.cleaned_data.get(
-            'catalogue_values').count()
+        #catalogue_number_values = self.cleaned_data.get(
+         #   'catalogue_values').count()
         #catalogue_founded = self.cleaned_data.get('catalogue_founded')
 
         if catalogue_contact_phone_number is not None and not re.match(
@@ -349,10 +354,10 @@ class CompleteCatalogueDetailsForm(ModelForm):
                            'Must only contain numbers and a leading plus.')
             valid = False
 
-        if catalogue_number_values > 3:
-            self.add_error('catalogue_values',
-                           'You can not select more than 3 values.')
-            valid = False
+        #if catalogue_number_values > 3:
+         #   self.add_error('catalogue_values',
+          #                 'You can not select more than 3 values.')
+           # valid = False
 
         # if catalogue_founded is not None and (catalogue_founded < 1600 or catalogue_founded > datetime.datetime.now().year):
         # 	self.add_error('catalogue_founded', 'The year is invalid.')

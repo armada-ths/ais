@@ -6,7 +6,6 @@ and is generally easier to work with.
 
 import os
 from ais.common.settings import *
-from ais.secrets import APPLICATION_ID, CLIENT_SECRET
 
 # Debug mode gives us helpful error messages when a server error
 # occurs. This is a serious security flaw if used in production!
@@ -16,7 +15,17 @@ DEBUG = True
 # This lets us access AIS via its IP address (usually 127.0.0.1),
 # which you can't do in production for security reasons.
 ALLOWED_HOSTS = ['*']
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+CORS_ORIGIN_ALLOW_ALL = True
+
+# Email settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'noreply@armada.nu'
+DEFAULT_TO_EMAIL = 'info@armada.nu'
+EMAIL_HOST_USER = 'noreply@armada.nu'
+EMAIL_HOST_PASSWORD = os.environ.get('DUMMY', 'dummy')
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ROOT_URLCONF = 'ais.local.urls'
 
@@ -31,11 +40,11 @@ STRIPE_PUBLISHABLE = 'pk_test_IzgUj9oJhednbt4EIf78esBE'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'ais_dev',
-        'USER': 'ais_dev',
-        'PASSWORD': 'ais_dev',
-        'HOST': '127.0.0.1', # For Vagrant
-        # 'HOST': 'db',  # For docker
+        'NAME': os.environ.get('DB_NAME', 'ais_dev'),
+        'USER': os.environ.get('DB_USER', 'ais_dev'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'ais_dev'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -53,9 +62,17 @@ SECRET_KEY = '..............¯\_(ツ)_/¯...............'
 # CLIENT_SECRET is given from the 'secrets.py' file.
 AUTHLIB_OAUTH_CLIENTS = {
     'kth': {
-        'client_id': APPLICATION_ID,
-        'client_secret': CLIENT_SECRET,
+        'client_id': os.environ.get('APPLICATION_ID'),
+        'client_secret': os.environ.get('CLIENT_SECRET'),
         'api_base_url': 'https://login.ug.kth.se/adfs/oauth2/',
     }
 }
 LOGOUT_REDIRECT_URL = '/'
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+AWS_STORAGE_BUCKET_NAME='armada-ais-files'

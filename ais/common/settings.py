@@ -10,16 +10,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import os
 from os import path
 
 BASE_DIR = path.join(path.dirname(path.abspath(__file__)), '../../')
-
-# Email settings
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'noreply@armada.nu'
-DEFAULT_TO_EMAIL = 'info@armada.nu'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
@@ -31,6 +25,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'corsheaders',
     'webpack_loader',
     'polymorphic',
     'events',
@@ -59,6 +54,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

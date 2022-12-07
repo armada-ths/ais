@@ -27,8 +27,8 @@ class Banquet(models.Model):
     product = models.ForeignKey(Product, null=True, blank=True, on_delete=models.CASCADE, verbose_name='Product to link the banquet with')
     background = models.ImageField(upload_to=UploadToDirUUID('banquets', 'map'), blank=True, null=True)
     point_size = models.DecimalField(blank=True, null=True, max_digits=11, decimal_places=10)
-    afterparty_price = models.PositiveIntegerField(default = 75, verbose_name = 'After Party Price (SEK)')  # can be zero
-    afterparty_price_discount = models.PositiveIntegerField(default = 50, verbose_name = 'After Party Discounted Price (SEK)')  # can be zero
+    afterparty_price = models.PositiveIntegerField(default = 0, verbose_name = 'After Party Price (SEK)')  # can be zero
+    afterparty_price_discount = models.PositiveIntegerField(default = 0, verbose_name = 'After Party Discounted Price (SEK)')  # can be zero
 
     def __str__(self): return self.name
 

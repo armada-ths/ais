@@ -20,6 +20,8 @@ urlpatterns = [
         name='banquet_manage_invitation_edit'),
     url(r'^(?P<banquet_pk>[0-9]+)/invitations/new$', views.manage_invitation_form, name='banquet_manage_invitation_new'),
     url(r'^(?P<banquet_pk>[0-9]+)/participants$', views.manage_participants, name='banquet_manage_participants'),
+    url(r'^(?P<banquet_pk>[0-9]+)/participants/exportafterparty$', views.export_afterparty, name='banquet_export_afterparty'),
+    url(r'^(?P<banquet_pk>[0-9]+)/participants/export$', views.export_participants, name='banquet_export_participants'),
     url(r'^(?P<banquet_pk>[0-9]+)/participants/(?P<participant_pk>[0-9]+)$', views.manage_participant, name='banquet_manage_participant'),
     url(r'^(?P<banquet_pk>[0-9]+)/participants/(?P<participant_pk>[0-9]+)/edit$', views.manage_participant_form,
         name='banquet_manage_participant_edit'),

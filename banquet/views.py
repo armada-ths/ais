@@ -608,7 +608,8 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 def manage_participant(request, year, banquet_pk, participant_pk):
     fair = get_object_or_404(Fair, year=year)
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
-    participant = get_object_or_404(Participant, banquet=banquet, pk=participant_pk)
+    participant = get_object_or_404(
+        Participant, banquet=banquet, pk=participant_pk)
 
     try:
         invitation_status = participant.invitation_set.first().status
@@ -623,10 +624,10 @@ def manage_participant(request, year, banquet_pk, participant_pk):
             'name': participant.user.get_full_name() if participant.user else participant.name,
             'email_address': participant.user.email if participant.user else participant.email_address,
             'phone_number': participant.phone_number,
-			'dietary_restrictions': participant.dietary_restrictions,
-			'other_dietary_restrictions': participant.other_dietary_restrictions,
-			'alcohol': participant.get_alcohol_display,
-			'giveaway': participant.get_giveaway_display,
+            'dietary_restrictions': participant.dietary_restrictions,
+            'other_dietary_restrictions': participant.other_dietary_restrictions,
+            'alcohol': participant.get_alcohol_display,
+            'giveaway': participant.get_giveaway_display,
             'token': participant.token,
             'seat': participant.seat,
             'invitation_status': invitation_status,
@@ -692,7 +693,7 @@ def manage_participant_form(request, year, banquet_pk, participant_pk):
         users.append([organization_group.name, [(user.pk, user.get_full_name()) for user in this_users_flat]])
 
     if participant is not None and participant.user is not None and participant.user not in all_users: users = [(participant.user.pk,
-                                                                                                                 participant.user.get_full_name())] + users
+                  participant.user.get_full_name())] + users
 
     form.fields['user'].choices = [('', '---------')] + users
 
@@ -774,7 +775,7 @@ def invitation(request, year, token):
                         currency = 'sek',
                         description ='Banquet invitation token ' + str(invitation.token),
                         receipt_email = invitation.email_address,
-                        )
+                    )
                     invitation.participant.charge_stripe = intent['id']
                     invitation.participant.save()
                 else: # retrieve existing payment intent
@@ -847,7 +848,7 @@ def invitation_maybe(request, year, token):
 
 def external_invitation(request, token):
     invitation = get_object_or_404(Invitation, token=token, user=None)
-	# get participant or create a new one with correct name and email prefilled in participant form
+    # get participant or create a new one with correct name and email prefilled in participant form
     participant = invitation.participant if invitation.participant is not None else Participant(banquet=invitation.banquet, user=None)
 
     participant.name = invitation.name
@@ -865,7 +866,7 @@ def external_invitation(request, token):
 
     if invitation.banquet.caption_phone_number is not None: form.fields['phone_number'].help_text = invitation.banquet.caption_phone_number
     if invitation.banquet.caption_dietary_restrictions is not None: form.fields[
-        'dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
+            'dietary_restrictions'].help_text = invitation.banquet.caption_dietary_restrictions
 
     can_edit = invitation.deadline_smart is None or invitation.deadline_smart >= datetime.datetime.now().date()
 
@@ -999,59 +1000,78 @@ def external_banquet_afterparty(request, token=None):
                     discounted_invitation.used = True
                     discounted_invitation.save()
 
-                if amount > 0 and ticket.paid_price is None:
-                    stripe.api_key = settings.STRIPE_SECRET
-
-                    intent = stripe.PaymentIntent.create(
-                        amount = amount * 100, # Stripe wants the price in öre
-                        currency = 'sek',
-                        description ='After party ticket ' + str(ticket.token),
-                        receipt_email = ticket.email_address,
-                        )
-
-                    ticket.charge_stripe = intent['id']
-                    ticket.save()
-
-                    request.session['event'] = 'AfterParty'
-                    request.session['url_path'] = 'banquet_external_afterparty_token'
-                    request.session['intent'] = intent
-                    request.session['invitation_token'] = str(ticket.token)
-                    request.session.set_expiry(0)
-
-                    return redirect('/payments/checkout')
-
-    if ticket is not None:
-        stripe.api_key = settings.STRIPE_SECRET
-
-        id = ticket.charge_stripe
-        amount = (stripe.PaymentIntent.retrieve(id)['amount'])/100
-        has_paid = ticket.has_paid
-
-        if request.POST and ticket.has_paid is False:
-            if timezone.now() <= purchase_deadline:
-
-                request.session['event'] = 'AfterParty'
-                request.session['url_path'] = 'banquet_external_afterparty_token'
-                request.session['intent'] = stripe.PaymentIntent.retrieve(id)
-                request.session['invitation_token'] = str(ticket.token)
-                request.session.set_expiry(0)
-
-                return redirect('/payments/checkout')
-
-        if ticket.charge_stripe is not None:
-            stripe.api_key = settings.STRIPE_SECRET
-
-            if stripe.PaymentIntent.retrieve(ticket.charge_stripe)['status'] == 'succeeded' and ticket.email_sent == False:
                 send_mail(
                     'Your ticket for the After Party',
-                    'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
-                        ticket.token) + '\n\nTime and date: ' + str(date) + '\nLocation: ' + str(location) + '\n\nWelcome!',
+                    'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada.' + '\n\nTime and date: ' + str(date) + '\nLocation: ' +
+                    str(location) + '\nThis ticket Costs: ' +
+                    str(amount) + '\nPayments at the door!' +
+                    '\nPlease show this mail at the door!' +
+                    '\n\nWelcome!',
                     'noreply@armada.nu',
                     [ticket.email_address],
                     fail_silently=True,
                 )
                 ticket.email_sent = True
                 ticket.save()
+                if ticket.email_sent is True:
+                    return redirect('https://armada.nu/')
+
+
+    ###########################################Uncomment this block for payment#####################################################
+    #             if amount > 0 and ticket.paid_price is None:
+    #                 stripe.api_key = settings.STRIPE_SECRET
+
+    #                 intent = stripe.PaymentIntent.create(
+    #                     amount = amount * 100, # Stripe wants the price in öre
+    #                     currency = 'sek',
+    #                     description ='After party ticket ' + str(ticket.token),
+    #                     receipt_email = ticket.email_address,
+    #                     )
+
+    #                 ticket.charge_stripe = intent['id']
+    #                 ticket.save()
+
+    #                 request.session['event'] = 'AfterParty'
+    #                 request.session['url_path'] = 'banquet_external_afterparty_token'
+    #                 request.session['intent'] = intent
+    #                 request.session['invitation_token'] = str(ticket.token)
+    #                 request.session.set_expiry(0)
+
+    #                 return redirect('/payments/checkout')
+
+    # if ticket is not None:
+    #     stripe.api_key = settings.STRIPE_SECRET
+
+    #     id = ticket.charge_stripe
+    #     amount = (stripe.PaymentIntent.retrieve(id)['amount'])/100
+    #     has_paid = ticket.has_paid
+
+    #     if request.POST and ticket.has_paid is False:
+    #         if timezone.now() <= purchase_deadline:
+
+    #             request.session['event'] = 'AfterParty'
+    #             request.session['url_path'] = 'banquet_external_afterparty_token'
+    #             request.session['intent'] = stripe.PaymentIntent.retrieve(id)
+    #             request.session['invitation_token'] = str(ticket.token)
+    #             request.session.set_expiry(0)
+
+    #             return redirect('/payments/checkout')
+
+    #     if ticket.charge_stripe is not None:
+    #         stripe.api_key = settings.STRIPE_SECRET
+
+    #         if stripe.PaymentIntent.retrieve(ticket.charge_stripe)['status'] == 'succeeded' and ticket.email_sent == False:
+                #     send_mail(
+                #     'Your ticket for the After Party',
+                #     'Hello ' + ticket.name + '! Welcome to the After Party at the Grand Banquet of THS Armada. Your ticket is available here:\nhttps://ais.armada.nu/banquet/afterparty/' + str(
+                #         ticket.token) + '\n\nTime and date: ' + str(date) + '\nLocation: ' + str(location) + '\n\nWelcome!',
+                #     'noreply@armada.nu',
+                #     [ticket.email_address],
+                #     fail_silently=True,
+                # )
+                # ticket.email_sent = True
+                # ticket.save()
+    ###########################################Uncomment this block for payment#####################################################
 
     return render(request, 'banquet/afterparty.html', {
         'fair': fair,
@@ -1063,7 +1083,8 @@ def external_banquet_afterparty(request, token=None):
         'ticket': ticket,
         'has_paid': has_paid,
         'purchase_open': timezone.now() <= purchase_deadline
-        })
+    })
+    
 
 
 @permission_required('banquet.base')
@@ -1092,3 +1113,36 @@ class ParticipantsListView(GeneralMixin, ListView):
 
 class ThankYouView(TemplateView):
     template_name = 'banquet/thank_you.html'
+
+
+@permission_required('banquet.base')
+def export_participants(request, year, banquet_pk):
+     
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="banquet_participants.csv"'
+
+    writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
+    writer.writerow(['Company', 'User', 'Name', 'Email', 'Alcohol', 'Seat','Dietary restrictions','Other dietary restrictions', 'invitation','checked_in'])
+    for participant in Participant.objects.select_related('seat').select_related('seat__table').filter(banquet=banquet):
+        writer.writerow([participant.company, participant.user, participant.name, participant.email_address, participant.alcohol, participant.seat, ", ".join(str(x) for x in participant.dietary_restrictions.all()) , participant.other_dietary_restrictions,'https://ais.armada.nu/banquet/' + participant.token, participant.ticket_scanned ])
+
+    return response
+
+@permission_required('banquet.base')
+def export_afterparty(request, year, banquet_pk):
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, pk=banquet_pk)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="afterparty_participants.csv"'
+
+    writer = csv.writer(response, delimiter=',', quoting=csv.QUOTE_ALL)
+    writer.writerow(['Name', 'Email Sent','Email','Inviter'])
+    for participant in AfterPartyInvitation.objects.filter(banquet=banquet):
+        writer.writerow([participant.name, participant.used, participant.email_address,participant.inviter ])
+
+    return response
+

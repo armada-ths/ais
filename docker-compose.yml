@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+  web:
+    build: .
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    depends_on:
+      - db
+    command: source ./entrypoint.sh
+
+  db:
+    image: postgis/postgis:10-2.5-alpine
+    volumes:
+      # - postgres_data:/var/lib/postgresql/data/ # Production Development
+      - ./ais-developer-database.sql:/docker-entrypoint-initdb.d/init.sql # Local Development
+    environment:
+      - POSTGRES_USER=ais_dev
+      - POSTGRES_PASSWORD=ais_dev
+      - POSTGRES_DB=ais_dev
+
+volumes:
+  postgres_data:
+   
