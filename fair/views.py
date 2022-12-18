@@ -28,7 +28,11 @@ def login_redirect(request):
     print(request.user)
     if request.user.is_authenticated:
         contact = CompanyContact.objects.filter(user=request.user).first()
-        year = timezone.now().year
+        fair = Fair.objects.filter(current=True).first()
+        if fair is None:
+            fair = Fair.objects.filter.first()
+        year = fair.year
+        
 
         if contact is not None:
             return redirect('anmalan:choose_company')
