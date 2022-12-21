@@ -145,7 +145,9 @@ def form(request, company_pk):
     if not request.user.is_authenticated: return redirect('anmalan:logout')
 
     company = get_object_or_404(Company, pk=company_pk)
-    fair = Fair.objects.filter(current=True).first()
+    #fair = Fair.objects.filter(current=True).first()
+    year = timezone.now().year
+    fair = Fair.objects.filter(year=year).first()
     exhibitor = Exhibitor.objects.filter(fair=fair, company=company).first()
 
     if request.user.has_perm('companies.base') or (
