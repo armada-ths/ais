@@ -14,6 +14,7 @@
 	{% if perms.recruitment.administer_recruitment %}
 		<p>
 			<a class="btn btn-default" href="{% url "recruitment_period_new" fair.year %}">New recruitment period</a>
+			<!-- Testing -->
 			<a class="btn btn-default" href="{% url "recruitment_statistics" fair.year %}">Statistics</a>
 			<a class="btn btn-default" href="{% url "assign_roles" fair.year %}">Assign roles</a>
 		</p>
