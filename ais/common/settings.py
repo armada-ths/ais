@@ -25,6 +25,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'hijack',
+    'hijack.contrib.admin',
     'corsheaders',
     'webpack_loader',
     'polymorphic',
@@ -63,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'hijack.middleware.HijackUserMiddleware',
     'recruitment.middleware.LoginRequiredMiddleware'
 ]
 
