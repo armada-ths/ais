@@ -1,11 +1,8 @@
-# Contributing
+# Contributing to AIS
 
-- Please try to write clean, readable code
-- Please try to write tests for your code
-- Please try to write meaningful commit messages, PR descriptions etc.
-- Please try to help resolve any open PRs / issues
+## Code of Conduct
 
-Above all, be respectful towards others :)
+By participating in this project, you agree to uphold the (Code of Conduct)[ais/.github/CODE_OF_CONDUCT.md]
 
 ## Pull Request (PR) Workflow
 
