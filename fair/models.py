@@ -83,7 +83,8 @@ class OrganizationGroup(models.Model):
     fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
-    def __str__(self): return self.name
+    def __str__(self):
+        return '[%s] - %s' % (self.fair, self.name)
 
     class Meta:
         ordering = ['fair', 'name']
