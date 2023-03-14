@@ -66,14 +66,11 @@ class SignupLog(models.Model):
 
 	type = models.CharField(choices=types, null=True, blank=True, max_length=30)
 
-	def get_company_contact_company(self):
-		if self.company_contact == None:
-			return '-'
-		else:
-			return self.company_contact.company.name
+	def get_company_contact_name(self):
+		return '-' if self.company_contact == None else self.company_contact.company.name
 
 	def __str__(self):
-		return self.get_company_contact_company() + " for " + self.contract.name
+		return self.get_company_contact_name() + " for " + self.contract.name
 
 	class Meta:
 		ordering = ["-timestamp",]
