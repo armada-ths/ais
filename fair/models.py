@@ -76,8 +76,7 @@ class FairDay(models.Model):
         default_permissions = []
         ordering = ['fair', 'date']
 
-    def __str__(self):
-        return '[%s] - %s' % (self.fair, self.date)
+    def __str__(self): return str(self.date)
 
 
 class OrganizationGroup(models.Model):
