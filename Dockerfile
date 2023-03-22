@@ -1,7 +1,7 @@
 FROM python:3.10.1-alpine as base
+WORKDIR /usr/src/app
 
 FROM base as frontend
-WORKDIR /usr/src/app
 RUN apk add npm
 
 COPY package.json package-lock.json ./
@@ -11,7 +11,6 @@ COPY . .
 RUN npm run build
 
 FROM base as backend
-WORKDIR /usr/src/app
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
