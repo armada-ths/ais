@@ -28,12 +28,12 @@ RUN pip install --upgrade pip==21.3.1
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY --from=frontend /usr/src/app/webpack-stats.js ./
-COPY --from=frontend /usr/src/app/ais_static/bundles ./ais_static/bundles
-
 COPY . .
 RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
+
+COPY --from=frontend /usr/src/app/webpack-stats.js ./
+COPY --from=frontend /usr/src/app/ais_static/bundles ./ais_static/bundles
 
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
