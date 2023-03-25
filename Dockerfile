@@ -41,6 +41,5 @@ RUN npm run build
 # RUN 'entrypoint.sh'
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
-EXPOSE 8080
 EXPOSE 3000
 
