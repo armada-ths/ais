@@ -6,14 +6,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0009_auto_20181003_0935'),
+        ("people", "0009_auto_20181003_0935"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='profile',
-            options={'permissions': [('base', 'People')]},
+            name="profile",
+            options={"permissions": [("base", "People")]},
         ),
     ]

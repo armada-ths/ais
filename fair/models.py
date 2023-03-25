@@ -9,7 +9,11 @@ from people.models import DietaryRestriction
 
 
 def get_common_name(self):
-    return '%s %s' % (self.first_name, self.last_name) if self.first_name and self.last_name else self.username
+    return (
+        "%s %s" % (self.first_name, self.last_name)
+        if self.first_name and self.last_name
+        else self.username
+    )
 
 
 User.add_to_class("__str__", get_common_name)
@@ -42,16 +46,21 @@ class Fair(models.Model):
 
     current = models.BooleanField(default=False)
 
-    product_lunch_ticket = models.ForeignKey('accounting.Product', blank=True, null=True, on_delete=models.SET_NULL)
+    product_lunch_ticket = models.ForeignKey(
+        "accounting.Product", blank=True, null=True, on_delete=models.SET_NULL
+    )
 
     companies_ticket_deadline = models.DateTimeField(null=True, blank=True)
-    companies_ticket_deadline.help_text = 'After this date the companies will no longer be able to create or edit their lunch or banquet tickets on their registration page.'
+    companies_ticket_deadline.help_text = "After this date the companies will no longer be able to create or edit their lunch or banquet tickets on their registration page."
 
     def is_member_of_fair(self, user):
-        if user.is_superuser: return True
+        if user.is_superuser:
+            return True
 
         for recruitment_period in self.recruitmentperiod_set.all():
-            if recruitment_period.recruitmentapplication_set.filter(user=user, status='accepted').exists():
+            if recruitment_period.recruitmentapplication_set.filter(
+                user=user, status="accepted"
+            ).exists():
                 return True
 
         return False
@@ -74,9 +83,10 @@ class FairDay(models.Model):
 
     class Meta:
         default_permissions = []
-        ordering = ['fair', 'date']
+        ordering = ["fair", "date"]
 
-    def __str__(self): return str(self.date)
+    def __str__(self):
+        return str(self.date)
 
 
 class OrganizationGroup(models.Model):
@@ -84,27 +94,29 @@ class OrganizationGroup(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
-        return '[%s] - %s' % (self.fair, self.name)
+        return "[%s] - %s" % (self.fair, self.name)
 
     class Meta:
-        ordering = ['fair', 'name']
+        ordering = ["fair", "name"]
 
 
 class Partner(models.Model):
     name = models.CharField(max_length=50)
     fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
-    logo = models.ImageField(upload_to=UploadToDirUUID('partners', 'logo'))
+    logo = models.ImageField(upload_to=UploadToDirUUID("partners", "logo"))
     url = models.CharField(max_length=300)
     main_partner = models.BooleanField()
 
-    def __str__(self): return self.name
+    def __str__(self):
+        return self.name
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=500)
 
-    def __str__(self): return self.name
+    def __str__(self):
+        return self.name
 
 
 class LunchTicketTime(models.Model):
@@ -113,32 +125,45 @@ class LunchTicketTime(models.Model):
 
     class Meta:
         default_permissions = []
-        ordering = ['day', 'name']
+        ordering = ["day", "name"]
 
-    def __str__(self): return str(self.day) + ' ' + self.name
+    def __str__(self):
+        return str(self.day) + " " + self.name
 
 
 class LunchTicket(models.Model):
     fair = models.ForeignKey(Fair, on_delete=models.CASCADE)
-    token = models.CharField(max_length=255, null=False, blank=False, default=get_random_32_length_string, unique=True)
+    token = models.CharField(
+        max_length=255,
+        null=False,
+        blank=False,
+        default=get_random_32_length_string,
+        unique=True,
+    )
     used = models.BooleanField(default=False, blank=False, null=False)
-    email_address = models.EmailField(blank=True, null=True, max_length=255, verbose_name='E-mail address')
+    email_address = models.EmailField(
+        blank=True, null=True, max_length=255, verbose_name="E-mail address"
+    )
     comment = models.CharField(blank=True, null=True, max_length=255)
-    company = models.ForeignKey('companies.Company', on_delete=models.CASCADE, blank=True, null=True)
+    company = models.ForeignKey(
+        "companies.Company", on_delete=models.CASCADE, blank=True, null=True
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     day = models.ForeignKey(FairDay, on_delete=models.CASCADE)
-    time = models.ForeignKey(LunchTicketTime, on_delete=models.SET_NULL, blank=True, null=True)
+    time = models.ForeignKey(
+        LunchTicketTime, on_delete=models.SET_NULL, blank=True, null=True
+    )
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
     other_dietary_restrictions = models.CharField(max_length=75, blank=True, null=True)
-    sent = models.BooleanField(blank = False, null = False, default = False)
+    sent = models.BooleanField(blank=False, null=False, default=False)
 
     def get_ticket_type(self):
-        return 'student' if self.user else 'company'
+        return "student" if self.user else "company"
 
     class Meta:
-        permissions = [('lunchtickets', 'Manage lunch tickets')]
+        permissions = [("lunchtickets", "Manage lunch tickets")]
         default_permissions = []
-        ordering = ['pk']
+        ordering = ["pk"]
 
 
 class LunchTicketScan(models.Model):
@@ -154,7 +179,7 @@ class LunchTicketSend(models.Model):
     lunch_ticket = models.ForeignKey(LunchTicket, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-    email_address = models.EmailField(max_length=255, verbose_name='E-mail address')
+    email_address = models.EmailField(max_length=255, verbose_name="E-mail address")
 
     class Meta:
         default_permissions = []

@@ -6,28 +6,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='TransportationOrder',
+            name="TransportationOrder",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number_of_packages', models.IntegerField(default=0)),
-                ('number_of_pallets', models.IntegerField(default=0)),
-                ('goods_description', models.TextField(blank=True, max_length=250)),
-                ('contact_name', models.CharField(blank=True, max_length=50)),
-                ('contact_phone_number', models.CharField(blank=True, max_length=50)),
-                ('pickup_street_address', models.CharField(blank=True, max_length=100)),
-                ('pickup_zip_code', models.CharField(blank=True, max_length=10)),
-                ('pickup_city', models.CharField(blank=True, max_length=50)),
-                ('delivery_street_address', models.CharField(blank=True, max_length=100)),
-                ('delivery_zip_code', models.CharField(blank=True, max_length=10)),
-                ('delivery_city', models.CharField(blank=True, max_length=50)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("number_of_packages", models.IntegerField(default=0)),
+                ("number_of_pallets", models.IntegerField(default=0)),
+                ("goods_description", models.TextField(blank=True, max_length=250)),
+                ("contact_name", models.CharField(blank=True, max_length=50)),
+                ("contact_phone_number", models.CharField(blank=True, max_length=50)),
+                ("pickup_street_address", models.CharField(blank=True, max_length=100)),
+                ("pickup_zip_code", models.CharField(blank=True, max_length=10)),
+                ("pickup_city", models.CharField(blank=True, max_length=50)),
+                (
+                    "delivery_street_address",
+                    models.CharField(blank=True, max_length=100),
+                ),
+                ("delivery_zip_code", models.CharField(blank=True, max_length=10)),
+                ("delivery_city", models.CharField(blank=True, max_length=50)),
             ],
         ),
     ]

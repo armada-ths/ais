@@ -6,19 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0034_afterpartyinvitation'),
+        ("banquet", "0034_afterpartyinvitation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='afterpartyinvitation',
-            name='email_address',
-            field=models.EmailField(max_length=75, verbose_name='E-mail address'),
+            model_name="afterpartyinvitation",
+            name="email_address",
+            field=models.EmailField(max_length=75, verbose_name="E-mail address"),
         ),
         migrations.AlterUniqueTogether(
-            name='afterpartyinvitation',
-            unique_together=set([('banquet', 'email_address')]),
+            name="afterpartyinvitation",
+            unique_together=set([("banquet", "email_address")]),
         ),
     ]

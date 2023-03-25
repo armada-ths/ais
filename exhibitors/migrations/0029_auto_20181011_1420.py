@@ -7,26 +7,45 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0028_auto_20181011_1417'),
+        ("exhibitors", "0028_auto_20181011_1417"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ExhibitorInBooth',
+            name="ExhibitorInBooth",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.CharField(blank=True, max_length=255, null=True)),
-                ('booth', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Booth')),
-                ('exhibitor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Exhibitor')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("comment", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "booth",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="exhibitors.Booth",
+                    ),
+                ),
+                (
+                    "exhibitor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="exhibitors.Exhibitor",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['exhibitor', 'booth'],
+                "ordering": ["exhibitor", "booth"],
             },
         ),
         migrations.AlterUniqueTogether(
-            name='exhibitorinbooth',
-            unique_together=set([('exhibitor', 'booth')]),
+            name="exhibitorinbooth",
+            unique_together=set([("exhibitor", "booth")]),
         ),
     ]

@@ -6,20 +6,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0002_auto_20180730_1515'),
+        ("companies", "0002_auto_20180730_1515"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='companyaddress',
-            name='reference',
-            field=models.CharField(blank=True, max_length=200, null=True, verbose_name='Your reference'),
+            model_name="companyaddress",
+            name="reference",
+            field=models.CharField(
+                blank=True, max_length=200, null=True, verbose_name="Your reference"
+            ),
         ),
         migrations.AlterField(
-            model_name='companyaddress',
-            name='zipcode',
-            field=models.CharField(max_length=200, verbose_name='Zip code'),
+            model_name="companyaddress",
+            name="zipcode",
+            field=models.CharField(max_length=200, verbose_name="Zip code"),
         ),
     ]

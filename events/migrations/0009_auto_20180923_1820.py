@@ -7,34 +7,61 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0008_auto_20180918_1505'),
+        ("events", "0008_auto_20180918_1505"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SignupQuestionAnswer',
+            name="SignupQuestionAnswer",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answer', models.TextField()),
-                ('participant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Participant')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("answer", models.TextField()),
+                (
+                    "participant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="events.Participant",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='signupquestion',
-            name='event',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='events.Event'),
+            model_name="signupquestion",
+            name="event",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="events.Event",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='signupquestion',
-            name='type',
-            field=models.CharField(choices=[('text_field', 'Text Field'), ('text_area', 'Text Area'), ('radio', 'Single Choice'), ('checkbox', 'Multiple Choice')], max_length=20),
+            model_name="signupquestion",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("text_field", "Text Field"),
+                    ("text_area", "Text Area"),
+                    ("radio", "Single Choice"),
+                    ("checkbox", "Multiple Choice"),
+                ],
+                max_length=20,
+            ),
         ),
         migrations.AddField(
-            model_name='signupquestionanswer',
-            name='signup_question',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.SignupQuestion'),
+            model_name="signupquestionanswer",
+            name="signup_question",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="events.SignupQuestion"
+            ),
         ),
     ]

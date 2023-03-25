@@ -6,40 +6,51 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0003_auto_20180806_0219'),
+        ("companies", "0003_auto_20180806_0219"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='company',
-            name='invoice_city',
+            model_name="company",
+            name="invoice_city",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
         migrations.AddField(
-            model_name='company',
-            name='invoice_co',
+            model_name="company",
+            name="invoice_co",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
         migrations.AddField(
-            model_name='company',
-            name='invoice_country',
-            field=models.CharField(choices=[('DENMARK', 'Denmark'), ('FINLAND', 'Finland'), ('FRANCE', 'France'), ('GERMANY', 'Germany'), ('NORWAY', 'Norway'), ('SWEDEN', 'Sweden'), ('UNITED_KINGDOM', 'United Kingdom')], default='SWEDEN', max_length=200),
+            model_name="company",
+            name="invoice_country",
+            field=models.CharField(
+                choices=[
+                    ("DENMARK", "Denmark"),
+                    ("FINLAND", "Finland"),
+                    ("FRANCE", "France"),
+                    ("GERMANY", "Germany"),
+                    ("NORWAY", "Norway"),
+                    ("SWEDEN", "Sweden"),
+                    ("UNITED_KINGDOM", "United Kingdom"),
+                ],
+                default="SWEDEN",
+                max_length=200,
+            ),
         ),
         migrations.AddField(
-            model_name='company',
-            name='invoice_reference',
+            model_name="company",
+            name="invoice_reference",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
         migrations.AddField(
-            model_name='company',
-            name='invoice_street',
+            model_name="company",
+            name="invoice_street",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
         migrations.AddField(
-            model_name='company',
-            name='invoice_zipcode',
+            model_name="company",
+            name="invoice_zipcode",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
     ]

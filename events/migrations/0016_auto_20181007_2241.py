@@ -6,15 +6,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0015_checkintoken'),
+        ("events", "0015_checkintoken"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='checkintoken',
-            name='check_in_timestamp',
-            field=models.DateTimeField(null=True, verbose_name='When the token was last used to check in'),
+            model_name="checkintoken",
+            name="check_in_timestamp",
+            field=models.DateTimeField(
+                null=True, verbose_name="When the token was last used to check in"
+            ),
         ),
     ]

@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0026_auto_20190820_1729'),
+        ("companies", "0026_auto_20190820_1729"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='company',
-            name='e_invoice',
-            field=models.IntegerField(default=0, verbose_name='E-invoice'),
+            model_name="company",
+            name="e_invoice",
+            field=models.IntegerField(default=0, verbose_name="E-invoice"),
         ),
     ]

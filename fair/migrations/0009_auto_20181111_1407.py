@@ -6,19 +6,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0008_auto_20181111_1259'),
+        ("fair", "0008_auto_20181111_1259"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='lunchticket',
-            options={'default_permissions': [], 'ordering': ['pk'], 'permissions': [('lunchtickets', 'Manage lunch tickets')]},
+            name="lunchticket",
+            options={
+                "default_permissions": [],
+                "ordering": ["pk"],
+                "permissions": [("lunchtickets", "Manage lunch tickets")],
+            },
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='used',
+            model_name="lunchticket",
+            name="used",
             field=models.BooleanField(default=False),
         ),
     ]

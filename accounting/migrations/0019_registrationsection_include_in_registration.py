@@ -6,15 +6,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0018_auto_20190727_1403'),
+        ("accounting", "0018_auto_20190727_1403"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='registrationsection',
-            name='include_in_registration',
-            field=models.BooleanField(default=True, help_text='The section is only visible in the registration if this attribute is checked.'),
+            model_name="registrationsection",
+            name="include_in_registration",
+            field=models.BooleanField(
+                default=True,
+                help_text="The section is only visible in the registration if this attribute is checked.",
+            ),
         ),
     ]

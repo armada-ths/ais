@@ -5,20 +5,24 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0020_auto_20200729_1949'),
+        ("fair", "0020_auto_20200729_1949"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='fair',
-            name='product_lunch_ticket',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounting.Product'),
+            model_name="fair",
+            name="product_lunch_ticket",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="accounting.Product",
+            ),
         ),
         migrations.AlterField(
-            model_name='fair',
-            name='year',
+            model_name="fair",
+            name="year",
             field=models.IntegerField(default=2021),
         ),
     ]

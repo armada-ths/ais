@@ -6,15 +6,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0006_auto_20180918_1327'),
+        ("people", "0006_auto_20180918_1327"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='kth_synchronize',
-            field=models.BooleanField(default=True, verbose_name='Synchronize account data with KTH'),
+            model_name="profile",
+            name="kth_synchronize",
+            field=models.BooleanField(
+                default=True, verbose_name="Synchronize account data with KTH"
+            ),
         ),
     ]

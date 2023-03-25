@@ -6,15 +6,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0031_auto_20181019_1108'),
+        ("exhibitors", "0031_auto_20181019_1108"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='transport_from',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('NOT_APPLICABLE', 'Not applicable'), ('EXCEPTION', 'Exception'), ('IN_CONTACT', 'In contact')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_from",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                    ("EXCEPTION", "Exception"),
+                    ("IN_CONTACT", "In contact"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
     ]

@@ -6,15 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recruitment', '0022_auto_20190817_1813'),
+        ("recruitment", "0022_auto_20190817_1813"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='recruitmentperiod',
-            name='message_to_applicants',
-            field=models.TextField(blank=True, help_text='If a message is given it will be displayed to the applicant in the application form before the Apply/Save button.', null=True),
+            model_name="recruitmentperiod",
+            name="message_to_applicants",
+            field=models.TextField(
+                blank=True,
+                help_text="If a message is given it will be displayed to the applicant in the application form before the Apply/Save button.",
+                null=True,
+            ),
         ),
     ]

@@ -6,15 +6,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0006_auto_20180814_1236'),
+        ("exhibitors", "0006_auto_20180814_1236"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='booth_height',
-            field=models.PositiveIntegerField(blank=True, null=True, verbose_name='Height of the booth (cm)'),
+            model_name="exhibitor",
+            name="booth_height",
+            field=models.PositiveIntegerField(
+                blank=True, null=True, verbose_name="Height of the booth (cm)"
+            ),
         ),
     ]

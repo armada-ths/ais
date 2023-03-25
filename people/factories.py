@@ -5,7 +5,7 @@ from .models import Programme
 
 
 class ProfileFactory(factory.DjangoModelFactory):
-    name = factory.faker('name')
+    name = factory.faker("name")
     year = 2016
     user = -1
     programme = factory.subFactory(ProgrammeFactory)

@@ -7,15 +7,18 @@ import events.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0019_auto_20181009_1215'),
+        ("events", "0019_auto_20181009_1215"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='check_in_token',
-            field=models.CharField(default=events.models.get_random_32_length_string, max_length=32, unique=True),
+            model_name="participant",
+            name="check_in_token",
+            field=models.CharField(
+                default=events.models.get_random_32_length_string,
+                max_length=32,
+                unique=True,
+            ),
         ),
     ]

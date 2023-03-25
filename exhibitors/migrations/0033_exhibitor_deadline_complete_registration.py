@@ -6,15 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0032_auto_20181023_0913'),
+        ("exhibitors", "0032_auto_20181023_0913"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='deadline_complete_registration',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Deviating deadline for complete registration'),
+            model_name="exhibitor",
+            name="deadline_complete_registration",
+            field=models.DateTimeField(
+                blank=True,
+                null=True,
+                verbose_name="Deviating deadline for complete registration",
+            ),
         ),
     ]

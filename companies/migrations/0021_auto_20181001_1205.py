@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0020_group_allow_exhibitors'),
+        ("companies", "0020_group_allow_exhibitors"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='group',
-            name='allow_exhibitors',
+            model_name="group",
+            name="allow_exhibitors",
             field=models.BooleanField(default=False),
         ),
     ]

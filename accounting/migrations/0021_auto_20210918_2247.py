@@ -5,15 +5,19 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0020_auto_20191210_1634'),
+        ("accounting", "0020_auto_20191210_1634"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='order',
-            name='export_batch',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='accounting.ExportBatch'),
+            model_name="order",
+            name="export_batch",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="accounting.ExportBatch",
+            ),
         ),
     ]

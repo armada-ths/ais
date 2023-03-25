@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0010_auto_20181111_1830'),
+        ("fair", "0010_auto_20181111_1830"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lunchticket',
-            name='sent',
+            model_name="lunchticket",
+            name="sent",
             field=models.BooleanField(default=False),
         ),
     ]

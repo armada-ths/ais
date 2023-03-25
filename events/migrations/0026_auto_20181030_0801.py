@@ -6,18 +6,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0025_event_food'),
+        ("events", "0025_event_food"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='signupquestion',
-            options={'ordering': ['pk']},
+            name="signupquestion",
+            options={"ordering": ["pk"]},
         ),
         migrations.AlterModelOptions(
-            name='signupquestionanswer',
-            options={'ordering': ['signup_question__pk']},
+            name="signupquestionanswer",
+            options={"ordering": ["signup_question__pk"]},
         ),
     ]

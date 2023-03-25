@@ -7,16 +7,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0023_merge_20181004_0954'),
-        ('exhibitors', '0039_auto_20181105_1912'),
+        ("companies", "0023_merge_20181004_0954"),
+        ("exhibitors", "0039_auto_20181105_1912"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lunchticket',
-            name='company',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='companies.Company'),
+            model_name="lunchticket",
+            name="company",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="companies.Company",
+            ),
         ),
     ]

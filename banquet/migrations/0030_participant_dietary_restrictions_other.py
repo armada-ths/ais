@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0029_invitation_part_of_matching'),
+        ("banquet", "0029_invitation_part_of_matching"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='dietary_restrictions_other',
+            model_name="participant",
+            name="dietary_restrictions_other",
             field=models.CharField(blank=True, max_length=75, null=True),
         ),
     ]

@@ -12,7 +12,7 @@ MEDIA_ROOT = settings.MEDIA_ROOT
 
 # Hack for making pillow accept large images
 # (should maybe be removed after importing images)
-ImageFile.SAFEBLOCK = 1024*10000
+ImageFile.SAFEBLOCK = 1024 * 10000
 
 
 def path():
@@ -52,10 +52,10 @@ def should_generate(original, generated):
 # The path keeps the file extension of the input file
 @deconstructible
 class UploadToDirUUID(object):
-    path = '{}/{}{}'
+    path = "{}/{}{}"
 
     def __init__(self, *args):
-        self.directory = '/'.join(args)
+        self.directory = "/".join(args)
 
     def __call__(self, instance, filename):
         _, ext = os.path.splitext(filename)
@@ -65,10 +65,10 @@ class UploadToDirUUID(object):
 
 @deconstructible
 class UploadToDir(object):
-    path = '{}/{}'
+    path = "{}/{}"
 
     def __init__(self, *args):
-        self.directory = '/'.join(args)
+        self.directory = "/".join(args)
 
     def __call__(self, instance, filename):
         return UploadToDir.path.format(self.directory, filename)
@@ -76,9 +76,9 @@ class UploadToDir(object):
 
 # Wrapper of the image format functions
 def format_image(filename, width, height, img_type):
-    if img_type == 'png':
+    if img_type == "png":
         return format_png(filename, width, height)
-    if img_type == 'jpg':
+    if img_type == "jpg":
         return format_jpg(filename, width, height)
 
 
@@ -88,17 +88,14 @@ def format_image(filename, width, height, img_type):
 def format_png(filename, width, height):
     img = Image.open(filename)
     img.thumbnail((width, height))
-    if img.mode != 'P':
-        img = img.convert('P')
+    if img.mode != "P":
+        img = img.convert("P")
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
-    if ext != '.png':
-        filename = path + '.png'
-    img.save(buf, 'png')
-    return SimpleUploadedFile(
-        filename,
-        buf.getvalue(),
-        'image/png')
+    if ext != ".png":
+        filename = path + ".png"
+    img.save(buf, "png")
+    return SimpleUploadedFile(filename, buf.getvalue(), "image/png")
 
 
 # Creates a jpeg thumbnail of the input image
@@ -106,19 +103,24 @@ def format_png(filename, width, height):
 def format_jpg(filename, width, height):
     img = Image.open(filename)
     img.thumbnail((width, height))
-    if img.mode == 'P':
-        img = img.convert('RGB')
+    if img.mode == "P":
+        img = img.convert("RGB")
     path, ext = os.path.splitext(filename)
     buf = BytesIO()
-    if ext != '.jpg':
-        filename = path + '.jpg'
-    img.save(buf, 'jpeg', quality=80, optimize=True)
-    return SimpleUploadedFile(
-        filename,
-        buf.getvalue(),
-        'image/jpeg')
+    if ext != ".jpg":
+        filename = path + ".jpg"
+    img.save(buf, "jpeg", quality=80, optimize=True)
+    return SimpleUploadedFile(filename, buf.getvalue(), "image/jpeg")
+
 
 def load_test_image():
-    return SimpleUploadedFile(name='test_image.jpg', content=open(TEST_IMAGE_PATH, 'rb').read(), content_type='image/jpeg')
+    return SimpleUploadedFile(
+        name="test_image.jpg",
+        content=open(TEST_IMAGE_PATH, "rb").read(),
+        content_type="image/jpeg",
+    )
 
-TEST_IMAGE_PATH=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_image.jpg')
+
+TEST_IMAGE_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "test_image.jpg"
+)

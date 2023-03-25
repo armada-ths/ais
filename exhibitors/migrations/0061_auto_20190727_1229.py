@@ -6,18 +6,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0060_auto_20190727_1223'),
+        ("exhibitors", "0060_auto_20190727_1223"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='cataloguecategory',
-            options={'default_permissions': [], 'ordering': ['category'], 'verbose_name_plural': 'Catalogue categories'},
+            name="cataloguecategory",
+            options={
+                "default_permissions": [],
+                "ordering": ["category"],
+                "verbose_name_plural": "Catalogue categories",
+            },
         ),
         migrations.AlterModelOptions(
-            name='catalogueindustry',
-            options={'default_permissions': [], 'ordering': ['category', 'industry'], 'verbose_name_plural': 'Catalogue industries'},
+            name="catalogueindustry",
+            options={
+                "default_permissions": [],
+                "ordering": ["category", "industry"],
+                "verbose_name_plural": "Catalogue industries",
+            },
         ),
     ]

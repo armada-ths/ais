@@ -6,15 +6,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0008_auto_20180814_1254'),
+        ("exhibitors", "0008_auto_20180814_1254"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='placement_wish',
-            field=models.CharField(blank=True, choices=[('MIXED', 'Mixed with companies from other industries'), ('SIMILAR', 'Next to similar companies')], max_length=255, null=True),
+            model_name="exhibitor",
+            name="placement_wish",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("MIXED", "Mixed with companies from other industries"),
+                    ("SIMILAR", "Next to similar companies"),
+                ],
+                max_length=255,
+                null=True,
+            ),
         ),
     ]

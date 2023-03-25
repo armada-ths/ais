@@ -7,15 +7,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0020_afterpartyticket_charge_stripe'),
+        ("banquet", "0020_afterpartyticket_charge_stripe"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='token',
-            field=models.CharField(default=banquet.models.get_random_32_length_string, max_length=32),
+            model_name="participant",
+            name="token",
+            field=models.CharField(
+                default=banquet.models.get_random_32_length_string, max_length=32
+            ),
         ),
     ]

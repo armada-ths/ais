@@ -6,33 +6,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0010_auto_20181003_0938'),
+        ("people", "0010_auto_20181003_0938"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='profile',
-            name='drivers_license',
+            model_name="profile",
+            name="drivers_license",
         ),
         migrations.RemoveField(
-            model_name='profile',
-            name='shirt_size',
+            model_name="profile",
+            name="shirt_size",
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='birth_date',
-            field=models.DateField(blank=True, null=True, verbose_name='Date of birth'),
+            model_name="profile",
+            name="birth_date",
+            field=models.DateField(blank=True, null=True, verbose_name="Date of birth"),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='linkedin_url',
-            field=models.URLField(blank=True, null=True, verbose_name='Linkedin URL'),
+            model_name="profile",
+            name="linkedin_url",
+            field=models.URLField(blank=True, null=True, verbose_name="Linkedin URL"),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='slack_id',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Slack ID'),
+            model_name="profile",
+            name="slack_id",
+            field=models.CharField(
+                blank=True, max_length=255, null=True, verbose_name="Slack ID"
+            ),
         ),
     ]

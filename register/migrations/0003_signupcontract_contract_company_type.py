@@ -7,17 +7,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0024_company_show_externally'),
-        ('register', '0002_auto_20180731_1034'),
+        ("companies", "0024_company_show_externally"),
+        ("register", "0002_auto_20180731_1034"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signupcontract',
-            name='contract_company_type',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='companies.CompanyType'),
+            model_name="signupcontract",
+            name="contract_company_type",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="companies.CompanyType",
+            ),
             preserve_default=False,
         ),
     ]

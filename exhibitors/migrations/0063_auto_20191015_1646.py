@@ -7,42 +7,61 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0018_auto_20190921_1508'),
-        ('exhibitors', '0062_auto_20191008_1904'),
+        ("fair", "0018_auto_20190921_1508"),
+        ("exhibitors", "0062_auto_20191008_1904"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FairLocationSpecial',
+            name="FairLocationSpecial",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=255, null=True)),
             ],
             options={
-                'verbose_name': 'Special location',
-                'default_permissions': [],
+                "verbose_name": "Special location",
+                "default_permissions": [],
             },
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='flyer',
-            field=models.FileField(blank=True, default=None, null=True, upload_to='exhibitors/flyers/%Y%m%d/'),
+            model_name="exhibitor",
+            name="flyer",
+            field=models.FileField(
+                blank=True,
+                default=None,
+                null=True,
+                upload_to="exhibitors/flyers/%Y%m%d/",
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='fair_location',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Location'),
+            model_name="exhibitor",
+            name="fair_location",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="exhibitors.Location",
+            ),
         ),
         migrations.AddField(
-            model_name='fairlocationspecial',
-            name='exhibitors',
-            field=models.ManyToManyField(blank=True, to='exhibitors.Exhibitor'),
+            model_name="fairlocationspecial",
+            name="exhibitors",
+            field=models.ManyToManyField(blank=True, to="exhibitors.Exhibitor"),
         ),
         migrations.AddField(
-            model_name='fairlocationspecial',
-            name='fair',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair'),
+            model_name="fairlocationspecial",
+            name="fair",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+            ),
         ),
     ]

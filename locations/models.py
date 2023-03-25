@@ -4,10 +4,7 @@ from lib.image import UploadToDir
 
 class Building(models.Model):
     name = models.CharField(max_length=50, blank=False)
-    map_image = models.ImageField(
-        upload_to=UploadToDir('building'),
-        blank=False
-    )
+    map_image = models.ImageField(upload_to=UploadToDir("building"), blank=False)
 
     def __str__(self):
         return self.name
@@ -20,7 +17,9 @@ class Room(models.Model):
 
     def __str__(self):
         if self.name:
-            return "{} > Floor {} > {}".format(self.building.name, self.floor, self.name)
+            return "{} > Floor {} > {}".format(
+                self.building.name, self.floor, self.name
+            )
         return "{} > Floor {}".format(self.building.name, self.floor)
 
 

@@ -7,104 +7,180 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('fair', '0001_initial'),
+        ("fair", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('allow_multiple_purchases', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("allow_multiple_purchases", models.BooleanField(default=False)),
             ],
             options={
-                'verbose_name_plural': 'Categories',
-                'ordering': ['name'],
+                "verbose_name_plural": "Categories",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Invoice',
+            name="Invoice",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('id_display', models.PositiveIntegerField(unique=True)),
-                ('price', models.PositiveIntegerField()),
-                ('date_issue', models.DateField()),
-                ('date_due', models.DateField()),
-                ('date_delivery_start', models.DateField()),
-                ('date_delivery_end', models.DateField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("id_display", models.PositiveIntegerField(unique=True)),
+                ("price", models.PositiveIntegerField()),
+                ("date_issue", models.DateField()),
+                ("date_due", models.DateField()),
+                ("date_delivery_start", models.DateField()),
+                ("date_delivery_end", models.DateField(blank=True, null=True)),
             ],
             options={
-                'verbose_name_plural': 'Invoices',
+                "verbose_name_plural": "Invoices",
             },
         ),
         migrations.CreateModel(
-            name='Order',
+            name="Order",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=100, null=True)),
-                ('quantity', models.PositiveIntegerField()),
-                ('unit_price', models.PositiveIntegerField(blank=True, null=True)),
-                ('comment', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=100, null=True)),
+                ("quantity", models.PositiveIntegerField()),
+                ("unit_price", models.PositiveIntegerField(blank=True, null=True)),
+                ("comment", models.TextField(blank=True)),
             ],
             options={
-                'verbose_name_plural': 'Orders',
-                'ordering': ['name'],
+                "verbose_name_plural": "Orders",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('max_quantity', models.PositiveIntegerField(blank=True, null=True)),
-                ('unit_price', models.PositiveIntegerField()),
-                ('allow_companies', models.BooleanField(default=True)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='accounting.Category')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("max_quantity", models.PositiveIntegerField(blank=True, null=True)),
+                ("unit_price", models.PositiveIntegerField()),
+                ("allow_companies", models.BooleanField(default=True)),
+                (
+                    "category",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="accounting.Category",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Products',
-                'ordering': ['name'],
+                "verbose_name_plural": "Products",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='ProductOnInvoice',
+            name="ProductOnInvoice",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=100, null=True)),
-                ('price', models.PositiveIntegerField(blank=True, null=True)),
-                ('invoice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounting.Invoice')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounting.Product')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=100, null=True)),
+                ("price", models.PositiveIntegerField(blank=True, null=True)),
+                (
+                    "invoice",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="accounting.Invoice",
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="accounting.Product",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Products',
-                'ordering': ['name'],
+                "verbose_name_plural": "Products",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Revenue',
+            name="Revenue",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Revenues',
-                'ordering': ['name'],
+                "verbose_name_plural": "Revenues",
+                "ordering": ["name"],
             },
         ),
         migrations.AddField(
-            model_name='product',
-            name='revenue',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounting.Revenue'),
+            model_name="product",
+            name="revenue",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="accounting.Revenue"
+            ),
         ),
         migrations.AddField(
-            model_name='order',
-            name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounting.Product'),
+            model_name="order",
+            name="product",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="accounting.Product"
+            ),
         ),
     ]

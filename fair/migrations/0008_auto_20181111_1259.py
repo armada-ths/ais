@@ -8,57 +8,85 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0023_merge_20181004_0954'),
+        ("companies", "0023_merge_20181004_0954"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('people', '0011_auto_20181107_1416'),
-        ('fair', '0007_auto_20181111_1257'),
+        ("people", "0011_auto_20181107_1416"),
+        ("fair", "0007_auto_20181111_1257"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lunchticket',
-            name='company',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='companies.Company'),
+            model_name="lunchticket",
+            name="company",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="companies.Company",
+            ),
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='day',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='fair.FairDay'),
+            model_name="lunchticket",
+            name="day",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="fair.FairDay",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='dietary_restrictions',
-            field=models.ManyToManyField(blank=True, to='people.DietaryRestriction'),
+            model_name="lunchticket",
+            name="dietary_restrictions",
+            field=models.ManyToManyField(blank=True, to="people.DietaryRestriction"),
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='fair',
-            field=models.ForeignKey(default=3, on_delete=django.db.models.deletion.CASCADE, to='fair.Fair'),
+            model_name="lunchticket",
+            name="fair",
+            field=models.ForeignKey(
+                default=3, on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='time',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='fair.LunchTicketTime'),
+            model_name="lunchticket",
+            name="time",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="fair.LunchTicketTime",
+            ),
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="lunchticket",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='lunchticketscan',
-            name='lunch_ticket',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='fair.LunchTicket'),
+            model_name="lunchticketscan",
+            name="lunch_ticket",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="fair.LunchTicket",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='lunchticketscan',
-            name='user',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="lunchticketscan",
+            name="user",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
             preserve_default=False,
         ),
     ]

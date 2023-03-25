@@ -6,15 +6,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0005_auto_20180814_1235'),
+        ("companies", "0005_auto_20180814_1235"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='company',
-            name='name_legal',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Legal organization name'),
+            model_name="company",
+            name="name_legal",
+            field=models.CharField(
+                blank=True,
+                max_length=100,
+                null=True,
+                verbose_name="Legal organization name",
+            ),
         ),
     ]

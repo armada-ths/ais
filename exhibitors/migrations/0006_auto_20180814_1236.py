@@ -6,16 +6,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0005_auto_20180814_1235'),
+        ("exhibitors", "0005_auto_20180814_1235"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='placement_wish',
-            field=models.CharField(choices=[('NO_WISH', 'No wish'), ('MIXED', 'Mixed with companies from other industries'), ('SIMILAR', 'Next to similar companies')], default='NO_WISH', max_length=255),
+            model_name="exhibitor",
+            name="placement_wish",
+            field=models.CharField(
+                choices=[
+                    ("NO_WISH", "No wish"),
+                    ("MIXED", "Mixed with companies from other industries"),
+                    ("SIMILAR", "Next to similar companies"),
+                ],
+                default="NO_WISH",
+                max_length=255,
+            ),
             preserve_default=False,
         ),
     ]

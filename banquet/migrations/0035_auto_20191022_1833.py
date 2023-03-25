@@ -6,20 +6,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0034_auto_20191022_1804'),
+        ("banquet", "0034_auto_20191022_1804"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='afterpartyticket',
-            name='email_address',
-            field=models.EmailField(max_length=75, verbose_name='E-mail address'),
+            model_name="afterpartyticket",
+            name="email_address",
+            field=models.EmailField(max_length=75, verbose_name="E-mail address"),
         ),
         migrations.AlterField(
-            model_name='afterpartyticket',
-            name='name',
+            model_name="afterpartyticket",
+            name="name",
             field=models.CharField(max_length=75),
         ),
     ]

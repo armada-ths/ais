@@ -6,19 +6,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0011_auto_20180924_2028'),
+        ("events", "0011_auto_20180924_2028"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='signupquestionanswer',
-            name='answer_options',
+            model_name="signupquestionanswer",
+            name="answer_options",
         ),
         migrations.AlterField(
-            model_name='signupquestion',
-            name='type',
-            field=models.CharField(choices=[('text_field', 'Short Text'), ('text_area', 'Long Text'), ('single_choice', 'Single Choice'), ('multiple_choice', 'Multiple Choice')], max_length=20),
+            model_name="signupquestion",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("text_field", "Short Text"),
+                    ("text_area", "Long Text"),
+                    ("single_choice", "Single Choice"),
+                    ("multiple_choice", "Multiple Choice"),
+                ],
+                max_length=20,
+            ),
         ),
     ]

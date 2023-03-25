@@ -6,14 +6,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recruitment', '0003_auto_20180819_1431'),
+        ("recruitment", "0003_auto_20180819_1431"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='recruitmentperiod',
-            options={'ordering': ['fair', 'name'], 'permissions': (('administer_recruitment', 'Administer recruitment'),)},
+            name="recruitmentperiod",
+            options={
+                "ordering": ["fair", "name"],
+                "permissions": (("administer_recruitment", "Administer recruitment"),),
+            },
         ),
     ]

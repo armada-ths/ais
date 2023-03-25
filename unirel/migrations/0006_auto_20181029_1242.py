@@ -6,25 +6,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('unirel', '0005_auto_20181029_1241'),
+        ("unirel", "0005_auto_20181029_1241"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='addon_banquet',
-            field=models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=False),
+            model_name="participant",
+            name="addon_banquet",
+            field=models.BooleanField(
+                choices=[(True, "Yes"), (False, "No")], default=False
+            ),
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='addon_lunch',
-            field=models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=False),
+            model_name="participant",
+            name="addon_lunch",
+            field=models.BooleanField(
+                choices=[(True, "Yes"), (False, "No")], default=False
+            ),
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='addon_sleep',
-            field=models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=False),
+            model_name="participant",
+            name="addon_sleep",
+            field=models.BooleanField(
+                choices=[(True, "Yes"), (False, "No")], default=False
+            ),
         ),
     ]

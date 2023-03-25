@@ -7,20 +7,51 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0014_auto_20181007_2039'),
+        ("events", "0014_auto_20181007_2039"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CheckInToken',
+            name="CheckInToken",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(max_length=32, unique=True, verbose_name='The randomly generated 32 character long string of the token')),
-                ('check_in_timestamp', models.DateTimeField(verbose_name='When the token was last used to check in')),
-                ('check_in_counter', models.IntegerField(default=0, verbose_name='How many times the token has been used. For none-fraudulent use, this should be 0 or 1.')),
-                ('participant', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='events.Participant')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "value",
+                    models.CharField(
+                        max_length=32,
+                        unique=True,
+                        verbose_name="The randomly generated 32 character long string of the token",
+                    ),
+                ),
+                (
+                    "check_in_timestamp",
+                    models.DateTimeField(
+                        verbose_name="When the token was last used to check in"
+                    ),
+                ),
+                (
+                    "check_in_counter",
+                    models.IntegerField(
+                        default=0,
+                        verbose_name="How many times the token has been used. For none-fraudulent use, this should be 0 or 1.",
+                    ),
+                ),
+                (
+                    "participant",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="events.Participant",
+                    ),
+                ),
             ],
         ),
     ]

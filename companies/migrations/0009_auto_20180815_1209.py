@@ -6,15 +6,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0008_remove_company_phone_number'),
+        ("companies", "0008_remove_company_phone_number"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='company',
-            name='invoice_country',
-            field=models.CharField(blank=True, choices=[('DENMARK', 'Denmark'), ('FINLAND', 'Finland'), ('FRANCE', 'France'), ('GERMANY', 'Germany'), ('NORWAY', 'Norway'), ('SWEDEN', 'Sweden'), ('UNITED_KINGDOM', 'United Kingdom')], default='SWEDEN', max_length=200, null=True),
+            model_name="company",
+            name="invoice_country",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("DENMARK", "Denmark"),
+                    ("FINLAND", "Finland"),
+                    ("FRANCE", "France"),
+                    ("GERMANY", "Germany"),
+                    ("NORWAY", "Norway"),
+                    ("SWEDEN", "Sweden"),
+                    ("UNITED_KINGDOM", "United Kingdom"),
+                ],
+                default="SWEDEN",
+                max_length=200,
+                null=True,
+            ),
         ),
     ]

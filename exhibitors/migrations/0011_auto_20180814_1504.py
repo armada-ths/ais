@@ -7,20 +7,29 @@ import lib.image
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0010_auto_20180814_1406'),
+        ("exhibitors", "0010_auto_20180814_1406"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_logo_freesize',
-            field=models.ImageField(blank=True, upload_to=lib.image.UploadToDirUUID('exhibitors', 'catalogue_logo_freesize')),
+            model_name="exhibitor",
+            name="catalogue_logo_freesize",
+            field=models.ImageField(
+                blank=True,
+                upload_to=lib.image.UploadToDirUUID(
+                    "exhibitors", "catalogue_logo_freesize"
+                ),
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_logo_squared',
-            field=models.ImageField(blank=True, upload_to=lib.image.UploadToDirUUID('exhibitors', 'catalogue_logo_squared')),
+            model_name="exhibitor",
+            name="catalogue_logo_squared",
+            field=models.ImageField(
+                blank=True,
+                upload_to=lib.image.UploadToDirUUID(
+                    "exhibitors", "catalogue_logo_squared"
+                ),
+            ),
         ),
     ]

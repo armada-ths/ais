@@ -10,36 +10,38 @@ from enum import Enum, unique
 
 # Matching survey
 class Survey(models.Model):
-    fair = models.ForeignKey('fair.Fair', default=1, on_delete=models.CASCADE)
+    fair = models.ForeignKey("fair.Fair", default=1, on_delete=models.CASCADE)
     name = models.CharField(max_length=256)
     description = models.TextField()
 
     def __str__(self):
-        return "%s"%self.name
+        return "%s" % self.name
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
+
 
 CHOICES = (
-    (None, '-------'),
-    (1, 'Definitely Not'),
-    (2, 'Probably Not'),
-    (3, 'Maybe'),
-    (4, 'Probably'),
-    (5,'Definitely')
+    (None, "-------"),
+    (1, "Definitely Not"),
+    (2, "Probably Not"),
+    (3, "Maybe"),
+    (4, "Probably"),
+    (5, "Definitely"),
 )
 
 
 class Category(models.Model):
-
     name = models.CharField(max_length=400)
-    survey = models.ForeignKey(Survey, related_name="categories", on_delete=models.CASCADE)
+    survey = models.ForeignKey(
+        Survey, related_name="categories", on_delete=models.CASCADE
+    )
     order = models.IntegerField(blank=True, null=True)
     description = models.CharField(max_length=2000, blank=True, null=True)
 
     class Meta(object):
-        verbose_name = 'category'
-        verbose_name_plural = 'categories'
+        verbose_name = "category"
+        verbose_name_plural = "categories"
 
     def __str__(self):
         return self.name
@@ -47,74 +49,99 @@ class Category(models.Model):
     def slugify(self):
         return slugify(str(self))
 
+
 class Question(models.Model):
-    TEXT = 'text'
-    SELECT = 'select'
-    SELECT_MULTIPLE = 'select-multiple'
-    INT = 'integer'
-    BOOL = 'boolean'
+    TEXT = "text"
+    SELECT = "select"
+    SELECT_MULTIPLE = "select-multiple"
+    INT = "integer"
+    BOOL = "boolean"
 
     QUESTION_TYPES = (
-        (TEXT, 'text'),
-        (SELECT, 'select'),
-        (SELECT_MULTIPLE, 'Select Multiple'),
-        (INT, 'integer'),
-        (BOOL, 'boolean'),
+        (TEXT, "text"),
+        (SELECT, "select"),
+        (SELECT_MULTIPLE, "Select Multiple"),
+        (INT, "integer"),
+        (BOOL, "boolean"),
     )
     required = models.BooleanField(default=False)
     name = models.CharField(max_length=64, blank=True, null=True)
     text = models.TextField()
     help_text = models.TextField(blank=True, null=True)
-    category = models.ForeignKey(Category, blank=True, null=True,
-                                 related_name="questions", on_delete=models.CASCADE)
-    question_type = models.CharField(max_length=256, choices=QUESTION_TYPES, blank=True, null=True)
-    survey = models.ForeignKey(Survey, related_name="questions", on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(
+        Category,
+        blank=True,
+        null=True,
+        related_name="questions",
+        on_delete=models.CASCADE,
+    )
+    question_type = models.CharField(
+        max_length=256, choices=QUESTION_TYPES, blank=True, null=True
+    )
+    survey = models.ForeignKey(
+        Survey, related_name="questions", on_delete=models.CASCADE, null=True
+    )
 
     class Meta(object):
-        verbose_name = 'question'
-        verbose_name_plural = 'questions'
+        verbose_name = "question"
+        verbose_name_plural = "questions"
 
     def get_choices(self):
         return CHOICES
 
     def __str__(self):
-        return '%s'%self.name
-    #class Meta:
+        return "%s" % self.name
+
+    # class Meta:
     #    ordering = ['name']
 
+
 class Response(models.Model):
-    exhibitor = models.ForeignKey('exhibitors.Exhibitor', on_delete=models.CASCADE)
-    survey = models.ForeignKey(Survey, blank=True, null=True, on_delete=models.CASCADE, related_name="responses")
+    exhibitor = models.ForeignKey("exhibitors.Exhibitor", on_delete=models.CASCADE)
+    survey = models.ForeignKey(
+        Survey,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="responses",
+    )
 
     class Meta(object):
-        verbose_name = 'response'
-        verbose_name_plural = 'responses'
+        verbose_name = "response"
+        verbose_name_plural = "responses"
 
-        
     def __str__(self):
-        return '%s'%self.exhibitor
+        return "%s" % self.exhibitor
+
 
 class Answer(PolymorphicModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     response = models.ForeignKey(Response, on_delete=models.CASCADE)
 
     class Meta(object):
-        verbose_name = 'answer'
-        verbose_name_plural = 'answers'
+        verbose_name = "answer"
+        verbose_name_plural = "answers"
+
 
 class TextAns(Answer):
     ans = models.CharField(null=True, blank=True, max_length=4096)
-    #def __str__(self):
+    # def __str__(self):
     #    return '%s: %s'%(self.question, self.ans)
+
 
 class ChoiceAns(Answer):
     ans = models.IntegerField(choices=CHOICES, null=True, blank=True)
 
+
 class IntegerAns(Answer):
     ans = models.IntegerField(null=True, blank=True)
 
+
 class BooleanAns(Answer):
-    ans = models.NullBooleanField(choices=((True,'yes'), (False,'no')), null=True, blank=True, default=None)
+    ans = models.NullBooleanField(
+        choices=((True, "yes"), (False, "no")), null=True, blank=True, default=None
+    )
+
 
 ###########################################################
 #   Thes following question will contain output processed
@@ -123,19 +150,22 @@ class BooleanAns(Answer):
 #   the app/web, connected to a student_profile.
 @unique
 class StudentQuestionType(Enum):
-    SLIDER = 'slider'
-    GRADING = 'grading'
+    SLIDER = "slider"
+    GRADING = "grading"
 
     def is_type(string):
-        values = { item.value for item in StudentQuestionType }
-        return (string in values)
+        values = {item.value for item in StudentQuestionType}
+        return string in values
 
     def get_choices():
-        return [ (question_type.value, question_type.value) for question_type in StudentQuestionType ]
+        return [
+            (question_type.value, question_type.value)
+            for question_type in StudentQuestionType
+        ]
 
 
 class StudentQuestionBase(models.Model):
-    '''
+    """
     A base model for all types of student questions.
 
     ATTENTION! Trying to create an object of this model directly will raise an exception, as it's not intended to be used this way, create an object of one of the children instead!
@@ -159,27 +189,39 @@ class StudentQuestionBase(models.Model):
 
     Optional fields:
         company_question (fk) - foreign key to a company question
-    '''
+    """
 
     question = models.CharField(max_length=256)
-    question_type = models.CharField(max_length=64, choices=StudentQuestionType.get_choices())
+    question_type = models.CharField(
+        max_length=64, choices=StudentQuestionType.get_choices()
+    )
     survey = models.ManyToManyField(Survey, blank=True)
-    company_question = models.ForeignKey(Question, blank=True, null=True, on_delete=models.CASCADE)
+    company_question = models.ForeignKey(
+        Question, blank=True, null=True, on_delete=models.CASCADE
+    )
+
     class Meta:
         default_permissions = ()
-        verbose_name = 'question'
+        verbose_name = "question"
 
     def save(self, *args, **kwargs):
         if StudentQuestionType.is_type(self.question_type):
             return super(StudentQuestionBase, self).save(*args, **kwargs)
         else:
-            raise Exception('Trying to save a model <' + str(self) + '> of illegal type \'' + str(self.question_type) + '\'!')
+            raise Exception(
+                "Trying to save a model <"
+                + str(self)
+                + "> of illegal type '"
+                + str(self.question_type)
+                + "'!"
+            )
+
     def __str__(self):
-        return 'Question: %s    Type: %s'%(self.question, self.question_type)
+        return "Question: %s    Type: %s" % (self.question, self.question_type)
 
 
 class StudentQuestionSlider(StudentQuestionBase):
-    '''
+    """
     A numerical question answered with a slider.
 
     Is a child of StudentQuestionBase, which means its fields (question or question_type for example) are also accesable from this model.
@@ -190,7 +232,8 @@ class StudentQuestionSlider(StudentQuestionBase):
         units (string)      - the units (plural for now) of the measured entity
     Optional fields:
         logarithmic (bool)  - should the scale be logarithmic (defaults to False)
-    '''
+    """
+
     min_value = models.FloatField()
     max_value = models.FloatField()
     units = models.CharField(max_length=64, blank=True, null=True)
@@ -198,10 +241,11 @@ class StudentQuestionSlider(StudentQuestionBase):
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'slider question'
+        verbose_name = "slider question"
 
     def __init__(self, *args, **kwargs):
-        if kwargs.get('question_type', None): kwargs.pop('question_type')
+        if kwargs.get("question_type", None):
+            kwargs.pop("question_type")
         self.question_type = StudentQuestionType.SLIDER.value
         return super(StudentQuestionSlider, self).__init__(*args, **kwargs)
 
@@ -211,7 +255,7 @@ class StudentQuestionSlider(StudentQuestionBase):
 
 
 class StudentQuestionGrading(StudentQuestionBase):
-    '''
+    """
     A integer question answered by grading choices (0-grading_size)
 
     Is a child of StudentQuestionBase, which means its fields (question or question_type for example) are also accesable from this model.
@@ -219,15 +263,17 @@ class StudentQuestionGrading(StudentQuestionBase):
     Necessary field(s):
         grading_size (int) - number of grading choices
 
-    '''
+    """
+
     grading_size = models.IntegerField(default=5)
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'grading question'
+        verbose_name = "grading question"
 
     def __init__(self, *args, **kwargs):
-        if kwargs.get('question_type',None): kwargs.pop('question_type')
+        if kwargs.get("question_type", None):
+            kwargs.pop("question_type")
         self.question_type = StudentQuestionType.GRADING.value
         return super(StudentQuestionGrading, self).__init__(*args, **kwargs)
 
@@ -237,26 +283,29 @@ class StudentQuestionGrading(StudentQuestionBase):
 
 
 class StudentAnswerBase(models.Model):
-    '''
+    """
     Base model for answers to the student questions created by the matching
     algorithm. Contains a timestamp on created/updated that is autosave upon
     save.
 
     Necessary field(s):
         student (fk) - foreign key to Student Profile
-    '''
-    student = models.ForeignKey('student_profiles.StudentProfile', on_delete=models.CASCADE)
-    survey = models.ManyToManyField(Survey,blank=True)
+    """
+
+    student = models.ForeignKey(
+        "student_profiles.StudentProfile", on_delete=models.CASCADE
+    )
+    survey = models.ManyToManyField(Survey, blank=True)
     created = models.DateTimeField(editable=False, null=True, blank=True)
     updated = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer base'
-        verbose_name = 'answers base'
+        verbose_name = "answer base"
+        verbose_name = "answers base"
 
     def save(self, *args, **kwargs):
-        ''' setting timestamp '''
+        """setting timestamp"""
         if not self.id:
             self.created = timezone.now()
         self.updated = timezone.now()
@@ -264,7 +313,7 @@ class StudentAnswerBase(models.Model):
 
 
 class StudentAnswerSlider(StudentAnswerBase):
-    '''
+    """
     A floating point answer model with a foreign key to StudentQuestionSlider
 
     Parent is StudentAnswerBase
@@ -273,22 +322,23 @@ class StudentAnswerSlider(StudentAnswerBase):
         question (fk)       - foregin key to StudentQuestionSlider
         answer_min (float)  - the low bound of the range of the answer
         answer_max (float)  - the high bound of the range of the answer
-    '''
-    question    = models.ForeignKey(StudentQuestionSlider, on_delete=models.CASCADE)
-    answer_min  = models.FloatField(default=0.0)
-    answer_max  = models.FloatField(default=0.0)
+    """
+
+    question = models.ForeignKey(StudentQuestionSlider, on_delete=models.CASCADE)
+    answer_min = models.FloatField(default=0.0)
+    answer_max = models.FloatField(default=0.0)
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer slider'
-        verbose_name_plural = 'answers slider'
+        verbose_name = "answer slider"
+        verbose_name_plural = "answers slider"
 
     def __str__(self):
-        return '%.2f to %.2f' % (self.answer_min, self.answer_max)
+        return "%.2f to %.2f" % (self.answer_min, self.answer_max)
 
 
 class StudentAnswerGrading(StudentAnswerBase):
-    '''
+    """
     A int answer model with a foregin key to StudentAnswerGrading
 
     Parent is StudentAnswerBase
@@ -296,21 +346,22 @@ class StudentAnswerGrading(StudentAnswerBase):
     Necessary field(s):
         question (fk)   - foregin key to StudentQuestionGrading
         answer (int)    - answer to question
-    '''
-    question    = models.ForeignKey(StudentQuestionGrading, on_delete=models.CASCADE)
-    answer      = models.IntegerField(default=0)
+    """
+
+    question = models.ForeignKey(StudentQuestionGrading, on_delete=models.CASCADE)
+    answer = models.IntegerField(default=0)
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer grading'
-        verbose_name_plural = 'answers grading'
+        verbose_name = "answer grading"
+        verbose_name_plural = "answers grading"
 
     def __str__(self):
-        return '%i'%self.answer
+        return "%i" % self.answer
 
 
 class WorkFieldArea(models.Model):
-    '''
+    """
     Work field main areas. These are manually inputed into the db as a type
     of verification step. To each WorkFieldArea a set of WorkField objects are related
 
@@ -318,17 +369,20 @@ class WorkFieldArea(models.Model):
         work_area (unique string) - work field area name
 
     Note: work_area is set as unique
-    '''
+    """
+
     work_area = models.TextField(unique=True)
+
     class Meta:
         default_permissions = ()
-        verbose_name = 'work field area'
+        verbose_name = "work field area"
+
     def __str__(self):
-        return '%s'%self.work_area
+        return "%s" % self.work_area
 
 
 class WorkField(models.Model):
-    '''
+    """
     Work fields that are auto created by the matching algorithm. These are
     manually associated via a foregin key to WorkFieldArea as a way of manual
     verification
@@ -341,137 +395,163 @@ class WorkField(models.Model):
 
     Note: the work_field is set as unique and instead the field can be connected
           to multiple surveys if necessary.
-    '''
-    work_field  = models.TextField(unique=True)
-    work_area   = models.ForeignKey(WorkFieldArea, blank=True, null=True, on_delete=models.CASCADE)
-    survey      = models.ManyToManyField(Survey)
+    """
+
+    work_field = models.TextField(unique=True)
+    work_area = models.ForeignKey(
+        WorkFieldArea, blank=True, null=True, on_delete=models.CASCADE
+    )
+    survey = models.ManyToManyField(Survey)
+
     class Meta:
         default_permissions = ()
-        verbose_name = 'work field'
+        verbose_name = "work field"
 
     def __str__(self):
-        return '%s in %s'%(self.work_field, self.work_area.work_area)
+        return "%s in %s" % (self.work_field, self.work_area.work_area)
 
 
 class StudentAnswerWorkField(StudentAnswerBase):
-    '''
+    """
     An boolean answer connecting a student_profile to the WorkField model. Is a
     child of StudentAnswerBase.
 
     Necessary field(s):
         work_field (fk) - foreign key to WorkField
         answer (bool)   - true or false on that work field
-    '''
-    work_field  = models.ForeignKey(WorkField, on_delete=models.CASCADE)
-    answer      = models.BooleanField(choices=((True,'yes'), (False,'no')), default=False)
+    """
+
+    work_field = models.ForeignKey(WorkField, on_delete=models.CASCADE)
+    answer = models.BooleanField(choices=((True, "yes"), (False, "no")), default=False)
+
     class Meta:
         default_permissions = ()
-        verbose_name = 'answer workfield'
-        verbose_name_plural = 'answers workfield'
+        verbose_name = "answer workfield"
+        verbose_name_plural = "answers workfield"
 
     def __str__(self):
-        return '%s for work field = %s w ans = %s'%(self.student, self.work_field, self.answer)
+        return "%s for work field = %s w ans = %s" % (
+            self.student,
+            self.work_field,
+            self.answer,
+        )
+
 
 class SwedenRegion(models.Model):
-    '''
+    """
     Predefined regions in the app. Is used to connect companies cities to student answers in the app.
     region_id is an id that is used to send objects from the app.
-    '''
+    """
+
     name = models.TextField()
-    region_id = models.IntegerField(unique=True, null=True  )
+    region_id = models.IntegerField(unique=True, null=True)
     survey = models.ForeignKey(Survey, null=True, on_delete=models.CASCADE)
 
-
     def __str__(self):
-        return '%s: %s' %(self.region_id, self.name)
+        return "%s: %s" % (self.region_id, self.name)
+
 
 class SwedenCity(models.Model):
-    '''
+    """
     Used to connect cities to a region in Sweden. Contains preprocessed data.
-    '''
+    """
+
     city = models.TextField(unique=True)
-    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+    exhibitor = models.ManyToManyField("exhibitors.Exhibitor")
     region = models.ForeignKey(SwedenRegion, on_delete=models.CASCADE)
 
     class Meta:
-            verbose_name = 'sweden city'
-            verbose_name_plural = 'sweden cities'
+        verbose_name = "sweden city"
+        verbose_name_plural = "sweden cities"
 
     def __str__(self):
         return self.city
 
+
 class StudentAnswerRegion(StudentAnswerBase):
-    '''
+    """
     Region is the regions in sweden the student would prefere to work in.
-    '''
+    """
+
     region = models.ForeignKey(SwedenRegion, on_delete=models.CASCADE)
 
     class Meta:
-            verbose_name = 'answer region'
+        verbose_name = "answer region"
 
     def __str__(self):
-        return '%s chose %s' %(self.student, self.region)
+        return "%s chose %s" % (self.student, self.region)
 
 
 class Continent(models.Model):
-    '''
+    """
     Connects a exhibitor to a Continent.
     All continents should be connected to at least one exhibitor when used.
     continent_id is an id that is used to send objects from the app.
-    '''
+    """
+
     name = models.TextField(unique=True)
     continent_id = models.IntegerField(unique=True, null=True)
     survey = models.ForeignKey(Survey, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return '%s: %s' %(self.continent_id, self.name)
+        return "%s: %s" % (self.continent_id, self.name)
+
 
 class Country(models.Model):
-    '''
+    """
     Connects Country (that exhibitors work in) to continents (where student want to work)
-    '''
+    """
+
     name = models.TextField(unique=True)
-    exhibitor = models.ManyToManyField('exhibitors.Exhibitor')
+    exhibitor = models.ManyToManyField("exhibitors.Exhibitor")
     continent = models.ForeignKey(Continent, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural = 'countries'
+        verbose_name_plural = "countries"
+
 
 class StudentAnswerContinent(StudentAnswerBase):
-    '''
+    """
     Inherits from StudentAnswerBase.
     continent is the continents the student would prefere to work in.
-    '''
+    """
+
     continent = models.ForeignKey(Continent, on_delete=models.CASCADE)
 
     class Meta:
-            verbose_name = 'answer continent'
+        verbose_name = "answer continent"
 
     def __str__(self):
-        return '%s chose %s' %(self.student, self.continent)
+        return "%s chose %s" % (self.student, self.continent)
+
 
 class JobType(models.Model):
-    '''
+    """
     All jobtypes connected to an ID.
     LATER:: This should not be used!! Instead jobtypes in exhibitor should be used.
     relates to an exhibitor question for now.
-    '''
+    """
+
     job_type = models.TextField()
     job_type_id = models.IntegerField(unique=True)
-    exhibitor_question = models.ForeignKey(Question, blank=True, null=True, on_delete=models.CASCADE)
+    exhibitor_question = models.ForeignKey(
+        Question, blank=True, null=True, on_delete=models.CASCADE
+    )
 
     def __str__(self):
-        return '%s: %s'%(self.job_type_id, self.job_type)
+        return "%s: %s" % (self.job_type_id, self.job_type)
+
 
 class StudentAnswerJobType(StudentAnswerBase):
-    '''
+    """
     Inherits from StudentAnswerBase.
     Region is the regions in sweden the student would prefere to work in.
-    '''
+    """
+
     job_type = models.ForeignKey(JobType, null=True, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'answer job type'
+        verbose_name = "answer job type"
 
     def __str__(self):
-        return '%s chose %s' %(self.student, self.job_type)
+        return "%s chose %s" % (self.student, self.job_type)

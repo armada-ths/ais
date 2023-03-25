@@ -6,14 +6,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recruitment', '0013_auto_20180910_1920'),
+        ("recruitment", "0013_auto_20180910_1920"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='recruitmentapplication',
-            name='exhibitor',
+            model_name="recruitmentapplication",
+            name="exhibitor",
         ),
     ]

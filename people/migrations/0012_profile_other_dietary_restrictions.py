@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0011_auto_20181107_1416'),
+        ("people", "0011_auto_20181107_1416"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='other_dietary_restrictions',
+            model_name="profile",
+            name="other_dietary_restrictions",
             field=models.CharField(blank=True, max_length=75, null=True),
         ),
     ]

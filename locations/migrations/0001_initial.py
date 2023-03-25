@@ -8,41 +8,74 @@ import lib.image
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Building',
+            name="Building",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('map_image', models.ImageField(upload_to=lib.image.UploadToDir('building'))),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "map_image",
+                    models.ImageField(upload_to=lib.image.UploadToDir("building")),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Location',
+            name="Location",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('x_pos', models.FloatField(default=0.0)),
-                ('y_pos', models.FloatField(default=0.0)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("x_pos", models.FloatField(default=0.0)),
+                ("y_pos", models.FloatField(default=0.0)),
             ],
         ),
         migrations.CreateModel(
-            name='Room',
+            name="Room",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=80)),
-                ('floor', models.PositiveSmallIntegerField(default=0)),
-                ('building', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='locations.Building')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=80)),
+                ("floor", models.PositiveSmallIntegerField(default=0)),
+                (
+                    "building",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="locations.Building",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='location',
-            name='room',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='locations.Room'),
+            model_name="location",
+            name="room",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="locations.Room"
+            ),
         ),
     ]

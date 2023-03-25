@@ -6,16 +6,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0003_auto_20180828_0959'),
+        ("people", "0003_auto_20180828_0959"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='language',
-            name='short',
-            field=models.CharField(default='', max_length=100),
+            model_name="language",
+            name="short",
+            field=models.CharField(default="", max_length=100),
             preserve_default=False,
         ),
     ]

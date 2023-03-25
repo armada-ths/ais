@@ -6,20 +6,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0005_auto_20181002_1357'),
+        ("banquet", "0005_auto_20181002_1357"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='dietary_restrictions',
-            field=models.ManyToManyField(blank=True, to='people.DietaryRestriction'),
+            model_name="participant",
+            name="dietary_restrictions",
+            field=models.ManyToManyField(blank=True, to="people.DietaryRestriction"),
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='email_address',
-            field=models.EmailField(blank=True, max_length=75, null=True, verbose_name='E-mail address'),
+            model_name="participant",
+            name="email_address",
+            field=models.EmailField(
+                blank=True, max_length=75, null=True, verbose_name="E-mail address"
+            ),
         ),
     ]

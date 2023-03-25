@@ -6,20 +6,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('unirel', '0003_participant_phone_number'),
+        ("unirel", "0003_participant_phone_number"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='addon_banquet',
+            model_name="participant",
+            name="addon_banquet",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='phone_number',
+            model_name="participant",
+            name="phone_number",
             field=models.CharField(blank=True, max_length=75, null=True),
         ),
     ]

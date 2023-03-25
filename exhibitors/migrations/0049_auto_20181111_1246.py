@@ -6,55 +6,54 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0048_auto_20181109_1001'),
+        ("exhibitors", "0048_auto_20181109_1001"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='lunchticket',
-            name='company',
+            model_name="lunchticket",
+            name="company",
         ),
         migrations.RemoveField(
-            model_name='lunchticket',
-            name='day',
+            model_name="lunchticket",
+            name="day",
         ),
         migrations.RemoveField(
-            model_name='lunchticket',
-            name='dietary_restrictions',
+            model_name="lunchticket",
+            name="dietary_restrictions",
         ),
         migrations.RemoveField(
-            model_name='lunchticket',
-            name='fair',
+            model_name="lunchticket",
+            name="fair",
         ),
         migrations.RemoveField(
-            model_name='lunchticket',
-            name='time',
+            model_name="lunchticket",
+            name="time",
         ),
         migrations.RemoveField(
-            model_name='lunchticket',
-            name='user',
+            model_name="lunchticket",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='lunchticketscan',
-            name='lunch_ticket',
+            model_name="lunchticketscan",
+            name="lunch_ticket",
         ),
         migrations.RemoveField(
-            model_name='lunchticketscan',
-            name='user',
+            model_name="lunchticketscan",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='lunchtickettime',
-            name='fair',
+            model_name="lunchtickettime",
+            name="fair",
         ),
         migrations.DeleteModel(
-            name='LunchTicket',
+            name="LunchTicket",
         ),
         migrations.DeleteModel(
-            name='LunchTicketScan',
+            name="LunchTicketScan",
         ),
         migrations.DeleteModel(
-            name='LunchTicketTime',
+            name="LunchTicketTime",
         ),
     ]

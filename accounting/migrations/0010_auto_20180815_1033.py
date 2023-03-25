@@ -6,14 +6,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0009_auto_20180815_0937'),
+        ("accounting", "0009_auto_20180815_0937"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='product',
-            options={'ordering': ['name'], 'permissions': [('base', 'Accounting')], 'verbose_name_plural': 'Products'},
+            name="product",
+            options={
+                "ordering": ["name"],
+                "permissions": [("base", "Accounting")],
+                "verbose_name_plural": "Products",
+            },
         ),
     ]

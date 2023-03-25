@@ -6,20 +6,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0006_company_name_legal'),
+        ("companies", "0006_company_name_legal"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='company',
-            old_name='name_legal',
-            new_name='invoice_name',
+            model_name="company",
+            old_name="name_legal",
+            new_name="invoice_name",
         ),
         migrations.AddField(
-            model_name='company',
-            name='ths_customer_id',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='THS Customer ID'),
+            model_name="company",
+            name="ths_customer_id",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="THS Customer ID"
+            ),
         ),
     ]

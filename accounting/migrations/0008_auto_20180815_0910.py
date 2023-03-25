@@ -6,19 +6,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0001_initial'),
-        ('accounting', '0007_auto_20180815_0905'),
+        ("fair", "0001_initial"),
+        ("accounting", "0007_auto_20180815_0905"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='revenue',
-            options={'ordering': ['fair__year', 'name'], 'verbose_name_plural': 'Revenues'},
+            name="revenue",
+            options={
+                "ordering": ["fair__year", "name"],
+                "verbose_name_plural": "Revenues",
+            },
         ),
         migrations.AlterUniqueTogether(
-            name='revenue',
-            unique_together=set([('name', 'fair')]),
+            name="revenue",
+            unique_together=set([("name", "fair")]),
         ),
     ]

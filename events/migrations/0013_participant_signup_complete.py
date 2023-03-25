@@ -6,15 +6,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0012_auto_20180927_2246'),
+        ("events", "0012_auto_20180927_2246"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='signup_complete',
-            field=models.BooleanField(default=False, verbose_name='The participant has completed signup'),
+            model_name="participant",
+            name="signup_complete",
+            field=models.BooleanField(
+                default=False, verbose_name="The participant has completed signup"
+            ),
         ),
     ]

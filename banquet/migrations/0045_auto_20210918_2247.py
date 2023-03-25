@@ -5,35 +5,52 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0044_auto_20200930_2042'),
+        ("banquet", "0044_auto_20200930_2042"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='matchinginterest',
-            name='include_in_form',
-            field=models.BooleanField(blank=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="matchinginterest",
+            name="include_in_form",
+            field=models.BooleanField(
+                blank=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
         migrations.AlterField(
-            model_name='matchingprogram',
-            name='include_in_form',
-            field=models.BooleanField(blank=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="matchingprogram",
+            name="include_in_form",
+            field=models.BooleanField(
+                blank=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
         migrations.AlterField(
-            model_name='matchingyear',
-            name='include_in_form',
-            field=models.BooleanField(blank=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="matchingyear",
+            name="include_in_form",
+            field=models.BooleanField(
+                blank=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
         migrations.AlterField(
-            model_name='tablematching',
-            name='matching_program',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='banquet.MatchingProgram'),
+            model_name="tablematching",
+            name="matching_program",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="banquet.MatchingProgram",
+            ),
         ),
         migrations.AlterField(
-            model_name='tablematching',
-            name='matching_year',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='banquet.MatchingYear'),
+            model_name="tablematching",
+            name="matching_year",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="banquet.MatchingYear",
+            ),
         ),
     ]

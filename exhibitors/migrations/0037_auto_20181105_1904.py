@@ -9,31 +9,42 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('exhibitors', '0036_auto_20181102_1523'),
+        ("exhibitors", "0036_auto_20181102_1523"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lunchticket',
-            name='token',
+            model_name="lunchticket",
+            name="token",
             field=models.CharField(default=uuid.uuid4, max_length=255),
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="lunchticket",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='lunchticket',
-            name='email_address',
-            field=models.EmailField(blank=True, max_length=255, null=True, verbose_name='E-mail address'),
+            model_name="lunchticket",
+            name="email_address",
+            field=models.EmailField(
+                blank=True, max_length=255, null=True, verbose_name="E-mail address"
+            ),
         ),
         migrations.AlterField(
-            model_name='lunchticket',
-            name='exhibitor',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Exhibitor'),
+            model_name="lunchticket",
+            name="exhibitor",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="exhibitors.Exhibitor",
+            ),
         ),
     ]

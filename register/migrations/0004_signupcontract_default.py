@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('register', '0003_signupcontract_contract_company_type'),
+        ("register", "0003_signupcontract_contract_company_type"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signupcontract',
-            name='default',
+            model_name="signupcontract",
+            name="default",
             field=models.BooleanField(default=False),
         ),
     ]

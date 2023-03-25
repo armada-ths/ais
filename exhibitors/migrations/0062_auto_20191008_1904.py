@@ -7,21 +7,25 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('locations', '0001_initial'),
-        ('exhibitors', '0061_auto_20190727_1229'),
+        ("locations", "0001_initial"),
+        ("exhibitors", "0061_auto_20190727_1229"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='fair_location',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='locations.Location'),
+            model_name="exhibitor",
+            name="fair_location",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="locations.Location",
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='vyer_position',
+            model_name="exhibitor",
+            name="vyer_position",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]

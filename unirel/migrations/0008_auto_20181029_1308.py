@@ -7,15 +7,19 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('unirel', '0007_auto_20181029_1252'),
+        ("unirel", "0007_auto_20181029_1252"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='company',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='unirel_participant_company', to='companies.Company', verbose_name='Organization'),
+            model_name="participant",
+            name="company",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="unirel_participant_company",
+                to="companies.Company",
+                verbose_name="Organization",
+            ),
         ),
     ]

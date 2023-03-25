@@ -6,15 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('register', '0001_initial'),
+        ("register", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='signupcontract',
-            name='type',
-            field=models.CharField(choices=[('INITIAL', 'Initial'), ('COMPLETE', 'Complete')], default=('INITIAL', 'Initial'), max_length=200),
+            model_name="signupcontract",
+            name="type",
+            field=models.CharField(
+                choices=[("INITIAL", "Initial"), ("COMPLETE", "Complete")],
+                default=("INITIAL", "Initial"),
+                max_length=200,
+            ),
         ),
     ]

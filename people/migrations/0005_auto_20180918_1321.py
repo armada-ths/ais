@@ -6,35 +6,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0004_language_short'),
+        ("people", "0004_language_short"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DietaryRestriction',
+            name="DietaryRestriction",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.RemoveField(
-            model_name='profile',
-            name='allergy',
+            model_name="profile",
+            name="allergy",
         ),
         migrations.AddField(
-            model_name='profile',
-            name='no_dietary_restrictions',
+            model_name="profile",
+            name="no_dietary_restrictions",
             field=models.BooleanField(default=False),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='profile',
-            name='dietary_restrictions',
-            field=models.ManyToManyField(to='people.DietaryRestriction'),
+            model_name="profile",
+            name="dietary_restrictions",
+            field=models.ManyToManyField(to="people.DietaryRestriction"),
         ),
     ]

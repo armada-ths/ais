@@ -6,48 +6,63 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0012_auto_20180816_0927'),
+        ("exhibitors", "0012_auto_20180816_0927"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='delivery_order',
+            model_name="exhibitor",
+            name="delivery_order",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='inbound_transportation',
+            model_name="exhibitor",
+            name="inbound_transportation",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='outbound_transportation',
+            model_name="exhibitor",
+            name="outbound_transportation",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='pickup_order',
+            model_name="exhibitor",
+            name="pickup_order",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='status',
+            model_name="exhibitor",
+            name="status",
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='transport_comment',
+            model_name="exhibitor",
+            name="transport_comment",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='transport_from',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('NOT_APPLICABLE', 'Not applicable')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_from",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='transport_to',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('NOT_APPLICABLE', 'Not applicable')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_to",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
         migrations.DeleteModel(
-            name='TransportationAlternative',
+            name="TransportationAlternative",
         ),
     ]

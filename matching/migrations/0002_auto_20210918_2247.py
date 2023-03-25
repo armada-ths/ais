@@ -4,26 +4,25 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('matching', '0001_initial'),
+        ("matching", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='booleanans',
-            options={'base_manager_name': 'objects'},
+            name="booleanans",
+            options={"base_manager_name": "objects"},
         ),
         migrations.AlterModelOptions(
-            name='choiceans',
-            options={'base_manager_name': 'objects'},
+            name="choiceans",
+            options={"base_manager_name": "objects"},
         ),
         migrations.AlterModelOptions(
-            name='integerans',
-            options={'base_manager_name': 'objects'},
+            name="integerans",
+            options={"base_manager_name": "objects"},
         ),
         migrations.AlterModelOptions(
-            name='textans',
-            options={'base_manager_name': 'objects'},
+            name="textans",
+            options={"base_manager_name": "objects"},
         ),
     ]

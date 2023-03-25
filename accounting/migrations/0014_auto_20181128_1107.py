@@ -6,34 +6,54 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0013_auto_20181128_1037'),
+        ("accounting", "0013_auto_20181128_1037"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='category',
-            options={'default_permissions': [], 'ordering': ['name'], 'verbose_name_plural': 'Categories'},
+            name="category",
+            options={
+                "default_permissions": [],
+                "ordering": ["name"],
+                "verbose_name_plural": "Categories",
+            },
         ),
         migrations.AlterModelOptions(
-            name='invoice',
-            options={'default_permissions': []},
+            name="invoice",
+            options={"default_permissions": []},
         ),
         migrations.AlterModelOptions(
-            name='order',
-            options={'default_permissions': [], 'ordering': ['name'], 'verbose_name_plural': 'Orders'},
+            name="order",
+            options={
+                "default_permissions": [],
+                "ordering": ["name"],
+                "verbose_name_plural": "Orders",
+            },
         ),
         migrations.AlterModelOptions(
-            name='product',
-            options={'default_permissions': [], 'ordering': ['name'], 'permissions': [('base', 'Accounting'), ('export', 'Export orders')], 'verbose_name_plural': 'Products'},
+            name="product",
+            options={
+                "default_permissions": [],
+                "ordering": ["name"],
+                "permissions": [("base", "Accounting"), ("export", "Export orders")],
+                "verbose_name_plural": "Products",
+            },
         ),
         migrations.AlterModelOptions(
-            name='registrationsection',
-            options={'default_permissions': [], 'ordering': ['name'], 'verbose_name_plural': 'Registration sections'},
+            name="registrationsection",
+            options={
+                "default_permissions": [],
+                "ordering": ["name"],
+                "verbose_name_plural": "Registration sections",
+            },
         ),
         migrations.AlterModelOptions(
-            name='revenue',
-            options={'default_permissions': [], 'ordering': ['fair__year', 'name'], 'verbose_name_plural': 'Revenues'},
+            name="revenue",
+            options={
+                "default_permissions": [],
+                "ordering": ["fair__year", "name"],
+                "verbose_name_plural": "Revenues",
+            },
         ),
     ]

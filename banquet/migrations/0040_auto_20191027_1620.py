@@ -6,20 +6,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0039_afterpartyticket_inviter'),
+        ("banquet", "0039_afterpartyticket_inviter"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='banquet',
-            name='afterparty_price_discount',
-            field=models.PositiveIntegerField(default=50, verbose_name='After Party Discounted Price (SEK)'),
+            model_name="banquet",
+            name="afterparty_price_discount",
+            field=models.PositiveIntegerField(
+                default=50, verbose_name="After Party Discounted Price (SEK)"
+            ),
         ),
         migrations.AlterField(
-            model_name='banquet',
-            name='afterparty_price',
-            field=models.PositiveIntegerField(default=75, verbose_name='After Party Price (SEK)'),
+            model_name="banquet",
+            name="afterparty_price",
+            field=models.PositiveIntegerField(
+                default=75, verbose_name="After Party Price (SEK)"
+            ),
         ),
     ]

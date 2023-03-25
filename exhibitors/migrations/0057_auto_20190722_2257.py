@@ -6,47 +6,62 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0056_auto_20190721_1353'),
+        ("exhibitors", "0056_auto_20190721_1353"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CatalogueCompetence',
+            name="CatalogueCompetence",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('competence', models.CharField(max_length=255)),
-                ('include_in_form', models.BooleanField(default=True, help_text='The alternative is only visible in forms if this attribute is checked.')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("competence", models.CharField(max_length=255)),
+                (
+                    "include_in_form",
+                    models.BooleanField(
+                        default=True,
+                        help_text="The alternative is only visible in forms if this attribute is checked.",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['competence'],
-                'default_permissions': [],
+                "ordering": ["competence"],
+                "default_permissions": [],
             },
         ),
         migrations.AlterModelOptions(
-            name='cataloguebenefit',
-            options={'default_permissions': [], 'ordering': ['benefit']},
+            name="cataloguebenefit",
+            options={"default_permissions": [], "ordering": ["benefit"]},
         ),
         migrations.AlterModelOptions(
-            name='catalogueemployment',
-            options={'default_permissions': [], 'ordering': ['employment']},
+            name="catalogueemployment",
+            options={"default_permissions": [], "ordering": ["employment"]},
         ),
         migrations.AlterModelOptions(
-            name='catalogueindustry',
-            options={'default_permissions': [], 'ordering': ['industry']},
+            name="catalogueindustry",
+            options={"default_permissions": [], "ordering": ["industry"]},
         ),
         migrations.AlterModelOptions(
-            name='cataloguelocation',
-            options={'default_permissions': [], 'ordering': ['location']},
+            name="cataloguelocation",
+            options={"default_permissions": [], "ordering": ["location"]},
         ),
         migrations.AlterModelOptions(
-            name='cataloguevalue',
-            options={'default_permissions': [], 'ordering': ['value']},
+            name="cataloguevalue",
+            options={"default_permissions": [], "ordering": ["value"]},
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_competences',
-            field=models.ManyToManyField(blank=True, to='exhibitors.CatalogueCompetence'),
+            model_name="exhibitor",
+            name="catalogue_competences",
+            field=models.ManyToManyField(
+                blank=True, to="exhibitors.CatalogueCompetence"
+            ),
         ),
     ]

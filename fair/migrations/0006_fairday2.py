@@ -7,22 +7,34 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0005_fairday_lunchticket_lunchticketscan_lunchtickettime'),
+        ("fair", "0005_fairday_lunchticket_lunchticketscan_lunchtickettime"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FairDay2',
+            name="FairDay2",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(max_length=255)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateField(max_length=255)),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
             options={
-                'ordering': ['fair', 'date'],
-                'default_permissions': [],
+                "ordering": ["fair", "date"],
+                "default_permissions": [],
             },
         ),
     ]

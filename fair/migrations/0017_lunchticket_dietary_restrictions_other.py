@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0016_auto_20190320_0909'),
+        ("fair", "0016_auto_20190320_0909"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lunchticket',
-            name='dietary_restrictions_other',
+            model_name="lunchticket",
+            name="dietary_restrictions_other",
             field=models.CharField(blank=True, max_length=75, null=True),
         ),
     ]

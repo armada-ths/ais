@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0036_merge_20191025_0639'),
+        ("banquet", "0036_merge_20191025_0639"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='banquet',
-            name='afterparty_date',
+            model_name="banquet",
+            name="afterparty_date",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

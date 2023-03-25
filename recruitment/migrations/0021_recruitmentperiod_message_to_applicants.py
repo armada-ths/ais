@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recruitment', '0020_merge_20181004_0955'),
+        ("recruitment", "0020_merge_20181004_0955"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='recruitmentperiod',
-            name='message_to_applicants',
+            model_name="recruitmentperiod",
+            name="message_to_applicants",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
     ]

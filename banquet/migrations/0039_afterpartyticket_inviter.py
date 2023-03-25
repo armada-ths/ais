@@ -6,15 +6,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0038_banquet_afterparty_price'),
+        ("banquet", "0038_banquet_afterparty_price"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='afterpartyticket',
-            name='inviter',
-            field=models.CharField(blank=True, max_length=75, null=True, verbose_name='Full name of the inviter'),
+            model_name="afterpartyticket",
+            name="inviter",
+            field=models.CharField(
+                blank=True,
+                max_length=75,
+                null=True,
+                verbose_name="Full name of the inviter",
+            ),
         ),
     ]

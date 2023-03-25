@@ -6,50 +6,49 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0002_auto_20180730_1515'),
+        ("banquet", "0002_auto_20180730_1515"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='banquet',
-            name='fair',
+            model_name="banquet",
+            name="fair",
         ),
         migrations.RemoveField(
-            model_name='banquettable',
-            name='fair',
+            model_name="banquettable",
+            name="fair",
         ),
         migrations.RemoveField(
-            model_name='banquetteattendant',
-            name='exhibitor',
+            model_name="banquetteattendant",
+            name="exhibitor",
         ),
         migrations.RemoveField(
-            model_name='banquetteattendant',
-            name='fair',
+            model_name="banquetteattendant",
+            name="fair",
         ),
         migrations.RemoveField(
-            model_name='banquetteattendant',
-            name='table',
+            model_name="banquetteattendant",
+            name="table",
         ),
         migrations.RemoveField(
-            model_name='banquetteattendant',
-            name='ticket',
+            model_name="banquetteattendant",
+            name="ticket",
         ),
         migrations.RemoveField(
-            model_name='banquetteattendant',
-            name='user',
+            model_name="banquetteattendant",
+            name="user",
         ),
         migrations.DeleteModel(
-            name='Banquet',
+            name="Banquet",
         ),
         migrations.DeleteModel(
-            name='BanquetTable',
+            name="BanquetTable",
         ),
         migrations.DeleteModel(
-            name='BanquetteAttendant',
+            name="BanquetteAttendant",
         ),
         migrations.DeleteModel(
-            name='BanquetTicket',
+            name="BanquetTicket",
         ),
     ]

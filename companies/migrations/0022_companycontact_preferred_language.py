@@ -7,16 +7,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0007_profile_kth_synchronize'),
-        ('companies', '0021_auto_20181001_1205'),
+        ("people", "0007_profile_kth_synchronize"),
+        ("companies", "0021_auto_20181001_1205"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='companycontact',
-            name='preferred_language',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='people.Language'),
+            model_name="companycontact",
+            name="preferred_language",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="people.Language",
+            ),
         ),
     ]

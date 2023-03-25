@@ -12,13 +12,8 @@ class TransportationOrder(models.Model):
     pickup_zip_code = models.CharField(max_length=10, blank=True)
     pickup_city = models.CharField(max_length=50, blank=True)
 
-
     delivery_street_address = models.CharField(max_length=100, blank=True)
     delivery_zip_code = models.CharField(max_length=10, blank=True)
     delivery_city = models.CharField(max_length=50, blank=True)
 
-
     ## TODO: Delivery and pickup dates
-
-
-

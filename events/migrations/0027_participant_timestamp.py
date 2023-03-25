@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0026_auto_20181030_0801'),
+        ("events", "0026_auto_20181030_0801"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='timestamp',
+            model_name="participant",
+            name="timestamp",
             field=models.DateTimeField(auto_now_add=True, null=True),
         ),
     ]

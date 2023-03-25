@@ -7,20 +7,27 @@ import events.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0022_merge_20181013_1426'),
+        ("events", "0022_merge_20181013_1426"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='check_in_token',
-            field=models.CharField(default=events.models.get_random_32_length_string, max_length=32, unique=True),
+            model_name="participant",
+            name="check_in_token",
+            field=models.CharField(
+                default=events.models.get_random_32_length_string,
+                max_length=32,
+                unique=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='participantcheckin',
-            name='timestamp',
-            field=models.DateTimeField(auto_now_add=True, null=True, verbose_name='When the participant checked in at the event'),
+            model_name="participantcheckin",
+            name="timestamp",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                null=True,
+                verbose_name="When the participant checked in at the event",
+            ),
         ),
     ]

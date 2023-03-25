@@ -6,15 +6,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0017_auto_20181008_2022'),
+        ("events", "0017_auto_20181008_2022"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='check_in_token',
-            field=models.CharField(default='lMhSLeeJnfl0dmbk8cE9q0Rm5q7C02aU', max_length=32, unique=True),
+            model_name="participant",
+            name="check_in_token",
+            field=models.CharField(
+                default="lMhSLeeJnfl0dmbk8cE9q0Rm5q7C02aU", max_length=32, unique=True
+            ),
         ),
     ]

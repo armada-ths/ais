@@ -6,23 +6,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recruitment', '0009_auto_20180830_1741'),
+        ("recruitment", "0009_auto_20180830_1741"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='location',
-            options={'ordering': ['name']},
+            name="location",
+            options={"ordering": ["name"]},
         ),
         migrations.AlterModelOptions(
-            name='slot',
-            options={'ordering': ['start', 'location']},
+            name="slot",
+            options={"ordering": ["start", "location"]},
         ),
         migrations.AlterField(
-            model_name='slot',
-            name='length',
-            field=models.PositiveIntegerField(verbose_name='Length (minutes)'),
+            model_name="slot",
+            name="length",
+            field=models.PositiveIntegerField(verbose_name="Length (minutes)"),
         ),
     ]

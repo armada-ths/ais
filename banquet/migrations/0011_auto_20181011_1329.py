@@ -7,27 +7,31 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0010_auto_20181011_1326'),
+        ("banquet", "0010_auto_20181011_1326"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='seat',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='banquet.Seat'),
+            model_name="participant",
+            name="seat",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="banquet.Seat",
+            ),
         ),
         migrations.RemoveField(
-            model_name='seat',
-            name='participant',
+            model_name="seat",
+            name="participant",
         ),
         migrations.AlterUniqueTogether(
-            name='seat',
-            unique_together=set([('table', 'name')]),
+            name="seat",
+            unique_together=set([("table", "name")]),
         ),
         migrations.AlterUniqueTogether(
-            name='table',
-            unique_together=set([('banquet', 'name')]),
+            name="table",
+            unique_together=set([("banquet", "name")]),
         ),
     ]

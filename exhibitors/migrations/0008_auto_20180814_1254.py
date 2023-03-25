@@ -6,35 +6,49 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0007_exhibitor_booth_height'),
+        ("exhibitors", "0007_exhibitor_booth_height"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_about',
+            model_name="exhibitor",
+            name="catalogue_about",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_contact_email_address',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="Contact person's e-mail address"),
+            model_name="exhibitor",
+            name="catalogue_contact_email_address",
+            field=models.CharField(
+                blank=True,
+                max_length=255,
+                null=True,
+                verbose_name="Contact person's e-mail address",
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_contact_name',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="Contact person's name"),
+            model_name="exhibitor",
+            name="catalogue_contact_name",
+            field=models.CharField(
+                blank=True,
+                max_length=255,
+                null=True,
+                verbose_name="Contact person's name",
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_contact_phone_number',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="Contact person's phone number"),
+            model_name="exhibitor",
+            name="catalogue_contact_phone_number",
+            field=models.CharField(
+                blank=True,
+                max_length=255,
+                null=True,
+                verbose_name="Contact person's phone number",
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_purpose',
+            model_name="exhibitor",
+            name="catalogue_purpose",
             field=models.TextField(blank=True, null=True),
         ),
     ]

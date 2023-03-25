@@ -6,54 +6,53 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0014_auto_20180911_2126'),
+        ("exhibitors", "0014_auto_20180911_2126"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='continents',
+            model_name="cataloginfo",
+            name="continents",
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='exhibitor',
+            model_name="cataloginfo",
+            name="exhibitor",
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='job_types',
+            model_name="cataloginfo",
+            name="job_types",
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='main_work_field',
+            model_name="cataloginfo",
+            name="main_work_field",
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='programs',
+            model_name="cataloginfo",
+            name="programs",
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='tags',
+            model_name="cataloginfo",
+            name="tags",
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='values',
+            model_name="cataloginfo",
+            name="values",
         ),
         migrations.RemoveField(
-            model_name='cataloginfo',
-            name='work_fields',
+            model_name="cataloginfo",
+            name="work_fields",
         ),
         migrations.DeleteModel(
-            name='CatalogInfo',
+            name="CatalogInfo",
         ),
         migrations.DeleteModel(
-            name='Continent',
+            name="Continent",
         ),
         migrations.DeleteModel(
-            name='Value',
+            name="Value",
         ),
         migrations.DeleteModel(
-            name='WorkField',
+            name="WorkField",
         ),
     ]

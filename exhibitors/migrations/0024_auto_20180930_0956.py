@@ -6,14 +6,22 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0023_auto_20180930_0941'),
+        ("exhibitors", "0023_auto_20180930_0941"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='exhibitor',
-            options={'default_permissions': [], 'permissions': [('base', 'View the Exhibitors tab'), ('view_all', 'Always view all exhibitors'), ('create', 'Create new exhibitors'), ('modify_contact_persons', 'Modify contact persons'), ('transport', 'Modify exhibitor transport details')]},
+            name="exhibitor",
+            options={
+                "default_permissions": [],
+                "permissions": [
+                    ("base", "View the Exhibitors tab"),
+                    ("view_all", "Always view all exhibitors"),
+                    ("create", "Create new exhibitors"),
+                    ("modify_contact_persons", "Modify contact persons"),
+                    ("transport", "Modify exhibitor transport details"),
+                ],
+            },
         ),
     ]

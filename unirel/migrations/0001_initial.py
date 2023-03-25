@@ -7,24 +7,44 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('people', '0010_auto_20181003_0938'),
+        ("people", "0010_auto_20181003_0938"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Participant',
+            name="Participant",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(default=uuid.uuid4, max_length=255, unique=True)),
-                ('name', models.CharField(max_length=75)),
-                ('email_address', models.EmailField(max_length=75, verbose_name='E-mail address')),
-                ('addon_sleep', models.BooleanField(default=False)),
-                ('addon_lunch', models.BooleanField(default=False)),
-                ('dietary_restrictions', models.ManyToManyField(blank=True, related_name='unirel_participant_dietaryrestrictions', to='people.DietaryRestriction')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "token",
+                    models.CharField(default=uuid.uuid4, max_length=255, unique=True),
+                ),
+                ("name", models.CharField(max_length=75)),
+                (
+                    "email_address",
+                    models.EmailField(max_length=75, verbose_name="E-mail address"),
+                ),
+                ("addon_sleep", models.BooleanField(default=False)),
+                ("addon_lunch", models.BooleanField(default=False)),
+                (
+                    "dietary_restrictions",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="unirel_participant_dietaryrestrictions",
+                        to="people.DietaryRestriction",
+                    ),
+                ),
             ],
         ),
     ]

@@ -6,15 +6,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0012_auto_20180815_1430'),
+        ("companies", "0012_auto_20180815_1430"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='company',
-            name='invoice_email_address',
-            field=models.CharField(blank=True, max_length=300, null=True, verbose_name='Invoice e-mail address'),
+            model_name="company",
+            name="invoice_email_address",
+            field=models.CharField(
+                blank=True,
+                max_length=300,
+                null=True,
+                verbose_name="Invoice e-mail address",
+            ),
         ),
     ]

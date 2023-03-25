@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0018_lunchticket_email_address'),
+        ("exhibitors", "0018_lunchticket_email_address"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lunchticket',
-            name='email_address',
-            field=models.EmailField(max_length=255, verbose_name='E-mail address'),
+            model_name="lunchticket",
+            name="email_address",
+            field=models.EmailField(max_length=255, verbose_name="E-mail address"),
         ),
     ]

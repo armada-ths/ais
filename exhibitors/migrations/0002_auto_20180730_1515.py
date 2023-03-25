@@ -6,34 +6,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('exhibitors', '0001_initial'),
-        ('people', '0001_initial'),
-        ('fair', '0001_initial'),
+        ("exhibitors", "0001_initial"),
+        ("people", "0001_initial"),
+        ("fair", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cataloginfo',
-            name='programs',
-            field=models.ManyToManyField(blank=True, to='people.Programme'),
+            model_name="cataloginfo",
+            name="programs",
+            field=models.ManyToManyField(blank=True, to="people.Programme"),
         ),
         migrations.AddField(
-            model_name='cataloginfo',
-            name='tags',
-            field=models.ManyToManyField(blank=True, to='fair.Tag'),
+            model_name="cataloginfo",
+            name="tags",
+            field=models.ManyToManyField(blank=True, to="fair.Tag"),
         ),
         migrations.AddField(
-            model_name='cataloginfo',
-            name='values',
-            field=models.ManyToManyField(blank=True, to='exhibitors.Value'),
+            model_name="cataloginfo",
+            name="values",
+            field=models.ManyToManyField(blank=True, to="exhibitors.Value"),
         ),
         migrations.AddField(
-            model_name='cataloginfo',
-            name='work_fields',
-            field=models.ManyToManyField(blank=True, related_name='_cataloginfo_work_fields_+', to='exhibitors.WorkField'),
+            model_name="cataloginfo",
+            name="work_fields",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="_cataloginfo_work_fields_+",
+                to="exhibitors.WorkField",
+            ),
         ),
     ]

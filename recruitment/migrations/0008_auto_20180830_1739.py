@@ -6,19 +6,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recruitment', '0007_location_slot'),
+        ("recruitment", "0007_location_slot"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='slot',
-            name='end',
+            model_name="slot",
+            name="end",
         ),
         migrations.AddField(
-            model_name='slot',
-            name='length',
+            model_name="slot",
+            name="length",
             field=models.PositiveIntegerField(default=0),
             preserve_default=False,
         ),

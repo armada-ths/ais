@@ -7,15 +7,16 @@ import exhibitors.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0037_auto_20181105_1904'),
+        ("exhibitors", "0037_auto_20181105_1904"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lunchticket',
-            name='token',
-            field=models.CharField(default=exhibitors.models.get_random_32_length_string, max_length=255),
+            model_name="lunchticket",
+            name="token",
+            field=models.CharField(
+                default=exhibitors.models.get_random_32_length_string, max_length=255
+            ),
         ),
     ]

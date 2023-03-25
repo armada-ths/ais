@@ -6,21 +6,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0006_registrationsection_description'),
+        ("accounting", "0006_registrationsection_description"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='cost_center',
+            model_name="product",
+            name="cost_center",
             field=models.PositiveIntegerField(default=0),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='product',
-            name='result_center',
+            model_name="product",
+            name="result_center",
             field=models.PositiveIntegerField(default=0),
             preserve_default=False,
         ),

@@ -8,91 +8,304 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('fair', '0001_initial'),
-        ('accounting', '0011_auto_20180815_1123'),
-        ('events', '0003_auto_20180904_1445'),
+        ("fair", "0001_initial"),
+        ("accounting", "0011_auto_20180815_1123"),
+        ("events", "0003_auto_20180904_1445"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Event',
+            name="Event",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=75)),
-                ('description', models.TextField(blank=True, null=True)),
-                ('date_start', models.DateTimeField()),
-                ('date_end', models.DateTimeField()),
-                ('location', models.CharField(blank=True, max_length=75, null=True)),
-                ('signup_cr', models.BooleanField(verbose_name='Let company representatives sign up')),
-                ('signup_s', models.BooleanField(verbose_name='Let students sign up')),
-                ('teams_create_cr', models.BooleanField(verbose_name='Let company representatives create teams')),
-                ('teams_create_s', models.BooleanField(verbose_name='Let students create teams')),
-                ('teams_participate_cr', models.BooleanField(verbose_name='Let company representatives join or leave teams')),
-                ('teams_participate_s', models.BooleanField(verbose_name='Let students join or leave teams')),
-                ('teams_default_max_capacity', models.PositiveIntegerField(blank=True, null=True, verbose_name='Default max number of team members')),
-                ('fee_s', models.PositiveIntegerField(default=0, verbose_name='Sign-up fee for students')),
-                ('published', models.BooleanField(verbose_name='The event is published on the website')),
-                ('requires_invitation', models.BooleanField(verbose_name='Participants need an invitation to sign up')),
-                ('external_event_link', models.CharField(blank=True, max_length=255, null=True)),
-                ('company_product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='accounting.Product', verbose_name='Product to link the event with')),
-                ('contact_person', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=75)),
+                ("description", models.TextField(blank=True, null=True)),
+                ("date_start", models.DateTimeField()),
+                ("date_end", models.DateTimeField()),
+                ("location", models.CharField(blank=True, max_length=75, null=True)),
+                (
+                    "signup_cr",
+                    models.BooleanField(
+                        verbose_name="Let company representatives sign up"
+                    ),
+                ),
+                ("signup_s", models.BooleanField(verbose_name="Let students sign up")),
+                (
+                    "teams_create_cr",
+                    models.BooleanField(
+                        verbose_name="Let company representatives create teams"
+                    ),
+                ),
+                (
+                    "teams_create_s",
+                    models.BooleanField(verbose_name="Let students create teams"),
+                ),
+                (
+                    "teams_participate_cr",
+                    models.BooleanField(
+                        verbose_name="Let company representatives join or leave teams"
+                    ),
+                ),
+                (
+                    "teams_participate_s",
+                    models.BooleanField(
+                        verbose_name="Let students join or leave teams"
+                    ),
+                ),
+                (
+                    "teams_default_max_capacity",
+                    models.PositiveIntegerField(
+                        blank=True,
+                        null=True,
+                        verbose_name="Default max number of team members",
+                    ),
+                ),
+                (
+                    "fee_s",
+                    models.PositiveIntegerField(
+                        default=0, verbose_name="Sign-up fee for students"
+                    ),
+                ),
+                (
+                    "published",
+                    models.BooleanField(
+                        verbose_name="The event is published on the website"
+                    ),
+                ),
+                (
+                    "requires_invitation",
+                    models.BooleanField(
+                        verbose_name="Participants need an invitation to sign up"
+                    ),
+                ),
+                (
+                    "external_event_link",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "company_product",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="accounting.Product",
+                        verbose_name="Product to link the event with",
+                    ),
+                ),
+                (
+                    "contact_person",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Invitation',
+            name="Invitation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('fee', models.PositiveIntegerField(blank=True, null=True, verbose_name='Fee to participate')),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Event')),
-                ('invitee', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "fee",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Fee to participate"
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                (
+                    "event",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="events.Event"
+                    ),
+                ),
+                (
+                    "invitee",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Participant',
+            name="Participant",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(blank=True, null=True)),
-                ('email_address', models.TextField(blank=True, null=True)),
-                ('phone_number', models.TextField(blank=True, null=True)),
-                ('event', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='events.Event')),
-                ('user_cr', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_cr', to=settings.AUTH_USER_MODEL)),
-                ('user_s', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user_s', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(blank=True, null=True)),
+                ("email_address", models.TextField(blank=True, null=True)),
+                ("phone_number", models.TextField(blank=True, null=True)),
+                (
+                    "event",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="events.Event",
+                    ),
+                ),
+                (
+                    "user_cr",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_cr",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user_s",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_s",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Team',
+            name="Team",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=75)),
-                ('max_capacity', models.PositiveIntegerField(blank=True, null=True, verbose_name='Max number of team members')),
-                ('allow_join_cr', models.BooleanField(default=True, verbose_name='Allow company representatives to join the team')),
-                ('allow_join_s', models.BooleanField(default=True, verbose_name='Allow students to join the team')),
-                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Event')),
-                ('leader', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=75)),
+                (
+                    "max_capacity",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Max number of team members"
+                    ),
+                ),
+                (
+                    "allow_join_cr",
+                    models.BooleanField(
+                        default=True,
+                        verbose_name="Allow company representatives to join the team",
+                    ),
+                ),
+                (
+                    "allow_join_s",
+                    models.BooleanField(
+                        default=True, verbose_name="Allow students to join the team"
+                    ),
+                ),
+                (
+                    "event",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="events.Event"
+                    ),
+                ),
+                (
+                    "leader",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TeamInvitation',
+            name="TeamInvitation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('invitee', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Team')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                (
+                    "invitee",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="events.Team"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TeamMember',
+            name="TeamMember",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('participant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Participant')),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Team')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "participant",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="events.Participant",
+                    ),
+                ),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="events.Team"
+                    ),
+                ),
             ],
         ),
     ]

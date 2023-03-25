@@ -6,25 +6,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0017_afterpartyticket'),
+        ("banquet", "0017_afterpartyticket"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='afterpartyticket',
-            name='email_address',
-            field=models.CharField(blank=True, max_length=75, null=True, verbose_name='E-mail address'),
+            model_name="afterpartyticket",
+            name="email_address",
+            field=models.CharField(
+                blank=True, max_length=75, null=True, verbose_name="E-mail address"
+            ),
         ),
         migrations.AlterField(
-            model_name='afterpartyticket',
-            name='paid_price',
+            model_name="afterpartyticket",
+            name="paid_price",
             field=models.PositiveIntegerField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='afterpartyticket',
-            name='paid_timestamp',
+            model_name="afterpartyticket",
+            name="paid_timestamp",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

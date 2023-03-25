@@ -6,15 +6,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0027_company_e_invoice'),
+        ("companies", "0027_company_e_invoice"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='company',
-            name='e_invoice',
-            field=models.BooleanField(default=False, help_text='This attribute should be checked if the company uses e-invoices'),
+            model_name="company",
+            name="e_invoice",
+            field=models.BooleanField(
+                default=False,
+                help_text="This attribute should be checked if the company uses e-invoices",
+            ),
         ),
     ]

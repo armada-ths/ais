@@ -6,15 +6,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0019_auto_20180930_2206'),
+        ("companies", "0019_auto_20180930_2206"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='group',
-            name='allow_exhibitors',
+            model_name="group",
+            name="allow_exhibitors",
             field=models.BooleanField(default=True),
         ),
     ]
