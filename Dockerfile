@@ -17,10 +17,8 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apk update \
   && apk add --no-cache gcc python3-dev musl-dev libffi-dev \
-  gdal-dev linux-headers g++ binutils geos-dev
-
-# Prerequsite for Pillow
-RUN apk add tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
+  gdal-dev linux-headers g++ binutils geos-dev \
+  tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
   libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
   libxcb-dev libpng-dev
 
