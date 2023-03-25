@@ -1,4 +1,4 @@
-Copyright © 2016 THS Armada
+Copyright © 2023 THS Armada
 All rights reserved.
 
 Please note that default copyright laws apply to the contents of this repository.
