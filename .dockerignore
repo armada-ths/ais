@@ -1,0 +1,26 @@
+.git
+*.swp
+*.pyc
+ais/secrets.py
+#ais.sock
+#ais/restart_uwsgi_server.sh
+#ais/ais_uwsgi.ini
+#ais/ais_nginx.conf
+deploy
+db.sqlite3
+run_server.sh
+.idea/*
+*~
+.vagrant/
+.DS_Store
+ais_venv/
+nohup.out
+env/
+.env*
+*.sql
+*.log
+
+# JS build artifacts
+node_modules/
+webpack-stats.js
+ais_static/bundles
