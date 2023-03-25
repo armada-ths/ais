@@ -54,6 +54,8 @@ INSTALLED_APPS = (
     "journal",
     "markupfield",
     "testpage",
+    "kth_login",
+    "raven.contrib.django.raven_compat",
 )
 
 MIDDLEWARE = [
@@ -119,3 +121,32 @@ LANGUAGE_CODE = "en-us"
 USE_L10N = False
 DATE_FORMAT = "M j, Y"
 DATETIME_FORMAT = "M j, Y, H:i"
+
+# Email settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = "noreply@armada.nu"
+DEFAULT_TO_EMAIL = "info@armada.nu"
+EMAIL_HOST_USER = "noreply@armada.nu"
+EMAIL_HOST_PASSWORD = os.environ.get("DUMMY", "dummy")
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SALES_HOOK_URL = (
+    "https://hooks.slack.com/services/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"
+)
+RECRUITMENT_HOOK_URL = (
+    "https://hooks.slack.com/services/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"
+)
+
+# This is for AUTHLIB package for interacting with KTH OpenID Connect
+# APPLICATION_ID is given from the 'secrets.py' file.
+# CLIENT_SECRET is given from the 'secrets.py' file.
+AUTHLIB_OAUTH_CLIENTS = {
+    "kth": {
+        "client_id": os.environ.get("APPLICATION_ID"),
+        "client_secret": os.environ.get("CLIENT_SECRET"),
+        "api_base_url": "https://login.ug.kth.se/adfs/oauth2/",
+    }
+}
+LOGOUT_REDIRECT_URL = "/"
