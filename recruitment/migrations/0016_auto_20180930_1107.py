@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("recruitment", "0015_role_allow_exhibitor_contact_person"),
     ]

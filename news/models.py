@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from lib.image import UploadToDirUUID, UploadToDir, update_image_field
 
+
 # Manager for getting only the articles that should be displayed
 class NewsArticleManager(models.Manager):
     def get_queryset(self):

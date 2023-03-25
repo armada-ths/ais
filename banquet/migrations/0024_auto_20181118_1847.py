@@ -7,7 +7,6 @@ import lib.image
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("banquet", "0023_auto_20181117_2022"),
     ]

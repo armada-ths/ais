@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("companies", "0024_company_show_externally"),
         ("register", "0002_auto_20180731_1034"),

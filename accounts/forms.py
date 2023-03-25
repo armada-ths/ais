@@ -25,7 +25,7 @@ class ExternalUserForm(UserCreationForm):
             user = User.objects.get(email=email.lower())
         except User.DoesNotExist:
             return email
-        raise forms.ValidationError(u'Email "%s" is already in use.' % email)
+        raise forms.ValidationError('Email "%s" is already in use.' % email)
 
 
 class ExternalUserLoginForm(ModelForm):

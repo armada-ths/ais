@@ -7,7 +7,6 @@ import lib.image
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("events", "0023_auto_20181019_1108"),
     ]

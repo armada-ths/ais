@@ -95,7 +95,6 @@ class RecruitmentTestCase(TestCase):
         self.pg_role.add_user_to_groups(self.core_user)
 
     def test_recruitment_period(self):
-
         self.assertEqual(len(self.recruitment_period.recruitable_roles.all()), 2)
 
         self.assertEqual(self.recruitment_period.is_past(), True)
@@ -137,7 +136,6 @@ class RecruitmentTestCase(TestCase):
         )
 
     def test_site_for_non_armada_member(self):
-
         client = Client()
         response = client.post(
             "/accounts/login/", {"username": "bratteby", "password": "bratteby"}

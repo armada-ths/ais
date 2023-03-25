@@ -970,7 +970,6 @@ def send_order_summaries(request, year):
             order_string += "\n"
 
             for person in recipient["people"]:
-
                 html_message = """
 			<html>
 	        	<body>

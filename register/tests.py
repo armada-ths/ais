@@ -18,6 +18,7 @@ from django.forms import Field
 
 from django.test import Client
 
+
 # Tests that the view is working
 class RegisterViewTestCase(TestCase):
     def setUp(self):
@@ -69,7 +70,6 @@ class RegisterViewTestCase(TestCase):
 
 class OrderLogTestCase(TestCase):
     def test(self):
-
         fair = Fair.objects.create(
             name="fair1", year=2017, description="description", current=True
         )

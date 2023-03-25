@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("people", "0007_profile_kth_synchronize"),
         ("companies", "0021_auto_20181001_1205"),

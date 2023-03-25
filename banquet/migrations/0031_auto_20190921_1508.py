@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("banquet", "0030_participant_dietary_restrictions_other"),
     ]

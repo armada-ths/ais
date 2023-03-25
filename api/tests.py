@@ -345,7 +345,7 @@ class QuestionsTestCase(TestCase):
             ),
             WorkField.objects.get_or_create(work_area=work_area, work_field="My field"),
         ]
-        for (field, wasCreated) in self.fields:
+        for field, wasCreated in self.fields:
             if wasCreated:
                 field.save()
                 field.survey.add(self.survey)

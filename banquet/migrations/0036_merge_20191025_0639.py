@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("banquet", "0035_auto_20191022_1833"),
         ("banquet", "0035_auto_20191015_1759"),

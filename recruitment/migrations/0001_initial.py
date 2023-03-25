@@ -10,7 +10,6 @@ import markupfield.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

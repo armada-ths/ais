@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("exhibitors", "0044_exhibitor_checked_in"),
     ]

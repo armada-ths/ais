@@ -7,7 +7,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("banquet", "0012_participant_charge_stripe"),
     ]

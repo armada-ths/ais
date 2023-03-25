@@ -14,7 +14,7 @@ from example.models import Order, Product
 def autocomplete_products(request):
     q = request.GET.get("q", "")
     products = Product.objects.filter(name__icontains=q).values_list("pk", "name")
-    output = u"\n".join([u"%d|%s" % tuple(product) for product in products])
+    output = "\n".join(["%d|%s" % tuple(product) for product in products])
     return HttpResponse(output, mimetype="text/plain")
 
 

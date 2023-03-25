@@ -12,12 +12,10 @@ from accounting.models import Order
 
 
 def testpage(request):
-
     return render(request, "testpage/testpage.html")
 
 
 def send_test_email(request):
-
     company = get_object_or_404(Company, name="Sales Company 2")
     fair = get_object_or_404(Fair, year=2019)
 
@@ -32,7 +30,6 @@ def send_test_email(request):
 
 
 def send_CR_confirmation_email(signature, deadline):
-
     html_message = """
 		<html>
         	<body>

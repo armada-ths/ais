@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from .forms import ExternalUserLoginForm
 
+
 # Create your views here.
 def login(request):
     return render(request, "accounts/login.html")

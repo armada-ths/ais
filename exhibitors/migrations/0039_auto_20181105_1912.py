@@ -7,7 +7,6 @@ import exhibitors.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("exhibitors", "0038_auto_20181105_1909"),
     ]

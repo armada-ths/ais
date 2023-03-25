@@ -116,7 +116,6 @@ def matching(request):
 @csrf_exempt
 def matching_choices(request):
     if request.method == "GET":
-
         # Get the choices that we include in the company forms
         competences = CatalogueCompetence.objects.filter(include_in_form=True).values(
             "id", "competence"

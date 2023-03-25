@@ -8,7 +8,6 @@ import fair.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fair", "0004_auto_20181003_1227"),
     ]

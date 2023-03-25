@@ -1151,7 +1151,6 @@ def external_invitation(request, token):
 
     if can_edit:
         if request.POST and form.is_valid():
-
             form.instance.name = invitation.name
             form.instance.email_address = invitation.email_address
             invitation.participant = form.save()
@@ -1432,7 +1431,6 @@ class ThankYouView(TemplateView):
 
 @permission_required("banquet.base")
 def export_participants(request, year, banquet_pk):
-
     fair = get_object_or_404(Fair, year=year)
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
 

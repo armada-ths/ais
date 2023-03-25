@@ -7,7 +7,6 @@ import events.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("events", "0022_merge_20181013_1426"),
     ]

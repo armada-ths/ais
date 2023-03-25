@@ -422,7 +422,6 @@ class CompleteProductBooleanForm(Form):
 
 
 class CompleteFinalSubmissionForm(Form):
-
     # contract = BooleanField(required=True)
     # contract.label = 'I have read the binding contract and agree to the terms. I am also authorized to register my organization for THS Armada 2022 and sign this contract.'
 

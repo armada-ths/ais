@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("people", "0007_profile_kth_synchronize"),
         ("banquet", "0004_auto_20180910_1940"),

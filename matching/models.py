@@ -32,7 +32,6 @@ CHOICES = (
 
 
 class Category(models.Model):
-
     name = models.CharField(max_length=400)
     survey = models.ForeignKey(
         Survey, related_name="categories", on_delete=models.CASCADE

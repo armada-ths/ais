@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("recruitment", "0021_recruitmentperiod_message_to_applicants"),
     ]

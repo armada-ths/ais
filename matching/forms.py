@@ -28,7 +28,6 @@ from polymorphic.models import PolymorphicModel
 
 
 class ResponseForm(ModelForm):
-
     WIDGETS = {
         Question.TEXT: forms.TextInput,
         Question.SELECT: forms.Select,
@@ -114,7 +113,6 @@ class ResponseForm(ModelForm):
         if response is None:
             return None
         try:
-
             answer = Answer.objects.get(
                 question=question, response=response
             ).get_real_instance()

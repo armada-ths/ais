@@ -438,7 +438,6 @@ import urllib
 
 
 def remember_last_query_params(url_name, query_params):
-
     """Stores the specified list of query params from the last time this user
     looked at this URL (by url_name). Stores the last values in the session.
     If the view is subsequently rendered w/o specifying ANY of the query params,
@@ -488,7 +487,6 @@ def remember_last_query_params(url_name, query_params):
 
     def do_decorator(view_func):
         def decorator(*args, **kwargs):
-
             request = args[0]
 
             key_prefix = url_name + "_"
@@ -974,7 +972,6 @@ def recruitment_application_new(
             request, user
         )
         if role_form.is_valid() and profile_form.is_valid():
-
             if not recruitment_application:
                 recruitment_application = RecruitmentApplication()
                 send_confirmation_email(user, recruitment_period)
@@ -995,7 +992,6 @@ def recruitment_application_new(
                     )
 
             if pk == None:  # Slack webhook for signup notifications
-
                 r.post(
                     settings.RECRUITMENT_HOOK_URL,
                     data=json.dumps(
@@ -1031,7 +1027,6 @@ def recruitment_application_new(
 
 
 def send_confirmation_email(user, recruitment_period):
-
     hr_profile = get_recruiter_information()
     url_to_application = "https://ais.armada.nu/fairs/%s/recruitment/%s" % (
         str(recruitment_period.fair.year),

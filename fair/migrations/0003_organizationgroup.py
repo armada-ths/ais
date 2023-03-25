@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fair", "0002_fair_product_lunch_ticket"),
     ]

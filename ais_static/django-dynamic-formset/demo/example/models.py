@@ -21,7 +21,7 @@ class Order(models.Model):
     date = models.DateField(default=date.today, editable=False)
 
     def __unicode__(self):
-        return u"%s's order" % self.customer
+        return "%s's order" % self.customer
 
 
 class OrderedItem(models.Model):
@@ -30,4 +30,4 @@ class OrderedItem(models.Model):
     quantity = models.PositiveSmallIntegerField()
 
     def __unicode__(self):
-        return u"%s (%d)" % (self.product, self.quantity)
+        return "%s (%d)" % (self.product, self.quantity)

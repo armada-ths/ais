@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import DEFERRED
 from django.utils import timezone
 
+
 # A 'Contact' is a person working for a 'Company'
 class SignupContract(models.Model):
     name = models.CharField(max_length=30)

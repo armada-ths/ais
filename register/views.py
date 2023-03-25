@@ -254,7 +254,6 @@ def form(request, company_pk):
 
 
 def form_initial(request, company, company_contact, fair):
-
     signature = SignupLog.objects.filter(
         company=company, contract__fair=fair, contract__type="INITIAL"
     ).first()
@@ -384,7 +383,6 @@ def form_initial(request, company, company_contact, fair):
 
 
 def form_complete(request, company, company_contact, fair, exhibitor):
-
     signature = SignupLog.objects.filter(
         company=company, contract__fair=fair, contract__type="COMPLETE"
     ).first()
@@ -520,7 +518,6 @@ def form_complete(request, company, company_contact, fair, exhibitor):
                         order.delete()
 
                 else:  # if a product has been checked or a number given
-
                     # enforce that only one product in the category should be kept if multiple purchases is not allowed
                     if product_raw.category:
                         if not product_raw.category.allow_multiple_purchases:

@@ -7,7 +7,6 @@ import jsonfield.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []

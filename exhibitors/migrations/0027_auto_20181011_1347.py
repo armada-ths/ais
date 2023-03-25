@@ -9,7 +9,6 @@ import lib.image
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fair", "0004_auto_20181003_1227"),
         ("exhibitors", "0026_auto_20180930_1133"),

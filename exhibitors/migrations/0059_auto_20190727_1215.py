@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("exhibitors", "0058_exhibitor_catalogue_cities"),
     ]

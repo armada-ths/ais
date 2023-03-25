@@ -8,7 +8,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("banquet", "0006_auto_20181002_1440"),
     ]

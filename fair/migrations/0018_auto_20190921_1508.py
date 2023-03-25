@@ -6,7 +6,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("fair", "0017_lunchticket_dietary_restrictions_other"),
     ]
