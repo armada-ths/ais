@@ -8,13 +8,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0018_auto_20190921_1508'),
+        ("fair", "0018_auto_20190921_1508"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fair',
-            name='companies_ticket_deadline',
-            field=models.DateTimeField(blank=True, help_text='After this date the companies will no longer be able to create or edit their lunch or banquet tickets on their registration page.', null=True),
+            model_name="fair",
+            name="companies_ticket_deadline",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="After this date the companies will no longer be able to create or edit their lunch or banquet tickets on their registration page.",
+                null=True,
+            ),
         ),
     ]

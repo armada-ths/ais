@@ -8,44 +8,44 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0022_auto_20180929_1127'),
+        ("exhibitors", "0022_auto_20180929_1127"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='cataloguebenefit',
-            options={'default_permissions': []},
+            name="cataloguebenefit",
+            options={"default_permissions": []},
         ),
         migrations.AlterModelOptions(
-            name='catalogueemployment',
-            options={'default_permissions': []},
+            name="catalogueemployment",
+            options={"default_permissions": []},
         ),
         migrations.AlterModelOptions(
-            name='catalogueindustry',
-            options={'default_permissions': []},
+            name="catalogueindustry",
+            options={"default_permissions": []},
         ),
         migrations.AlterModelOptions(
-            name='cataloguelocation',
-            options={'default_permissions': []},
+            name="cataloguelocation",
+            options={"default_permissions": []},
         ),
         migrations.AlterModelOptions(
-            name='cataloguevalue',
-            options={'default_permissions': []},
+            name="cataloguevalue",
+            options={"default_permissions": []},
         ),
         migrations.AlterModelOptions(
-            name='exhibitorview',
-            options={'default_permissions': []},
+            name="exhibitorview",
+            options={"default_permissions": []},
         ),
         migrations.AlterModelOptions(
-            name='lunchticket',
-            options={'default_permissions': [], 'ordering': ['pk']},
+            name="lunchticket",
+            options={"default_permissions": [], "ordering": ["pk"]},
         ),
         migrations.AlterModelOptions(
-            name='lunchticketday',
-            options={'default_permissions': [], 'ordering': ['fair', 'name']},
+            name="lunchticketday",
+            options={"default_permissions": [], "ordering": ["fair", "name"]},
         ),
         migrations.AlterModelOptions(
-            name='lunchticketscan',
-            options={'default_permissions': []},
+            name="lunchticketscan",
+            options={"default_permissions": []},
         ),
     ]

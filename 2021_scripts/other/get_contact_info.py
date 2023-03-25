@@ -1,8 +1,11 @@
 from fair.models import Fair
 from recruitment.models import RecruitmentApplication
+
 fair = Fair.objects.filter(current=True)
-applications = RecruitmentApplication.objects.filter(status = "accepted", recruitment_period__fair = fair)
-out = 'Name\tRole'
+applications = RecruitmentApplication.objects.filter(
+    status="accepted", recruitment_period__fair=fair
+)
+out = "Name\tRole"
 
 person_idx = 50
 
@@ -16,17 +19,22 @@ person_idx = 50
 # for attr in dir(applications[0].user):
 #     print(attr)
 
+
 def takeFirst(elem):
     return elem[0]
+
 
 def takeSecond(elem):
     return elem[1]
 
+
 def takeThird(elem):
     return elem[2]
 
+
 def takeForth(elem):
     return elem[2]
+
 
 contacts = []
 
@@ -46,7 +54,7 @@ contacts_without_PM.sort(key=takeFirst)
 
 contacts_without_PM = [contacts[0]] + contacts_without_PM
 for contact in contacts_without_PM:
-    print(f'{contact[0]},{contact[1]},{contact[2]}')
+    print(f"{contact[0]},{contact[1]},{contact[2]}")
 
 # for application in applications:
 # 	out += '\n'

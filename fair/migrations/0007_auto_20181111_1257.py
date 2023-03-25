@@ -8,15 +8,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0006_fairday2'),
+        ("fair", "0006_fairday2"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='fairday2',
-            name='fair',
+            model_name="fairday2",
+            name="fair",
         ),
         migrations.DeleteModel(
-            name='FairDay2',
+            name="FairDay2",
         ),
     ]

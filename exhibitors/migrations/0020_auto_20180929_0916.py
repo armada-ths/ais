@@ -8,12 +8,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0019_auto_20180922_1900'),
+        ("exhibitors", "0019_auto_20180922_1900"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='lunchticket',
-            options={'ordering': ['pk']},
+            name="lunchticket",
+            options={"ordering": ["pk"]},
         ),
     ]

@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0019_fair_companies_ticket_deadline'),
+        ("fair", "0019_fair_companies_ticket_deadline"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='fair',
-            name='year',
+            model_name="fair",
+            name="year",
             field=models.IntegerField(default=2020),
         ),
     ]

@@ -19,7 +19,14 @@ from django.utils.crypto import get_random_string
 import api.deserializers as deserializers
 import api.serializers as serializers
 
-from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence #CatalogueBenefit
+from exhibitors.models import (
+    Exhibitor,
+    CatalogueIndustry,
+    CatalogueValue,
+    CatalogueEmployment,
+    CatalogueLocation,
+    CatalogueCompetence,
+)  # CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
 from fair.models import Partner, Fair, current_fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
@@ -29,18 +36,21 @@ from student_profiles.models import StudentProfile, MatchingResult
 
 
 def root(request):
-    return JsonResponse({'message': 'Welcome to the Armada API!'})
+    return JsonResponse({"message": "Welcome to the Armada API!"})
+
 
 @csrf_exempt
 def matching(request):
     # Validate POST-input to make sure the given answers exist
-    if request.method == 'POST':
+    if request.method == "POST":
         if request.body:
             try:
                 # convert json to dict
                 data = json.loads(request.body.decode())
             except Exception:
-                return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+                return HttpResponse(
+                    "Misformatted json!", content_type="text/plain", status=406
+                )
 
             # Here is where the actual deserialization happens:
             if deserializers.matching(data):
@@ -48,189 +58,254 @@ def matching(request):
                 random_doc_name = os.path.join("/tmp/", docID + ".json")
                 matching_script_loc = "/opt/matching.py"
 
-                with open(random_doc_name, 'w') as outfile:
+                with open(random_doc_name, "w") as outfile:
                     json.dump(data, outfile)
                 fair_id = current_fair()
-                if current_fair() is None: fair_id = 4 # Default to 2019
-                
-                retrieved = subprocess.Popen(["python3", matching_script_loc, docID, random_doc_name, str(fair_id)],stdout=subprocess.PIPE)
+                if current_fair() is None:
+                    fair_id = 4  # Default to 2019
+
+                retrieved = subprocess.Popen(
+                    [
+                        "python3",
+                        matching_script_loc,
+                        docID,
+                        random_doc_name,
+                        str(fair_id),
+                    ],
+                    stdout=subprocess.PIPE,
+                )
                 # have to wait for subprocess to finish
                 retrieved.wait()
                 matching_path = os.path.join("/tmp/", docID + "_output.json")
-                with open(matching_path, 'r') as matching_file:
+                with open(matching_path, "r") as matching_file:
                     matching_data = json.load(matching_file)
-                
-                #print(matching_data) # Leaving this for debugging purposes
+
+                # print(matching_data) # Leaving this for debugging purposes
 
                 # Only serialize each exhibitor once, even if
                 # one exhibitor appears as a top choice in several cateogories.
                 exhibitors = {}
                 for category, similar_companies in matching_data.items():
                     for company in similar_companies:
-                        exhibitor_id = company['exhibitor_id']
+                        exhibitor_id = company["exhibitor_id"]
                         if exhibitor_id not in exhibitors:
-                            exhibitors[exhibitor_id] = serialize_exhibitor(Exhibitor.objects.filter(pk = exhibitor_id).first(), request)
+                            exhibitors[exhibitor_id] = serialize_exhibitor(
+                                Exhibitor.objects.filter(pk=exhibitor_id).first(),
+                                request,
+                            )
 
-                response = {
-                    "similarities": matching_data,
-                    "exhibitors": exhibitors
-                }
+                response = {"similarities": matching_data, "exhibitors": exhibitors}
 
-                return JsonResponse(response, safe = False)
-                 
+                return JsonResponse(response, safe=False)
+
             else:
-                return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
+                return HttpResponse(
+                    "Failed to update profile (deserialization error)!",
+                    content_type="text/plain",
+                    status=406,
+                )
     else:
-        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
+        return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
 
 
 # When using the matching function, this api can be used
 # to present the questions that the user should answer.
-# the response holds the questions, as well as 
+# the response holds the questions, as well as
 # the order in which they come.
-@cache_page(60*15)
+@cache_page(60 * 15)
 @csrf_exempt
 def matching_choices(request):
-    if request.method == 'GET':
+    if request.method == "GET":
 
         # Get the choices that we include in the company forms
-        competences = CatalogueCompetence.objects.filter(include_in_form=True).values('id', 'competence')
-        employments = CatalogueEmployment.objects.filter(include_in_form=True).values('id', 'employment')
-        values = CatalogueValue.objects.filter(include_in_form=True).values('id', 'value')
-        industries = CatalogueIndustry.objects.filter(include_in_form=True).values('id', 'industry')
-        locations = CatalogueLocation.objects.filter(include_in_form=True).values('id', 'location')
+        competences = CatalogueCompetence.objects.filter(include_in_form=True).values(
+            "id", "competence"
+        )
+        employments = CatalogueEmployment.objects.filter(include_in_form=True).values(
+            "id", "employment"
+        )
+        values = CatalogueValue.objects.filter(include_in_form=True).values(
+            "id", "value"
+        )
+        industries = CatalogueIndustry.objects.filter(include_in_form=True).values(
+            "id", "industry"
+        )
+        locations = CatalogueLocation.objects.filter(include_in_form=True).values(
+            "id", "location"
+        )
 
         # We want to return a JSON object with the options the user has
-        response = {
-                    'options': [],
-                    'meta': {}
-        }
+        response = {"options": [], "meta": {}}
 
         # Indicates which order the questions/answers come in
         # in the options list.
-        response['meta']['order'] = ['values', 'industries', 'competences', 'employments', 'locations']
-        
+        response["meta"]["order"] = [
+            "values",
+            "industries",
+            "competences",
+            "employments",
+            "locations",
+        ]
+
         current_fair_id = current_fair()
-        if current_fair() is None: current_fair_id = 4 # Default to 2019
-        
-        response['meta']['max_response_size'] = Exhibitor.objects.filter(fair_id = current_fair_id).count()
+        if current_fair() is None:
+            current_fair_id = 4  # Default to 2019
+
+        response["meta"]["max_response_size"] = Exhibitor.objects.filter(
+            fair_id=current_fair_id
+        ).count()
 
         def append_component(key):
-            if key == 'competences':
+            if key == "competences":
                 # Append competence choices to response
                 comp = {}
-                comp['question'] = "What competencies do you have?"
-                comp['answers'] = []
+                comp["question"] = "What competencies do you have?"
+                comp["answers"] = []
                 for competence in competences:
-                    comp['answers'].append({
-                        'value': competence['competence'],
-                        'label': competence['competence'],
-                        'id': competence['id']
-                    })
-                response['options'].append(comp)
+                    comp["answers"].append(
+                        {
+                            "value": competence["competence"],
+                            "label": competence["competence"],
+                            "id": competence["id"],
+                        }
+                    )
+                response["options"].append(comp)
 
-            elif key == 'employments':
+            elif key == "employments":
                 # Append employment choices to results
                 emp = {}
-                emp['question'] = "What employment types are you interested in?"
-                emp['answers'] = []
+                emp["question"] = "What employment types are you interested in?"
+                emp["answers"] = []
                 for employment in employments:
-                    emp['answers'].append({
-                        'value': employment['employment'],
-                        'label': employment['employment'],
-                        'id': employment['id']
-                    })
-                response['options'].append(emp)
+                    emp["answers"].append(
+                        {
+                            "value": employment["employment"],
+                            "label": employment["employment"],
+                            "id": employment["id"],
+                        }
+                    )
+                response["options"].append(emp)
 
-            elif key == 'values':
+            elif key == "values":
                 # Append value choices to results
                 val = {}
-                val['question'] = "What values are important to you?"
-                val['answers'] = []
+                val["question"] = "What values are important to you?"
+                val["answers"] = []
                 for value in values:
-                    val['answers'].append({
-                        'value': value['value'],
-                        'label': value['value'],
-                        'id': value['id']
-                    })
-                response['options'].append(val)
+                    val["answers"].append(
+                        {
+                            "value": value["value"],
+                            "label": value["value"],
+                            "id": value["id"],
+                        }
+                    )
+                response["options"].append(val)
 
-            elif key == 'industries':
+            elif key == "industries":
                 # # Append industry choices to results
                 ind = {}
-                ind['question'] = "What industries are you interested in?"
-                ind['answers'] = []
+                ind["question"] = "What industries are you interested in?"
+                ind["answers"] = []
                 for industry in industries:
-                    ind['answers'].append({
-                        'value': industry['industry'],
-                        'label': industry['industry'],
-                        'id': industry['id']
-                    })
-                response['options'].append(ind)
+                    ind["answers"].append(
+                        {
+                            "value": industry["industry"],
+                            "label": industry["industry"],
+                            "id": industry["id"],
+                        }
+                    )
+                response["options"].append(ind)
 
-            elif key == 'locations':
+            elif key == "locations":
                 # # Append location choices to results
                 loc = {}
-                loc['question'] = "Where in the world?"
-                loc['answers'] = []
+                loc["question"] = "Where in the world?"
+                loc["answers"] = []
                 for location in locations:
-                    loc['answers'].append({
-                        'value': location['location'],
-                        'label': location['location'],
-                        'id': location['id']
-                    })
-                response['options'].append(loc)
+                    loc["answers"].append(
+                        {
+                            "value": location["location"],
+                            "label": location["location"],
+                            "id": location["id"],
+                        }
+                    )
+                response["options"].append(loc)
 
-        for key in response['meta']['order']:
+        for key in response["meta"]["order"]:
             append_component(key)
 
         return JsonResponse(response, safe=False)
 
     else:
-        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
+        return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
+
 
 @cache_page(60 * 5)
 def catalogueselections(request):
-	selections = []
+    selections = []
 
-	selections.append({
-		'selection': 'industries',
-		'question': 'Which industries does your company work in?',
-		'options': [(industry.pk, industry.industry) for industry in CatalogueIndustry.objects.all()]
-	})
+    selections.append(
+        {
+            "selection": "industries",
+            "question": "Which industries does your company work in?",
+            "options": [
+                (industry.pk, industry.industry)
+                for industry in CatalogueIndustry.objects.all()
+            ],
+        }
+    )
 
-	selections.append({
-		'selection': 'values',
-		'question': 'Select up to three values that apply to the company.',
-		'options': [(value.pk, value.value) for value in CatalogueValue.objects.all()]
-	})
+    selections.append(
+        {
+            "selection": "values",
+            "question": "Select up to three values that apply to the company.",
+            "options": [
+                (value.pk, value.value) for value in CatalogueValue.objects.all()
+            ],
+        }
+    )
 
-	selections.append({
-		'selection': 'employments',
-		'question': 'What kind of employments does your company offer?',
-		'options': [(employment.pk, employment.employment) for employment in CatalogueEmployment.objects.all()]
-	})
+    selections.append(
+        {
+            "selection": "employments",
+            "question": "What kind of employments does your company offer?",
+            "options": [
+                (employment.pk, employment.employment)
+                for employment in CatalogueEmployment.objects.all()
+            ],
+        }
+    )
 
-	selections.append({
-		'selection': 'locations',
-		'question': 'Where does your company operate?',
-		'options': [(location.pk, location.location) for location in CatalogueLocation.objects.all()]
-	})
+    selections.append(
+        {
+            "selection": "locations",
+            "question": "Where does your company operate?",
+            "options": [
+                (location.pk, location.location)
+                for location in CatalogueLocation.objects.all()
+            ],
+        }
+    )
 
-	selections.append({
-		'selection': 'benefits',
-		'question': 'Which benefits does your company offers its employees?',
-		'options': [(benefit.pk, benefit.benefit) for benefit in CatalogueBenefit.objects.all()]
-	})
+    selections.append(
+        {
+            "selection": "benefits",
+            "question": "Which benefits does your company offers its employees?",
+            "options": [
+                (benefit.pk, benefit.benefit)
+                for benefit in CatalogueBenefit.objects.all()
+            ],
+        }
+    )
 
-	return JsonResponse(selections, safe = False)
+    return JsonResponse(selections, safe=False)
 
 
 @cache_page(60 * 5)
 def news(request):
-    '''
+    """
     Returns all news
-    '''
+    """
     news = NewsArticle.public_articles.all()
     data = [serializers.newsarticle(request, article) for article in news]
     return JsonResponse(data, safe=False)
@@ -238,29 +313,27 @@ def news(request):
 
 @cache_page(60 * 5)
 def partners(request):
-    '''
+    """
     Returns all partners for current fair
-    '''
+    """
     fair = Fair.objects.get(current=True)
-    partners = Partner.objects.filter(
-        fair=fair
-    ).order_by('-main_partner')
+    partners = Partner.objects.filter(fair=fair).order_by("-main_partner")
     data = [serializers.partner(request, partner) for partner in partners]
     return JsonResponse(data, safe=False)
 
 
 @cache_page(60 * 5)
 def organization(request):
-    '''
+    """
     Returns all roles for current fair
-    '''
-    all_groups = Group.objects \
-        .prefetch_related('user_set__profile') \
-        .order_by('name')
+    """
+    all_groups = Group.objects.prefetch_related("user_set__profile").order_by("name")
 
     # We only want groups that belong to roles that have been recruited during the current fair
     fair = Fair.objects.get(current=True)
-    recruitment_period_roles = [period.recruitable_roles.all() for period in fair.recruitmentperiod_set.all()]
+    recruitment_period_roles = [
+        period.recruitable_roles.all() for period in fair.recruitmentperiod_set.all()
+    ]
     role_groups = [role.group for roles in recruitment_period_roles for role in roles]
     groups = [group for group in all_groups if group in role_groups]
 
@@ -271,58 +344,76 @@ def organization(request):
 def status(request):
     hostname = platform.node()
     python_version = platform.python_version()
-    git_hash = subprocess.check_output('cd ~/git && git rev-parse HEAD', shell=True).decode("utf-8").strip()
-    data = OrderedDict([
-        ('status', "OK"),
-        ('time', datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-        ('hostname', hostname),
-        ('commit', git_hash),
-        ('python_version', python_version),
-    ])
+    git_hash = (
+        subprocess.check_output("cd ~/git && git rev-parse HEAD", shell=True)
+        .decode("utf-8")
+        .strip()
+    )
+    data = OrderedDict(
+        [
+            ("status", "OK"),
+            ("time", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+            ("hostname", hostname),
+            ("commit", git_hash),
+            ("python_version", python_version),
+        ]
+    )
     return JsonResponse(data, safe=False)
 
 
 @csrf_exempt
 def student_profile(request):
-    '''
+    """
     GET student profiles nickname by their id.
     Url: /student_profile?student_id={STUDENTPROFILEID}
     or
     PUT student profile nickname by the id
     URL: /api/student_profile?student_id={STUDENT_PROFILE_ID}
     DATA: json'{"nickname" : "{NICKNAME}"}'
-    '''
-    if request.method == 'GET':
-        student_id = request.GET['student_id']
+    """
+    if request.method == "GET":
+        student_id = request.GET["student_id"]
         student = get_object_or_404(StudentProfile, pk=student_id)
         data = serializers.student_profile(student)
-    elif request.method == 'PUT':
+    elif request.method == "PUT":
         if request.body:
-            student_id = request.GET['student_id']
-            (student_profile, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
+            student_id = request.GET["student_id"]
+            (student_profile, wasCreated) = StudentProfile.objects.get_or_create(
+                pk=student_id
+            )
             try:
                 data = json.loads(request.body.decode())
             except Exception:
                 if wasCreated:
                     student_profile.delete()
-                return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+                return HttpResponse(
+                    "Misformatted json!", content_type="text/plain", status=406
+                )
             # Here is where the actual deserialization happens:
             if deserializers.student_profile(data, student_profile):
-                return HttpResponse('Profile updated sucessfully!', content_type='text/plain')
+                return HttpResponse(
+                    "Profile updated sucessfully!", content_type="text/plain"
+                )
             else:
                 if wasCreated:
                     student_profile.delete()
-                return HttpResponse('Failed to update profile (deserialization error)!', content_type='text/plain', status=406)
+                return HttpResponse(
+                    "Failed to update profile (deserialization error)!",
+                    content_type="text/plain",
+                    status=406,
+                )
         else:
-            return HttpResponse('No payload detected!', content_type='text/plain', status=406)
+            return HttpResponse(
+                "No payload detected!", content_type="text/plain", status=406
+            )
     else:
-        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
+        return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
 
     return JsonResponse(data, safe=False)
 
 
 def questions_GET(request):
-    '''
+    """
     Handles a GET request to ais.armada.nu/api/questions
     Returns all questions and possible work fields, that belong to current survey.
     Each question can be of one of QuestionType types and have special fields depending on that type.
@@ -346,50 +437,56 @@ def questions_GET(request):
         AREA_ID     - is an integer, identifying that specific area
         FIELD       - the name of the field, which is a subcategory of AREA
         AREA        - the name of a field area, which is a supercategory of FIELD
-    '''
+    """
     current_fair = get_object_or_404(Fair, current=True)
     survey = get_object_or_404(Survey, fair=current_fair)
     questions = QuestionBase.objects.filter(survey=survey)
     areas = WorkField.objects.filter(survey=survey)
-    data = OrderedDict([
-        ('questions', [serializers.question(question) for question in questions]),
-        ('areas', [serializers.work_area(area) for area in areas])
-    ])
+    data = OrderedDict(
+        [
+            ("questions", [serializers.question(question) for question in questions]),
+            ("areas", [serializers.work_area(area) for area in areas]),
+        ]
+    )
     return JsonResponse(data, safe=False)
 
 
 def matching_result(request):
-    '''
+    """
     ais.armada.nu/api/matching_result?student_id=STUDENT_PROFILE_PK
     returns the result for a student after the matching algorithm is done (=> when length of result is the same as MATCHING_DONE)
     The result is an array of MAX_MATCHES matching exhibitors.
     If there are no result yet, it will return an empty list [].
-    '''
+    """
     MATCHING_DONE = 6
     MAX_MATCHES = 5
     current_fair = get_object_or_404(Fair, current=True)
-    student_id = request.GET['student_id']
+    student_id = request.GET["student_id"]
     try:
         student = StudentProfile.objects.get(pk=student_id)
     except StudentProfile.DoesNotExist:
-        return HttpResponse('No such student', content_type='text/plain', status=404)
+        return HttpResponse("No such student", content_type="text/plain", status=404)
 
-    number_of_matches = MatchingResult.objects.filter(student=student, fair=current_fair).count()
+    number_of_matches = MatchingResult.objects.filter(
+        student=student, fair=current_fair
+    ).count()
     if number_of_matches < MATCHING_DONE:
         data = None
     else:
-        matches = MatchingResult.objects.filter(student=student).order_by('-score')[:MAX_MATCHES]
+        matches = MatchingResult.objects.filter(student=student).order_by("-score")[
+            :MAX_MATCHES
+        ]
         data = [serializers.matching_result(matching) for matching in matches]
 
     return JsonResponse(data, safe=False)
 
 
 def intChoices(objectType, data, student, survey, function):
-    '''
+    """
     help function for questions_PUT. Checks if there data has an objectType with a list of Integers.
     Returns the list and True if the list is valid.
-    '''
-    allChosen = [];
+    """
+    allChosen = []
     for chosen in data[objectType]:
         if type(chosen) is int:
             allChosen.append(chosen)
@@ -398,7 +495,7 @@ def intChoices(objectType, data, student, survey, function):
 
 
 def questions_PUT(request):
-    '''
+    """
     Handles a PUT request to ais.armada.nu/api/questions?student_id=STUDENT_ID
     Where STUDENT_ID is a unique uuid for a student.
     Expected payload looks like:
@@ -413,9 +510,9 @@ def questions_PUT(request):
         AREA_ID - is an integer id for each area that was selected, that was sent with questions_PUT
 
     Should respond "Answers submitted!" to a valid PUT request
-    '''
+    """
     if request.body:
-        student_id = request.GET['student_id']
+        student_id = request.GET["student_id"]
         (student, wasCreated) = StudentProfile.objects.get_or_create(pk=student_id)
         fair = get_object_or_404(Fair, current=True)
         survey = get_object_or_404(Survey, fair=fair)
@@ -424,91 +521,124 @@ def questions_PUT(request):
         except Exception:
             if wasCreated:
                 student.delete()
-            return HttpResponse('Misformatted json!', content_type='text/plain', status=406)
+            return HttpResponse(
+                "Misformatted json!", content_type="text/plain", status=406
+            )
         modified = False
         (modified_count, total_count) = (0, 0)
 
         if type(data) is not dict:
-            return HttpResponse('Wrong payload format!', content_type='text/plain', status=406)
+            return HttpResponse(
+                "Wrong payload format!", content_type="text/plain", status=406
+            )
 
-        if 'questions' in data and type(data['questions']) is list:
-            (modified_count, total_count) = deserializers.answers(data['questions'], student, survey)
+        if "questions" in data and type(data["questions"]) is list:
+            (modified_count, total_count) = deserializers.answers(
+                data["questions"], student, survey
+            )
 
-        if 'areas' in data and type(data['areas']) is list:
-            intChoices('areas', data, student, survey, deserializers.fields)
+        if "areas" in data and type(data["areas"]) is list:
+            intChoices("areas", data, student, survey, deserializers.fields)
             modified = True
-        if 'regions' in data and type(data['regions']) is list:
-            intChoices('regions', data, student, survey, deserializers.regions)
+        if "regions" in data and type(data["regions"]) is list:
+            intChoices("regions", data, student, survey, deserializers.regions)
             modified = True
-        if 'continents' in data and type(data['continents']) is list:
-            intChoices('continents', data, student, survey, deserializers.continents)
+        if "continents" in data and type(data["continents"]) is list:
+            intChoices("continents", data, student, survey, deserializers.continents)
             modified = True
-        if 'looking_for' in data and type(data['looking_for']) is list:
-            intChoices('looking_for', data, student, survey, deserializers.jobtype)
+        if "looking_for" in data and type(data["looking_for"]) is list:
+            intChoices("looking_for", data, student, survey, deserializers.jobtype)
             modified = True
 
         if modified or modified_count > 0:
-            answer = 'Answers submitted! (' + str(modified_count) + '/' + str(total_count) + ' question answers were saved, fields were '
+            answer = (
+                "Answers submitted! ("
+                + str(modified_count)
+                + "/"
+                + str(total_count)
+                + " question answers were saved, fields were "
+            )
             if not modified:
-                answer += 'not '
-            answer += 'updated)'
-            return HttpResponse(answer, content_type='text/plain')
+                answer += "not "
+            answer += "updated)"
+            return HttpResponse(answer, content_type="text/plain")
         else:
             if wasCreated:
                 student.delete()
-            return HttpResponse('No answers were found in payload!', content_type='text/plain', status=406)
+            return HttpResponse(
+                "No answers were found in payload!",
+                content_type="text/plain",
+                status=406,
+            )
     else:
-        return HttpResponse('No payload detected!', content_type='text/plain', status=406)
+        return HttpResponse(
+            "No payload detected!", content_type="text/plain", status=406
+        )
 
 
 @csrf_exempt
 def questions(request):
-    '''
+    """
     ais.armada.nu/api/questions
     Handles GET request with questions_GET
     Handles PUT request with questions_PUT
-    '''
-    if request.method == 'GET':
+    """
+    if request.method == "GET":
         return questions_GET(request)
-    elif request.method == 'PUT':
+    elif request.method == "PUT":
         return questions_PUT(request)
     else:
-        return HttpResponseBadRequest('Unsupported method!', content_type='text/plain')
+        return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
 
 
 def recruitment(request):
-    '''
+    """
     ais.armada.nu/api/recruitment
     Returns all open recruitments and information about availeble roles for each recruitment.
     If there areno open recrutiment it returns an empty list.
-    '''
+    """
     fair = Fair.objects.get(current=True)
     recruitments = RecruitmentPeriod.objects.filter(fair=fair)
-    recruitments = list(filter(lambda rec: (rec.start_date < timezone.now()) & (rec.end_date > timezone.now()),
-                               recruitments))  # Make sure only current recruitments are shown
+    recruitments = list(
+        filter(
+            lambda rec: (rec.start_date < timezone.now())
+            & (rec.end_date > timezone.now()),
+            recruitments,
+        )
+    )  # Make sure only current recruitments are shown
     data = []
     for recruitment in recruitments:
         roles_info = dict()
         roles = recruitment.recruitable_roles.all()
         # Adds all roles available for this recruitment
         for role in roles:
-            organization_group = str(role.organization_group) if role.organization_group is not None else ''
-            role = OrderedDict([
-                ('name', role.name),
-                ('parent', role.parent_role.name if role.parent_role else None),
-                ('description', role.description),
-            ])
+            organization_group = (
+                str(role.organization_group)
+                if role.organization_group is not None
+                else ""
+            )
+            role = OrderedDict(
+                [
+                    ("name", role.name),
+                    ("parent", role.parent_role.name if role.parent_role else None),
+                    ("description", role.description),
+                ]
+            )
             if organization_group in roles_info:
                 roles_info[organization_group].append(role)
             else:
                 roles_info[organization_group] = [role]
 
-        data.append(OrderedDict([
-            ('name', recruitment.name),
-            ('link', '/fairs/' + str(fair.year) + '/recruitment/'),
-            ('start_date', recruitment.start_date),
-            ('end_date', recruitment.end_date),
-            ('groups', roles_info),
-        ]))
+        data.append(
+            OrderedDict(
+                [
+                    ("name", recruitment.name),
+                    ("link", "/fairs/" + str(fair.year) + "/recruitment/"),
+                    ("start_date", recruitment.start_date),
+                    ("end_date", recruitment.end_date),
+                    ("groups", roles_info),
+                ]
+            )
+        )
 
     return JsonResponse(data, safe=False)

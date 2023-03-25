@@ -25,15 +25,18 @@ class RoleApplicationInline(admin.TabularInline):
 class RecruitmentApplicationAdmin(admin.ModelAdmin):
     inlines = [RoleApplicationInline]
 
+
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
-	list_display = ['name', 'organization_group', 'recruitment_period']
-	list_filter = ['recruitment_period', 'organization_group']
+    list_display = ["name", "organization_group", "recruitment_period"]
+    list_filter = ["recruitment_period", "organization_group"]
+
 
 @admin.register(Slot)
 class SlotAdmin(admin.ModelAdmin):
-	list_display = ['__str__', 'location', 'recruitment_period']
-	list_filter = ['location', 'recruitment_period']
+    list_display = ["__str__", "location", "recruitment_period"]
+    list_filter = ["location", "recruitment_period"]
+
 
 admin.site.register(RecruitmentPeriod)
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)

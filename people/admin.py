@@ -26,7 +26,11 @@ admin.site.register(User, CustomUserAdmin)
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    search_fields = ('user__first_name', 'user__last_name',)
+    search_fields = (
+        "user__first_name",
+        "user__last_name",
+    )
+
 
 admin.site.register(Language)
 admin.site.register(Programme)

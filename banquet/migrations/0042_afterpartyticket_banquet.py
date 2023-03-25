@@ -9,13 +9,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0041_afterpartyticket_has_paid'),
+        ("banquet", "0041_afterpartyticket_has_paid"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='afterpartyticket',
-            name='banquet',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='banquet.Banquet'),
+            model_name="afterpartyticket",
+            name="banquet",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="banquet.Banquet",
+            ),
         ),
     ]

@@ -8,18 +8,29 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0065_auto_20200929_0214'),
+        ("exhibitors", "0065_auto_20200929_0214"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='check_in_user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='check_in_user', to=settings.AUTH_USER_MODEL),
+            model_name="exhibitor",
+            name="check_in_user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="check_in_user",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='fair_location',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='exhibitors.Location'),
+            model_name="exhibitor",
+            name="fair_location",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="exhibitors.Location",
+            ),
         ),
     ]

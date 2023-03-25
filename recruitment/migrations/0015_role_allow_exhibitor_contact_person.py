@@ -8,13 +8,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recruitment', '0014_remove_recruitmentapplication_exhibitor'),
+        ("recruitment", "0014_remove_recruitmentapplication_exhibitor"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='role',
-            name='allow_exhibitor_contact_person',
-            field=models.BooleanField(default=False, verbose_name='People with this role can be contact persons for exhibitors'),
+            model_name="role",
+            name="allow_exhibitor_contact_person",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="People with this role can be contact persons for exhibitors",
+            ),
         ),
     ]

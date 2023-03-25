@@ -8,13 +8,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('companies', '0024_company_show_externally'),
+        ("companies", "0024_company_show_externally"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='company',
-            name='general_email_address',
-            field=models.EmailField(blank=True, max_length=200, null=True, verbose_name='General e-mail address'),
+            model_name="company",
+            name="general_email_address",
+            field=models.EmailField(
+                blank=True,
+                max_length=200,
+                null=True,
+                verbose_name="General e-mail address",
+            ),
         ),
     ]

@@ -10,55 +10,112 @@ import fair.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0004_auto_20181003_1227'),
+        ("fair", "0004_auto_20181003_1227"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FairDay',
+            name="FairDay",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date', models.DateField(max_length=255)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date", models.DateField(max_length=255)),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
             options={
-                'ordering': ['fair', 'date'],
-                'default_permissions': [],
+                "ordering": ["fair", "date"],
+                "default_permissions": [],
             },
         ),
         migrations.CreateModel(
-            name='LunchTicket',
+            name="LunchTicket",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(default=fair.models.get_random_32_length_string, max_length=255, unique=True)),
-                ('email_address', models.EmailField(blank=True, max_length=255, null=True, verbose_name='E-mail address')),
-                ('comment', models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "token",
+                    models.CharField(
+                        default=fair.models.get_random_32_length_string,
+                        max_length=255,
+                        unique=True,
+                    ),
+                ),
+                (
+                    "email_address",
+                    models.EmailField(
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name="E-mail address",
+                    ),
+                ),
+                ("comment", models.CharField(blank=True, max_length=255, null=True)),
             ],
             options={
-                'ordering': ['pk'],
-                'default_permissions': [],
+                "ordering": ["pk"],
+                "default_permissions": [],
             },
         ),
         migrations.CreateModel(
-            name='LunchTicketScan',
+            name="LunchTicketScan",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'default_permissions': [],
+                "default_permissions": [],
             },
         ),
         migrations.CreateModel(
-            name='LunchTicketTime',
+            name="LunchTicketTime",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('day', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.FairDay')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "day",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.FairDay"
+                    ),
+                ),
             ],
             options={
-                'ordering': ['day', 'name'],
-                'default_permissions': [],
+                "ordering": ["day", "name"],
+                "default_permissions": [],
             },
         ),
     ]

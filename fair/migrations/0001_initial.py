@@ -12,41 +12,86 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Fair',
+            name="Fair",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default=fair.models.default_name, max_length=100)),
-                ('year', models.IntegerField(default=2018)),
-                ('description', models.TextField(default=fair.models.default_name, max_length=500)),
-                ('registration_start_date', models.DateTimeField(null=True)),
-                ('registration_end_date', models.DateTimeField(null=True)),
-                ('complete_registration_start_date', models.DateTimeField(blank=True, null=True)),
-                ('complete_registration_close_date', models.DateTimeField(blank=True, null=True)),
-                ('current', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(default=fair.models.default_name, max_length=100),
+                ),
+                ("year", models.IntegerField(default=2018)),
+                (
+                    "description",
+                    models.TextField(default=fair.models.default_name, max_length=500),
+                ),
+                ("registration_start_date", models.DateTimeField(null=True)),
+                ("registration_end_date", models.DateTimeField(null=True)),
+                (
+                    "complete_registration_start_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                (
+                    "complete_registration_close_date",
+                    models.DateTimeField(blank=True, null=True),
+                ),
+                ("current", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='Partner',
+            name="Partner",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('logo', models.ImageField(upload_to=lib.image.UploadToDirUUID('partners', 'logo'))),
-                ('url', models.CharField(max_length=300)),
-                ('main_partner', models.BooleanField()),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "logo",
+                    models.ImageField(
+                        upload_to=lib.image.UploadToDirUUID("partners", "logo")
+                    ),
+                ),
+                ("url", models.CharField(max_length=300)),
+                ("main_partner", models.BooleanField()),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.TextField(max_length=500)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.TextField(max_length=500)),
             ],
         ),
     ]

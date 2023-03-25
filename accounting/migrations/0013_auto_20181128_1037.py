@@ -12,76 +12,87 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('accounting', '0012_order_invoiced'),
+        ("accounting", "0012_order_invoiced"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='productoninvoice',
-            name='invoice',
+            model_name="productoninvoice",
+            name="invoice",
         ),
         migrations.RemoveField(
-            model_name='productoninvoice',
-            name='product',
+            model_name="productoninvoice",
+            name="product",
         ),
         migrations.AlterModelOptions(
-            name='invoice',
+            name="invoice",
             options={},
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='address',
+            model_name="invoice",
+            name="address",
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='company_customer',
+            model_name="invoice",
+            name="company_customer",
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='date_delivery_end',
+            model_name="invoice",
+            name="date_delivery_end",
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='date_delivery_start',
+            model_name="invoice",
+            name="date_delivery_start",
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='date_due',
+            model_name="invoice",
+            name="date_due",
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='date_issue',
+            model_name="invoice",
+            name="date_issue",
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='id_display',
+            model_name="invoice",
+            name="id_display",
         ),
         migrations.RemoveField(
-            model_name='invoice',
-            name='price',
+            model_name="invoice",
+            name="price",
         ),
         migrations.RemoveField(
-            model_name='order',
-            name='invoiced',
+            model_name="order",
+            name="invoiced",
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='timestamp',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="invoice",
+            name="timestamp",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='user',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="invoice",
+            name="user",
+            field=models.ForeignKey(
+                default=0,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='order',
-            name='invoice',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='accounting.Invoice'),
+            model_name="order",
+            name="invoice",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="accounting.Invoice",
+            ),
         ),
         migrations.DeleteModel(
-            name='ProductOnInvoice',
+            name="ProductOnInvoice",
         ),
     ]

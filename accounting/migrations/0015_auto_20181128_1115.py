@@ -8,12 +8,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0014_auto_20181128_1107'),
+        ("accounting", "0014_auto_20181128_1107"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='product',
-            options={'default_permissions': [], 'ordering': ['name'], 'permissions': [('base', 'Accounting'), ('export_orders', 'Export orders'), ('ths_customer_ids', 'Edit companies without THS customer IDs')], 'verbose_name_plural': 'Products'},
+            name="product",
+            options={
+                "default_permissions": [],
+                "ordering": ["name"],
+                "permissions": [
+                    ("base", "Accounting"),
+                    ("export_orders", "Export orders"),
+                    ("ths_customer_ids", "Edit companies without THS customer IDs"),
+                ],
+                "verbose_name_plural": "Products",
+            },
         ),
     ]

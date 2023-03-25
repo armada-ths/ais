@@ -10,20 +10,32 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='NewsArticle',
+            name="NewsArticle",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=150)),
-                ('author', models.CharField(blank=True, max_length=50)),
-                ('ingress', models.TextField(default='', max_length=500)),
-                ('html_article_text', models.TextField(default='', max_length=5000)),
-                ('publication_date', models.DateTimeField()),
-                ('image', models.ImageField(blank=True, upload_to=lib.image.UploadToDirUUID('news', 'image'))),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=150)),
+                ("author", models.CharField(blank=True, max_length=50)),
+                ("ingress", models.TextField(default="", max_length=500)),
+                ("html_article_text", models.TextField(default="", max_length=5000)),
+                ("publication_date", models.DateTimeField()),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True, upload_to=lib.image.UploadToDirUUID("news", "image")
+                    ),
+                ),
             ],
         ),
     ]

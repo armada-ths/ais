@@ -13,12 +13,12 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser):
-        parser.add_argument('folder')
+        parser.add_argument("folder")
 
     def handle(self, *args, **options):
-        folder = options['folder']
+        folder = options["folder"]
         if not folder:
-            raise CommandError('[ERROR] Please specify a folder with the images')
+            raise CommandError("[ERROR] Please specify a folder with the images")
         files = os.listdir(folder)
         self.stdout.write("[INFO] Uploading {} map images".format(len(files)))
         for image in files:
@@ -26,9 +26,13 @@ class Command(BaseCommand):
             self.stdout.write("[INFO] Now processing {}".format(image))
             catalogue_info = CatalogInfo.objects.filter(slug=filename).first()
             if not catalogue_info:
-                self.stderr.write("[ERROR] Catalog info does not exists for {}".format(filename))
+                self.stderr.write(
+                    "[ERROR] Catalog info does not exists for {}".format(filename)
+                )
                 continue
             map_file = File(open("{}{}".format(folder, image), "rb"))
-            catalogue_info.location_at_fair_original.save("{}-map.png".format(filename), map_file, save=True)
+            catalogue_info.location_at_fair_original.save(
+                "{}-map.png".format(filename), map_file, save=True
+            )
             self.stdout.write("[SUCCESS] Saved map for {}".format(filename))
         self.stdout.write("[INFO] Import finished.")

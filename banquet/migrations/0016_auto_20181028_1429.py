@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0015_invitationgroup_banquet'),
+        ("banquet", "0015_invitationgroup_banquet"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='invitation',
-            name='price',
-            field=models.PositiveIntegerField(verbose_name='Price (SEK)'),
+            model_name="invitation",
+            name="price",
+            field=models.PositiveIntegerField(verbose_name="Price (SEK)"),
         ),
     ]

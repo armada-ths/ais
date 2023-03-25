@@ -11,34 +11,46 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('fair', '0012_remove_lunchticket_sent'),
+        ("fair", "0012_remove_lunchticket_sent"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LunchTicketSend',
+            name="LunchTicketSend",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('email_address', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                ("email_address", models.CharField(max_length=255)),
             ],
             options={
-                'default_permissions': [],
+                "default_permissions": [],
             },
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='sent',
+            model_name="lunchticket",
+            name="sent",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='lunchticketsend',
-            name='lunch_ticket',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.LunchTicket'),
+            model_name="lunchticketsend",
+            name="lunch_ticket",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="fair.LunchTicket"
+            ),
         ),
         migrations.AddField(
-            model_name='lunchticketsend',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="lunchticketsend",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

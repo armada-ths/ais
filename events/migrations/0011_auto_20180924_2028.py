@@ -9,18 +9,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0010_auto_20180924_2026'),
+        ("events", "0010_auto_20180924_2026"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='signupquestion',
-            name='options',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), default=[], size=None),
+            model_name="signupquestion",
+            name="options",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.TextField(), default=[], size=None
+            ),
         ),
         migrations.AlterField(
-            model_name='signupquestionanswer',
-            name='answer_options',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.TextField(), default=[], size=None),
+            model_name="signupquestionanswer",
+            name="answer_options",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.TextField(), default=[], size=None
+            ),
         ),
     ]

@@ -10,31 +10,35 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0006_auto_20181002_1440'),
+        ("banquet", "0006_auto_20181002_1440"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='dietarypreference',
-            name='banquet',
+            model_name="dietarypreference",
+            name="banquet",
         ),
         migrations.AddField(
-            model_name='invitation',
-            name='banquet',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='banquet.Banquet'),
+            model_name="invitation",
+            name="banquet",
+            field=models.ForeignKey(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="banquet.Banquet",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='invitation',
-            name='denied',
+            model_name="invitation",
+            name="denied",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='invitation',
-            name='token',
+            model_name="invitation",
+            name="token",
             field=models.CharField(default=uuid.uuid4, max_length=255, null=True),
         ),
         migrations.DeleteModel(
-            name='DietaryPreference',
+            name="DietaryPreference",
         ),
     ]

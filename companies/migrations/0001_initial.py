@@ -10,126 +10,292 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Company',
+            name="Company",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Organisation name')),
-                ('identity_number', models.CharField(blank=True, max_length=100, null=True)),
-                ('website', models.CharField(blank=True, max_length=300, null=True)),
-                ('phone_number', models.CharField(blank=True, max_length=200, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=100, unique=True, verbose_name="Organisation name"
+                    ),
+                ),
+                (
+                    "identity_number",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                ("website", models.CharField(blank=True, max_length=300, null=True)),
+                (
+                    "phone_number",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Companies',
-                'permissions': (('base', 'Companies'),),
-                'ordering': ['name'],
+                "verbose_name_plural": "Companies",
+                "permissions": (("base", "Companies"),),
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='CompanyAddress',
+            name="CompanyAddress",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('INVOICE', 'Invoice'), ('TRANSPORT', 'Transport'), ('OFFICE', 'Office')], max_length=200)),
-                ('name', models.CharField(blank=True, max_length=200, null=True, verbose_name='Name, if different from the organisation name')),
-                ('street', models.CharField(max_length=200)),
-                ('zipcode', models.CharField(max_length=200)),
-                ('city', models.CharField(max_length=200)),
-                ('country', models.CharField(choices=[('DENMARK', 'Denmark'), ('FINLAND', 'Finland'), ('FRANCE', 'France'), ('GERMANY', 'Germany'), ('NORWAY', 'Norway'), ('SWEDEN', 'Sweden'), ('UNITED_KINGDOM', 'United Kingdom')], default='SWEDEN', max_length=200)),
-                ('phone_number', models.CharField(blank=True, max_length=200, null=True)),
-                ('email_address', models.CharField(blank=True, max_length=200, null=True, verbose_name='E-mail address')),
-                ('reference', models.CharField(blank=True, max_length=200, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("INVOICE", "Invoice"),
+                            ("TRANSPORT", "Transport"),
+                            ("OFFICE", "Office"),
+                        ],
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        max_length=200,
+                        null=True,
+                        verbose_name="Name, if different from the organisation name",
+                    ),
+                ),
+                ("street", models.CharField(max_length=200)),
+                ("zipcode", models.CharField(max_length=200)),
+                ("city", models.CharField(max_length=200)),
+                (
+                    "country",
+                    models.CharField(
+                        choices=[
+                            ("DENMARK", "Denmark"),
+                            ("FINLAND", "Finland"),
+                            ("FRANCE", "France"),
+                            ("GERMANY", "Germany"),
+                            ("NORWAY", "Norway"),
+                            ("SWEDEN", "Sweden"),
+                            ("UNITED_KINGDOM", "United Kingdom"),
+                        ],
+                        default="SWEDEN",
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "phone_number",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                (
+                    "email_address",
+                    models.CharField(
+                        blank=True,
+                        max_length=200,
+                        null=True,
+                        verbose_name="E-mail address",
+                    ),
+                ),
+                ("reference", models.CharField(blank=True, max_length=200, null=True)),
             ],
             options={
-                'verbose_name_plural': 'Company addresses',
+                "verbose_name_plural": "Company addresses",
             },
         ),
         migrations.CreateModel(
-            name='CompanyContact',
+            name="CompanyContact",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('first_name', models.CharField(max_length=200, null=True, verbose_name='First name')),
-                ('last_name', models.CharField(max_length=200, null=True, verbose_name='Last name')),
-                ('email_address', models.EmailField(max_length=200, verbose_name='E-mail address')),
-                ('alternative_email_address', models.EmailField(blank=True, max_length=200, null=True, verbose_name='Alternative e-mail address')),
-                ('title', models.CharField(blank=True, max_length=200, null=True)),
-                ('mobile_phone_number', models.CharField(blank=True, max_length=200, null=True)),
-                ('work_phone_number', models.CharField(blank=True, max_length=200, null=True)),
-                ('active', models.BooleanField(default=True)),
-                ('confirmed', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(
+                        max_length=200, null=True, verbose_name="First name"
+                    ),
+                ),
+                (
+                    "last_name",
+                    models.CharField(
+                        max_length=200, null=True, verbose_name="Last name"
+                    ),
+                ),
+                (
+                    "email_address",
+                    models.EmailField(max_length=200, verbose_name="E-mail address"),
+                ),
+                (
+                    "alternative_email_address",
+                    models.EmailField(
+                        blank=True,
+                        max_length=200,
+                        null=True,
+                        verbose_name="Alternative e-mail address",
+                    ),
+                ),
+                ("title", models.CharField(blank=True, max_length=200, null=True)),
+                (
+                    "mobile_phone_number",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                (
+                    "work_phone_number",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                ("active", models.BooleanField(default=True)),
+                ("confirmed", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='CompanyCustomer',
+            name="CompanyCustomer",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Company customers',
-                'ordering': ['company__name'],
+                "verbose_name_plural": "Company customers",
+                "ordering": ["company__name"],
             },
         ),
         migrations.CreateModel(
-            name='CompanyCustomerComment',
+            name="CompanyCustomerComment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.TextField()),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("comment", models.TextField()),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'ordering': ['-timestamp'],
+                "ordering": ["-timestamp"],
             },
         ),
         migrations.CreateModel(
-            name='CompanyCustomerResponsible',
+            name="CompanyCustomerResponsible",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Company customer responsibles',
-                'ordering': ['company__name', 'group__name'],
+                "verbose_name_plural": "Company customer responsibles",
+                "ordering": ["company__name", "group__name"],
             },
         ),
         migrations.CreateModel(
-            name='CompanyLog',
+            name="CompanyLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('data', jsonfield.fields.JSONField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                ("data", jsonfield.fields.JSONField()),
             ],
         ),
         migrations.CreateModel(
-            name='CompanyType',
+            name="CompanyType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("type", models.CharField(max_length=100)),
             ],
             options={
-                'verbose_name_plural': 'Company types',
-                'ordering': ['type'],
+                "verbose_name_plural": "Company types",
+                "ordering": ["type"],
             },
         ),
         migrations.CreateModel(
-            name='Group',
+            name="Group",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('name_full', models.CharField(editable=False, max_length=100)),
-                ('description', models.TextField(blank=True)),
-                ('color', models.CharField(blank=True, choices=[('BLUE', 'Blue'), ('GREEN', 'Green'), ('RED', 'Red'), ('YELLOW', 'Yellow')], max_length=200, null=True)),
-                ('allow_companies', models.BooleanField(default=True)),
-                ('allow_registration', models.BooleanField(default=False)),
-                ('allow_responsibilities', models.BooleanField(default=False)),
-                ('allow_comments', models.BooleanField(default=False)),
-                ('allow_statistics', models.BooleanField(default=False)),
-                ('allow_status', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("name_full", models.CharField(editable=False, max_length=100)),
+                ("description", models.TextField(blank=True)),
+                (
+                    "color",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("BLUE", "Blue"),
+                            ("GREEN", "Green"),
+                            ("RED", "Red"),
+                            ("YELLOW", "Yellow"),
+                        ],
+                        max_length=200,
+                        null=True,
+                    ),
+                ),
+                ("allow_companies", models.BooleanField(default=True)),
+                ("allow_registration", models.BooleanField(default=False)),
+                ("allow_responsibilities", models.BooleanField(default=False)),
+                ("allow_comments", models.BooleanField(default=False)),
+                ("allow_statistics", models.BooleanField(default=False)),
+                ("allow_status", models.BooleanField(default=False)),
             ],
             options={
-                'verbose_name_plural': 'Groups',
-                'ordering': ['parent__name', 'name'],
+                "verbose_name_plural": "Groups",
+                "ordering": ["parent__name", "name"],
             },
         ),
     ]

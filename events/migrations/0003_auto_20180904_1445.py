@@ -8,56 +8,56 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0002_auto_20180730_1515'),
+        ("events", "0002_auto_20180730_1515"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='event',
-            name='allowed_groups',
+            model_name="event",
+            name="allowed_groups",
         ),
         migrations.RemoveField(
-            model_name='event',
-            name='extra_field',
+            model_name="event",
+            name="extra_field",
         ),
         migrations.RemoveField(
-            model_name='event',
-            name='fair',
+            model_name="event",
+            name="fair",
         ),
         migrations.RemoveField(
-            model_name='event',
-            name='tags',
+            model_name="event",
+            name="tags",
         ),
         migrations.RemoveField(
-            model_name='eventanswer',
-            name='attendence',
+            model_name="eventanswer",
+            name="attendence",
         ),
         migrations.RemoveField(
-            model_name='eventanswer',
-            name='question',
+            model_name="eventanswer",
+            name="question",
         ),
         migrations.RemoveField(
-            model_name='eventattendence',
-            name='event',
+            model_name="eventattendence",
+            name="event",
         ),
         migrations.RemoveField(
-            model_name='eventattendence',
-            name='user',
+            model_name="eventattendence",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='eventquestion',
-            name='event',
+            model_name="eventquestion",
+            name="event",
         ),
         migrations.DeleteModel(
-            name='Event',
+            name="Event",
         ),
         migrations.DeleteModel(
-            name='EventAnswer',
+            name="EventAnswer",
         ),
         migrations.DeleteModel(
-            name='EventAttendence',
+            name="EventAttendence",
         ),
         migrations.DeleteModel(
-            name='EventQuestion',
+            name="EventQuestion",
         ),
     ]

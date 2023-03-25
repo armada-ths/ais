@@ -5,8 +5,9 @@ import calendar
 def image_preview(name):
     def f(self, instance):
         return '<img src="%s" />' % getattr(instance, name).url
+
     f.allow_tags = True
-    f.short_description = 'Preview of %s' % name
+    f.short_description = "Preview of %s" % name
     return f
 
 

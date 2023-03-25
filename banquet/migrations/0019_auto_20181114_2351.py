@@ -8,13 +8,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0018_auto_20181114_2346'),
+        ("banquet", "0018_auto_20181114_2346"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='afterpartyticket',
-            name='email_address',
-            field=models.EmailField(blank=True, max_length=75, null=True, verbose_name='E-mail address'),
+            model_name="afterpartyticket",
+            name="email_address",
+            field=models.EmailField(
+                blank=True, max_length=75, null=True, verbose_name="E-mail address"
+            ),
         ),
     ]

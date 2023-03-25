@@ -9,13 +9,17 @@ import lib.image
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0023_auto_20181019_1108'),
+        ("events", "0023_auto_20181019_1108"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='picture',
-            field=models.ImageField(blank=True, null=True, upload_to=lib.image.UploadToDirUUID('events', 'pictures')),
+            model_name="event",
+            name="picture",
+            field=models.ImageField(
+                blank=True,
+                null=True,
+                upload_to=lib.image.UploadToDirUUID("events", "pictures"),
+            ),
         ),
     ]

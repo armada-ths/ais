@@ -1,22 +1,46 @@
 from django import forms
-from django.forms import ModelForm, Form, ModelMultipleChoiceField, ModelChoiceField, ChoiceField
+from django.forms import (
+    ModelForm,
+    Form,
+    ModelMultipleChoiceField,
+    ModelChoiceField,
+    ChoiceField,
+)
 from django.contrib.auth.models import User
 import re
 
-from .models import Participant, InvitationGroup, Invitation, AfterPartyInvitation, AfterPartyTicket, TableMatching, \
-    MatchingProgram, MatchingInterest, MatchingYear
-from exhibitors.models import CatalogueIndustry, CatalogueCompetence, CatalogueValue, CatalogueLocation, \
-    CatalogueEmployment, CatalogueCategory
+from .models import (
+    Participant,
+    InvitationGroup,
+    Invitation,
+    AfterPartyInvitation,
+    AfterPartyTicket,
+    TableMatching,
+    MatchingProgram,
+    MatchingInterest,
+    MatchingYear,
+)
+from exhibitors.models import (
+    CatalogueIndustry,
+    CatalogueCompetence,
+    CatalogueValue,
+    CatalogueLocation,
+    CatalogueEmployment,
+    CatalogueCategory,
+)
 
 
 def fix_phone_number(n):
-    if n is None: return None
+    if n is None:
+        return None
 
-    n = n.replace(' ', '')
-    n = n.replace('-', '')
+    n = n.replace(" ", "")
+    n = n.replace("-", "")
 
-    if n.startswith("00"): n = "+" + n[2:]
-    if n.startswith("0"): n = "+46" + n[1:]
+    if n.startswith("00"):
+        n = "+" + n[2:]
+    if n.startswith("0"):
+        n = "+46" + n[1:]
 
     return n
 
@@ -25,41 +49,50 @@ class ParticipantForm(forms.ModelForm):
     def clean(self):
         super(ParticipantForm, self).clean()
 
-        if 'phone_number' in self.cleaned_data:
-            self.cleaned_data['phone_number'] = fix_phone_number(
-                self.cleaned_data['phone_number'])
+        if "phone_number" in self.cleaned_data:
+            self.cleaned_data["phone_number"] = fix_phone_number(
+                self.cleaned_data["phone_number"]
+            )
 
         return self.cleaned_data
 
     def is_valid(self):
         valid = super(ParticipantForm, self).is_valid()
 
-        if not valid: return valid
+        if not valid:
+            return valid
 
-        phone_number = self.cleaned_data.get('phone_number')
+        phone_number = self.cleaned_data.get("phone_number")
 
-        if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
+        if phone_number is not None and not re.match(r"\+[0-9]+$", phone_number):
             self.add_error(
-                'phone_number', 'Must only contain numbers and a leading plus.')
+                "phone_number", "Must only contain numbers and a leading plus."
+            )
             valid = False
 
         return valid
 
     class Meta:
         model = Participant
-        fields = ['name', 'email_address', 'phone_number',
-                  'dietary_restrictions', 'other_dietary_restrictions', 'alcohol']
+        fields = [
+            "name",
+            "email_address",
+            "phone_number",
+            "dietary_restrictions",
+            "other_dietary_restrictions",
+            "alcohol",
+        ]
 
         widgets = {
-            'name': forms.TextInput(attrs={'readonly': 'readonly'}),
-            'email_address': forms.TextInput(attrs={'readonly': 'readonly'}),
-            'dietary_restrictions': forms.CheckboxSelectMultiple(),
-            'other_dietary_restrictions': forms.TextInput(),
-            'alcohol': forms.RadioSelect()
+            "name": forms.TextInput(attrs={"readonly": "readonly"}),
+            "email_address": forms.TextInput(attrs={"readonly": "readonly"}),
+            "dietary_restrictions": forms.CheckboxSelectMultiple(),
+            "other_dietary_restrictions": forms.TextInput(),
+            "alcohol": forms.RadioSelect(),
         }
 
         help_texts = {
-            'other_dietary_restrictions': 'Please leave empty if no other restrictions.',
+            "other_dietary_restrictions": "Please leave empty if no other restrictions.",
         }
 
 
@@ -67,71 +100,84 @@ class ParticipantAdminForm(forms.ModelForm):
     def clean(self):
         super(ParticipantAdminForm, self).clean()
 
-        if 'phone_number' in self.cleaned_data:
-            self.cleaned_data['phone_number'] = fix_phone_number(
-                self.cleaned_data['phone_number'])
+        if "phone_number" in self.cleaned_data:
+            self.cleaned_data["phone_number"] = fix_phone_number(
+                self.cleaned_data["phone_number"]
+            )
 
         return self.cleaned_data
 
     def is_valid(self):
         valid = super(ParticipantAdminForm, self).is_valid()
 
-        if not valid: return valid
+        if not valid:
+            return valid
 
-        company = self.cleaned_data.get('company')
-        user = self.cleaned_data.get('user')
-        name = self.cleaned_data.get('name')
-        email_address = self.cleaned_data.get('email_address')
-        phone_number = self.cleaned_data.get('phone_number')
+        company = self.cleaned_data.get("company")
+        user = self.cleaned_data.get("user")
+        name = self.cleaned_data.get("name")
+        email_address = self.cleaned_data.get("email_address")
+        phone_number = self.cleaned_data.get("phone_number")
 
         if company is not None and user is not None:
-            self.add_error('company', 'Cannot have both a company and a user.')
-            self.add_error('user', 'Cannot have both a company and a user.')
+            self.add_error("company", "Cannot have both a company and a user.")
+            self.add_error("user", "Cannot have both a company and a user.")
             valid = False
 
-        if phone_number is not None and not re.match(r'\+[0-9]+$', phone_number):
+        if phone_number is not None and not re.match(r"\+[0-9]+$", phone_number):
             self.add_error(
-                'phone_number', 'Must only contain numbers and a leading plus.')
+                "phone_number", "Must only contain numbers and a leading plus."
+            )
             valid = False
 
         if user is not None and name is not None:
-            self.add_error('name', 'Must be empty if a user is selected.')
+            self.add_error("name", "Must be empty if a user is selected.")
             valid = False
 
         if user is not None and email_address is not None:
-            self.add_error('email_address', 'Must be empty if a user is selected.')
+            self.add_error("email_address", "Must be empty if a user is selected.")
             valid = False
 
         if user is None and name is None:
-            self.add_error('name', 'Must be given if no user is selected.')
+            self.add_error("name", "Must be given if no user is selected.")
             valid = False
 
         if user is None and email_address is None:
-            self.add_error('email_address', 'Must be given if no user is selected.')
+            self.add_error("email_address", "Must be given if no user is selected.")
             valid = False
 
         return valid
 
     class Meta:
         model = Participant
-        fields = ['seat', 'company', 'user', 'name', 'email_address', 'phone_number',
-                  'dietary_restrictions', 'other_dietary_restrictions', 'alcohol', 'giveaway']
+        fields = [
+            "seat",
+            "company",
+            "user",
+            "name",
+            "email_address",
+            "phone_number",
+            "dietary_restrictions",
+            "other_dietary_restrictions",
+            "alcohol",
+            "giveaway",
+        ]
 
         help_texts = {
-            'name': 'Only enter a name if you do not select a user.',
-            'email_address': 'Only enter an e-mail address if you do not select a user.',
-            'giveaway': 'Only applies to company tickets, default should be No for all other tickets.',
+            "name": "Only enter a name if you do not select a user.",
+            "email_address": "Only enter an e-mail address if you do not select a user.",
+            "giveaway": "Only applies to company tickets, default should be No for all other tickets.",
         }
 
         labels = {
-            'giveaway': 'The company plan to give this ticket to a student',
+            "giveaway": "The company plan to give this ticket to a student",
         }
 
         widgets = {
-            'dietary_restrictions': forms.CheckboxSelectMultiple(),
-            'other_dietary_restrictions': forms.TextInput(),
-            'alcohol': forms.RadioSelect(),
-            'giveaway': forms.RadioSelect(),
+            "dietary_restrictions": forms.CheckboxSelectMultiple(),
+            "other_dietary_restrictions": forms.TextInput(),
+            "alcohol": forms.RadioSelect(),
+            "giveaway": forms.RadioSelect(),
         }
 
 
@@ -139,38 +185,44 @@ class InvitationForm(forms.ModelForm):
     def clean(self):
         super(InvitationForm, self).clean()
 
-        if 'phone_number' in self.cleaned_data:
-            self.cleaned_data['phone_number'] = fix_phone_number(
-                self.cleaned_data['phone_number'])
+        if "phone_number" in self.cleaned_data:
+            self.cleaned_data["phone_number"] = fix_phone_number(
+                self.cleaned_data["phone_number"]
+            )
 
         return self.cleaned_data
 
     def is_valid(self):
         valid = super(InvitationForm, self).is_valid()
 
-        if not valid: return valid
+        if not valid:
+            return valid
 
-        user = self.cleaned_data.get('user')
-        name = self.cleaned_data.get('name')
-        email_address = self.cleaned_data.get('email_address')
+        user = self.cleaned_data.get("user")
+        name = self.cleaned_data.get("name")
+        email_address = self.cleaned_data.get("email_address")
 
         if user is not None:
             if name is not None:
-                self.add_error('name', 'Leave this empty if you select a user.')
+                self.add_error("name", "Leave this empty if you select a user.")
                 valid = False
 
             if email_address is not None:
-                self.add_error('email_address', 'Leave this empty if you select a user.')
+                self.add_error(
+                    "email_address", "Leave this empty if you select a user."
+                )
                 valid = False
 
         else:
             if name is None or len(name) == 0:
-                self.add_error('name', 'Either select a user or provide a name.')
+                self.add_error("name", "Either select a user or provide a name.")
                 valid = False
 
             if email_address is None or len(email_address) == 0:
-                self.add_error('email_address',
-                               'Either select a user or provide an e-mail address.')
+                self.add_error(
+                    "email_address",
+                    "Either select a user or provide an e-mail address.",
+                )
                 valid = False
 
         return valid
@@ -193,64 +245,77 @@ class InvitationForm(forms.ModelForm):
 
     class Meta:
         model = Invitation
-        fields = ['group', 'user', 'name', 'email_address',
-                  'reason', 'deadline', 'price', 'part_of_matching']
+        fields = [
+            "group",
+            "user",
+            "name",
+            "email_address",
+            "reason",
+            "deadline",
+            "price",
+            "part_of_matching",
+        ]
 
         help_texts = {
-            'reason': 'Not shown to the invitee.',
-            'deadline': 'Leave blank to get the group\'s default deadline.',
-            'price': 'Enter an integer price in SEK.',
-            'part_of_matching': "This person is subject to the banquet placement matching functionality."
+            "reason": "Not shown to the invitee.",
+            "deadline": "Leave blank to get the group's default deadline.",
+            "price": "Enter an integer price in SEK.",
+            "part_of_matching": "This person is subject to the banquet placement matching functionality.",
         }
 
-        widgets = {
-            'deadline': forms.DateInput(attrs={'type': 'date'})
-        }
+        widgets = {"deadline": forms.DateInput(attrs={"type": "date"})}
 
 
 class InvitationSearchForm(forms.Form):
     status_choices = [
-        ('GOING', 'Going'),
-        ('HAS_NOT_PAID', 'Has not paid'),
-        ('NOT_GOING', 'Not going'),
-        ('PENDING', 'Pending')
+        ("GOING", "Going"),
+        ("HAS_NOT_PAID", "Has not paid"),
+        ("NOT_GOING", "Not going"),
+        ("PENDING", "Pending"),
     ]
 
     matching_status_choices = [
-        (None, 'Any'),
-        (True, 'Part of matching'),
-        (False, 'Not part of matching')
+        (None, "Any"),
+        (True, "Part of matching"),
+        (False, "Not part of matching"),
     ]
 
     statuses = forms.MultipleChoiceField(
-        choices=status_choices, widget=forms.CheckboxSelectMultiple(), required=False)
-    groups = forms.ModelMultipleChoiceField(queryset=InvitationGroup.objects.none(),
-                                            widget=forms.CheckboxSelectMultiple(
-                                            ), label='Show only invitations belonging to any of these groups',
-                                            required=False)
-    matching_statuses = forms.ChoiceField(choices=matching_status_choices, widget=forms.RadioSelect(
-    ), label='Show only invitations that are / are not subject to the matching functionality', required=False)
+        choices=status_choices, widget=forms.CheckboxSelectMultiple(), required=False
+    )
+    groups = forms.ModelMultipleChoiceField(
+        queryset=InvitationGroup.objects.none(),
+        widget=forms.CheckboxSelectMultiple(),
+        label="Show only invitations belonging to any of these groups",
+        required=False,
+    )
+    matching_statuses = forms.ChoiceField(
+        choices=matching_status_choices,
+        widget=forms.RadioSelect(),
+        label="Show only invitations that are / are not subject to the matching functionality",
+        required=False,
+    )
 
 
 class AfterPartyInvitationForm(forms.ModelForm):
     class Meta:
         model = AfterPartyInvitation
-        fields = ['name', 'email_address']
+        fields = ["name", "email_address"]
 
         labels = {
-            'name': "Friend's full name",
-            'email_address': "Friend's email address"
+            "name": "Friend's full name",
+            "email_address": "Friend's email address",
         }
 
 
 class AfterPartyTicketForm(forms.ModelForm):
     class Meta:
         model = AfterPartyTicket
-        fields = ['name', 'email_address', 'inviter']
+        fields = ["name", "email_address", "inviter"]
 
         labels = {
-            'name': 'Your full name',
-            'inviter': 'Did someone in Armada recommend you about this after party? Write first name and last name.'
+            "name": "Your full name",
+            "inviter": "Did someone in Armada recommend you about this after party? Write first name and last name.",
         }
 
 
@@ -263,19 +328,19 @@ class InternalParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
         # Is still something we send back in view but handled without user input
-        exclude = ['banquet', 'company', 'user']
+        exclude = ["banquet", "company", "user"]
 
         widgets = {
-            'name': forms.TextInput(attrs={'readonly': 'readonly'}),
-            'email_address': forms.TextInput(attrs={'readonly': 'readonly'}),
-            'phone_number': forms.TextInput(attrs={'readonly': 'readonly'}),
-            'dietary_restrictions': forms.CheckboxSelectMultiple(),
-            'other_dietary_restrictions': forms.TextInput(),
-            'alcohol': forms.RadioSelect()
+            "name": forms.TextInput(attrs={"readonly": "readonly"}),
+            "email_address": forms.TextInput(attrs={"readonly": "readonly"}),
+            "phone_number": forms.TextInput(attrs={"readonly": "readonly"}),
+            "dietary_restrictions": forms.CheckboxSelectMultiple(),
+            "other_dietary_restrictions": forms.TextInput(),
+            "alcohol": forms.RadioSelect(),
         }
 
         help_texts = {
-            'other_dietary_restrictions': 'Please leave empty if no other restrictions.',
+            "other_dietary_restrictions": "Please leave empty if no other restrictions.",
         }
 
 
@@ -283,35 +348,38 @@ class ParticipantTableMatchingForm(ModelForm):
     # custom defined field subclass to overwrite string representation
     class IncludeCategoryChoiceFieldMultiple(ModelMultipleChoiceField):
         def label_from_instance(self, choice):
-                return str(choice)
+            return str(choice)
 
     class IncludeCategoryChoiceFieldSingle(ModelChoiceField):
         def label_from_instance(self, choice):
-                return str(choice)
+            return str(choice)
 
     matching_program = IncludeCategoryChoiceFieldSingle(
         queryset=MatchingProgram.objects.filter(include_in_form=True),
         widget=forms.RadioSelect,
-        label='What are you studying?',
+        label="What are you studying?",
         empty_label="I don't want to participate in matching",
-        required=False)
+        required=False,
+    )
 
     matching_interests = IncludeCategoryChoiceFieldMultiple(
         queryset=MatchingInterest.objects.filter(include_in_form=True),
         widget=forms.CheckboxSelectMultiple,
-        label='What are your interests? (Yes, all of them :) )',
-        required=False)
+        label="What are your interests? (Yes, all of them :) )",
+        required=False,
+    )
 
     matching_year = IncludeCategoryChoiceFieldSingle(
         queryset=MatchingYear.objects.filter(include_in_form=True),
         widget=forms.RadioSelect,
-        label='What year will you graduate?',
+        label="What year will you graduate?",
         empty_label="I don't want to participate in matching",
-        required=False)
+        required=False,
+    )
 
     class Meta:
         model = TableMatching
-        fields = ['matching_program', 'matching_interests', 'matching_year']
+        fields = ["matching_program", "matching_interests", "matching_year"]
 
 
 # Previous implementation of the MatchingForm
@@ -360,27 +428,29 @@ class ExternalParticipantForm(forms.ModelForm):
 
     class Meta:
         model = Participant
-        exclude = ['banquet', 'company', 'user', 'seat']
+        exclude = ["banquet", "company", "user", "seat"]
         widgets = {
-            'name': forms.TextInput(attrs={'readonly': 'readonly'}),
-            'email_address': forms.TextInput(attrs={'readonly': 'readonly'}),
-            'dietary_restrictions': forms.CheckboxSelectMultiple(),
-            'dietary_restictions_other': forms.TextInput(),
-            'alcohol': forms.RadioSelect()
+            "name": forms.TextInput(attrs={"readonly": "readonly"}),
+            "email_address": forms.TextInput(attrs={"readonly": "readonly"}),
+            "dietary_restrictions": forms.CheckboxSelectMultiple(),
+            "dietary_restictions_other": forms.TextInput(),
+            "alcohol": forms.RadioSelect(),
         }
 
 
 class SendInvitationForm(forms.ModelForm):
     """
-	Banquet administrator sends out invite
-	"""
+    Banquet administrator sends out invite
+    """
 
     def __init__(self, *args, **kwargs):
         # would like to do as in conact list however I can't get user object in that case
         # but this works also although not pretty
         super(SendInvitationForm, self).__init__(*args, **kwargs)
-        self.fields['user'].queryset = User.objects.exclude(groups__isnull=True).order_by('last_name')
+        self.fields["user"].queryset = User.objects.exclude(
+            groups__isnull=True
+        ).order_by("last_name")
 
     class Meta:
         model = Invitation
-        exclude = ['banquet', 'participant', 'denied', 'token']
+        exclude = ["banquet", "participant", "denied", "token"]

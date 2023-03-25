@@ -10,85 +10,131 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0001_initial'),
+        ("fair", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('exhibitors', '0015_auto_20180922_1635'),
+        ("exhibitors", "0015_auto_20180922_1635"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LunchTicket',
+            name="LunchTicket",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("comment", models.CharField(blank=True, max_length=255, null=True)),
             ],
         ),
         migrations.CreateModel(
-            name='LunchTicketDay',
+            name="LunchTicketDay",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
             options={
-                'ordering': ['fair', 'name'],
+                "ordering": ["fair", "name"],
             },
         ),
         migrations.CreateModel(
-            name='LunchTicketScan',
+            name="LunchTicketScan",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('lunch_ticket', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.LunchTicket')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                (
+                    "lunch_ticket",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="exhibitors.LunchTicket",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='about_text',
+            model_name="exhibitor",
+            name="about_text",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='accept_terms',
+            model_name="exhibitor",
+            name="accept_terms",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='booth_number',
+            model_name="exhibitor",
+            name="booth_number",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='facts_text',
+            model_name="exhibitor",
+            name="facts_text",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='fair_location',
+            model_name="exhibitor",
+            name="fair_location",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='job_types',
+            model_name="exhibitor",
+            name="job_types",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='location',
+            model_name="exhibitor",
+            name="location",
         ),
         migrations.RemoveField(
-            model_name='exhibitor',
-            name='tags',
+            model_name="exhibitor",
+            name="tags",
         ),
         migrations.DeleteModel(
-            name='JobType',
+            name="JobType",
         ),
         migrations.DeleteModel(
-            name='Location',
+            name="Location",
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='day',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.LunchTicketDay'),
+            model_name="lunchticket",
+            name="day",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="exhibitors.LunchTicketDay",
+            ),
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='exhibitor',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Exhibitor'),
+            model_name="lunchticket",
+            name="exhibitor",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="exhibitors.Exhibitor"
+            ),
         ),
     ]

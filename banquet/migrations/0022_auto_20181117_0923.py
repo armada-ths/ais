@@ -9,13 +9,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0021_participant_token'),
+        ("banquet", "0021_participant_token"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='token',
-            field=models.CharField(default=banquet.models.get_random_32_length_string, max_length=32, unique=True),
+            model_name="participant",
+            name="token",
+            field=models.CharField(
+                default=banquet.models.get_random_32_length_string,
+                max_length=32,
+                unique=True,
+            ),
         ),
     ]

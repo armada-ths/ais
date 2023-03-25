@@ -8,18 +8,44 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0063_auto_20191015_1646'),
+        ("exhibitors", "0063_auto_20191015_1646"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='transport_from',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('NOT_APPLICABLE', 'Not applicable'), ('EXCEPTION', 'Exception'), ('IN_CONTACT', 'In contact'), ('STURE', 'Sture'), ('BY_HAND', 'Carried by hand')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_from",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                    ("EXCEPTION", "Exception"),
+                    ("IN_CONTACT", "In contact"),
+                    ("STURE", "Sture"),
+                    ("BY_HAND", "Carried by hand"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='transport_to',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('ARKAD', 'Transported by Arkad'), ('NOT_APPLICABLE', 'Not applicable'), ('EXCEPTION', 'Exception'), ('IN_CONTACT', 'In contact'), ('IN_CONTACT_ARMADA', 'In contact by Armada'), ('STURE', 'Sture'), ('BY_HAND', 'Carried by hand')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_to",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("ARKAD", "Transported by Arkad"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                    ("EXCEPTION", "Exception"),
+                    ("IN_CONTACT", "In contact"),
+                    ("IN_CONTACT_ARMADA", "In contact by Armada"),
+                    ("STURE", "Sture"),
+                    ("BY_HAND", "Carried by hand"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
     ]

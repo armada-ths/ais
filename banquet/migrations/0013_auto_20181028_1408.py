@@ -9,21 +9,29 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0012_participant_charge_stripe'),
+        ("banquet", "0012_participant_charge_stripe"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='InvitationGroup',
+            name="InvitationGroup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
-                ('deadline', models.DateField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
+                ("deadline", models.DateField(blank=True, null=True)),
             ],
         ),
         migrations.AlterField(
-            model_name='invitation',
-            name='token',
+            model_name="invitation",
+            name="token",
             field=models.CharField(default=uuid.uuid4, max_length=255, unique=True),
         ),
     ]

@@ -8,33 +8,48 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0055_auto_20190721_0730'),
+        ("exhibitors", "0055_auto_20190721_0730"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cataloguebenefit',
-            name='include_in_form',
-            field=models.BooleanField(default=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="cataloguebenefit",
+            name="include_in_form",
+            field=models.BooleanField(
+                default=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
         migrations.AlterField(
-            model_name='catalogueemployment',
-            name='include_in_form',
-            field=models.BooleanField(default=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="catalogueemployment",
+            name="include_in_form",
+            field=models.BooleanField(
+                default=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
         migrations.AlterField(
-            model_name='catalogueindustry',
-            name='include_in_form',
-            field=models.BooleanField(default=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="catalogueindustry",
+            name="include_in_form",
+            field=models.BooleanField(
+                default=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
         migrations.AlterField(
-            model_name='cataloguelocation',
-            name='include_in_form',
-            field=models.BooleanField(default=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="cataloguelocation",
+            name="include_in_form",
+            field=models.BooleanField(
+                default=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
         migrations.AlterField(
-            model_name='cataloguevalue',
-            name='include_in_form',
-            field=models.BooleanField(default=True, help_text='The alternative is only visible in forms if this attribute is checked.'),
+            model_name="cataloguevalue",
+            name="include_in_form",
+            field=models.BooleanField(
+                default=True,
+                help_text="The alternative is only visible in forms if this attribute is checked.",
+            ),
         ),
     ]

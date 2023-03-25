@@ -1,19 +1,46 @@
 from django.shortcuts import get_object_or_404
-from matching.models import StudentQuestionBase, StudentQuestionType, StudentAnswerSlider, StudentAnswerGrading, WorkField, StudentAnswerWorkField, Continent, SwedenRegion, \
-StudentAnswerRegion, StudentAnswerContinent, JobType, StudentAnswerJobType
-from exhibitors.models import Exhibitor, CatalogueIndustry, CatalogueValue, CatalogueEmployment, CatalogueLocation, CatalogueCompetence#CatalogueBenefit
+from matching.models import (
+    StudentQuestionBase,
+    StudentQuestionType,
+    StudentAnswerSlider,
+    StudentAnswerGrading,
+    WorkField,
+    StudentAnswerWorkField,
+    Continent,
+    SwedenRegion,
+    StudentAnswerRegion,
+    StudentAnswerContinent,
+    JobType,
+    StudentAnswerJobType,
+)
+from exhibitors.models import (
+    Exhibitor,
+    CatalogueIndustry,
+    CatalogueValue,
+    CatalogueEmployment,
+    CatalogueLocation,
+    CatalogueCompetence,
+)  # CatalogueBenefit
 from fair.models import current_fair
 import numbers
 
+
 def matching(data):
-    '''
+    """
     check the student answers data, validating the data on the way
-    '''
+    """
     if type(data) is dict:
-        # Check that all necessary first-level key-value pairs are 
+        # Check that all necessary first-level key-value pairs are
         # present and of the right type, i.e.
         # <category>: {"answers": ..., "weight": ...}
-        for category in ["industries", "values", "employments", "locations", "competences", "cities"]:
+        for category in [
+            "industries",
+            "values",
+            "employments",
+            "locations",
+            "competences",
+            "cities",
+        ]:
             if not category in data:
                 return False
             elif not type(data[category]) is dict:
@@ -21,18 +48,17 @@ def matching(data):
             elif not "answer" in data[category] or not "weight" in data[category]:
                 return False
 
-        industries = CatalogueIndustry.objects.values_list('pk', flat=True)
-        values = CatalogueValue.objects.values_list('pk', flat=True)
-        employments = CatalogueEmployment.objects.values_list('pk', flat=True)
-        locations = CatalogueLocation.objects.values_list('pk', flat=True)
-        competences = CatalogueCompetence.objects.values_list('pk', flat=True)
-
+        industries = CatalogueIndustry.objects.values_list("pk", flat=True)
+        values = CatalogueValue.objects.values_list("pk", flat=True)
+        employments = CatalogueEmployment.objects.values_list("pk", flat=True)
+        locations = CatalogueLocation.objects.values_list("pk", flat=True)
+        competences = CatalogueCompetence.objects.values_list("pk", flat=True)
 
         validation_multi_set = {
-            "industries" : industries,
-            "values" : values,
-            "employments" : employments,
-            "locations" : locations,
+            "industries": industries,
+            "values": values,
+            "employments": employments,
+            "locations": locations,
             "competences": competences,
         }
 
@@ -41,7 +67,7 @@ def matching(data):
         # Also check that the weights, if given,
         # don't sum to zero.
         weight_sum = 0
-        non_empties = len(validation_multi_set) + 1 # Count cities too
+        non_empties = len(validation_multi_set) + 1  # Count cities too
         for key, value_list in validation_multi_set.items():
             # check if list
             if isinstance(data[key]["answer"], (list,)):
@@ -50,12 +76,12 @@ def matching(data):
                     return False
 
                 if len(data[key]["answer"]) == 0:
-                    non_empties -= 1    
+                    non_empties -= 1
                     # The weight will be forced to 0
                 else:
                     # Weight must be a number
                     if isinstance(data[key]["weight"], numbers.Number):
-                        weight_sum += data[key]["weight"] 
+                        weight_sum += data[key]["weight"]
                     else:
                         return False
 
@@ -65,7 +91,7 @@ def matching(data):
         # The cities value must be a string of comma-separated cities
         if not isinstance(data["cities"]["answer"], str):
             return False
-        
+
         if data["cities"]["answer"] != "":
             # There is actually an answer for cities
             # Just check that it is numeric
@@ -87,15 +113,18 @@ def matching(data):
 
         # The reponse_size variable must not be defined...
         if "response_size" in data:
-        # ... but it can't be 0 or negative
+            # ... but it can't be 0 or negative
             if data["response_size"] <= 0:
                 return False
             else:
                 # It also can't be bigger than the number of exhibitors
                 # in the current fair
                 current_fair_id = current_fair()
-                if current_fair_id is None: current_fair_id = 4 # Default to 2019
-                max_response_size = Exhibitor.objects.filter(fair_id = current_fair_id).count()
+                if current_fair_id is None:
+                    current_fair_id = 4  # Default to 2019
+                max_response_size = Exhibitor.objects.filter(
+                    fair_id=current_fair_id
+                ).count()
                 if data["response_size"] > max_response_size:
                     return False
 
@@ -103,29 +132,37 @@ def matching(data):
     else:
         return False
 
+
 def answer_slider(answer, student, question, survey):
-    '''
+    """
     Validate and deserialize an answer to a question of type SLIDER
     Returns true if the question was validated sucessfuly and saved
-    '''
+    """
     question = question.studentquestionslider
     if type(answer) is dict:
-        if 'min' in answer and 'max' in answer \
-        and (type(answer['min']) is float or type(answer['min']) is int) \
-        and (type(answer['max']) is float or type(answer['max']) is int) \
-        and answer['min'] <= answer['max'] \
-        and answer['min'] >= question.min_value \
-        and answer['max'] <= question.max_value:
-            (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(question=question, student=student)
+        if (
+            "min" in answer
+            and "max" in answer
+            and (type(answer["min"]) is float or type(answer["min"]) is int)
+            and (type(answer["max"]) is float or type(answer["max"]) is int)
+            and answer["min"] <= answer["max"]
+            and answer["min"] >= question.min_value
+            and answer["max"] <= question.max_value
+        ):
+            (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(
+                question=question, student=student
+            )
             if was_created:
                 answer_model.survey.add(survey)
-            answer_model.answer_min = answer['min']
-            answer_model.answer_max = answer['max']
+            answer_model.answer_min = answer["min"]
+            answer_model.answer_max = answer["max"]
             answer_model.save()
             return True
-    elif (type(answer) is float or type(answer) is int):
+    elif type(answer) is float or type(answer) is int:
         if question.min_value <= answer <= question.max_value:
-            (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(question=question, student=student)
+            (answer_model, was_created) = StudentAnswerSlider.objects.get_or_create(
+                question=question, student=student
+            )
             if was_created:
                 answer_model.survey.add(survey)
             answer_model.answer_min = answer
@@ -136,16 +173,20 @@ def answer_slider(answer, student, question, survey):
 
 
 def answer_grading(answer, student, question, survey):
-    '''
+    """
     Validate and deseralize an answer to a question of type GRADING
     Returns true if the question was validated sucessfuly and saved
-    '''
+    """
     if type(answer) is int:
-        sizes = [-(question.studentquestiongrading.grading_size - 1) / 2,
-                question.studentquestiongrading.grading_size / 2]
-        if (sizes[0] < answer < sizes[1]):
+        sizes = [
+            -(question.studentquestiongrading.grading_size - 1) / 2,
+            question.studentquestiongrading.grading_size / 2,
+        ]
+        if sizes[0] < answer < sizes[1]:
             question = question.studentquestiongrading
-            (answer_model, was_created) = StudentAnswerGrading.objects.get_or_create(question=question, student=student)
+            (answer_model, was_created) = StudentAnswerGrading.objects.get_or_create(
+                question=question, student=student
+            )
             if was_created:
                 answer_model.survey.add(survey)
             answer_model.answer = answer
@@ -155,91 +196,100 @@ def answer_grading(answer, student, question, survey):
 
 
 ANSWER_DESERIALIZERS = {
-    StudentQuestionType.SLIDER.value : answer_slider,
-    StudentQuestionType.GRADING.value : answer_grading
+    StudentQuestionType.SLIDER.value: answer_slider,
+    StudentQuestionType.GRADING.value: answer_grading,
 }
 
 
 def answers(answers, student, survey):
-    '''
+    """
     Create or modify question answers from payload data
     used by questions_PUT in api/views
     Returns (int, int):
         where the first int tells the number of saved answers (all of which passed validation)
         and the second one is total number of processed anwers (some of which may have failed validation)
-    '''
+    """
     modified_count = 0
     total_count = 0
     for answer in answers:
         total_count += 1
-        if type(answer) is dict and 'id' in answer and 'answer' in answer:
-            question = StudentQuestionBase.objects.filter(pk=answer['id']).first()
+        if type(answer) is dict and "id" in answer and "answer" in answer:
+            question = StudentQuestionBase.objects.filter(pk=answer["id"]).first()
             if question and question.question_type in ANSWER_DESERIALIZERS:
-                if ANSWER_DESERIALIZERS[question.question_type](answer['answer'], student, question, survey):
+                if ANSWER_DESERIALIZERS[question.question_type](
+                    answer["answer"], student, question, survey
+                ):
                     modified_count += 1
     return (modified_count, total_count)
 
 
 def fields(fields, student, survey):
-    '''
+    """
     Create or modify field answers from payload data
     used by questions_PUT in api/views
-    '''
+    """
     work_fields = WorkField.objects.filter(survey=survey).all()
     for work_field in work_fields:
-        (field_model, was_created) = StudentAnswerWorkField.objects.get_or_create(student=student, work_field=work_field)
+        (field_model, was_created) = StudentAnswerWorkField.objects.get_or_create(
+            student=student, work_field=work_field
+        )
         if was_created:
             field_model.survey.add(survey)
         field_model.answer = work_field.pk in fields
         field_model.save()
 
+
 def student_profile(data, profile):
-    '''
+    """
     Deserialize the data into the student_profile, validating the data on the way
-    '''
+    """
     if type(data) is dict:
-        if 'nickname' in data and type(data['nickname']) is str:
-            profile.nickname = data['nickname']
+        if "nickname" in data and type(data["nickname"]) is str:
+            profile.nickname = data["nickname"]
         else:
             return False
 
         # optional fields
-        if 'facebook_profile' in data and type(data['facebook_profile']) is str:
-            profile.facebook_profile = data['facebook_profile']
-        if 'linkedin_profile' in data and type(data['linkedin_profile']) is str:
-            profile.linkedin_profile = data['linkedin_profile']
-        if 'phone_number' in data and type(data['phone_number']) is str:
-            profile.phone_number = data['phone_number']
+        if "facebook_profile" in data and type(data["facebook_profile"]) is str:
+            profile.facebook_profile = data["facebook_profile"]
+        if "linkedin_profile" in data and type(data["linkedin_profile"]) is str:
+            profile.linkedin_profile = data["linkedin_profile"]
+        if "phone_number" in data and type(data["phone_number"]) is str:
+            profile.phone_number = data["phone_number"]
         profile.save()
         return True
     else:
         return False
 
+
 def regions(regions, student, survey):
-    '''
+    """
     Create or modify field answers from payload data.
     used by questions_PUT in api/views.
-    '''
+    """
     for region_id in regions:
         region = get_object_or_404(SwedenRegion, region_id=region_id)
         StudentAnswerRegion.objects.get_or_create(student=student, region=region)
 
 
 def continents(continents, student, survey):
-    '''
+    """
     Create or modify field answers from payload data.
     used by questions_PUT in api/views.
-    '''
+    """
     for continent_id in continents:
         continent = get_object_or_404(Continent, continent_id=continent_id)
-        StudentAnswerContinent.objects.get_or_create(student=student, continent=continent)
+        StudentAnswerContinent.objects.get_or_create(
+            student=student, continent=continent
+        )
+
 
 def jobtype(jobtypes, student, survey):
-    '''
+    """
     Create or modify field answers from payload data.
     used by questions_PUT in api/views. Uses the JobType defined in the Matching app.
     LATER: Change it to use the JobType model in the exhibitors app.
-    '''
+    """
     for job_type_id in jobtypes:
         job_type = get_object_or_404(JobType, job_type_id=job_type_id)
         StudentAnswerJobType.objects.get_or_create(student=student, job_type=job_type)

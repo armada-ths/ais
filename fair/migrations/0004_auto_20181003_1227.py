@@ -8,12 +8,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0003_organizationgroup'),
+        ("fair", "0003_organizationgroup"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='organizationgroup',
-            options={'ordering': ['fair', 'name']},
+            name="organizationgroup",
+            options={"ordering": ["fair", "name"]},
         ),
     ]

@@ -8,13 +8,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0043_auto_20181105_1933'),
+        ("exhibitors", "0043_auto_20181105_1933"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='checked_in',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Date and time of check in'),
+            model_name="exhibitor",
+            name="checked_in",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Date and time of check in"
+            ),
         ),
     ]

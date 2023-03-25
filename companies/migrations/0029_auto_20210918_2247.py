@@ -8,23 +8,39 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('companies', '0028_auto_20190922_1051'),
+        ("companies", "0028_auto_20190922_1051"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='companycontact',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
+            model_name="companycontact",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='companycustomer',
-            name='status',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='status', to='companies.Group'),
+            model_name="companycustomer",
+            name="status",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="status",
+                to="companies.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='group',
-            name='contract',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='register.SignupContract'),
+            model_name="group",
+            name="contract",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="register.SignupContract",
+            ),
         ),
     ]

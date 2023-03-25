@@ -8,16 +8,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recruitment', '0017_auto_20181001_1205'),
+        ("recruitment", "0017_auto_20181001_1205"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='role',
-            options={'ordering': ['recruitment_period', 'name'], 'permissions': (('administer_roles', 'Administer roles'),)},
+            name="role",
+            options={
+                "ordering": ["recruitment_period", "name"],
+                "permissions": (("administer_roles", "Administer roles"),),
+            },
         ),
         migrations.RemoveField(
-            model_name='role',
-            name='organization_group',
+            model_name="role",
+            name="organization_group",
         ),
     ]

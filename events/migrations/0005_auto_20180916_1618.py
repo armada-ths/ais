@@ -8,18 +8,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0004_event_invitation_participant_team_teaminvitation_teammember'),
+        ("events", "0004_event_invitation_participant_team_teaminvitation_teammember"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='event',
-            options={'ordering': ['date_start', 'name']},
+            name="event",
+            options={"ordering": ["date_start", "name"]},
         ),
         migrations.AddField(
-            model_name='event',
-            name='open_for_signup',
-            field=models.BooleanField(default=False, verbose_name='Event is currently open for sign up'),
+            model_name="event",
+            name="open_for_signup",
+            field=models.BooleanField(
+                default=False, verbose_name="Event is currently open for sign up"
+            ),
             preserve_default=False,
         ),
     ]

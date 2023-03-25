@@ -8,16 +8,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0022_auto_20181117_0923'),
+        ("banquet", "0022_auto_20181117_0923"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='seat',
-            options={'ordering': ['table', 'name']},
+            name="seat",
+            options={"ordering": ["table", "name"]},
         ),
         migrations.AlterModelOptions(
-            name='table',
-            options={'ordering': ['banquet', 'name']},
+            name="table",
+            options={"ordering": ["banquet", "name"]},
         ),
     ]

@@ -14,47 +14,121 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0008_alter_user_username_max_length'),
+        ("auth", "0008_alter_user_username_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('user', models.OneToOneField(default=-1, on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('birth_date', models.DateField(blank=True, null=True)),
-                ('gender', models.CharField(blank=True, choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')], max_length=10)),
-                ('shirt_size', models.CharField(blank=True, choices=[('WXS', 'Woman X-Small'), ('WS', 'Woman Small'), ('WM', 'Woman Medium'), ('WL', 'Woman Large'), ('WXL', 'Woman X-Large'), ('MXS', 'Man X-Small'), ('MS', 'Man Small'), ('MM', 'Man Medium'), ('ML', 'Man Large'), ('MXL', 'Man X-Large')], max_length=3)),
-                ('phone_number', models.CharField(blank=True, max_length=15, null=True)),
-                ('drivers_license', models.CharField(blank=True, max_length=10, null=True)),
-                ('allergy', models.CharField(blank=True, max_length=30, null=True)),
-                ('registration_year', models.IntegerField(blank=True, null=True)),
-                ('planned_graduation', models.IntegerField(blank=True, null=True)),
-                ('linkedin_url', models.URLField(blank=True, null=True)),
-                ('token', models.CharField(default=uuid.uuid4, max_length=255, null=True)),
-                ('slack_id', models.CharField(blank=True, max_length=255, null=True)),
-                ('picture_original', models.ImageField(blank=True, upload_to=lib.image.UploadToDirUUID('profiles', 'picture_original'))),
-                ('picture', models.ImageField(blank=True, upload_to=lib.image.UploadToDir('profiles', 'picture'))),
+                (
+                    "user",
+                    models.OneToOneField(
+                        default=-1,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                ("birth_date", models.DateField(blank=True, null=True)),
+                (
+                    "gender",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("male", "Male"),
+                            ("female", "Female"),
+                            ("other", "Other"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "shirt_size",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("WXS", "Woman X-Small"),
+                            ("WS", "Woman Small"),
+                            ("WM", "Woman Medium"),
+                            ("WL", "Woman Large"),
+                            ("WXL", "Woman X-Large"),
+                            ("MXS", "Man X-Small"),
+                            ("MS", "Man Small"),
+                            ("MM", "Man Medium"),
+                            ("ML", "Man Large"),
+                            ("MXL", "Man X-Large"),
+                        ],
+                        max_length=3,
+                    ),
+                ),
+                (
+                    "phone_number",
+                    models.CharField(blank=True, max_length=15, null=True),
+                ),
+                (
+                    "drivers_license",
+                    models.CharField(blank=True, max_length=10, null=True),
+                ),
+                ("allergy", models.CharField(blank=True, max_length=30, null=True)),
+                ("registration_year", models.IntegerField(blank=True, null=True)),
+                ("planned_graduation", models.IntegerField(blank=True, null=True)),
+                ("linkedin_url", models.URLField(blank=True, null=True)),
+                (
+                    "token",
+                    models.CharField(default=uuid.uuid4, max_length=255, null=True),
+                ),
+                ("slack_id", models.CharField(blank=True, max_length=255, null=True)),
+                (
+                    "picture_original",
+                    models.ImageField(
+                        blank=True,
+                        upload_to=lib.image.UploadToDirUUID(
+                            "profiles", "picture_original"
+                        ),
+                    ),
+                ),
+                (
+                    "picture",
+                    models.ImageField(
+                        blank=True,
+                        upload_to=lib.image.UploadToDir("profiles", "picture"),
+                    ),
+                ),
             ],
             options={
-                'permissions': (('base', 'People'),),
-                'db_table': 'profile',
+                "permissions": (("base", "People"),),
+                "db_table": "profile",
             },
         ),
         migrations.CreateModel(
-            name='Programme',
+            name="Programme",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('shortening', models.CharField(blank=True, max_length=100, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("shortening", models.CharField(blank=True, max_length=100, null=True)),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.AddField(
-            model_name='profile',
-            name='programme',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='people.Programme'),
+            model_name="profile",
+            name="programme",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="people.Programme",
+            ),
         ),
     ]

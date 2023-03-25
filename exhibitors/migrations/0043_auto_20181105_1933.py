@@ -9,26 +9,44 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0004_auto_20181003_1227'),
-        ('exhibitors', '0042_remove_lunchticket_exhibitor'),
+        ("fair", "0004_auto_20181003_1227"),
+        ("exhibitors", "0042_remove_lunchticket_exhibitor"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LunchTicketTime',
+            name="LunchTicketTime",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
             options={
-                'ordering': ['fair', 'name'],
-                'default_permissions': [],
+                "ordering": ["fair", "name"],
+                "default_permissions": [],
             },
         ),
         migrations.AddField(
-            model_name='lunchticket',
-            name='time',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='exhibitors.LunchTicketTime'),
+            model_name="lunchticket",
+            name="time",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="exhibitors.LunchTicketTime",
+            ),
         ),
     ]

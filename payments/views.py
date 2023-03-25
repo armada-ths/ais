@@ -8,104 +8,113 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from banquet.models import Participant, Invitation, AfterPartyTicket
 
+
 def checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
     # stripe.api_version = '2019-09-09'
 
     try:
-        intent = request.session['intent']
+        intent = request.session["intent"]
     except KeyError:
         raise Http404
 
-    client_secret = intent['client_secret']
-    template_name = 'payments/checkout.html'
+    client_secret = intent["client_secret"]
+    template_name = "payments/checkout.html"
 
-    return render(request, template_name, {
-        'client_secret' : client_secret,
-        'stripe_publishable': settings.STRIPE_PUBLISHABLE,
-        'amount' : intent['amount']/100,
-    })
+    return render(
+        request,
+        template_name,
+        {
+            "client_secret": client_secret,
+            "stripe_publishable": settings.STRIPE_PUBLISHABLE,
+            "amount": intent["amount"] / 100,
+        },
+    )
 
 
 def confirm(request):
     try:
-        invitation_token = request.session['invitation_token']
+        invitation_token = request.session["invitation_token"]
     except KeyError:
         raise Http404
 
     try:
-        intent = request.session['intent']
+        intent = request.session["intent"]
     except KeyError:
         raise Http404
 
     try:
-        url_path = request.session['url_path']
+        url_path = request.session["url_path"]
     except KeyError:
         raise Http404
 
     try:
-        event = request.session['event']
+        event = request.session["event"]
     except KeyError:
         raise Http404
 
-    if event == 'AfterParty':
+    if event == "AfterParty":
         ticket = get_object_or_404(AfterPartyTicket, token=invitation_token)
 
-    elif event == 'Banquet':
+    elif event == "Banquet":
         invitation = get_object_or_404(Invitation, token=invitation_token)
 
-    id = intent['id']
+    id = intent["id"]
 
     test_status = 0
-    while stripe.PaymentIntent.retrieve(id)['status'] != 'succeeded' and test_status != 5:
+    while (
+        stripe.PaymentIntent.retrieve(id)["status"] != "succeeded" and test_status != 5
+    ):
         time.sleep(3)
         test_status += 1
 
-    if stripe.PaymentIntent.retrieve(id)['status'] != 'succeeded':
+    if stripe.PaymentIntent.retrieve(id)["status"] != "succeeded":
         invitation.participant.has_paid = False
         invitation.participant.save()
         # if we are unable to get status succeeded we send an email to support, the issue then has to be handled manually
         send_mail(
-            'Problem with a payment in Stripe',
-            'There have been a problem with the charge for the token ' + invitation_token + ' and the intent id ' + id,
-            'noreply@armada.nu',
-            ['support@armada.nu'],
+            "Problem with a payment in Stripe",
+            "There have been a problem with the charge for the token "
+            + invitation_token
+            + " and the intent id "
+            + id,
+            "noreply@armada.nu",
+            ["support@armada.nu"],
             fail_silently=False,
         )
 
     else:
-        if event == 'AfterParty':
+        if event == "AfterParty":
             ticket.has_paid = True
             ticket.paid_timestamp = datetime.datetime.now()
             ticket.save()
 
-        elif event == 'Banquet':
+        elif event == "Banquet":
             invitation.participant.has_paid = True
             invitation.participant.save()
 
     try:
-        del request.session['intent']
+        del request.session["intent"]
     except KeyError:
         pass
 
     try:
-        del request.session['invitation_token']
+        del request.session["invitation_token"]
     except KeyError:
         pass
 
     try:
-        del request.session['url_path']
+        del request.session["url_path"]
     except KeyError:
         pass
 
     try:
-        del request.session['event']
+        del request.session["event"]
     except KeyError:
         pass
 
-
-    if event == 'AfterParty':
+    if event == "AfterParty":
         return redirect(url_path, invitation_token)
 
-    elif event == 'Banquet':
+    elif event == "Banquet":
         return redirect(url_path)

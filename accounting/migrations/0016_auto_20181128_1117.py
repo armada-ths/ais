@@ -8,21 +8,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0015_auto_20181128_1115'),
+        ("accounting", "0015_auto_20181128_1115"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='Invoice',
-            new_name='ExportBatch',
+            old_name="Invoice",
+            new_name="ExportBatch",
         ),
         migrations.AlterModelOptions(
-            name='exportbatch',
-            options={'default_permissions': [], 'ordering': ['timestamp']},
+            name="exportbatch",
+            options={"default_permissions": [], "ordering": ["timestamp"]},
         ),
         migrations.RenameField(
-            model_name='order',
-            old_name='invoice',
-            new_name='export_batch',
+            model_name="order",
+            old_name="invoice",
+            new_name="export_batch",
         ),
     ]

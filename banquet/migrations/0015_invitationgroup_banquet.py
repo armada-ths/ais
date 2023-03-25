@@ -9,14 +9,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0014_auto_20181028_1411'),
+        ("banquet", "0014_auto_20181028_1411"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='invitationgroup',
-            name='banquet',
-            field=models.ForeignKey(default=2, on_delete=django.db.models.deletion.CASCADE, to='banquet.Banquet'),
+            model_name="invitationgroup",
+            name="banquet",
+            field=models.ForeignKey(
+                default=2,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="banquet.Banquet",
+            ),
             preserve_default=False,
         ),
     ]

@@ -9,18 +9,26 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0003_organizationgroup'),
-        ('recruitment', '0018_auto_20181003_1223'),
+        ("fair", "0003_organizationgroup"),
+        ("recruitment", "0018_auto_20181003_1223"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='role',
-            options={'ordering': ['recruitment_period', 'organization_group', 'name'], 'permissions': (('administer_roles', 'Administer roles'),)},
+            name="role",
+            options={
+                "ordering": ["recruitment_period", "organization_group", "name"],
+                "permissions": (("administer_roles", "Administer roles"),),
+            },
         ),
         migrations.AddField(
-            model_name='role',
-            name='organization_group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='fair.OrganizationGroup'),
+            model_name="role",
+            name="organization_group",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="fair.OrganizationGroup",
+            ),
         ),
     ]

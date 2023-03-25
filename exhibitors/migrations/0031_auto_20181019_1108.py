@@ -8,18 +8,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0030_auto_20181011_1702'),
+        ("exhibitors", "0030_auto_20181011_1702"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='transport_from',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('ARKAD', 'Transported by Arkad'), ('NOT_APPLICABLE', 'Not applicable'), ('EXCEPTION', 'Exception'), ('IN_CONTACT', 'In contact')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_from",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("ARKAD", "Transported by Arkad"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                    ("EXCEPTION", "Exception"),
+                    ("IN_CONTACT", "In contact"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='transport_to',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('ARKAD', 'Transported by Arkad'), ('NOT_APPLICABLE', 'Not applicable'), ('EXCEPTION', 'Exception'), ('IN_CONTACT', 'In contact')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_to",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("ARKAD", "Transported by Arkad"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                    ("EXCEPTION", "Exception"),
+                    ("IN_CONTACT", "In contact"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
     ]

@@ -8,13 +8,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0027_auto_20181119_2258'),
+        ("banquet", "0027_auto_20181119_2258"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='giveaway',
-            field=models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=False),
+            model_name="participant",
+            name="giveaway",
+            field=models.BooleanField(
+                choices=[(True, "Yes"), (False, "No")], default=False
+            ),
         ),
     ]

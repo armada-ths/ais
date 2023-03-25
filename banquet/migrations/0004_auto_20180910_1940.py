@@ -13,59 +13,150 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('companies', '0017_auto_20180910_1920'),
-        ('accounting', '0011_auto_20180815_1123'),
-        ('fair', '0001_initial'),
-        ('banquet', '0003_auto_20180910_1920'),
+        ("companies", "0017_auto_20180910_1920"),
+        ("accounting", "0011_auto_20180815_1123"),
+        ("fair", "0001_initial"),
+        ("banquet", "0003_auto_20180910_1920"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Banquet',
+            name="Banquet",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=75)),
-                ('date', models.DateTimeField()),
-                ('location', models.CharField(blank=True, max_length=75, null=True)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
-                ('product', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='accounting.Product', verbose_name='Product to link the banquet with')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=75)),
+                ("date", models.DateTimeField()),
+                ("location", models.CharField(blank=True, max_length=75, null=True)),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="accounting.Product",
+                        verbose_name="Product to link the banquet with",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='DietaryPreference',
+            name="DietaryPreference",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('preference', models.CharField(max_length=75)),
-                ('banquet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='banquet.Banquet')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("preference", models.CharField(max_length=75)),
+                (
+                    "banquet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="banquet.Banquet",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Invitation',
+            name="Invitation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(max_length=128, unique=True)),
-                ('name', models.CharField(blank=True, max_length=75, null=True)),
-                ('email_address', models.CharField(blank=True, max_length=75, null=True)),
-                ('reason', models.CharField(blank=True, max_length=75, null=True)),
-                ('price', models.PositiveIntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.CharField(max_length=128, unique=True)),
+                ("name", models.CharField(blank=True, max_length=75, null=True)),
+                (
+                    "email_address",
+                    models.CharField(blank=True, max_length=75, null=True),
+                ),
+                ("reason", models.CharField(blank=True, max_length=75, null=True)),
+                ("price", models.PositiveIntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='Participant',
+            name="Participant",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=75, null=True)),
-                ('email_address', models.CharField(blank=True, max_length=75, null=True)),
-                ('phone_number', models.CharField(blank=True, max_length=75, null=True)),
-                ('banquet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='banquet.Banquet')),
-                ('company', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='companies.Company')),
-                ('dietary_preferences', models.ManyToManyField(to='banquet.DietaryPreference')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=75, null=True)),
+                (
+                    "email_address",
+                    models.CharField(blank=True, max_length=75, null=True),
+                ),
+                (
+                    "phone_number",
+                    models.CharField(blank=True, max_length=75, null=True),
+                ),
+                (
+                    "banquet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="banquet.Banquet",
+                    ),
+                ),
+                (
+                    "company",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="companies.Company",
+                    ),
+                ),
+                (
+                    "dietary_preferences",
+                    models.ManyToManyField(to="banquet.DietaryPreference"),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='invitation',
-            name='participant',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='banquet.Participant'),
+            model_name="invitation",
+            name="participant",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="banquet.Participant",
+            ),
         ),
     ]

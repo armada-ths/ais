@@ -9,32 +9,50 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0016_auto_20181007_2241'),
+        ("events", "0016_auto_20181007_2241"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ParticipantCheckIn',
+            name="ParticipantCheckIn",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(null=True, verbose_name='When the participant checked in at the event')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "timestamp",
+                    models.DateTimeField(
+                        null=True,
+                        verbose_name="When the participant checked in at the event",
+                    ),
+                ),
             ],
         ),
         migrations.RemoveField(
-            model_name='checkintoken',
-            name='participant',
+            model_name="checkintoken",
+            name="participant",
         ),
         migrations.AddField(
-            model_name='participant',
-            name='check_in_token',
-            field=models.CharField(default='9lnh6if7yLsEzroGacSLH8CALDGD7c2t', max_length=32, unique=True),
+            model_name="participant",
+            name="check_in_token",
+            field=models.CharField(
+                default="9lnh6if7yLsEzroGacSLH8CALDGD7c2t", max_length=32, unique=True
+            ),
         ),
         migrations.DeleteModel(
-            name='CheckInToken',
+            name="CheckInToken",
         ),
         migrations.AddField(
-            model_name='participantcheckin',
-            name='participant',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Participant'),
+            model_name="participantcheckin",
+            name="participant",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="events.Participant"
+            ),
         ),
     ]

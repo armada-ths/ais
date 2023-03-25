@@ -11,25 +11,32 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('events', '0001_initial'),
-        ('recruitment', '0001_initial'),
-        ('fair', '0001_initial'),
+        ("events", "0001_initial"),
+        ("recruitment", "0001_initial"),
+        ("fair", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='extra_field',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='recruitment.ExtraField'),
+            model_name="event",
+            name="extra_field",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="recruitment.ExtraField",
+            ),
         ),
         migrations.AddField(
-            model_name='event',
-            name='fair',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair'),
+            model_name="event",
+            name="fair",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+            ),
         ),
         migrations.AddField(
-            model_name='event',
-            name='tags',
-            field=models.ManyToManyField(blank=True, to='fair.Tag'),
+            model_name="event",
+            name="tags",
+            field=models.ManyToManyField(blank=True, to="fair.Tag"),
         ),
     ]

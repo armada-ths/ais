@@ -8,78 +8,122 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0009_auto_20180814_1259'),
+        ("exhibitors", "0009_auto_20180814_1259"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CatalogueBenefit',
+            name="CatalogueBenefit",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('benefit', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("benefit", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='CatalogueEmployment',
+            name="CatalogueEmployment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('employment', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("employment", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='CatalogueIndustry',
+            name="CatalogueIndustry",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('industry', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("industry", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='CatalogueLocation',
+            name="CatalogueLocation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('location', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("location", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='CatalogueValue',
+            name="CatalogueValue",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.CharField(max_length=255)),
             ],
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_average_age',
-            field=models.PositiveIntegerField(blank=True, null=True, verbose_name='Average age of employees'),
+            model_name="exhibitor",
+            name="catalogue_average_age",
+            field=models.PositiveIntegerField(
+                blank=True, null=True, verbose_name="Average age of employees"
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_founded',
+            model_name="exhibitor",
+            name="catalogue_founded",
             field=models.PositiveIntegerField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_benefits',
-            field=models.ManyToManyField(blank=True, to='exhibitors.CatalogueBenefit'),
+            model_name="exhibitor",
+            name="catalogue_benefits",
+            field=models.ManyToManyField(blank=True, to="exhibitors.CatalogueBenefit"),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_employments',
-            field=models.ManyToManyField(blank=True, to='exhibitors.CatalogueEmployment'),
+            model_name="exhibitor",
+            name="catalogue_employments",
+            field=models.ManyToManyField(
+                blank=True, to="exhibitors.CatalogueEmployment"
+            ),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_industries',
-            field=models.ManyToManyField(blank=True, to='exhibitors.CatalogueIndustry'),
+            model_name="exhibitor",
+            name="catalogue_industries",
+            field=models.ManyToManyField(blank=True, to="exhibitors.CatalogueIndustry"),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_locations',
-            field=models.ManyToManyField(blank=True, to='exhibitors.CatalogueLocation'),
+            model_name="exhibitor",
+            name="catalogue_locations",
+            field=models.ManyToManyField(blank=True, to="exhibitors.CatalogueLocation"),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='catalogue_values',
-            field=models.ManyToManyField(blank=True, to='exhibitors.CatalogueValue'),
+            model_name="exhibitor",
+            name="catalogue_values",
+            field=models.ManyToManyField(blank=True, to="exhibitors.CatalogueValue"),
         ),
     ]

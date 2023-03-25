@@ -8,13 +8,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('people', '0007_profile_kth_synchronize'),
+        ("people", "0007_profile_kth_synchronize"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='drivers_license',
-            field=models.CharField(blank=True, max_length=10, null=True, verbose_name="Driver's license"),
+            model_name="profile",
+            name="drivers_license",
+            field=models.CharField(
+                blank=True, max_length=10, null=True, verbose_name="Driver's license"
+            ),
         ),
     ]

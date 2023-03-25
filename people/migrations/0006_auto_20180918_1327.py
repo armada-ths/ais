@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('people', '0005_auto_20180918_1321'),
+        ("people", "0005_auto_20180918_1321"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='dietary_restrictions',
-            field=models.ManyToManyField(blank=True, to='people.DietaryRestriction'),
+            model_name="profile",
+            name="dietary_restrictions",
+            field=models.ManyToManyField(blank=True, to="people.DietaryRestriction"),
         ),
     ]

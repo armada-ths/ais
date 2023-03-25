@@ -8,12 +8,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('unirel', '0008_auto_20181029_1308'),
+        ("unirel", "0008_auto_20181029_1308"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='participant',
-            options={'ordering': ['fair', 'company', 'name'], 'permissions': [('base', 'University relations')]},
+            name="participant",
+            options={
+                "ordering": ["fair", "company", "name"],
+                "permissions": [("base", "University relations")],
+            },
         ),
     ]

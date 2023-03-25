@@ -8,17 +8,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('companies', '0010_auto_20180815_1428'),
+        ("companies", "0010_auto_20180815_1428"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='company',
-            name='invoice_co',
+            model_name="company",
+            name="invoice_co",
         ),
         migrations.AddField(
-            model_name='company',
-            name='invoice_address_line_2',
+            model_name="company",
+            name="invoice_address_line_2",
             field=models.CharField(blank=True, max_length=300, null=True),
         ),
     ]

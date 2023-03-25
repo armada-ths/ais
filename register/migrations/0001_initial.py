@@ -11,34 +11,91 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('companies', '0001_initial'),
-        ('fair', '0001_initial'),
+        ("companies", "0001_initial"),
+        ("fair", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SignupContract',
+            name="SignupContract",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
-                ('contract', models.FileField(upload_to='contracts/%Y%m%d/')),
-                ('current', models.BooleanField(default=False)),
-                ('type', models.CharField(choices=[('INITIAL', 'Initial'), ('COMPLETE', 'Complete')], max_length=200)),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30)),
+                ("contract", models.FileField(upload_to="contracts/%Y%m%d/")),
+                ("current", models.BooleanField(default=False)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[("INITIAL", "Initial"), ("COMPLETE", "Complete")],
+                        max_length=200,
+                    ),
+                ),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SignupLog',
+            name="SignupLog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
-                ('type', models.CharField(blank=True, choices=[('initial', 'Initial'), ('complete', 'Complete')], max_length=30, null=True)),
-                ('company', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='signature', to='companies.Company')),
-                ('company_contact', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='companies.CompanyContact')),
-                ('contract', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='register.SignupContract')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
+                (
+                    "type",
+                    models.CharField(
+                        blank=True,
+                        choices=[("initial", "Initial"), ("complete", "Complete")],
+                        max_length=30,
+                        null=True,
+                    ),
+                ),
+                (
+                    "company",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="signature",
+                        to="companies.Company",
+                    ),
+                ),
+                (
+                    "company_contact",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="companies.CompanyContact",
+                    ),
+                ),
+                (
+                    "contract",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="register.SignupContract",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-timestamp'],
+                "ordering": ["-timestamp"],
             },
         ),
     ]

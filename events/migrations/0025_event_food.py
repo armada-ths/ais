@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0024_event_picture'),
+        ("events", "0024_event_picture"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='food',
+            model_name="event",
+            name="food",
             field=models.CharField(blank=True, max_length=75, null=True),
         ),
     ]

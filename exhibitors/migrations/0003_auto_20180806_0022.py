@@ -8,23 +8,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0002_auto_20180730_1515'),
+        ("exhibitors", "0002_auto_20180730_1515"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='electricity_equipment',
+            model_name="exhibitor",
+            name="electricity_equipment",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='electricity_socket_count',
+            model_name="exhibitor",
+            name="electricity_socket_count",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='electricity_total_power',
+            model_name="exhibitor",
+            name="electricity_total_power",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

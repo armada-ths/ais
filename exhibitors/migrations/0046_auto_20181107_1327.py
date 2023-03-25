@@ -11,23 +11,29 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('exhibitors', '0045_auto_20181107_1325'),
+        ("exhibitors", "0045_auto_20181107_1325"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='check_in_comment',
+            model_name="exhibitor",
+            name="check_in_comment",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='exhibitor',
-            name='check_in_user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='check_in_user', to=settings.AUTH_USER_MODEL),
+            model_name="exhibitor",
+            name="check_in_user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="check_in_user",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='check_in_timestamp',
+            model_name="exhibitor",
+            name="check_in_timestamp",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

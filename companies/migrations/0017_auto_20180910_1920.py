@@ -8,13 +8,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('companies', '0016_auto_20180816_1118'),
+        ("companies", "0016_auto_20180816_1118"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='company',
-            name='invoice_country',
-            field=models.CharField(blank=True, choices=[('DENMARK', 'Denmark'), ('FINLAND', 'Finland'), ('FRANCE', 'France'), ('GERMANY', 'Germany'), ('NORWAY', 'Norway'), ('POLAND', 'Poland'), ('SWEDEN', 'Sweden'), ('UNITED_KINGDOM', 'United Kingdom')], default='SWEDEN', max_length=200, null=True),
+            model_name="company",
+            name="invoice_country",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("DENMARK", "Denmark"),
+                    ("FINLAND", "Finland"),
+                    ("FRANCE", "France"),
+                    ("GERMANY", "Germany"),
+                    ("NORWAY", "Norway"),
+                    ("POLAND", "Poland"),
+                    ("SWEDEN", "Sweden"),
+                    ("UNITED_KINGDOM", "United Kingdom"),
+                ],
+                default="SWEDEN",
+                max_length=200,
+                null=True,
+            ),
         ),
     ]

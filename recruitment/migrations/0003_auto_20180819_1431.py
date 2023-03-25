@@ -8,13 +8,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recruitment', '0002_auto_20180819_1412'),
+        ("recruitment", "0002_auto_20180819_1412"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='recruitmentperiod',
-            name='allowed_groups',
-            field=models.ManyToManyField(blank=True, help_text='Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.', to='auth.Group'),
+            model_name="recruitmentperiod",
+            name="allowed_groups",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Only those who are members of at least one of the selected groups can see the applications submitted to this recruitment period.",
+                to="auth.Group",
+            ),
         ),
     ]

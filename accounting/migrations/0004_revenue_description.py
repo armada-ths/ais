@@ -8,14 +8,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0003_product_description'),
+        ("accounting", "0003_product_description"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='revenue',
-            name='description',
-            field=models.CharField(default='', max_length=100),
+            model_name="revenue",
+            name="description",
+            field=models.CharField(default="", max_length=100),
             preserve_default=False,
         ),
     ]

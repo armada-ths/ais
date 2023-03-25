@@ -8,32 +8,40 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0006_participant_attended'),
+        ("events", "0006_participant_attended"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SignupQuestion',
+            name="SignupQuestion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('required', models.BooleanField()),
-                ('type', models.CharField(max_length=255)),
-                ('question', models.TextField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("required", models.BooleanField()),
+                ("type", models.CharField(max_length=255)),
+                ("question", models.TextField()),
             ],
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='email_address',
+            model_name="participant",
+            name="email_address",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='name',
+            model_name="participant",
+            name="name",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='phone_number',
+            model_name="participant",
+            name="phone_number",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]

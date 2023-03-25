@@ -9,29 +9,61 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0009_auto_20181011_1259'),
+        ("banquet", "0009_auto_20181011_1259"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Seat',
+            name="Seat",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=75)),
-                ('participant', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='banquet.Participant')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=75)),
+                (
+                    "participant",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="banquet.Participant",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Table',
+            name="Table",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=75)),
-                ('banquet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='banquet.Banquet')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=75)),
+                (
+                    "banquet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="banquet.Banquet",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='seat',
-            name='table',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='banquet.Table'),
+            model_name="seat",
+            name="table",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="banquet.Table"
+            ),
         ),
     ]

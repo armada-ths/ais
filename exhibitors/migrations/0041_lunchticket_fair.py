@@ -9,15 +9,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0004_auto_20181003_1227'),
-        ('exhibitors', '0040_lunchticket_company'),
+        ("fair", "0004_auto_20181003_1227"),
+        ("exhibitors", "0040_lunchticket_company"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lunchticket',
-            name='fair',
-            field=models.ForeignKey(default=3, on_delete=django.db.models.deletion.CASCADE, to='fair.Fair'),
+            model_name="lunchticket",
+            name="fair",
+            field=models.ForeignKey(
+                default=3, on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+            ),
             preserve_default=False,
         ),
     ]

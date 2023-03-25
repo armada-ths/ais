@@ -12,18 +12,26 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('banquet', '0007_auto_20181007_1035'),
+        ("banquet", "0007_auto_20181007_1035"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='invitation',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='banquet_invitation_user', to=settings.AUTH_USER_MODEL),
+            model_name="invitation",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="banquet_invitation_user",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='invitation',
-            name='token',
-            field=models.CharField(default=uuid.uuid4, max_length=255, null=True, unique=True),
+            model_name="invitation",
+            name="token",
+            field=models.CharField(
+                default=uuid.uuid4, max_length=255, null=True, unique=True
+            ),
         ),
     ]

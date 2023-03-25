@@ -8,17 +8,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0019_registrationsection_include_in_registration'),
+        ("accounting", "0019_registrationsection_include_in_registration"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='registrationsection',
-            name='include_in_registration',
+            model_name="registrationsection",
+            name="include_in_registration",
         ),
         migrations.AddField(
-            model_name='registrationsection',
-            name='hide_from_registration',
-            field=models.BooleanField(default=False, help_text='If this box is ticked the section will not be visible for the companies in the registration.'),
+            model_name="registrationsection",
+            name="hide_from_registration",
+            field=models.BooleanField(
+                default=False,
+                help_text="If this box is ticked the section will not be visible for the companies in the registration.",
+            ),
         ),
     ]

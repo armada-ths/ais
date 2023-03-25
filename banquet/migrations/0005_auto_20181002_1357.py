@@ -8,23 +8,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('people', '0007_profile_kth_synchronize'),
-        ('banquet', '0004_auto_20180910_1940'),
+        ("people", "0007_profile_kth_synchronize"),
+        ("banquet", "0004_auto_20180910_1940"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='participant',
-            name='dietary_preferences',
+            model_name="participant",
+            name="dietary_preferences",
         ),
         migrations.AddField(
-            model_name='participant',
-            name='alcohol',
-            field=models.BooleanField(choices=[(True, 'Yes'), (False, 'No')], default=True),
+            model_name="participant",
+            name="alcohol",
+            field=models.BooleanField(
+                choices=[(True, "Yes"), (False, "No")], default=True
+            ),
         ),
         migrations.AddField(
-            model_name='participant',
-            name='dietary_restrictions',
-            field=models.ManyToManyField(to='people.DietaryRestriction'),
+            model_name="participant",
+            name="dietary_restrictions",
+            field=models.ManyToManyField(to="people.DietaryRestriction"),
         ),
     ]

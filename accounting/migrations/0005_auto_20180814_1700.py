@@ -9,28 +9,41 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0004_revenue_description'),
+        ("accounting", "0004_revenue_description"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RegistrationSection',
+            name="RegistrationSection",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
             options={
-                'ordering': ['name'],
-                'verbose_name_plural': 'Registration sections',
+                "ordering": ["name"],
+                "verbose_name_plural": "Registration sections",
             },
         ),
         migrations.RemoveField(
-            model_name='product',
-            name='allow_companies',
+            model_name="product",
+            name="allow_companies",
         ),
         migrations.AddField(
-            model_name='product',
-            name='registration_section',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='accounting.RegistrationSection'),
+            model_name="product",
+            name="registration_section",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="accounting.RegistrationSection",
+            ),
         ),
     ]

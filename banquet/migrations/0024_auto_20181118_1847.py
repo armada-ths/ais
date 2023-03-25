@@ -9,18 +9,24 @@ import lib.image
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0023_auto_20181117_2022'),
+        ("banquet", "0023_auto_20181117_2022"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='banquet',
-            name='background',
-            field=models.ImageField(blank=True, null=True, upload_to=lib.image.UploadToDirUUID('banquets', 'map')),
+            model_name="banquet",
+            name="background",
+            field=models.ImageField(
+                blank=True,
+                null=True,
+                upload_to=lib.image.UploadToDirUUID("banquets", "map"),
+            ),
         ),
         migrations.AddField(
-            model_name='banquet',
-            name='point_size',
-            field=models.DecimalField(blank=True, decimal_places=10, max_digits=11, null=True),
+            model_name="banquet",
+            name="point_size",
+            field=models.DecimalField(
+                blank=True, decimal_places=10, max_digits=11, null=True
+            ),
         ),
     ]

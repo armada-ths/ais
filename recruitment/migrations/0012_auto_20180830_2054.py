@@ -8,16 +8,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recruitment', '0011_auto_20180830_2040'),
+        ("recruitment", "0011_auto_20180830_2040"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='slot',
-            options={'ordering': ['start', 'location', 'recruitment_period']},
+            name="slot",
+            options={"ordering": ["start", "location", "recruitment_period"]},
         ),
         migrations.RemoveField(
-            model_name='recruitmentperiod',
-            name='interview_end_date',
+            model_name="recruitmentperiod",
+            name="interview_end_date",
         ),
     ]

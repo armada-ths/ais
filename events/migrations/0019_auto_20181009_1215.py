@@ -8,13 +8,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0018_auto_20181009_1144'),
+        ("events", "0018_auto_20181009_1144"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='check_in_token',
-            field=models.CharField(default='48jf2JfsKwGOn5rPYLaXkhkYE8seqo2w', max_length=32, unique=True),
+            model_name="participant",
+            name="check_in_token",
+            field=models.CharField(
+                default="48jf2JfsKwGOn5rPYLaXkhkYE8seqo2w", max_length=32, unique=True
+            ),
         ),
     ]

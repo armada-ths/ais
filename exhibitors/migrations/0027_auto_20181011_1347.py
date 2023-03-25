@@ -11,46 +11,89 @@ import lib.image
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fair', '0004_auto_20181003_1227'),
-        ('exhibitors', '0026_auto_20180930_1133'),
+        ("fair", "0004_auto_20181003_1227"),
+        ("exhibitors", "0026_auto_20180930_1133"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Booth',
+            name="Booth",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('boundaries', django.contrib.gis.db.models.fields.PolygonField(blank=True, null=True, srid=4326)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "boundaries",
+                    django.contrib.gis.db.models.fields.PolygonField(
+                        blank=True, null=True, srid=4326
+                    ),
+                ),
             ],
             options={
-                'ordering': ['location', 'name'],
+                "ordering": ["location", "name"],
             },
         ),
         migrations.CreateModel(
-            name='Location',
+            name="Location",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('picture_original', models.ImageField(blank=True, null=True, upload_to=lib.image.UploadToDirUUID('locations'))),
-                ('fair', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Location')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "picture_original",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to=lib.image.UploadToDirUUID("locations"),
+                    ),
+                ),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+                    ),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="exhibitors.Location",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['fair', 'name'],
+                "ordering": ["fair", "name"],
             },
         ),
         migrations.AddField(
-            model_name='booth',
-            name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Location'),
+            model_name="booth",
+            name="location",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="exhibitors.Location"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='location',
-            unique_together=set([('fair', 'name')]),
+            name="location",
+            unique_together=set([("fair", "name")]),
         ),
         migrations.AlterUniqueTogether(
-            name='booth',
-            unique_together=set([('location', 'name')]),
+            name="booth",
+            unique_together=set([("location", "name")]),
         ),
     ]

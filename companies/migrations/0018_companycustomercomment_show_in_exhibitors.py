@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('companies', '0017_auto_20180910_1920'),
+        ("companies", "0017_auto_20180910_1920"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='companycustomercomment',
-            name='show_in_exhibitors',
+            model_name="companycustomercomment",
+            name="show_in_exhibitors",
             field=models.BooleanField(default=False),
         ),
     ]

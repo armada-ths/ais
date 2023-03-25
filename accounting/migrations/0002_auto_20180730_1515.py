@@ -13,35 +13,53 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('accounting', '0001_initial'),
-        ('companies', '0001_initial'),
-        ('fair', '0001_initial'),
+        ("accounting", "0001_initial"),
+        ("companies", "0001_initial"),
+        ("fair", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='order',
-            name='purchasing_company',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='companies.Company'),
+            model_name="order",
+            name="purchasing_company",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="companies.Company",
+            ),
         ),
         migrations.AddField(
-            model_name='order',
-            name='purchasing_user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="order",
+            name="purchasing_user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='address',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='companies.CompanyAddress'),
+            model_name="invoice",
+            name="address",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="companies.CompanyAddress",
+            ),
         ),
         migrations.AddField(
-            model_name='invoice',
-            name='company_customer',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='companies.CompanyCustomer'),
+            model_name="invoice",
+            name="company_customer",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="companies.CompanyCustomer",
+            ),
         ),
         migrations.AddField(
-            model_name='category',
-            name='fair',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fair.Fair'),
+            model_name="category",
+            name="fair",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="fair.Fair"
+            ),
         ),
     ]

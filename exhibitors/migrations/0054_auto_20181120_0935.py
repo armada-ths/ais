@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0053_auto_20181120_0922'),
+        ("exhibitors", "0053_auto_20181120_0922"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='locationtick',
-            name='timestamp',
+            model_name="locationtick",
+            name="timestamp",
             field=models.DateTimeField(auto_now_add=True),
         ),
     ]

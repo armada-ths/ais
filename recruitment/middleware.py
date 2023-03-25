@@ -9,11 +9,9 @@ class LoginRequiredMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-
     def __call__(self, request):
         response = self.get_response(request)
         return response
-    
 
     """
     Middleware that requires a user to be authenticated to view any page other
@@ -26,7 +24,9 @@ class LoginRequiredMiddleware:
     """
 
     def process_request(self, request):
-        assert hasattr(request, 'user'), "The Login Required middleware\
+        assert hasattr(
+            request, "user"
+        ), "The Login Required middleware\
  requires authentication middleware to be installed. Edit your\
  MIDDLEWARE_CLASSES setting to insert\
  'django.contrib.auth.middlware.AuthenticationMiddleware'. If that doesn't\
@@ -37,18 +37,20 @@ class LoginRequiredMiddleware:
 
         current_year = datetime.datetime.now().year
         url_exceptions = {
-            '/',
-            '/register/', '/register/user', '/register/company',
-            '/register/password_reset/', '/register/password_reset/done/',
-            '/register/external/signup', '/payments/checkout', '/payments/confirm',
-            '/banquet/afterparty'
+            "/",
+            "/register/",
+            "/register/user",
+            "/register/company",
+            "/register/password_reset/",
+            "/register/password_reset/done/",
+            "/register/external/signup",
+            "/payments/checkout",
+            "/payments/confirm",
+            "/banquet/afterparty",
         }
 
         # Since reset tokens are unique a startswith is necessary, this should later be implemented in settings.py with LOGIN_EXEMPT_URLS to avoid the logout part in the reset URL
-        url_prefix_exceptions = {
-            '/api/',
-            '/register/reset/'
-        }
+        url_prefix_exceptions = {"/api/", "/register/reset/"}
 
         if path in url_exceptions:
             return
@@ -56,28 +58,45 @@ class LoginRequiredMiddleware:
         if path.startswith("/journal/ics/"):
             return
 
-        if re.match(r'/media/.*$', path): return
+        if re.match(r"/media/.*$", path):
+            return
 
-        if re.match(r'/banquet/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$', path): return
+        if re.match(
+            r"/banquet/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$",
+            path,
+        ):
+            return
 
+        if re.match(r"/banquet/[0-9A-Za-z]+$", path):
+            return
 
-        if re.match(r'/banquet/[0-9A-Za-z]+$', path): return
+        if re.match(
+            r"/banquet/afterparty/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            path,
+        ):
+            return
 
-        if re.match(r'/banquet/afterparty/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', path): return
+        if re.match(
+            r"/unirel/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$",
+            path,
+        ):
+            return
 
-        if re.match(r'/unirel/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(/maybe|/no){0,1}$', path): return
-
-        if re.match(r'/lunchticket/[0-9A-Za-z]+$', path): return
+        if re.match(r"/lunchticket/[0-9A-Za-z]+$", path):
+            return
 
         for prefix in url_prefix_exceptions:
             if path.startswith(prefix, 0, len(prefix)):
                 return
 
         # if re.match(r'/login/+$', path): return
-        if 'login' in path:
+        if "login" in path:
             return
 
         if not request.user.is_authenticated:
-            if re.match(r'/oidc/kth/callback+$', path): return
-                
-            return HttpResponseRedirect("/?next=%s" % (urlquote(request.get_full_path())))
+            if re.match(r"/oidc/kth/callback+$", path):
+                return
+
+            return HttpResponseRedirect(
+                "/?next=%s" % (urlquote(request.get_full_path()))
+            )

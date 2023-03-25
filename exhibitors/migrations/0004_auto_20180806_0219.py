@@ -8,23 +8,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0003_auto_20180806_0022'),
+        ("exhibitors", "0003_auto_20180806_0022"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='electricity_equipment',
-            field=models.TextField(blank=True, null=True, verbose_name='Description of equipment'),
+            model_name="exhibitor",
+            name="electricity_equipment",
+            field=models.TextField(
+                blank=True, null=True, verbose_name="Description of equipment"
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='electricity_socket_count',
-            field=models.PositiveIntegerField(blank=True, null=True, verbose_name='Number of sockets'),
+            model_name="exhibitor",
+            name="electricity_socket_count",
+            field=models.PositiveIntegerField(
+                blank=True, null=True, verbose_name="Number of sockets"
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='electricity_total_power',
-            field=models.PositiveIntegerField(blank=True, null=True, verbose_name='Estimated power consumption (W)'),
+            model_name="exhibitor",
+            name="electricity_total_power",
+            field=models.PositiveIntegerField(
+                blank=True, null=True, verbose_name="Estimated power consumption (W)"
+            ),
         ),
     ]

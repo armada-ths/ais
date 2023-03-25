@@ -11,407 +11,793 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('student_profiles', '0001_initial'),
-        ('exhibitors', '0001_initial'),
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('fair', '0001_initial'),
+        ("student_profiles", "0001_initial"),
+        ("exhibitors", "0001_initial"),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("fair", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Answer',
+            name="Answer",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'answers',
-                'verbose_name': 'answer',
-                'manager_inheritance_from_future': True,
+                "verbose_name_plural": "answers",
+                "verbose_name": "answer",
+                "manager_inheritance_from_future": True,
             },
         ),
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=400)),
-                ('order', models.IntegerField(blank=True, null=True)),
-                ('description', models.CharField(blank=True, max_length=2000, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=400)),
+                ("order", models.IntegerField(blank=True, null=True)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=2000, null=True),
+                ),
             ],
             options={
-                'verbose_name_plural': 'categories',
-                'verbose_name': 'category',
+                "verbose_name_plural": "categories",
+                "verbose_name": "category",
             },
         ),
         migrations.CreateModel(
-            name='Continent',
+            name="Continent",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(unique=True)),
-                ('continent_id', models.IntegerField(null=True, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(unique=True)),
+                ("continent_id", models.IntegerField(null=True, unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Country',
+            name="Country",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField(unique=True)),
-                ('continent', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.Continent')),
-                ('exhibitor', models.ManyToManyField(to='exhibitors.Exhibitor')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField(unique=True)),
+                (
+                    "continent",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="matching.Continent",
+                    ),
+                ),
+                ("exhibitor", models.ManyToManyField(to="exhibitors.Exhibitor")),
             ],
             options={
-                'verbose_name_plural': 'countries',
+                "verbose_name_plural": "countries",
             },
         ),
         migrations.CreateModel(
-            name='JobType',
+            name="JobType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('job_type', models.TextField()),
-                ('job_type_id', models.IntegerField(unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("job_type", models.TextField()),
+                ("job_type_id", models.IntegerField(unique=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Question',
+            name="Question",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('required', models.BooleanField(default=False)),
-                ('name', models.CharField(blank=True, max_length=64, null=True)),
-                ('text', models.TextField()),
-                ('help_text', models.TextField(blank=True, null=True)),
-                ('question_type', models.CharField(blank=True, choices=[('text', 'text'), ('select', 'select'), ('select-multiple', 'Select Multiple'), ('integer', 'integer'), ('boolean', 'boolean')], max_length=256, null=True)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='matching.Category')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("required", models.BooleanField(default=False)),
+                ("name", models.CharField(blank=True, max_length=64, null=True)),
+                ("text", models.TextField()),
+                ("help_text", models.TextField(blank=True, null=True)),
+                (
+                    "question_type",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("text", "text"),
+                            ("select", "select"),
+                            ("select-multiple", "Select Multiple"),
+                            ("integer", "integer"),
+                            ("boolean", "boolean"),
+                        ],
+                        max_length=256,
+                        null=True,
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="questions",
+                        to="matching.Category",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'questions',
-                'verbose_name': 'question',
+                "verbose_name_plural": "questions",
+                "verbose_name": "question",
             },
         ),
         migrations.CreateModel(
-            name='Response',
+            name="Response",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('exhibitor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Exhibitor')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "exhibitor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="exhibitors.Exhibitor",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'responses',
-                'verbose_name': 'response',
+                "verbose_name_plural": "responses",
+                "verbose_name": "response",
             },
         ),
         migrations.CreateModel(
-            name='StudentAnswerBase',
+            name="StudentAnswerBase",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(blank=True, editable=False, null=True)),
-                ('updated', models.DateTimeField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created",
+                    models.DateTimeField(blank=True, editable=False, null=True),
+                ),
+                ("updated", models.DateTimeField(blank=True, null=True)),
             ],
             options={
-                'verbose_name': 'answers base',
-                'default_permissions': (),
+                "verbose_name": "answers base",
+                "default_permissions": (),
             },
         ),
         migrations.CreateModel(
-            name='StudentQuestionBase',
+            name="StudentQuestionBase",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.CharField(max_length=256)),
-                ('question_type', models.CharField(choices=[('slider', 'slider'), ('grading', 'grading')], max_length=64)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("question", models.CharField(max_length=256)),
+                (
+                    "question_type",
+                    models.CharField(
+                        choices=[("slider", "slider"), ("grading", "grading")],
+                        max_length=64,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'question',
-                'default_permissions': (),
+                "verbose_name": "question",
+                "default_permissions": (),
             },
         ),
         migrations.CreateModel(
-            name='Survey',
+            name="Survey",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256)),
-                ('description', models.TextField()),
-                ('fair', models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='fair.Fair')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=256)),
+                ("description", models.TextField()),
+                (
+                    "fair",
+                    models.ForeignKey(
+                        default=1,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="fair.Fair",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['name'],
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='SwedenCity',
+            name="SwedenCity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('city', models.TextField(unique=True)),
-                ('exhibitor', models.ManyToManyField(to='exhibitors.Exhibitor')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("city", models.TextField(unique=True)),
+                ("exhibitor", models.ManyToManyField(to="exhibitors.Exhibitor")),
             ],
             options={
-                'verbose_name_plural': 'sweden cities',
-                'verbose_name': 'sweden city',
+                "verbose_name_plural": "sweden cities",
+                "verbose_name": "sweden city",
             },
         ),
         migrations.CreateModel(
-            name='SwedenRegion',
+            name="SwedenRegion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.TextField()),
-                ('region_id', models.IntegerField(null=True, unique=True)),
-                ('survey', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.Survey')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.TextField()),
+                ("region_id", models.IntegerField(null=True, unique=True)),
+                (
+                    "survey",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="matching.Survey",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='WorkField',
+            name="WorkField",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('work_field', models.TextField(unique=True)),
-                ('survey', models.ManyToManyField(to='matching.Survey')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("work_field", models.TextField(unique=True)),
+                ("survey", models.ManyToManyField(to="matching.Survey")),
             ],
             options={
-                'verbose_name': 'work field',
-                'default_permissions': (),
+                "verbose_name": "work field",
+                "default_permissions": (),
             },
         ),
         migrations.CreateModel(
-            name='WorkFieldArea',
+            name="WorkFieldArea",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('work_area', models.TextField(unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("work_area", models.TextField(unique=True)),
             ],
             options={
-                'verbose_name': 'work field area',
-                'default_permissions': (),
+                "verbose_name": "work field area",
+                "default_permissions": (),
             },
         ),
         migrations.CreateModel(
-            name='BooleanAns',
+            name="BooleanAns",
             fields=[
-                ('answer_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.Answer')),
-                ('ans', models.NullBooleanField(choices=[(True, 'yes'), (False, 'no')], default=None)),
+                (
+                    "answer_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.Answer",
+                    ),
+                ),
+                (
+                    "ans",
+                    models.NullBooleanField(
+                        choices=[(True, "yes"), (False, "no")], default=None
+                    ),
+                ),
             ],
             options={
-                'manager_inheritance_from_future': True,
+                "manager_inheritance_from_future": True,
             },
-            bases=('matching.answer',),
+            bases=("matching.answer",),
         ),
         migrations.CreateModel(
-            name='ChoiceAns',
+            name="ChoiceAns",
             fields=[
-                ('answer_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.Answer')),
-                ('ans', models.IntegerField(blank=True, choices=[(None, '-------'), (1, 'Definitely Not'), (2, 'Probably Not'), (3, 'Maybe'), (4, 'Probably'), (5, 'Definitely')], null=True)),
+                (
+                    "answer_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.Answer",
+                    ),
+                ),
+                (
+                    "ans",
+                    models.IntegerField(
+                        blank=True,
+                        choices=[
+                            (None, "-------"),
+                            (1, "Definitely Not"),
+                            (2, "Probably Not"),
+                            (3, "Maybe"),
+                            (4, "Probably"),
+                            (5, "Definitely"),
+                        ],
+                        null=True,
+                    ),
+                ),
             ],
             options={
-                'manager_inheritance_from_future': True,
+                "manager_inheritance_from_future": True,
             },
-            bases=('matching.answer',),
+            bases=("matching.answer",),
         ),
         migrations.CreateModel(
-            name='IntegerAns',
+            name="IntegerAns",
             fields=[
-                ('answer_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.Answer')),
-                ('ans', models.IntegerField(blank=True, null=True)),
+                (
+                    "answer_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.Answer",
+                    ),
+                ),
+                ("ans", models.IntegerField(blank=True, null=True)),
             ],
             options={
-                'manager_inheritance_from_future': True,
+                "manager_inheritance_from_future": True,
             },
-            bases=('matching.answer',),
+            bases=("matching.answer",),
         ),
         migrations.CreateModel(
-            name='StudentAnswerContinent',
+            name="StudentAnswerContinent",
             fields=[
-                ('studentanswerbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentAnswerBase')),
+                (
+                    "studentanswerbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentAnswerBase",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'answer continent',
+                "verbose_name": "answer continent",
             },
-            bases=('matching.studentanswerbase',),
+            bases=("matching.studentanswerbase",),
         ),
         migrations.CreateModel(
-            name='StudentAnswerGrading',
+            name="StudentAnswerGrading",
             fields=[
-                ('studentanswerbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentAnswerBase')),
-                ('answer', models.IntegerField(default=0)),
+                (
+                    "studentanswerbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentAnswerBase",
+                    ),
+                ),
+                ("answer", models.IntegerField(default=0)),
             ],
             options={
-                'verbose_name_plural': 'answers grading',
-                'verbose_name': 'answer grading',
-                'default_permissions': (),
+                "verbose_name_plural": "answers grading",
+                "verbose_name": "answer grading",
+                "default_permissions": (),
             },
-            bases=('matching.studentanswerbase',),
+            bases=("matching.studentanswerbase",),
         ),
         migrations.CreateModel(
-            name='StudentAnswerJobType',
+            name="StudentAnswerJobType",
             fields=[
-                ('studentanswerbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentAnswerBase')),
+                (
+                    "studentanswerbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentAnswerBase",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'answer job type',
+                "verbose_name": "answer job type",
             },
-            bases=('matching.studentanswerbase',),
+            bases=("matching.studentanswerbase",),
         ),
         migrations.CreateModel(
-            name='StudentAnswerRegion',
+            name="StudentAnswerRegion",
             fields=[
-                ('studentanswerbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentAnswerBase')),
-                ('region', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.SwedenRegion')),
+                (
+                    "studentanswerbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentAnswerBase",
+                    ),
+                ),
+                (
+                    "region",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="matching.SwedenRegion",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'answer region',
+                "verbose_name": "answer region",
             },
-            bases=('matching.studentanswerbase',),
+            bases=("matching.studentanswerbase",),
         ),
         migrations.CreateModel(
-            name='StudentAnswerSlider',
+            name="StudentAnswerSlider",
             fields=[
-                ('studentanswerbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentAnswerBase')),
-                ('answer_min', models.FloatField(default=0.0)),
-                ('answer_max', models.FloatField(default=0.0)),
+                (
+                    "studentanswerbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentAnswerBase",
+                    ),
+                ),
+                ("answer_min", models.FloatField(default=0.0)),
+                ("answer_max", models.FloatField(default=0.0)),
             ],
             options={
-                'verbose_name_plural': 'answers slider',
-                'verbose_name': 'answer slider',
-                'default_permissions': (),
+                "verbose_name_plural": "answers slider",
+                "verbose_name": "answer slider",
+                "default_permissions": (),
             },
-            bases=('matching.studentanswerbase',),
+            bases=("matching.studentanswerbase",),
         ),
         migrations.CreateModel(
-            name='StudentAnswerWorkField',
+            name="StudentAnswerWorkField",
             fields=[
-                ('studentanswerbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentAnswerBase')),
-                ('answer', models.BooleanField(choices=[(True, 'yes'), (False, 'no')], default=False)),
+                (
+                    "studentanswerbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentAnswerBase",
+                    ),
+                ),
+                (
+                    "answer",
+                    models.BooleanField(
+                        choices=[(True, "yes"), (False, "no")], default=False
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'answers workfield',
-                'verbose_name': 'answer workfield',
-                'default_permissions': (),
+                "verbose_name_plural": "answers workfield",
+                "verbose_name": "answer workfield",
+                "default_permissions": (),
             },
-            bases=('matching.studentanswerbase',),
+            bases=("matching.studentanswerbase",),
         ),
         migrations.CreateModel(
-            name='StudentQuestionGrading',
+            name="StudentQuestionGrading",
             fields=[
-                ('studentquestionbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentQuestionBase')),
-                ('grading_size', models.IntegerField(default=5)),
+                (
+                    "studentquestionbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentQuestionBase",
+                    ),
+                ),
+                ("grading_size", models.IntegerField(default=5)),
             ],
             options={
-                'verbose_name': 'grading question',
-                'default_permissions': (),
+                "verbose_name": "grading question",
+                "default_permissions": (),
             },
-            bases=('matching.studentquestionbase',),
+            bases=("matching.studentquestionbase",),
         ),
         migrations.CreateModel(
-            name='StudentQuestionSlider',
+            name="StudentQuestionSlider",
             fields=[
-                ('studentquestionbase_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.StudentQuestionBase')),
-                ('min_value', models.FloatField()),
-                ('max_value', models.FloatField()),
-                ('units', models.CharField(blank=True, max_length=64, null=True)),
-                ('logarithmic', models.BooleanField(default=False)),
+                (
+                    "studentquestionbase_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.StudentQuestionBase",
+                    ),
+                ),
+                ("min_value", models.FloatField()),
+                ("max_value", models.FloatField()),
+                ("units", models.CharField(blank=True, max_length=64, null=True)),
+                ("logarithmic", models.BooleanField(default=False)),
             ],
             options={
-                'verbose_name': 'slider question',
-                'default_permissions': (),
+                "verbose_name": "slider question",
+                "default_permissions": (),
             },
-            bases=('matching.studentquestionbase',),
+            bases=("matching.studentquestionbase",),
         ),
         migrations.CreateModel(
-            name='TextAns',
+            name="TextAns",
             fields=[
-                ('answer_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='matching.Answer')),
-                ('ans', models.CharField(blank=True, max_length=4096, null=True)),
+                (
+                    "answer_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="matching.Answer",
+                    ),
+                ),
+                ("ans", models.CharField(blank=True, max_length=4096, null=True)),
             ],
             options={
-                'manager_inheritance_from_future': True,
+                "manager_inheritance_from_future": True,
             },
-            bases=('matching.answer',),
+            bases=("matching.answer",),
         ),
         migrations.AddField(
-            model_name='workfield',
-            name='work_area',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.WorkFieldArea'),
+            model_name="workfield",
+            name="work_area",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="matching.WorkFieldArea",
+            ),
         ),
         migrations.AddField(
-            model_name='swedencity',
-            name='region',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.SwedenRegion'),
+            model_name="swedencity",
+            name="region",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="matching.SwedenRegion"
+            ),
         ),
         migrations.AddField(
-            model_name='studentquestionbase',
-            name='company_question',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.Question'),
+            model_name="studentquestionbase",
+            name="company_question",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="matching.Question",
+            ),
         ),
         migrations.AddField(
-            model_name='studentquestionbase',
-            name='survey',
-            field=models.ManyToManyField(blank=True, to='matching.Survey'),
+            model_name="studentquestionbase",
+            name="survey",
+            field=models.ManyToManyField(blank=True, to="matching.Survey"),
         ),
         migrations.AddField(
-            model_name='studentanswerbase',
-            name='student',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='student_profiles.StudentProfile'),
+            model_name="studentanswerbase",
+            name="student",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="student_profiles.StudentProfile",
+            ),
         ),
         migrations.AddField(
-            model_name='studentanswerbase',
-            name='survey',
-            field=models.ManyToManyField(blank=True, to='matching.Survey'),
+            model_name="studentanswerbase",
+            name="survey",
+            field=models.ManyToManyField(blank=True, to="matching.Survey"),
         ),
         migrations.AddField(
-            model_name='response',
-            name='survey',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='responses', to='matching.Survey'),
+            model_name="response",
+            name="survey",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="responses",
+                to="matching.Survey",
+            ),
         ),
         migrations.AddField(
-            model_name='question',
-            name='survey',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='matching.Survey'),
+            model_name="question",
+            name="survey",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="questions",
+                to="matching.Survey",
+            ),
         ),
         migrations.AddField(
-            model_name='jobtype',
-            name='exhibitor_question',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.Question'),
+            model_name="jobtype",
+            name="exhibitor_question",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="matching.Question",
+            ),
         ),
         migrations.AddField(
-            model_name='continent',
-            name='survey',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.Survey'),
+            model_name="continent",
+            name="survey",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="matching.Survey",
+            ),
         ),
         migrations.AddField(
-            model_name='category',
-            name='survey',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categories', to='matching.Survey'),
+            model_name="category",
+            name="survey",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="categories",
+                to="matching.Survey",
+            ),
         ),
         migrations.AddField(
-            model_name='answer',
-            name='polymorphic_ctype',
-            field=models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_matching.answer_set+', to='contenttypes.ContentType'),
+            model_name="answer",
+            name="polymorphic_ctype",
+            field=models.ForeignKey(
+                editable=False,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="polymorphic_matching.answer_set+",
+                to="contenttypes.ContentType",
+            ),
         ),
         migrations.AddField(
-            model_name='answer',
-            name='question',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.Question'),
+            model_name="answer",
+            name="question",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="matching.Question"
+            ),
         ),
         migrations.AddField(
-            model_name='answer',
-            name='response',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.Response'),
+            model_name="answer",
+            name="response",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="matching.Response"
+            ),
         ),
         migrations.AddField(
-            model_name='studentanswerworkfield',
-            name='work_field',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.WorkField'),
+            model_name="studentanswerworkfield",
+            name="work_field",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="matching.WorkField"
+            ),
         ),
         migrations.AddField(
-            model_name='studentanswerslider',
-            name='question',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.StudentQuestionSlider'),
+            model_name="studentanswerslider",
+            name="question",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="matching.StudentQuestionSlider",
+            ),
         ),
         migrations.AddField(
-            model_name='studentanswerjobtype',
-            name='job_type',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='matching.JobType'),
+            model_name="studentanswerjobtype",
+            name="job_type",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="matching.JobType",
+            ),
         ),
         migrations.AddField(
-            model_name='studentanswergrading',
-            name='question',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.StudentQuestionGrading'),
+            model_name="studentanswergrading",
+            name="question",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="matching.StudentQuestionGrading",
+            ),
         ),
         migrations.AddField(
-            model_name='studentanswercontinent',
-            name='continent',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='matching.Continent'),
+            model_name="studentanswercontinent",
+            name="continent",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="matching.Continent"
+            ),
         ),
     ]

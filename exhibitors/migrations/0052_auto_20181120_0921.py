@@ -11,45 +11,70 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('exhibitors', '0051_auto_20181119_1101'),
+        ("exhibitors", "0051_auto_20181119_1101"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LocationTick',
+            name="LocationTick",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('timestamp', models.DateTimeField()),
-                ('change', models.IntegerField()),
-                ('new_people_count', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("timestamp", models.DateTimeField()),
+                ("change", models.IntegerField()),
+                ("new_people_count", models.IntegerField()),
             ],
         ),
         migrations.AlterModelOptions(
-            name='exhibitor',
-            options={'default_permissions': [], 'ordering': ['company__name'], 'permissions': [('base', 'View the Exhibitors tab'), ('view_all', 'Always view all exhibitors'), ('create', 'Create new exhibitors'), ('modify_contact_persons', 'Modify contact persons'), ('modify_transport', 'Modify transport details'), ('modify_check_in', 'Modify check in'), ('modify_details', 'Modify details'), ('modify_booths', 'Modify booths')]},
+            name="exhibitor",
+            options={
+                "default_permissions": [],
+                "ordering": ["company__name"],
+                "permissions": [
+                    ("base", "View the Exhibitors tab"),
+                    ("view_all", "Always view all exhibitors"),
+                    ("create", "Create new exhibitors"),
+                    ("modify_contact_persons", "Modify contact persons"),
+                    ("modify_transport", "Modify transport details"),
+                    ("modify_check_in", "Modify check in"),
+                    ("modify_details", "Modify details"),
+                    ("modify_booths", "Modify booths"),
+                ],
+            },
         ),
         migrations.AlterModelOptions(
-            name='location',
-            options={'ordering': ['fair', 'parent__name', 'name']},
+            name="location",
+            options={"ordering": ["fair", "parent__name", "name"]},
         ),
         migrations.AddField(
-            model_name='location',
-            name='people_count',
+            model_name="location",
+            name="people_count",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='location',
-            name='people_count_enabled',
+            model_name="location",
+            name="people_count_enabled",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='locationtick',
-            name='location',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='exhibitors.Location'),
+            model_name="locationtick",
+            name="location",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="exhibitors.Location"
+            ),
         ),
         migrations.AddField(
-            model_name='locationtick',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="locationtick",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

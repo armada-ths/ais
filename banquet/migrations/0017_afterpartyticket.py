@@ -9,19 +9,33 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0016_auto_20181028_1429'),
+        ("banquet", "0016_auto_20181028_1429"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AfterPartyTicket',
+            name="AfterPartyTicket",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.CharField(default=uuid.uuid4, max_length=255, unique=True)),
-                ('name', models.CharField(blank=True, max_length=75, null=True)),
-                ('email_address', models.CharField(blank=True, max_length=75, null=True)),
-                ('paid_timestamp', models.DateTimeField(auto_now_add=True)),
-                ('paid_price', models.PositiveIntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "token",
+                    models.CharField(default=uuid.uuid4, max_length=255, unique=True),
+                ),
+                ("name", models.CharField(blank=True, max_length=75, null=True)),
+                (
+                    "email_address",
+                    models.CharField(blank=True, max_length=75, null=True),
+                ),
+                ("paid_timestamp", models.DateTimeField(auto_now_add=True)),
+                ("paid_price", models.PositiveIntegerField()),
             ],
         ),
     ]

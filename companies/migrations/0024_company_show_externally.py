@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('companies', '0023_merge_20181004_0954'),
+        ("companies", "0023_merge_20181004_0954"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='company',
-            name='show_externally',
+            model_name="company",
+            name="show_externally",
             field=models.BooleanField(default=True),
         ),
     ]

@@ -8,21 +8,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0013_participant_signup_complete'),
+        ("events", "0013_participant_signup_complete"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='team',
-            name='leader',
+            model_name="team",
+            name="leader",
         ),
         migrations.AddField(
-            model_name='teammember',
-            name='leader',
+            model_name="teammember",
+            name="leader",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterUniqueTogether(
-            name='teammember',
-            unique_together=set([('team', 'leader')]),
+            name="teammember",
+            unique_together=set([("team", "leader")]),
         ),
     ]

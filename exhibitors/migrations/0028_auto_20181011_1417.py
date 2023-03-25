@@ -8,13 +8,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0027_auto_20181011_1347'),
+        ("exhibitors", "0027_auto_20181011_1347"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='location',
-            old_name='picture_original',
-            new_name='background',
+            model_name="location",
+            old_name="picture_original",
+            new_name="background",
         ),
     ]

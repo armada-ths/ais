@@ -8,18 +8,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0029_auto_20181011_1420'),
+        ("exhibitors", "0029_auto_20181011_1420"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='transport_from',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('ARKAD', 'Transported by Arkad'), ('NOT_APPLICABLE', 'Not applicable')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_from",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("ARKAD", "Transported by Arkad"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='transport_to',
-            field=models.CharField(choices=[('NOT_BOOKED', 'Not booked'), ('BOOKED', 'Booked'), ('ARKAD', 'Transported by Arkad'), ('NOT_APPLICABLE', 'Not applicable')], default='NOT_BOOKED', max_length=30),
+            model_name="exhibitor",
+            name="transport_to",
+            field=models.CharField(
+                choices=[
+                    ("NOT_BOOKED", "Not booked"),
+                    ("BOOKED", "Booked"),
+                    ("ARKAD", "Transported by Arkad"),
+                    ("NOT_APPLICABLE", "Not applicable"),
+                ],
+                default="NOT_BOOKED",
+                max_length=30,
+            ),
         ),
     ]
