@@ -190,16 +190,20 @@ def partner(request, partner):
 
 def person(request, person, role):
     # Check that there are a profile for the user
+
     try:
         profile = person.profile
+
         try:
             programme = profile.programme.name
         except AttributeError:
             programme = None
+
         return OrderedDict(
             [
                 ("id", profile.user.pk),
                 ("name", profile.user.get_full_name()),
+                ("email", profile.email),
                 (
                     "picture",
                     image_url_or_missing(
@@ -213,7 +217,12 @@ def person(request, person, role):
         )
     except Profile.DoesNotExist:  # There are no profile for this user
         return OrderedDict(
-            [("id", person.pk), ("name", person.get_full_name()), ("role", role)]
+            [
+                ("id", person.pk),
+                ("email", profile.email),
+                ("name", person.get_full_name()),
+                ("role", role),
+            ]
         )
 
 
