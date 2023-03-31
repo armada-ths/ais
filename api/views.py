@@ -333,6 +333,7 @@ def organization(request):
     recruitment_period_roles = [
         period.recruitable_roles.all() for period in fair.recruitmentperiod_set.all()
     ]
+
     role_groups = [role.group for roles in recruitment_period_roles for role in roles]
     groups = [group for group in all_groups if group in role_groups]
 
