@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
             model_name="profile",
             name="armada_email",
             field=models.EmailField(
-                blank=True, max_length=75, null=True, verbose_name="E-mail address"
+                blank=True, max_length=75, null=True, verbose_name="Armada e-mail address"
             ),
         ),
     ]
