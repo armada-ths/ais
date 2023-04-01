@@ -203,7 +203,7 @@ def person(request, person, role):
             [
                 ("id", profile.user.pk),
                 ("name", profile.user.get_full_name()),
-                ("email", profile.email),
+                ("armada_email", profile.armada_email),
                 (
                     "picture",
                     image_url_or_missing(
@@ -219,7 +219,6 @@ def person(request, person, role):
         return OrderedDict(
             [
                 ("id", person.pk),
-                ("email", profile.email),
                 ("name", person.get_full_name()),
                 ("role", role),
             ]
