@@ -21,7 +21,7 @@
 		<div class="panel-body">
 			<ul class="list-unstyled">
 				<li><span style="font-weight: 700;">E-mail address:</span> <a href="mailto:{{ profile.user.email }}">{{ profile.user.email }}</a></li>
-				<li><span style="font-weight: 700;">Armada e-mail address:</span> {% if profile.armada_email %}<a href="tel:{{ profile.armada_email }}">{{ profile.armada_email }}</a>{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
+				<li><span style="font-weight: 700;">Armada e-mail address:</span> {% if profile.armada_email %}<a href="mailto:{{ profile.armada_email }}">{{ profile.armada_email }}</a>{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
 				<li><span style="font-weight: 700;">Phone number:</span> {% if profile.phone_number %}<a href="tel:{{ profile.phone_number }}">{{ profile.phone_number }}</a>{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
 				<li><span style="font-weight: 700;">Date of birth:</span> {% if profile.birth_date %}{{ profile.birth_date }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
 				<li><span style="font-weight: 700;">Gender:</span> {% if profile.gender %}{{ profile.get_gender_display }}{% else %}<span style="font-style: italic;">not given</span>{% endif %}</li>
