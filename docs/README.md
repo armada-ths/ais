@@ -48,13 +48,13 @@ Remember to recomment the line `python manage.py migrate --settings=local_settin
 
 ## Creating Database Migrations
 
-When adding new fields to models, you will need to create a database migration. This migration will be ran on the server to update the database to the latest structure. After adding a field, you run the following command:
+When adding new fields to models, you will need to create a database migration. This migration will be performed on the server to update the database to the latest structure. After adding a field, you run the following command:
 
 ```bash
 python3 manage.py makemigrations --name <name of migration> <name of module where field was added> --settings=ais.local.settings
 ```
 
-Running this command will attempt to migrate your local database, specified by the settings in `ais.local.settings`. Since the development environment is ran in a docker-compose instance, you will not have access to a local database, making the above command fail. To counteract this, you can temporarily switch out the database engine, specific in `ais.local.settings`, to a dummy database, by switching out the `ENGINE` variable to `django.db.backends.dummy`.
+Running this command will attempt to migrate your local database, specified by the settings in `ais.local.settings`. Since the development environment runs in a docker-compose instance, you will not have access to a local database, making the above command fail. To counteract this, you can temporarily switch out the database engine, specified in `ais.local.settings`, to a dummy database, by switching out the `ENGINE` variable to `django.db.backends.dummy`.
 
 ## Scripts
 
