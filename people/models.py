@@ -46,6 +46,9 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True, verbose_name="Date of birth")
     gender = models.CharField(max_length=10, choices=GENDERS, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
+    armada_email = models.EmailField(
+        max_length=75, verbose_name="Armada e-mail address", null=True, blank=True
+    )
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
     other_dietary_restrictions = models.CharField(max_length=75, blank=True, null=True)
     no_dietary_restrictions = models.BooleanField(
