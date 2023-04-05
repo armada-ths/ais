@@ -643,6 +643,7 @@ def recruitment(request):
 
     return JsonResponse(data, safe=False)
 
+
 @permission_required("recruitment.view_recruitment_applications")
 def recruitment_data(request):
     """
