@@ -702,4 +702,4 @@ def recruitment_data(request):
         for app in applications
     ]
 
-    return json_to_csv_response("recruitment_data.csv", data)
+    return json_to_csv_response("recruitment_data", data)
