@@ -46,7 +46,6 @@ class ExtraField(models.Model):
             answer = CustomFieldAnswer.objects.filter(
                 custom_field=custom_field, user=user
             ).first()
-
             questions_with_answers.append((custom_field, answer))
         return questions_with_answers
 
