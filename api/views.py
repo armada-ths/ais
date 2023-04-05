@@ -700,6 +700,4 @@ def recruitment_data(request):
         for app in applications
     ]
 
-    print(data)
-
     return JsonResponse(data, safe=False)
