@@ -20,6 +20,8 @@ from django.utils.crypto import get_random_string
 import api.deserializers as deserializers
 import api.serializers as serializers
 
+from .util import json_to_csv_response
+
 from exhibitors.models import (
     Exhibitor,
     CatalogueIndustry,
@@ -700,4 +702,4 @@ def recruitment_data(request):
         for app in applications
     ]
 
-    return JsonResponse(data, safe=False)
+    return json_to_csv_response("recruitment_data.csv", data)
