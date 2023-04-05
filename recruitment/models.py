@@ -26,15 +26,17 @@ class ExtraField(models.Model):
                 custom_field=custom_field, user=user
             ).first()
 
-            arguments = CustomFieldArgument.objects.filter(
-                custom_field=custom_field
-            )
+            arguments = CustomFieldArgument.objects.filter(custom_field=custom_field)
 
             try:
-                argument = [argument.value for argument in list(arguments) if str(argument.id) == str(answer.answer)][0]
+                argument = [
+                    argument.value
+                    for argument in list(arguments)
+                    if str(argument.id) == str(answer.answer)
+                ][0]
             except:
                 argument = None
-            
+
             questions_with_answers.append((custom_field, argument))
         return questions_with_answers
 
@@ -44,7 +46,7 @@ class ExtraField(models.Model):
             answer = CustomFieldAnswer.objects.filter(
                 custom_field=custom_field, user=user
             ).first()
-            
+
             questions_with_answers.append((custom_field, answer))
         return questions_with_answers
 
