@@ -645,6 +645,12 @@ def recruitment(request):
 
 @permission_required("recruitment.view_recruitment_applications")
 def recruitment_data(request):
+    """
+    ais.armada.nu/api/recruitment_data?fair_year={FAIR_YEAR}
+    Returns anonymized statistics of recruitment applications.
+    If FAIR_YEAR is unset, defaults to the current fair.
+    If the fair year does not exist, return 500 error.
+    """
     fair_year = request.GET.get("fair_year") or None
     if fair_year:
         try:
