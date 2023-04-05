@@ -650,7 +650,7 @@ def recruitment(request):
 def recruitment_data(request):
     """
     ais.armada.nu/api/recruitment_data?fair_year={FAIR_YEAR}
-    Returns anonymized statistics of recruitment applications.
+    Returns anonymized statistics of recruitment applications as a CSV file.
     If FAIR_YEAR is unset, defaults to the current fair.
     If the fair year does not exist, return 500 error.
     """
