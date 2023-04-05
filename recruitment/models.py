@@ -16,6 +16,30 @@ class ExtraField(models.Model):
     def __str__(self):
         return "%d" % (self.id)
 
+    # Return the same as questions_with_answers_for_user, but map the answer id
+    # to the actual answer argument name. Basically instead of just an index
+    # representing the answer, get the actual argument the user selected (which is a string value).
+    def questions_with_answer_arguments_for_user(self, user):
+        questions_with_answers = []
+        for custom_field in self.customfield_set.all().order_by("position"):
+            answer = CustomFieldAnswer.objects.filter(
+                custom_field=custom_field, user=user
+            ).first()
+
+            arguments = CustomFieldArgument.objects.filter(custom_field=custom_field)
+
+            try:
+                argument = [
+                    argument.value
+                    for argument in list(arguments)
+                    if str(argument.id) == str(answer.answer)
+                ][0]
+            except:
+                argument = None
+
+            questions_with_answers.append((custom_field, argument))
+        return questions_with_answers
+
     def questions_with_answers_for_user(self, user):
         questions_with_answers = []
         for custom_field in self.customfield_set.all().order_by("position"):

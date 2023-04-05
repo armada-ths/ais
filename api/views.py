@@ -6,6 +6,7 @@ import platform
 import subprocess
 from collections import OrderedDict
 from datetime import datetime
+from itertools import chain
 
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import permission_required
@@ -673,33 +674,49 @@ def recruitment_data(request):
         else:
             return None
 
+    def get_questions(application):
+        return application.recruitment_period.application_questions.questions_with_answer_arguments_for_user(
+            application.user
+        )
+
     data = [
         OrderedDict(
-            [
-                ("status", app.status),
-                ("gender", with_profile(app.user, lambda profile: profile.gender)),
-                (
-                    "programme",
-                    with_profile(
-                        app.user,
-                        lambda profile: (profile.programme and profile.programme.name)
-                        or None,
+            chain(
+                [
+                    (question[0].__str__(), question[1].__str__())
+                    for question in get_questions(app)
+                ],
+                [
+                    ("status", app.status),
+                    (
+                        "profile_gender",
+                        with_profile(app.user, lambda profile: profile.gender),
                     ),
-                ),
-                (
-                    "preferred_language",
-                    with_profile(
-                        app.user,
-                        lambda profile: (
-                            profile.preferred_language
-                            and profile.preferred_language.name
-                        )
-                        or None,
+                    (
+                        "programme",
+                        with_profile(
+                            app.user,
+                            lambda profile: (
+                                profile.programme and profile.programme.name
+                            )
+                            or None,
+                        ),
                     ),
-                ),
-            ]
+                    (
+                        "profile_preferred_language",
+                        with_profile(
+                            app.user,
+                            lambda profile: (
+                                profile.preferred_language
+                                and profile.preferred_language.name
+                            )
+                            or None,
+                        ),
+                    ),
+                ],
+            )
         )
         for app in applications
     ]
 
-    return json_to_csv_response("recruitment_data.csv", data)
+    return json_to_csv_response("recruitment_data", data)
