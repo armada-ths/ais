@@ -674,17 +674,17 @@ def recruitment_data(request):
         else:
             return None
 
-    application = list(applications)[0]
-    questions = application.recruitment_period.application_questions.questions_with_answer_arguments_for_user(
-        application.user
-    )
+    def get_questions(application):
+        return application.recruitment_period.application_questions.questions_with_answer_arguments_for_user(
+            application.user
+        )
 
     data = [
         OrderedDict(
             chain(
                 [
                     (question[0].__str__(), question[1].__str__())
-                    for question in questions
+                    for question in get_questions(app)
                 ],
                 [
                     ("status", app.status),
