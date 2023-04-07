@@ -686,7 +686,10 @@ def recruitment_data(request):
                     (question[0].__str__(), question[1].__str__())
                     for question in get_questions(app)
                 ],
+                [("preferred_role_%d" % i, role) for (i, role) in enumerate(app.roles)],
                 [
+                    ("rating", app.rating),
+                    ("recommended_role", app.recommended_role),
                     ("status", app.status),
                     (
                         "profile_gender",
