@@ -17,5 +17,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: Slashgear/action-check-pr-title@v4.3.0
         with:
-          regexp: '^(feat|fix|chore|refactor|doc): .*$'
+          regexp: '^(feat|fix|chore|refactor|doc|pipeline): .*$'
           helpMessage: "Example: 'feat: example of title'"
