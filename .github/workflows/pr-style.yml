@@ -14,7 +14,8 @@ jobs:
   validate_title:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: dylanvann/check-pull-request-title@v1
+      - uses: actions/checkout@v2
+      - uses: Slashgear/action-check-pr-title@v4.3.0
         with:
-          pattern: '^(feat|fix|chore|refactor|doc): .*$'
+          regexp: '^(feat|fix|chore|refactor|doc): .*$'
+          helpMessage: "Example: 'feat: example of title'"
