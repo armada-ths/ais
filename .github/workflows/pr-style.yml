@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   validate_format:
+    name: 'Code should be formatted'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -12,6 +13,7 @@ jobs:
           options: "--check"
           src: "."
   validate_title:
+    name: 'Title should have valid prefix'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
