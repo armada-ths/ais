@@ -21,3 +21,15 @@ jobs:
         with:
           regexp: '^(feat|fix|chore|refactor|doc|pipeline): .*$'
           helpMessage: "Example: 'feat: example of title'"
+  check_pull_requests:
+    runs-on: ubuntu-latest
+    name: Check linked issues
+    permissions:
+      issues: read
+      pull-requests: write
+    steps:
+      - uses: nearform-actions/github-action-check-linked-issues@v1
+        id: check-linked-issues
+        with:
+          exclude-branches: "release/**, dependabot/**"
+          comment: false
