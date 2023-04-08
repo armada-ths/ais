@@ -57,25 +57,16 @@ def index(request, year=None):
     else:
         events = Event.objects.filter(fair=fair, published=True)
 
+    recruitment_period = RecruitmentPeriod.objects.filter(fair=fair).order_by(
+        "-start_date"
+    )
+
     return render(
         request,
         "fair/home.html",
         {
             "recruitment": {
-                "recruitment_periods": RecruitmentPeriod.objects.filter(
-                    fair=fair
-                ).order_by("-start_date"),
-                "roles": [
-                    {
-                        "parent_role": role,
-                        "child_roles": [
-                            child_role
-                            for child_role in Role.objects.all()
-                            if child_role.has_parent(role)
-                        ],
-                    }
-                    for role in Role.objects.filter(parent_role=None)
-                ],
+                "recruitment_periods": recruitment_period,
             },
             "events": events,
             "fair": fair,
