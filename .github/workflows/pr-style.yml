@@ -1,0 +1,23 @@
+name: Validate Pull Request Style
+
+on: [pull_request]
+
+jobs:
+  validate_format:
+    name: 'Code should be formatted'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "."
+  validate_title:
+    name: 'Title should have valid prefix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: Slashgear/action-check-pr-title@v4.3.0
+        with:
+          regexp: '^(feat|fix|chore|refactor|doc|pipeline): .*$'
+          helpMessage: "Example: 'feat: example of title'"
