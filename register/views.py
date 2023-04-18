@@ -98,7 +98,7 @@ def send_CR_confirmation_email(signature, deadline):
         			}
         		</style>
         		<div>
-        		      Thank you for submitting the complete registration for THS Armada 2022. The complete registration contract was signed by %s on the %s for %s.
+        		      Thank you for submitting the complete registration for THS Armada 2023. The complete registration contract was signed by %s on the %s for %s.
                       <br/><br/>
                       The complete registration is binding and you will be liable for all additional services selected at the last date of the registration (%s), provided that THS Armada is able to supply your organization with your choices.
                       <br/><br/>
@@ -115,7 +115,7 @@ def send_CR_confirmation_email(signature, deadline):
         str(deadline.strftime("%Y-%m-%d")),
     )
 
-    plain_text_message = """Thank you for submitting the complete registration for THS Armada 2022. The complete registration contract was signed by %s on the %s for %s.
+    plain_text_message = """Thank you for submitting the complete registration for THS Armada 2023. The complete registration contract was signed by %s on the %s for %s.
 
 The complete registration is binding and you will be liable for all additional services selected at the last date of the registration (%s), provided that THS Armada is able to supply your organization with your choices.
 
@@ -130,7 +130,7 @@ Please note that this is an automatically generated email. If you have any quest
     )
 
     email = EmailMultiAlternatives(
-        "Complete registration for THS Armada 2022",
+        "Complete registration for THS Armada 2023",
         plain_text_message,
         "noreply@armada.nu",
         [signature.company_contact.email_address],
