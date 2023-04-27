@@ -46,6 +46,30 @@ The web-server will setup everything and connect itself to a postgis database, a
 
 Remember to recomment the line `python manage.py migrate --settings=local_settings` in the `entrypoint.sh` file.
 
+## Accessing the local server
+
+After setting up the AIS with Docker, you can access it in a web browser with the address "localhost:3000"
+
+You will notice that there is no way to login to the system. This is because there are no users in the newly created, empty database. To solve this, you have to enter the Docker container and create a super user. To do this, (summarize process here)
+
+First list the Docker processes using the command ```docker ps```. Find the process for the ais-web Docker container and note down the value in field "CONTAINER ID".
+
+Then, you want to execute an interactive ```sh``` shell on the ais-web container, with the following command:
+
+```docker exec -it containerid sh```
+
+Where *containerid* is the container id of ais-web that you noted down. If done correctly, the command line prompt should now start with ```/usr/src/app #```.
+
+From the shell in the countainer, execute the python script "manage.py" with the argument "createsuperuser"
+
+```python manage.py createsuperuser```
+
+You will then be prompted to enter a username, email, and password. After doing so, you can log in.
+
+
+
+## Common issues
+
 ## Scripts
 
 A number of scripts are available in the scripts folder. Others can be run with `manage.py [scriptname]`. Run `manage.py help` to list what scripts are available through manage.py
