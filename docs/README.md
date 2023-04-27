@@ -74,13 +74,13 @@ You will then be prompted to enter a username, email, and password. After doing 
 
 **Solution:** Most likely, you haven't created a fair yet. To do so, follow these steps:
 
-1. Go to the admin page (localhost:3000/admin/)
+1. Go to the admin page (```localhost:3000/admin/```)
 
 2. Log in there again using your super user account, if needed.
 
 3. On the admin page, find the "FAIR" section, and press "Add" next to "Fairs" to add a new fair.
 
-4. Now you need to fill out some information. Fill out the necessary fields (Registration start date & end date, Complete registration start date & end date). Make sure end dates come after start dates. Tick the "Current" box.
+4. Now you need to fill out some information. Fill out the necessary fields (Registration start date & end date, Complete registration start date & end date). Make sure end dates come after start dates. Tick the "Current" box, and press save at the bottom of the page. The fair will be created, and you can go back to ```localhost:3000``` to see the landing page for the fair.
 
 ## Scripts
 
