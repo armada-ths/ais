@@ -50,6 +50,8 @@ Remember to recomment the line `python manage.py migrate --settings=local_settin
 
 After setting up the AIS with Docker, you can access it in a web browser with the address "localhost:3000"
 
+### Creating a super user account
+
 You will notice that there is no way to login to the system. This is because there are no users in the newly created, empty database. To solve this, you have to enter the Docker container and create a super user. To do this, (summarize process here)
 
 First list the Docker processes using the command ```docker ps```. Find the process for the ais-web Docker container and note down the value in field "CONTAINER ID".
@@ -66,9 +68,19 @@ From the shell in the countainer, execute the python script "manage.py" with the
 
 You will then be prompted to enter a username, email, and password. After doing so, you can log in.
 
+### Common issues
 
+**Issue:** "I logged into my locally hosted AIS instance for the first time; but I can only see an error page!"
 
-## Common issues
+**Solution:** Most likely, you haven't created a fair yet. To do so, follow these steps:
+
+1. Go to the admin page (localhost:3000/admin/)
+
+2. Log in there again using your super user account, if needed.
+
+3. On the admin page, find the "FAIR" section, and press "Add" next to "Fairs" to add a new fair.
+
+4. Now you need to fill out some information. Fill out the necessary fields (Registration start date & end date, Complete registration start date & end date). Make sure end dates come after start dates. Tick the "Current" box.
 
 ## Scripts
 
