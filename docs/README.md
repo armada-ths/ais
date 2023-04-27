@@ -52,17 +52,17 @@ After setting up the AIS with Docker, you can access it in a web browser with th
 
 ### Creating a super user account
 
-You will notice that there is no way to login to the system. This is because there are no users in the newly created, empty database. To solve this, you have to enter the Docker container and create a super user. To do this, (summarize process here)
+You will notice that there is no way to login to the system. This is because there are no users in the newly created, empty database. To solve this, you have to enter the Docker container and create a super user, by following the steps below.
 
-First list the Docker processes using the command ```docker ps```. Find the process for the ais-web Docker container and note down the value in field "CONTAINER ID".
+1. First list the Docker processes using the command ```docker ps```. Find the process for the ais-web Docker container and note down the value in field "CONTAINER ID".
 
-Then, you want to execute an interactive ```sh``` shell on the ais-web container, with the following command:
+2. Then, you want to execute an interactive ```sh``` shell on the ais-web container, with the following command:
 
-```docker exec -it containerid sh```
+    ```docker exec -it containerid sh```
 
-Where *containerid* is the container id of ais-web that you noted down. If done correctly, the command line prompt should now start with ```/usr/src/app #```.
+    Where *containerid* is the container id of ais-web that you noted down. If done correctly, the command line prompt should now start with ```/usr/src/app #```.
 
-From the shell in the countainer, execute the python script "manage.py" with the argument "createsuperuser"
+3. From the shell in the countainer, execute the python script "manage.py" with the argument "createsuperuser"
 
 ```python manage.py createsuperuser```
 
