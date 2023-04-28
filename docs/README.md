@@ -48,7 +48,7 @@ Remember to recomment the line `python manage.py migrate --settings=local_settin
 
 ## Creating Database Migrations
 
-When adding new fields to models, you will need to create a database migration. This migration will be performed on the server to update the database to the latest structure.After adding a field, and making sure the docker instance of AIS is up and running through docker compose, you run the following command:
+When adding new fields to models, you will need to create a database migration. This migration will be performed on the server to update the database to the latest structure. After adding a field, and making sure the docker instance of AIS is up and running through docker compose, you run the following command:
 
 ```bash
 ./make-migrations <name of migration> <name of module where field was added>
