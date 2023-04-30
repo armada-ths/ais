@@ -30,21 +30,23 @@ DB_HOST=db
 
 ### Section 4: Execution of the Server
 
-The server will run in a `docker compose` instance. Before starting the server, go to the `entrypoint.sh` file and uncomment the following line:
+#### Prepare the production database copy
 
-```sh
-python manage.py migrate --settings=local_settings
-```
+You can choose to use a copy of the production database for your local development. Create a directory called `ais-developer-database.sql` in the root directory, and add the production database copy `init.sql` to it.
 
-To start the server, run the following command:
+#### Run the server
+
+The server will run in a `docker compose` instance. To start the server, run the following command:
 
 `docker compose up`
 
-The web-server will setup everything and connect itself to a postgis database, after which it will create the appropriate tables automatically. The server will listen for code changes, and restart itself thereafter (that is, you don't need to run this command after every change you make). If everything went right you see the output:
+The web-server will setup everything and connect itself to a postgis database. The server will listen for code changes, and restart itself thereafter (that is, you don't need to run this command after every change you make). If everything went right you see the output:
 
 > `ais-web-1  | Starting development server at http://0.0.0.0:3000/`
 
-Remember to recomment the line `python manage.py migrate --settings=local_settings` in the `entrypoint.sh` file.
+#### Migrate the database and create a super user
+
+The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user.
 
 ## Accessing the local server
 
