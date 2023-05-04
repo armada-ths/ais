@@ -11,8 +11,8 @@ By participating in this project, you agree to uphold the (Code of Conduct)[ais/
 1. Find an issue to work on and assign yourself to it. If an issue does not
    exist for what you want to work on, create the issue first.
 2. Push your (unfinished) work early so others can see it. You need to create a
-   branch in the following style: `<name>/<type>/<description>`, where `<name>` is your own surname, `<type>` is one of: `f` for feature, `h` for (hot)fix, `d` for
-   documentation, `c` for chorse, or `r` for refactor. E.g. `adam/f/add-fair-button-in-profile` for a PR that adds
+   branch in the following style: `<name>/<type>/<description>`, where `<name>` is your own surname, `<type>` is one of: `feat` for feature, `hot` for (hot)fix, `doc` for
+   documentation, `chore` for chores, or `refactor` for refactor. E.g. `adam/f/add-fair-button-in-profile` for a PR that adds
    a fair button in the profile page.
 3. Right away, open a PR on GitHub based on that branch. Assign yourself to the
    PR, and add a "draft" label to the PR if you don't think it's ready to be
