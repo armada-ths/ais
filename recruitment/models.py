@@ -393,7 +393,7 @@ class Role(models.Model):
         return False
 
     def __str__(self):
-        return self.recruitment_period.name + " – " + self.name
+        return self.recruitment_period.__str__() + " – " + self.name
 
     def users(self):
         return [
