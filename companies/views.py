@@ -8,6 +8,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.conf import settings
+from django.core.paginator import Paginator
+from django.core.cache import cache
 
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
@@ -329,113 +331,132 @@ def companies_list(request, year):
         for x in Exhibitor.objects.select_related("company").filter(fair=exhibitor_fair)
     ]
 
-    companies_modified = []
-
-    for company in companies:
-        exhibitor = company in exhibitors
-
-        if has_filtering:
-            if not exhibitor and form.cleaned_data["exhibitors"] == "YES":
-                continue
-            if exhibitor and form.cleaned_data["exhibitors"] == "NO":
-                continue
-
-            if len(form.cleaned_data["contracts_positive"]) != 0:
-                if company not in signatures:
+    companies_modified = cache.get(
+        "companies_modified"
+    )  # Make sure that cached value is up to date
+    if not companies_modified:
+        companies_modified = []
+        for company in companies:
+            exhibitor = company in exhibitors
+            if has_filtering:
+                if not exhibitor and form.cleaned_data["exhibitors"] == "YES":
                     continue
-
-                if (
-                    len(
-                        [
-                            signature
-                            for signature in signatures[company]
-                            if signature.contract
-                            in form.cleaned_data["contracts_positive"]
-                        ]
-                    )
-                    == 0
-                ):
+                if exhibitor and form.cleaned_data["exhibitors"] == "NO":
                     continue
-
-            if len(form.cleaned_data["contracts_negative"]) > 0:
-                if (
-                    company in signatures
-                    and len(
-                        [
-                            signature
-                            for signature in signatures[company]
-                            if signature.contract
-                            in form.cleaned_data["contracts_negative"]
-                        ]
-                    )
-                    != 0
-                ):
-                    continue
-
-            if len(form.cleaned_data["users"]) != 0:
-                if company not in responsibles:
-                    continue
-
-                found = False
-
-                for r in responsibles[company]:
+                if len(form.cleaned_data["contracts_positive"]) != 0:
+                    if company not in signatures:
+                        continue
                     if (
-                        len([u for u in r["users"] if u in form.cleaned_data["users"]])
-                        != 0
+                        len(
+                            [
+                                signature
+                                for signature in signatures[company]
+                                if signature.contract
+                                in form.cleaned_data["contracts_positive"]
+                            ]
+                        )
+                        == 0
                     ):
-                        found = True
-                        break
+                        continue
 
-                if not found:
-                    continue
+                    if len(form.cleaned_data["contracts_negative"]) > 0:
+                        if (
+                            company in signatures
+                            and len(
+                                [
+                                    signature
+                                    for signature in signatures[company]
+                                    if signature.contract
+                                    in form.cleaned_data["contracts_negative"]
+                                ]
+                            )
+                            != 0
+                        ):
+                            continue
 
-        # Related company contacts
-        contacts = []
-        for contact in company.companycontact_set.values():
-            contacts.append(
+                    if len(form.cleaned_data["users"]) != 0:
+                        if company not in responsibles:
+                            continue
+
+                        found = False
+
+                        for r in responsibles[company]:
+                            if (
+                                len(
+                                    [
+                                        u
+                                        for u in r["users"]
+                                        if u in form.cleaned_data["users"]
+                                    ]
+                                )
+                                != 0
+                            ):
+                                found = True
+                                break
+
+                        if not found:
+                            continue
+
+            # Related company contacts
+            contacts = []
+            for contact in company.companycontact_set.values():
+                contacts.append(
+                    {
+                        "name": contact["first_name"] + " " + contact["last_name"],
+                        "emails": [
+                            contact["email_address"],
+                            contact["alternative_email_address"],
+                        ],
+                        "numbers": [
+                            contact["mobile_phone_number"],
+                            contact["work_phone_number"],
+                        ],
+                    }
+                )
+                # The numbers all start with +46, it would be nice to able to search numbers
+                # without the country code so for every number +46701234567, we append 0701234567.
+                # Note: some numbers do not have swedish country codes, and cannot be searched
+                # for with a leading 0.
+                for number in contacts[-1]["numbers"]:
+                    if number is not None and number[:3] == "+46":
+                        contacts[-1]["numbers"].append(number.replace("+46", "0"))
+
+            companies_modified.append(
                 {
-                    "name": contact["first_name"] + " " + contact["last_name"],
-                    "emails": [
-                        contact["email_address"],
-                        contact["alternative_email_address"],
-                    ],
-                    "numbers": [
-                        contact["mobile_phone_number"],
-                        contact["work_phone_number"],
-                    ],
+                    "pk": company.pk,
+                    "name": company.name,
+                    "contacts": contacts,
+                    "status": None,  # TODO: fix status!
+                    "groups": company.groups.filter(fair=fair),
+                    "responsibles": responsibles[company]
+                    if company in responsibles
+                    else None,
+                    "signatures": signatures[company]
+                    if company in signatures
+                    else None,
+                    "exhibitor": exhibitor,
+                    "show_externally": company.show_externally,
                 }
             )
-            # The numbers all start with +46, it would be nice to able to search numbers
-            # without the country code so for every number +46701234567, we append 0701234567.
-            # Note: some numbers do not have swedish country codes, and cannot be searched
-            # for with a leading 0.
-            for number in contacts[-1]["numbers"]:
-                if number is not None and number[:3] == "+46":
-                    contacts[-1]["numbers"].append(number.replace("+46", "0"))
 
-        companies_modified.append(
-            {
-                "pk": company.pk,
-                "name": company.name,
-                "contacts": contacts,
-                "status": None,  # TODO: fix status!
-                "groups": company.groups.filter(fair=fair),
-                "responsibles": responsibles[company]
-                if company in responsibles
-                else None,
-                "signatures": signatures[company] if company in signatures else None,
-                "exhibitor": exhibitor,
-                "show_externally": company.show_externally,
-            }
-        )
+    cache.set("companies_modified", companies_modified)
+    companies_id = cache.get("companies_id")
+    if not companies_id:
+        companies_id = list(range(0, len(companies_modified)))
+        cache.set("companies_id", companies_id)
+
+    COMPANIES_PER_PAGE = 10
+    companies_paginator = Paginator(companies_modified, COMPANIES_PER_PAGE)
+    page_number = request.GET.get("page")
+    page_obj = companies_paginator.get_page(page_number)
 
     return render(
         request,
         "companies/companies_list.html",
         {
             "fair": fair,
-            "companies": companies_modified,
-            "companies_ids": [x["pk"] for x in companies_modified],
+            "companies": page_obj,
+            "companies_ids": companies_id,
             "form": form,
         },
     )

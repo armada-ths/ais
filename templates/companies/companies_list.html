@@ -157,6 +157,24 @@
 	</table>
 </div>
 
+<div class="pagination">
+    <span class="step-links">
+        {% if companies.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ companies.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ companies.number }} of {{ companies.paginator.num_pages }}.
+        </span>
+
+        {% if companies.has_next %}
+            <a href="?page={{ companies.next_page_number }}">next</a>
+            <a href="?page={{ companies.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
 <a href="{% url 'send_order_summaries' fair.year %}?id={{ companies_ids | join:"&id=" }}" class="btn btn-primary pull-right"onclick="return confirm('Press OK to send out e-mail messages with confirmations to all companies in list above.')">Send order confirmations</a>
 
 
