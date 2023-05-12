@@ -2,14 +2,15 @@ body {
 	background-color: #2d2d2c;
 	color: #000;
 }
+
 @font-face {
-  font-family: "Bebas Neue";
-  src: url("./fonts/BebasNeue-Regular.otf");
+	font-family: "Bebas Neue";
+	src: url("./fonts/BebasNeue-Regular.otf");
 }
 
 @font-face {
-  font-family: "Lato";
-  src: url("./fonts/Lato-Regular.ttf");
+	font-family: "Lato";
+	src: url("./fonts/Lato-Regular.ttf");
 }
 
 p {
@@ -21,7 +22,7 @@ input {
 	font-family: "Lato";
 	font-size: 4em;
 	max-height: 100px;
-    margin-top: 5px;
+	margin-top: 5px;
 }
 
 
@@ -30,7 +31,9 @@ h1 {
 	font-size: 4em;
 }
 
-h2, h3, h4 {
+h2,
+h3,
+h4 {
 	font-family: "Bebas Neue";
 	font-size: 3em;
 }
@@ -71,8 +74,8 @@ label {
 .main-logo {
 	max-width: 100%;
 	padding-top: -1200px;
-	margin-left:auto;
-	margin-right:auto;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .main-logo-small {
@@ -80,7 +83,8 @@ label {
 	padding-top: 30px;
 }
 
-.form-holder, .endings {
+.form-holder,
+.endings {
 	margin-top: 4em;
 }
 
@@ -88,22 +92,33 @@ label {
 	margin-top: 20px;
 }
 
-a, a:hover, a:active, a:visited {
+a,
+a:hover,
+a:active,
+a:visited {
 	color: #00d790;
+	text-decoration: underline;
 }
 
-.btn-success, .btn-success:hover, .btn-success:active {
+.btn-success,
+.btn-success:hover,
+.btn-success:active {
 	background-color: #00d790;
 	border-color: #00b570;
 }
 
-.btn-melon, .btn-melon:hover, .btn-melon:active {
+.btn-melon,
+.btn-melon:hover,
+.btn-melon:active {
 	background-color: #e73953;
 	border-color: #c51731;
 	color: #fff;
 }
 
-.attention, .attention:hover, .attention:active, .attention:visited {
+.attention,
+.attention:hover,
+.attention:active,
+.attention:visited {
 	color: #e73953;
 	text-decoration-color: #e73953;
 }
@@ -154,6 +169,6 @@ input[type="url"]:focus,
 input[type="search"]:focus,
 input[type="tel"]:focus,
 input[type="color"]:focus,
-.uneditable-input:focus {   
-  border-color: #00d790;
+.uneditable-input:focus {
+	border-color: #00d790;
 }
