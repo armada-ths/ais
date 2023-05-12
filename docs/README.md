@@ -84,14 +84,6 @@ You will then be prompted to enter a username, email, and password. After doing 
 
 4. Now you need to fill out some information. Fill out the necessary fields (Registration start date & end date, Complete registration start date & end date). Make sure end dates come after start dates. Tick the "Current" box, and press save at the bottom of the page. The fair will be created, and you can go back to ```localhost:3000``` to see the landing page for the fair.
 
-## Creating Database Migrations
-
-When adding new fields to models, you will need to create a database migration. This migration will be performed on the server to update the database to the latest structure. After adding a field, and making sure the docker instance of AIS is up and running through docker compose, you run the following command:
-
-```bash
-./make-migrations <name of migration> <name of module where field was added>
-```
-
 ## Scripts
 
 A number of scripts are available in the scripts folder. Others can be run with `manage.py [scriptname]`. Run `manage.py help` to list what scripts are available through manage.py
