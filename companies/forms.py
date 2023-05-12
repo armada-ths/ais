@@ -1,6 +1,6 @@
 import re, datetime
 
-from django.forms import ModelForm, HiddenInput, BaseModelFormSet
+from django.forms import ModelForm, HiddenInput, BaseModelFormSet, Widget
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
@@ -311,6 +311,10 @@ class UserForm(UserCreationForm):
         fields = ["password1", "password2"]
 
 
+class CustomCompanyField(Widget):
+    template_name = "companies/widget/custom_company_field.html"
+
+
 class CreateCompanyContactForm(ModelForm):
     def clean(self):
         super(CreateCompanyContactForm, self).clean()
@@ -339,6 +343,7 @@ class CreateCompanyContactForm(ModelForm):
         super(CreateCompanyContactForm, self).__init__(*args, **kwargs)
         self.fields["company"].queryset = Company.objects.filter(show_externally=True)
         self.fields["company"].label = "Company"
+        self.fields["company"].widget = CustomCompanyField()
 
     class Meta:
         model = CompanyContact

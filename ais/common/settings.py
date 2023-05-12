@@ -26,6 +26,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
+    "django.forms",
     "hijack",
     "hijack.contrib.admin",
     "corsheaders",
@@ -75,6 +76,7 @@ MIDDLEWARE = [
 USE_ETAGS = True
 
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 TEMPLATES = [
     {
