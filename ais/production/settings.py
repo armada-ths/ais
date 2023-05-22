@@ -18,62 +18,7 @@ DEBUG = False
 # since we need to accomodate the KTH OpenID Connect integration.
 ROOT_URLCONF = "ais.production.urls"
 
-# SENTRY
-RAVEN_CONFIG = {
-    "dsn": "https://%s:%s@sentry.io/%s"
-    % (
-        os.environ.get("SENTRY_USERNAME"),
-        os.environ.get("SENTRY_PASSWORD"),
-        os.environ.get("SENTRY_APPID"),
-    ),
-    "processors": ("raven.processors.Processor",),
-}
-
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": True,
-    "formatters": {
-        "verbose": {
-            "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
-        },
-    },
-    "handlers": {
-        "sentry": {
-            "level": "ERROR",  # To capture more than ERROR, change to WARNING, INFO, etc.
-            "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-            "tags": {"custom-tag": "x"},
-        },
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-    },
-    "loggers": {
-        "root": {
-            "level": "WARNING",
-            "handlers": ["sentry"],
-        },
-        "django.db.backends": {
-            "level": "ERROR",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "raven": {
-            "level": "DEBUG",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "sentry.errors": {
-            "level": "DEBUG",
-            "handlers": ["console"],
-            "propagate": False,
-        },
-    },
-}
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
