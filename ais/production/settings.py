@@ -18,18 +18,6 @@ DEBUG = False
 # since we need to accomodate the KTH OpenID Connect integration.
 ROOT_URLCONF = "ais.production.urls"
 
-# Use a full-fledged database instead of SQLite.
-DATABASES = {
-    "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": os.environ.get("DB_NAME", "ais_dev"),
-        "USER": os.environ.get("DB_USERNAME", "ais_dev"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", "ais_dev"),
-        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
-    }
-}
-
 # SENTRY
 RAVEN_CONFIG = {
     "dsn": "https://%s:%s@sentry.io/%s"
@@ -86,6 +74,8 @@ LOGGING = {
         },
     },
 }
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 # The system sends out system-related emails to these addresses.
 ADMINS = MANAGERS = (("System", "system@armada.nu"),)
