@@ -456,8 +456,11 @@ def companies_new(request, year):
 
 @permission_required("companies.base")
 def companies_view(request, year, pk):
+    print("Request company", request, year, pk)
     fair = get_object_or_404(Fair, year=year)
+    print("Fair", fair)
     company = get_object_or_404(Company, pk=pk)
+    print("Company", company)
 
     initially_selected = []
 
