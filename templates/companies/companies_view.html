@@ -113,8 +113,8 @@
 						{% endif %}
 
 						<li><strong>E-mail address:</strong> <a href="mailto:{{ contact.email_address }}">{{ contact.email_address }}</a></li>
-						{% if contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> <a href="tel:{{ contact.mobile_phone_number }}">{{ contact.mobile_phone_number }}</a>{% if profile.slack_id %} (<a onclick="slack_call('{{ contact.mobile_phone_number }}');">Slack</a>){% endif %}</li>{% endif %}
-						{% if contact.work_phone_number %}<li><strong>Work phone number:</strong> <a href="tel:{{ contact.work_phone_number }}">{{ contact.work_phone_number }}</a>{% if profile.slack_id %} (<a onclick="slack_call('{{ contact.work_phone_number }}');">Slack</a>){% endif %}</li>{% endif %}
+						{% if contact.mobile_phone_number %}<li><strong>Mobile phone number:</strong> <a href="tel:{{ contact.mobile_phone_number }}">{{ contact.mobile_phone_number }}</a>{% if profile and profile.slack_id %} (<a onclick="slack_call('{{ contact.mobile_phone_number }}');">Slack</a>){% endif %}</li>{% endif %}
+						{% if contact.work_phone_number %}<li><strong>Work phone number:</strong> <a href="tel:{{ contact.work_phone_number }}">{{ contact.work_phone_number }}</a>{% if profile and profile.slack_id %} (<a onclick="slack_call('{{ contact.work_phone_number }}');">Slack</a>){% endif %}</li>{% endif %}
 					</ul>
 				</div>
 			</div>
