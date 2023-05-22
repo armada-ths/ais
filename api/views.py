@@ -6,8 +6,10 @@ import platform
 import subprocess
 from collections import OrderedDict
 from datetime import datetime
+from itertools import chain
 
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -19,6 +21,8 @@ from django.utils.crypto import get_random_string
 import api.deserializers as deserializers
 import api.serializers as serializers
 
+from .util import json_to_csv_response
+
 from exhibitors.models import (
     Exhibitor,
     CatalogueIndustry,
@@ -28,7 +32,7 @@ from exhibitors.models import (
     CatalogueCompetence,
 )  # CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
-from fair.models import Partner, Fair, current_fair
+from fair.models import Partner, Fair, OrganizationGroup, current_fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
@@ -321,6 +325,7 @@ def partners(request):
     return JsonResponse(data, safe=False)
 
 
+# Todo: Deprecate the usage of this serializer (used by armada.nu)
 @cache_page(60 * 5)
 def organization(request):
     """
@@ -338,6 +343,42 @@ def organization(request):
 
     data = [serializers.organization_group(request, group) for group in groups]
     return JsonResponse(data, safe=False)
+
+
+@cache_page(60 * 5)
+def organization_v2(request):
+    fair = get_object_or_404(Fair, current=True)
+    groups = OrganizationGroup.objects.filter(fair=fair)
+    people = lambda group: [
+        serializers.person_v2(
+            user,
+        )
+        for user in RecruitmentApplication.objects.select_related("user")
+        .filter(
+            delegated_role__organization_group=group,
+            status="accepted",
+            recruitment_period__fair=fair,
+        )
+        .order_by(
+            "delegated_role__organization_group",
+            "recruitment_period__start_date",
+            "delegated_role",
+            "user__first_name",
+            "user__last_name",
+        )
+    ]
+
+    result = [
+        OrderedDict(
+            [
+                ("name", group.name),
+                ("people", people(group)),
+            ]
+        )
+        for group in groups
+    ]
+
+    return JsonResponse(result, safe=False)
 
 
 def status(request):
@@ -641,3 +682,81 @@ def recruitment(request):
         )
 
     return JsonResponse(data, safe=False)
+
+
+@permission_required("recruitment.view_recruitment_applications")
+def recruitment_data(request):
+    """
+    ais.armada.nu/api/recruitment_data?fair_year={FAIR_YEAR}
+    Returns anonymized statistics of recruitment applications as a CSV file.
+    If FAIR_YEAR is unset, defaults to the current fair.
+    If the fair year does not exist, return 500 error.
+    """
+    fair_year = request.GET.get("fair_year") or None
+    if fair_year:
+        try:
+            fair = Fair.objects.get(year=fair_year)
+        except:
+            return HttpResponse(status=500)
+    else:
+        fair = Fair.objects.get(current=True)
+
+    applications = RecruitmentApplication.objects.filter(
+        recruitment_period__in=RecruitmentPeriod.objects.filter(fair=fair)
+    )
+
+    def with_profile(user, callback):
+        if user.profile:
+            return callback(user.profile)
+        else:
+            return None
+
+    def get_questions(application):
+        return application.recruitment_period.application_questions.questions_with_answer_arguments_for_user(
+            application.user
+        )
+
+    data = [
+        OrderedDict(
+            chain(
+                [
+                    (question[0].__str__(), question[1].__str__())
+                    for question in get_questions(app)
+                ],
+                [("preferred_role_%d" % i, role) for (i, role) in enumerate(app.roles)],
+                [
+                    ("rating", app.rating),
+                    ("recommended_role", app.recommended_role),
+                    ("status", app.status),
+                    (
+                        "profile_gender",
+                        with_profile(app.user, lambda profile: profile.gender),
+                    ),
+                    (
+                        "programme",
+                        with_profile(
+                            app.user,
+                            lambda profile: (
+                                profile.programme and profile.programme.name
+                            )
+                            or None,
+                        ),
+                    ),
+                    (
+                        "profile_preferred_language",
+                        with_profile(
+                            app.user,
+                            lambda profile: (
+                                profile.preferred_language
+                                and profile.preferred_language.name
+                            )
+                            or None,
+                        ),
+                    ),
+                ],
+            )
+        )
+        for app in applications
+    ]
+
+    return json_to_csv_response("recruitment_data", data)

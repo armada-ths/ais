@@ -1,0 +1,26 @@
+name: Validate Pull Request Style
+
+on: [pull_request]
+
+jobs:
+  validate_format:
+    name: Code should be formatted
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "."
+  check_pull_requests:
+    name: Require one linked issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+      pull-requests: write
+    steps:
+      - uses: nearform-actions/github-action-check-linked-issues@v1
+        id: check-linked-issues
+        with:
+          exclude-branches: "release/**, dependabot/**"
+          comment: false
