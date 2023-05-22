@@ -32,7 +32,7 @@ from exhibitors.models import (
     CatalogueCompetence,
 )  # CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
-from fair.models import Partner, Fair, current_fair
+from fair.models import Partner, Fair, OrganizationGroup, current_fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
@@ -325,6 +325,7 @@ def partners(request):
     return JsonResponse(data, safe=False)
 
 
+# Todo: Deprecate the usage of this serializer (used by armada.nu)
 @cache_page(60 * 5)
 def organization(request):
     """
@@ -342,6 +343,42 @@ def organization(request):
 
     data = [serializers.organization_group(request, group) for group in groups]
     return JsonResponse(data, safe=False)
+
+
+@cache_page(60 * 5)
+def organization_v2(request):
+    fair = get_object_or_404(Fair, current=True)
+    groups = OrganizationGroup.objects.filter(fair=fair)
+    people = lambda group: [
+        serializers.person_v2(
+            user,
+        )
+        for user in RecruitmentApplication.objects.select_related("user")
+        .filter(
+            delegated_role__organization_group=group,
+            status="accepted",
+            recruitment_period__fair=fair,
+        )
+        .order_by(
+            "delegated_role__organization_group",
+            "recruitment_period__start_date",
+            "delegated_role",
+            "user__first_name",
+            "user__last_name",
+        )
+    ]
+
+    result = [
+        OrderedDict(
+            [
+                ("name", group.name),
+                ("people", people(group)),
+            ]
+        )
+        for group in groups
+    ]
+
+    return JsonResponse(result, safe=False)
 
 
 def status(request):
