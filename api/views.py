@@ -32,7 +32,7 @@ from exhibitors.models import (
     CatalogueCompetence,
 )  # CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
-from fair.models import Partner, Fair, OrganizationGroup, current_fair
+from fair.models import Partner, Fair, FairDay, OrganizationGroup, current_fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
@@ -381,24 +381,31 @@ def organization_v2(request):
     return JsonResponse(result, safe=False)
 
 
-def status(request):
-    hostname = platform.node()
-    python_version = platform.python_version()
-    git_hash = (
-        subprocess.check_output("cd ~/git && git rev-parse HEAD", shell=True)
-        .decode("utf-8")
-        .strip()
+def dates(request):
+    """
+    GET date of fair, ticket deadline, IR and FR start and end dates
+    """
+    fair = Fair.objects.get(current=True)
+    days = FairDay.objects.filter(fair=fair)
+
+    return JsonResponse(
+        {
+            "fair": {
+                "description": fair.description,
+                "days": [day.date for day in days],
+            },
+            "ticket": {"end": fair.companies_ticket_deadline},
+            "ir": {
+                "start": fair.registration_start_date,
+                "end": fair.registration_end_date,
+            },
+            "fr": {
+                "start": fair.complete_registration_start_date,
+                "end": fair.complete_registration_close_date,
+            },
+        },
+        safe=False,
     )
-    data = OrderedDict(
-        [
-            ("status", "OK"),
-            ("time", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-            ("hostname", hostname),
-            ("commit", git_hash),
-            ("python_version", python_version),
-        ]
-    )
-    return JsonResponse(data, safe=False)
 
 
 @csrf_exempt
