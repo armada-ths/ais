@@ -19,6 +19,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 INSTALLED_APPS = (
     "whitenoise.runserver_nostatic",
+    "magic_link",
+    "ebhealthcheck.apps.EBHealthCheckConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
