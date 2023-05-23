@@ -381,7 +381,7 @@ def organization_v2(request):
     return JsonResponse(result, safe=False)
 
 
-def status(request):
+def dates(request):
     """
     GET date of fair, ticket deadline, IR and FR start and end dates
     """
