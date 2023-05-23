@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from .models import *
 
@@ -22,8 +23,21 @@ class RoleApplicationInline(admin.TabularInline):
     model = RoleApplication
 
 
+class RecruitmentApplicationForm(forms.ModelForm):
+    class Meta:
+        model = RecruitmentApplication
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(RecruitmentApplicationForm, self).__init__(*args, **kwargs)
+        self.fields["delegated_role"].queryset = Role.objects.filter(
+            organization_group__fair__current=True
+        )
+
+
 class RecruitmentApplicationAdmin(admin.ModelAdmin):
     inlines = [RoleApplicationInline]
+    form = RecruitmentApplicationForm
 
 
 @admin.register(Role)

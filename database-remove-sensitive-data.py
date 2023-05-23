@@ -1,10 +1,14 @@
 # To remove sensitive data from the AIS for developer purpose run each of these three scripts in the Django Python shell
 # Sara Gustafsson, 2019
 
+import django
+
+django.setup()
+
 from recruitment.models import *
 from fair.models import *
 
-remove_years = ["2016", "2017", "2018", "2019", "2020", "2021"]
+remove_years = ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"]
 for year in remove_years:
     recruitment_periods = RecruitmentPeriod.objects.filter(fair__year=year)
     for period in recruitment_periods:
@@ -23,7 +27,7 @@ for year in remove_years:
 from recruitment.models import *
 from fair.models import *
 
-year = "2021"
+year = "2023"
 remove_periods = ["Operations Team", "Developer", "Project Manager", "Project Group"]
 for period in remove_periods:
     print(period)
@@ -44,7 +48,7 @@ for period in remove_periods:
 
 from recruitment.models import *
 
-recruitment_period = RecruitmentPeriod.objects.filter(fair__year="2019", name="Host")
+recruitment_period = RecruitmentPeriod.objects.filter(fair__year="2013", name="Host")
 applications = RecruitmentApplication.objects.filter(
     recruitment_period=recruitment_period
 )
