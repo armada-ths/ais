@@ -9,6 +9,8 @@ from ais.common.settings import *
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
+ALLOWED_HOSTS = [".armada.nu", "localhost", "armada.nu"]
+
 DEBUG = False
 
 # The URL scheme is slightly different in a production environment
