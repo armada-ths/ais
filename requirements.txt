@@ -24,3 +24,4 @@ postgis==1.0.4
 django-storages==1.12.3
 boto3==1.21.4
 django-cors-headers
+django-ebhealthcheck==2.0.2
