@@ -16,7 +16,7 @@ urlpatterns = [
     url(r"^questions/?$", views.questions),
     url(r"^recruitment/$", views.recruitment),
     url(r"^recruitment_data/$", views.recruitment_data),
-    url(r"^status/$", views.status),
+    url(r"^dates/$", views.dates),
     url(r"^student_profile$", views.student_profile),
     url(r"^matching/$", views.matching),
     url(r"^matching/choices$", views.matching_choices),
