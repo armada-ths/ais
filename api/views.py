@@ -37,6 +37,7 @@ from matching.models import StudentQuestionBase as QuestionBase, WorkField, Surv
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
 from student_profiles.models import StudentProfile, MatchingResult
+from companies.models import Company
 
 
 def root(request):
@@ -341,6 +342,15 @@ def organization(request):
     groups = [group for group in all_groups if group in role_groups]
 
     data = [serializers.organization_group(request, group) for group in groups]
+    return JsonResponse(data, safe=False)
+
+
+def companies(request):
+    """
+    Returns a query of customizable amount of ccompanies (default= 10) based on user input
+    """
+    companies = Company.objects.all()
+    data = [serializers.companies(request, companies) for company in companies]
     return JsonResponse(data, safe=False)
 
 
