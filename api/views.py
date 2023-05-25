@@ -8,7 +8,7 @@ from collections import OrderedDict
 from datetime import datetime
 from itertools import chain
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -38,6 +38,7 @@ from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
 from student_profiles.models import StudentProfile, MatchingResult
 from companies.models import Company
+from magic_link.models import MagicLink
 
 
 def root(request):
@@ -324,6 +325,14 @@ def partners(request):
     partners = Partner.objects.filter(fair=fair).order_by("-main_partner")
     data = [serializers.partner(request, partner) for partner in partners]
     return JsonResponse(data, safe=False)
+
+
+def create_magic_link(request):
+    user = User.objects.get(first_name='Didrik')
+    link = MagicLink.objects.create(user=user, redirect_to="/foo")
+    url = request.build_absolute_uri(link.get_absolute_url())
+
+    return JsonResponse({"url": url}, safe=False)
 
 
 # Todo: Deprecate the usage of this serializer (used by armada.nu)
