@@ -10,6 +10,12 @@ from ais.common.settings import *
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 ALLOWED_HOSTS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "https://armada.nu",
+    "https://www.armada.nu",
+    "http://armada.nu",
+    "http://www.armada.nu",
+]
 
 DEBUG = False
 
