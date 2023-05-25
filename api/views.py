@@ -328,8 +328,13 @@ def partners(request):
 
 
 def create_magic_link(request):
-    user = User.objects.get(first_name='Didrik')
-    link = MagicLink.objects.create(user=user, redirect_to="/foo")
+    id = request.GET["user"]
+    redirect_to = request.GET.get("redirect_to", None)
+
+    user = User.objects.get(pk=id)
+    link = MagicLink.objects.create(
+        user=user, redirect_to=redirect_to if redirect_to != None else "/register"
+    )
     url = request.build_absolute_uri(link.get_absolute_url())
 
     return JsonResponse({"url": url}, safe=False)
