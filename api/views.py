@@ -32,7 +32,7 @@ from exhibitors.models import (
     CatalogueCompetence,
 )  # CatalogueBenefit
 from exhibitors.api import serialize_exhibitor
-from fair.models import Partner, Fair, current_fair
+from fair.models import Partner, Fair, FairDay, OrganizationGroup, current_fair
 from matching.models import StudentQuestionBase as QuestionBase, WorkField, Survey
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
@@ -325,6 +325,7 @@ def partners(request):
     return JsonResponse(data, safe=False)
 
 
+# Todo: Deprecate the usage of this serializer (used by armada.nu)
 @cache_page(60 * 5)
 def organization(request):
     """
@@ -344,24 +345,67 @@ def organization(request):
     return JsonResponse(data, safe=False)
 
 
-def status(request):
-    hostname = platform.node()
-    python_version = platform.python_version()
-    git_hash = (
-        subprocess.check_output("cd ~/git && git rev-parse HEAD", shell=True)
-        .decode("utf-8")
-        .strip()
+@cache_page(60 * 5)
+def organization_v2(request):
+    fair = get_object_or_404(Fair, current=True)
+    groups = OrganizationGroup.objects.filter(fair=fair)
+    people = lambda group: [
+        serializers.person_v2(
+            user,
+        )
+        for user in RecruitmentApplication.objects.select_related("user")
+        .filter(
+            delegated_role__organization_group=group,
+            status="accepted",
+            recruitment_period__fair=fair,
+        )
+        .order_by(
+            "delegated_role__organization_group",
+            "recruitment_period__start_date",
+            "delegated_role",
+            "user__first_name",
+            "user__last_name",
+        )
+    ]
+
+    result = [
+        OrderedDict(
+            [
+                ("name", group.name),
+                ("people", people(group)),
+            ]
+        )
+        for group in groups
+    ]
+
+    return JsonResponse(result, safe=False)
+
+
+def dates(request):
+    """
+    GET date of fair, ticket deadline, IR and FR start and end dates
+    """
+    fair = Fair.objects.get(current=True)
+    days = FairDay.objects.filter(fair=fair)
+
+    return JsonResponse(
+        {
+            "fair": {
+                "description": fair.description,
+                "days": [day.date for day in days],
+            },
+            "ticket": {"end": fair.companies_ticket_deadline},
+            "ir": {
+                "start": fair.registration_start_date,
+                "end": fair.registration_end_date,
+            },
+            "fr": {
+                "start": fair.complete_registration_start_date,
+                "end": fair.complete_registration_close_date,
+            },
+        },
+        safe=False,
     )
-    data = OrderedDict(
-        [
-            ("status", "OK"),
-            ("time", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-            ("hostname", hostname),
-            ("commit", git_hash),
-            ("python_version", python_version),
-        ]
-    )
-    return JsonResponse(data, safe=False)
 
 
 @csrf_exempt
