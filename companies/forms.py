@@ -339,6 +339,7 @@ class CreateCompanyContactForm(ModelForm):
         super(CreateCompanyContactForm, self).__init__(*args, **kwargs)
         self.fields["company"].queryset = Company.objects.filter(show_externally=True)
         self.fields["company"].label = "Find your company"
+        self.fields["company"].widget = forms.TextInput(attrs={"id": "browser"})
 
     class Meta:
         model = CompanyContact
