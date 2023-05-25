@@ -15,6 +15,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://www.armada.nu",
     "http://armada.nu",
     "http://www.armada.nu",
+    "http://localhost:8000",
 ]
 
 DEBUG = False
