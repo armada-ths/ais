@@ -116,7 +116,6 @@ WSGI_APPLICATION = "ais.wsgi.application"
 
 STATIC_ROOT = path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
-STATICFILES_DIRS = (path.join(BASE_DIR, "ais_static"),)
 
 ADMIN_MEDIA_PREFIX = "/static/admin/"
 MEDIA_ROOT = path.abspath(path.join(BASE_DIR, "..", "media"))
