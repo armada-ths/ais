@@ -349,9 +349,22 @@ def companies(request):
     """
     Returns a query of customizable amount of ccompanies (default= 10) based on user input
     """
-    companies = Company.objects.all()
-    data = [serializers.companies(request, company) for company in companies]
-    return JsonResponse(data, safe=False)
+    if request.method == "GET":
+        limit = request.GET.get("limit", 0)
+        input = request.GET.get("input", "")
+
+        limit = int(limit)
+
+        if limit == 0:
+            companies = Company.objects.filter(name__contains=input)
+        else:
+            companies = Company.objects.filter(name__contains=input)[:limit]
+
+        data = [serializers.companies(request, company) for company in companies]
+        return JsonResponse(data, safe=False)
+
+    else:
+        return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
 
 
 def status(request):
