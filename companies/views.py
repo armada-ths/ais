@@ -334,23 +334,28 @@ def companies_list(request, year):
     page_number = int(request.GET.get("page") or 1)
     start_index = (page_number - 1) * COMPANIES_PER_PAGE
     total_companies = Company.objects.prefetch_related("groups", "companycontact_set")
-    companies_current_page = total_companies[start_index : start_index + COMPANIES_PER_PAGE]
+    filtered_companies = total_companies
+    if has_filtering:
+        exhibitor_ids = [exhibitor.identity_number for exhibitor in exhibitors]
+        #companies_with_signatures_ids = [company.identity_number for company in signatures.keys]
+        if form.cleaned_data["exhibitors"] == "YES":
+            filtered_companies = filtered_companies.filter(identity_number__in=exhibitor_ids)
+        elif form.cleaned_data["exhibitors"] == "NO":
+            filtered_companies = filtered_companies.exclude(identity_number__in=exhibitor_ids)
+        if len(form.cleaned_data["contracts_positive"]) != 0:
+                filtered_companies = filtered_companies.filter(identity_number__in=signatures.keys())
+
+    companies_current_page = filtered_companies[start_index : start_index + COMPANIES_PER_PAGE]
 
     companies_modified = []
     for company in companies_current_page:
         exhibitor = company in exhibitors
-        '''
         if has_filtering:
-            if not exhibitor and form.cleaned_data["exhibitors"] == "YES":
-                continue
-            if exhibitor and form.cleaned_data["exhibitors"] == "NO":
-                continue
             if len(form.cleaned_data["contracts_positive"]) != 0:
-                if company not in signatures:
-                    continue
                 if (
                     len(
                         [
+                            #a list of all the signatures for a company 
                             signature
                             for signature in signatures[company]
                             if signature.contract
@@ -398,7 +403,6 @@ def companies_list(request, year):
 
                     if not found:
                         continue
-        '''
         # Related company contacts
         contacts = []
         for contact in company.companycontact_set.values():
@@ -441,7 +445,7 @@ def companies_list(request, year):
             }
         )
 
-    total_pages = total_companies.count() // COMPANIES_PER_PAGE
+    total_pages = filtered_companies.count() // COMPANIES_PER_PAGE
     return render(
         request,
         "companies/companies_list.html",
