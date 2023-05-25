@@ -14,7 +14,7 @@ services:
     command: source ./entrypoint.sh
 
   db:
-    image: postgis/postgis:10-2.5
+    image: postgis/postgis:13-3.3
     volumes:
       # - postgres_data:/var/lib/postgresql/data/ # Production Development
       - ./ais-developer-database.sql:/docker-entrypoint-initdb.d # Local Development

@@ -137,9 +137,7 @@ def exhibitor(request, exhibitor, company):
 def companies(request, company):
     return OrderedDict(
         [
-            ("name", company.name),
-            ("type", company.type.type),
-            ("company_website", company.website),
+            ("Organization Name", company.name),
         ]
     )
 

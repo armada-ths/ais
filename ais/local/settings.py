@@ -79,7 +79,7 @@ LOGOUT_REDIRECT_URL = "/"
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
 AWS_STORAGE_BUCKET_NAME = "armada-ais-files"

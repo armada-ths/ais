@@ -350,7 +350,7 @@ def companies(request):
     Returns a query of customizable amount of ccompanies (default= 10) based on user input
     """
     companies = Company.objects.all()
-    data = [serializers.companies(request, companies) for company in companies]
+    data = [serializers.companies(request, company) for company in companies]
     return JsonResponse(data, safe=False)
 
 
