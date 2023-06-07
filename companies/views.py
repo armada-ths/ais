@@ -257,7 +257,7 @@ def statistics(request, year):
 
 @permission_required("companies.base")
 def companies_list(request, year):
-    form = CompanySearchForm(request.POST or None)
+    form = CompanySearchForm(request.GET or None)
     exhibitor_year = year
     num_fairs = Fair.objects.count()
     year_list = range(int(year), int(year) - int(num_fairs), -1)
@@ -276,7 +276,7 @@ def companies_list(request, year):
     form.fields["contracts_positive"].queryset = contracts
     form.fields["contracts_negative"].queryset = contracts
 
-    has_filtering = request.POST and form.is_valid()
+    has_filtering = request.GET and form.is_valid()
 
 
     responsibles_list = list(

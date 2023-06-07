@@ -2,6 +2,8 @@
 
 {% load crispy_forms_tags %}
 
+{% load companies_filter %}
+
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
@@ -38,8 +40,7 @@
 	}
 </style>
 
-<form method="post" class="form_no_ul" enctype="multipart/form-data">
-	{% csrf_token %}
+<form action="" method="get" class="form_no_ul" enctype="multipart/form-data">
 
 	<div class="row">
 		<div class="col-md-6">
@@ -160,8 +161,8 @@
 <div class="pagination">
     <span class="step-links">
         {% if companies.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ companies.previous_page_number }}">previous</a>
+            <a href="?{% param_replace page=1 %}">&laquo; first</a>
+            <a href="?{% param_replace page=companies.previous_page_number %}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -169,8 +170,8 @@
         </span>
 
         {% if companies.has_next %}
-            <a href="?page={{ companies.next_page_number }}">next</a>
-            <a href="?page={{ companies.num_pages }}">last &raquo;</a>
+            <a href="?{% param_replace page=companies.next_page_number %}">next</a>
+            <a href="?{% param_replace page=companies.num_pages %}">last &raquo;</a>
         {% endif %}
     </span>
 </div>
