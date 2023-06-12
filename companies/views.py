@@ -258,14 +258,13 @@ def statistics(request, year):
 @permission_required("companies.base")
 def companies_list(request, year):
     form = CompanySearchForm(request.GET or None)
-    exhibitor_year = year
     num_fairs = Fair.objects.count()
     year_list = range(int(year), int(year) - int(num_fairs), -1)
     form.fields["exhibitors_year"].choices = [
         (str(year), str(year)) for year in year_list
     ]
     form.fields["exhibitors_year"].initial = str(year)
-    exhibitor_year = int(form["exhibitors_year"].value())
+    exhibitor_year = int(form["exhibitors_year"].value() or year)
     exhibitor_fair = get_object_or_404(Fair, year=exhibitor_year)
     fair = get_object_or_404(Fair, year=year)
 
@@ -277,7 +276,6 @@ def companies_list(request, year):
     form.fields["contracts_negative"].queryset = contracts
 
     has_filtering = request.GET and form.is_valid()
-
 
     responsibles_list = list(
         CompanyCustomerResponsible.objects.select_related("company")
@@ -311,12 +309,11 @@ def companies_list(request, year):
     signatures_list = []
     signatures = {}
 
-    for contract in SignupContract.objects.filter(fair=fair):
-        signatures_list = signatures_list + list(
-            SignupLog.objects.select_related("company")
-            .select_related("contract")
-            .filter(contract=contract)
-        )
+    signatures_list = list(
+        SignupLog.objects.select_related("company")
+        .select_related("contract")
+        .filter(contract__in=SignupContract.objects.filter(fair=fair))
+    )
 
     for signature in signatures_list:
         if signature.company not in signatures:
@@ -325,84 +322,56 @@ def companies_list(request, year):
         else:
             signatures[signature.company].append(signature)
 
-    exhibitors = [
-        x.company
-        for x in Exhibitor.objects.select_related("company").filter(fair=exhibitor_fair)
-    ]
-
+    # Pagination variables
     COMPANIES_PER_PAGE = 10
     page_number = int(request.GET.get("page") or 1)
-    start_index = (page_number - 1) * COMPANIES_PER_PAGE
+
+    # SQL level filtering
     total_companies = Company.objects.prefetch_related("groups", "companycontact_set")
     filtered_companies = total_companies
+    exhibitors = Exhibitor.objects.select_related("company").filter(fair=exhibitor_fair)
     if has_filtering:
-        exhibitor_ids = [exhibitor.identity_number for exhibitor in exhibitors]
-        #companies_with_signatures_ids = [company.identity_number for company in signatures.keys]
         if form.cleaned_data["exhibitors"] == "YES":
-            filtered_companies = filtered_companies.filter(identity_number__in=exhibitor_ids)
+            filtered_companies = filtered_companies.filter(pk__in=exhibitors)
         elif form.cleaned_data["exhibitors"] == "NO":
-            filtered_companies = filtered_companies.exclude(identity_number__in=exhibitor_ids)
+            filtered_companies = filtered_companies.exclude(pk__in=exhibitors)
         if len(form.cleaned_data["contracts_positive"]) != 0:
-                filtered_companies = filtered_companies.filter(identity_number__in=signatures.keys())
-
-    companies_current_page = filtered_companies[start_index : start_index + COMPANIES_PER_PAGE]
+            contract_signing_companies = (
+                SignupLog.objects.select_related("company")
+                .select_related("contract")
+                .filter(contract__in=form.cleaned_data["contracts_positive"])
+            )
+            filtered_companies = filtered_companies.filter(
+                pk__in=contract_signing_companies.values_list("company")
+            )
+        if len(form.cleaned_data["contracts_negative"]) != 0:
+            contract_signing_companies = (
+                SignupLog.objects.select_related("company")
+                .select_related("contract")
+                .filter(contract__in=form.cleaned_data["contracts_negative"])
+            )
+            filtered_companies = filtered_companies.exclude(
+                pk__in=contract_signing_companies.values_list("company")
+            )
+        if len(form.cleaned_data["users"]) != 0:
+            companies_with_sought_responsibles = (
+                CompanyCustomerResponsible.objects.select_related("company")
+                .select_related("group")
+                .filter(group__fair=fair)
+                .prefetch_related("users")
+                .filter(users__in=form.cleaned_data["users"])
+                .values_list("company")
+            )
+            filtered_companies = filtered_companies.filter(
+                pk__in=companies_with_sought_responsibles
+            )
 
     companies_modified = []
-    for company in companies_current_page:
+    for company in filtered_companies[
+        (page_number - 1) * COMPANIES_PER_PAGE : page_number * COMPANIES_PER_PAGE
+    ]:
         exhibitor = company in exhibitors
-        if has_filtering:
-            if len(form.cleaned_data["contracts_positive"]) != 0:
-                if (
-                    len(
-                        [
-                            #a list of all the signatures for a company 
-                            signature
-                            for signature in signatures[company]
-                            if signature.contract
-                            in form.cleaned_data["contracts_positive"]
-                        ]
-                    )
-                    == 0
-                ):
-                    continue
 
-                if len(form.cleaned_data["contracts_negative"]) > 0:
-                    if (
-                        company in signatures
-                        and len(
-                            [
-                                signature
-                                for signature in signatures[company]
-                                if signature.contract
-                                in form.cleaned_data["contracts_negative"]
-                            ]
-                        )
-                        != 0
-                    ):
-                        continue
-
-                if len(form.cleaned_data["users"]) != 0:
-                    if company not in responsibles:
-                        continue
-
-                    found = False
-
-                    for r in responsibles[company]:
-                        if (
-                            len(
-                                [
-                                    u
-                                    for u in r["users"]
-                                    if u in form.cleaned_data["users"]
-                                ]
-                            )
-                            != 0
-                        ):
-                            found = True
-                            break
-
-                    if not found:
-                        continue
         # Related company contacts
         contacts = []
         for contact in company.companycontact_set.values():
@@ -437,9 +406,7 @@ def companies_list(request, year):
                 "responsibles": responsibles[company]
                 if company in responsibles
                 else None,
-                "signatures": signatures[company]
-                if company in signatures
-                else None,
+                "signatures": signatures[company] if company in signatures else None,
                 "exhibitor": exhibitor,
                 "show_externally": company.show_externally,
             }
@@ -452,10 +419,11 @@ def companies_list(request, year):
         {
             "fair": fair,
             "companies": Company_Page(companies_modified, total_pages, page_number),
-            "companies_ids": list(range(page_number, page_number + 10)),
+            "companies_ids": [company["pk"] for company in companies_modified],
             "form": form,
         },
     )
+
 
 class Company_Page:
     def __init__(self, companies, total_pages, page_number):
@@ -465,16 +433,16 @@ class Company_Page:
 
     def has_previous(self):
         return self.page > 1
-    
+
     def has_next(self):
         return self.page < self.num_pages
-    
+
     def previous_page_number(self):
         return self.page - 1
-    
+
     def next_page_number(self):
         return self.page + 1
-    
+
     def __iter__(self):
         yield from self.object_list
 
