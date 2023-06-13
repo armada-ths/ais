@@ -8,8 +8,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.conf import settings
-from django.core.paginator import Paginator
-from django.core.cache import cache
 
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
