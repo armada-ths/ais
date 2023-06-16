@@ -1,60 +1,31 @@
 {% load crispy_forms_tags %} {% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1"
-    />
-    <meta charset="utf-8" />
-    {% include "header.html" %}{% block head-extra %}{% endblock %}
-    <link
-      href="{% static 'registration_style.css' %}"
-      rel="stylesheet"
-      media="screen"
-    />
-    <script
-      src="{% static 'js/setmobile.js' %}"
-      type="text/javascript"
-      charset="utf-8"
-      async
-      defer
-    ></script>
-    <script
-      src="{% static 'js/stepform.js' %}"
-      type="text/javascript"
-      charset="utf-8"
-      async
-      defer
-    ></script>
-    <script
-      src="{% static 'js/companybrowser.js' %}"
-      type="text/javascript"
-      charset="utf-8"
-      async
-      defer
-    ></script>
-  </head>
 
-  <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-          <img
-            src="{% static 'images/armada_logo_text_left_black.svg' %}"
-            alt="Armada Ship"
-            class="main-logo-small"
-          />
-        </div>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta charset="utf-8" />
+  {% include "header.html" %}{% block head-extra %}{% endblock %}
+  <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
+  <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+  <script src="{% static 'js/stepform.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo-small" />
       </div>
+    </div>
 
-      <div class="row header-row">
-        <div class="col-md-12">
-          <h1>Create a new account</h1>
-        </div>
+    <div class="row header-row">
+      <div class="col-md-12">
+        <h1>Create a new account</h1>
       </div>
+    </div>
 
-      <!--
+    <!--
 		<div class="row">
 			<div class="col-md-8">
 				<a href="{% url 'anmalan:create_company' %}">
@@ -63,36 +34,54 @@
 			</div>
 		</div>
 		-->
-      <div class="row">
-        <div class="col-md-12">
-          <form method="post">
-            {% csrf_token %}
-            <div class="form-step">
-              {{ contact_form.company.errors }} 
-              {{ contact_form.company | as_crispy_field}}
-            </div>
+    <div class="row">
+      <div class="col-md-12">
 
-            <div class="form-step">
-              {% for field in contact_form %} 
-              {% if field.name != 'company' %}
-              {{ field.errors }} 
-              {{ field |as_crispy_field}} 
-              {% endif %} 
-              {% endfor %}
-            </div>
+        <div class="d-inline-flex">
+          <div class="p-2">1</div>
+          <div class="p-2">2</div>
+          <div class="p-2">3</div>
+        </div>
 
-            <div class="form-step">{{ user_form | crispy }}</div>
-            <button type="submit" class="btn btn-success">Submit</button>
-            <button class="btn btn-default" id="back-step-btn">Back</button>
-            <button class="btn btn-default" id="next-step-btn">Next</button>
-            <!--
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-step">
+            {{ contact_form.company.errors }}
+            {{ contact_form.company | as_crispy_field}}
+            <div id="company-list" class="d-flex flex-column">
+            </div>
+          </div>
+
+          <div class="form-step">
+            <p class="text-center">Is this your company?</p>
+            <p class="text-center" id="company-confirmation-title">Company Placeholder</p>
+          </div>
+
+          <div class="form-step">
+            {% for field in contact_form %}
+            {% if field.name != 'company' %}
+            {{ field.errors }}
+            {{ field |as_crispy_field}}
+            {% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="form-step">{{ user_form | crispy }}</div>
+          <div class="col-md-12 text-center">
+            <button type="button" class="btn btn-default" id="back-step-btn">Back</button>
+            <button type="button" class="btn btn-default" id="next-step-btn">Next</button>
+            <button type="submit" class="btn btn-success" id="submit-form-btn">Submit</button>
+          </div>
+
+          <!--
 						{% csrf_token %} {{ contact_form | crispy }}
 						<p align="left">* Required fields</p>{{ user_form | crispy }}
 						<button type="submit" class="btn btn-success">Submit</button>
 						<a href="{% url 'anmalan:choose_company' %}"><button type="button" class="btn btn-default">Back</button></a>-->
-          </form>
-        </div>
+        </form>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

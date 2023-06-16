@@ -347,7 +347,7 @@ def organization(request):
 
 def companies(request):
     """
-    Returns a query of customizable amount of ccompanies (default= 10) based on user input
+    Returns a query of customizable amount of companies (default= 10) based on user input
     """
     if request.method == "GET":
         limit = request.GET.get("limit", 0)
@@ -356,9 +356,9 @@ def companies(request):
         limit = int(limit)
 
         if limit == 0:
-            companies = Company.objects.filter(name__contains=input)
+            companies = Company.objects.filter(name__icontains=input)
         else:
-            companies = Company.objects.filter(name__contains=input)[:limit]
+            companies = Company.objects.filter(name__icontains=input)[:limit]
 
         data = [serializers.companies(request, company) for company in companies]
         return JsonResponse(data, safe=False)

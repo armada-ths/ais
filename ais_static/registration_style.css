@@ -174,8 +174,40 @@ input[type="color"]:focus,
 
 .form-step {
 	display: none;
+	width: inherit;
+	position: relative;
 }
 
 #activeStep {
 	display: block;
+}
+
+#company-list {
+	position: absolute;
+	visibility: hidden;
+	font-size: 1.2em;
+	margin-bottom: 15px;
+	background-color: #fdfdfd;
+	z-index: 10;
+	width: 100%;
+}
+
+#company-list div {
+	padding: 15px;
+}
+
+#company-list a:hover {
+	cursor: pointer;
+}
+
+.form-step:first-of-type input {
+	background-image: url("https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg");
+	background-size: 13px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	padding: 7px 8px 7px 30px;
+}
+
+#company-confirmation-title {
+	font-weight: bold;
 }
