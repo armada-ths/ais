@@ -138,6 +138,7 @@ def companies(request, company):
     return OrderedDict(
         [
             ("Organization Name", company.name),
+            ("id", company.id),
         ]
     )
 

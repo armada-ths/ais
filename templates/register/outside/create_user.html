@@ -13,15 +13,13 @@
 
 <body>
   <div class="container">
-    <div class="row">
-      <div class="col-md-6 col-md-offset-3">
-        <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo-small" />
-      </div>
+    <div class="col-md-6 col-md-offset-3">
+      <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo-small" />
     </div>
 
     <div class="row header-row">
-      <div class="col-md-12">
-        <h1>Create a new account</h1>
+      <div class="col-md-12 text-center">
+        <p class="h1">Create a new account</p>
       </div>
     </div>
 
@@ -36,14 +34,26 @@
 		-->
     <div class="row">
       <div class="col-md-12">
+        <ul id="form-step-tracker" class="center-block">
+          <li class="active">
+            <span>1</span>
+            <p>Select Company</p>
+          </li>
+          <li>
+            <span>2</span>
+            <p>Personal Details</p>
+          </li>
+          <li>
+            <span>3</span>
+            <p>Password</p>
+          </li>
+        </ul>
 
-        <div class="d-inline-flex">
-          <div class="p-2">1</div>
-          <div class="p-2">2</div>
-          <div class="p-2">3</div>
-        </div>
+      </div>
 
-        <form method="post">
+      <div class="col-md-12">
+
+        <form method="post" id="user-registration-form">
           {% csrf_token %}
           <div class="form-step">
             {{ contact_form.company.errors }}
@@ -54,7 +64,7 @@
 
           <div class="form-step">
             <p class="text-center">Is this your company?</p>
-            <p class="text-center" id="company-confirmation-title">Company Placeholder</p>
+            <p class="text-center"><strong id="company-confirmation-title">Company Placeholder</strong></strong>
           </div>
 
           <div class="form-step">
@@ -70,7 +80,7 @@
           <div class="col-md-12 text-center">
             <button type="button" class="btn btn-default" id="back-step-btn">Back</button>
             <button type="button" class="btn btn-default" id="next-step-btn">Next</button>
-            <button type="submit" class="btn btn-success" id="submit-form-btn">Submit</button>
+            <button type="button" class="btn btn-success" id="submit-form-btn">Submit</button>
           </div>
 
           <!--
