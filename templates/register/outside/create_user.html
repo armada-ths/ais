@@ -35,15 +35,15 @@
     <div class="row">
       <div class="col-md-12">
         <ul id="form-step-tracker" class="center-block">
-          <li class="active">
+          <li class="active no-transition">
             <span>1</span>
             <p>Select Company</p>
           </li>
-          <li>
+          <li class="no-transition">
             <span>2</span>
             <p>Personal Details</p>
           </li>
-          <li>
+          <li class="no-transition">
             <span>3</span>
             <p>Password</p>
           </li>
@@ -56,21 +56,20 @@
         <form method="post" id="user-registration-form">
           {% csrf_token %}
           <div class="form-step">
-            {{ contact_form.company.errors }}
-            {{ contact_form.company | as_crispy_field}}
-            <div id="company-list" class="d-flex flex-column">
+            <div id="company-search">
+              {{ contact_form.company | as_crispy_field}}
+              <div id="company-list" class="d-flex flex-column">
+              </div>
             </div>
-          </div>
-
-          <div class="form-step">
-            <p class="text-center">Is this your company?</p>
-            <p class="text-center"><strong id="company-confirmation-title">Company Placeholder</strong></strong>
+            <div id="company-confirmation">
+              <p class="text-center">Is this your company?</p>
+              <p class="text-center"><strong id="company-confirmation-title">Company Placeholder</strong></strong>
+            </div>
           </div>
 
           <div class="form-step">
             {% for field in contact_form %}
             {% if field.name != 'company' %}
-            {{ field.errors }}
             {{ field |as_crispy_field}}
             {% endif %}
             {% endfor %}

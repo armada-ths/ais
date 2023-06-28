@@ -239,6 +239,15 @@ input[type="color"]:focus,
 	height: 2px;
 }
 
+#form-step-tracker>li.no-transition span,
+#form-step-tracker>li.no-transition span:before {
+	transition: none;
+}
+
+#company-confirmation {
+	display: none;
+}
+
 #form-step-tracker>li.active span {
 	background-position: left;
 	transition: background-position .3s;
