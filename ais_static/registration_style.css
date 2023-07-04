@@ -97,6 +97,7 @@ a:hover,
 a:active,
 a:visited {
 	color: #00d790;
+	cursor: pointer;
 }
 
 .btn-success,
@@ -192,7 +193,7 @@ input[type="color"]:focus,
 	padding: 15px;
 }
 
-.form-step:first-of-type input {
+#company-search input {
 	padding: 7px 8px 7px 30px;
 	background-image: url("https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg");
 	background-size: 13px;
@@ -265,4 +266,9 @@ input[type="color"]:focus,
 
 #form-step-tracker>li:first-of-type span:before {
 	display: none;
+}
+
+#company-list-no-results {
+	color: #e73953;
+	visibility: hidden;
 }

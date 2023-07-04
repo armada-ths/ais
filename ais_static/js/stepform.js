@@ -13,6 +13,7 @@ let stepTrackerChildren;
 let requiredElementsForm;
 let form;
 let timeout;
+let noResults;
 
 function init() {
     //Get elements from DOM
@@ -26,6 +27,7 @@ function init() {
     list = document.getElementById('company-list');
     stepTrackerChildren = document.getElementById('form-step-tracker').children;
     form = document.getElementById('user-registration-form');
+    noResults = document.getElementById('company-list-no-results');
 
     //Setting static initial values
     currentStep = 0;
@@ -149,8 +151,13 @@ function validate(submit) {
 function initBrowser() {
     browser.addEventListener('keyup', function (e) {
         clearTimeout(timeout);
+
+        //No Results Found text turns invisible each time a key is entered
+        noResults.style.visibility = 'hidden';
+
         // Make a new timeout set to go off in 1000ms (1 second)
         timeout = setTimeout(function () {
+
 
             //Remove all elements from list
             while (list.firstChild) {
@@ -163,6 +170,11 @@ function initBrowser() {
             } else {
                 //Fetches the top 10 companies related to the input search
                 fetch("http://localhost:3000/api/companies?limit=10&input=" + browser.value).then((response) => response.json()).then((json) => {
+
+                    //No Results Found text turns visible if no company is returned by API
+                    if (json.length == 0)
+                        noResults.style.visibility = 'visible';
+
                     //Create a list element for each company returned
                     for (var i = 0; i < json.length; i++) {
                         //Name of company
