@@ -215,7 +215,7 @@ function initBrowser() {
     });
 }
 
-(function () {
+function execute() {
     init();
     validate(false);
     setActiveStep();
@@ -245,5 +245,18 @@ function initBrowser() {
             form.submit();
         }
     });
+}
+
+(function () {
+
+    if (document.readyState !== 'loading') {
+        //document is already ready and JS can be executed
+        execute();
+    } else {
+        document.addEventListener('DOMContentLoaded', function () {
+            //document was not ready and JS needs to wait for DOm to be fully loaded to be executed
+            execute();
+        });
+    }
 
 })();
