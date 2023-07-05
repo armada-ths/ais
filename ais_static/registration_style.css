@@ -195,7 +195,7 @@ input[type="color"]:focus,
 
 #company-search input {
 	padding: 7px 8px 7px 30px;
-	background-image: url("https://upload.wikimedia.org/wikipedia/commons/5/55/Magnifying_glass_icon.svg");
+	background-image: url("images/search_icon.svg");
 	background-size: 13px;
 	background-repeat: no-repeat;
 	background-position: 10px center;
