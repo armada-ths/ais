@@ -25,11 +25,19 @@ def absolute_url(request, path):
     return "{}{}/{}".format(protocol, url, path)
 
 
+def image_url_or_missing_relative(image, missing=MISSING_IMAGE):
+    return image.url if image else missing
+
+
+# This function does not handle trailing slashes
+# A common response is "http://localhost:3000//static/images/no-image.png"
+#
+# Another problem is the usage of ais buckets
+# A common response is "https://ais.armada.nu/https://armada-ais-files.s3.amazonaws.com/profiles/picture_original/3d867d2a75f84e3eb32..."
+#
+# Please use `image_url_or_missing_relative`
 def image_url_or_missing(request, image, missing=MISSING_IMAGE):
-    if image:
-        return absolute_url(request, image.url)
-    else:
-        return absolute_url(request, missing)
+    return absolute_url(request, image.url if image else missing)
 
 
 def obj_name(obj):
@@ -197,6 +205,45 @@ def partner(request, partner):
     )
 
 
+def person_v2(user):
+    # Check that there is a profile for the user
+    try:
+        profile = user.profile
+
+        try:
+            programme = profile.programme.name
+        except AttributeError:
+            programme = None
+
+        return OrderedDict(
+            [
+                ("id", profile.user.pk),
+                ("name", profile.user.get_full_name()),
+                (
+                    "picture",
+                    image_url_or_missing_relative(
+                        profile.picture_original, MISSING_PERSON
+                    ),
+                ),
+                ("linkedin_url", profile.linkedin_url),
+                ("programme", programme),
+                ("role", user.delegated_role.__str__()),
+            ]
+        )
+    except Profile.DoesNotExist:  # There is no profile for this user
+        return OrderedDict(
+            [
+                ("id", user.pk),
+                ("name", user.user.get_full_name()),
+                (
+                    "role",
+                    user.delegated_role.__str__() if user.delegated_role else None,
+                ),
+            ]
+        )
+
+
+# Todo: Deprecate the usage of this serializer (used by armada.nu)
 def person(request, person, role):
     # Check that there are a profile for the user
     try:
