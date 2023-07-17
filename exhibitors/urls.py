@@ -35,6 +35,7 @@ urlpatterns = [
     url(r"^view$", views.edit_view, name="edit_view"),
     url(r"^create$", views.create, name="create"),
     url(r"^export$", views.export, name="export"),
+    url(r"^export/json$", views.export_json, name="export_json"),
     url(
         r"^people_count/(?P<location_pk>[0-9]+)$",
         views.people_count,

@@ -1,9 +1,10 @@
 import datetime
 import json
-
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
+from collections import OrderedDict
+from itertools import chain
 
 from accounting.models import Order
 from banquet.models import Banquet, Participant
@@ -17,6 +18,9 @@ from exhibitors import serializers
 from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
+
+from api.util import json_to_csv_response
+
 from .forms import (
     ExhibitorViewForm,
     ExhibitorCreateForm,
@@ -230,6 +234,34 @@ def export(request, year):
         "exhibitors/export.html",
         {"exhibitors": Exhibitor.objects.filter(fair=fair)},
     )
+
+
+@permission_required("exhibitors.base")
+def export_json(request, year):
+    fair = get_object_or_404(Fair, year=year)
+    exhibitors = Exhibitor.objects.filter(fair=fair)
+
+    exhibitor_fields = [
+        "id"
+    ]
+
+    company_fields = [
+        "name",
+        "website"
+    ]
+
+    data = [
+        OrderedDict(chain([
+            (field, getattr(exhibitor, field))
+            for field in exhibitor_fields
+        ], [
+            (field, getattr(exhibitor.company, field))
+            for field in company_fields
+        ]))
+        for exhibitor in exhibitors
+    ]
+
+    return json_to_csv_response("exhibitors_%s" % year, data)
 
 
 @permission_required("exhibitors.base")

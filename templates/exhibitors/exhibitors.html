@@ -19,6 +19,7 @@
 		<a href="{% url 'edit_view' fair.year %}" class="btn btn-default">Edit view</a>
 		{% if perms.exhibitors.create %}<a href="{% url 'create' fair.year %}" class="btn btn-default">Create exhibitor</a>{% endif %}
 		<a href="{% url 'export' fair.year %}" class="btn btn-default">Export exhibitors</a>
+		<a href="{% url 'export_json' fair.year %}" class="btn btn-default">Export exhibitors data</a>
 	</p>
 
 	<form method="post">
