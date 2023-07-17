@@ -368,26 +368,6 @@ def companies(request):
         return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
 
 
-def status(request):
-    hostname = platform.node()
-    python_version = platform.python_version()
-    git_hash = (
-        subprocess.check_output("cd ~/git && git rev-parse HEAD", shell=True)
-        .decode("utf-8")
-        .strip()
-    )
-    data = OrderedDict(
-        [
-            ("status", "OK"),
-            ("time", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-            ("hostname", hostname),
-            ("commit", git_hash),
-            ("python_version", python_version),
-        ]
-    )
-    return JsonResponse(data, safe=False)
-
-
 @cache_page(60 * 5)
 def organization_v2(request):
     fair = get_object_or_404(Fair, current=True)

@@ -22,16 +22,6 @@
         <p class="h1">Create a new account</p>
       </div>
     </div>
-
-    <!--
-		<div class="row">
-			<div class="col-md-8">
-				<a href="{% url 'anmalan:create_company' %}">
-					<p>Not in the company list? Create a new company profile here!</p>
-				</a>
-			</div>
-		</div>
-		-->
     <div class="row">
       <div class="col-md-12">
         <ul id="form-step-tracker" class="center-block">
@@ -86,12 +76,6 @@
             <button type="button" class="btn btn-default" id="next-step-btn">Next</button>
             <button type="button" class="btn btn-success" id="submit-form-btn">Submit</button>
           </div>
-
-          <!--
-						{% csrf_token %} {{ contact_form | crispy }}
-						<p align="left">* Required fields</p>{{ user_form | crispy }}
-						<button type="submit" class="btn btn-success">Submit</button>
-						<a href="{% url 'anmalan:choose_company' %}"><button type="button" class="btn btn-default">Back</button></a>-->
         </form>
       </div>
     </div>
