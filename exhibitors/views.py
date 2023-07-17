@@ -247,7 +247,8 @@ def export_json(request, year):
 
     company_fields = [
         "name",
-        "website"
+        "website",
+        "identity_number"
     ]
 
     data = [
