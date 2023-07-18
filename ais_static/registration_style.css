@@ -97,7 +97,7 @@ a:hover,
 a:active,
 a:visited {
 	color: #00d790;
-	text-decoration: underline;
+	cursor: pointer;
 }
 
 .btn-success,
@@ -171,4 +171,104 @@ input[type="tel"]:focus,
 input[type="color"]:focus,
 .uneditable-input:focus {
 	border-color: #00d790;
+}
+
+.form-step {
+	display: none;
+}
+
+#activeStep {
+	display: block;
+}
+
+#company-list {
+	font-size: 1.2em;
+	width: 100%;
+	position: absolute;
+	background-color: #ffffff;
+	cursor: pointer;
+}
+
+#company-list div {
+	padding: 15px;
+}
+
+#company-search input {
+	padding: 7px 8px 7px 30px;
+	background-image: url("images/search_icon.svg");
+	background-size: 13px;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+}
+
+#form-step-tracker {
+	margin: 20px auto;
+	padding: 0px;
+	display: flex;
+	justify-content: center;
+}
+
+#form-step-tracker>li {
+	max-width: 50px;
+	font-size: 1rem;
+	margin-left: 10vw;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+}
+
+#form-step-tracker>li span {
+	position: relative;
+	font-weight: bold;
+	background: linear-gradient(to left, rgba(45, 45, 44, 20%) 50%, #00d790 50%) right;
+	background-size: 200%;
+	border-radius: 50%;
+	line-height: 50px;
+	transition: background-position .3s;
+}
+
+#form-step-tracker>li span:before {
+	content: "";
+	position: absolute;
+	background: linear-gradient(to left, rgba(45, 45, 44, 20%) 50%, #00d790 50%) right;
+	background-size: 200%;
+	transition: background-position .3s;
+	transition-delay: .3s;
+	top: 24px;
+	right: 50px;
+	width: 10vw;
+	height: 2px;
+}
+
+#form-step-tracker>li.no-transition span,
+#form-step-tracker>li.no-transition span:before {
+	transition: none;
+}
+
+#company-confirmation {
+	display: none;
+}
+
+#form-step-tracker>li.active span {
+	background-position: left;
+	transition: background-position .3s;
+	transition-delay: .3s;
+}
+
+#form-step-tracker>li.active span:before {
+	background-position: left;
+	transition: background-position .3s;
+}
+
+#form-step-tracker>li:first-of-type {
+	margin-left: 0px;
+}
+
+#form-step-tracker>li:first-of-type span:before {
+	display: none;
+}
+
+#company-list-no-results {
+	color: #e73953;
+	visibility: hidden;
 }

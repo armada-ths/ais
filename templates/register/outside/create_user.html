@@ -3,47 +3,83 @@
 <html lang="en">
 
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<meta charset="utf-8">
-	{% include "header.html" %}{% block head-extra %}{% endblock %}
-	<link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen">
-	<script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta charset="utf-8" />
+  {% include "header.html" %}{% block head-extra %}{% endblock %}
+  <link href="{% static 'registration_style.css' %}" rel="stylesheet" media="screen" />
+  <script src="{% static 'js/setmobile.js' %}" type="text/javascript" charset="utf-8" async defer></script>
+  <script src="{% static 'js/stepform.js' %}" type="text/javascript" charset="utf-8" async defer></script>
 </head>
 
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship"
-					class="main-logo-small">
-			</div>
-		</div>
+  <div class="container">
+    <div class="col-md-6 col-md-offset-3">
+      <img src="{% static 'images/armada_logo_text_left_black.svg' %}" alt="Armada Ship" class="main-logo-small" />
+    </div>
 
-		<div class="row header-row">
-			<div class="col-md-12">
-				<h1>Create a new account</h1>
-			</div>
-		</div>
+    <div class="row header-row">
+      <div class="col-md-12 text-center">
+        <p class="h1">Create a new account</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <ul id="form-step-tracker" class="center-block">
+          <li class="active no-transition">
+            <span>1</span>
+            <p>Select Company</p>
+          </li>
+          <li class="no-transition">
+            <span>2</span>
+            <p>Personal Details</p>
+          </li>
+          <li class="no-transition">
+            <span>3</span>
+            <p>Password</p>
+          </li>
+        </ul>
 
-		<div class="row">
-			<div class="col-md-8">
-				<p>Not in the company list? <a href="{% url 'anmalan:create_company' %}">Create a new company profile
-						here!</a></p>
-			</div>
-		</div>
+      </div>
 
-		<div class="row">
-			<div class="col-md-12">
-				<form method="post">
-					{% csrf_token %} {{ contact_form | crispy }} {{ user_form | crispy }}
-					<p align="left">* Required fields</p>
-					<button type="submit" class="btn btn-success">Submit</button>
-					<a href="{% url 'anmalan:choose_company' %}"><button type="button"
-							class="btn btn-default">Back</button></a>
-				</form>
-			</div>
-		</div>
-	</div>
+      <div class="col-md-12">
+
+        <form method="post" id="user-registration-form">
+          {% csrf_token %}
+          <div class="form-step">
+            <div id="company-search">
+              {{ contact_form.company | as_crispy_field}}
+              <div id="company-list" class="d-flex flex-column">
+              </div>
+              <p id="company-list-no-results">No results found</p>
+              <p>
+                <b>Can't find your company? </b>
+                <a href="/register/company">Create a new company profile here!</a>
+              </p>
+            </div>
+            <div id="company-confirmation">
+              <p class="text-center">Is this your company?</p>
+              <p class="text-center"><strong id="company-confirmation-title">Company Placeholder</strong></strong>
+            </div>
+          </div>
+
+          <div class="form-step">
+            {% for field in contact_form %}
+            {% if field.name != 'company' %}
+            {{ field |as_crispy_field}}
+            {% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="form-step">{{ user_form | crispy }}</div>
+          <div class="col-md-12 text-center">
+            <button type="button" class="btn btn-default" id="back-step-btn">Back</button>
+            <button type="button" class="btn btn-default" id="next-step-btn">Next</button>
+            <button type="button" class="btn btn-success" id="submit-form-btn">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

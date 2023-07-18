@@ -338,12 +338,14 @@ class CreateCompanyContactForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreateCompanyContactForm, self).__init__(*args, **kwargs)
         self.fields["company"].queryset = Company.objects.filter(show_externally=True)
-        self.fields["company"].label = "Company"
+        self.fields["company"].label = "Find your company"
+        self.fields["company"].widget = forms.TextInput(attrs={"id": "browser"})
 
     class Meta:
         model = CompanyContact
         fields = "__all__"
         exclude = ("user", "active", "confirmed")
+        widgets = {"company": forms.TextInput}
 
     def is_valid(self):
         valid = super(CreateCompanyContactForm, self).is_valid()

@@ -142,6 +142,15 @@ def exhibitor(request, exhibitor, company):
     )
 
 
+def companies(request, company):
+    return OrderedDict(
+        [
+            ("Organization Name", company.name),
+            ("id", company.id),
+        ]
+    )
+
+
 def event(request, event):
     tags = tags_mappings(event.tags.all())
     signup_link = (

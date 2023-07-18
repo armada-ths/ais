@@ -37,6 +37,7 @@ from matching.models import StudentQuestionBase as QuestionBase, WorkField, Surv
 from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
 from student_profiles.models import StudentProfile, MatchingResult
+from companies.models import Company
 
 
 def root(request):
@@ -343,6 +344,28 @@ def organization(request):
 
     data = [serializers.organization_group(request, group) for group in groups]
     return JsonResponse(data, safe=False)
+
+
+def companies(request):
+    """
+    Returns a query of customizable amount of companies (default= 10) based on user input
+    """
+    if request.method == "GET":
+        limit = request.GET.get("limit", 0)
+        input = request.GET.get("input", "")
+
+        limit = int(limit)
+
+        if limit == 0:
+            companies = Company.objects.filter(name__icontains=input)
+        else:
+            companies = Company.objects.filter(name__icontains=input)[:limit]
+
+        data = [serializers.companies(request, company) for company in companies]
+        return JsonResponse(data, safe=False)
+
+    else:
+        return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
 
 
 @cache_page(60 * 5)
