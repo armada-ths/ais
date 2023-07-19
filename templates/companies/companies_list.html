@@ -2,6 +2,8 @@
 
 {% load crispy_forms_tags %}
 
+{% load companies_filter %}
+
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
@@ -38,8 +40,7 @@
 	}
 </style>
 
-<form method="post" class="form_no_ul" enctype="multipart/form-data">
-	{% csrf_token %}
+<form action="" method="get" class="form_no_ul" enctype="multipart/form-data">
 
 	<div class="row">
 		<div class="col-md-6">
@@ -155,6 +156,24 @@
 			</tr>
 		{% endfor %}
 	</table>
+</div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if companies.has_previous %}
+            <a href="?{% param_replace page=1 %}">&laquo; first</a>
+            <a href="?{% param_replace page=companies.previous_page_number %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ companies.page }} of {{ companies.num_pages }}.
+        </span>
+
+        {% if companies.has_next %}
+            <a href="?{% param_replace page=companies.next_page_number %}">next</a>
+            <a href="?{% param_replace page=companies.num_pages %}">last &raquo;</a>
+        {% endif %}
+    </span>
 </div>
 
 <a href="{% url 'send_order_summaries' fair.year %}?id={{ companies_ids | join:"&id=" }}" class="btn btn-primary pull-right"onclick="return confirm('Press OK to send out e-mail messages with confirmations to all companies in list above.')">Send order confirmations</a>
