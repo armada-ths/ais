@@ -365,9 +365,8 @@ def companies_list(request, year):
             )
 
     companies_modified = []
-    for company in filtered_companies[
-        (page_number - 1) * COMPANIES_PER_PAGE : page_number * COMPANIES_PER_PAGE
-    ]:
+    companies_current_page = filtered_companies[(page_number - 1) * COMPANIES_PER_PAGE : page_number * COMPANIES_PER_PAGE]
+    for company in companies_current_page:
         exhibitor = company in exhibitors
 
         # Related company contacts
@@ -416,14 +415,14 @@ def companies_list(request, year):
         "companies/companies_list.html",
         {
             "fair": fair,
-            "companies": Company_Page(companies_modified, total_pages, page_number),
+            "companies": CompanyPage(companies_modified, total_pages, page_number),
             "companies_ids": [company["pk"] for company in companies_modified],
             "form": form,
         },
     )
 
 
-class Company_Page:
+class CompanyPage:
     def __init__(self, companies, total_pages, page_number):
         self.num_pages = total_pages
         self.object_list = companies
