@@ -365,7 +365,9 @@ def companies_list(request, year):
             )
 
     companies_modified = []
-    companies_current_page = filtered_companies[(page_number - 1) * COMPANIES_PER_PAGE : page_number * COMPANIES_PER_PAGE]
+    companies_current_page = filtered_companies[
+        (page_number - 1) * COMPANIES_PER_PAGE : page_number * COMPANIES_PER_PAGE
+    ]
     for company in companies_current_page:
         exhibitor = company in exhibitors
 
