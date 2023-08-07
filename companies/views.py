@@ -325,7 +325,7 @@ def companies_list(request, year):
             signatures[signature.company].append(signature)
 
     # Pagination variables
-    COMPANIES_PER_PAGE = 10
+    COMPANIES_PER_PAGE = 50
     page_number = int(request.GET.get("page") or 1)
 
     # SQL level filtering
