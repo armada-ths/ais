@@ -1,6 +1,8 @@
 from slackclient import SlackClient
 import csv
 
+import re
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
@@ -8,6 +10,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.conf import settings
+from django.db.models import Q
+from django.db.models import CharField
 
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
@@ -363,6 +367,76 @@ def companies_list(request, year):
             filtered_companies = filtered_companies.filter(
                 pk__in=companies_with_sought_responsibles
             )
+        if form.cleaned_data["q"]:
+            # Free text search
+            search_query = form.cleaned_data["q"]
+
+            # Include every CharField in Company model in search
+            field_names = [
+                f.name for f in Company._meta.fields if isinstance(f, CharField)
+            ]
+            qs = get_query(search_query, field_names)
+
+            # Responsibles
+            query = get_query(search_query, ["first_name", "last_name"])
+            matched_responsibles = (
+                CompanyCustomerResponsible.objects.select_related("company")
+                .select_related("group")
+                .filter(group__fair=fair)
+                .prefetch_related("users")
+                .filter(users__in=User.objects.filter(query))
+                .values_list("company")
+            )
+
+            qs = qs | Q(pk__in=matched_responsibles)
+
+            # Contracts
+            query = get_query(search_query, ["name", "type"])
+            matched_contracts = (
+                SignupLog.objects.select_related("company")
+                .select_related("contract")
+                .filter(contract__in=SignupContract.objects.filter(query))
+                .values_list("company")
+            )
+
+            qs = qs | Q(pk__in=matched_contracts)
+
+            # Contacts
+            query = get_query(
+                search_query,
+                [
+                    "first_name",
+                    "last_name",
+                    "email_address",
+                    "alternative_email_address",
+                    "mobile_phone_number",
+                    "work_phone_number",
+                ],
+            )
+
+            # Enable searching for phone numbers with a leading 0 by removing it
+            # (since all phone numbers in database begin with +46)
+            search_query_stripped = search_query.strip()
+            if search_query_stripped[0] == "0":
+                query = (
+                    query
+                    | Q(mobile_phone_number__icontains=search_query_stripped[1:])
+                    | Q(work_phone_number__icontains=search_query_stripped[1:])
+                )
+
+            matched_contacts = CompanyContact.objects.filter(query).values_list(
+                "company"
+            )
+
+            qs = qs | Q(pk__in=matched_contacts)
+
+            # Groups
+            query = get_query(search_query, ["name", "name_full"])
+            matched_groups = Group.objects.filter(query)
+
+            qs = qs | Q(groups__in=matched_groups)
+
+            filtered_companies = filtered_companies.filter(qs)
 
     companies_modified = []
     companies_current_page = filtered_companies[
@@ -371,35 +445,10 @@ def companies_list(request, year):
     for company in companies_current_page:
         exhibitor = company in exhibitors
 
-        # Related company contacts
-        contacts = []
-        for contact in company.companycontact_set.values():
-            contacts.append(
-                {
-                    "name": contact["first_name"] + " " + contact["last_name"],
-                    "emails": [
-                        contact["email_address"],
-                        contact["alternative_email_address"],
-                    ],
-                    "numbers": [
-                        contact["mobile_phone_number"],
-                        contact["work_phone_number"],
-                    ],
-                }
-            )
-            # The numbers all start with +46, it would be nice to able to search numbers
-            # without the country code so for every number +46701234567, we append 0701234567.
-            # Note: some numbers do not have swedish country codes, and cannot be searched
-            # for with a leading 0.
-            for number in contacts[-1]["numbers"]:
-                if number is not None and number[:3] == "+46":
-                    contacts[-1]["numbers"].append(number.replace("+46", "0"))
-
         companies_modified.append(
             {
                 "pk": company.pk,
                 "name": company.name,
-                "contacts": contacts,
                 "status": None,  # TODO: fix status!
                 "groups": company.groups.filter(fair=fair),
                 "responsibles": responsibles[company]
@@ -422,6 +471,44 @@ def companies_list(request, year):
             "form": form,
         },
     )
+
+
+def normalize_query(
+    query_string,
+    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+    normspace=re.compile(r"\s{2,}").sub,
+):
+    """Splits the query string in invidual keywords, getting rid of unecessary spaces
+    and grouping quoted words together.
+    Example:
+
+    normalize_query('  some random  words "with   quotes  " and   spaces')
+    ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
+
+    """
+    return [normspace(" ", (t[0] or t[1]).strip()) for t in findterms(query_string)]
+
+
+def get_query(query_string, search_fields):
+    """Returns a query, that is a combination of Q objects. That combination
+    aims to search keywords within a model by testing the given search fields.
+
+    """
+    query = None  # Query to search for every search term
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None  # Query to search for a given term in each field
+        for field_name in search_fields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
 
 
 class CompanyPage:
