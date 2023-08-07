@@ -499,7 +499,7 @@ class CompanySearchForm(forms.Form):
     )
     q = forms.CharField(
         label="Search:",
-        required = False,
+        required=False,
     )
 
 
