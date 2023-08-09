@@ -61,6 +61,7 @@ class Profile(models.Model):
     registration_year = models.IntegerField(null=True, blank=True)
     planned_graduation = models.IntegerField(null=True, blank=True)
     linkedin_url = models.URLField(null=True, blank=True, verbose_name="Linkedin URL")
+    armada_email = models.EmailField(null=True, blank=True, verbose_name="Armada Email")
     token = models.CharField(max_length=255, null=True, blank=False, default=uuid.uuid4)
     slack_id = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="Slack ID"
