@@ -18,33 +18,6 @@ export const form: Form = {
                             mapping="company.identify_number"
                         />
                     )
-                },
-                {
-                    mapping: "company.invoice_city",
-                    component: (
-                        <FormField.Text
-                            label="Company Name"
-                            mapping="company.invoice_city"
-                        />
-                    )
-                },
-                {
-                    mapping: "company.general_email_address",
-                    component: (
-                        <FormField.Text
-                            label="General Email Address"
-                            mapping="company.general_email_address"
-                        />
-                    )
-                },
-                {
-                    mapping: "company.invoice_country",
-                    component: (
-                        <FormField.Text
-                            label="Invoice Country"
-                            mapping="company.invoice_country"
-                        />
-                    )
                 }
             ]
         },

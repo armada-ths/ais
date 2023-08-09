@@ -53,7 +53,7 @@ export function App() {
     }, [])
 
     return (
-        <div>
+        <div className="bg-slate-50">
             <FormScreen form={form} />
         </div>
     )

@@ -1,9 +1,13 @@
 import PrimarySection from "./PrimarySection"
 import { FormPageView } from "./FormPageView"
 import { useSelector } from "react-redux"
-import { selectActivePage } from "../../store/form/form_selectors"
+import {
+    selectActivePage,
+    selectActivePageIndex
+} from "../../store/form/form_selectors"
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 import React from "react"
+import { cx } from "../../utils/cx"
 
 export type FieldValue = string | boolean | undefined | File
 
@@ -33,18 +37,26 @@ type Props = {
 
 export function FormScreen({ form }: Props) {
     const activePage = useSelector(selectActivePage)
+    const activePageIndex = useSelector(selectActivePageIndex)
 
     return (
-        <div className="grid min-h-[100dvh] grid-cols-[1fr_3fr_1fr] grid-rows-[80px_1fr]">
-            <div className="col-span-3 h-full bg-emerald-400"></div>
+        <div
+            className={cx(
+                "grid min-h-[100dvh] grid-cols-[1fr_3fr_1fr]",
+                form.isSkippable && "grid-rows-[80px_1fr]"
+            )}
+        >
+            {form.isSkippable && (
+                <div className="col-span-3 h-full bg-emerald-400"></div>
+            )}
             <FormSidebarProgressionSummary />
             <PrimarySection>
-                <div>
-                    <h1 className="text-4xl">{form.name}</h1>
-                    <FormPageView page={activePage} />
-                </div>
+                <h1 className="border-b-2 border-solid border-slate-800 text-4xl">
+                    {form.name}
+                </h1>
+                <FormPageView page={activePage} pageIndex={activePageIndex} />
             </PrimarySection>
-            <div className="bg-blue-500" />
+            <div className="" />
         </div>
     )
 }

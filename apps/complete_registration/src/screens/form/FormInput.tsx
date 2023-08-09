@@ -34,6 +34,7 @@ const TextInput: FieldComponentType = ({ label, mapping }) => {
     return (
         <span key={mapping} className="p-float-label">
             <InputText
+                className="mx-auto w-full max-w-[400px]"
                 value={field.value ?? ""}
                 onChange={event =>
                     dispatch(

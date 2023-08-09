@@ -4,6 +4,7 @@ import { App } from "./App.tsx"
 import "./input.css"
 import "primereact/resources/primereact.min.css"
 import "primereact/resources/themes/tailwind-light/theme.css"
+import "primeicons/primeicons.css"
 import { store } from "./store/store.ts"
 import { Provider } from "react-redux"
 
