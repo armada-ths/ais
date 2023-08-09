@@ -155,9 +155,6 @@ class Exhibitor(models.Model):
     booth_height = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Height of the booth (cm)"
     )
-    electricity_total_power = models.PositiveIntegerField(
-        blank=True, null=True, verbose_name="Estimated power consumption (W)"
-    )
     electricity_socket_count = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Number of sockets"
     )
@@ -219,21 +216,6 @@ class Exhibitor(models.Model):
         blank=True,
         null=True,
         verbose_name="Deviating deadline for complete registration",
-    )
-
-    placement_wishes = [
-        (None, "No preference"),
-        ("MIXED", "Mixed with companies from other industries"),
-        ("SIMILAR", "Next to similar companies"),
-    ]
-
-    placement_wish = models.CharField(
-        choices=placement_wishes, blank=True, null=True, max_length=255
-    )
-    placement_comment = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Additional wishes regarding placement at the fair",
     )
 
     transport_to_statuses = [
@@ -365,9 +347,6 @@ class ExhibitorView(models.Model):
         "transport_to": "Transport to the fair",
         "transport_from": "Transport from the fair",
         "transport_comment": "Transport comment",
-        "placement_wish": "Placement wish",
-        "placement_comment": "Placement comment",
-        "electricity_total_power": "Total power (W)",
         "electricity_socket_count": "Socket count",
         "electricity_equipment": "Electricity equipment",
         "booth_height": "Booth height (cm)",

@@ -144,12 +144,6 @@ def exhibitors(request, year, template_name="exhibitors/exhibitors.html"):
                 value = e.transport_from
             if choice == "transport_comment":
                 value = e.transport_comment
-            if choice == "placement_wish":
-                value = e.get_placement_wish_display
-            if choice == "placement_comment":
-                value = e.placement_comment
-            if choice == "electricity_total_power":
-                value = e.electricity_total_power
             if choice == "electricity_socket_count":
                 value = e.electricity_socket_count
             if choice == "electricity_equipment":

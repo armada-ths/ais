@@ -189,39 +189,21 @@ class CompleteLogisticsDetailsForm(ModelForm):
         model = Exhibitor
         fields = [
             "booth_height",
-            "electricity_total_power",
             "electricity_socket_count",
             "electricity_equipment",
-            "placement_wish",
-            "placement_comment",
         ]
 
         widgets = {
             "electricity_equipment": forms.Textarea(attrs={"rows": 5}),
-            "placement_wish": forms.RadioSelect,
-            "placement_comment": forms.Textarea(
-                attrs={
-                    "rows": 5,
-                    "placeholder": "We will consider your wish of placement, but we cannot give any guarantees.",
-                }
-            ),
         }
 
         labels = {
             "booth_height": "Height of the booth (cm) (required to sign contract)",
-            "electricity_total_power": "Estimated power consumption (W) (required to sign contract)",
             "electricity_socket_count": "Number of sockets (required to sign contract)",
         }
 
         help_texts = {
-            "electricity_total_power": """
-				If possible, please provide the actual power consumption figures of the
-				equipment you plan to bring.
-				Typical power requirements of common devices are presented in a table below this form.
-				1000 W is included in the Base kit. If you require additional electricity,
-				remember to add "Additional Electricity" in the Products section below.""",
             "booth_height": '230 cm is included in the Base kit. If you want additional height, remember to add "Additional Booth Height" in the Products section below.',
-            "placement_wish": 'We will use the industry information you provide in the section "Exhibitor catalogue" to facilitate your placement wish. If you have other wishes for industry segmentation please provide a comment below.',
         }
 
     def is_valid(self):

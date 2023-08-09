@@ -573,7 +573,6 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
     if signature:
         form_logistics_details.fields["booth_height"].required = True
-        form_logistics_details.fields["electricity_total_power"].required = True
         form_logistics_details.fields["electricity_socket_count"].required = True
         form_catalogue_details.fields["catalogue_about"].required = True
         # form_catalogue_details.fields['catalogue_purpose'].required = True # Not collected at all in 2019
@@ -653,8 +652,6 @@ def form_complete(request, company, company_contact, fair, exhibitor):
         errors.append("Invoice address, zip code, city and country")
     if not exhibitor.booth_height:
         errors.append("Height of the booth (cm)")
-    if exhibitor.electricity_total_power is None:
-        errors.append("Estimated power consumption (W)")
     if exhibitor.electricity_socket_count is None:
         errors.append("Number of power sockets")
     if not exhibitor.catalogue_about:
