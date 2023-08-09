@@ -1,7 +1,8 @@
-from rest_framework import status
 from rest_framework.parsers import JSONParser
 
 from django.http import JsonResponse
+from accounting.models import Order
+from register.api import status
 
 from register.api.registration.types import Registration, RegistrationSerializer
 from register.api.registration.serializer import CompanyCRSerializer
@@ -35,7 +36,7 @@ def put_cr_registration(request, registration):
         serializer.update(registration, serializer.validated_data)
         return JsonResponse(serializer.data)
 
-    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return status.serializer_error(serializer.errors)
 
 
 def handle_cr(request, company, fair, contact):
@@ -50,15 +51,14 @@ def handle_cr(request, company, fair, contact):
 
     exhibitor = Exhibitor.objects.filter(fair=fair, company=company).first()
     if exhibitor == None:
-        return JsonResponse(
-            {"error": "user_is_not_exhibitor"},
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
+        return status.USER_IS_NOT_EXHIBITOR
 
     deadline = (
         exhibitor.deadline_complete_registration
         or fair.complete_registration_close_date
     )
+
+    orders = Order.objects.filter(purchasing_company=company)
 
     registration = Registration(
         type="complete_registration",
@@ -67,6 +67,7 @@ def handle_cr(request, company, fair, contact):
         contact=contact,
         fair=fair,
         contract=contract,
+        orders=orders,
     )
 
     if request.method == "GET":
@@ -74,7 +75,4 @@ def handle_cr(request, company, fair, contact):
     elif request.method == "PUT":
         return put_cr_registration(request, registration)
     else:
-        return JsonResponse(
-            {"error": "unsupported_method"},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED,
-        )
+        return status.UNSUPPORTED_METHOD

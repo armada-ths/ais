@@ -1,10 +1,10 @@
 from django.conf.urls import url
 
-from register import api
+from register.api import registration
 
 app_name = "register_api"
 
 urlpatterns = [
-    url(r"^$", api.index, name="index"),
+    url(r"^$", registration.index, name="index"),
     # url(r"^(?P<company_pk>[0-9]+)$", api.index, name="index"),
 ]

@@ -16,7 +16,7 @@ class Revenue(models.Model):
         default_permissions = []
 
     def __str__(self):
-        return "%s – %s" % (self.name, self.description)
+        return "[%s] %s – %s" % (self.fair.year, self.name, self.description)
 
 
 class Category(models.Model):
@@ -52,7 +52,16 @@ class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
     unit_price = models.IntegerField(blank=False)
-    revenue = models.ForeignKey(Revenue, blank=False, on_delete=models.CASCADE)
+    revenue = models.ForeignKey(
+        Revenue,
+        blank=False,
+        on_delete=models.CASCADE,
+        help_text=" ".join(
+            [
+                "This field also determines which products will be displayed on the FR page for the customer"
+            ]
+        ),
+    )
     result_center = models.PositiveIntegerField(blank=False, null=False)
     cost_unit = models.PositiveIntegerField(blank=False, null=False)
     category = models.ForeignKey(
@@ -61,6 +70,30 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     registration_section = models.ForeignKey(
         RegistrationSection, blank=True, null=True, on_delete=models.CASCADE
+    )
+    child_products = models.ManyToManyField(
+        "self",
+        symmetrical=False,
+        blank=True,
+        help_text=" ".join(
+            [
+                "This product will automatically add these products when added.",
+                'Recommended (but not neccessary) is to toggle the "No customer removal" on',
+                "the child products in order to make the package automatically add packages ",
+                "which can only be removed by a salesperson.",
+                "This feature was used in 2023 when selling gold, silver, and bronze packages.",
+            ]
+        ),
+    )
+    no_customer_removal = models.BooleanField(
+        default=False,
+        help_text=" ".join(
+            [
+                "This product will be unable to be removed by the customer."
+                "Only a salesperson can remove it.",
+                "Used in order to be a child product to a package product.",
+            ]
+        ),
     )
 
     class Meta:

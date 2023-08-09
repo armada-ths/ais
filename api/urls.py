@@ -9,6 +9,7 @@ urlpatterns = [
     url(r"^banquet/", include("banquet.api_urls")),
     url(r"^fair/", include("fair.api_urls")),
     url(r"^registration/", include("register.api_urls")),
+    url(r"^accounting/", include("accounting.api_urls")),
     url(r"^catalogueselections/", views.catalogueselections),
     url(r"^news/", views.news),
     url(r"^organization/v2", views.organization_v2),
