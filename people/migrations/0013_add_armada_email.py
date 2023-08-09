@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('people', '0012_profile_other_dietary_restrictions'),
+        ("people", "0012_profile_other_dietary_restrictions"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='armada_email',
-            field=models.EmailField(blank=True, max_length=254, null=True, verbose_name='Armada Email'),
+            model_name="profile",
+            name="armada_email",
+            field=models.EmailField(
+                blank=True, max_length=254, null=True, verbose_name="Armada Email"
+            ),
         ),
     ]
