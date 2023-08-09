@@ -51,10 +51,18 @@
               <div id="company-list" class="d-flex flex-column">
               </div>
               <p id="company-list-no-results">No results found</p>
-              <p>
-                <b>Can't find your company? </b>
-                <a href="/register/company">Create a new company profile here!</a>
-              </p>
+            </div>
+            <div id="company-regitration-form" class="collapsible">
+              <p class="collapsible-preview mb-0">Can't find your company?</p>
+              <div class="collapsible-content">
+                <p>*Fill your company information to proceed with the registration</p>
+                <div id="company-registration-inputs">
+                  {{ company_form | crispy }}
+                  <div class="text-center">
+                    <button type="button" class="btn btn-success" id="register-company-btn">Register Company</button>
+                  </div>
+                </div>
+              </div>
             </div>
             <div id="company-confirmation">
               <p class="text-center">Is this your company?</p>
