@@ -18,12 +18,8 @@ export const selectPageProgress = cs(
     (form, pageId) => {
         const page = form.pages.find(p => p.id == pageId)
         if (page == null) return null
-        const totalFields = page.fields.filter(
-            field => field.type != "text"
-        ).length
-        const completedFields = page.fields.filter(
-            field => field.type != "text" && field.value
-        ).length
+        const totalFields = page.fields.filter(field => !field.readonly).length
+        const completedFields = page.fields.filter(field => field.value).length
 
         if (totalFields <= 0) return null
         return completedFields / totalFields
@@ -33,12 +29,21 @@ export const selectPageProgress = cs(
 export const selectFormProgress = cs(selectForm, form => {
     const [completedFields, totalFields] = form.pages.reduce(
         (acc, page) => [
-            acc[0] +
-                page.fields.filter(field => field.type != "text" && field.value)
-                    .length,
-            acc[1] + page.fields.filter(field => field.type != "text").length
+            acc[0] + page.fields.filter(field => field.value).length,
+            acc[1] + page.fields.filter(field => field.readonly !== true).length
         ],
         [0, 0]
     )
     return completedFields / totalFields
 })
+
+export const selectField = cs(
+    [selectForm, (_: RootState, mapping: string) => mapping],
+    (form, mapping) => {
+        for (const page of form.pages) {
+            const field = page.fields.find(f => f.mapping == mapping)
+            if (field) return field
+        }
+        return null
+    }
+)

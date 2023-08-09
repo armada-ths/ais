@@ -4,6 +4,11 @@ import formReducer from "./form/form_slice"
 export const store = configureStore({
     reducer: {
         formMeta: formReducer
+    },
+    middleware(getDefaultMiddleware) {
+        return getDefaultMiddleware({
+            serializableCheck: false
+        })
     }
 })
 

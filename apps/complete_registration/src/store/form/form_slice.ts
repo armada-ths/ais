@@ -5,7 +5,10 @@ import { PayloadAction } from "@reduxjs/toolkit"
 
 export type FormState = { activePage: number; form: Form }
 
-const initialState: FormState = { activePage: 0, form: FORMS.primary }
+const initialState: FormState = {
+    activePage: 0,
+    form: FORMS.primary
+}
 
 export const counterSlice = createSlice({
     name: "formMeta",
@@ -29,7 +32,6 @@ export const counterSlice = createSlice({
                     field => field.mapping === action.payload.mapping
                 )
                 if (result == null) continue
-                if (result.type === "text") continue
                 result.value = action.payload.value
             }
         }

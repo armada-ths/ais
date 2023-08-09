@@ -33,7 +33,7 @@ export function App() {
     const form = useSelector(selectForm)
 
     useEffect(() => {
-        fetch("https://2ff9-130-229-136-125.ngrok-free.app/api/registration", {
+        fetch("http://192.168.157.172:3000/api/registration/", {
             headers: new Headers({
                 "ngrok-skip-browser-warning": "69420"
             })

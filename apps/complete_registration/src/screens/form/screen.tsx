@@ -3,54 +3,16 @@ import { FormPageView } from "./FormPageView"
 import { useSelector } from "react-redux"
 import { selectActivePage } from "../../store/form/form_selectors"
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
+import React from "react"
 
 export type FieldValue = string | boolean | undefined | File
 
 export type Field = {
     mapping: string
-    name: string
-} & (
-    | {
-          type: "input-text"
-          value?: string
-      }
-    | {
-          type: "input-textarea"
-          value?: string
-      }
-    | {
-          type: "input-select"
-          options: Array<{
-              id: string
-              text: string
-          }>
-          value?: string
-      }
-    | {
-          type: "input-dropdown"
-          options: Array<{
-              id: string
-              text: string
-          }>
-          value?: string
-      }
-    | {
-          type: "input-switch"
-          value?: boolean
-      }
-    | {
-          type: "input-checkbox"
-          value?: boolean
-      }
-    | {
-          type: "text"
-          text: string
-      }
-    | {
-          type: "input-file"
-          value?: File
-      }
-)
+    component: React.ReactElement
+    readonly?: boolean
+    value?: FieldValue
+}
 
 export interface FormPage {
     id: string

@@ -1,5 +1,4 @@
 import { FormPage } from "./screen"
-import FieldGenerator from "./FieldGenerator"
 import { Button } from "primereact/button"
 import { useDispatch } from "react-redux"
 import { nextPage, previousPage } from "../../store/form/form_slice"
@@ -27,7 +26,9 @@ export function FormPageView({ page }: { page: FormPage }) {
         <div>
             <h2>{page.title}</h2>
             {page.fields.map(field => (
-                <FieldGenerator key={field.name} field={field} />
+                <div key={field.mapping} className="my-8">
+                    {field.component}
+                </div>
             ))}
             <div className="flex justify-between gap-x-5">
                 <Button label="Previous" onClick={handlePrevious} />

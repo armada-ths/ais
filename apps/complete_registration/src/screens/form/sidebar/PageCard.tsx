@@ -4,7 +4,6 @@ import { FormPage } from "../screen"
 import { useSelector } from "react-redux"
 
 export function PageCard({ page }: { page: FormPage }) {
-    console.log(page.id)
     const progress = useSelector((state: RootState) =>
         selectPageProgress(state, page.id)
     )

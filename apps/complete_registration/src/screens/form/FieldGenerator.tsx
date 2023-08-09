@@ -1,4 +1,4 @@
-import { Field } from "./screen"
+import { OldField } from "./screen"
 import { InputText } from "primereact/inputtext"
 import { Checkbox } from "primereact/checkbox"
 import { InputTextarea } from "primereact/inputtextarea"
@@ -7,7 +7,7 @@ import { SelectButton } from "primereact/selectbutton"
 import { useDispatch } from "react-redux"
 import { setField } from "../../store/form/form_slice"
 
-export default function FieldWrapper({ field }: { field: Field }) {
+export default function FieldWrapper({ field }: { field: OldField }) {
     return (
         <div>
             <p>{field.name}</p>
@@ -16,7 +16,7 @@ export default function FieldWrapper({ field }: { field: Field }) {
     )
 }
 
-export function FieldGenerator({ field }: { field: Field }) {
+export function FieldGenerator({ field }: { field: OldField }) {
     const dispatch = useDispatch()
 
     function callSetField(value: string | boolean | File) {
