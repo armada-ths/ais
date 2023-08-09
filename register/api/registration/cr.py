@@ -26,6 +26,7 @@ class RegistrationCRSerializer(RegistrationSerializer):
 
         return instance
 
+
 def put_cr_registration(request, registration):
     data = JSONParser().parse(request)
     serializer = RegistrationCRSerializer(registration, data=data, partial=True)

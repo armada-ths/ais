@@ -37,6 +37,7 @@ class RegistrationState(Enum):
         elif time >= fair.complete_registration_close_date:
             return RegistrationState.AFTER_CR
 
+
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyContact

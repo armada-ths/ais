@@ -21,6 +21,7 @@ COMPANY_FIELDS = (
     "e_invoice",
 )
 
+
 class CompanySerializer(UniqueFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Company
