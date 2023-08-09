@@ -34,7 +34,6 @@ export function reverseMap(parent: any, form: Form) {
 
             // Look for field in parent
             const path = field.mapping.split(".")
-            console.log("PATH", path)
             let parentCopy = { ...parent }
             for (const part of path) {
                 if (parentCopy == null || parentCopy[part] === undefined)
@@ -52,11 +51,9 @@ export function reverseMap(parent: any, form: Form) {
                     continue
                 }
 
-                console.log("Diving into", parentCopy, part)
                 parentCopy = parentCopy[part]
             }
         }
     }
-    console.log("MAPRESULT", awaitingMappings)
     return awaitingMappings
 }

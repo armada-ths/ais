@@ -2,6 +2,7 @@ import PrimarySection from "./PrimarySection"
 import { FormPageView } from "./FormPageView"
 import { useSelector } from "react-redux"
 import { selectActivePage } from "../../store/form/form_selectors"
+import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 
 export type FieldValue = string | boolean | undefined | File
 
@@ -59,6 +60,7 @@ export interface FormPage {
 
 export interface Form {
     name: string
+    isSkippable: boolean
     description: string
     pages: FormPage[]
 }
@@ -71,8 +73,9 @@ export function FormScreen({ form }: Props) {
     const activePage = useSelector(selectActivePage)
 
     return (
-        <div className="grid min-h-[100dvh] grid-cols-[1fr_3fr_1fr]">
-            <div className="bg-red-500" />
+        <div className="grid min-h-[100dvh] grid-cols-[1fr_3fr_1fr] grid-rows-[80px_1fr]">
+            <div className="col-span-3 h-full bg-emerald-400"></div>
+            <FormSidebarProgressionSummary />
             <PrimarySection>
                 <div>
                     <h1 className="text-4xl">{form.name}</h1>

@@ -3,6 +3,7 @@ import { Form } from "../screens/form/screen"
 export const form: Form = {
     name: "Mandatory info",
     description: "This is mandatory",
+    isSkippable: false,
     pages: [
         {
             id: "primary_form",
@@ -31,7 +32,7 @@ export const form: Form = {
             ]
         },
         {
-            id: "primary_form",
+            id: "primary_form_second",
             title: "ANother page",
             fields: []
         }

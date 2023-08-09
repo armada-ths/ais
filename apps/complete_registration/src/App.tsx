@@ -38,9 +38,7 @@ export function App() {
                 "ngrok-skip-browser-warning": "69420"
             })
         }).then(async raw => {
-            console.log("HELLO", raw)
             const data = await raw.json()
-            console.log("HERE YEAY", data)
             const awaitingMappings = reverseMap(data, form)
             for (const current of awaitingMappings) {
                 dispatch(
