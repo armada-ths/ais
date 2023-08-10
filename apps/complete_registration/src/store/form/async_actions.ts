@@ -14,7 +14,7 @@ export const remoteSaveChanges = createAsyncThunk(
         const selectedProducts = selectSelectedProducts(state)
 
         outgoing.orders = generateProductApiSetArray(selectedProducts)
-        console.log(JSON.stringify(outgoing))
+        console.log("OUTGOING", JSON.stringify(outgoing))
 
         const response = await fetch(
             "http://192.168.157.172:3000/api/registration/",

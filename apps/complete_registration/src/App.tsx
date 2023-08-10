@@ -25,7 +25,7 @@ export function App() {
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
-            console.log("YOOO", data)
+            console.log("YOOO", JSON.stringify(data))
             dispatch(loadProducts(data))
         })
         fetch(`${HOST}/api/registration/`, {
@@ -52,7 +52,7 @@ export function App() {
                 dispatch(
                     pickProduct({
                         id: productMeta.product.id,
-                        quantity: 1,
+                        quantity: productMeta.quantity,
                         isPackage:
                             productMeta.product.category?.name === PACKAGE_KEY
                     })

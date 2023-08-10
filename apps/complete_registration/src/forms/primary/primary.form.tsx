@@ -68,13 +68,9 @@ export const form: Form = {
             ]
         },
         {
-            id: "general_form",
-            title: "ANother page",
-            fields: [
-                {
-                    mapping: "company.general_email_address"
-                }
-            ]
+            id: "summary",
+            title: "Summary",
+            fields: []
         }
     ]
 }

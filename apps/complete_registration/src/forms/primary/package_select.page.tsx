@@ -2,7 +2,6 @@ import { useSelector } from "react-redux"
 import { FormField } from "../../screens/form/FormInput"
 import { FormWrapper } from "../FormWrapper"
 import { selectProductPackages } from "../../store/products/products_selectors"
-import { PrimaryFormHeader } from "./Header"
 
 export function PackageSelectFormPage() {
     const packages = useSelector(selectProductPackages)
@@ -10,7 +9,6 @@ export function PackageSelectFormPage() {
 
     return (
         <FormWrapper>
-            <PrimaryFormHeader />
             <div className="flex flex-wrap justify-center gap-5">
                 {packages.map(productPackageMeta => (
                     <FormField.Package

@@ -5,6 +5,12 @@ export interface Category {
     allow_multiple_purchases: boolean
 }
 
+export interface RegistrationSection {
+    name: string
+    description: string
+    hide_from_registration: boolean
+}
+
 export interface Product {
     id: number
     name: string
@@ -13,6 +19,7 @@ export interface Product {
     description: string
     category: Category | null
     no_customer_removal: boolean
+    registration_section: RegistrationSection | null
     child_products: Omit<Product, "child_products">[]
 }
 export interface ProductMeta {
@@ -49,6 +56,7 @@ export function generateProductApiSetArray(selected: SelectedProduct[]) {
 }
 
 export const PACKAGE_KEY = "Package"
+export const EVENTS_REGISTRATION_SECTION_KEY = "Events"
 export const productSlice = createSlice({
     name: "products",
     initialState,
@@ -57,17 +65,26 @@ export const productSlice = createSlice({
             state.records = action.payload
         },
         pickProduct: (state, action: PayloadAction<SelectedProduct>) => {
-            if (
-                state.selected.find(product => product.id === action.payload.id)
-            ) {
-                return
-            }
+            // Remove previous occurances of the product
+            state.selected = state.selected.filter(
+                current => current.id !== action.payload.id
+            )
             state.selected.push(action.payload)
+        },
+        unpickProduct: (
+            state,
+            action: PayloadAction<{
+                id: number
+            }>
+        ) => {
+            state.selected = state.selected.filter(
+                current => current.id !== action.payload.id
+            )
         }
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { loadProducts, pickProduct } = productSlice.actions
+export const { loadProducts, pickProduct, unpickProduct } = productSlice.actions
 
 export default productSlice.reducer
