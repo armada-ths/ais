@@ -26,6 +26,3 @@ STRIPE_PUBLISHABLE = "pk_test_IzgUj9oJhednbt4EIf78esBE"
 # restarting the server. Again, this is a serious security flaw
 # if used in production!
 SECRET_KEY = "..............¯\_(ツ)_/¯..............."
-
-# todo: Remove after setting production environment in production (2023)
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"

@@ -2,35 +2,49 @@ from rest_framework import serializers
 
 from django.http import JsonResponse
 
-from accounting.models import Category, Order, Product
+from accounting.models import Category, Order, Product, RegistrationSection
 from fair.models import Fair
+
+
+class RegistrationSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegistrationSection
+        read_only_fields = ("name", "description", "hide_from_registration")
+        fields = read_only_fields
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ("name", "allow_multiple_purchases")
+        read_only_fields = ("id", "description", "name", "allow_multiple_purchases")
+        fields = read_only_fields
 
 
 class ProductChildSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = (
-            "id",
+        read_only_fields = (
             "name",
             "max_quantity",
             "unit_price",
             "description",
             "category",
             "no_customer_removal",
+            "registration_section",
         )
+        fields = read_only_fields + ("id",)
 
-    category = CategorySerializer()
+    id = serializers.IntegerField()
+    category = CategorySerializer(allow_null=True)
+    registration_section = RegistrationSectionSerializer()
 
 
 class ProductSerializer(ProductChildSerializer):
     class Meta(ProductChildSerializer.Meta):
-        fields = ProductChildSerializer.Meta.fields + ("child_products",)
+        read_only_fields = ProductChildSerializer.Meta.read_only_fields + (
+            "child_products",
+        )
+        fields = ProductChildSerializer.Meta.fields + read_only_fields
 
     child_products = ProductChildSerializer(many=True)
 
@@ -38,9 +52,41 @@ class ProductSerializer(ProductChildSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ("id", "product", "quantity", "unit_price", "comment")
+        read_only_fields = ("id", "unit_price", "comment")
+        fields = read_only_fields + ("product", "quantity")
 
     product = ProductSerializer()
+
+    def validate(self, data):
+        try:
+            if int(data["quantity"]) < 0:
+                raise
+        except:
+            raise serializers.ValidationError("quantity must be a positive integer")
+
+        try:
+            product_id = int(data["product"]["id"])
+        except:
+            raise serializers.ValidationError("product.id must be a positive integer")
+
+        try:
+            if not Product.objects.get(id=product_id):
+                raise
+        except:
+            raise serializers.ValidationError("product does not exist")
+
+        return data
+
+    def create(self, validated_data):
+        product = Product.objects.get(id=validated_data["product"]["id"])
+        if not product:
+            return
+
+        return Order.objects.create(
+            product=product,
+            quantity=int(validated_data["quantity"]),
+            purchasing_company=self.context["purchasing_company"],
+        )
 
 
 def list_products(request):

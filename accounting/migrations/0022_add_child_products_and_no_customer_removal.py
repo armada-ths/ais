@@ -4,20 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0021_auto_20210918_2247'),
+        ("accounting", "0021_auto_20210918_2247"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='child_products',
-            field=models.ManyToManyField(blank=True, help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "No customer removal" on the child products in order to make the package automatically add packages  which can only be removed by a salesperson.', to='accounting.Product'),
+            model_name="product",
+            name="child_products",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "No customer removal" on the child products in order to make the package automatically add packages  which can only be removed by a salesperson.',
+                to="accounting.Product",
+            ),
         ),
         migrations.AddField(
-            model_name='product',
-            name='no_customer_removal',
-            field=models.BooleanField(default=False, help_text='This product will be unable to be removed by the customer.Only a salesperson can remove it. Used in order to be a child product to a package product.'),
+            model_name="product",
+            name="no_customer_removal",
+            field=models.BooleanField(
+                default=False,
+                help_text="This product will be unable to be removed by the customer.Only a salesperson can remove it. Used in order to be a child product to a package product.",
+            ),
         ),
     ]

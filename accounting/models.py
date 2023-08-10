@@ -21,6 +21,7 @@ class Revenue(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=False)
+    description = models.TextField(blank=True, null=True)
     fair = models.ForeignKey("fair.Fair", blank=False, on_delete=models.CASCADE)
     allow_multiple_purchases = models.BooleanField(default=False)
 
@@ -30,7 +31,7 @@ class Category(models.Model):
         default_permissions = []
 
     def __str__(self):
-        return self.name
+        return '[%s] %s' % (self.fair.year, self.name)
 
 
 class RegistrationSection(models.Model):

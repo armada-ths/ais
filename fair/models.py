@@ -1,8 +1,10 @@
+from enum import Enum
 from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.crypto import get_random_string
+from django.utils import timezone
 
 from lib.image import UploadToDirUUID
 from people.models import DietaryRestriction
@@ -34,6 +36,14 @@ def get_random_32_length_string():
     return get_random_string(32)
 
 
+class RegistrationState(Enum):
+    BEFORE_IR = 1
+    IR = 2
+    AFTER_IR = 3
+    CR = 4
+    AFTER_CR = 5
+
+
 class Fair(models.Model):
     name = models.CharField(max_length=100, default=default_name)
     year = models.IntegerField(default=date.today().year)
@@ -52,6 +62,26 @@ class Fair(models.Model):
 
     companies_ticket_deadline = models.DateTimeField(null=True, blank=True)
     companies_ticket_deadline.help_text = "After this date the companies will no longer be able to create or edit their lunch or banquet tickets on their registration page."
+
+    def get_period(self):
+        time = timezone.now()
+
+        if time < self.registration_start_date:
+            return RegistrationState.BEFORE_IR
+        elif time >= self.registration_start_date and time < self.registration_end_date:
+            return RegistrationState.IR
+        elif (
+            time >= self.registration_end_date
+            and time < self.complete_registration_start_date
+        ):
+            return RegistrationState.AFTER_IR
+        elif (
+            time >= self.complete_registration_start_date
+            and time < self.complete_registration_close_date
+        ):
+            return RegistrationState.CR
+        elif time >= self.complete_registration_close_date:
+            return RegistrationState.AFTER_CR
 
     def is_member_of_fair(self, user):
         if user.is_superuser:

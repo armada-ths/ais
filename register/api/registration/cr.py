@@ -1,36 +1,23 @@
 from rest_framework.parsers import JSONParser
 
 from django.http import JsonResponse
-from accounting.models import Order
+from django.views.decorators.http import require_POST, require_GET
+
 from register.api import status
+from register.api.registration.types import (
+    Registration,
+    get_contract_signature,
+)
 
-from register.api.registration.types import Registration, RegistrationSerializer
-from register.api.registration.serializer import CompanyCRSerializer
-
-from exhibitors.models import Exhibitor
 from register.models import SignupLog
-
-from register.views import get_contract
-
-
-class RegistrationCRSerializer(RegistrationSerializer):
-    company = CompanyCRSerializer()
-
-    def update(self, instance, validated_data):
-        company = validated_data.pop("company", None)
-        if company:
-            company_serializer = CompanyCRSerializer(
-                instance.company, data=company, partial=True
-            )
-            if company_serializer.is_valid():
-                company_serializer.save()
-
-        return instance
+from accounting.models import Order
 
 
-def put_cr_registration(request, registration):
+def put_cr_registration(request, registration, purchasing_company):
     data = JSONParser().parse(request)
-    serializer = RegistrationCRSerializer(registration, data=data, partial=True)
+    serializer = registration.get_serializer(
+        data, context={"purchasing_company": purchasing_company}
+    )
 
     if serializer.is_valid():
         serializer.update(registration, serializer.validated_data)
@@ -39,40 +26,65 @@ def put_cr_registration(request, registration):
     return status.serializer_error(serializer.errors)
 
 
-def handle_cr(request, company, fair, contact):
-    signature = SignupLog.objects.filter(
-        company=company, contract__fair=fair, contract__type="COMPLETE"
-    ).first()
+def get_registration(company, fair, contact, exhibitor):
+    contract, signature = get_contract_signature(company, fair)
 
-    if signature:
-        contract = signature.contract
-    else:
-        contract = get_contract(company, fair, "COMPLETE")
-
-    exhibitor = Exhibitor.objects.filter(fair=fair, company=company).first()
     if exhibitor == None:
-        return status.USER_IS_NOT_EXHIBITOR
-
-    deadline = (
-        exhibitor.deadline_complete_registration
-        or fair.complete_registration_close_date
-    )
+        if signature == None:
+            return status.USER_DID_NOT_SIGN
+        else:
+            return status.USER_IS_NOT_EXHIBITOR
 
     orders = Order.objects.filter(purchasing_company=company)
 
-    registration = Registration(
-        type="complete_registration",
-        deadline=deadline,
+    return Registration(
         company=company,
         contact=contact,
         fair=fair,
+        exhibitor=exhibitor,
         contract=contract,
         orders=orders,
     )
 
+
+def handle_cr(request, company, fair, contact, exhibitor):
+    registration = get_registration(company, fair, contact, exhibitor)
+    serializer = registration.get_serializer()
+
     if request.method == "GET":
-        return JsonResponse(RegistrationCRSerializer(registration).data, safe=False)
+        return JsonResponse(serializer.data, safe=False)
     elif request.method == "PUT":
-        return put_cr_registration(request, registration)
+        return put_cr_registration(request, registration, company)
     else:
         return status.UNSUPPORTED_METHOD
+
+
+@require_POST
+def submit_cr(request, company, fair, contact, exhibitor):
+    registration = get_registration(company, fair, contact, exhibitor)
+    _, signature = get_contract_signature(company, fair)
+
+    if signature != None:
+        return status.EXHIBITOR_ALREADY_SIGNED
+
+    # if not form_final_submission.is_valid():
+    #     return error
+
+    signature = SignupLog.objects.create(
+        company_contact=contact, contract=registration.contract, company=company
+    )
+
+    # deadline = (
+    #     exhibitor.deadline_complete_registration
+    #     or fair.complete_registration_close_date
+    # )
+    # send_CR_confirmation_email(signature, deadline)
+
+    registration = get_registration(company, fair, contact, exhibitor)
+
+    try:
+        serializer = registration.get_serializer()
+    except:
+        return
+
+    return JsonResponse(serializer.data, safe=False)
