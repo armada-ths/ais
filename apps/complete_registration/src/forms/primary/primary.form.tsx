@@ -19,14 +19,20 @@ export const form: Form = {
                     ? 100
                     : 0
             },
-            fields: [
-                {
-                    mapping: "company.general_email_address"
-                }
-            ]
+            fields: []
         },
         {
-            id: "primary_form",
+            id: "events",
+            title: "Select Events",
+            fields: []
+        },
+        {
+            id: "extras",
+            title: "Select Extras",
+            fields: []
+        },
+        {
+            id: "invoice",
             title: "Invoice Information",
             fields: [
                 {

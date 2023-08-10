@@ -1,13 +1,23 @@
 import { FormField } from "../../screens/form/FormInput"
 import { FormWrapper } from "../FormWrapper"
+import { PrimaryFormHeader } from "./Header"
 
 export function InvoiceDetailsFormPage() {
     return (
         <FormWrapper>
+            <PrimaryFormHeader />
             <FormField.Text
                 label="Identity Number"
                 mapping="company.identity_number"
                 className="mb-10"
+            />
+            <FormField.Text
+                label="Invoice Name"
+                mapping="company.invoice_name"
+            />
+            <FormField.Text
+                label="Invoice Email Address"
+                mapping="company.invoice_email_address"
             />
             <div className="flex flex-wrap gap-x-5 lg:grid lg:grid-cols-2">
                 <FormField.Text

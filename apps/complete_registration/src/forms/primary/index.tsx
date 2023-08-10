@@ -1,7 +1,8 @@
 import { form } from "./primary.form"
 import { InvoiceDetailsFormPage } from "./invoice_details.page"
 import { PackageSelectFormPage } from "./package_select.page"
-import { GeneralFormPage } from "./general.page"
+import { EventsFormPage } from "./events.page"
+import { ExtrasFormPage } from "./extras.page"
 export default {
     form,
     pages: [
@@ -10,12 +11,16 @@ export default {
             page: PackageSelectFormPage
         },
         {
-            id: "invoice_details",
-            page: InvoiceDetailsFormPage
+            id: "events",
+            page: EventsFormPage
         },
         {
-            id: "general",
-            page: GeneralFormPage
+            id: "extras",
+            page: ExtrasFormPage
+        },
+        {
+            id: "invoice_details",
+            page: InvoiceDetailsFormPage
         }
     ]
 }

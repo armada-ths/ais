@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux"
 import { setField } from "./store/form/form_slice"
 import {
     PACKAGE_KEY,
-    Product,
     ProductMeta,
     loadProducts,
     pickProduct
