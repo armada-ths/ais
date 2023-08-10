@@ -5,25 +5,32 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0022_add_child_products_and_no_customer_removal'),
+        ("accounting", "0022_add_child_products_and_no_customer_removal"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='category',
-            name='description',
+            model_name="category",
+            name="description",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='product',
-            name='child_products',
-            field=models.ManyToManyField(blank=True, help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "No customer removal" on the child products in order to make the package automatically add packages  which can only be removed by a salesperson. This feature was used in 2023 when selling gold, silver, and bronze packages.', to='accounting.Product'),
+            model_name="product",
+            name="child_products",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "No customer removal" on the child products in order to make the package automatically add packages  which can only be removed by a salesperson. This feature was used in 2023 when selling gold, silver, and bronze packages.',
+                to="accounting.Product",
+            ),
         ),
         migrations.AlterField(
-            model_name='product',
-            name='revenue',
-            field=models.ForeignKey(help_text='This field also determines which products will be displayed on the FR page for the customer', on_delete=django.db.models.deletion.CASCADE, to='accounting.Revenue'),
+            model_name="product",
+            name="revenue",
+            field=models.ForeignKey(
+                help_text="This field also determines which products will be displayed on the FR page for the customer",
+                on_delete=django.db.models.deletion.CASCADE,
+                to="accounting.Revenue",
+            ),
         ),
     ]

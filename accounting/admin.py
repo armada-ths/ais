@@ -32,12 +32,12 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    readonly_fields = ('amount',)
+    readonly_fields = ("amount",)
     list_display = ["name", "purchasing_company", "product", "quantity", "amount"]
     list_filter = ["purchasing_company__name"]
 
     def amount(self, obj):
         if obj.unit_price:
-            return '%s (D)' % obj.unit_price
+            return "%s (D)" % obj.unit_price
         else:
             return obj.product.unit_price * obj.quantity

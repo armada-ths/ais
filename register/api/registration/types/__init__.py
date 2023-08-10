@@ -32,4 +32,3 @@ class RegistrationSerializer(serializers.Serializer):
     fair = FairSerializer(read_only=True)
     contract = SignupContractSerializer(read_only=True)
     orders = OrderSerializer(many=True)
-

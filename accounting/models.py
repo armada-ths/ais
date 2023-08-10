@@ -31,7 +31,7 @@ class Category(models.Model):
         default_permissions = []
 
     def __str__(self):
-        return '[%s] %s' % (self.fair.year, self.name)
+        return "[%s] %s" % (self.fair.year, self.name)
 
 
 class RegistrationSection(models.Model):

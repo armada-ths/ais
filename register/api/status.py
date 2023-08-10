@@ -33,12 +33,19 @@ COMPANY_DOES_NOT_EXIST = JsonResponse(
     {"error": "company_does_not_exist"},
     status=status.HTTP_404_NOT_FOUND,
 )
-USER_DID_NOT_SIGN = JsonResponse(
-    {"error": "user_did_not_sign"},
+USER_DID_NOT_SIGN_IR = JsonResponse(
+    {"error": "user_did_not_sign_ir"},
     status=status.HTTP_401_UNAUTHORIZED,
 )
 USER_IS_NOT_EXHIBITOR = JsonResponse(
     {"error": "user_is_not_exhibitor"},
+    status=status.HTTP_401_UNAUTHORIZED,
+)
+USER_NOT_ALLOWED_TO_SUBMIT = JsonResponse(
+    {
+        "error": "user_not_allowed_to_submit",
+        "message": "You are not a contact person for this company",
+    },
     status=status.HTTP_401_UNAUTHORIZED,
 )
 UNSUPPORTED_METHOD = JsonResponse(

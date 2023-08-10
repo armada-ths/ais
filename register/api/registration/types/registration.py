@@ -2,12 +2,17 @@ from enum import Enum
 from rest_framework.fields import empty
 
 from fair.models import RegistrationState
+from register.api import status
 
 from register.api.registration.types.cr import (
     CRRegistrationSerializer,
     CRSignedRegistrationSerializer,
 )
-from register.api.registration.util import UserPermission, get_contract_signature
+from register.api.registration.util import (
+    JSONError,
+    UserPermission,
+    get_contract_signature,
+)
 
 
 class RegistrationType(Enum):
@@ -22,13 +27,14 @@ class RegistrationType(Enum):
 
 
 class Registration:
-    def __init__(self, company, exhibitor, contact, fair, contract, orders):
+    def __init__(self, company, exhibitor, contact, fair, contract, orders, signature):
         self.company = company
         self.exhibitor = exhibitor
         self.contact = contact
         self.fair = fair
         self.contract = contract
         self.orders = orders
+        self.signature = signature
 
         period = fair.get_period()
 
@@ -39,7 +45,7 @@ class Registration:
         elif period == RegistrationState.AFTER_IR:
             pass
         elif period == RegistrationState.CR:
-            _, signature = get_contract_signature(company, fair)
+            self.ensure_cr_eligibility()
 
             self.deadline = (
                 exhibitor.deadline_complete_registration
@@ -75,3 +81,10 @@ class Registration:
             partial=True,
             context=context,
         )
+
+    def ensure_cr_eligibility(self):
+        if self.exhibitor == None:
+            if self.signature == None:
+                raise JSONError(status.USER_DID_NOT_SIGN_IR)
+            else:
+                raise JSONError(status.USER_IS_NOT_EXHIBITOR)

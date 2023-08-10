@@ -8,6 +8,11 @@ from register.models import SignupLog
 from register.views import get_contract
 
 
+class JSONError(BaseException):
+    def __init__(self, status):
+        self.status = status
+
+
 class UserPermission(Enum):
     COMPANY_CONTACT = 0
     SALES = 1
