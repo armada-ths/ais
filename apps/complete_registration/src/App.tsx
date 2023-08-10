@@ -25,6 +25,7 @@ export function App() {
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
+            console.log("PRODUCTS", JSON.stringify(data))
             dispatch(loadProducts(data))
         })
         fetch(`${HOST}/api/registration/`, {

@@ -1,9 +1,6 @@
 import { useDispatch, useSelector } from "react-redux"
 import { FormWrapper } from "../FormWrapper"
-import {
-    selectProductEvents,
-    selectSelectedProduct
-} from "../../store/products/products_selectors"
+import { selectSelectedProduct } from "../../store/products/products_selectors"
 import {
     EVENTS_REGISTRATION_SECTION_KEY,
     Product,
@@ -16,7 +13,7 @@ import { InputSwitch } from "primereact/inputswitch"
 import { cx } from "../../utils/cx"
 import React, { useMemo } from "react"
 
-function EventInput({ product }: { product: Product }) {
+function InputCard({ product }: { product: Product }) {
     const dispatch = useDispatch()
     const selected = useSelector((state: RootState) =>
         selectSelectedProduct(state, product.id)
@@ -78,12 +75,16 @@ function EventInput({ product }: { product: Product }) {
     )
 }
 
-export function EventsFormPage() {
-    const events = useSelector(selectProductEvents)
-    const compartmentalizedEvents = useMemo(
+export function ProductFormPage({
+    selector
+}: {
+    selector: (state: RootState) => Product[]
+}) {
+    const products = useSelector(selector)
+    const compartmentalizedProducts = useMemo(
         () =>
             Object.entries(
-                events.reduce<Record<string, Product[]>>(
+                products.reduce<Record<string, Product[]>>(
                     (total, current) => {
                         if (current.category == null) {
                             total["none"].push(current)
@@ -100,13 +101,13 @@ export function EventsFormPage() {
                     { none: [] }
                 )
             ),
-        [events]
+        [products]
     )
 
     return (
         <FormWrapper>
             <div className="flex flex-col gap-10">
-                {compartmentalizedEvents.map(([section, products]) => (
+                {compartmentalizedProducts.map(([section, products]) => (
                     <React.Fragment key={section}>
                         {products.length > 0 && (
                             <div className="flex flex-col gap-5">
@@ -116,19 +117,12 @@ export function EventsFormPage() {
                                     </h3>
                                 )}
 
-                                {products
-                                    .filter(
-                                        current =>
-                                            current.registration_section
-                                                ?.name ===
-                                            EVENTS_REGISTRATION_SECTION_KEY
-                                    )
-                                    .map(current => (
-                                        <EventInput
-                                            key={current.id}
-                                            product={current}
-                                        />
-                                    ))}
+                                {products.map(current => (
+                                    <InputCard
+                                        key={current.id}
+                                        product={current}
+                                    />
+                                ))}
                             </div>
                         )}
                     </React.Fragment>
