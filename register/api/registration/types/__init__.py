@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from exhibitors.models import Exhibitor
 
 from fair.models import Fair
 from companies.models import CompanyContact
@@ -25,6 +26,12 @@ class SignupContractSerializer(serializers.ModelSerializer):
         fields = ("name", "contract")
 
 
+class ExhibitorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exhibitor
+        fields = ("__all__")
+
+
 class RegistrationSerializer(serializers.Serializer):
     type = serializers.StringRelatedField(read_only=True)
     deadline = serializers.DateTimeField(read_only=True)
@@ -32,3 +39,4 @@ class RegistrationSerializer(serializers.Serializer):
     fair = FairSerializer(read_only=True)
     contract = SignupContractSerializer(read_only=True)
     orders = OrderSerializer(many=True)
+    exhibitor = ExhibitorSerializer()
