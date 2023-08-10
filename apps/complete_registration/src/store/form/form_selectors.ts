@@ -18,8 +18,13 @@ export const selectPageProgress = cs(
     (form, pageId) => {
         const page = form.pages.find(p => p.id == pageId)
         if (page == null) return null
-        const totalFields = page.fields.filter(field => !field.readonly).length
-        const completedFields = page.fields.filter(field => field.value).length
+        const totalFields = page.fields.filter(
+            field =>
+                !field.readonly && field.includeInProgressionSummary !== false
+        ).length
+        const completedFields = page.fields.filter(
+            field => field.value && field.includeInProgressionSummary !== false
+        ).length
 
         if (totalFields <= 0) return null
         return completedFields / totalFields
