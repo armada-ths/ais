@@ -15,7 +15,13 @@ export const formSlice = createSlice({
     initialState,
     reducers: {
         reset: () => initialState,
-        setPage: (state, action: PayloadAction<string>) => {
+        setPage: (state, action: PayloadAction<string | number>) => {
+            // Set index
+            if (typeof action.payload === "number") {
+                state.activePage = action.payload
+                return
+            }
+            // Set by page id
             const pageIndex = state.form.pages.findIndex(
                 page => page.id === action.payload
             )

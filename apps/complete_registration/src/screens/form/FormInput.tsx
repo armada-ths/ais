@@ -5,11 +5,12 @@ import { Dropdown } from "primereact/dropdown"
 import { SelectButton } from "primereact/selectbutton"
 import { useSelector } from "react-redux"
 import { selectField } from "../../store/form/form_selectors"
-import { RootState } from "../../store/store"
+import { AppDispatch, RootState } from "../../store/store"
 import { useDispatch } from "react-redux"
 import { nextPage, setField } from "../../store/form/form_slice"
 import { cx } from "../../utils/cx"
-import { Product, selectPackage } from "../../store/products/products_slice"
+import { Product, pickProduct } from "../../store/products/products_slice"
+import { remoteSaveChanges } from "../../store/form/async_actions"
 
 export type FieldComponentProps = {
     label: string
@@ -184,13 +185,23 @@ const PackageInput: FieldComponentType<
         children?: React.ReactNode
     }
 > = ({ product, children }) => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
 
-    function onClickPackage() {
-        dispatch(selectPackage(product))
+    async function onClickPackage() {
+        dispatch(
+            pickProduct({
+                id: product.id,
+                isPackage: true,
+                quantity: 1
+            })
+        )
         dispatch(nextPage())
-        console.log("CLICKED package")
+        // Force save changes to wait an itteration to make sure
+        // previous dispatches are applied
+        setTimeout(() => dispatch(remoteSaveChanges()))
     }
+
+    console.log("PRODUCT", product)
 
     return (
         <div
@@ -216,7 +227,7 @@ const PackageInput: FieldComponentType<
                 ))}
             </div>
             <div className="flex flex-1 items-end justify-center p-5">
-                <p className="rounded bg-slate-500 p-2 px-5 text-center text-2xl font-bold text-slate-50">
+                <p className="rounded bg-slate-500 p-1 px-3 text-center text-lg font-bold text-slate-50">
                     {product.unit_price} kr
                 </p>
             </div>

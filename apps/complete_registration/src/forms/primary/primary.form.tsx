@@ -1,6 +1,5 @@
 import { Form } from "../../screens/form/screen"
 import { selectSelectedProducts } from "../../store/products/products_selectors"
-import { PACKAGE_KEY } from "../../store/products/products_slice"
 
 export const form: Form = {
     key: "primary",
@@ -13,8 +12,9 @@ export const form: Form = {
             title: "Select Package",
             hasPageControls: false,
             getProgress(state) {
+                console.log("HERE", selectSelectedProducts(state))
                 return selectSelectedProducts(state).find(
-                    current => current.category.name === PACKAGE_KEY
+                    current => current.isPackage
                 ) != null
                     ? 100
                     : 0

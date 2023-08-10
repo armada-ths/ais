@@ -14,6 +14,7 @@ export function PageCard({ page }: { selected: boolean; page: FormPage }) {
         selectPageProgress(state, page.id)
     )
     const customProgress = useSelector(page.getProgress ?? (() => null))
+    console.log(customProgress, calcProgress, page.getProgress)
     const progress = customProgress != null ? customProgress : calcProgress
     const activePage = useSelector(selectActivePage)
 

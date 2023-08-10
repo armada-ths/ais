@@ -11,14 +11,27 @@ export interface Product {
     max_quantity: number
     unit_price: number
     description: string
-    category: Category
+    category: Category | null
     no_customer_removal: boolean
     child_products: Omit<Product, "child_products">[]
+}
+export interface ProductMeta {
+    id: number
+    unit_price: number | null
+    comment: string
+    product: Product
+    quantity: number
+}
+
+export interface SelectedProduct {
+    id: number
+    quantity: number
+    isPackage: boolean
 }
 
 export interface ProductState {
     records: Product[]
-    selected: Product[]
+    selected: SelectedProduct[]
 }
 
 const initialState: ProductState = {
@@ -26,12 +39,12 @@ const initialState: ProductState = {
     selected: []
 }
 
-export function generateProductApiSetArray(selected: Product[]) {
+export function generateProductApiSetArray(selected: SelectedProduct[]) {
     return selected.map(product => ({
         product: {
             id: product.id
         },
-        quantity: 1 // Hard coded for now, sorry :(
+        quantity: product.quantity // Hard coded for now, sorry :(
     }))
 }
 
@@ -43,17 +56,18 @@ export const productSlice = createSlice({
         loadProducts: (state, action: PayloadAction<Product[]>) => {
             state.records = action.payload
         },
-        selectPackage: (state, action: PayloadAction<Product>) => {
-            const oldProducts = state.selected
-            state.selected = oldProducts.filter(
-                product => product.category.name !== PACKAGE_KEY
-            )
+        pickProduct: (state, action: PayloadAction<SelectedProduct>) => {
+            if (
+                state.selected.find(product => product.id === action.payload.id)
+            ) {
+                return
+            }
             state.selected.push(action.payload)
         }
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { loadProducts, selectPackage } = productSlice.actions
+export const { loadProducts, pickProduct } = productSlice.actions
 
 export default productSlice.reducer
