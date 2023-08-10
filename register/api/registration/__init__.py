@@ -1,13 +1,12 @@
 from django.views.decorators.csrf import csrf_exempt
-from exhibitors.models import Exhibitor
 
 from companies.models import Company, CompanyContact
 from fair.models import RegistrationState
-
-from register.views import send_CR_confirmation_email
+from exhibitors.models import Exhibitor
 
 from register.api import get_fair, get_user, status
 from register.api.registration.cr import handle_cr, submit_cr
+from register.api.registration.util import UserPermission
 
 
 # This function will receive a GET or PUT and return
@@ -82,16 +81,10 @@ def get_company(request, company_pk):
 
     exhibitor = Exhibitor.objects.filter(fair=get_fair(), company=company).first()
     user = get_user(request)
+    permission = UserPermission(user)
+    user_is_contact_person = exhibitor and user in exhibitor.contact_persons.all()
 
-    user_may_view_company = user.has_perm("companies.base") or (
-        exhibitor is not None
-        and (
-            user.has_perm("exhibitors.view_all")
-            or user in exhibitor.contact_persons.all()
-        )
-    )
-
-    if user_may_view_company:
+    if permission == UserPermission.SALES or user_is_contact_person:
         contact = None
     else:
         contact = CompanyContact.objects.filter(user=user, company=company).first()

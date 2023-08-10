@@ -9,7 +9,7 @@ from fair.models import Fair
 class RegistrationSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationSection
-        read_only_fields = ("name", "description", "hide_from_registration")
+        read_only_fields = ("id", "name", "description", "hide_from_registration")
         fields = read_only_fields
 
 
