@@ -15,6 +15,12 @@ export const counterSlice = createSlice({
     initialState,
     reducers: {
         reset: () => initialState,
+        setPage: (state, action: PayloadAction<string>) => {
+            const pageIndex = state.form.pages.findIndex(
+                page => page.id === action.payload
+            )
+            state.activePage = pageIndex === -1 ? 0 : pageIndex
+        },
         nextPage: state => {
             if (state.activePage < state.form.pages.length - 1)
                 state.activePage++
@@ -39,6 +45,7 @@ export const counterSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { nextPage, previousPage, setField } = counterSlice.actions
+export const { setPage, nextPage, previousPage, setField } =
+    counterSlice.actions
 
 export default counterSlice.reducer

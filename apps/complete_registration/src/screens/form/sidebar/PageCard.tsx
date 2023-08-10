@@ -2,10 +2,11 @@ import {
     selectActivePage,
     selectPageProgress
 } from "../../../store/form/form_selectors"
+import { setPage } from "../../../store/form/form_slice"
 import { RootState } from "../../../store/store"
 import { cx } from "../../../utils/cx"
 import { FormPage } from "../screen"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 export function PageCard({
     selected,
@@ -14,6 +15,7 @@ export function PageCard({
     selected: boolean
     page: FormPage
 }) {
+    const dispatch = useDispatch()
     const progress = useSelector((state: RootState) =>
         selectPageProgress(state, page.id)
     )
@@ -21,10 +23,15 @@ export function PageCard({
 
     const completed = progress != null && progress >= 1
 
+    function clickPageCard() {
+        dispatch(setPage(page.id))
+    }
+
     return (
         <div
+            onClick={clickPageCard}
             className={cx(
-                "flex items-center justify-between rounded border-[0.5px] bg-white p-2 px-4 shadow-sm",
+                "flex select-none items-center justify-between rounded border-[0.5px] bg-white p-2 px-4 shadow-sm transition-all duration-100 hover:cursor-pointer active:scale-95",
                 completed && page.id !== activePage.id && "opacity-70",
                 selected && "border-2"
             )}

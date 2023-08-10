@@ -8,12 +8,13 @@ import { selectField } from "../../store/form/form_selectors"
 import { RootState } from "../../store/store"
 import { useDispatch } from "react-redux"
 import { setField } from "../../store/form/form_slice"
+import { cx } from "../../utils/cx"
 
 export type FieldComponentProps = {
     label: string
     mapping: string
     children?: React.ReactNode // Allow children in props
-}
+} & React.HTMLAttributes<HTMLDivElement>
 export type FieldComponentType<T = FieldComponentProps> = (
     props: T
 ) => JSX.Element
@@ -22,7 +23,11 @@ function FormField() {
     return <div />
 }
 
-const TextInput: FieldComponentType = ({ label, mapping }) => {
+const TextInput: FieldComponentType<
+    FieldComponentProps & {
+        inputClassName?: string
+    }
+> = ({ label, mapping, inputClassName, className, ...rest }) => {
     const dispatch = useDispatch()
     const field = useSelector((state: RootState) => selectField(state, mapping))
     if (
@@ -31,10 +36,18 @@ const TextInput: FieldComponentType = ({ label, mapping }) => {
     )
         return <div>Invalid field mapping</div>
 
+    console.log(className, "DING", rest)
+
     return (
-        <span key={mapping} className="p-float-label">
+        <span
+            key={mapping}
+            className={cx("p-float-label mt-8 basis-full", className)}
+        >
             <InputText
-                className="mx-auto w-full max-w-[400px]"
+                className={cx(
+                    "mt-8 w-full min-w-[300px] max-w-[400px]",
+                    inputClassName
+                )}
                 value={field.value ?? ""}
                 onChange={event =>
                     dispatch(
@@ -44,8 +57,11 @@ const TextInput: FieldComponentType = ({ label, mapping }) => {
                         })
                     )
                 }
+                {...rest}
             />
-            <label htmlFor={mapping}>{label}</label>
+            <label className="capitalize" htmlFor={mapping}>
+                {label}
+            </label>
         </span>
     )
 }
@@ -160,5 +176,10 @@ const SelectButtonInput: FieldComponentType<
     )
 }
 FormField.SelectButton = SelectButtonInput
+
+const Filler = (props: React.HTMLAttributes<HTMLDivElement>) => {
+    return <div className="flex-1 basis-2/5" {...props} />
+}
+FormField.Filler = Filler
 
 export { FormField }

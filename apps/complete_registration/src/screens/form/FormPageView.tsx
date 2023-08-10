@@ -31,6 +31,9 @@ export function FormPageView({
     return (
         <div className="mb-10 flex w-full flex-col items-center px-10">
             <h2 className="text-2xl">{page.title}</h2>
+            <div className="flex flex-wrap justify-center gap-x-5">
+                {page.fields.map(field => field.component)}
+            </div>
             <div className="flex w-full justify-between gap-x-5">
                 {pageIndex <= 0 ? (
                     <div />
@@ -48,30 +51,6 @@ export function FormPageView({
                     onClick={handleNext}
                 />
             </div>
-            {page.fields.map(field => (
-                <div key={field.mapping} className="my-5 w-96">
-                    {field.component}
-                </div>
-            ))}
-            {page.fields.length > 10 && (
-                <div className="flex w-full justify-between gap-x-5">
-                    {pageIndex <= 0 ? (
-                        <div />
-                    ) : (
-                        <Button
-                            icon="pi pi-arrow-left"
-                            label="Previous"
-                            onClick={handlePrevious}
-                        />
-                    )}
-                    <Button
-                        icon="pi pi-arrow-right"
-                        label="Next"
-                        iconPos="right"
-                        onClick={handleNext}
-                    />
-                </div>
-            )}
         </div>
     )
 }
