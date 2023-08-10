@@ -12,7 +12,6 @@ export const form: Form = {
             title: "Select Package",
             hasPageControls: false,
             getProgress(state) {
-                console.log("HERE", selectSelectedProducts(state))
                 return selectSelectedProducts(state).find(
                     current => current.isPackage
                 ) != null

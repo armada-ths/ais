@@ -5,7 +5,6 @@ import { selectProductPackages } from "../../store/products/products_selectors"
 
 export function PackageSelectFormPage() {
     const packages = useSelector(selectProductPackages)
-    console.log("PACKAGES", packages)
 
     return (
         <FormWrapper>

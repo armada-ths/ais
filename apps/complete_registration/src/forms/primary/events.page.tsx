@@ -12,15 +12,16 @@ import {
 import { InputText } from "primereact/inputtext"
 import { RootState } from "../../store/store"
 import { InputSwitch } from "primereact/inputswitch"
+import { cx } from "../../utils/cx"
 
 function EventInput({ product }: { product: Product }) {
     const dispatch = useDispatch()
     const selected = useSelector((state: RootState) =>
         selectSelectedProduct(state, product.id)
     )
-    console.log("SELECTED", selected)
 
     function onChange(quantity: number) {
+        if (isNaN(quantity)) return
         if (quantity <= 0 || quantity == null) {
             dispatch(
                 unpickProduct({
@@ -39,14 +40,19 @@ function EventInput({ product }: { product: Product }) {
     }
 
     return (
-        <div className="w-full rounded bg-white p-5 shadow-sm">
+        <div
+            className={cx(
+                "w-full rounded bg-white p-5 shadow-sm",
+                selected && "border-2 border-emerald-500"
+            )}
+        >
             <div className="flex justify-between gap-10">
                 <div className="w-3/4">
                     <p className="text-xl">{product.name}</p>
                     <p className="text-sm">{product.description}</p>
                 </div>
                 <div className="flex items-center justify-center">
-                    {product.max_quantity > 1 ? (
+                    {product.max_quantity <= 1 ? (
                         <InputSwitch
                             onChange={() => onChange(selected == null ? 1 : 0)}
                             checked={selected != null}
@@ -72,7 +78,6 @@ function EventInput({ product }: { product: Product }) {
 
 export function EventsFormPage() {
     const events = useSelector(selectProductEvents)
-    console.log("EVENTS", events)
     return (
         <FormWrapper>
             <div className="flex flex-col gap-5">

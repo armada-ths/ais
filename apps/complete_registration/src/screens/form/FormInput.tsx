@@ -38,8 +38,6 @@ const TextInput: FieldComponentType<
     )
         return <div>Invalid field mapping</div>
 
-    console.log(className, "DING", rest)
-
     return (
         <span
             key={mapping}
@@ -200,8 +198,6 @@ const PackageInput: FieldComponentType<
         // previous dispatches are applied
         setTimeout(() => dispatch(remoteSaveChanges()))
     }
-
-    console.log("PRODUCT", product)
 
     return (
         <div

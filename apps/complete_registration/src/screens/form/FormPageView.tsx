@@ -38,7 +38,7 @@ export function FormPageView({
     return (
         <div className="mb-10 flex w-full flex-col items-center px-10">
             <h2 className="text-2xl">{page.title}</h2>
-            <div className="flex flex-wrap justify-center gap-x-5">
+            <div className="mb-5 flex flex-wrap justify-center gap-x-5">
                 <Page />
             </div>
             {page.hasPageControls !== false && (

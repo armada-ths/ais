@@ -25,7 +25,6 @@ export function App() {
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
-            console.log("YOOO", JSON.stringify(data))
             dispatch(loadProducts(data))
         })
         fetch(`${HOST}/api/registration/`, {
@@ -34,7 +33,6 @@ export function App() {
             })
         }).then(async raw => {
             const data = await raw.json()
-            console.log("DATA", JSON.stringify(data))
             const awaitingMappings = reverseMap(data, form)
 
             for (const current of awaitingMappings) {
