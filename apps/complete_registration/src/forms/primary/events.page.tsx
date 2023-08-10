@@ -5,6 +5,7 @@ import {
     selectSelectedProduct
 } from "../../store/products/products_selectors"
 import {
+    EVENTS_REGISTRATION_SECTION_KEY,
     Product,
     pickProduct,
     unpickProduct
@@ -13,6 +14,7 @@ import { InputText } from "primereact/inputtext"
 import { RootState } from "../../store/store"
 import { InputSwitch } from "primereact/inputswitch"
 import { cx } from "../../utils/cx"
+import React, { useMemo } from "react"
 
 function EventInput({ product }: { product: Product }) {
     const dispatch = useDispatch()
@@ -48,7 +50,7 @@ function EventInput({ product }: { product: Product }) {
         >
             <div className="flex justify-between gap-10">
                 <div className="w-3/4">
-                    <p className="text-xl">{product.name}</p>
+                    <p className="text">{product.name}</p>
                     <p className="text-sm">{product.description}</p>
                 </div>
                 <div className="flex items-center justify-center">
@@ -78,11 +80,58 @@ function EventInput({ product }: { product: Product }) {
 
 export function EventsFormPage() {
     const events = useSelector(selectProductEvents)
+    const compartmentalizedEvents = useMemo(
+        () =>
+            Object.entries(
+                events.reduce<Record<string, Product[]>>(
+                    (total, current) => {
+                        if (current.category == null) {
+                            total["none"].push(current)
+                            return total
+                        }
+
+                        const target = total[current.category.name]
+                        if (target == null)
+                            total[current.category.name] = [current]
+                        else target.push(current)
+
+                        return total
+                    },
+                    { none: [] }
+                )
+            ),
+        [events]
+    )
+
     return (
         <FormWrapper>
-            <div className="flex flex-col gap-5">
-                {events.map(current => (
-                    <EventInput key={current.id} product={current} />
+            <div className="flex flex-col gap-10">
+                {compartmentalizedEvents.map(([section, products]) => (
+                    <React.Fragment key={section}>
+                        {products.length > 0 && (
+                            <div className="flex flex-col gap-5">
+                                {section !== "none" && (
+                                    <h3 className="text-xl text-emerald-400">
+                                        {section}
+                                    </h3>
+                                )}
+
+                                {products
+                                    .filter(
+                                        current =>
+                                            current.registration_section
+                                                ?.name ===
+                                            EVENTS_REGISTRATION_SECTION_KEY
+                                    )
+                                    .map(current => (
+                                        <EventInput
+                                            key={current.id}
+                                            product={current}
+                                        />
+                                    ))}
+                            </div>
+                        )}
+                    </React.Fragment>
                 ))}
             </div>
         </FormWrapper>
