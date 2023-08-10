@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { reverseMap } from "./utils/mapper"
 import { useDispatch } from "react-redux"
 import { setField } from "./store/form/form_slice"
+import { loadProducts } from "./store/products/products_slice"
 
 interface RegistrationForm {
     invoiceDetails: {
@@ -28,12 +29,19 @@ interface RegistrationForm {
     }
 }
 
+export const HOST = "http://192.168.157.172:3000"
+
 export function App() {
     const dispatch = useDispatch()
     const form = useSelector(selectForm)
 
     useEffect(() => {
-        fetch("http://192.168.157.172:3000/api/registration/", {
+        fetch(`${HOST}/api/accounting/products`).then(async raw => {
+            const data = await raw.json()
+            console.log(data)
+            dispatch(loadProducts(data))
+        })
+        fetch(`${HOST}/api/registration/`, {
             headers: new Headers({
                 "ngrok-skip-browser-warning": "69420"
             })

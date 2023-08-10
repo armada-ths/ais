@@ -7,10 +7,10 @@ export type FormState = { activePage: number; form: Form }
 
 const initialState: FormState = {
     activePage: 0,
-    form: FORMS.primary
+    form: FORMS.primary.form
 }
 
-export const counterSlice = createSlice({
+export const formSlice = createSlice({
     name: "formMeta",
     initialState,
     reducers: {
@@ -45,7 +45,6 @@ export const counterSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setPage, nextPage, previousPage, setField } =
-    counterSlice.actions
+export const { setPage, nextPage, previousPage, setField } = formSlice.actions
 
-export default counterSlice.reducer
+export default formSlice.reducer

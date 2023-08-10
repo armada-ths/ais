@@ -8,17 +8,13 @@ import { cx } from "../../../utils/cx"
 import { FormPage } from "../screen"
 import { useDispatch, useSelector } from "react-redux"
 
-export function PageCard({
-    selected,
-    page
-}: {
-    selected: boolean
-    page: FormPage
-}) {
+export function PageCard({ page }: { selected: boolean; page: FormPage }) {
     const dispatch = useDispatch()
-    const progress = useSelector((state: RootState) =>
+    const calcProgress = useSelector((state: RootState) =>
         selectPageProgress(state, page.id)
     )
+    const customProgress = useSelector(page.getProgress ?? (() => null))
+    const progress = customProgress != null ? customProgress : calcProgress
     const activePage = useSelector(selectActivePage)
 
     const completed = progress != null && progress >= 1
@@ -31,9 +27,8 @@ export function PageCard({
         <div
             onClick={clickPageCard}
             className={cx(
-                "flex select-none items-center justify-between rounded border-[0.5px] bg-white p-2 px-4 shadow-sm transition-all duration-100 hover:cursor-pointer active:scale-95",
-                completed && page.id !== activePage.id && "opacity-70",
-                selected && "border-2"
+                "shadow-smhover:cursor-pointer flex select-none items-center justify-between rounded border-[0.5px] bg-white p-2 px-4 hover:cursor-pointer",
+                completed && page.id !== activePage.id && "opacity-70"
             )}
         >
             <div className="flex items-center gap-2">
@@ -42,7 +37,7 @@ export function PageCard({
                 )}
                 <h3 className="text-emerald-800">{page.title}</h3>
             </div>
-            {progress != null && progress < 1 && (
+            {progress != null && progress < 1 && progress > 0 && (
                 <p className="text-xs font-bold text-emerald-400">
                     {(progress * 100).toFixed(0)}%
                 </p>

@@ -6,14 +6,13 @@ import {
     selectActivePageIndex
 } from "../../store/form/form_selectors"
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
-import React from "react"
 import { cx } from "../../utils/cx"
+import { RootState } from "../../store/store"
 
 export type FieldValue = string | boolean | undefined | File
 
 export type Field = {
     mapping: string
-    component: React.ReactElement
     readonly?: boolean
     value?: FieldValue
 }
@@ -22,9 +21,12 @@ export interface FormPage {
     id: string
     title: string
     fields: Field[]
+    hasPageControls?: boolean // If true, the page will have a next and previous button
+    getProgress?: (state: RootState) => number // If a page has custom progress logic this can be used
 }
 
 export interface Form {
+    key: string // The key field to map the form to the *.form.tsx
     name: string
     isSkippable: boolean
     description: string

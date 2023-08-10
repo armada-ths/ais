@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit"
 import formReducer from "./form/form_slice"
+import productsReducer from "./products/products_slice"
 
 export const store = configureStore({
     reducer: {
-        formMeta: formReducer
+        formMeta: formReducer,
+        products: productsReducer
     },
     middleware(getDefaultMiddleware) {
         return getDefaultMiddleware({

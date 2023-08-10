@@ -1,9 +1,11 @@
 import { FormPage } from "./screen"
 import { Button } from "primereact/button"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { nextPage, previousPage } from "../../store/form/form_slice"
 import { AppDispatch } from "../../store/store"
 import { remoteSaveChanges } from "../../store/form/async_actions"
+import { FORMS } from "../../forms"
+import { selectFormState } from "../../store/form/form_selectors"
 
 export function FormPageView({
     page,
@@ -13,6 +15,11 @@ export function FormPageView({
     pageIndex: number
 }) {
     const dispatch = useDispatch<AppDispatch>()
+
+    const formState = useSelector(selectFormState)
+
+    const formWrapper = FORMS[formState.form.key as keyof typeof FORMS]
+    const Page = formWrapper.pages[formState.activePage].page
 
     async function saveChanges() {
         await dispatch(remoteSaveChanges())
@@ -32,25 +39,27 @@ export function FormPageView({
         <div className="mb-10 flex w-full flex-col items-center px-10">
             <h2 className="text-2xl">{page.title}</h2>
             <div className="flex flex-wrap justify-center gap-x-5">
-                {page.fields.map(field => field.component)}
+                <Page />
             </div>
-            <div className="flex w-full justify-between gap-x-5">
-                {pageIndex <= 0 ? (
-                    <div />
-                ) : (
+            {page.hasPageControls !== false && (
+                <div className="flex w-full justify-between gap-x-5">
+                    {pageIndex <= 0 ? (
+                        <div />
+                    ) : (
+                        <Button
+                            icon="pi pi-arrow-left"
+                            label="Previous"
+                            onClick={handlePrevious}
+                        />
+                    )}
                     <Button
-                        icon="pi pi-arrow-left"
-                        label="Previous"
-                        onClick={handlePrevious}
+                        icon="pi pi-arrow-right"
+                        label="Next"
+                        iconPos="right"
+                        onClick={handleNext}
                     />
-                )}
-                <Button
-                    icon="pi pi-arrow-right"
-                    label="Next"
-                    iconPos="right"
-                    onClick={handleNext}
-                />
-            </div>
+                </div>
+            )}
         </div>
     )
 }

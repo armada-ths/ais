@@ -1,4 +1,4 @@
-import { form as primary } from "./primary.form"
+import PrimaryForm from "./primary"
 export const FORMS = {
-    primary
+    primary: PrimaryForm
 }
