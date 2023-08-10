@@ -8,6 +8,7 @@ import {
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 import { cx } from "../../utils/cx"
 import { RootState } from "../../store/store"
+import { FormSidebarCartSummary } from "./sidebar/FormSidebarCartSummary"
 
 export type FieldValue = string | boolean | undefined | File
 
@@ -22,7 +23,8 @@ export interface FormPage {
     id: string
     title: string
     fields: Field[]
-    hasPageControls?: boolean // If true, the page will have a next and previous button
+    hasNextButton?: boolean // If true, the page will have a next and previous button
+    hasPrevButton?: boolean
     getProgress?: (state: RootState) => number // If a page has custom progress logic this can be used
 }
 
@@ -59,7 +61,7 @@ export function FormScreen({ form }: Props) {
                 </h1>
                 <FormPageView page={activePage} pageIndex={activePageIndex} />
             </PrimarySection>
-            <div className="" />
+            <FormSidebarCartSummary />
         </div>
     )
 }

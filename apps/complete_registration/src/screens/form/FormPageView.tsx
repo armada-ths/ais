@@ -41,9 +41,9 @@ export function FormPageView({
             <div className="mb-5 flex flex-wrap justify-center gap-x-5">
                 <Page />
             </div>
-            {page.hasPageControls !== false && (
+            {(page.hasNextButton !== false || page.hasPrevButton !== false) && (
                 <div className="flex w-full justify-between gap-x-5">
-                    {pageIndex <= 0 ? (
+                    {pageIndex <= 0 && page.hasPrevButton !== false ? (
                         <div />
                     ) : (
                         <Button
@@ -52,12 +52,14 @@ export function FormPageView({
                             onClick={handlePrevious}
                         />
                     )}
-                    <Button
-                        icon="pi pi-arrow-right"
-                        label="Next"
-                        iconPos="right"
-                        onClick={handleNext}
-                    />
+                    {page.hasNextButton !== false && (
+                        <Button
+                            icon="pi pi-arrow-right"
+                            label="Next"
+                            iconPos="right"
+                            onClick={handleNext}
+                        />
+                    )}
                 </div>
             )}
         </div>

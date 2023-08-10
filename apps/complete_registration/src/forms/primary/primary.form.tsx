@@ -10,7 +10,8 @@ export const form: Form = {
         {
             id: "package",
             title: "Select Package",
-            hasPageControls: false,
+            hasNextButton: false,
+            hasPrevButton: false,
             getProgress(state) {
                 return selectSelectedProducts(state).find(
                     current => current.isPackage
@@ -71,6 +72,7 @@ export const form: Form = {
         {
             id: "summary",
             title: "Summary",
+            hasNextButton: false,
             fields: []
         }
     ]

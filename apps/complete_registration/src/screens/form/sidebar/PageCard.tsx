@@ -1,3 +1,4 @@
+import React from "react"
 import {
     selectActivePage,
     selectPageProgress
@@ -7,6 +8,22 @@ import { RootState } from "../../../store/store"
 import { cx } from "../../../utils/cx"
 import { FormPage } from "../screen"
 import { useDispatch, useSelector } from "react-redux"
+
+type Props = React.HTMLAttributes<HTMLDivElement>
+
+export function Card({ children, className, ...rest }: Props) {
+    return (
+        <div
+            className={cx(
+                "flex select-none flex-col rounded border-[0.5px] bg-white p-2 px-4 shadow-sm",
+                className
+            )}
+            {...rest}
+        >
+            {children}
+        </div>
+    )
+}
 
 export function PageCard({ page }: { selected: boolean; page: FormPage }) {
     const dispatch = useDispatch()
@@ -24,10 +41,10 @@ export function PageCard({ page }: { selected: boolean; page: FormPage }) {
     }
 
     return (
-        <div
+        <Card
             onClick={clickPageCard}
             className={cx(
-                "shadow-smhover:cursor-pointer flex select-none items-center justify-between rounded border-[0.5px] bg-white p-2 px-4 hover:cursor-pointer",
+                "flex-row items-center justify-between hover:cursor-pointer",
                 completed && page.id !== activePage.id && "opacity-70"
             )}
         >
@@ -42,6 +59,6 @@ export function PageCard({ page }: { selected: boolean; page: FormPage }) {
                     {(progress * 100).toFixed(0)}%
                 </p>
             )}
-        </div>
+        </Card>
     )
 }

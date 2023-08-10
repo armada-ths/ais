@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { FormWrapper } from "../FormWrapper"
 import { selectSelectedProduct } from "../../store/products/products_selectors"
 import {
-    EVENTS_REGISTRATION_SECTION_KEY,
     Product,
     pickProduct,
     unpickProduct

@@ -70,7 +70,11 @@ export const productSlice = createSlice({
         pickProduct: (state, action: PayloadAction<SelectedProduct>) => {
             // Remove previous occurances of the product
             state.selected = state.selected.filter(
-                current => current.id !== action.payload.id
+                current =>
+                    // Always delete duplicates
+                    current.id !== action.payload.id &&
+                    // If the product is a package, delete other packages if they exist
+                    (action.payload.isPackage && current.isPackage) === false
             )
             state.selected.push(action.payload)
         },
