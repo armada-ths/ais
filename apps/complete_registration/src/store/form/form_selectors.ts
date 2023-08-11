@@ -87,7 +87,7 @@ export const selectUnfilledFields = cs(
                 fields: []
             }
             for (const field of page.fields ?? []) {
-                if (field.value == null && field.mandatory !== false)
+                if (!field.value && field.mandatory !== false)
                     newUnfilledPage.fields.push(field)
             }
             if (newUnfilledPage.fields.length == 0) continue
