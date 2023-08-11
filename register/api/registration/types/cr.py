@@ -1,5 +1,7 @@
-from accounting.api import OrderSerializer
 from accounting.models import Order
+
+from accounting.api import OrderSerializer
+
 from companies.serializers import CompanySerializer
 from register.api.registration.types import RegistrationSerializer
 
@@ -11,7 +13,7 @@ class CRCompanySerializer(CompanySerializer):
 
 # We're in CR, the company has picked products and submitted.
 # This serializer disallows a company representative to change all invoice variables.
-class CRSubmittedCompanySerializer(CompanySerializer):
+class CRSignedCompanySerializer(CompanySerializer):
     class Meta(CompanySerializer.Meta):
         read_only_fields = (
             "id",
@@ -30,18 +32,18 @@ class CRSubmittedCompanySerializer(CompanySerializer):
 
 
 class CRSignedRegistrationSerializer(RegistrationSerializer):
-    company = CRSubmittedCompanySerializer()
+    company = CRSignedCompanySerializer()
 
     def update(self, instance, validated_data):
         company = validated_data.pop("company", None)
         if company != None:
-            company_serializer = CRSubmittedCompanySerializer(
+            company_serializer = CRSignedCompanySerializer(
                 instance.company, data=company, partial=True
             )
             if company_serializer.is_valid():
                 company_serializer.save()
 
-        return instance
+        return super().update(instance, validated_data)
 
 
 class CRRegistrationSerializer(RegistrationSerializer):
@@ -68,4 +70,4 @@ class CRRegistrationSerializer(RegistrationSerializer):
                 ).delete()
                 instance.orders = orders_serializer.create(validated_data=orders)
 
-        return instance
+        return super().update(instance, validated_data)

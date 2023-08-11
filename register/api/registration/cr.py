@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 
 from register.api import get_user, status
 from register.api.registration.types.registration import Registration
+from register.api.registration.types.util import get_serializer
 from register.api.registration.util import JSONError, get_contract_signature
 
 from register.models import SignupLog
@@ -15,7 +16,8 @@ from register.views import send_CR_confirmation_email
 
 def put_cr_registration(request, registration, purchasing_company):
     data = JSONParser().parse(request)
-    serializer = registration.get_serializer(
+    serializer = get_serializer(
+        registration,
         context={"user": get_user(request), "purchasing_company": purchasing_company},
         data=data,
     )
@@ -48,7 +50,7 @@ def handle_cr(request, company, fair, contact, exhibitor):
     except JSONError as error:
         return error.status
 
-    serializer = registration.get_serializer(context={"user": get_user(request)})
+    serializer = get_serializer(registration, context={"user": get_user(request)})
 
     if request.method == "GET":
         return JsonResponse(serializer.data, safe=False)
@@ -79,13 +81,16 @@ def submit_cr(request, company, fair, contact, exhibitor):
         company_contact=contact, contract=registration.contract, company=company
     )
 
-    send_CR_confirmation_email(signature, registration.deadline)
+    try:
+        send_CR_confirmation_email(signature, registration.deadline)
+    except:
+        pass
 
     try:
         registration = get_registration(company, fair, contact, exhibitor)
     except JSONError as error:
         return error.status
 
-    serializer = registration.get_serializer(context={"user": get_user(request)})
+    serializer = get_serializer(registration, context={"user": get_user(request)})
 
     return JsonResponse(serializer.data, safe=False)

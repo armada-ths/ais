@@ -1,18 +1,9 @@
 from enum import Enum
-from rest_framework.fields import empty
 
 from fair.models import RegistrationState
 from register.api import status
 
-from register.api.registration.types.cr import (
-    CRRegistrationSerializer,
-    CRSignedRegistrationSerializer,
-)
-from register.api.registration.util import (
-    JSONError,
-    UserPermission,
-    get_contract_signature,
-)
+from register.api.registration.util import JSONError
 
 
 class RegistrationType(Enum):
@@ -60,27 +51,6 @@ class Registration:
             pass
         else:
             pass
-
-    def get_serializer(self, data=empty, context={}):
-        user = context["user"]
-        if user != None:
-            permission = UserPermission(user)
-
-        if self.type == RegistrationType.CompleteRegistration:
-            Serializer = CRRegistrationSerializer
-        elif self.type == RegistrationType.CompleteRegistrationSigned:
-            # If user is sales, they may change anything he likes
-            if permission != None and permission == UserPermission.SALES:
-                Serializer = CRRegistrationSerializer
-            else:
-                Serializer = CRSignedRegistrationSerializer
-
-        return Serializer(
-            self,
-            data=data,
-            partial=True,
-            context=context,
-        )
 
     def ensure_cr_eligibility(self):
         if self.exhibitor == None:
