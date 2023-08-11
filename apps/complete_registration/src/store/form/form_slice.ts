@@ -13,13 +13,12 @@ export function getPageComponent(formId: keyof typeof FORMS, pageId: string) {
 
 export type FormState = {
     activePage: number
-    activeForm: keyof typeof FORMS
+    activeForm?: keyof typeof FORMS
     forms: typeof FORMS
 }
 
 const initialState: FormState = {
     activePage: 0,
-    activeForm: "primary",
     forms: getMutableFormsInstance()
 }
 
@@ -28,10 +27,14 @@ export const formSlice = createSlice({
     initialState,
     reducers: {
         reset: () => initialState,
-        setActiveForm: (state, action: PayloadAction<keyof typeof FORMS>) => {
-            state.activeForm = action.payload
+        setActiveForm: (
+            state,
+            action: PayloadAction<keyof typeof FORMS | null>
+        ) => {
+            state.activeForm = action.payload ?? undefined
         },
         setPage: (state, action: PayloadAction<string | number>) => {
+            if (state.activeForm == null) return
             // Set index
             if (typeof action.payload === "number") {
                 state.activePage = action.payload
@@ -45,6 +48,7 @@ export const formSlice = createSlice({
             state.activePage = pageIndex === -1 ? 0 : pageIndex
         },
         nextPage: state => {
+            if (state.activeForm == null) return
             const activeForm = state.forms[state.activeForm]
             if (state.activePage < activeForm.pages.length - 1)
                 state.activePage++
@@ -56,6 +60,7 @@ export const formSlice = createSlice({
             state,
             action: PayloadAction<{ mapping: string; value: FieldValue }>
         ) => {
+            if (state.activeForm == null) return
             const activeForm = state.forms[state.activeForm]
             // Const find a specific field in state
             for (const page of activeForm.pages) {

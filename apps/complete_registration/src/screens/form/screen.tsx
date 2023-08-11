@@ -11,6 +11,7 @@ import { cx } from "../../utils/cx"
 import { RootState } from "../../store/store"
 import { FormSidebarCartSummary } from "./sidebar/FormSidebarCartSummary"
 import { FORMS } from "../../forms"
+import { Navbar } from "../../shared/Navbar"
 
 export type FieldValue = string | boolean | undefined | File
 
@@ -48,28 +49,27 @@ export function FormScreen({ form }: Props) {
     const activePageIndex = useSelector(selectActivePageIndex)
     const activeForm = useSelector(selectActiveForm)
 
+    if (activeForm == null || activePage == null) return <p>No form selected</p>
+
     return (
-        <div
-            className={cx(
-                "grid min-h-[100dvh] grid-cols-[1fr_3fr_1fr]",
-                form.isSkippable && "grid-rows-[80px_1fr]"
-            )}
-        >
-            {form.isSkippable && (
-                <div className="col-span-3 h-full bg-emerald-400"></div>
-            )}
-            <FormSidebarProgressionSummary />
-            <PrimarySection>
-                <h1 className="border-b-2 border-solid border-slate-800 text-4xl">
-                    {form.name}
-                </h1>
-                <FormPageView
-                    form={activeForm}
-                    page={activePage}
-                    pageIndex={activePageIndex}
-                />
-            </PrimarySection>
-            <FormSidebarCartSummary />
+        <div>
+            <Navbar />
+            <div
+                className={cx(
+                    "grid min-h-[92vh] grid-cols-[1fr_3fr_1fr]",
+                    form.isSkippable && "grid-rows-[80px_1fr]"
+                )}
+            >
+                <FormSidebarProgressionSummary />
+                <PrimarySection>
+                    <FormPageView
+                        form={activeForm}
+                        page={activePage}
+                        pageIndex={activePageIndex}
+                    />
+                </PrimarySection>
+                <FormSidebarCartSummary />
+            </div>
         </div>
     )
 }

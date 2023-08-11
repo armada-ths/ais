@@ -10,9 +10,9 @@ export function FormSidebarCartSummary() {
     const selectedProducts = useSelector(selectProductsSelectedWithoutPackages)
 
     return (
-        <div className="relative h-[100vh]">
+        <div className="relative h-full">
             <div className="sticky top-0 flex flex-col gap-y-2">
-                <div className="max-h-[100vh] overflow-auto p-5">
+                <div className="max-h-full overflow-auto p-5">
                     {productPackage != null && (
                         <div className="rounded bg-emerald-400 p-5 py-3">
                             <div className="mb-5 flex flex-wrap items-center justify-between gap-x-4">
@@ -43,7 +43,9 @@ export function FormSidebarCartSummary() {
                         </div>
                     )}
                     <div className="flex flex-col gap-y-2">
-                        <h2 className="mb-2 mt-5 text-xl">Selected products</h2>
+                        <h2 className="mb-2 text-center text-xl">
+                            Selected products
+                        </h2>
                         {selectedProducts.map(current => (
                             <Card key={current.id} className="">
                                 <p className="">{current.name}</p>

@@ -4,9 +4,13 @@ import { FORMS } from "../../forms"
 
 export const selectFormState = (state: RootState) => state.formMeta
 export const selectForms = cs(selectFormState, formMeta => formMeta.forms)
-export const selectActiveForm = cs(
-    selectFormState,
-    formState => formState.forms[formState.activeForm]
+export const selectForm = cs(
+    selectForms,
+    (_: RootState, formKey: keyof typeof FORMS) => formKey,
+    (forms, formKey) => forms[formKey]
+)
+export const selectActiveForm = cs(selectFormState, formState =>
+    formState.activeForm == null ? null : formState.forms[formState.activeForm]
 )
 export const selectActivePageIndex = cs(
     selectFormState,
@@ -15,12 +19,13 @@ export const selectActivePageIndex = cs(
 export const selectActivePage = cs(
     selectActiveForm,
     selectActivePageIndex,
-    (activeForm, activePage) => activeForm.pages[activePage]
+    (activeForm, activePage) => activeForm?.pages[activePage]
 )
 
 export const selectPageProgress = cs(
     [selectActiveForm, (_: RootState, pageId: string) => pageId],
     (form, pageId) => {
+        if (form == null) return null
         const page = form.pages.find(p => p.id == pageId)
         if (page == null) return null
         const totalFields =
@@ -62,7 +67,7 @@ export const selectFormProgress = cs(
             ],
             [0, 0]
         )
-        return completedFields / totalFields
+        return completedFields / (totalFields || 1)
     }
 )
 

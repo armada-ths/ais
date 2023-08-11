@@ -13,11 +13,9 @@ export function DashboardScreen() {
                     </h1>
                 </div>
                 <div className="mt-10 flex flex-wrap gap-5">
-                    {Object.entries(FORMS)
-                        /*                         .filter(current => current[0] === "primary") */
-                        .map(([key, formMeta]) => (
-                            <FormCard key={key} form={formMeta} />
-                        ))}
+                    {Object.entries(FORMS).map(([key, formMeta]) => (
+                        <FormCard key={key} form={formMeta} />
+                    ))}
                 </div>
             </div>
             <div>{/* SIDEBAR */}</div>

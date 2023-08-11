@@ -21,6 +21,7 @@ export function App() {
     const form = useSelector(selectActiveForm)
 
     useEffect(() => {
+        if (form == null) return
         if (initialized.current) return
         initialized.current = true
 
@@ -62,11 +63,9 @@ export function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const showDashboard = false
-
     return (
         <div className="bg-slate-50">
-            {showDashboard ? <DashboardScreen /> : <FormScreen form={form} />}
+            {form ? <FormScreen form={form} /> : <DashboardScreen />}
         </div>
     )
 }
