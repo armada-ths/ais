@@ -19,7 +19,8 @@ export function DashboardScreen() {
             primary: ["complete_registration_signed"],
             lunch_tickets: [],
             exhibitor_catalog: [],
-            transport: []
+            transport: [],
+            banquet_tickets: []
         }
 
     const user = useSelector(selectUser)

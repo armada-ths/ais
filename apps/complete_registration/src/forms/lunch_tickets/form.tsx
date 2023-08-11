@@ -1,5 +1,5 @@
 import { Form } from "../../screens/form/screen"
-import { BasicInfoFormPage } from "../exhibitor_catalog/basic_info.page"
+import { CommingSoon } from "./comming_soon.page"
 
 const form: Form = {
     key: "lunch_tickets",
@@ -11,7 +11,9 @@ const form: Form = {
         {
             id: "",
             title: "Select Events",
-            pageComponent: BasicInfoFormPage
+            hasNextButton: false,
+            hasPrevButton: false,
+            pageComponent: CommingSoon
         }
     ]
 }

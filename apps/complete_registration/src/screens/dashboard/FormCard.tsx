@@ -42,6 +42,7 @@ export default function FormCard({
                 )}
             </div>
             <p className="text-xs text-slate-500">{form.description}</p>
+            <div className="flex-1" />
             {form.key === "primary" && !locked && (
                 <p className="mt-2 rounded bg-yellow-500 p-1 px-3 text-white">
                     Contract has not been signed
