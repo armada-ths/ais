@@ -65,11 +65,7 @@ class RegistrationSerializer(serializers.Serializer):
                 instance.exhibitor, data=exhibitor, partial=True
             )
 
-            print(exhibitor_serializer)
-
             if exhibitor_serializer.is_valid():
                 exhibitor_serializer.save()
-            else:
-                print('Was not valid', exhibitor_serializer.errors)
 
         return instance
