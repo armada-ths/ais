@@ -1,14 +1,17 @@
 import { Form } from "../../screens/form/screen"
+import { BasicInfoFormPage } from "../exhibitor_catalog/basic_info.page"
 
 const form: Form = {
-    key: "create_lunch_tickets",
-    name: "Create Lunch Tickets",
-    description: "This is your opportunity to get some free lunch",
+    key: "lunch_tickets",
+    name: "Lunch Tickets",
+    description:
+        "Lunch tickets give attendees access to the lunch area at the fair",
     isSkippable: true,
     pages: [
         {
             id: "",
-            title: "Select Events"
+            title: "Select Events",
+            pageComponent: BasicInfoFormPage
         }
     ]
 }

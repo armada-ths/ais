@@ -27,7 +27,7 @@ export default function FormCard({
             onClick={locked ? () => {} : openForm}
             key={form.key}
             className={cx(
-                "w-96 p-5 px-8 text-slate-700 transition-all hover:cursor-pointer active:scale-95",
+                "p-5 px-8 text-slate-700 transition-all hover:cursor-pointer active:scale-95",
                 locked && "opacity-50 hover:cursor-default active:scale-100"
             )}
         >

@@ -24,7 +24,7 @@ export const form: Form = {
                     mapping: "exhibitor.catalogue_contact_name"
                 },
                 {
-                    mapping: "exhibitor.catalogue_contact_email"
+                    mapping: "exhibitor.catalogue_contact_email_address"
                 },
                 {
                     mapping: "exhibitor.catalogue_contact_phone_number"

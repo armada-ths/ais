@@ -26,7 +26,7 @@ export function BasicInfoFormPage() {
                     label="Contact Person Name"
                 />
                 <FormField.Text
-                    mapping="exhibitor.catalogue_contact_email"
+                    mapping="exhibitor.catalogue_contact_email_address"
                     label="Contact Person Email"
                 />
                 <FormField.Text

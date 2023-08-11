@@ -6,7 +6,7 @@ import { form as TransportForm } from "./transport/form"
 export function getMutableFormsInstance() {
     return {
         primary: PrimaryForm,
-        create_lunch_tickets: CreateLunchTicketsForm,
+        lunch_tickets: CreateLunchTicketsForm,
         exhibitor_catalog: ExhibitorCatalogForm,
         transport: TransportForm
     }

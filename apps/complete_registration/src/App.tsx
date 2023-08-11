@@ -14,7 +14,8 @@ import {
 import { DashboardScreen } from "./screens/dashboard/screen"
 import {
     RegistrationStatus,
-    setCompanyRegistrationStatus
+    setCompanyRegistrationStatus,
+    setUser
 } from "./store/company/company_slice"
 
 export const HOST = "http://192.168.157.172:3000"
@@ -45,6 +46,7 @@ export function App() {
             dispatch(
                 setCompanyRegistrationStatus(data.type as RegistrationStatus)
             )
+            dispatch(setUser(data.contact))
 
             for (const current of awaitingMappings) {
                 dispatch(

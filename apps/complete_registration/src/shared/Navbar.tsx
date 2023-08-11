@@ -1,13 +1,16 @@
 import { useDispatch, useSelector } from "react-redux"
 import { selectActiveForm } from "../store/form/form_selectors"
 import { setActiveForm } from "../store/form/form_slice"
+import { AppDispatch } from "../store/store"
+import { remoteSaveChanges } from "../store/form/async_actions"
 
 export function Navbar() {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const form = useSelector(selectActiveForm)
 
     function closeForm() {
         dispatch(setActiveForm(null))
+        dispatch(remoteSaveChanges())
     }
 
     return (
