@@ -236,6 +236,11 @@ class Exhibitor(models.Model):
         verbose_name="Additional wishes regarding placement at the fair",
     )
 
+    transport_information_read = models.BooleanField(
+        null=False,
+        default=False,
+    )
+
     transport_to_statuses = [
         ("NOT_BOOKED", "Not booked"),
         ("BOOKED", "Booked"),

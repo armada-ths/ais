@@ -104,18 +104,19 @@ class CatalogueLocationsSerializer(CheckboxSerializer):
 class ExhibitorSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Exhibitor
-        read_only_fields = ("id",)
+        read_only_fields = ("id", "deadline_complete_registration")
         fields = read_only_fields + (
+            "transport_information_read",
             "catalogue_about",
             "catalogue_logo_squared",
             "catalogue_logo_freesize",
             "catalogue_contact_name",
             "catalogue_contact_email_address",
             "catalogue_contact_phone_number",
+            "catalogue_cities",
             "catalogue_industries",
             "catalogue_employments",
             "catalogue_locations",
-            "catalogue_cities",
         )
 
     catalogue_logo_squared = Base64ImageField(allow_null=True)
