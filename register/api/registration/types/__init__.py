@@ -1,7 +1,10 @@
+import copy
+import inspect
+
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
 
-from util import ChildSerializer, update_field
+from util import update_field
 
 from register.api.registration.types.base64image import Base64ImageField
 
@@ -21,6 +24,17 @@ from accounting.api import OrderSerializer
 
 ### Didrik (2023) The below serializers could be placed in a more logical
 ### place, e.g. in the folders of the actual models.
+
+
+class CheckboxesSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        all_children = self.child.Meta.model.objects.all()
+        values = list(data.values_list("id", flat=True))
+
+        return [
+            dict(type(self.child)(child).data) | {"selected": child.id in values}
+            for child in all_children
+        ]
 
 
 # Use this when serializing a common checkbox model
@@ -104,7 +118,13 @@ class CatalogueLocationsSerializer(CheckboxSerializer):
 class ExhibitorSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Exhibitor
-        read_only_fields = ("id", "deadline_complete_registration")
+        read_only_fields = (
+            "id",
+            "deadline_complete_registration",
+            "transport_to",
+            "transport_from",
+            "transport_comment",
+        )
         fields = read_only_fields + (
             "transport_information_read",
             "catalogue_about",
@@ -121,9 +141,20 @@ class ExhibitorSerializer(WritableNestedModelSerializer):
 
     catalogue_logo_squared = Base64ImageField(allow_null=True)
     catalogue_logo_freesize = Base64ImageField(allow_null=True)
-    catalogue_industries = ChildSerializer(child=CatalogueIndustrySerializer())
-    catalogue_employments = ChildSerializer(child=CatalogueEmploymentSerializer())
-    catalogue_locations = ChildSerializer(child=CatalogueLocationsSerializer())
+    catalogue_industries = CheckboxesSerializer(child=CatalogueIndustrySerializer())
+    catalogue_employments = CheckboxesSerializer(child=CatalogueEmploymentSerializer())
+    catalogue_locations = CheckboxesSerializer(child=CatalogueLocationsSerializer())
+
+    transport_to = serializers.SerializerMethodField(read_only=True)
+    transport_from = serializers.SerializerMethodField(read_only=True)
+
+    def get_transport_to(self, obj):
+        return dict(Exhibitor.transport_to_statuses).get(obj.transport_to, "Unknown")
+
+    def get_transport_from(self, obj):
+        return dict(Exhibitor.transport_from_statuses).get(
+            obj.transport_from, "Unknown"
+        )
 
 
 class RegistrationSerializer(serializers.Serializer):

@@ -184,7 +184,7 @@ class Exhibitor(models.Model):
     catalogue_contact_name = models.CharField(
         blank=True, null=True, max_length=255, verbose_name="Contact person's name"
     )
-    catalogue_contact_email_address = models.CharField(
+    catalogue_contact_email_address = models.EmailField(
         blank=True,
         null=True,
         max_length=255,
