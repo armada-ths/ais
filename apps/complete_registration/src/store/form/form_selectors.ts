@@ -1,6 +1,7 @@
 import { createSelector as cs } from "reselect"
 import { RootState } from "../store"
 import { FORMS } from "../../forms"
+import { Field, FormPage } from "../../screens/form/screen"
 
 export const selectFormState = (state: RootState) => state.formMeta
 export const selectForms = cs(selectFormState, formMeta => formMeta.forms)
@@ -29,13 +30,10 @@ export const selectPageProgress = cs(
         const page = form.pages.find(p => p.id == pageId)
         if (page == null) return null
         const totalFields =
-            page.fields?.filter(
-                field => field.includeInProgressionSummary !== false
-            ).length ?? 0
+            page.fields?.filter(field => field.mandatory !== false).length ?? 0
         const completedFields =
             page.fields?.filter(
-                field =>
-                    field.value && field.includeInProgressionSummary !== false
+                field => field.value && field.mandatory !== false
             ).length ?? 0
 
         if (totalFields <= 0) return null
@@ -52,14 +50,11 @@ export const selectFormProgress = cs(
             (acc, page) => [
                 acc[0] +
                     (page.fields?.filter(
-                        field =>
-                            field.value &&
-                            field.includeInProgressionSummary !== false
+                        field => field.value && field.mandatory !== false
                     ).length ?? 0),
                 acc[1] +
-                    (page.fields?.filter(
-                        field => field.includeInProgressionSummary !== false
-                    ).length ?? 0)
+                    (page.fields?.filter(field => field.mandatory !== false)
+                        .length ?? 0)
             ],
             [0, 0]
         )
@@ -78,5 +73,26 @@ export const selectField = cs(
             }
         }
         return null
+    }
+)
+
+export const selectUnfilledFields = cs(
+    (state: RootState, formKey: keyof typeof FORMS) =>
+        selectForm(state, formKey),
+    selectedForm => {
+        const unfilledFields: { page: FormPage; fields: Field[] }[] = []
+        for (const page of selectedForm.pages) {
+            const newUnfilledPage: (typeof unfilledFields)[number] = {
+                page,
+                fields: []
+            }
+            for (const field of page.fields ?? []) {
+                if (field.value == null && field.mandatory !== false)
+                    newUnfilledPage.fields.push(field)
+            }
+            if (newUnfilledPage.fields.length == 0) continue
+            unfilledFields.push(newUnfilledPage)
+        }
+        return unfilledFields
     }
 )

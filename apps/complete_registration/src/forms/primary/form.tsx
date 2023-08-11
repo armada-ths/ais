@@ -62,11 +62,11 @@ export const form: Form = {
                 },
                 {
                     mapping: "company.invoice_address_line_2",
-                    includeInProgressionSummary: false
+                    mandatory: false
                 },
                 {
                     mapping: "company.invoice_address_line_3",
-                    includeInProgressionSummary: false
+                    mandatory: false
                 },
                 {
                     mapping: "company.invoice_zip_code"
