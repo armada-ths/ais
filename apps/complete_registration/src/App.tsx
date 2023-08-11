@@ -11,6 +11,7 @@ import {
     loadProducts,
     pickProduct
 } from "./store/products/products_slice"
+import { DashboardScreen } from "./screens/dashboard/screen"
 
 export const HOST = "http://192.168.157.172:3000"
 
@@ -61,9 +62,11 @@ export function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    const showDashboard = true
+
     return (
         <div className="bg-slate-50">
-            <FormScreen form={form} />
+            {showDashboard ? <DashboardScreen /> : <FormScreen form={form} />}
         </div>
     )
 }

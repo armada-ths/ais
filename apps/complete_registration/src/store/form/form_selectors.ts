@@ -34,8 +34,18 @@ export const selectPageProgress = cs(
 export const selectFormProgress = cs(selectForm, form => {
     const [completedFields, totalFields] = form.pages.reduce(
         (acc, page) => [
-            acc[0] + page.fields.filter(field => field.value).length,
-            acc[1] + page.fields.filter(field => field.readonly !== true).length
+            acc[0] +
+                page.fields.filter(
+                    field =>
+                        field.value &&
+                        field.includeInProgressionSummary !== false
+                ).length,
+            acc[1] +
+                page.fields.filter(
+                    field =>
+                        field.readonly !== true &&
+                        field.includeInProgressionSummary !== false
+                ).length
         ],
         [0, 0]
     )
