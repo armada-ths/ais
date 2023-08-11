@@ -12,6 +12,10 @@ import {
     pickProduct
 } from "./store/products/products_slice"
 import { DashboardScreen } from "./screens/dashboard/screen"
+import {
+    RegistrationStatus,
+    setCompanyRegistrationStatus
+} from "./store/company/company_slice"
 
 export const HOST = "http://192.168.157.172:3000"
 
@@ -35,6 +39,11 @@ export function App() {
         }).then(async raw => {
             const data = await raw.json()
             const awaitingMappings = reverseMap(data)
+
+            // Set status for company
+            dispatch(
+                setCompanyRegistrationStatus(data.type as RegistrationStatus)
+            )
 
             for (const current of awaitingMappings) {
                 dispatch(

@@ -2,9 +2,20 @@ import { useSelector } from "react-redux"
 import { cx } from "../../utils/cx"
 import FormCard from "./FormCard"
 import { selectForms } from "../../store/form/form_selectors"
+import { selectCompanyStatus } from "../../store/company/company_selectors"
+import { RegistrationStatus } from "../../store/company/company_slice"
+import { FORMS } from "../../forms"
 
 export function DashboardScreen() {
     const forms = useSelector(selectForms)
+    const companyStatus = useSelector(selectCompanyStatus)
+
+    const FORM_CLOSED_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> =
+        {
+            primary: ["complete_registration_signed"],
+            create_lunch_tickets: []
+        }
+
     return (
         <div className={cx("grid min-h-[100dvh] grid-cols-[1fr_6fr_1fr]")}>
             <div>{/* SIDEBAR */}</div>
@@ -16,7 +27,16 @@ export function DashboardScreen() {
                 </div>
                 <div className="mt-10 flex flex-wrap gap-5">
                     {Object.entries(forms).map(([key, formMeta]) => (
-                        <FormCard key={key} form={formMeta} />
+                        <FormCard
+                            key={key}
+                            form={formMeta}
+                            locked={
+                                companyStatus != null &&
+                                FORM_CLOSED_DURING[formMeta.key].includes(
+                                    companyStatus
+                                )
+                            }
+                        />
                     ))}
                 </div>
             </div>

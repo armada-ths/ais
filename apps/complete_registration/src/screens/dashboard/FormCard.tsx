@@ -4,11 +4,14 @@ import { useDispatch, useSelector } from "react-redux"
 import { selectFormProgress } from "../../store/form/form_selectors"
 import { RootState } from "../../store/store"
 import { setActiveForm } from "../../store/form/form_slice"
+import { cx } from "../../utils/cx"
 
 export default function FormCard({
-    form
+    form,
+    locked
 }: {
     form: (typeof FORMS)[keyof typeof FORMS]
+    locked?: boolean
 }) {
     const dispatch = useDispatch()
     const formProgress = useSelector((state: RootState) =>
@@ -21,9 +24,12 @@ export default function FormCard({
 
     return (
         <Card
-            onClick={openForm}
+            onClick={locked ? () => {} : openForm}
             key={form.key}
-            className="max-w-sm p-5 px-8 text-slate-700 transition-all hover:cursor-pointer active:scale-95"
+            className={cx(
+                "max-w-sm p-5 px-8 text-slate-700 transition-all hover:cursor-pointer active:scale-95",
+                locked && "opacity-50 hover:cursor-default active:scale-100"
+            )}
         >
             <div className="mb-2 flex items-center justify-between gap-x-10">
                 <p className="text-lg">{form.name}</p>
@@ -36,6 +42,11 @@ export default function FormCard({
                 )}
             </div>
             <p className="text-slate-500">{form.description}</p>
+            {form.key === "primary" && !locked && (
+                <p className="mt-2 rounded bg-yellow-500 p-1 px-3 text-white">
+                    Contract has not been signed
+                </p>
+            )}
         </Card>
     )
 }
