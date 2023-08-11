@@ -4,6 +4,7 @@ from accounting.api import OrderSerializer
 
 from companies.serializers import CompanySerializer
 from register.api.registration.types import RegistrationSerializer
+from util import update_field
 
 
 class CRCompanySerializer(CompanySerializer):
@@ -35,13 +36,7 @@ class CRSignedRegistrationSerializer(RegistrationSerializer):
     company = CRSignedCompanySerializer()
 
     def update(self, instance, validated_data):
-        company = validated_data.pop("company", None)
-        if company != None:
-            company_serializer = CRSignedCompanySerializer(
-                instance.company, data=company, partial=True
-            )
-            if company_serializer.is_valid():
-                company_serializer.save()
+        update_field(instance, validated_data, "company", CRSignedCompanySerializer)
 
         return super().update(instance, validated_data)
 
@@ -50,13 +45,7 @@ class CRRegistrationSerializer(RegistrationSerializer):
     company = CRCompanySerializer()
 
     def update(self, instance, validated_data):
-        company = validated_data.pop("company", None)
-        if company != None:
-            company_serializer = CRCompanySerializer(
-                instance.company, data=company, partial=True
-            )
-            if company_serializer.is_valid():
-                company_serializer.save()
+        update_field(instance, validated_data, "company", CRCompanySerializer)
 
         orders = validated_data.pop("orders", None)
         if orders != None:

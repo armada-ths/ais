@@ -4,7 +4,6 @@ from drf_writable_nested import UniqueFieldsMixin
 
 
 COMPANY_FIELDS = (
-    "id",
     "name",
     "identity_number",
     "website",
@@ -25,4 +24,5 @@ COMPANY_FIELDS = (
 class CompanySerializer(UniqueFieldsMixin, serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = COMPANY_FIELDS
+        read_only_fields = COMPANY_FIELDS
+        fields = read_only_fields + ("id",)
