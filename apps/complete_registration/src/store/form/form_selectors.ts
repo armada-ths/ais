@@ -62,6 +62,20 @@ export const selectFormProgress = cs(
     }
 )
 
+export const selectCompanyProgress = cs(selectForms, forms => {
+    let completedFields = 0
+    let totalFields = 0
+    for (const form of Object.values(forms)) {
+        for (const page of form.pages) {
+            for (const field of page.fields ?? []) {
+                if (field.mandatory !== false) totalFields++
+                if (field.mandatory !== false && field.value) completedFields++
+            }
+        }
+    }
+    return completedFields / (totalFields || 1)
+})
+
 export const selectField = cs(
     [selectForms, (_: RootState, mapping: string) => mapping],
     (forms, mapping) => {
@@ -75,7 +89,23 @@ export const selectField = cs(
         return null
     }
 )
-
+export const selectFieldErrors = cs(
+    [selectFormState, (_: RootState, mapping: string) => mapping],
+    (formState, mapping) => {
+        for (const error of formState.errors ?? []) {
+            console.log(
+                error.mapping.split(".").slice(0, -1).join("."),
+                mapping,
+                error.mapping.split(".").slice(0, -1).join(".") === mapping
+            )
+            if (error.mapping.split(".").slice(0, -1).join(".") === mapping) {
+                console.log("FOUND MAP!!!!!!!!!!!", error)
+                return error
+            }
+        }
+        return null
+    }
+)
 export const selectUnfilledFields = cs(
     (state: RootState, formKey: keyof typeof FORMS) =>
         selectForm(state, formKey),

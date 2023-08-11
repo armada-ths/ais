@@ -4,7 +4,7 @@ import { InputTextarea } from "primereact/inputtextarea"
 import { Dropdown } from "primereact/dropdown"
 import { SelectButton } from "primereact/selectbutton"
 import { useSelector } from "react-redux"
-import { selectField } from "../../store/form/form_selectors"
+import { selectField, selectFieldErrors } from "../../store/form/form_selectors"
 import { AppDispatch, RootState } from "../../store/store"
 import { useDispatch } from "react-redux"
 import { nextPage, setField } from "../../store/form/form_slice"
@@ -33,6 +33,10 @@ const TextInput: FieldComponentType<
 > = ({ label, mapping, inputClassName, className, ...rest }) => {
     const dispatch = useDispatch()
     const field = useSelector((state: RootState) => selectField(state, mapping))
+    const fieldErrors = useSelector((state: RootState) =>
+        selectFieldErrors(state, mapping)
+    )
+    console.log("ERROR", fieldErrors)
     if (
         field == null ||
         (typeof field.value !== "string" && field.value != null)
@@ -47,7 +51,11 @@ const TextInput: FieldComponentType<
             <InputText
                 className={cx(
                     "mt-8 w-full min-w-[200px] max-w-[600px]",
-                    inputClassName
+                    inputClassName,
+                    !fieldErrors &&
+                        field.value &&
+                        "!border-[1px] !border-solid !border-emerald-400",
+                    fieldErrors && "p-invalid"
                 )}
                 value={field.value ?? ""}
                 onChange={event =>
@@ -78,6 +86,10 @@ const TextAreaInput: FieldComponentType = ({ label, mapping }) => {
         <span key={mapping} className="flex flex-col">
             <label htmlFor={mapping}>{label}</label>
             <InputTextarea
+                className={cx(
+                    field?.value &&
+                        "!border-[1px] !border-solid !border-emerald-400"
+                )}
                 id={mapping}
                 name={mapping}
                 value={field?.value ?? ""}

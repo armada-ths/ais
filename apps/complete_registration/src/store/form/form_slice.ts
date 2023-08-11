@@ -11,10 +11,39 @@ export function getPageComponent(formId: keyof typeof FORMS, pageId: string) {
     return page.pageComponent
 }
 
+export function flatMapErrors(
+    output: NonNullable<FormState["errors"]>,
+    errors: unknown,
+    currentMapping: string
+) {
+    if (errors == null) return
+    if (Array.isArray(errors)) {
+        let i = 0
+        for (const error of errors) {
+            flatMapErrors(output, error, `${currentMapping}.$${i}`)
+            i++
+        }
+    } else if (typeof errors === "object") {
+        for (const [key, value] of Object.entries(errors)) {
+            flatMapErrors(output, value, `${currentMapping}.${key}`)
+        }
+    } else {
+        output.push({
+            mapping: currentMapping.slice(1),
+            error: errors.toString()
+        })
+    }
+}
+
+// Create a recursive type with objects, strings, numbers and booleans
 export type FormState = {
     activePage: number
     activeForm?: keyof typeof FORMS
     forms: typeof FORMS
+    errors?: {
+        mapping: string
+        error: string
+    }[]
 }
 
 const initialState: FormState = {
@@ -31,7 +60,12 @@ export const formSlice = createSlice({
             state,
             action: PayloadAction<keyof typeof FORMS | null>
         ) => {
+            if (action.payload == null) state.activePage = 0
+
             state.activeForm = action.payload ?? undefined
+        },
+        setErrors: (state, action: PayloadAction<FormState["errors"]>) => {
+            state.errors = action.payload
         },
         setPage: (state, action: PayloadAction<string | number>) => {
             if (state.activeForm == null) return
@@ -76,7 +110,13 @@ export const formSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setActiveForm, setPage, nextPage, previousPage, setField } =
-    formSlice.actions
+export const {
+    setErrors,
+    setActiveForm,
+    setPage,
+    nextPage,
+    previousPage,
+    setField
+} = formSlice.actions
 
 export default formSlice.reducer

@@ -23,17 +23,16 @@ export function FormPageView({
     const Page = getPageComponent(form.key, page.id)
 
     async function saveChanges() {
-        await dispatch(remoteSaveChanges())
+        const response = await dispatch(remoteSaveChanges())
+        return (response.payload as { success: boolean }).success
     }
 
     async function handlePrevious() {
-        await saveChanges()
-        dispatch(previousPage())
+        if (await saveChanges()) dispatch(previousPage())
     }
 
     async function handleNext() {
-        await saveChanges()
-        dispatch(nextPage())
+        if (await saveChanges()) dispatch(nextPage())
     }
 
     return (
