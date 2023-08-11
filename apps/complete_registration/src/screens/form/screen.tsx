@@ -9,7 +9,6 @@ import {
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 import { cx } from "../../utils/cx"
 import { RootState } from "../../store/store"
-import { FormSidebarCartSummary } from "./sidebar/FormSidebarCartSummary"
 import { FORMS } from "../../forms"
 import { Navbar } from "../../shared/Navbar"
 
@@ -37,6 +36,7 @@ export interface Form {
     isSkippable: boolean
     description: string
     pages: FormPage[]
+    rightSidebar?: () => JSX.Element
 }
 
 type Props = {
@@ -67,7 +67,7 @@ export function FormScreen({ form }: Props) {
                         pageIndex={activePageIndex}
                     />
                 </PrimarySection>
-                <FormSidebarCartSummary />
+                {form.rightSidebar?.()}
             </div>
         </div>
     )

@@ -45,7 +45,7 @@ export function PageCard({ page }: { selected: boolean; page: FormPage }) {
             onClick={clickPageCard}
             className={cx(
                 "flex-row items-center justify-between hover:cursor-pointer",
-                completed && page.id !== activePage.id && "opacity-70"
+                completed && page.id !== activePage?.id && "opacity-70"
             )}
         >
             <div className="flex items-center gap-2">

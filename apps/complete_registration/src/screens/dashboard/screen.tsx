@@ -13,7 +13,9 @@ export function DashboardScreen() {
     const FORM_CLOSED_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> =
         {
             primary: ["complete_registration_signed"],
-            create_lunch_tickets: []
+            create_lunch_tickets: [],
+            exhibitor_catalog: [],
+            transport: []
         }
 
     return (
@@ -25,7 +27,7 @@ export function DashboardScreen() {
                         Company AB
                     </h1>
                 </div>
-                <div className="mt-10 flex flex-wrap gap-5">
+                <div className="mt-10 grid grid-cols-1 gap-5 xl:grid-cols-2 3xl:grid-cols-3">
                     {Object.entries(forms).map(([key, formMeta]) => (
                         <FormCard
                             key={key}

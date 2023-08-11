@@ -11,6 +11,7 @@ import { nextPage, setField } from "../../store/form/form_slice"
 import { cx } from "../../utils/cx"
 import { Product, pickProduct } from "../../store/products/products_slice"
 import { remoteSaveChanges } from "../../store/form/async_actions"
+import { HOST } from "../../App"
 
 export type FieldComponentProps = {
     label: string
@@ -70,13 +71,16 @@ FormField.Text = TextInput
 const TextAreaInput: FieldComponentType = ({ label, mapping }) => {
     const dispatch = useDispatch()
     const field = useSelector((state: RootState) => selectField(state, mapping))
-    if (field?.value == null || typeof field.value !== "string")
+    if (field?.value != null && typeof field.value !== "string")
         return <div>Invalid field mapping</div>
 
     return (
-        <span key={mapping} className="p-float-label">
+        <span key={mapping} className="flex flex-col">
+            <label htmlFor={mapping}>{label}</label>
             <InputTextarea
-                value={field.value ?? ""}
+                id={mapping}
+                name={mapping}
+                value={field?.value ?? ""}
                 onChange={event =>
                     dispatch(
                         setField({
@@ -86,7 +90,6 @@ const TextAreaInput: FieldComponentType = ({ label, mapping }) => {
                     )
                 }
             />
-            <label htmlFor={mapping}>{label}</label>
         </span>
     )
 }
@@ -125,24 +128,24 @@ FormField.Dropdown = DropdownInput
 const CheckboxInput: FieldComponentType = ({ label, mapping }) => {
     const dispatch = useDispatch()
     const field = useSelector((state: RootState) => selectField(state, mapping))
-    if (field?.value == null || typeof field.value !== "boolean")
+    if (field?.value != null && typeof field.value !== "boolean")
         return <div>Invalid field mapping</div>
 
     return (
-        <span key={mapping} className="p-float-label">
+        <div className="flex items-center gap-5">
+            <label>{label}</label>
             <Checkbox
-                checked={field.value ?? false}
+                checked={field?.value ?? false}
                 onChange={event =>
                     dispatch(
                         setField({
                             mapping,
-                            value: event.target.value
+                            value: event.target.checked
                         })
                     )
                 }
             />
-            <label htmlFor={mapping}>{label}</label>
-        </span>
+        </div>
     )
 }
 FormField.Checkbox = CheckboxInput
@@ -231,5 +234,55 @@ const PackageInput: FieldComponentType<
     )
 }
 FormField.Package = PackageInput
+
+const ImageInput: FieldComponentType<FieldComponentProps> = ({ mapping }) => {
+    const dispatch = useDispatch()
+    const image = useSelector((state: RootState) => selectField(state, mapping))
+    if (image?.value != null && typeof image.value !== "string")
+        return <p>Invalid field mapping</p>
+
+    function convertBase64(file: File) {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader()
+            fileReader.readAsDataURL(file)
+            fileReader.onload = () => {
+                resolve(fileReader.result)
+            }
+            fileReader.onerror = error => {
+                reject(error)
+            }
+        })
+    }
+
+    async function onSubmitImage(event: React.ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0]
+        if (file == null) return null
+        const base64 = (await convertBase64(file)) as string
+        dispatch(setField({ mapping, value: base64 }))
+    }
+
+    return (
+        <div className="mt-5 grid grid-cols-2 gap-2">
+            <div>
+                {image != null && (
+                    <img
+                        className="object-contain"
+                        src={
+                            image.value?.startsWith("data:")
+                                ? image.value
+                                : `${HOST}${image.value}`
+                        }
+                    />
+                )}
+            </div>
+            <input
+                type="file"
+                onChange={onSubmitImage}
+                className="flex h-full items-center justify-center rounded-lg border-2 border-dashed border-gray-700 bg-gray-100"
+            />
+        </div>
+    )
+}
+FormField.Image = ImageInput
 
 export { FormField }

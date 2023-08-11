@@ -27,7 +27,7 @@ export default function FormCard({
             onClick={locked ? () => {} : openForm}
             key={form.key}
             className={cx(
-                "max-w-sm p-5 px-8 text-slate-700 transition-all hover:cursor-pointer active:scale-95",
+                "w-96 p-5 px-8 text-slate-700 transition-all hover:cursor-pointer active:scale-95",
                 locked && "opacity-50 hover:cursor-default active:scale-100"
             )}
         >
@@ -41,7 +41,7 @@ export default function FormCard({
                     <span className="pi pi-check-circle !font-bold text-emerald-400"></span>
                 )}
             </div>
-            <p className="text-slate-500">{form.description}</p>
+            <p className="text-xs text-slate-500">{form.description}</p>
             {form.key === "primary" && !locked && (
                 <p className="mt-2 rounded bg-yellow-500 p-1 px-3 text-white">
                     Contract has not been signed

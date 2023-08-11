@@ -7,7 +7,7 @@ type Props = React.HTMLAttributes<HTMLDivElement>
 
 export function FormWrapper({ className, children, ...rest }: Props) {
     return (
-        <div className={cx("my-5", className)} {...rest}>
+        <div className={cx("my-5 max-w-lg", className)} {...rest}>
             <PrimaryFormHeader />
             {children}
         </div>

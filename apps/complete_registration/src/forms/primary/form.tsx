@@ -1,4 +1,5 @@
 import { Form } from "../../screens/form/screen"
+import { FormSidebarCartSummary } from "../../screens/form/sidebar/FormSidebarCartSummary"
 import {
     selectProductEvents,
     selectProductExtras,
@@ -14,6 +15,7 @@ export const form: Form = {
     name: "Mandatory Information",
     description: "This is mandatory",
     isSkippable: false,
+    rightSidebar: FormSidebarCartSummary,
     pages: [
         {
             id: "packages",
