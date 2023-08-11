@@ -30,9 +30,7 @@ export const selectPageProgress = cs(
         if (page == null) return null
         const totalFields =
             page.fields?.filter(
-                field =>
-                    !field.readonly &&
-                    field.includeInProgressionSummary !== false
+                field => field.includeInProgressionSummary !== false
             ).length ?? 0
         const completedFields =
             page.fields?.filter(
@@ -60,9 +58,7 @@ export const selectFormProgress = cs(
                     ).length ?? 0),
                 acc[1] +
                     (page.fields?.filter(
-                        field =>
-                            field.readonly !== true &&
-                            field.includeInProgressionSummary !== false
+                        field => field.includeInProgressionSummary !== false
                     ).length ?? 0)
             ],
             [0, 0]

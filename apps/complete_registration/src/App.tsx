@@ -21,13 +21,11 @@ export function App() {
     const form = useSelector(selectActiveForm)
 
     useEffect(() => {
-        if (form == null) return
         if (initialized.current) return
         initialized.current = true
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
-            console.log("PRODUCTS", JSON.stringify(data))
             dispatch(loadProducts(data))
         })
         fetch(`${HOST}/api/registration/`, {
@@ -36,7 +34,7 @@ export function App() {
             })
         }).then(async raw => {
             const data = await raw.json()
-            const awaitingMappings = reverseMap(data, form)
+            const awaitingMappings = reverseMap(data)
 
             for (const current of awaitingMappings) {
                 dispatch(

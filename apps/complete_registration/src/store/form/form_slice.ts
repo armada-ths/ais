@@ -60,15 +60,16 @@ export const formSlice = createSlice({
             state,
             action: PayloadAction<{ mapping: string; value: FieldValue }>
         ) => {
-            if (state.activeForm == null) return
-            const activeForm = state.forms[state.activeForm]
-            // Const find a specific field in state
-            for (const page of activeForm.pages) {
-                const result = page.fields?.find(
-                    field => field.mapping === action.payload.mapping
-                )
-                if (result == null) continue
-                result.value = action.payload.value
+            for (const form of Object.values(state.forms)) {
+                // Const find a specific field in state
+                for (const page of form.pages) {
+                    const result = page.fields?.find(
+                        field => field.mapping === action.payload.mapping
+                    )
+                    if (result == null) continue
+                    result.value = action.payload.value
+                    return
+                }
             }
         }
     }

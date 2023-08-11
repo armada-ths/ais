@@ -14,7 +14,7 @@ export function FormSidebarCartSummary() {
             <div className="sticky top-0 flex flex-col gap-y-2">
                 <div className="max-h-full overflow-auto p-5">
                     {productPackage != null && (
-                        <div className="rounded bg-emerald-400 p-5 py-3">
+                        <div className="mb-5 rounded bg-emerald-400 p-5 py-3">
                             <div className="mb-5 flex flex-wrap items-center justify-between gap-x-4">
                                 <h3 className="text-xl text-white">Package</h3>
                                 <h4 className="mt-1 inline-block rounded bg-white p-1 px-3 text-emerald-400">

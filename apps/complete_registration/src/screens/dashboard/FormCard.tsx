@@ -28,7 +28,9 @@ export default function FormCard({
             <div className="mb-2 flex items-center justify-between gap-x-10">
                 <p className="text-lg">{form.name}</p>
                 {formProgress < 1 ? (
-                    <p className="text-yellow-400">{formProgress}%</p>
+                    <p className="text-yellow-400">
+                        {(formProgress * 100).toFixed()}%
+                    </p>
                 ) : (
                     <span className="pi pi-check-circle !font-bold text-emerald-400"></span>
                 )}

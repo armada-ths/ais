@@ -1,8 +1,10 @@
-import { FORMS } from "../../forms"
+import { useSelector } from "react-redux"
 import { cx } from "../../utils/cx"
 import FormCard from "./FormCard"
+import { selectForms } from "../../store/form/form_selectors"
 
 export function DashboardScreen() {
+    const forms = useSelector(selectForms)
     return (
         <div className={cx("grid min-h-[100dvh] grid-cols-[1fr_6fr_1fr]")}>
             <div>{/* SIDEBAR */}</div>
@@ -13,7 +15,7 @@ export function DashboardScreen() {
                     </h1>
                 </div>
                 <div className="mt-10 flex flex-wrap gap-5">
-                    {Object.entries(FORMS).map(([key, formMeta]) => (
+                    {Object.entries(forms).map(([key, formMeta]) => (
                         <FormCard key={key} form={formMeta} />
                     ))}
                 </div>

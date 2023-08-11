@@ -18,7 +18,6 @@ export type FieldValue = string | boolean | undefined | File
 export type Field = {
     mapping: string
     includeInProgressionSummary?: boolean
-    readonly?: boolean
     value?: FieldValue
 }
 
