@@ -4,9 +4,10 @@ import io
 import uuid
 import filetype
 
+from rest_framework.fields import ImageField, empty
+
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-from rest_framework.fields import ImageField
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 
@@ -36,7 +37,7 @@ class Base64FieldMixin:
         # Check if this is a base64 string
         if base64_data in self.EMPTY_VALUES:
             return None
-        
+
         if isinstance(base64_data, SimpleUploadedFile):
             return super().to_internal_value(base64_data)
 
@@ -53,7 +54,13 @@ class Base64FieldMixin:
             try:
                 decoded_file = base64.b64decode(base64_data)
             except (TypeError, binascii.Error, ValueError):
-                raise ValidationError(self.INVALID_FILE_MESSAGE)
+                # Currently the frontend will send back the
+                # url of the image, which is not a base64.
+                # Instead of raising a ValidationError,
+                # simply don't set the image if the image is invalid.
+
+                # raise ValidationError(self.INVALID_FILE_MESSAGE)
+                return empty
 
             # Generate file name:
             file_name = self.get_file_name(decoded_file)

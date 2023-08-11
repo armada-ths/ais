@@ -24,7 +24,9 @@ from accounting.api import OrderSerializer
 
 
 # Use this when serializing a common checkbox model
-class CheckboxSerializer:
+class CheckboxSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
     def validate(self, data):
         try:
             id = int(data["id"])
@@ -76,27 +78,26 @@ class CatalogueCategorySerializer(serializers.ModelSerializer):
         fields = read_only_fields
 
 
-class CatalogueIndustrySerializer(CheckboxSerializer, serializers.ModelSerializer):
+class CatalogueIndustrySerializer(CheckboxSerializer):
     class Meta:
         model = CatalogueIndustry
         read_only_fields = ("id", "include_in_form", "industry", "category")
         fields = read_only_fields
 
-    id = serializers.IntegerField()
     category = CatalogueCategorySerializer
 
 
-class CatalogueEmploymentSerializer(CheckboxSerializer, serializers.ModelSerializer):
+class CatalogueEmploymentSerializer(CheckboxSerializer):
     class Meta:
         model = CatalogueEmployment
-        read_only_fields = ("employment", "include_in_form")
+        read_only_fields = ("id", "employment", "include_in_form")
         fields = read_only_fields
 
 
-class CatalogueLocationsSerializer(CheckboxSerializer, serializers.ModelSerializer):
+class CatalogueLocationsSerializer(CheckboxSerializer):
     class Meta:
         model = CatalogueLocation
-        read_only_fields = ("location", "include_in_form")
+        read_only_fields = ("id", "location", "include_in_form")
         fields = read_only_fields
 
 
