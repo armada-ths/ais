@@ -1,6 +1,6 @@
 import { FormScreen } from "./screens/form/screen"
 import { useSelector } from "react-redux"
-import { selectForm } from "./store/form/form_selectors"
+import { selectActiveForm } from "./store/form/form_selectors"
 import { useEffect, useRef } from "react"
 import { reverseMap } from "./utils/mapper"
 import { useDispatch } from "react-redux"
@@ -18,7 +18,7 @@ export const HOST = "http://192.168.157.172:3000"
 export function App() {
     const initialized = useRef(false)
     const dispatch = useDispatch()
-    const form = useSelector(selectForm)
+    const form = useSelector(selectActiveForm)
 
     useEffect(() => {
         if (initialized.current) return
@@ -62,7 +62,7 @@ export function App() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const showDashboard = true
+    const showDashboard = false
 
     return (
         <div className="bg-slate-50">

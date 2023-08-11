@@ -1,6 +1,5 @@
 import { FORMS } from "../../forms"
 import { cx } from "../../utils/cx"
-import { Card } from "../form/sidebar/PageCard"
 import FormCard from "./FormCard"
 
 export function DashboardScreen() {
@@ -14,10 +13,10 @@ export function DashboardScreen() {
                     </h1>
                 </div>
                 <div className="mt-10 flex flex-wrap gap-5">
-                    {[...Object.entries(FORMS), ...Object.entries(FORMS)]
+                    {Object.entries(FORMS)
                         /*                         .filter(current => current[0] === "primary") */
                         .map(([key, formMeta]) => (
-                            <FormCard key={key} formMeta={formMeta} />
+                            <FormCard key={key} form={formMeta} />
                         ))}
                 </div>
             </div>

@@ -34,6 +34,11 @@ export function FormSidebarCartSummary() {
                                         )
                                     )}
                                 </ul>
+                                <div>
+                                    <h4 className="mt-5 rounded bg-white p-1 px-3 text-center text-emerald-400">
+                                        {productPackage.unit_price} kr
+                                    </h4>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -55,7 +60,7 @@ export function FormSidebarCartSummary() {
                             {selectedProducts.reduce(
                                 (acc, current) => acc + current.unit_price,
                                 0
-                            )}{" "}
+                            ) + (productPackage?.unit_price ?? 0)}{" "}
                             kr
                         </p>
                     </div>

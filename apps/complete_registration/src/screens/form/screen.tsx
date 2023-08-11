@@ -2,6 +2,7 @@ import PrimarySection from "./PrimarySection"
 import { FormPageView } from "./FormPageView"
 import { useSelector } from "react-redux"
 import {
+    selectActiveForm,
     selectActivePage,
     selectActivePageIndex
 } from "../../store/form/form_selectors"
@@ -9,6 +10,7 @@ import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionS
 import { cx } from "../../utils/cx"
 import { RootState } from "../../store/store"
 import { FormSidebarCartSummary } from "./sidebar/FormSidebarCartSummary"
+import { FORMS } from "../../forms"
 
 export type FieldValue = string | boolean | undefined | File
 
@@ -22,14 +24,15 @@ export type Field = {
 export interface FormPage {
     id: string
     title: string
-    fields: Field[]
+    fields?: Field[]
     hasNextButton?: boolean // If true, the page will have a next and previous button
     hasPrevButton?: boolean
     getProgress?: (state: RootState) => number // If a page has custom progress logic this can be used
+    pageComponent: () => JSX.Element
 }
 
 export interface Form {
-    key: string // The key field to map the form to the *.form.tsx
+    key: keyof typeof FORMS // The key field to map the form to the *.form.tsx
     name: string
     isSkippable: boolean
     description: string
@@ -43,6 +46,7 @@ type Props = {
 export function FormScreen({ form }: Props) {
     const activePage = useSelector(selectActivePage)
     const activePageIndex = useSelector(selectActivePageIndex)
+    const activeForm = useSelector(selectActiveForm)
 
     return (
         <div
@@ -59,7 +63,11 @@ export function FormScreen({ form }: Props) {
                 <h1 className="border-b-2 border-solid border-slate-800 text-4xl">
                     {form.name}
                 </h1>
-                <FormPageView page={activePage} pageIndex={activePageIndex} />
+                <FormPageView
+                    form={activeForm}
+                    page={activePage}
+                    pageIndex={activePageIndex}
+                />
             </PrimarySection>
             <FormSidebarCartSummary />
         </div>

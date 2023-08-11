@@ -1,5 +1,13 @@
 import { Form } from "../../screens/form/screen"
-import { selectSelectedProducts } from "../../store/products/products_selectors"
+import {
+    selectProductEvents,
+    selectProductExtras,
+    selectSelectedProducts
+} from "../../store/products/products_selectors"
+import { InvoiceDetailsFormPage } from "./invoice_details.page"
+import { PackageSelectFormPage } from "./package_select.page"
+import { ProductFormPage } from "./product.page"
+import { SummaryFormPage } from "./summary.page"
 
 export const form: Form = {
     key: "primary",
@@ -8,7 +16,7 @@ export const form: Form = {
     isSkippable: false,
     pages: [
         {
-            id: "package",
+            id: "packages",
             title: "Select Package",
             hasNextButton: false,
             hasPrevButton: false,
@@ -19,21 +27,26 @@ export const form: Form = {
                     ? 100
                     : 0
             },
-            fields: []
+            pageComponent: PackageSelectFormPage
         },
         {
             id: "events",
             title: "Select Events",
-            fields: []
+            pageComponent: () => (
+                <ProductFormPage selector={selectProductEvents} />
+            )
         },
         {
             id: "extras",
             title: "Select Extras",
-            fields: []
+            pageComponent: () => (
+                <ProductFormPage selector={selectProductExtras} />
+            )
         },
         {
             id: "invoice",
             title: "Invoice Information",
+            pageComponent: InvoiceDetailsFormPage,
             fields: [
                 {
                     mapping: "company.invoice_name"
@@ -73,7 +86,7 @@ export const form: Form = {
             id: "summary",
             title: "Summary",
             hasNextButton: false,
-            fields: []
+            pageComponent: SummaryFormPage
         }
     ]
 }

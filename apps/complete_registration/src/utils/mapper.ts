@@ -1,12 +1,15 @@
+import { FORMS } from "../forms"
 import { FieldValue, Form } from "../screens/form/screen"
 
-export function mapToApi(form: Form) {
+export function mapToApi(forms: typeof FORMS) {
     const output = {} as any
 
-    for (const page of form.pages) {
-        for (const field of page.fields) {
-            if (field.type === "text") continue
-            map(field.mapping, output, field.value)
+    for (const formMeta of Object.values(forms)) {
+        for (const page of formMeta.form.pages) {
+            if (page.fields == null) continue
+            for (const field of page.fields) {
+                map(field.mapping, output, field.value)
+            }
         }
     }
     return output
@@ -29,7 +32,7 @@ export function map(mapping: string, parent: any, attachable: FieldValue) {
 export function reverseMap(parent: any, form: Form) {
     const awaitingMappings: { mapping: string; value: FieldValue }[] = []
     for (const page of form.pages) {
-        for (const field of page.fields) {
+        for (const field of page.fields ?? []) {
             if (field.type === "text") continue
 
             // Look for field in parent

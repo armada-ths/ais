@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux"
 import {
-    selectActivePage,
-    selectForm
+    selectActiveForm,
+    selectActivePage
 } from "../../../store/form/form_selectors"
 import { PageCard } from "./PageCard"
 
 export function FormSidebarProgressionSummary() {
-    const form = useSelector(selectForm)
+    const form = useSelector(selectActiveForm)
     const activePage = useSelector(selectActivePage)
     return (
         <div className="relative h-[100vh]">
