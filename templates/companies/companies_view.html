@@ -100,9 +100,11 @@
 					<a class="pull-right" href="{% url 'companies_contacts_edit' fair.year company.pk contact.pk %}">
 						<span class="glyphicon glyphicon-edit"></span>
 					</a>
+					{% if 'magic_link.add_magiclink' in perms %}
 					<a class="pull-right" href="javascript:;" onclick="createMagicLink(this, '{{ contact.user.pk }}')" style="margin-right: 7px;" title="Create a magic link for the user, redirecting them to the register page">
 						<span class="glyphicon glyphicon-link"></span>
 					</a>
+					{% endif %}
 					<h2 class="panel-title">{% if contact.preferred_language %}{{ contact.preferred_language.short }} {% endif %}{{ contact }}</h2>
 					{% if contact.title %}{{ contact.title }}{% endif %}
 				</div>

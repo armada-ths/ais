@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.utils.crypto import get_random_string
 
@@ -38,7 +39,7 @@ from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
 from student_profiles.models import StudentProfile, MatchingResult
 from companies.models import Company
-from magic_link.models import MagicLink
+from magic_link.models import MagicLink, link_expires_at
 
 
 def root(request):
@@ -327,13 +328,19 @@ def partners(request):
     return JsonResponse(data, safe=False)
 
 
+@permission_required('magic_link.add_magiclink')
 def create_magic_link(request):
-    id = request.GET["user"]
+    id = request.GET.get("user", None)
     redirect_to = request.GET.get("redirect_to", None)
+
+    if id == None:
+        return JsonResponse({"error": "id required"}, status=400)
 
     user = User.objects.get(pk=id)
     link = MagicLink.objects.create(
-        user=user, redirect_to=redirect_to if redirect_to != None else "/register"
+        user=user,
+        redirect_to=redirect_to if redirect_to != None else "/register",
+        expires_at=link_expires_at(24 * 60 * 60),  # expires in 24h
     )
     url = request.build_absolute_uri(link.get_absolute_url())
 
