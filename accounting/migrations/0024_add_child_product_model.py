@@ -5,27 +5,40 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0023_add_category_description'),
+        ("accounting", "0023_add_category_description"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ChildProduct',
+            name="ChildProduct",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', models.PositiveIntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quantity", models.PositiveIntegerField()),
             ],
         ),
         migrations.AlterField(
-            model_name='product',
-            name='child_products',
-            field=models.ManyToManyField(blank=True, help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "No customer removal" on the child products in order to make the package automatically add packages  which can only be removed by a salesperson. This feature was used in 2023 when selling gold, silver, and bronze packages.', to='accounting.ChildProduct'),
+            model_name="product",
+            name="child_products",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "No customer removal" on the child products in order to make the package automatically add packages  which can only be removed by a salesperson. This feature was used in 2023 when selling gold, silver, and bronze packages.',
+                to="accounting.ChildProduct",
+            ),
         ),
         migrations.AddField(
-            model_name='childproduct',
-            name='child_product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounting.Product'),
+            model_name="childproduct",
+            name="child_product",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="accounting.Product"
+            ),
         ),
     ]

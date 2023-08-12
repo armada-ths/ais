@@ -91,7 +91,7 @@ def submit_cr(request, company, fair, contact, exhibitor):
                 purchasing_company=company,
                 product=child.child_product,
                 quantity=child.quantity,
-                unit_price=0, # A package product is free
+                unit_price=0,  # A package product is free
             )
 
     try:
