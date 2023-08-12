@@ -1,6 +1,6 @@
 import { createSelector as cs } from "reselect"
 import { RootState } from "../store"
-import { FORMS } from "../../forms"
+import { FORMS, getFieldFromForm } from "../../forms"
 import { Field, FormPage } from "../../screens/form/screen"
 
 export const selectFormState = (state: RootState) => state.formMeta
@@ -79,14 +79,7 @@ export const selectCompanyProgress = cs(selectForms, forms => {
 export const selectField = cs(
     [selectForms, (_: RootState, mapping: string) => mapping],
     (forms, mapping) => {
-        // Iterate over all forms and pages to find the field with the given mapping
-        for (const formMeta of Object.values(forms)) {
-            for (const page of formMeta.pages) {
-                const field = page.fields?.find(f => f.mapping == mapping) ?? 0
-                if (field) return field
-            }
-        }
-        return null
+        return getFieldFromForm(forms, mapping)
     }
 )
 export const selectErrors = cs(selectFormState, formState => formState.errors)

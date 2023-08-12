@@ -5,18 +5,12 @@ export function DetailedFormPage() {
     return (
         <FormWrapper>
             <FormField.MultiSelect
-                label=""
+                label="Industries"
                 mapping="exhibitor.catalogue_industries"
-                options={[
-                    {
-                        label: "First",
-                        value: "first"
-                    },
-                    {
-                        label: "Second",
-                        value: "third"
-                    }
-                ]}
+                className="w-full"
+                filter
+                optionLabel="industry"
+                optionValue="selected"
             />
         </FormWrapper>
     )

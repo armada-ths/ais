@@ -1,5 +1,5 @@
-import { FORMS } from "../forms"
-import { FieldValue } from "../screens/form/screen"
+import { FORMS, getFieldFromForm } from "../forms"
+import { FieldOption, FieldValue } from "../screens/form/screen"
 
 export function mapToApi(forms: typeof FORMS) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,10 +9,20 @@ export function mapToApi(forms: typeof FORMS) {
         for (const page of formMeta.pages) {
             if (page.fields == null) continue
             for (const field of page.fields) {
+                if (Array.isArray(field.value)) {
+                    mapValueOptions(
+                        field.mapping,
+                        output,
+                        field.value as unknown as FieldOption[]
+                    )
+                    continue
+                }
+
                 map(field.mapping, output, field.value)
             }
         }
     }
+    console.log("OUT", output)
     return output
 }
 
@@ -26,6 +36,30 @@ export function map(mapping: string, parent: any, attachable: FieldValue) {
         if (current[part] === undefined) current[part] = {}
 
         if (part === parts[parts.length - 1]) current[part] = attachable
+
+        current = current[part]
+    }
+}
+
+export function mapValueOptions(
+    mapping: string,
+    parent: any,
+    attachable: FieldOption[]
+) {
+    const parts = mapping.split(".")
+    let current = parent ?? {}
+
+    for (const part of parts) {
+        if (typeof current !== "object") continue
+        if (current[part] === undefined) current[part] = {}
+
+        if (part === parts[parts.length - 1]) {
+            current[part] = attachable
+                .filter(current => current.selected)
+                .map(current => ({
+                    id: current.id
+                }))
+        }
 
         current = current[part]
     }
@@ -54,6 +88,23 @@ export function reverseMap(parent: any) {
                             value: parentCopy[part]
                         })
                         continue
+                    } else if (parentCopy[part] != null) {
+                        const stateField = getFieldFromForm(
+                            FORMS,
+                            field.mapping
+                        )
+                        if (
+                            // Make sure that array is end-node
+                            stateField != null &&
+                            stateField.isMultiSelect &&
+                            Array.isArray(parentCopy[part])
+                        ) {
+                            awaitingMappings.push({
+                                mapping: field.mapping,
+                                value: parentCopy[part]
+                            })
+                            continue
+                        }
                     }
 
                     parentCopy = parentCopy[part]
@@ -61,5 +112,6 @@ export function reverseMap(parent: any) {
             }
         }
     }
+    console.log("RESULT", JSON.stringify(awaitingMappings))
     return awaitingMappings
 }

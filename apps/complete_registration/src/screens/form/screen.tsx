@@ -14,11 +14,18 @@ import { Navbar } from "../../shared/Navbar"
 
 export type FieldValue = string | boolean | undefined | File
 
-export type Field = {
+export interface FieldOption {
+    id: number
+    label: string
+    selected: boolean
+}
+
+export interface Field {
     mapping: string
     mandatory?: boolean
     isMultiSelect?: boolean
-    value?: FieldValue
+    multiSelectOptionMap?: never
+    value?: FieldValue | FieldOption[]
 }
 
 export interface FormPage {

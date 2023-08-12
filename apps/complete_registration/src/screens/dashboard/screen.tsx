@@ -53,7 +53,7 @@ export function DashboardScreen() {
                     <div className="grid w-full grid-cols-[1fr_2fr_1fr]">
                         <div />
                         <h1 className="rounded p-2 px-8 text-center text-4xl text-emerald-400">
-                            {companyName ?? "<no company name>"}
+                            {companyName}
                         </h1>
                     </div>
                     {user?.first_name != null && (
