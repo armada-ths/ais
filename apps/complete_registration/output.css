@@ -637,6 +637,10 @@ video {
   height: 0.125rem;
 }
 
+.h-\[100vh\] {
+  height: 100vh;
+}
+
 .h-full {
   height: 100%;
 }
@@ -667,6 +671,10 @@ video {
 
 .w-72 {
   width: 18rem;
+}
+
+.w-\[100vw\] {
+  width: 100vw;
 }
 
 .w-\[450px\] {
