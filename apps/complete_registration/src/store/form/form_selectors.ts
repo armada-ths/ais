@@ -89,6 +89,7 @@ export const selectField = cs(
         return null
     }
 )
+export const selectErrors = cs(selectFormState, formState => formState.errors)
 export const selectFieldErrors = cs(
     [selectFormState, (_: RootState, mapping: string) => mapping],
     (formState, mapping) => {

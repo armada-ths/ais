@@ -7,6 +7,7 @@ export type RegistrationStatus =
 
 export type CompanyState = {
     status?: RegistrationStatus
+    companyName?: string
     user?: {
         first_name: string
         last_name: string
@@ -25,6 +26,9 @@ export const companySlice = createSlice({
     name: "company",
     initialState,
     reducers: {
+        setCompanyName: (state, action: PayloadAction<string>) => {
+            state.companyName = action.payload
+        },
         setCompanyRegistrationStatus: (
             status,
             action: PayloadAction<RegistrationStatus>
@@ -38,6 +42,7 @@ export const companySlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setCompanyRegistrationStatus, setUser } = companySlice.actions
+export const { setCompanyRegistrationStatus, setUser, setCompanyName } =
+    companySlice.actions
 
 export default companySlice.reducer

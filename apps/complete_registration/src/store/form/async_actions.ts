@@ -18,18 +18,17 @@ export const remoteSaveChanges = createAsyncThunk(
         outgoing.orders = generateProductApiSetArray(selectedProducts)
         console.log("OUTGOING", JSON.stringify(outgoing))
 
-        const response = await fetch(
-            "/api/registration/",
-            {
-                method: "PUT",
-                body: JSON.stringify(outgoing)
-            }
-        )
+        const response = await fetch("/api/registration/", {
+            method: "PUT",
+            body: JSON.stringify(outgoing)
+        })
         if (response.status === 400) {
             const errors = await response.json()
             const output: FormState["errors"] = []
             flatMapErrors(output, errors, "")
             thunkAPI.dispatch(setErrors(output))
+            return { success: false }
+        } else if (response.status !== 200) {
             return { success: false }
         }
 

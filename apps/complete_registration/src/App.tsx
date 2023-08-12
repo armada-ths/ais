@@ -4,7 +4,7 @@ import { selectActiveForm } from "./store/form/form_selectors"
 import { useEffect, useRef } from "react"
 import { reverseMap } from "./utils/mapper"
 import { useDispatch } from "react-redux"
-import { setField } from "./store/form/form_slice"
+import { setErrors, setField } from "./store/form/form_slice"
 import {
     PACKAGE_KEY,
     ProductMeta,
@@ -14,6 +14,7 @@ import {
 import { DashboardScreen } from "./screens/dashboard/screen"
 import {
     RegistrationStatus,
+    setCompanyName,
     setCompanyRegistrationStatus,
     setUser
 } from "./store/company/company_slice"
@@ -31,6 +32,7 @@ export function App() {
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
+            console.log("PRODUCTS", data)
             dispatch(loadProducts(data))
         })
         fetch(`${HOST}/api/registration/`, {
@@ -39,12 +41,20 @@ export function App() {
             })
         }).then(async raw => {
             const data = await raw.json()
+            console.log(JSON.stringify(data))
+
+            if (data.error != null) {
+                console.log("Setting", data.error)
+                dispatch(setErrors(data.error))
+            }
+
             const awaitingMappings = reverseMap(data)
 
             // Set status for company
             dispatch(
                 setCompanyRegistrationStatus(data.type as RegistrationStatus)
             )
+            dispatch(setCompanyName(data.company.name))
             dispatch(setUser(data.contact))
 
             for (const current of awaitingMappings) {
