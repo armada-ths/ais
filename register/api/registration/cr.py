@@ -68,7 +68,7 @@ def submit_cr(request, company, fair, contact, exhibitor):
         return error.status
 
     # Currently will not happen, because you can only
-    # cal submit on your own company
+    # call submit on your own company
     if registration.contact == None:
         return status.COMPANY_DOES_NOT_EXIST
 
@@ -80,6 +80,19 @@ def submit_cr(request, company, fair, contact, exhibitor):
     signature = SignupLog.objects.create(
         company_contact=contact, contract=registration.contract, company=company
     )
+
+    # Add package products
+    package_products = Order.objects.filter(
+        purchasing_company=company, product__category__name="Package"
+    )
+    for package in package_products:
+        for child in package.product.child_products.all():
+            Order.objects.create(
+                purchasing_company=company,
+                product=child.child_product,
+                quantity=child.quantity,
+                unit_price=0, # A package product is free
+            )
 
     try:
         send_CR_confirmation_email(signature, registration.deadline)

@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from django.http import JsonResponse
 
-from accounting.models import Category, Order, Product, RegistrationSection
+from accounting.models import Category, ChildProduct, Order, Product, RegistrationSection
 from fair.models import Fair
 
 
@@ -39,6 +39,18 @@ class ProductChildSerializer(serializers.ModelSerializer):
     registration_section = RegistrationSectionSerializer()
 
 
+class ChildProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChildProduct
+        read_only_fields = (
+            "quantity",
+            "child_product"
+        )
+        fields = read_only_fields
+
+    child_product = ProductChildSerializer()
+
+
 class ProductSerializer(ProductChildSerializer):
     class Meta(ProductChildSerializer.Meta):
         read_only_fields = ProductChildSerializer.Meta.read_only_fields + (
@@ -46,7 +58,7 @@ class ProductSerializer(ProductChildSerializer):
         )
         fields = ProductChildSerializer.Meta.fields + read_only_fields
 
-    child_products = ProductChildSerializer(many=True)
+    child_products = ChildProductSerializer(many=True)
 
 
 class OrderSerializer(serializers.ModelSerializer):

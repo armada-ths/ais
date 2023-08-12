@@ -23,6 +23,11 @@ class RegistrationSectionAdmin(admin.ModelAdmin):
     list_display = ["name"]
 
 
+@admin.register(ChildProduct)
+class ChildProductAdmin(admin.ModelAdmin):
+    fields = ("child_product", "quantity")
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     ordering = ["revenue", "category", "name"]

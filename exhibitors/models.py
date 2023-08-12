@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models

@@ -49,20 +49,19 @@ class RegistrationSection(models.Model):
         return self.name
 
 
+class ChildProduct(models.Model):
+    quantity = models.PositiveIntegerField(blank=False)
+    child_product = models.ForeignKey("Product", blank=False, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s x %s" % (self.child_product, self.quantity)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
     unit_price = models.IntegerField(blank=False)
-    revenue = models.ForeignKey(
-        Revenue,
-        blank=False,
-        on_delete=models.CASCADE,
-        help_text=" ".join(
-            [
-                "This field also determines which products will be displayed on the FR page for the customer"
-            ]
-        ),
-    )
+    revenue = models.ForeignKey(Revenue, blank=False, on_delete=models.CASCADE)
     result_center = models.PositiveIntegerField(blank=False, null=False)
     cost_unit = models.PositiveIntegerField(blank=False, null=False)
     category = models.ForeignKey(
@@ -73,8 +72,7 @@ class Product(models.Model):
         RegistrationSection, blank=True, null=True, on_delete=models.CASCADE
     )
     child_products = models.ManyToManyField(
-        "self",
-        symmetrical=False,
+        ChildProduct,
         blank=True,
         help_text=" ".join(
             [
@@ -108,7 +106,7 @@ class Product(models.Model):
         ]
 
     def __str__(self):
-        return "%s – %s" % (self.revenue, self.name)
+        return "%s – %s" % (self.category, self.name)
 
 
 class ExportBatch(models.Model):
