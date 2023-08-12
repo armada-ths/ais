@@ -338,7 +338,10 @@ const PackageInput: FieldComponentType<
 }
 FormField.Package = PackageInput
 
-const ImageInput: FieldComponentType<FieldComponentProps> = ({ mapping }) => {
+const ImageInput: FieldComponentType<FieldComponentProps> = ({
+    mapping,
+    label
+}) => {
     const dispatch = useDispatch()
     const image = useSelector((state: RootState) => selectField(state, mapping))
     if (image?.value != null && typeof image.value !== "string")
@@ -366,7 +369,8 @@ const ImageInput: FieldComponentType<FieldComponentProps> = ({ mapping }) => {
 
     return (
         <div className="mt-5 grid grid-cols-2 gap-2">
-            <div>
+            <p className="col-span-full">{label}</p>
+            <div className="rounded bg-slate-100">
                 {image?.value != null && (
                     <img
                         className="object-contain"

@@ -25,18 +25,15 @@ export function FormSidebarCartSummary() {
                                 <h4 className="text-white">
                                     Included in package
                                 </h4>
-                                <ul className="ml-4 list-disc text-white">
+                                <ul className="ml-4 list-inside list-disc text-white">
                                     {productPackage.child_products.map(
                                         ({ child_product, quantity }) => (
-                                            <li
-                                                key={child_product.id}
-                                                className="flex gap-x-1"
-                                            >
-                                                <p>{child_product.name}</p>
-                                                {quantity > 1 && (
-                                                    <p> x {quantity}</p>
-                                                )}
-                                            </li>
+                                            <p className="whitespace-nowrap">
+                                                * {child_product.name}
+                                                {quantity > 1
+                                                    ? ` x ${quantity}`
+                                                    : ""}
+                                            </p>
                                         )
                                     )}
                                 </ul>
