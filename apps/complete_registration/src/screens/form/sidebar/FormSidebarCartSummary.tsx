@@ -42,7 +42,10 @@ export function FormSidebarCartSummary() {
                                 </ul>
                                 <div>
                                     <h4 className="mt-5 rounded bg-white p-1 px-3 text-center text-emerald-400">
-                                        {productPackage.unit_price} kr
+                                        {Intl.NumberFormat("sv").format(
+                                            productPackage.unit_price
+                                        )}{" "}
+                                        kr
                                     </h4>
                                 </div>
                             </div>
@@ -56,7 +59,10 @@ export function FormSidebarCartSummary() {
                             <Card key={current.id} className="">
                                 <p className="">{current.name}</p>
                                 <p className="mt-2 text-slate-400">
-                                    {current.unit_price} kr
+                                    {Intl.NumberFormat("sv").format(
+                                        current.unit_price
+                                    )}{" "}
+                                    kr
                                 </p>
                             </Card>
                         ))}
@@ -65,10 +71,12 @@ export function FormSidebarCartSummary() {
                     <div className="mt-5 flex items-center justify-between rounded bg-slate-200 p-1 px-3">
                         <h2 className="text-lg">Total</h2>
                         <p className="text font-bold">
-                            {selectedProducts.reduce(
-                                (acc, current) => acc + current.unit_price,
-                                0
-                            ) + (productPackage?.unit_price ?? 0)}{" "}
+                            {Intl.NumberFormat("sv").format(
+                                selectedProducts.reduce(
+                                    (acc, current) => acc + current.unit_price,
+                                    0
+                                ) + (productPackage?.unit_price ?? 0)
+                            )}{" "}
                             kr
                         </p>
                     </div>

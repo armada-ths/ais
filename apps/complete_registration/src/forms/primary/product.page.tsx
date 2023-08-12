@@ -46,8 +46,10 @@ function InputCard({ product }: { product: Product }) {
         >
             <div className="flex justify-between gap-10">
                 <div className="w-3/4">
-                    <p className="text">{product.name}</p>
-                    <p className="text-sm">{product.description}</p>
+                    <p className="text text-slate-700">{product.name}</p>
+                    <p className="text-xs text-slate-500">
+                        {product.description}
+                    </p>
                 </div>
                 <div className="flex items-center justify-center">
                     {product.max_quantity <= 1 ? (
@@ -68,6 +70,13 @@ function InputCard({ product }: { product: Product }) {
                             }
                         />
                     )}
+                </div>
+            </div>
+            <div className="mt-5">
+                <div className="inline-block">
+                    <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
+                        {Intl.NumberFormat("sv").format(product.unit_price)} kr
+                    </p>
                 </div>
             </div>
         </div>

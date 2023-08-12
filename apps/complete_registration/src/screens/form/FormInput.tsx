@@ -318,7 +318,7 @@ const PackageInput: FieldComponentType<
                 {product.child_products.map(({ child_product, quantity }) => (
                     <div
                         key={child_product.id}
-                        className="m-5 flex items-center gap-5"
+                        className="m-5 flex items-center gap-5 text-sm"
                     >
                         <i className="pi pi-check !font-bold text-emerald-400"></i>
                         <div className="flex gap-1 text-slate-500">
@@ -330,7 +330,7 @@ const PackageInput: FieldComponentType<
             </div>
             <div className="flex flex-1 items-end justify-center p-5">
                 <p className="rounded bg-slate-500 p-1 px-3 text-center text-lg font-bold text-slate-50">
-                    {product.unit_price} kr
+                    {Intl.NumberFormat("sv").format(product.unit_price)} kr
                 </p>
             </div>
         </div>
