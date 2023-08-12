@@ -6,11 +6,11 @@ export function LogoFormPage() {
         <FormWrapper>
             <FormField.Image
                 mapping="exhibitor.catalogue_logo_squared"
-                label="Company Square Logo"
+                label="Company Logo Square"
             />
             <FormField.Image
                 mapping="exhibitor.catalogue_logo_freesize"
-                label="Company Free Sized Logo"
+                label="Company Free Sized Logo (optional)"
             />
         </FormWrapper>
     )
