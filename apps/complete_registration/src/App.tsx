@@ -39,7 +39,6 @@ export function App() {
             })
         }).then(async raw => {
             const data = await raw.json()
-            console.log("DATA", JSON.stringify(data))
             const awaitingMappings = reverseMap(data)
 
             // Set status for company
