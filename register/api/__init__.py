@@ -1,7 +1,11 @@
+import os
+
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 from fair.models import Fair
+
+is_dev = os.environ["DJANGO_SETTINGS_MODULE"] == "ais.local.settings"
 
 
 def get_fair():
@@ -11,8 +15,9 @@ def get_fair():
 def get_user(request):
     user = request.user
     if not user.is_authenticated:
-        # Todo: remove for prod
-        user = User.objects.filter(email="dmu0817@3gamma.com").first()
-        # return None
+        if is_dev:
+            user = User.objects.filter(email="didrik.munther@armada.nu").first()
+        else:
+            return None
 
     return user
