@@ -14,6 +14,7 @@ urlpatterns = [
     url(r"^news/", views.news),
     url(r"^organization/v2", views.organization_v2),
     url(r"^organization/", views.organization),
+    url(r"^create_magic_link/", views.create_magic_link, name="create_magic_link"),
     url(r"^partners/", views.partners),
     url(r"^questions/?$", views.questions),
     url(r"^recruitment/$", views.recruitment),

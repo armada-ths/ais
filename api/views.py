@@ -8,13 +8,14 @@ from collections import OrderedDict
 from datetime import datetime
 from itertools import chain
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.utils.crypto import get_random_string
 
@@ -38,6 +39,7 @@ from news.models import NewsArticle
 from recruitment.models import RecruitmentPeriod, RecruitmentApplication
 from student_profiles.models import StudentProfile, MatchingResult
 from companies.models import Company
+from magic_link.models import MagicLink, link_expires_at
 
 
 def root(request):
@@ -324,6 +326,25 @@ def partners(request):
     partners = Partner.objects.filter(fair=fair).order_by("-main_partner")
     data = [serializers.partner(request, partner) for partner in partners]
     return JsonResponse(data, safe=False)
+
+
+@permission_required("magic_link.add_magiclink")
+def create_magic_link(request):
+    id = request.GET.get("user", None)
+    redirect_to = request.GET.get("redirect_to", None)
+
+    if id == None:
+        return JsonResponse({"error": "id required"}, status=400)
+
+    user = User.objects.get(pk=id)
+    link = MagicLink.objects.create(
+        user=user,
+        redirect_to=redirect_to if redirect_to != None else "/register",
+        expires_at=link_expires_at(24 * 60 * 60),  # expires in 24h
+    )
+    url = request.build_absolute_uri(link.get_absolute_url())
+
+    return JsonResponse({"url": url}, safe=False)
 
 
 # Todo: Deprecate the usage of this serializer (used by armada.nu)

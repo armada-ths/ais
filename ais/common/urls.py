@@ -4,6 +4,7 @@ from ais.common import settings
 from django.conf.urls.static import static
 from fair.views import login_redirect
 from testpage.views import testpage
+from magic_link import urls as magic_link_urls
 
 urlpatterns = [
     url(r"^accounts/", include("accounts.urls")),
@@ -21,6 +22,7 @@ urlpatterns = [
     url(r"^testpage/", include("testpage.urls")),
     url(r"^payments/", include("payments.urls")),
     url(r"^hijack/", include("hijack.urls")),
+    url(r"^magic_link/", include(magic_link_urls)),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
