@@ -35,6 +35,19 @@ export function DashboardScreen() {
         "text-emerald-400": companyProgress <= 1
     }
 
+    if (user == null) {
+        return (
+            <div className="flex h-[100vh] w-[100vw] items-center justify-center">
+                <p>
+                    You are not logged in, you can{" "}
+                    <a className="text-emerald-400 underline" href="/register">
+                        sign in here
+                    </a>
+                </p>
+            </div>
+        )
+    }
+
     return (
         <div className={cx("grid min-h-[100dvh] grid-cols-[1fr_6fr_1fr]")}>
             <div>{/* SIDEBAR */}</div>
