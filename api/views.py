@@ -328,7 +328,7 @@ def partners(request):
     return JsonResponse(data, safe=False)
 
 
-@permission_required('magic_link.add_magiclink')
+@permission_required("magic_link.add_magiclink")
 def create_magic_link(request):
     id = request.GET.get("user", None)
     redirect_to = request.GET.get("redirect_to", None)
