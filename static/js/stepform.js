@@ -249,7 +249,7 @@ function initBrowser() {
                 list.style.visibility = 'hidden'
             } else {
                 //Fetches the top 10 companies related to the input search
-                fetch("http://localhost:3000/api/companies?limit=10&input=" + browser.value).then((response) => response.json()).then((json) => {
+                fetch("/api/companies?limit=10&input=" + browser.value).then((response) => response.json()).then((json) => {
 
                     //No Results Found text turns visible if no company is returned by API
                     if (json.length == 0)
