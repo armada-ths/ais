@@ -7,7 +7,7 @@ export function PackageSelectFormPage() {
     const packages = useSelector(selectProductPackages)
 
     return (
-        <FormWrapper>
+        <FormWrapper className="max-w-none">
             <div className="flex flex-wrap justify-center gap-5">
                 {packages.map(productPackageMeta => (
                     <FormField.Package

@@ -3,16 +3,18 @@ import { InputText } from "primereact/inputtext"
 import { InputTextarea } from "primereact/inputtextarea"
 import { Dropdown } from "primereact/dropdown"
 import { SelectButton } from "primereact/selectbutton"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { selectField, selectFieldErrors } from "../../store/form/form_selectors"
 import { AppDispatch, RootState } from "../../store/store"
-import { useDispatch } from "react-redux"
 import { nextPage, setField } from "../../store/form/form_slice"
 import { cx } from "../../utils/cx"
 import { Product, pickProduct } from "../../store/products/products_slice"
 import { remoteSaveChanges } from "../../store/form/async_actions"
-import { HOST } from "../../App"
-import { MultiSelect } from "primereact/multiselect"
+import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect"
+import { HOST } from "../../shared/vars"
+import React, { useEffect, useState } from "react"
+import { FieldValue } from "./screen"
+import z from "zod"
 
 export type FieldComponentProps = {
     label: string
@@ -54,7 +56,7 @@ const TextInput: FieldComponentType<
                     inputClassName,
                     !fieldErrors &&
                         field.value &&
-                        "!border-[1px] !border-solid !border-emerald-400",
+                        "!border-2 !border-solid !border-slate-400",
                     fieldErrors && "p-invalid"
                 )}
                 value={field.value ?? ""}
@@ -93,7 +95,7 @@ const TextAreaInput: FieldComponentType = ({ label, mapping }) => {
                 className={cx(
                     !fieldErrors &&
                         field?.value &&
-                        "!border-[1px] !border-solid !border-emerald-400",
+                        "!border-2 !border-solid !border-slate-400",
 
                     fieldErrors && "p-invalid"
                 )}
@@ -201,16 +203,79 @@ FormField.SelectButton = SelectButtonInput
 
 const MultiSelectInput: FieldComponentType<
     FieldComponentProps & {
-        options: { label: string; value: string }[]
+        filter?: boolean
+        optionLabel?: string
+        optionValue?: string
     }
-> = ({ options, mapping }) => {
-    const test = mapping
-    console.log(test)
+> = ({ mapping, label, className, filter, optionLabel, optionValue }) => {
+    const dispatch = useDispatch()
+    const field = useSelector((state: RootState) => selectField(state, mapping))
+    const mapped =
+        ((field?.value as unknown as FieldValue[]) ?? []).map((value: any) => ({
+            id: value.id,
+            label: value[optionLabel ?? "label"],
+            selected: value[optionValue ?? "value"]
+        })) ?? []
+
+    const schema = z.array(
+        z.object({ id: z.number(), label: z.string(), selected: z.boolean() })
+    )
+    const options = schema.parse(mapped)
+
+    const [selected, setSelected] = useState(
+        options.filter(option => option.selected).map(option => option.id)
+    )
+
+    useEffect(() => {
+        if (field?.value == null || !Array.isArray(field.value)) return
+        dispatch(
+            setField({
+                mapping,
+                value: field?.value?.map(current => ({
+                    ...(current as object),
+                    selected:
+                        selected?.find(
+                            selected =>
+                                selected ===
+                                (current as unknown as { id: number }).id
+                        ) != null
+                })) as unknown as FieldValue // Casting here since values doesn't support objects (types)
+            })
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch, selected])
+
+    if (
+        field?.value == null ||
+        // Invalid if either field is not array or type is not set to allow multiple values
+        !Array.isArray(field.value) ||
+        !field.isMultiSelect
+    ) {
+        return <p>Invalid mapping for field "{mapping}"</p>
+    }
+
+    function setMultiField(event: MultiSelectChangeEvent) {
+        setSelected(event.value)
+    }
 
     return (
-        <div>
-            <MultiSelect value={[]} options={options} />
-        </div>
+        <span className="p-float-label mt-8">
+            <MultiSelect
+                id={mapping}
+                className={cx(
+                    "[&>div>div]:flex [&>div>div]:flex-wrap [&>div>div]:gap-y-2 [&>div>div]:text-xs",
+                    className
+                )}
+                filter={filter}
+                display="chip"
+                optionLabel="label"
+                optionValue="id"
+                value={selected}
+                onChange={event => setMultiField(event)}
+                options={options}
+            />
+            <label htmlFor={mapping}>{label}</label>
+        </span>
     )
 }
 FormField.MultiSelect = MultiSelectInput
@@ -256,9 +321,10 @@ const PackageInput: FieldComponentType<
                         className="m-5 flex items-center gap-5"
                     >
                         <i className="pi pi-check !font-bold text-emerald-400"></i>
-                        <p className="text-slate-500">
-                            {child_product.name} x {quantity}
-                        </p>
+                        <div className="flex gap-1 text-slate-500">
+                            <p className="">{child_product.name}</p>
+                            {quantity > 1 && <p> x {quantity}</p>}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -301,7 +367,7 @@ const ImageInput: FieldComponentType<FieldComponentProps> = ({ mapping }) => {
     return (
         <div className="mt-5 grid grid-cols-2 gap-2">
             <div>
-                {image != null && (
+                {image?.value != null && (
                     <img
                         className="object-contain"
                         src={

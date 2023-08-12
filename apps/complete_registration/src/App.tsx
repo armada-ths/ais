@@ -4,9 +4,8 @@ import { selectActiveForm } from "./store/form/form_selectors"
 import { useEffect, useRef } from "react"
 import { reverseMap } from "./utils/mapper"
 import { useDispatch } from "react-redux"
-import { setField } from "./store/form/form_slice"
+import { setErrors, setField } from "./store/form/form_slice"
 import {
-    PACKAGE_KEY,
     ProductMeta,
     loadProducts,
     pickProduct
@@ -14,11 +13,11 @@ import {
 import { DashboardScreen } from "./screens/dashboard/screen"
 import {
     RegistrationStatus,
+    setCompanyName,
     setCompanyRegistrationStatus,
     setUser
 } from "./store/company/company_slice"
-
-export const HOST = ""
+import { HOST, PACKAGE_KEY } from "./shared/vars"
 
 export function App() {
     const initialized = useRef(false)
@@ -33,19 +32,21 @@ export function App() {
             const data = await raw.json()
             dispatch(loadProducts(data))
         })
-        fetch(`${HOST}/api/registration/`, {
-            headers: new Headers({
-                "ngrok-skip-browser-warning": "69420"
-            })
-        }).then(async raw => {
+        fetch(`${HOST}/api/registration/`, {}).then(async raw => {
             const data = await raw.json()
+
+            if (data.error != null) {
+                dispatch(setErrors(data.error))
+            }
+
             const awaitingMappings = reverseMap(data)
 
             // Set status for company
             dispatch(
                 setCompanyRegistrationStatus(data.type as RegistrationStatus)
             )
-            dispatch(setUser(data.contact))
+            if (data.company?.name) dispatch(setCompanyName(data.company.name))
+            if (data.contact) dispatch(setUser(data.contact))
 
             for (const current of awaitingMappings) {
                 dispatch(
@@ -58,7 +59,7 @@ export function App() {
 
             // Apply orders
             const orders = data.orders as ProductMeta[]
-            for (const productMeta of orders) {
+            for (const productMeta of orders ?? []) {
                 dispatch(
                     pickProduct({
                         id: productMeta.product.id,

@@ -1,6 +1,6 @@
 import { Button } from "primereact/button"
 import { Checkbox } from "primereact/checkbox"
-import { useState, MouseEvent } from "react"
+import { useState, MouseEvent, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import {
     selectActiveForm,
@@ -9,12 +9,14 @@ import {
 import { RootState } from "../../store/store"
 import { Card } from "../../screens/form/sidebar/PageCard"
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup"
-import { HOST } from "../../App"
 import { setCompanyRegistrationStatus } from "../../store/company/company_slice"
 import { setActiveForm } from "../../store/form/form_slice"
+import { Toast } from "primereact/toast"
+import { HOST } from "../../shared/vars"
 
 export function SummaryFormPage() {
     const dispatch = useDispatch()
+    const toastRef = useRef<Toast>(null)
     const [confirmEligibility, setConfirmEligibility] = useState(false)
 
     const activeForm = useSelector(selectActiveForm)
@@ -22,17 +24,23 @@ export function SummaryFormPage() {
         selectUnfilledFields(state, activeForm?.key ?? "primary")
     )
 
-    console.log("HELLO", unfilledFields, activeForm?.key)
-
     const readyToSign = confirmEligibility && unfilledFields.length === 0
 
     async function submitRegistration() {
         const response = await fetch(`${HOST}/api/registration/submit`, {
             method: "POST"
         })
+        if (response.status < 200 || response.status >= 300) {
+            toastRef.current?.show({
+                severity: "error",
+                summary: "Error",
+                detail: "We encountered an error while submitting, if the problem persists please contact us."
+            })
+            return
+        }
+
         dispatch(setCompanyRegistrationStatus("complete_registration_signed"))
         dispatch(setActiveForm(null))
-        console.log(JSON.stringify(await response.json()))
     }
 
     const confirm = (event: MouseEvent<HTMLButtonElement>) => {
@@ -40,10 +48,10 @@ export function SummaryFormPage() {
             target: event.currentTarget,
             message: (
                 <div className="flex flex-col">
-                    <p> </p>
+                    <p>Lock your product selection</p>
                 </div>
             ),
-            icon: "pi pi-exclamation-triangle",
+            icon: "pi pi-info-circle",
             accept: submitRegistration,
             reject: () => {}
         })
@@ -51,6 +59,7 @@ export function SummaryFormPage() {
 
     return (
         <div className="flex flex-col items-center">
+            <Toast ref={toastRef} />
             {unfilledFields.length > 0 && (
                 <h2 className="mb-2 text-lg text-red-400">
                     Missing information

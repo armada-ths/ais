@@ -14,3 +14,14 @@ export function getMutableFormsInstance() {
     }
 }
 export const FORMS = Object.freeze(getMutableFormsInstance())
+
+export function getFieldFromForm(forms: typeof FORMS, mapping: string) {
+    // Iterate over all forms and pages to find the field with the given mapping
+    for (const formMeta of Object.values(forms)) {
+        for (const page of formMeta.pages) {
+            const field = page.fields?.find(f => f.mapping == mapping) ?? 0
+            if (field) return field
+        }
+    }
+    return null
+}

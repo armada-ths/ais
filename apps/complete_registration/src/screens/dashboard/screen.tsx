@@ -3,29 +3,37 @@ import { cx } from "../../utils/cx"
 import FormCard from "./FormCard"
 import {
     selectCompanyProgress,
+    selectErrors,
     selectForms
 } from "../../store/form/form_selectors"
 import {
+    selectCompanyName,
     selectCompanyStatus,
     selectUser
 } from "../../store/company/company_selectors"
 import { RegistrationStatus } from "../../store/company/company_slice"
 import { FORMS } from "../../forms"
 import { Card } from "../form/sidebar/PageCard"
+import { DashboardError } from "./DashboardError"
 
 export function DashboardScreen() {
     const forms = useSelector(selectForms)
     const companyStatus = useSelector(selectCompanyStatus)
     const companyProgress = useSelector(selectCompanyProgress)
+    const selectError = useSelector(selectErrors)
+    const companyName = useSelector(selectCompanyName)
 
-    const FORM_CLOSED_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> =
-        {
-            primary: ["complete_registration_signed"],
-            lunch_tickets: [],
-            exhibitor_catalog: [],
-            transport: [],
-            banquet_tickets: []
-        }
+    const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
+        primary: ["complete_registration"],
+        lunch_tickets: ["complete_registration_signed"],
+        exhibitor_catalog: [
+            "complete_registration_signed",
+            "complete_registration",
+            "before_complete_registration"
+        ],
+        transport: ["complete_registration_signed"],
+        banquet_tickets: ["complete_registration_signed"]
+    }
 
     const user = useSelector(selectUser)
 
@@ -35,17 +43,9 @@ export function DashboardScreen() {
         "text-emerald-400": companyProgress <= 1
     }
 
-    if (user == null) {
-        return (
-            <div className="flex h-[100vh] w-[100vw] items-center justify-center">
-                <p>
-                    You are not logged in, you can{" "}
-                    <a className="text-emerald-400 underline" href="/register">
-                        sign in here
-                    </a>
-                </p>
-            </div>
-        )
+    // Check if root error
+    if (selectError != null && typeof selectError === "string") {
+        return <DashboardError />
     }
 
     return (
@@ -56,7 +56,7 @@ export function DashboardScreen() {
                     <div className="grid w-full grid-cols-[1fr_2fr_1fr]">
                         <div />
                         <h1 className="rounded p-2 px-8 text-center text-4xl text-emerald-400">
-                            Company AB
+                            {companyName}
                         </h1>
                     </div>
                     {user?.first_name != null && (
@@ -92,8 +92,8 @@ export function DashboardScreen() {
                                 key={key}
                                 form={formMeta}
                                 locked={
-                                    companyStatus != null &&
-                                    FORM_CLOSED_DURING[formMeta.key].includes(
+                                    companyStatus == null ||
+                                    !FORM_OPEN_DURING[formMeta.key].includes(
                                         companyStatus
                                     )
                                 }

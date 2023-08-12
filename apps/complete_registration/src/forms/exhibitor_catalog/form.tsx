@@ -35,7 +35,6 @@ export const form: Form = {
         {
             id: "logo",
             title: "Logo",
-            hasNextButton: false,
             pageComponent: LogoFormPage,
             fields: [
                 {
@@ -51,9 +50,18 @@ export const form: Form = {
             id: "detailed",
             title: "Exhibitor Specification",
             pageComponent: DetailedFormPage,
+            hasNextButton: false,
             fields: [
                 {
                     mapping: "exhibitor.catalogue_industries",
+                    isMultiSelect: true
+                },
+                {
+                    mapping: "exhibitor.catalogue_employments",
+                    isMultiSelect: true
+                },
+                {
+                    mapping: "exhibitor.catalogue_locations",
                     isMultiSelect: true
                 }
             ]

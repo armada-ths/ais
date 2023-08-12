@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit"
 
 export type RegistrationStatus =
+    | "before_complete_registration" // We are in FR, but no contract uploaded
     | "complete_registration"
     | "complete_registration_signed"
 
 export type CompanyState = {
     status?: RegistrationStatus
+    companyName?: string
     user?: {
         first_name: string
         last_name: string
@@ -25,6 +27,9 @@ export const companySlice = createSlice({
     name: "company",
     initialState,
     reducers: {
+        setCompanyName: (state, action: PayloadAction<string>) => {
+            state.companyName = action.payload
+        },
         setCompanyRegistrationStatus: (
             status,
             action: PayloadAction<RegistrationStatus>
@@ -38,6 +43,7 @@ export const companySlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setCompanyRegistrationStatus, setUser } = companySlice.actions
+export const { setCompanyRegistrationStatus, setUser, setCompanyName } =
+    companySlice.actions
 
 export default companySlice.reducer
