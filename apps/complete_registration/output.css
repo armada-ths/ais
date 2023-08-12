@@ -585,6 +585,10 @@ video {
   margin-bottom: 0.5rem;
 }
 
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
 .mb-5 {
   margin-bottom: 1.25rem;
 }
@@ -607,6 +611,10 @@ video {
 
 .mt-2 {
   margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
 }
 
 .mt-5 {
@@ -701,6 +709,10 @@ video {
   max-width: 32rem;
 }
 
+.max-w-none {
+  max-width: none;
+}
+
 .max-w-xl {
   max-width: 36rem;
 }
@@ -779,6 +791,10 @@ video {
   justify-content: space-between;
 }
 
+.gap-1 {
+  gap: 0.25rem;
+}
+
 .gap-10 {
   gap: 2.5rem;
 }
@@ -827,8 +843,8 @@ video {
   border-radius: 0.5rem;
 }
 
-.\!border-\[1px\] {
-  border-width: 1px !important;
+.\!border-2 {
+  border-width: 2px !important;
 }
 
 .border-0 {
@@ -864,9 +880,9 @@ video {
   border-style: dashed;
 }
 
-.\!border-emerald-400 {
+.\!border-slate-400 {
   --tw-border-opacity: 1 !important;
-  border-color: rgb(52 211 153 / var(--tw-border-opacity)) !important;
+  border-color: rgb(148 163 184 / var(--tw-border-opacity)) !important;
 }
 
 .border-emerald-500 {
@@ -1234,4 +1250,21 @@ video {
   .xl\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.\[\&\>div\>div\]\:flex>div>div {
+  display: flex;
+}
+
+.\[\&\>div\>div\]\:flex-wrap>div>div {
+  flex-wrap: wrap;
+}
+
+.\[\&\>div\>div\]\:gap-y-2>div>div {
+  row-gap: 0.5rem;
+}
+
+.\[\&\>div\>div\]\:text-xs>div>div {
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
