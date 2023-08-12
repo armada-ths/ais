@@ -1,7 +1,8 @@
 import { FORMS } from "../forms"
-import { FieldValue, Form } from "../screens/form/screen"
+import { FieldValue } from "../screens/form/screen"
 
 export function mapToApi(forms: typeof FORMS) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const output = {} as any
 
     for (const formMeta of Object.values(forms)) {
@@ -15,6 +16,7 @@ export function mapToApi(forms: typeof FORMS) {
     return output
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function map(mapping: string, parent: any, attachable: FieldValue) {
     const parts = mapping.split(".")
     let current = parent ?? {}
@@ -29,6 +31,7 @@ export function map(mapping: string, parent: any, attachable: FieldValue) {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function reverseMap(parent: any) {
     const awaitingMappings: { mapping: string; value: FieldValue }[] = []
     for (const form of Object.values(FORMS)) {

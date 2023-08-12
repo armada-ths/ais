@@ -50,7 +50,7 @@ export const selectProductExtras = cs(selectProducts, products =>
 export const selectSelectedProduct = cs(
     [
         selectSelectedProducts,
-        (state: RootState, productId: number) => productId
+        (_state: RootState, productId: number) => productId
     ],
     (selectedProducts, productId) =>
         selectedProducts.find(current => current.id === productId)
