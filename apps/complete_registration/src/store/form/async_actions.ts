@@ -19,7 +19,7 @@ export const remoteSaveChanges = createAsyncThunk(
         console.log("OUTGOING", JSON.stringify(outgoing))
 
         const response = await fetch(
-            "http://192.168.157.172:3000/api/registration/",
+            "/api/registration/",
             {
                 method: "PUT",
                 body: JSON.stringify(outgoing)

@@ -1,9 +1,519 @@
-{% load staticfiles %} {% block content %}
-<link
-  href="{% static 'apps/complete_registration/assets/index.css' %}"
-  rel="stylesheet"
-/>
+{% extends "register/inside/base.html" %}
 
-<div id="root" />
-<script src="{% static 'apps/complete_registration/assets/index.js' %}"></script>
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-registration %}<li><a href="{% url 'anmalan:registration' company.pk %}" class="active">{{ company.name }}</a></li>{% endblock %}
+
+{% block content %}
+	<h1>Final registration for {{ company.name }}</h1>
+
+	{% if contract %}
+
+		<p>Please make sure that the mandatory information is provided and that you have made an order before the last date of the registration.</p>
+		<p>You can save your progress for each section and return later if you are unable to enter all information at once. <span style="font-weight: 700;">Please note that you must save each section individually before continuing with the next one,</span> otherwise your unsaved changes will be lost.</p>
+		<p><span style="font-weight: 700;">Your registration is completed when you have pushed the "Order" button at the bottom of this page.</span> When you have made the order, you will receive a confirmation email and we will then contact you for the contract signing.</p>
+		<p>All fields and products are editable until the last date of the registration, also after the order has been made. You can view your total to pay at the bottom of this page. If you have any questions about the order or want to add a product after the registration is closed, please contact Sales or your representative.</p>
+
+		<p>Please note that <span style="font-weight: 700;">the final registration is binding</span> and that you will be liable for all additional services selected at the last date of the registration, provided that THS Armada is able to supply your organization with your choices.</p>
+
+		<h4 style="text-align: center;">Registration {% if after_deadline %}closed{% else %}closes{% endif %}: <span style="font-weight: 700;">{{ deadline|date:"F j, Y" }}</span></h4>
+
+		<div class="expandable" style="margin-top: 10px; border-top: none;">
+			<h2>Company and invoice details</h2>
+
+			<div class="expandable_content">
+				<p>Make sure that there is at least one complete address to which THS Armada can send the final invoice. Provide an invoice e-mail address to get the invoice sent by e-mail.</p>
+
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ form_company_details | crispy }}
+
+					<input type="submit" name="save_company_details" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
+				</form>
+			</div>
+		</div>
+
+
+		<div class="expandable">
+			<h2>Logistics and booth details</h2>
+
+			<div class="expandable_content">
+				<h3>Is your booth ready?</h3>
+
+				<img style="float: right; width: 200px; margin-left: 15px;" src="{% static 'images/sture_skolden_cmyk_75mm_bred.png' %}" alt="Sture Logo"/>
+
+				<p>Armada will continue the cooperation with Sture Exhibitions &amp; Events AB regarding the construction of stands, rental of furniture and other career fair related services. Sture is one of the largest and most creative companies in Sweden within the field of expo marketing.</p>
+
+				<p>Aligned with Armada's focus on environmental sustainability, we are very proud to collaborate with Sture, a company that has received a gold rating from Svensk miljöbas thanks to their work to reduce their environmental impact. Sture are more than happy to help you with stand designs for both rental and purchase as well as graphic solutions (texts, signs, roll­ups etc.).</p>
+
+				<!--
+				<p>You can find Sture's product catalogue for Armada <a target="_blank" href="https://drive.google.com/file/d/0B9btlTI8Z2FFS3F0OHJtblNraG5xYjZHOEdYbWpHdE9SallB/view?usp=sharing">here</a>. --><p> For more information, please visit <a target="_blank" href="http://www.sture.se/">Sture's website</a>.<br/>To facilitate the ordering process, please send an e-mail to <a href="mailto:mattias.hagman@sture.se">mattias.hagman@sture.se</a> and state your request.</p>
+				<br/>
+
+				<h3>Transportation of your goods to and from the fair</h3>
+
+				<p>Armada offers a transportation solution called Armada Transport which includes free transportation (limitations apply) of your goods to and from the fair. Your goods will be placed at your booth spot upon your arrival. The background behind offering this service is our aim to reduce Armada's impact on the environment and ensure a smooth exhibitor experience. We believe that it is more sustainable to have one transportation company transporting goods with fewer trucks driving on the road, rather than letting everyone find their own transportation solution leading to a higher climate impact with more trucks driving to KTH and more complex logistics.</p>
+
+				<img style="float: right; width: 300px; margin-left: 15px;" src="{% static 'images/DHL_rgb.png' %}" alt="DHL Logo"/>
+
+				<p>Armada is happy to announce that we are collaborating  with DHL to handle the transportation. All of the administration of bookings will be handled directly by DHL. Please note that no exhibitors are allowed to use a different transportation company than DHL. No company other than DHL will access KTH's loading docks, and exhibitors who decide not to use Armada Transport will have to carry their goods into the buildings at the fair.</p>
+
+				<p>More information about how the booking of Armada Transport works will be sent together with the confirmation of registration after the final registration closes. If you want more information about Armada Transport contact <a href='mailto:transport@armada.nu'>transport@armada.nu</a>.</p>
+
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+
+					{{ form_logistics_details | crispy }}
+
+					<input type="submit" name="save_logistics_details" class="btn btn-armada-green" value="Save changes"{% if not is_editable %} disabled{% endif %} />
+				</form>
+
+				<h3>Typical power requirements of commonly used devices</h3>
+
+				<table>
+					<thead>
+						<tr>
+							<th>Item</th>
+							<th style="width: 30%; text-align: right; white-space: nowrap;">Power consumption (W)</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td>Mobile phone charger</td>
+							<td style="text-align: right;">12</td>
+						</tr>
+
+						<tr>
+							<td>Tablet phone charger</td>
+							<td style="text-align: right;">12</td>
+						</tr>
+
+						<tr>
+							<td>Laptop charger</td>
+							<td style="text-align: right;">80</td>
+						</tr>
+
+						<tr>
+							<td>PC (demos, VR etc.)</td>
+							<td style="text-align: right;">500-1200</td>
+						</tr>
+
+						<tr>
+							<td>TV</td>
+							<td style="text-align: right;">100</td>
+						</tr>
+
+						<tr>
+							<td>Halogen stand spotlight</td>
+							<td style="text-align: right;">200</td>
+						</tr>
+
+						<tr>
+							<td>LED stand spotlight</td>
+							<td style="text-align: right;">20</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+		</div>
+
+		{% if form_catalogue_details %}
+		<div class="expandable">
+			<h2>Exhibitor catalogue</h2>
+
+			<div class="expandable_content">
+				<p>This information is used in the exhibitor catalogue on the website and for matching relevant students with your company. We encourage you to fill out as many fields as possible to increase the likelihood of receiving relevant matches.</p>
+
+				<form method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					{{ form_catalogue_details | crispy }}
+
+					<input type="submit" name="save_catalogue_details" class="btn btn-armada-green" value="Save"{% if not is_editable %} disabled{% endif %} />
+				</form>
+			</div>
+		</div>
+		{% endif %}
+
+
+		{% for registration_section in registration_sections %}
+			<div class="expandable">
+				<h2>{{ registration_section.name }}</h2>
+
+				<div class="expandable_content">
+					{% if registration_section.description %}<p>{{ registration_section.description | linebreaks }}</p>{% endif %}
+
+					{% for product in registration_section.products %}
+						<div class="product">
+							<form method="post" enctype="multipart/form-data">
+								{% csrf_token %}
+
+								<input type="submit" name="save_product_{{ product.id }}" class="btn btn-armada-green" value="Save choice"{% if not is_editable %} disabled{% endif %} />
+
+								{% if product.max_quantity == 1 %}
+									{{ product.form.checkbox.errors }}
+									{{ product.form.checkbox }}
+									<label for="{{ product.form.checkbox.id_for_label }}">Yes, please</label>
+								{% else %}
+									{{ product.form }}
+								{% endif %}
+
+								<h3>SEK {{ product.unit_price | intcomma }}{% if product.max_quantity != 1 %} <span style="margin-left: 10px;">×</span>{% endif %}</h3>
+							</form>
+
+							{% if product.category %}<h4>{{ product.category }}</h4>{% endif %}
+							<h3>{{ product.name }}</h3>
+							<p>{{ product.description | linebreaks }}</p>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endfor %}
+
+		<div class="expandable always_opened">
+			<h3 style="color: #00d791;">Summary</h3>
+			<p>The table below summarizes your choices.</p>
+
+			<table>
+				<thead>
+					<tr>
+						<th>Product</th>
+						<th style="width: 15%; text-align: right; white-space: nowrap;">Quantity</th>
+						<th style="width: 20%; text-align: right; white-space: nowrap;">Product total (SEK)</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{% for order in orders %}
+						<tr>
+							<td>
+								{% if order.category %}{{ order.category }} – {% endif %}{{ order.name }}
+								{% if order.description %}<div style="margin-left: 15px;">{{ order.description | linebreaks }}</div>{% endif %}
+							</td>
+							<td style="text-align: right;">{{ order.quantity }}</td>
+							<td style="text-align: right;">{{ order.product_total | intcomma }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+			<h4 style="text-align: right;">Total to pay: <span style="font-weight: bold; letter-spacing: 1px;">SEK {{ orders_total | intcomma }}</span> (excluding VAT)</h4>
+
+			<div class="expandable_content">
+				<h3>Order</h3>
+
+				{% if signature %}
+					<p>An order has been made.</p>
+
+					 <p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p>
+
+					<p><span style="font-weight: 700;">Ordered by:</span> {{ signature.company_contact.first_name }} {{ signature.company_contact.last_name }}<br />
+					<span style="font-weight: 700;">Date:</span> {{ signature.timestamp }}</p>
+				{% else %}
+					<p>Make sure that the information provided above is correct and that all sections have been saved.</p>
+					{% comment %} <p><a class="btn btn-armada-green" target="_blank" href="{{ contract.contract.url }}">Open the contract</a></p> {% endcomment %}
+
+					{% if errors %}
+						<p style="font-weight: 700;">In order to make the order and complete your registration, the following data needs to be provided:</p>
+						<ul>
+							{% for error in errors %}
+								<li>{{ error }}</li>
+							{% endfor %}
+						</ul>
+					{% endif %}
+
+					{% comment %} {% if company_contact %}
+						<form method="post" enctype="multipart/form-data">
+							{% csrf_token %}
+
+							{{ form_final_submission | crispy }}
+
+							<input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Order"{% if errors %} disabled {% endif %} />
+						</form>
+					{% else %}
+						<p style="font-style: italic;">Since you are logged in as an Armada representative, you cannot make an order.</p>
+					{% endif %} {% endcomment %}
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        {{ form_final_submission | crispy }}
+
+                        <input type="submit" name="save_final_submission" class="btn btn-armada-green" value="Order"{% if errors %} disabled {% endif %} />
+                    </form>
+				{% endif %}
+			</div>
+		</div>
+
+	{% else %}
+		<!-- Contract is not available -->
+		<p> We are working on constructing this years complete registration contract and it will soon be available. </p>
+	{% endif %}
+
+    <div id="contact_cards">
+        {% if contacts %}
+            {% for contact in contacts %}
+                <div class="contact_card">
+                    <span style="font-weight: 700;">{{ contact.name }}</span><br/>
+                    <span >{{ contact.role }}</span><br/>
+                        <span ><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></span><br />
+                        <span ><a href="tel:{{ contact.phone_number }}">{{ contact.phone_number }}</a></span><br />
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="contact_card">
+                <span style="font-weight: 700;">THS Armada</span><br/>
+                <span >Support</span><br/>
+                <span ><a href="mailto:support@armada.nu">support@armada.nu</a></span><br />
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+	<style type="text/css">
+		#contact_cards
+		{
+			text-align: center;
+		}
+
+		#contact_cards .contact_card
+		{
+			display: inline-block;
+			text-align: left;
+			padding: 8px;
+			margin: 7px 5px;
+			background: #353535;
+		}
+
+		.expandable
+		{
+			border-top: 1px dotted #ffffff;
+			padding: 15px;
+		}
+
+		.expandable h2
+		{
+			margin: 10px 0;
+			padding: 0;
+			color: #ffffff;
+		}
+
+		.expandable:not(.always_opened):not(.active)
+		{
+			padding: 5px 15px;
+		}
+
+		.expandable:not(.always_opened):not(.active) h2
+		{
+			font-size: 20pt;
+		}
+
+		.expandable:not(.always_opened) h2
+		{
+			cursor: pointer;
+		}
+
+		.expandable:not(.always_opened) h2:before
+		{
+			content: '+ ';
+		}
+
+		.expandable.active:not(.always_opened) h2:before
+		{
+			content: '- ';
+		}
+
+		.expandable:not(.always_opened) .expandable_content
+		{
+			display: none;
+		}
+
+		.expandable_content
+		{
+			overflow: hidden;
+		}
+
+		.product
+		{
+			background: #353535;
+			padding: 20px;
+			margin-bottom: 10px;
+			overflow: hidden;
+			padding-bottom: 10px;
+		}
+
+		.product h3
+		{
+			margin: 0;
+			padding: 0;
+		}
+
+		.product form
+		{
+			padding: 0;
+			overflow: hidden;
+			float: right;
+		}
+
+		.product form h3
+		{
+			display: inline-block;
+			float: right;
+			margin-top: 3px;
+			margin-right: 20px;
+		}
+
+		.product form label
+		{
+			display: inline-block;
+			float: right;
+		}
+
+		.product form input[type='checkbox']
+		{
+			position: absolute;
+			overflow: hidden;
+			clip: rect(0 0 0 0);
+			height: 1px;
+			width: 1px;
+			margin: -1px;
+			padding: 0;
+			border: 0;
+		}
+
+		.product form input[type='checkbox'] + label
+		{
+			padding-left: 23px;
+			display: inline-block;
+			line-height: 17px;
+			margin-top: 8px;
+			background-repeat: no-repeat;
+			background-position: 0 0;
+			font-size: 15px;
+			vertical-align: middle;
+			cursor: pointer;
+			float: right;
+		}
+
+		.product form input[type='checkbox']:checked + label
+		{
+			background-position: 0 -17px;
+		}
+
+		.product form input[type='checkbox'] + label
+		{
+			background-image: url('//static.kottnet.net/images//checkbox.png');
+		}
+
+		.product form input, .product form select
+		{
+			float: right;
+		}
+
+		.product form input[type='submit']
+		{
+			margin-left: 20px;
+		}
+
+		.product form select
+		{
+			margin: 0;
+		}
+
+		.btn
+		{
+			color: #000000 !important;
+		}
+
+		table
+		{
+			width: 100%;
+			border-collapse: collapse;
+			border: 1px solid #444444;
+			box-sizing: border-box;
+			margin-bottom: 20px;
+			background: #353535;
+		}
+
+		table tr th
+		{
+			padding: 10px;
+		}
+
+		table tr td
+		{
+			padding: 5px;
+			vertical-align: top;
+		}
+
+		table tr
+		{
+			border-bottom: 1px dotted #888888;
+		}
+	</style>
+	<script>
+		window.onscroll = function() {myFunction()};
+
+		var header = document.getElementById("menu");
+		var sticky = header.offsetTop;
+
+		function myFunction() {
+			if (window.pageYOffset > sticky) {
+				header.classList.add("sticky");
+			} else {
+				header.classList.remove("sticky");
+			}
+		}
+
+		$(function()
+		{
+			if (window.location.hash.length !== 0)
+			{
+				var s = window.location.hash.substring(1).split(/,/g);
+				var expandables = $('.expandable');
+
+				for (var i = 0; i < s.length; i++)
+				{
+					$(expandables[parseInt(s[i])]).addClass('active');
+					$(expandables[parseInt(s[i])]).children('.expandable_content').show();
+				}
+
+				if ($('.form-group.has-error').length !== 0) { $('html, body').scrollTop($('.form-group.has-error').offset().top - 300); }
+			}
+
+			$('.expandable:not(.always_opened) h2').click(function()
+			{
+				if ($(this).parent().hasClass('active'))
+				{
+					$(this).parent().removeClass('active');
+					$(this).parent().children('.expandable_content').hide(50);
+				}
+
+				else
+				{
+					$(this).parent().parent().find('.expandable:not(.always_opened)').removeClass('active');
+					$(this).parent().parent().find('.expandable:not(.always_opened) .expandable_content').hide(50);
+
+					$(this).parent().addClass('active');
+					$(this).parent().children('.expandable_content').show(50);
+				}
+
+				var anchor = '';
+				var expandables = $('.expandable');
+
+				for (var i = 0; i < expandables.length; i++)
+				{
+					if ($(expandables[i]).hasClass('active')) { anchor += ',' + i; }
+				}
+
+				if (anchor.length !== 0) { anchor = anchor.substring(1); }
+
+				document.location = '#' + anchor;
+			});
+		});
+	</script>
 {% endblock %}

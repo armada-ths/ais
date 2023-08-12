@@ -14,7 +14,7 @@ export function Navbar() {
     }
 
     return (
-        <div className="grid h-[8vh] grid-cols-[1fr_3fr_1fr] items-center justify-center border-b-2">
+        <div className="grid p-2 grid-cols-[1fr_3fr_1fr] items-center justify-center border-b-2">
             <div
                 className="flex items-center justify-center gap-x-2 hover:cursor-pointer"
                 onClick={closeForm}

@@ -18,7 +18,7 @@ import {
     setUser
 } from "./store/company/company_slice"
 
-export const HOST = "http://192.168.157.172:3000"
+export const HOST = ""
 
 export function App() {
     const initialized = useRef(false)

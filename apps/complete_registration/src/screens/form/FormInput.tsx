@@ -50,7 +50,7 @@ const TextInput: FieldComponentType<
         >
             <InputText
                 className={cx(
-                    "mt-8 w-full min-w-[200px] max-w-[600px]",
+                    "w-full min-w-[200px] max-w-[600px]",
                     inputClassName,
                     !fieldErrors &&
                         field.value &&

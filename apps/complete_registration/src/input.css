@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+	font-family: 'primeicons';
+	font-display: block;
+	src: url(primeicons.eot);
+	src: url(primeicons.eot?#iefix) format('embedded-opentype'), url(primeicons.ttf) format('truetype'), url(primeicons.woff) format('woff'), url(primeicons.svg?#primeicons) format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 300;
+	src: local(""), url(Inter-Light.woff2) format("woff2"), url(Inter-Light.woff) format("woff")
+}
+
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 400;
+	src: local(""), url(Inter-Regular.woff2) format("woff2"), url(Inter-Regular.woff) format("woff")
+}
+
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 500;
+	src: local(""), url(Inter-Medium.woff2) format("woff2"), url(Inter-Medium.woff) format("woff")
+}
+
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 600;
+	src: local(""), url(Inter-SemiBold.woff2) format("woff2"), url(Inter-SemiBold.woff) format("woff")
+}
+
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 700;
+	src: local(""), url(Inter-Bold.woff2) format("woff2"), url(Inter-Bold.woff) format("woff")
+}
