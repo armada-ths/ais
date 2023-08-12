@@ -21,7 +21,6 @@ export function CompleteButton({
             const status = await dispatch(remoteSaveChanges())
             success = (status.payload as { success: boolean }).success
         }
-        console.log(success)
         if (success) dispatch(setActiveForm(null))
         else {
             toastRef.current?.show({

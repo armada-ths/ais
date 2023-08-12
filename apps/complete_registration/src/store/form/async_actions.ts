@@ -16,7 +16,6 @@ export const remoteSaveChanges = createAsyncThunk(
         const selectedProducts = selectSelectedProducts(state)
 
         outgoing.orders = generateProductApiSetArray(selectedProducts)
-        console.log("OUTGOING", JSON.stringify(outgoing))
 
         const response = await fetch("/api/registration/", {
             method: "PUT",
@@ -32,7 +31,6 @@ export const remoteSaveChanges = createAsyncThunk(
             return { success: false }
         }
 
-        console.log(response)
         return { success: true }
     }
 )

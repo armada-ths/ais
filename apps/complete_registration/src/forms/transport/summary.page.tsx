@@ -11,7 +11,6 @@ export function TransportSummaryFormPage() {
     const transportTo = useSelector((state: RootState) =>
         selectField(state, "exhibitor.transport_to")
     )
-    console.log(transportFrom, transportTo)
     return (
         <FormWrapper>
             <div className="flex flex-col gap-5">

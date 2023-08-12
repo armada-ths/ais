@@ -32,7 +32,6 @@ export function App() {
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
-            console.log("PRODUCTS", data)
             dispatch(loadProducts(data))
         })
         fetch(`${HOST}/api/registration/`, {
@@ -41,10 +40,8 @@ export function App() {
             })
         }).then(async raw => {
             const data = await raw.json()
-            console.log(JSON.stringify(data))
 
             if (data.error != null) {
-                console.log("Setting", data.error)
                 dispatch(setErrors(data.error))
             }
 

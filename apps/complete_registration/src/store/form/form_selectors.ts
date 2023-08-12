@@ -94,13 +94,7 @@ export const selectFieldErrors = cs(
     [selectFormState, (_: RootState, mapping: string) => mapping],
     (formState, mapping) => {
         for (const error of formState.errors ?? []) {
-            console.log(
-                error.mapping.split(".").slice(0, -1).join("."),
-                mapping,
-                error.mapping.split(".").slice(0, -1).join(".") === mapping
-            )
             if (error.mapping.split(".").slice(0, -1).join(".") === mapping) {
-                console.log("FOUND MAP!!!!!!!!!!!", error)
                 return error
             }
         }
