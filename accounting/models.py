@@ -51,6 +51,7 @@ class RegistrationSection(models.Model):
 
 class ChildProduct(models.Model):
     quantity = models.PositiveIntegerField(blank=False)
+    description = models.TextField(blank=True, null=True)
     child_product = models.ForeignKey("Product", blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
