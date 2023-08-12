@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
@@ -184,7 +185,7 @@ class Exhibitor(models.Model):
     catalogue_contact_name = models.CharField(
         blank=True, null=True, max_length=255, verbose_name="Contact person's name"
     )
-    catalogue_contact_email_address = models.CharField(
+    catalogue_contact_email_address = models.EmailField(
         blank=True,
         null=True,
         max_length=255,
@@ -234,6 +235,11 @@ class Exhibitor(models.Model):
         blank=True,
         null=True,
         verbose_name="Additional wishes regarding placement at the fair",
+    )
+
+    transport_information_read = models.BooleanField(
+        null=False,
+        default=False,
     )
 
     transport_to_statuses = [

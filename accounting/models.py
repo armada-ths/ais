@@ -16,11 +16,12 @@ class Revenue(models.Model):
         default_permissions = []
 
     def __str__(self):
-        return "%s – %s" % (self.name, self.description)
+        return "[%s] %s – %s" % (self.fair.year, self.name, self.description)
 
 
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=False)
+    description = models.TextField(blank=True, null=True)
     fair = models.ForeignKey("fair.Fair", blank=False, on_delete=models.CASCADE)
     allow_multiple_purchases = models.BooleanField(default=False)
 
@@ -30,7 +31,7 @@ class Category(models.Model):
         default_permissions = []
 
     def __str__(self):
-        return self.name
+        return "[%s] %s" % (self.fair.year, self.name)
 
 
 class RegistrationSection(models.Model):
@@ -48,6 +49,14 @@ class RegistrationSection(models.Model):
         return self.name
 
 
+class ChildProduct(models.Model):
+    quantity = models.PositiveIntegerField(blank=False)
+    child_product = models.ForeignKey("Product", blank=False, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s x %s" % (self.child_product, self.quantity)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
@@ -62,6 +71,29 @@ class Product(models.Model):
     registration_section = models.ForeignKey(
         RegistrationSection, blank=True, null=True, on_delete=models.CASCADE
     )
+    child_products = models.ManyToManyField(
+        ChildProduct,
+        blank=True,
+        help_text=" ".join(
+            [
+                "This product will automatically add these products when added.",
+                'Recommended (but not neccessary) is to toggle the "No customer removal" on',
+                "the child products in order to make the package automatically add packages ",
+                "which can only be removed by a salesperson.",
+                "This feature was used in 2023 when selling gold, silver, and bronze packages.",
+            ]
+        ),
+    )
+    no_customer_removal = models.BooleanField(
+        default=False,
+        help_text=" ".join(
+            [
+                "This product will be unable to be removed by the customer."
+                "Only a salesperson can remove it.",
+                "Used in order to be a child product to a package product.",
+            ]
+        ),
+    )
 
     class Meta:
         verbose_name_plural = "Products"
@@ -74,7 +106,7 @@ class Product(models.Model):
         ]
 
     def __str__(self):
-        return "%s – %s" % (self.revenue, self.name)
+        return "%s – %s" % (self.category, self.name)
 
 
 class ExportBatch(models.Model):

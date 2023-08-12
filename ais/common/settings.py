@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     "testpage",
     "kth_login",
     "raven.contrib.django.raven_compat",
+    "rest_framework",
 )
 
 MIDDLEWARE = [
