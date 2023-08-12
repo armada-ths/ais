@@ -27,9 +27,12 @@ export function FormSidebarCartSummary() {
                                 </h4>
                                 <ul className="ml-4 list-disc text-white">
                                     {productPackage.child_products.map(
-                                        product => (
-                                            <li key={product.id}>
-                                                <p>{product.name}</p>
+                                        ({ child_product, quantity }) => (
+                                            <li key={child_product.id}>
+                                                <p>
+                                                    {child_product.name} x{" "}
+                                                    {quantity}
+                                                </p>
                                             </li>
                                         )
                                     )}

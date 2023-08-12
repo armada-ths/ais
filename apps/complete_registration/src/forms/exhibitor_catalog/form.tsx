@@ -1,5 +1,6 @@
 import { Form } from "../../screens/form/screen"
 import { BasicInfoFormPage } from "./basic_info.page"
+import { DetailedFormPage } from "./detailed.page"
 import { LogoFormPage } from "./logo.page"
 
 export const form: Form = {
@@ -43,6 +44,17 @@ export const form: Form = {
                 {
                     mapping: "exhibitor.catalogue_logo_freesize",
                     mandatory: false
+                }
+            ]
+        },
+        {
+            id: "detailed",
+            title: "Exhibitor Specification",
+            pageComponent: DetailedFormPage,
+            fields: [
+                {
+                    mapping: "exhibitor.catalogue_industries",
+                    isMultiSelect: true
                 }
             ]
         }

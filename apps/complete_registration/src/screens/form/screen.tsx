@@ -17,6 +17,7 @@ export type FieldValue = string | boolean | undefined | File
 export type Field = {
     mapping: string
     mandatory?: boolean
+    isMultiSelect?: boolean
     value?: FieldValue
 }
 

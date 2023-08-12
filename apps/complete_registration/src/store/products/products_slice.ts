@@ -12,6 +12,11 @@ export interface RegistrationSection {
     hide_from_registration: boolean
 }
 
+export interface ChildProduct {
+    quantity: number
+    child_product: Omit<Product, "child_products">
+}
+
 export interface Product {
     id: number
     name: string
@@ -21,7 +26,7 @@ export interface Product {
     category: Category | null
     no_customer_removal: boolean
     registration_section: RegistrationSection | null
-    child_products: Omit<Product, "child_products">[]
+    child_products: ChildProduct[]
 }
 export interface ProductMeta {
     id: number

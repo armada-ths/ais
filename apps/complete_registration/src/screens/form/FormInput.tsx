@@ -12,6 +12,7 @@ import { cx } from "../../utils/cx"
 import { Product, pickProduct } from "../../store/products/products_slice"
 import { remoteSaveChanges } from "../../store/form/async_actions"
 import { HOST } from "../../App"
+import { MultiSelect } from "primereact/multiselect"
 
 export type FieldComponentProps = {
     label: string
@@ -36,7 +37,6 @@ const TextInput: FieldComponentType<
     const fieldErrors = useSelector((state: RootState) =>
         selectFieldErrors(state, mapping)
     )
-    console.log("ERROR", fieldErrors)
     if (
         field == null ||
         (typeof field.value !== "string" && field.value != null)
@@ -68,6 +68,7 @@ const TextInput: FieldComponentType<
                 }
                 {...rest}
             />
+            <p className="mt-1 text-xs text-red-400">{fieldErrors?.error}</p>
             <label className="capitalize" htmlFor={mapping}>
                 {label}
             </label>
@@ -79,6 +80,9 @@ FormField.Text = TextInput
 const TextAreaInput: FieldComponentType = ({ label, mapping }) => {
     const dispatch = useDispatch()
     const field = useSelector((state: RootState) => selectField(state, mapping))
+    const fieldErrors = useSelector((state: RootState) =>
+        selectFieldErrors(state, mapping)
+    )
     if (field?.value != null && typeof field.value !== "string")
         return <div>Invalid field mapping</div>
 
@@ -87,8 +91,11 @@ const TextAreaInput: FieldComponentType = ({ label, mapping }) => {
             <label htmlFor={mapping}>{label}</label>
             <InputTextarea
                 className={cx(
-                    field?.value &&
-                        "!border-[1px] !border-solid !border-emerald-400"
+                    !fieldErrors &&
+                        field?.value &&
+                        "!border-[1px] !border-solid !border-emerald-400",
+
+                    fieldErrors && "p-invalid"
                 )}
                 id={mapping}
                 name={mapping}
@@ -192,6 +199,22 @@ const SelectButtonInput: FieldComponentType<
 }
 FormField.SelectButton = SelectButtonInput
 
+const MultiSelectInput: FieldComponentType<
+    FieldComponentProps & {
+        options: { label: string; value: string }[]
+    }
+> = ({ options, mapping }) => {
+    const test = mapping
+    console.log(test)
+
+    return (
+        <div>
+            <MultiSelect value={[]} options={options} />
+        </div>
+    )
+}
+FormField.MultiSelect = MultiSelectInput
+
 const PackageInput: FieldComponentType<
     FieldComponentProps & {
         product: Product
@@ -227,13 +250,15 @@ const PackageInput: FieldComponentType<
             </div>
             <div className="mx-5 h-0.5 bg-slate-500" />
             <div>
-                {product.child_products.map(current => (
+                {product.child_products.map(({ child_product, quantity }) => (
                     <div
-                        key={current.id}
+                        key={child_product.id}
                         className="m-5 flex items-center gap-5"
                     >
                         <i className="pi pi-check !font-bold text-emerald-400"></i>
-                        <p className="text-slate-500">{current.name}</p>
+                        <p className="text-slate-500">
+                            {child_product.name} x {quantity}
+                        </p>
                     </div>
                 ))}
             </div>
