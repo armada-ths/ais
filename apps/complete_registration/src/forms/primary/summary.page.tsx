@@ -18,13 +18,17 @@ export function SummaryFormPage() {
     const dispatch = useDispatch()
     const toastRef = useRef<Toast>(null)
     const [confirmEligibility, setConfirmEligibility] = useState(false)
+    const [confirmDataProcessing, setConfirmDataProcessing] = useState(false)
 
     const activeForm = useSelector(selectActiveForm)
     const unfilledFields = useSelector((state: RootState) =>
         selectUnfilledFields(state, activeForm?.key ?? "primary")
     )
 
-    const readyToSign = confirmEligibility && unfilledFields.length === 0
+    const readyToSign =
+        confirmEligibility &&
+        confirmDataProcessing &&
+        unfilledFields.length === 0
 
     async function submitRegistration() {
         const response = await fetch(`${HOST}/api/registration/submit`, {
@@ -79,7 +83,6 @@ export function SummaryFormPage() {
             </div>
             <div className="mb-5 flex flex-col justify-center">
                 <div className="flex items-center gap-x-5">
-                    <p>I'm eligible to sign this</p>
                     <Checkbox
                         checked={confirmEligibility}
                         className=""
@@ -87,6 +90,36 @@ export function SummaryFormPage() {
                             setConfirmEligibility(value.checked ?? false)
                         }
                     />
+                    <p>I'm eligible to sign this</p>
+                </div>
+
+                <div className="mt-5 flex items-center gap-x-5">
+                    <Checkbox
+                        checked={confirmDataProcessing}
+                        className=""
+                        onChange={value =>
+                            setConfirmDataProcessing(value.checked ?? false)
+                        }
+                    />
+                    <p className="text-xs text-slate-500">
+                        THS Armada would like to process personal data about you
+                        and your organization to be able to contact you in
+                        conjunction with complete registration and send you
+                        information regarding the fair of 2023. The data we
+                        intend to collect and the process is forename, surname,
+                        the title of your organization, phone number, and email
+                        address. You decide for yourself if you want to leave
+                        any additional information to us. The data will only be
+                        processed by the project group in THS Armada and by THS
+                        Management. The data will be saved in the Armada
+                        Internal Systems, AIS. You are, according to GDPR
+                        (General Data Protection Regulation), entitled to
+                        receive information regarding what personal data we
+                        process and how we process these. You also have the
+                        right to request a correction as to what personal data
+                        we are processing about you. I consent for THS Armada to
+                        process my personal data in accordance with the above.*
+                    </p>
                 </div>
             </div>
             <div className="flex w-60 justify-center">
