@@ -3,14 +3,18 @@ from enum import Enum
 from fair.models import RegistrationState
 from register.api import status
 
-from register.api.registration.util import JSONError
+from register.api.registration.util import JSONError, get_contract_signature
+from register.models import SignupLog
 
 
 class RegistrationType(Enum):
+    BeforeCompleteRegistration = 0
     CompleteRegistration = 1
     CompleteRegistrationSigned = 2
 
     def __str__(self):
+        if self == RegistrationType.BeforeCompleteRegistration:
+            return "before_complete_registration"
         if self == RegistrationType.CompleteRegistration:
             return "complete_registration"
         elif self == RegistrationType.CompleteRegistrationSigned:
@@ -18,13 +22,16 @@ class RegistrationType(Enum):
 
 
 class Registration:
-    def __init__(self, company, exhibitor, contact, fair, contract, orders, signature):
+    def __init__(self, company, exhibitor, contact, fair, orders):
         self.company = company
         self.exhibitor = exhibitor
         self.contact = contact
         self.fair = fair
-        self.contract = contract
         self.orders = orders
+
+        contract, signature = get_contract_signature(company, fair)
+
+        self.contract = contract
         self.signature = signature
 
         period = fair.get_period()
@@ -42,8 +49,9 @@ class Registration:
                 exhibitor.deadline_complete_registration
                 or fair.complete_registration_close_date
             )
-
-            if signature != None:
+            if contract == None:
+                self.type = RegistrationType.BeforeCompleteRegistration
+            elif signature != None:
                 self.type = RegistrationType.CompleteRegistrationSigned
             else:
                 self.type = RegistrationType.CompleteRegistration
@@ -53,8 +61,12 @@ class Registration:
             pass
 
     def ensure_cr_eligibility(self):
+        signature = SignupLog.objects.filter(
+            company=self.company, contract__fair=self.fair, contract__type="INITIAL"
+        ).first()
+
         if self.exhibitor == None:
-            if self.signature == None:
+            if signature == None:
                 raise JSONError(status.USER_DID_NOT_SIGN_IR)
             else:
                 raise JSONError(status.USER_IS_NOT_EXHIBITOR)

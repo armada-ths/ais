@@ -17,7 +17,9 @@ def get_serializer(registration, data=empty, context={}):
     if user != None:
         permission = UserPermission(user)
 
-    if registration.type == RegistrationType.CompleteRegistration:
+    if registration.type == RegistrationType.BeforeCompleteRegistration:
+        Serializer = CRRegistrationSerializer
+    elif registration.type == RegistrationType.CompleteRegistration:
         Serializer = CRRegistrationSerializer
     elif registration.type == RegistrationType.CompleteRegistrationSigned:
         # If user is sales, they may change anything he likes
