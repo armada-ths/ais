@@ -173,6 +173,10 @@ def choose_company(request):
     )
 
 
+def new_react_cr_view(request):
+    return render(request, "register/inside/registration_complete_new.html")
+
+
 # This function serves the correct template according to the current time of the Armada year and status of the company or user
 # It either calls form_initial, form_complete or it renders a "betweeen" template
 def form(request, company_pk):
