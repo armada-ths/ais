@@ -272,3 +272,43 @@ input[type="color"]:focus,
 	color: #e73953;
 	visibility: hidden;
 }
+
+.collapsible {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.collapsible-preview {
+	margin: 0;
+	padding: 2px 5px;
+	background-image: url("images/chevron_right_icon.svg");
+	background-repeat: no-repeat;
+	background-position: right 8px center;
+	background-color: rgba(45, 45, 44, 10%);
+	font-size: medium;
+	cursor: pointer;
+}
+
+.collapsible-preview.active {
+	background-image: url("images/chevron_down_icon.svg");
+}
+
+.collapsible-content {
+	margin: 0px 5%;
+	overflow: hidden;
+	max-height: 0;
+	transition: max-height 0.2s ease-out;
+}
+
+.collapsible-content>p {
+	color: #00d790;
+	font-size: small;
+}
+
+.collapsible-content>*:first-child {
+	padding-top: 2%;
+}
+
+.collapsible-content>*:last-child {
+	padding-bottom: 2%;
+}
