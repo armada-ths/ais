@@ -1,5 +1,3 @@
-from django.views.decorators.csrf import csrf_exempt
-
 from companies.models import Company, CompanyContact
 from fair.models import RegistrationState
 from exhibitors.models import Exhibitor
@@ -30,8 +28,6 @@ def render_company(request, company, contact, exhibitor):
         return status.INVALID_REGISTRATION_PERIOD
 
 
-# Todo: remove in prod
-@csrf_exempt
 def submit(request):
     fair = get_fair()
     period = fair.get_period()
@@ -52,8 +48,6 @@ def submit(request):
     return submit_cr(request, company, fair, contact, exhibitor)
 
 
-# Todo: remove in prod
-@csrf_exempt
 def index(request):
     """
     Root endpoint for all information regarding the current complete registration
@@ -72,8 +66,6 @@ def index(request):
     return render_company(request, company, contact, exhibitor)
 
 
-# Todo: remove in prod
-@csrf_exempt
 def get_company(request, company_pk):
     company = Company.objects.filter(pk=company_pk).first()
     if not company:
