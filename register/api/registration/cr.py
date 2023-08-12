@@ -30,14 +30,11 @@ def put_cr_registration(request, registration, purchasing_company):
 
 
 def get_registration(company, fair, contact, exhibitor):
-    contract, signature = get_contract_signature(company, fair)
     orders = Order.objects.filter(purchasing_company=company)
 
     return Registration(
         company=company,
         contact=contact,
-        contract=contract,
-        signature=signature,
         fair=fair,
         exhibitor=exhibitor,
         orders=orders,
