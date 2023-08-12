@@ -1,10 +1,10 @@
 import { createSelector as cs } from "@reduxjs/toolkit"
 import { RootState } from "../store"
 import {
+    PACKAGE_KEY,
     EVENTS_REGISTRATION_SECTION_KEY,
-    EXTRAS_REGISTRATION_SECTION_KEY,
-    PACKAGE_KEY
-} from "./products_slice"
+    EXTRAS_REGISTRATION_SECTION_KEY
+} from "../../shared/vars"
 
 export const selectProducts = (state: RootState) => state.products
 export const selectProductPackages = cs(selectProducts, products =>

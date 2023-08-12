@@ -9,10 +9,10 @@ import {
 import { RootState } from "../../store/store"
 import { Card } from "../../screens/form/sidebar/PageCard"
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup"
-import { HOST } from "../../App"
 import { setCompanyRegistrationStatus } from "../../store/company/company_slice"
 import { setActiveForm } from "../../store/form/form_slice"
 import { Toast } from "primereact/toast"
+import { HOST } from "../../shared/vars"
 
 export function SummaryFormPage() {
     const dispatch = useDispatch()
@@ -48,10 +48,10 @@ export function SummaryFormPage() {
             target: event.currentTarget,
             message: (
                 <div className="flex flex-col">
-                    <p> </p>
+                    <p>Lock your product selection</p>
                 </div>
             ),
-            icon: "pi pi-exclamation-triangle",
+            icon: "pi pi-info-circle",
             accept: submitRegistration,
             reject: () => {}
         })

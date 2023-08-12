@@ -61,10 +61,6 @@ export function generateProductApiSetArray(selected: SelectedProduct[]) {
     }))
 }
 
-export const PACKAGE_KEY = "Package"
-export const EVENTS_REGISTRATION_SECTION_KEY = "Events"
-export const EXTRAS_REGISTRATION_SECTION_KEY = "Extras"
-
 export const productSlice = createSlice({
     name: "products",
     initialState,

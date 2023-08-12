@@ -11,8 +11,8 @@ import { nextPage, setField } from "../../store/form/form_slice"
 import { cx } from "../../utils/cx"
 import { Product, pickProduct } from "../../store/products/products_slice"
 import { remoteSaveChanges } from "../../store/form/async_actions"
-import { HOST } from "../../App"
 import { MultiSelect } from "primereact/multiselect"
+import { HOST } from "../../shared/vars"
 
 export type FieldComponentProps = {
     label: string
@@ -54,7 +54,7 @@ const TextInput: FieldComponentType<
                     inputClassName,
                     !fieldErrors &&
                         field.value &&
-                        "!border-[1px] !border-solid !border-emerald-400",
+                        "!border-2 !border-solid !border-slate-400",
                     fieldErrors && "p-invalid"
                 )}
                 value={field.value ?? ""}
@@ -93,7 +93,7 @@ const TextAreaInput: FieldComponentType = ({ label, mapping }) => {
                 className={cx(
                     !fieldErrors &&
                         field?.value &&
-                        "!border-[1px] !border-solid !border-emerald-400",
+                        "!border-2 !border-solid !border-slate-400",
 
                     fieldErrors && "p-invalid"
                 )}
