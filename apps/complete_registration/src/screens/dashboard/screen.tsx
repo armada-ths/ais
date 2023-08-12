@@ -23,14 +23,17 @@ export function DashboardScreen() {
     const selectError = useSelector(selectErrors)
     const companyName = useSelector(selectCompanyName)
 
-    const FORM_CLOSED_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> =
-        {
-            primary: ["complete_registration_signed"],
-            lunch_tickets: [],
-            exhibitor_catalog: [],
-            transport: [],
-            banquet_tickets: []
-        }
+    const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
+        primary: ["complete_registration"],
+        lunch_tickets: ["complete_registration_signed"],
+        exhibitor_catalog: [
+            "complete_registration_signed",
+            "complete_registration",
+            "before_complete_registration"
+        ],
+        transport: ["complete_registration_signed"],
+        banquet_tickets: ["complete_registration_signed"]
+    }
 
     const user = useSelector(selectUser)
 
@@ -89,8 +92,8 @@ export function DashboardScreen() {
                                 key={key}
                                 form={formMeta}
                                 locked={
-                                    companyStatus != null &&
-                                    FORM_CLOSED_DURING[formMeta.key].includes(
+                                    companyStatus == null ||
+                                    !FORM_OPEN_DURING[formMeta.key].includes(
                                         companyStatus
                                     )
                                 }

@@ -46,7 +46,7 @@ export function App() {
                 setCompanyRegistrationStatus(data.type as RegistrationStatus)
             )
             if (data.company?.name) dispatch(setCompanyName(data.company.name))
-            if (data.company?.contact) dispatch(setUser(data.contact))
+            if (data.contact) dispatch(setUser(data.contact))
 
             for (const current of awaitingMappings) {
                 dispatch(

@@ -12,7 +12,7 @@ import { Product, pickProduct } from "../../store/products/products_slice"
 import { remoteSaveChanges } from "../../store/form/async_actions"
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect"
 import { HOST } from "../../shared/vars"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { FieldValue } from "./screen"
 import z from "zod"
 
@@ -259,14 +259,14 @@ const MultiSelectInput: FieldComponentType<
     }
 
     return (
-        <div>
+        <span className="p-float-label mt-8">
             <MultiSelect
+                id={mapping}
                 className={cx(
                     "[&>div>div]:flex [&>div>div]:flex-wrap [&>div>div]:gap-y-2 [&>div>div]:text-xs",
                     className
                 )}
                 filter={filter}
-                placeholder={label}
                 display="chip"
                 optionLabel="label"
                 optionValue="id"
@@ -274,7 +274,8 @@ const MultiSelectInput: FieldComponentType<
                 onChange={event => setMultiField(event)}
                 options={options}
             />
-        </div>
+            <label htmlFor={mapping}>{label}</label>
+        </span>
     )
 }
 FormField.MultiSelect = MultiSelectInput
@@ -320,9 +321,10 @@ const PackageInput: FieldComponentType<
                         className="m-5 flex items-center gap-5"
                     >
                         <i className="pi pi-check !font-bold text-emerald-400"></i>
-                        <p className="text-slate-500">
-                            {child_product.name} x {quantity}
-                        </p>
+                        <div className="flex gap-1 text-slate-500">
+                            <p className="">{child_product.name}</p>
+                            {quantity > 1 && <p> x {quantity}</p>}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -365,7 +367,7 @@ const ImageInput: FieldComponentType<FieldComponentProps> = ({ mapping }) => {
     return (
         <div className="mt-5 grid grid-cols-2 gap-2">
             <div>
-                {image != null && (
+                {image?.value != null && (
                     <img
                         className="object-contain"
                         src={

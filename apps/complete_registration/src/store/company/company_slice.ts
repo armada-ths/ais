@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit"
 
 export type RegistrationStatus =
+    | "before_complete_registration" // We are in FR, but no contract uploaded
     | "complete_registration"
     | "complete_registration_signed"
 

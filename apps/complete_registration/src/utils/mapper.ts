@@ -22,7 +22,6 @@ export function mapToApi(forms: typeof FORMS) {
             }
         }
     }
-    console.log("OUT", output)
     return output
 }
 
@@ -112,6 +111,5 @@ export function reverseMap(parent: any) {
             }
         }
     }
-    console.log("RESULT", JSON.stringify(awaitingMappings))
     return awaitingMappings
 }
