@@ -30,7 +30,7 @@ export function FormSidebarCartSummary() {
                                         ({ child_product, quantity }) => (
                                             <li
                                                 key={child_product.id}
-                                                className="flex"
+                                                className="flex gap-x-1"
                                             >
                                                 <p>{child_product.name}</p>
                                                 {quantity > 1 && (
