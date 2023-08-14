@@ -1,13 +1,15 @@
 import { useSelector } from "react-redux"
 import {
     selectProductPackage,
-    selectProductsSelectedWithoutPackages
+    selectProductsSelectedWithoutPackagesWithAdjustedPrice
 } from "../../../store/products/products_selectors"
-import { Card } from "./PageCard"
+import ProductCard from "./ProductCard"
 
 export function FormSidebarCartSummary() {
     const productPackage = useSelector(selectProductPackage)
-    const selectedProducts = useSelector(selectProductsSelectedWithoutPackages)
+    const selectedProducts = useSelector(
+        selectProductsSelectedWithoutPackagesWithAdjustedPrice
+    )
 
     return (
         <div className="relative h-full">
@@ -53,15 +55,7 @@ export function FormSidebarCartSummary() {
                             Selected products
                         </h2>
                         {selectedProducts.map(current => (
-                            <Card key={current.id} className="">
-                                <p className="">{current.name}</p>
-                                <p className="mt-2 text-slate-400">
-                                    {Intl.NumberFormat("sv").format(
-                                        current.unit_price
-                                    )}{" "}
-                                    kr
-                                </p>
-                            </Card>
+                            <ProductCard product={current} />
                         ))}
                     </div>
                     <div className="flex-1" />
@@ -70,7 +64,7 @@ export function FormSidebarCartSummary() {
                         <p className="text font-bold">
                             {Intl.NumberFormat("sv").format(
                                 selectedProducts.reduce(
-                                    (acc, current) => acc + current.unit_price,
+                                    (acc, current) => acc + current.price,
                                     0
                                 ) + (productPackage?.unit_price ?? 0)
                             )}{" "}

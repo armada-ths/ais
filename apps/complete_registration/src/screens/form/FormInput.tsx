@@ -15,6 +15,7 @@ import { HOST } from "../../shared/vars"
 import React, { useEffect, useState } from "react"
 import { FieldValue } from "./screen"
 import z from "zod"
+import { selectAdjustedProductPrice } from "../../store/products/products_selectors"
 
 export type FieldComponentProps = {
     label: string
@@ -287,6 +288,9 @@ const PackageInput: FieldComponentType<
     }
 > = ({ product, children }) => {
     const dispatch = useDispatch<AppDispatch>()
+    const price = useSelector((state: RootState) =>
+        selectAdjustedProductPrice(state, product.id)
+    )
 
     async function onClickPackage() {
         dispatch(
@@ -330,7 +334,7 @@ const PackageInput: FieldComponentType<
             </div>
             <div className="flex flex-1 items-end justify-center p-5">
                 <p className="rounded bg-slate-500 p-1 px-3 text-center text-lg font-bold text-slate-50">
-                    {Intl.NumberFormat("sv").format(product.unit_price)} kr
+                    {Intl.NumberFormat("sv").format(price)} kr
                 </p>
             </div>
         </div>

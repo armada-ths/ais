@@ -4,7 +4,7 @@ import productsReducer from "./products/products_slice"
 import companyReducer from "./company/company_slice"
 
 export const store = configureStore({
-    devTools: import.meta.env.DEV,
+    devTools: true || import.meta.env.DEV,
     reducer: {
         formMeta: formReducer,
         products: productsReducer,

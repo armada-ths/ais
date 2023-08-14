@@ -1,6 +1,9 @@
 import { useDispatch, useSelector } from "react-redux"
 import { FormWrapper } from "../FormWrapper"
-import { selectSelectedProduct } from "../../store/products/products_selectors"
+import {
+    selectAdjustedProductPrice,
+    selectSelectedProduct
+} from "../../store/products/products_selectors"
 import {
     Product,
     pickProduct,
@@ -16,6 +19,9 @@ function InputCard({ product }: { product: Product }) {
     const dispatch = useDispatch()
     const selected = useSelector((state: RootState) =>
         selectSelectedProduct(state, product.id)
+    )
+    const adjustedPrize = useSelector((state: RootState) =>
+        selectAdjustedProductPrice(state, product.id)
     )
 
     function onChange(quantity: number) {
@@ -75,7 +81,7 @@ function InputCard({ product }: { product: Product }) {
             <div className="mt-5">
                 <div className="inline-block">
                     <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
-                        {Intl.NumberFormat("sv").format(product.unit_price)} kr
+                        {Intl.NumberFormat("sv").format(adjustedPrize)} kr
                     </p>
                 </div>
             </div>
@@ -93,6 +99,7 @@ export function ProductFormPage({
         () =>
             Object.entries(
                 products.reduce<Record<string, Product[]>>(
+                    // Split products into categories
                     (total, current) => {
                         if (current.category == null) {
                             total["none"].push(current)

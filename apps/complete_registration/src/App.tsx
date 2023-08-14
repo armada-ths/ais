@@ -6,7 +6,8 @@ import { reverseMap } from "./utils/mapper"
 import { useDispatch } from "react-redux"
 import { setErrors, setField } from "./store/form/form_slice"
 import {
-    ProductMeta,
+    SelectedProduct,
+    loadProductMeta,
     loadProducts,
     pickProduct
 } from "./store/products/products_slice"
@@ -30,10 +31,12 @@ export function App() {
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
+            console.log("PRODUCS", JSON.stringify(data))
             dispatch(loadProducts(data))
         })
         fetch(`${HOST}/api/registration/`, {}).then(async raw => {
             const data = await raw.json()
+            console.log("DATA", JSON.stringify(data))
 
             if (data.error != null) {
                 dispatch(setErrors(data.error))
@@ -58,7 +61,7 @@ export function App() {
             }
 
             // Apply orders
-            const orders = data.orders as ProductMeta[]
+            const orders = data.orders
             for (const productMeta of orders ?? []) {
                 dispatch(
                     pickProduct({
@@ -69,6 +72,20 @@ export function App() {
                     })
                 )
             }
+
+            const productMetas = data.orders
+            const customPrices = [] as Omit<SelectedProduct, "isPackage">[]
+
+            for (const productMeta of productMetas ?? []) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                customPrices.push({
+                    id: productMeta.product.id,
+                    comment: productMeta.comment,
+                    quantity: productMeta.quantity,
+                    adjustedPrice: productMeta.unit_price
+                })
+            }
+            dispatch(loadProductMeta(customPrices))
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

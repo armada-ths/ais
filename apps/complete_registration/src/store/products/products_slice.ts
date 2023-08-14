@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { PACKAGE_KEY } from "../../shared/vars"
 
 export interface Category {
     name: "Package" | "Additional booth area"
@@ -28,18 +29,16 @@ export interface Product {
     registration_section: RegistrationSection | null
     child_products: ChildProduct[]
 }
-export interface ProductMeta {
-    id: number
-    unit_price: number | null
-    comment: string
-    product: Product
-    quantity: number
+export interface ProductAdjustedPrice extends Product {
+    price: number
 }
 
 export interface SelectedProduct {
     id: number
     quantity: number
     isPackage: boolean
+    adjustedPrice?: number
+    comment?: string
 }
 
 export interface ProductState {
@@ -68,6 +67,43 @@ export const productSlice = createSlice({
         loadProducts: (state, action: PayloadAction<Product[]>) => {
             state.records = action.payload
         },
+        loadProductMeta: (
+            state,
+            action: PayloadAction<Omit<SelectedProduct, "isPackage">[]>
+        ) => {
+            action.payload.map(adjustedPrice => {
+                const selectedProduct = state.selected.find(
+                    selected => selected.id === adjustedPrice.id
+                )
+                if (selectedProduct) {
+                    console.log("#1")
+                    selectedProduct.quantity = adjustedPrice.quantity
+                    selectedProduct.comment = adjustedPrice.comment
+                    selectedProduct.adjustedPrice = adjustedPrice.adjustedPrice
+                    return
+                }
+                const product = state.records.find(
+                    product => product.id === adjustedPrice.id
+                )
+                if (product != null) {
+                    console.log("BEFORE", state.selected)
+                    console.log("#2", {
+                        id: product.id,
+                        isPackage: product.category?.name === PACKAGE_KEY,
+                        quantity: adjustedPrice.quantity,
+                        comment: adjustedPrice.comment
+                    })
+                    state.selected.push({
+                        id: product.id,
+                        isPackage: product.category?.name === PACKAGE_KEY,
+                        quantity: adjustedPrice.quantity,
+                        comment: adjustedPrice.comment
+                    })
+                    return
+                }
+                console.warn("Product not found", action.payload)
+            })
+        },
         pickProduct: (state, action: PayloadAction<SelectedProduct>) => {
             // Remove previous occurances of the product
             state.selected = state.selected.filter(
@@ -93,6 +129,7 @@ export const productSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { loadProducts, pickProduct, unpickProduct } = productSlice.actions
+export const { loadProducts, loadProductMeta, pickProduct, unpickProduct } =
+    productSlice.actions
 
 export default productSlice.reducer
