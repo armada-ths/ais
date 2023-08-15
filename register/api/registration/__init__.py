@@ -29,6 +29,7 @@ def render_company(request, company, contact, exhibitor):
     else:
         return status.INVALID_REGISTRATION_PERIOD
 
+
 # Todo: remove in prod
 @csrf_exempt
 def submit(request):
@@ -50,6 +51,7 @@ def submit(request):
 
     return submit_cr(request, company, fair, contact, exhibitor)
 
+
 # Todo: remove in prod
 @csrf_exempt
 def index(request):
@@ -68,6 +70,7 @@ def index(request):
     exhibitor = Exhibitor.objects.filter(fair=get_fair(), company=company).first()
 
     return render_company(request, company, contact, exhibitor)
+
 
 # Todo: remove in prod
 @csrf_exempt
