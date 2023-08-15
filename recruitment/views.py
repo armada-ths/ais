@@ -811,7 +811,7 @@ def recruitment_period_edit(request, year, pk=None):
         if not user_can_access_recruitment_period(request.user, recruitment_period):
             return HttpResponseForbidden()
     else:
-        if not request.user.has_perm('recruitment.add_recruitmentperiod'):
+        if not request.user.has_perm("recruitment.add_recruitmentperiod"):
             return HttpResponseForbidden()
 
     fair = get_object_or_404(Fair, year=year)
