@@ -73,8 +73,20 @@ export const selectAdjustedProductPrice = cs(
     [selectProduct, selectSelectedProduct],
     (product, productMeta) => {
         return (
-            (productMeta?.quantity ?? 1) *
+            (productMeta?.quantity ?? 0) *
             (productMeta?.adjustedPrice ?? product?.unit_price ?? 0)
+        )
+    }
+)
+
+export const selectPackageBaseProductQuantity = cs(
+    [(_: RootState, productId: number) => productId, selectProductPackage],
+    (productId, productPackage) => {
+        if (!productPackage) return 0
+        return (
+            productPackage.child_products.find(
+                current => current.child_product.id === productId
+            )?.quantity ?? 0
         )
     }
 )
