@@ -65,6 +65,10 @@ class Product(models.Model):
     revenue = models.ForeignKey(Revenue, blank=False, on_delete=models.CASCADE)
     result_center = models.PositiveIntegerField(blank=False, null=False)
     cost_unit = models.PositiveIntegerField(blank=False, null=False)
+    ordering = models.IntegerField(
+        default=0,
+        help_text="Order the product. The higher the number, the higher the sorting.",
+    )
     category = models.ForeignKey(
         Category, blank=True, null=True, on_delete=models.CASCADE
     )
@@ -100,7 +104,7 @@ class Product(models.Model):
 
     class Meta:
         verbose_name_plural = "Products"
-        ordering = ["category", "name"]
+        ordering = ["ordering", "category"]
         default_permissions = []
         permissions = [
             ("base", "View the Accounting tab"),
