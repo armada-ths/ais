@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { PACKAGE_KEY } from "../../shared/vars"
 
 export interface Category {
+    id: number
     name: "Package" | "Additional booth area"
     allow_multiple_purchases: boolean
 }
@@ -65,7 +66,9 @@ export const productSlice = createSlice({
     initialState,
     reducers: {
         loadProducts: (state, action: PayloadAction<Product[]>) => {
-            state.records = action.payload.filter(product => product.display_in_product_list)
+            state.records = action.payload.filter(
+                product => product.display_in_product_list
+            )
         },
         loadProductMeta: (
             state,

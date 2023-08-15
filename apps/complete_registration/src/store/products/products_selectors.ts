@@ -78,3 +78,15 @@ export const selectAdjustedProductPrice = cs(
         )
     }
 )
+
+export const selectPackageBaseProductQuantity = cs(
+    [(_: RootState, productId: number) => productId, selectProductPackage],
+    (productId, productPackage) => {
+        if (!productPackage) return 0
+        return (
+            productPackage.child_products.find(
+                current => current.child_product.id === productId
+            )?.quantity ?? 0
+        )
+    }
+)

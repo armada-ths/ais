@@ -2,6 +2,8 @@ import { useDispatch, useSelector } from "react-redux"
 import { FormWrapper } from "../FormWrapper"
 import {
     selectAdjustedProductPrice,
+    selectProductPackage,
+    selectPackageBaseProductQuantity,
     selectSelectedProduct
 } from "../../store/products/products_selectors"
 import {
@@ -22,6 +24,10 @@ function InputCard({ product }: { product: Product }) {
     )
     const adjustedPrize = useSelector((state: RootState) =>
         selectAdjustedProductPrice(state, product.id)
+    )
+    const productPackage = useSelector(selectProductPackage)
+    const packageProductBaseQuantity = useSelector((state: RootState) =>
+        selectPackageBaseProductQuantity(state, product.id)
     )
 
     function onChange(quantity: number) {
@@ -61,7 +67,19 @@ function InputCard({ product }: { product: Product }) {
                     {product.max_quantity <= 1 ? (
                         <InputSwitch
                             onChange={() => onChange(selected == null ? 1 : 0)}
-                            checked={selected != null}
+                            checked={
+                                selected != null ||
+                                packageProductBaseQuantity > 0
+                            }
+                            disabled={packageProductBaseQuantity > 0}
+                            tooltip={
+                                packageProductBaseQuantity > 0
+                                    ? "Included in package"
+                                    : undefined
+                            }
+                            tooltipOptions={{
+                                showOnDisabled: true
+                            }}
                         />
                     ) : (
                         <InputText
@@ -79,10 +97,25 @@ function InputCard({ product }: { product: Product }) {
                 </div>
             </div>
             <div className="mt-5">
-                <div className="inline-block">
+                <div className="flex items-center gap-3">
                     <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
-                        {Intl.NumberFormat("sv").format(adjustedPrize)} kr
+                        {product.max_quantity <= 1 &&
+                        packageProductBaseQuantity > 0
+                            ? `Included In ${productPackage?.name ?? "Package"}`
+                            : `${Intl.NumberFormat("sv").format(
+                                  adjustedPrize
+                              )} kr`}
                     </p>
+                    {product.max_quantity > 1 &&
+                        packageProductBaseQuantity > 0 && (
+                            <>
+                                <p className="text-slate-500">in addition to</p>
+                                <p className="rounded bg-emerald-400 p-1 px-3 text-sm text-white">
+                                    {packageProductBaseQuantity} included in{" "}
+                                    {productPackage?.name ?? "package"}
+                                </p>
+                            </>
+                        )}
                 </div>
             </div>
         </div>
