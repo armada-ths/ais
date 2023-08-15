@@ -5,20 +5,21 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0024_add_child_product_model'),
+        ("accounting", "0024_add_child_product_model"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='childproduct',
-            name='description',
+            model_name="childproduct",
+            name="description",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='product',
-            name='revenue',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounting.Revenue'),
+            model_name="product",
+            name="revenue",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="accounting.Revenue"
+            ),
         ),
     ]

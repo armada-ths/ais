@@ -78,20 +78,22 @@ class Product(models.Model):
         help_text=" ".join(
             [
                 "This product will automatically add these products when added.",
-                'Recommended (but not neccessary) is to toggle the "No customer removal" on',
-                "the child products in order to make the package automatically add packages ",
+                'Recommended (but not neccessary) is to toggle the "Display in product list" to false on',
+                "the child products in order to make the package automatically add packages",
                 "which can only be removed by a salesperson.",
                 "This feature was used in 2023 when selling gold, silver, and bronze packages.",
             ]
         ),
     )
-    no_customer_removal = models.BooleanField(
-        default=False,
+
+    display_in_product_list = models.BooleanField(
+        default=True,
         help_text=" ".join(
             [
-                "This product will be unable to be removed by the customer."
-                "Only a salesperson can remove it.",
-                "Used in order to be a child product to a package product.",
+                "This product will not be shown to the customer unless a salesperson has added it,",
+                "or it was ordered with a package",
+                "Only a salesperson can add and remove it.",
+                "Used among other things to be a child product to a package product.",
             ]
         ),
     )
