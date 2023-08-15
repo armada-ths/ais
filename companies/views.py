@@ -10,9 +10,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.conf import settings
-from django.db.models import Q
-from django.db.models import CharField
-
+from django.db.models import CharField, Q, Case, When, Value, IntegerField
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
 from email.mime.text import MIMEText
@@ -371,6 +369,9 @@ def companies_list(request, year):
             # Free text search
             search_query = form.cleaned_data["q"]
 
+            # Name search (highest in matches on company name will appear highest in results)
+            name_q = get_query(search_query, ["name"])
+
             # Include every CharField in Company model in search
             field_names = [
                 f.name for f in Company._meta.fields if isinstance(f, CharField)
@@ -439,7 +440,25 @@ def companies_list(request, year):
             )
             qs = qs | Q(pk__in=matched_groups)
 
-            filtered_companies = filtered_companies.filter(qs)
+            # Apply filters, ranking matches on company name higher than matches on other fields
+            filtered_companies = (
+                filtered_companies.annotate(
+                    rank=Case(
+                        When(
+                            name_q,
+                            then=Value(1),
+                        ),
+                        When(
+                            qs,
+                            then=Value(2),
+                        ),
+                        default=Value(99),
+                        output_field=IntegerField(),
+                    )
+                )
+                .order_by("rank", "name")
+                .exclude(rank=99)
+            )
 
     companies_modified = []
     companies_current_page = filtered_companies[
