@@ -35,6 +35,7 @@ export const form: Form = {
         {
             id: "events",
             title: "Select Events",
+            hasPrevButton: false,
             pageComponent: () => (
                 <ProductFormPage selector={selectProductEvents} />
             )

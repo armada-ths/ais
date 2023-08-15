@@ -43,7 +43,7 @@ export function FormPageView({
             </div>
             {(page.hasNextButton !== false || page.hasPrevButton !== false) && (
                 <div className="flex w-full justify-between gap-x-5">
-                    {pageIndex <= 0 && page.hasPrevButton !== false ? (
+                    {pageIndex <= 0 || page.hasPrevButton === false ? (
                         <div />
                     ) : (
                         <Button
