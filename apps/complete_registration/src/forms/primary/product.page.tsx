@@ -40,6 +40,9 @@ function InputCard({ product }: { product: Product }) {
                 })
             )
         } else {
+            if (product.max_quantity <= 1 && packageProductBaseQuantity > 0)
+                return
+
             dispatch(
                 pickProduct({
                     id: product.id,
@@ -103,6 +106,9 @@ function InputCard({ product }: { product: Product }) {
                         {product.max_quantity <= 1 &&
                         packageProductBaseQuantity > 0
                             ? `Included In ${productPackage?.name ?? "Package"}`
+                            : packageProductBaseQuantity > 0 &&
+                              (selected?.quantity ?? 0) <= 0
+                            ? "0 kr"
                             : `${Intl.NumberFormat("sv").format(
                                   adjustedPrize
                               )} kr`}
