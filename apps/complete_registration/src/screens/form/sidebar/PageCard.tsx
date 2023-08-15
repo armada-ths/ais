@@ -4,10 +4,11 @@ import {
     selectPageProgress
 } from "../../../store/form/form_selectors"
 import { setPage } from "../../../store/form/form_slice"
-import { RootState } from "../../../store/store"
+import { AppDispatch, RootState } from "../../../store/store"
 import { cx } from "../../../utils/cx"
 import { FormPage } from "../screen"
 import { useDispatch, useSelector } from "react-redux"
+import { remoteSaveChanges } from "../../../store/form/async_actions"
 
 type Props = React.HTMLAttributes<HTMLDivElement>
 
@@ -26,7 +27,7 @@ export function Card({ children, className, ...rest }: Props) {
 }
 
 export function PageCard({ page }: { selected: boolean; page: FormPage }) {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const calcProgress = useSelector((state: RootState) =>
         selectPageProgress(state, page.id)
     )
@@ -37,6 +38,7 @@ export function PageCard({ page }: { selected: boolean; page: FormPage }) {
     const completed = progress != null && progress >= 1
 
     function clickPageCard() {
+        dispatch(remoteSaveChanges())
         dispatch(setPage(page.id))
     }
 
