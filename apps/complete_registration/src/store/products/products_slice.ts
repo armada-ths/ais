@@ -108,6 +108,11 @@ export const productSlice = createSlice({
             })
         },
         pickProduct: (state, action: PayloadAction<SelectedProduct>) => {
+            // If selected package, clear all products
+            if (action.payload.isPackage) {
+                state.selected = [action.payload]
+                return
+            }
             // Remove previous occurances of the product
             state.selected = state.selected.filter(
                 current =>

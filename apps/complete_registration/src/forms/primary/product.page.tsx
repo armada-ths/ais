@@ -40,6 +40,9 @@ function InputCard({ product }: { product: Product }) {
                 })
             )
         } else {
+            if (product.max_quantity <= 1 && packageProductBaseQuantity > 0)
+                return
+
             dispatch(
                 pickProduct({
                     id: product.id,
