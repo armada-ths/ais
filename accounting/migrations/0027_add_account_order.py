@@ -4,19 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0026_rename_hidden_products_field'),
+        ("accounting", "0026_rename_hidden_products_field"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='product',
-            options={'default_permissions': [], 'ordering': ['ordering', 'category'], 'permissions': [('base', 'View the Accounting tab'), ('export_orders', 'Export orders'), ('ths_customer_ids', 'Edit companies without THS customer IDs')], 'verbose_name_plural': 'Products'},
+            name="product",
+            options={
+                "default_permissions": [],
+                "ordering": ["ordering", "category"],
+                "permissions": [
+                    ("base", "View the Accounting tab"),
+                    ("export_orders", "Export orders"),
+                    ("ths_customer_ids", "Edit companies without THS customer IDs"),
+                ],
+                "verbose_name_plural": "Products",
+            },
         ),
         migrations.AddField(
-            model_name='product',
-            name='ordering',
-            field=models.IntegerField(default=0, help_text='Order the product. The higher the number, the higher the sorting.'),
+            model_name="product",
+            name="ordering",
+            field=models.IntegerField(
+                default=0,
+                help_text="Order the product. The higher the number, the higher the sorting.",
+            ),
         ),
     ]
