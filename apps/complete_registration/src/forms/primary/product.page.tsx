@@ -31,7 +31,8 @@ function InputCard({ product }: { product: Product }) {
     )
 
     function onChange(quantity: number) {
-        if (isNaN(quantity)) return
+        if (isNaN(quantity)) quantity = 0
+        if (quantity > product.max_quantity) quantity = product.max_quantity
         if (quantity <= 0 || quantity == null) {
             dispatch(
                 unpickProduct({

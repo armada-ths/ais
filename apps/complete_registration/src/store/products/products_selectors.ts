@@ -73,7 +73,7 @@ export const selectAdjustedProductPrice = cs(
     [selectProduct, selectSelectedProduct],
     (product, productMeta) => {
         return (
-            (productMeta?.quantity ?? 1) *
+            (productMeta?.quantity ?? 0) *
             (productMeta?.adjustedPrice ?? product?.unit_price ?? 0)
         )
     }
