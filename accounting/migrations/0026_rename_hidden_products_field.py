@@ -4,24 +4,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounting', '0025_add_child_product_descriptoin'),
+        ("accounting", "0025_add_child_product_descriptoin"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='product',
-            name='no_customer_removal',
+            model_name="product",
+            name="no_customer_removal",
         ),
         migrations.AddField(
-            model_name='product',
-            name='display_in_product_list',
-            field=models.BooleanField(default=True, help_text='This product will not be shown to the customer unless a salesperson has added it, or it was ordered with a package Only a salesperson can add and remove it. Used among other things to be a child product to a package product.'),
+            model_name="product",
+            name="display_in_product_list",
+            field=models.BooleanField(
+                default=True,
+                help_text="This product will not be shown to the customer unless a salesperson has added it, or it was ordered with a package Only a salesperson can add and remove it. Used among other things to be a child product to a package product.",
+            ),
         ),
         migrations.AlterField(
-            model_name='product',
-            name='child_products',
-            field=models.ManyToManyField(blank=True, help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "Display in product list" to false on the child products in order to make the package automatically add packages which can only be removed by a salesperson. This feature was used in 2023 when selling gold, silver, and bronze packages.', to='accounting.ChildProduct'),
+            model_name="product",
+            name="child_products",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='This product will automatically add these products when added. Recommended (but not neccessary) is to toggle the "Display in product list" to false on the child products in order to make the package automatically add packages which can only be removed by a salesperson. This feature was used in 2023 when selling gold, silver, and bronze packages.',
+                to="accounting.ChildProduct",
+            ),
         ),
     ]

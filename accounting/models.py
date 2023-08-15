@@ -85,7 +85,7 @@ class Product(models.Model):
             ]
         ),
     )
-    
+
     display_in_product_list = models.BooleanField(
         default=True,
         help_text=" ".join(
