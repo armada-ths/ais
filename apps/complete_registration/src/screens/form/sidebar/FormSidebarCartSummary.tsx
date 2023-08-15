@@ -1,14 +1,21 @@
 import { useSelector } from "react-redux"
 import {
+    selectAdjustedProductPrice,
     selectProductPackage,
     selectProductsSelectedWithoutPackagesWithAdjustedPrice
 } from "../../../store/products/products_selectors"
 import ProductCard from "./ProductCard"
+import { RootState } from "../../../store/store"
 
 export function FormSidebarCartSummary() {
     const productPackage = useSelector(selectProductPackage)
     const selectedProducts = useSelector(
         selectProductsSelectedWithoutPackagesWithAdjustedPrice
+    )
+    const price = useSelector(
+        (state: RootState) =>
+            productPackage &&
+            selectAdjustedProductPrice(state, productPackage?.id)
     )
 
     return (
@@ -42,7 +49,7 @@ export function FormSidebarCartSummary() {
                                 <div>
                                     <h4 className="mt-5 rounded bg-white p-1 px-3 text-center text-emerald-400">
                                         {Intl.NumberFormat("sv").format(
-                                            productPackage.unit_price
+                                            price ?? productPackage.unit_price
                                         )}{" "}
                                         kr
                                     </h4>
