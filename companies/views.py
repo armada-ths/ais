@@ -432,9 +432,12 @@ def companies_list(request, year):
 
             # Groups
             query = get_query(search_query, ["name", "name_full"])
-            matched_groups = Group.objects.filter(query)
-
-            qs = qs | Q(groups__in=matched_groups)
+            matched_groups = (
+                Group.objects.filter(query)
+                .select_related("company")
+                .values_list("company")
+            )
+            qs = qs | Q(pk__in=matched_groups)
 
             filtered_companies = filtered_companies.filter(qs)
 
