@@ -35,7 +35,7 @@ class ProductChildSerializer(serializers.ModelSerializer):
             "unit_price",
             "description",
             "category",
-            "no_customer_removal",
+            "display_in_product_list",
             "registration_section",
         )
         fields = read_only_fields + ("id",)
