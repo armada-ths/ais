@@ -52,7 +52,7 @@ export const OrderDetails = () => {
 					>
 						<p className="">{order.product.name} x {order.quantity}</p>
 						{
-							order.comment != null ? <p className="text-slate-400">{order.comment}</p> : <></>
+							order.comment ? <p className="text-slate-400">{order.comment}</p> : <></>
 						}
 						<p className="mt-2 text-slate-400">
 							{Intl.NumberFormat("sv").format(getOrderPrice(order))} kr
