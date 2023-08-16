@@ -1,7 +1,12 @@
+
+from util import JSONError, get_company_contact, get_contract_signature, get_user, status
+
 from rest_framework import serializers
 
+from django.db.models import Q
 from django.http import JsonResponse
 
+from fair.models import Fair
 from accounting.models import (
     Category,
     ChildProduct,
@@ -9,7 +14,6 @@ from accounting.models import (
     Product,
     RegistrationSection,
 )
-from fair.models import Fair
 
 
 class RegistrationSectionSerializer(serializers.ModelSerializer):
@@ -105,7 +109,21 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 def list_products(request):
+    user = get_user(request)
+    if user == None:
+        return JSONError(status.UNAUTHORIZED)
+
     fair = Fair.objects.get(current=True)
-    products = Product.objects.filter(revenue__fair=fair)
+    contact = get_company_contact(user)
+    company = contact.company
+    contract, signature = get_contract_signature(company, fair, type="INITIAL")
+
+    q = Q(exclusively_for=[])
+    if signature == None:
+        q |= Q(exclusively_for__contains=["ir-unsigned"])
+    else:
+        q |= Q(exclusively_for__contains=["ir-signed"])
+
+    products = Product.objects.filter(revenue__fair=fair).filter(q)
 
     return JsonResponse(ProductSerializer(products, many=True).data, safe=False)

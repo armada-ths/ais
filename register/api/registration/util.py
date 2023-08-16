@@ -8,11 +8,6 @@ from register.models import SignupLog
 from register.views import get_contract
 
 
-class JSONError(BaseException):
-    def __init__(self, status):
-        self.status = status
-
-
 class UserPermission(Enum):
     COMPANY_CONTACT = 0
     SALES = 1
@@ -27,20 +22,3 @@ class UserPermission(Enum):
             return cls(UserPermission.SALES)
         else:
             return cls(UserPermission.COMPANY_CONTACT)
-
-
-def get_fair():
-    return Fair.objects.filter(year=timezone.now().year).first()
-
-
-def get_contract_signature(company, fair):
-    signature = SignupLog.objects.filter(
-        company=company, contract__fair=fair, contract__type="COMPLETE"
-    ).first()
-
-    if signature:
-        contract = signature.contract
-    else:
-        contract = get_contract(company, fair, "COMPLETE")
-
-    return (contract, signature)
