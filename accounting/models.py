@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.postgres.fields import ArrayField
+from django.forms import MultipleChoiceField
 
 from fair.models import Fair
 
@@ -58,6 +61,35 @@ class ChildProduct(models.Model):
         return "%s x %s" % (self.child_product, self.quantity)
 
 
+class ChoiceArrayField(ArrayField):
+    """
+    A choices ArrayField that uses the `horizontal_filter` style of an M2M in the Admin
+
+    Usage::
+
+        class MyModel(models.Model):
+            tags = ChoiceArrayField(
+                models.TextField(choices=TAG_CHOICES),
+                verbose_name="Tags",
+                help_text="Some tags help",
+                blank=True,
+                default=list,
+            )
+    """
+
+    def formfield(self, **kwargs):
+        widget = FilteredSelectMultiple(self.verbose_name, False)
+        defaults = {
+            "form_class": MultipleChoiceField,
+            "widget": widget,
+            "choices": self.base_field.choices,
+        }
+        defaults.update(kwargs)
+        # Skip our parent's formfield implementation completely as we don't
+        # care for it.
+        return super(ArrayField, self).formfield(**defaults)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
@@ -66,7 +98,7 @@ class Product(models.Model):
     result_center = models.PositiveIntegerField(blank=False, null=False)
     cost_unit = models.PositiveIntegerField(blank=False, null=False)
     ordering = models.IntegerField(
-        default=0,
+        default=1000,
         help_text="Order the product. The higher the number, the higher the sorting.",
     )
     category = models.ForeignKey(
@@ -76,6 +108,24 @@ class Product(models.Model):
     registration_section = models.ForeignKey(
         RegistrationSection, blank=True, null=True, on_delete=models.CASCADE
     )
+
+    EXCLUSIVELY_FOR_CHOICES = [
+        ("ir-signed", "Companies who have signed IR"),
+        ("ir-unsigned", "Companies who have NOT signed IR"),
+    ]
+
+    exclusively_for = ChoiceArrayField(
+        models.CharField(max_length=31, choices=EXCLUSIVELY_FOR_CHOICES),
+        help_text=" ".join(
+            [
+                "Show this product only to the selected company types.",
+                "An empty selection means showing it to every company.",
+            ]
+        ),
+        blank=True,
+        default=list,
+    )
+
     child_products = models.ManyToManyField(
         ChildProduct,
         blank=True,

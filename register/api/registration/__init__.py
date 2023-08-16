@@ -1,10 +1,11 @@
 from django.views.decorators.csrf import csrf_exempt
 
+from util import get_company_contact, get_exhibitor, get_fair, get_user, status
+
 from companies.models import Company, CompanyContact
 from fair.models import RegistrationState
 from exhibitors.models import Exhibitor
 
-from register.api import get_fair, get_user, status
 from register.api.registration.cr import handle_cr, submit_cr
 from register.api.registration.util import UserPermission
 
@@ -30,7 +31,6 @@ def render_company(request, company, contact, exhibitor):
         return status.INVALID_REGISTRATION_PERIOD
 
 
-# Todo: remove in prod
 @csrf_exempt
 def submit(request):
     fair = get_fair()
@@ -42,17 +42,16 @@ def submit(request):
     if user == None:
         return status.UNAUTHORIZED
 
-    contact = CompanyContact.objects.filter(user=user).exclude(company=None).first()
+    contact = get_company_contact(user)
     if contact == None:
         return status.USER_HAS_NO_COMPANY
 
     company = contact.company
-    exhibitor = Exhibitor.objects.filter(fair=get_fair(), company=company).first()
+    exhibitor = get_exhibitor(company)
 
     return submit_cr(request, company, fair, contact, exhibitor)
 
 
-# Todo: remove in prod
 @csrf_exempt
 def index(request):
     """
@@ -62,17 +61,16 @@ def index(request):
     if user == None:
         return status.UNAUTHORIZED
 
-    contact = CompanyContact.objects.filter(user=user).exclude(company=None).first()
+    contact = get_company_contact(user)
     if contact == None:
         return status.USER_HAS_NO_COMPANY
 
     company = contact.company
-    exhibitor = Exhibitor.objects.filter(fair=get_fair(), company=company).first()
+    exhibitor = get_exhibitor(company)
 
     return render_company(request, company, contact, exhibitor)
 
 
-# Todo: remove in prod
 @csrf_exempt
 def get_company(request, company_pk):
     company = Company.objects.filter(pk=company_pk).first()

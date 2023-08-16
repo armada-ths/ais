@@ -1,12 +1,12 @@
+from util import JSONError, get_user, status
+
 from rest_framework.parsers import JSONParser
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from register.api import get_user, status
 from register.api.registration.types.registration import Registration
 from register.api.registration.types.util import get_serializer
-from register.api.registration.util import JSONError, get_contract_signature
 
 from register.models import SignupLog
 from accounting.models import Order

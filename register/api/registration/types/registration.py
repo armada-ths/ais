@@ -1,10 +1,8 @@
+from util import JSONError, get_contract_signature, status
+
 from enum import Enum
 
 from fair.models import RegistrationState
-from register.api import status
-
-from register.api.registration.util import JSONError, get_contract_signature
-from register.models import SignupLog
 
 
 class RegistrationType(Enum):
@@ -29,10 +27,13 @@ class Registration:
         self.fair = fair
         self.orders = orders
 
-        contract, signature = get_contract_signature(company, fair)
-
+        contract, signature = get_contract_signature(company, fair, "COMPLETE")
         self.contract = contract
         self.signature = signature
+
+        ir_contract, ir_signature = get_contract_signature(company, fair, "INITIAL")
+        self.ir_contract = ir_contract
+        self.ir_signature = ir_signature
 
         period = fair.get_period()
 
@@ -61,9 +62,7 @@ class Registration:
             pass
 
     def ensure_cr_eligibility(self):
-        signature = SignupLog.objects.filter(
-            company=self.company, contract__fair=self.fair, contract__type="INITIAL"
-        ).first()
+        signature = self.ir_signature
 
         if self.exhibitor == None:
             if signature == None:
