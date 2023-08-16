@@ -104,14 +104,14 @@ function InputCard({ product }: { product: Product }) {
                 <div className="flex items-center gap-3">
                     <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
                         {product.max_quantity <= 1 &&
-                        packageProductBaseQuantity > 0
+                            packageProductBaseQuantity > 0
                             ? `Included In ${productPackage?.name ?? "Package"}`
                             : packageProductBaseQuantity > 0 &&
-                              (selected?.quantity ?? 0) <= 0
-                            ? "0 kr"
-                            : `${Intl.NumberFormat("sv").format(
-                                  adjustedPrize
-                              )} kr`}
+                                (selected?.quantity ?? 0) <= 0
+                                ? "0 kr"
+                                : `${Intl.NumberFormat("sv").format(
+                                    adjustedPrize
+                                )} kr`}
                     </p>
                     {product.max_quantity > 1 &&
                         packageProductBaseQuantity > 0 && (
@@ -159,30 +159,44 @@ export function ProductFormPage({
         [products]
     )
 
-    return (
-        <FormWrapper>
-            <div className="flex flex-col gap-10">
-                {compartmentalizedProducts.map(([section, products]) => (
-                    <React.Fragment key={section}>
-                        {products.length > 0 && (
-                            <div className="flex flex-col gap-5">
-                                {section !== "none" && (
-                                    <h3 className="text-xl text-emerald-400">
-                                        {section}
-                                    </h3>
-                                )}
+    const description = products[0]?.registration_section?.description
 
-                                {products.map(current => (
-                                    <InputCard
-                                        key={current.id}
-                                        product={current}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </React.Fragment>
-                ))}
-            </div>
-        </FormWrapper>
+    return (
+        <>
+            {description
+                ? <div className="flex w-full justify-center">
+                    <div className="w-[450px] rounded bg-slate-200 p-2 px-4">
+                        <p className="text-slate-600">
+                            {description}
+                        </p>
+                    </div>
+                </div>
+                : <></>
+            }
+            <FormWrapper>
+                <div className="flex flex-col gap-10">
+                    {compartmentalizedProducts.map(([section, products]) => (
+                        <React.Fragment key={section}>
+                            {products.length > 0 && (
+                                <div className="flex flex-col gap-5">
+                                    {section !== "none" && (
+                                        <h3 className="text-xl text-emerald-400">
+                                            {section}
+                                        </h3>
+                                    )}
+
+                                    {products.map(current => (
+                                        <InputCard
+                                            key={current.id}
+                                            product={current}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </FormWrapper>
+        </>
     )
 }
