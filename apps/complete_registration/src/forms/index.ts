@@ -1,4 +1,5 @@
 import { form as PrimaryForm } from "./primary/form"
+import { form as ReceiptForm } from "./receipt/form"
 import CreateLunchTicketsForm from "./lunch_tickets/form"
 import { form as ExhibitorCatalogForm } from "./exhibitor_catalog/form"
 import { form as TransportForm } from "./transport/form"
@@ -7,6 +8,7 @@ import { form as BanquetForm } from "./banquet/form"
 export function getMutableFormsInstance() {
     return {
         primary: PrimaryForm,
+        receipt: ReceiptForm,
         exhibitor_catalog: ExhibitorCatalogForm,
         transport: TransportForm,
         lunch_tickets: CreateLunchTicketsForm,
