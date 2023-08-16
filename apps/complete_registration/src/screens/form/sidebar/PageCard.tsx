@@ -1,7 +1,7 @@
 import React from "react"
 import {
     selectActivePage,
-    selectPageProgress
+    selectFormPageProgress
 } from "../../../store/form/form_selectors"
 import { setPage } from "../../../store/form/form_slice"
 import { AppDispatch, RootState } from "../../../store/store"
@@ -29,7 +29,7 @@ export function Card({ children, className, ...rest }: Props) {
 export function PageCard({ page }: { selected: boolean; page: FormPage }) {
     const dispatch = useDispatch<AppDispatch>()
     const calcProgress = useSelector((state: RootState) =>
-        selectPageProgress(state, page.id)
+        selectFormPageProgress(state, page.id)
     )
     const customProgress = useSelector(page.getProgress ?? (() => null))
     const progress = customProgress != null ? customProgress : calcProgress
