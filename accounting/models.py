@@ -154,7 +154,7 @@ class Product(models.Model):
 
     class Meta:
         verbose_name_plural = "Products"
-        ordering = ["ordering", "category"]
+        ordering = ["ordering"]
         default_permissions = []
         permissions = [
             ("base", "View the Accounting tab"),
