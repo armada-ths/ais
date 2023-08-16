@@ -92,6 +92,7 @@ class ChoiceArrayField(ArrayField):
 
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
+    short_name = models.CharField(max_length=100, blank=True)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
     unit_price = models.IntegerField(blank=False)
     revenue = models.ForeignKey(Revenue, blank=False, on_delete=models.CASCADE)
