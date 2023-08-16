@@ -40,6 +40,7 @@ class ProductChildSerializer(serializers.ModelSerializer):
         model = Product
         read_only_fields = (
             "name",
+            "short_name",
             "max_quantity",
             "unit_price",
             "description",
