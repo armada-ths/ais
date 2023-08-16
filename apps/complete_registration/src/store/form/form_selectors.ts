@@ -23,12 +23,22 @@ export const selectActivePage = cs(
     (activeForm, activePage) => activeForm?.pages[activePage]
 )
 
-export const selectPageProgress = cs(
-    [selectActiveForm, (_: RootState, pageId: string) => pageId],
-    (form, pageId) => {
+export const selectFormPageProgress = cs(
+    [
+        (state: RootState) => state,
+        // If no worm key is provided, the active form will be used
+        (state: RootState, _: string, formKey?: keyof typeof FORMS) =>
+            formKey == null
+                ? selectActiveForm(state)
+                : selectForm(state, formKey),
+        (_: RootState, pageId: string) => pageId
+    ],
+    (state, form, pageId) => {
         if (form == null) return null
         const page = form.pages.find(p => p.id == pageId)
         if (page == null) return null
+        if (page.getProgress != null) page.getProgress(state)
+
         const totalFields =
             page.fields?.filter(field => field.mandatory !== false).length ?? 0
         const completedFields =
@@ -42,23 +52,20 @@ export const selectPageProgress = cs(
 )
 
 export const selectFormProgress = cs(
-    [selectForms, (_: RootState, formKey: keyof typeof FORMS) => formKey],
-    (forms, formKey) => {
+    [
+        (state: RootState) => state,
+        selectForms,
+        (_: RootState, formKey: keyof typeof FORMS) => formKey
+    ],
+    (state, forms, formKey) => {
         const form = forms[formKey]
+        const pageProgress = form.pages
+            .map(page => selectFormPageProgress(state, page.id, form.key))
+            .filter(Boolean) as number[]
 
-        const [completedFields, totalFields] = form.pages.reduce(
-            (acc, page) => [
-                acc[0] +
-                    (page.fields?.filter(
-                        field => field.value && field.mandatory !== false
-                    ).length ?? 0),
-                acc[1] +
-                    (page.fields?.filter(field => field.mandatory !== false)
-                        .length ?? 0)
-            ],
-            [0, 0]
+        return (
+            pageProgress.reduce((a, b) => a + b, 0) / (pageProgress.length || 1)
         )
-        return completedFields / (totalFields || 1)
     }
 )
 
