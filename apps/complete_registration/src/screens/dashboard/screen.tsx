@@ -54,20 +54,8 @@ export function DashboardScreen() {
         return <DashboardError />
     }
 
-    const formCards = Object.entries(forms)
+    const formCardsData = Object.entries(forms)
         .filter(([, formMeta]) => companyStatus == null || !FORM_HIDDEN_DURING[formMeta.key]?.includes(companyStatus))
-        .map(([key, formMeta]) => (
-            <FormCard
-                key={key}
-                form={formMeta}
-                locked={
-                    companyStatus == null ||
-                    !FORM_OPEN_DURING[formMeta.key].includes(
-                        companyStatus
-                    )
-                }
-            />
-        ))
 
     return (
         <div className={cx("grid min-h-[100dvh] grid-cols-[1fr_6fr_1fr]")}>
@@ -108,7 +96,18 @@ export function DashboardScreen() {
                         </p>
                     </div>
                     <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-                        {formCards}
+                        {formCardsData.map(([key, formMeta]) => (
+                            <FormCard
+                                key={key}
+                                form={formMeta}
+                                locked={
+                                    companyStatus == null ||
+                                    !FORM_OPEN_DURING[formMeta.key].includes(
+                                        companyStatus
+                                    )
+                                }
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
