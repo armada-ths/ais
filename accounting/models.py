@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.postgres.fields import ArrayField
 from django.forms import MultipleChoiceField
+from django.utils import timezone
 
 from fair.models import Fair
 
@@ -90,11 +91,20 @@ class ChoiceArrayField(ArrayField):
         return super(ArrayField, self).formfield(**defaults)
 
 
+class Stock(models.Model):
+    name = models.CharField(max_length=100, blank=False)
+    amount = models.PositiveIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return "(%d) %s" % (self.amount, self.name)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
     short_name = models.CharField(max_length=100, blank=True)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
     unit_price = models.IntegerField(blank=False)
+    stock = models.ForeignKey(Stock, blank=True, null=True, on_delete=models.CASCADE)
     revenue = models.ForeignKey(Revenue, blank=False, on_delete=models.CASCADE)
     result_center = models.PositiveIntegerField(blank=False, null=False)
     cost_unit = models.PositiveIntegerField(blank=False, null=False)
@@ -190,6 +200,14 @@ class Order(models.Model):
     comment = models.TextField(blank=True)
     export_batch = models.ForeignKey(
         ExportBatch, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    stock_when_bought = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text=" ".join(
+            ["When this order was placed, what was the stock level of the product?"]
+        ),
     )
 
     class Meta:

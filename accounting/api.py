@@ -1,7 +1,11 @@
+from companies.models import Company
+from exhibitors.models import Exhibitor
+from register.models import SignupLog
 from util import (
     JSONError,
     get_company_contact,
     get_contract_signature,
+    get_fair,
     get_user,
     status,
 )
@@ -35,6 +39,12 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = read_only_fields
 
 
+def get_product_orders(product):
+    return Order.objects.filter(
+        product__id=product.id, purchasing_company__signature__contract__type="COMPLETE"
+    )
+
+
 class ProductChildSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -42,6 +52,7 @@ class ProductChildSerializer(serializers.ModelSerializer):
             "name",
             "short_name",
             "max_quantity",
+            "out_of_stock",
             "unit_price",
             "description",
             "category",
@@ -51,8 +62,19 @@ class ProductChildSerializer(serializers.ModelSerializer):
         fields = read_only_fields + ("id",)
 
     id = serializers.IntegerField()
+    out_of_stock = serializers.SerializerMethodField()
     category = CategorySerializer(allow_null=True)
     registration_section = RegistrationSectionSerializer()
+
+    def get_out_of_stock(self, obj):
+        stock = obj.stock
+        if stock == None:
+            return None
+
+        orders = get_product_orders(obj)
+        amount_ordered = sum([order.quantity for order in orders])
+
+        return amount_ordered >= stock.amount
 
 
 class ChildProductSerializer(serializers.ModelSerializer):
@@ -107,10 +129,17 @@ class OrderSerializer(serializers.ModelSerializer):
         if not product:
             return
 
+        stock_when_bought = None
+        if product.stock != None:
+            orders = get_product_orders(product)
+            amount_ordered = sum([order.quantity for order in orders])
+            stock_when_bought = amount_ordered - product.stock.amount
+
         return Order.objects.create(
             product=product,
             quantity=int(validated_data["quantity"]),
             purchasing_company=self.context["purchasing_company"],
+            stock_when_bought=stock_when_bought,
         )
 
 
