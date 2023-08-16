@@ -50,7 +50,7 @@ export const form: Form = {
         {
             id: "invoice",
             title: "Invoice Information",
-            pageComponent: InvoiceDetailsFormPage,
+            pageComponent: () => <InvoiceDetailsFormPage />,
             fields: [
                 {
                     mapping: "company.invoice_name"

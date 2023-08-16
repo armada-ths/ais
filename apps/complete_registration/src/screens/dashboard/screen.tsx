@@ -25,6 +25,7 @@ export function DashboardScreen() {
 
     const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
         primary: ["complete_registration"],
+        receipt: ["complete_registration_signed"],
         lunch_tickets: ["complete_registration_signed"],
         exhibitor_catalog: [
             "complete_registration_signed",
@@ -33,6 +34,11 @@ export function DashboardScreen() {
         ],
         transport: ["complete_registration_signed"],
         banquet_tickets: ["complete_registration_signed"]
+    }
+
+    const FORM_HIDDEN_DURING: Partial<Record<keyof typeof FORMS, RegistrationStatus[]>> = {
+        primary: ["complete_registration_signed"],
+        receipt: ["complete_registration"]
     }
 
     const user = useSelector(selectUser)
@@ -47,6 +53,21 @@ export function DashboardScreen() {
     if (selectError != null && typeof selectError === "string") {
         return <DashboardError />
     }
+
+    const formCards = Object.entries(forms)
+        .filter(([, formMeta]) => companyStatus == null || !FORM_HIDDEN_DURING[formMeta.key]?.includes(companyStatus))
+        .map(([key, formMeta]) => (
+            <FormCard
+                key={key}
+                form={formMeta}
+                locked={
+                    companyStatus == null ||
+                    !FORM_OPEN_DURING[formMeta.key].includes(
+                        companyStatus
+                    )
+                }
+            />
+        ))
 
     return (
         <div className={cx("grid min-h-[100dvh] grid-cols-[1fr_6fr_1fr]")}>
@@ -87,18 +108,7 @@ export function DashboardScreen() {
                         </p>
                     </div>
                     <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-                        {Object.entries(forms).map(([key, formMeta]) => (
-                            <FormCard
-                                key={key}
-                                form={formMeta}
-                                locked={
-                                    companyStatus == null ||
-                                    !FORM_OPEN_DURING[formMeta.key].includes(
-                                        companyStatus
-                                    )
-                                }
-                            />
-                        ))}
+                        {formCards}
                     </div>
                 </div>
             </div>
