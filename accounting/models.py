@@ -91,12 +91,20 @@ class ChoiceArrayField(ArrayField):
         return super(ArrayField, self).formfield(**defaults)
 
 
+class Stock(models.Model):
+    name = models.CharField(max_length=100, blank=False)
+    amount = models.PositiveIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return "(%d) %s" % (self.amount, self.name)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
     short_name = models.CharField(max_length=100, blank=True)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
     unit_price = models.IntegerField(blank=False)
-    stock = models.PositiveIntegerField(blank=True, null=True)
+    stock = models.ForeignKey(Stock, blank=True, null=True, on_delete=models.CASCADE)
     revenue = models.ForeignKey(Revenue, blank=False, on_delete=models.CASCADE)
     result_center = models.PositiveIntegerField(blank=False, null=False)
     cost_unit = models.PositiveIntegerField(blank=False, null=False)

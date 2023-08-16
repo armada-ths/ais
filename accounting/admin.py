@@ -35,6 +35,11 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ["revenue", "category", "registration_section", "revenue__fair__year"]
 
 
+@admin.register(Stock)
+class StockAdmin(admin.ModelAdmin):
+    list_display = ["name", "amount"]
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ("amount",)

@@ -74,7 +74,7 @@ class ProductChildSerializer(serializers.ModelSerializer):
         orders = get_product_orders(obj)
         amount_ordered = sum([order.quantity for order in orders])
 
-        return amount_ordered >= stock
+        return amount_ordered >= stock.amount
 
 
 class ChildProductSerializer(serializers.ModelSerializer):
@@ -133,7 +133,7 @@ class OrderSerializer(serializers.ModelSerializer):
         if product.stock != None:
             orders = get_product_orders(product)
             amount_ordered = sum([order.quantity for order in orders])
-            stock_when_bought = amount_ordered - product.stock
+            stock_when_bought = amount_ordered - product.stock.amount
 
         return Order.objects.create(
             product=product,
