@@ -1,5 +1,10 @@
-
-from util import JSONError, get_company_contact, get_contract_signature, get_user, status
+from util import (
+    JSONError,
+    get_company_contact,
+    get_contract_signature,
+    get_user,
+    status,
+)
 
 from rest_framework import serializers
 
