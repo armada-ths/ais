@@ -29,11 +29,6 @@ export const form: Form = {
                 return 100
             },
             pageComponent: () => <InvoiceDetailsFormPage readOnly={true} />,
-            fields: [
-                {
-                    mapping: "company.invoice_name"
-                },
-            ]
         },
     ]
 }
