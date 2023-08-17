@@ -1,3 +1,4 @@
+import { Link, LinkComponent } from "@tanstack/react-router"
 import React from "react"
 
 /**
@@ -6,10 +7,15 @@ import React from "react"
 export function InfoScreen({
     children,
     title,
-    subText
+    subText,
+    link
 }: {
     children?: React.ReactNode
     title: string
+    link?: {
+        text?: string
+        to?: Parameters<LinkComponent>[0]["to"]
+    } | null
     subText?: string
 }) {
     return (
@@ -19,6 +25,15 @@ export function InfoScreen({
                 <h1 className="text-6xl font-bold text-emerald-400">{title}</h1>
                 {subText && (
                     <h3 className="mt-5 text-lg text-emerald-900">{subText}</h3>
+                )}
+                {link !== null && (
+                    <Link
+                        className="mt-5 underline "
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        to={(link?.to ?? "/") as any}
+                    >
+                        {link?.text ?? "Return to dashboard"}
+                    </Link>
                 )}
                 {children}
             </div>
