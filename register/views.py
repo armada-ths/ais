@@ -165,16 +165,14 @@ def choose_company(request):
     )
 
     if len(company_contacts) == 1:
-        return redirect("anmalan:registration", company_contacts.first().company.pk)
+        # Note: This is the old FR page
+        # return redirect("anmalan:registration", company_contacts.first().company.pk)
+        return new_react_cr_view(request)
 
     # if zero or several company_contacts connections
     return render(
         request, "register/choose_company.html", {"company_contacts": company_contacts}
     )
-
-
-def new_react_cr_view(request):
-    return render(request, "register/inside/registration_complete_new.html")
 
 
 # This function serves the correct template according to the current time of the Armada year and status of the company or user
@@ -384,6 +382,10 @@ def form_initial(request, company, company_contact, fair):
             "contacts": contact_cards,
         },
     )
+
+
+def new_react_cr_view(request):
+    return render(request, "register/inside/registration_complete_new.html")
 
 
 def form_complete(request, company, company_contact, fair, exhibitor):
