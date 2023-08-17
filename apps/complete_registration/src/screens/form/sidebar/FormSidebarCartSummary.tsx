@@ -18,12 +18,11 @@ export function FormSidebarCartSummary() {
             selectAdjustedProductPrice(state, productPackage?.id)
     )
 
-    const totalPrice = selectedProducts.reduce(
-        (acc, current) => acc + current.price,
-        0
-    ) + (productPackage?.unit_price ?? 0)
+    const totalPrice =
+        selectedProducts.reduce((acc, current) => acc + current.price, 0) +
+        (productPackage?.unit_price ?? 0)
 
-    const grossPrice = totalPrice * 1.25;
+    const grossPrice = totalPrice * 1.25
 
     return (
         <div className="relative h-full">
@@ -45,8 +44,13 @@ export function FormSidebarCartSummary() {
                                 <ul className="ml-4 list-inside list-disc text-white">
                                     {productPackage.child_products.map(
                                         ({ child_product, quantity }) => (
-                                            <p className="whitespace-nowrap">
-                                                * {child_product.short_name || child_product.name}
+                                            <p
+                                                key={child_product.id}
+                                                className="whitespace-nowrap"
+                                            >
+                                                *{" "}
+                                                {child_product.short_name ||
+                                                    child_product.name}
                                                 {quantity > 1
                                                     ? ` x ${quantity}`
                                                     : ""}
@@ -70,7 +74,7 @@ export function FormSidebarCartSummary() {
                             Selected products
                         </h2>
                         {selectedProducts.map(current => (
-                            <ProductCard product={current} />
+                            <ProductCard key={current.id} product={current} />
                         ))}
                     </div>
                     <div className="flex-1" />
@@ -78,25 +82,17 @@ export function FormSidebarCartSummary() {
                         <div className="flex w-full justify-between">
                             <h2 className="text-lg">Net</h2>
                             <p className="text">
-                                {Intl.NumberFormat("sv").format(
-                                    totalPrice
-                                )}{" "}
-                                kr
+                                {Intl.NumberFormat("sv").format(totalPrice)} kr
                             </p>
                         </div>
                         <div className="flex w-full justify-between">
                             <h2 className="text-lg">VAT</h2>
-                            <p className="text">
-                                25%
-                            </p>
+                            <p className="text">25%</p>
                         </div>
                         <div className="flex w-full justify-between">
                             <h2 className="text-lg">Gross</h2>
                             <p className="text font-bold">
-                                {Intl.NumberFormat("sv").format(
-                                    grossPrice
-                                )}{" "}
-                                kr
+                                {Intl.NumberFormat("sv").format(grossPrice)} kr
                             </p>
                         </div>
                     </div>
