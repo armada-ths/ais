@@ -1,6 +1,3 @@
-import { FormScreen } from "./screens/form/screen"
-import { useSelector } from "react-redux"
-import { selectActiveForm } from "./store/form/form_selectors"
 import { useEffect, useRef } from "react"
 import { reverseMap } from "./utils/mapper"
 import { useDispatch } from "react-redux"
@@ -24,7 +21,6 @@ import { HOST, PACKAGE_KEY } from "./shared/vars"
 export function App() {
     const initialized = useRef(false)
     const dispatch = useDispatch()
-    const form = useSelector(selectActiveForm)
 
     useEffect(() => {
         if (initialized.current) return
@@ -94,7 +90,7 @@ export function App() {
 
     return (
         <div className="bg-slate-50">
-            {form ? <FormScreen form={form} /> : <DashboardScreen />}
+            <DashboardScreen />
         </div>
     )
 }
