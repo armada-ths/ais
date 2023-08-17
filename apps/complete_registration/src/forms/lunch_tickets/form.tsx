@@ -6,6 +6,7 @@ const form: Form = {
     name: "Lunch Tickets",
     description:
         "Lunch tickets give attendees access to the lunch area at the fair",
+    progression: "none",
     pages: [
         {
             id: "",

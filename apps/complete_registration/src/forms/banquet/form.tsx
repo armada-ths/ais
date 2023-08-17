@@ -6,6 +6,7 @@ export const form: Form = {
     name: "Banquet Tickets",
     description:
         "Banquet tickets give attendees access to the the official Armada dinner",
+    progression: "none",
     pages: [
         {
             id: "",

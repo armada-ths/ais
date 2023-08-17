@@ -34,7 +34,9 @@ export const selectFormPageProgress = cs(
         (_: RootState, pageId: string) => pageId
     ],
     (state, form, pageId) => {
-        if (form == null) return null
+        if (form == null) {
+            return null
+        }
         const page = form.pages.find(p => p.id == pageId)
         if (page == null) return null
         if (page.getProgress != null) page.getProgress(state)
@@ -59,6 +61,9 @@ export const selectFormProgress = cs(
     ],
     (state, forms, formKey) => {
         const form = forms[formKey]
+        if (form.progression === "none" || form.progression === "silent")
+            return -1
+
         const pageProgress = form.pages
             .map(page => selectFormPageProgress(state, page.id, form.key))
             .filter(Boolean) as number[]
@@ -69,19 +74,20 @@ export const selectFormProgress = cs(
     }
 )
 
-export const selectCompanyProgress = cs(selectForms, forms => {
-    let completedFields = 0
-    let totalFields = 0
-    for (const form of Object.values(forms)) {
-        for (const page of form.pages) {
-            for (const field of page.fields ?? []) {
-                if (field.mandatory !== false) totalFields++
-                if (field.mandatory !== false && field.value) completedFields++
-            }
+export const selectCompanyProgress = cs(
+    [(state: RootState) => state, selectForms],
+    (state, forms) => {
+        let averageProgress = 0
+        let formCount = 0
+        for (const form of Object.values(forms)) {
+            if (form.progression === "none" || form.progression === "silent")
+                continue
+            averageProgress += selectFormProgress(state, form.key)
+            formCount++
         }
+        return averageProgress / (formCount || 1)
     }
-    return completedFields / (totalFields || 1)
-})
+)
 
 export const selectField = cs(
     [selectForms, (_: RootState, mapping: string) => mapping],
