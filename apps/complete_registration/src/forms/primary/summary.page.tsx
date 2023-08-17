@@ -19,9 +19,11 @@ import {
     selectProductsSelectedWithoutPackagesWithAdjustedPrice
 } from "../../store/products/products_selectors"
 import { formatCurrency } from "../../utils/format_currency"
+import { useNavigate } from "@tanstack/react-router"
 
 export function SummaryFormPage() {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const toastRef = useRef<Toast>(null)
     const [confirmTerms, setConfirmTerms] = useState(false)
     const [confirmBinding, setConfirmBinding] = useState(false)
@@ -60,6 +62,9 @@ export function SummaryFormPage() {
 
         dispatch(setCompanyRegistrationStatus("complete_registration_signed"))
         dispatch(setActiveForm(null))
+        navigate({
+            to: "/"
+        })
     }
 
     const confirm = (event: MouseEvent<HTMLButtonElement>) => {
