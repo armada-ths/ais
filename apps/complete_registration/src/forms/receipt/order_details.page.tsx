@@ -50,7 +50,7 @@ export const OrderDetails = () => {
 							"flex select-none flex-col rounded border-[0.5px] bg-white p-2 px-4 shadow-sm"
 						)}
 					>
-						<p className="">{order.product.name} x {order.quantity}</p>
+						<p className="">{order.product.short_name || order.product.name} x {order.quantity}</p>
 						{
 							order.comment ? <p className="text-slate-400">{order.comment}</p> : <></>
 						}

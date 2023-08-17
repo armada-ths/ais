@@ -46,7 +46,7 @@ export function FormSidebarCartSummary() {
                                     {productPackage.child_products.map(
                                         ({ child_product, quantity }) => (
                                             <p className="whitespace-nowrap">
-                                                * {child_product.name}
+                                                * {child_product.short_name || child_product.name}
                                                 {quantity > 1
                                                     ? ` x ${quantity}`
                                                     : ""}

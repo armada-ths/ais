@@ -315,7 +315,7 @@ const PackageInput: FieldComponentType<
         >
             <div>
                 <h2 className="my-5 text-center text-xl text-slate-500">
-                    {product.name}
+                    {product.short_name || product.name}
                 </h2>
                 {children}
             </div>
@@ -328,7 +328,7 @@ const PackageInput: FieldComponentType<
                     >
                         <i className="pi pi-check !font-bold text-emerald-400"></i>
                         <div className="flex gap-1 text-slate-500">
-                            <p className="">{child_product.name}</p>
+                            <p className="">{child_product.short_name || product.name}</p>
                             {quantity > 1 && <p> x {quantity}</p>}
                         </div>
                     </div>

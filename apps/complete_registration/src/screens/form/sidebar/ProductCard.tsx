@@ -14,7 +14,7 @@ export default function ProductCard({
     )
     return (
         <Card key={product.id} className="">
-            <p className="">{product.name}</p>
+            <p className="">{product.short_name || product.name}</p>
             <p className="mt-2 text-slate-400">
                 {Intl.NumberFormat("sv").format(price)} kr
             </p>
