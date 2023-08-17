@@ -21,6 +21,10 @@ INVALID_REGISTRATION_PERIOD = JsonResponse(
     {"error": "invalid_registration_period"},
     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
 )
+CR_NOT_OPEN = JsonResponse(
+    {"error": "cr_not_open"},
+    status=status.HTTP_403_FORBIDDEN,
+)
 USER_HAS_NO_COMPANY = JsonResponse(
     {"error": "user_has_no_company"},
     status=status.HTTP_404_NOT_FOUND,
