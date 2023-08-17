@@ -27,7 +27,8 @@ export function FormSidebarCartSummary() {
                             <div className="mb-5 flex flex-wrap items-center justify-between gap-x-4">
                                 <h3 className="text-xl text-white">Package</h3>
                                 <h4 className="mt-1 inline-block rounded bg-white p-1 px-3 text-emerald-400">
-                                    {productPackage.name}
+                                    {productPackage.short_name ||
+                                        productPackage.name}
                                 </h4>
                             </div>
                             <div>
