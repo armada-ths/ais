@@ -33,7 +33,7 @@ export default function FormCard({
         >
             <div className="mb-2 flex items-center justify-between gap-x-10">
                 <p className="text-lg">{form.name}</p>
-                {formProgress < 1 ? (
+                {formProgress < 1 && !form.forceFormDone ? (
                     <p className="text-yellow-400">
                         {(formProgress * 100).toFixed()}%
                     </p>

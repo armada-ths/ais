@@ -8,6 +8,7 @@ export const form: Form = {
     description:
         "On this page you select products and entry of company invoice details. Once submitted, no changes are permitted.",
     isSkippable: false,
+    forceFormDone: true,
     pages: [
         {
             id: "details",
@@ -28,6 +29,11 @@ export const form: Form = {
                 return 100
             },
             pageComponent: () => <InvoiceDetailsFormPage readOnly={true} />,
+            fields: [
+                {
+                    mapping: "company.invoice_name"
+                },
+            ]
         },
     ]
 }

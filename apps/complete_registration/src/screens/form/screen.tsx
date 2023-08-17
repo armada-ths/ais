@@ -42,6 +42,7 @@ export interface Form {
     key: keyof typeof FORMS // The key field to map the form to the *.form.tsx
     name: string
     isSkippable: boolean
+    forceFormDone?: boolean
     description: string
     pages: FormPage[]
     rightSidebar?: () => JSX.Element
