@@ -8,6 +8,7 @@ export const form: Form = {
     description:
         "On this page you select products and entry of company invoice details. Once submitted, no changes are permitted.",
     isSkippable: false,
+    forceFormDone: true,
     pages: [
         {
             id: "details",
