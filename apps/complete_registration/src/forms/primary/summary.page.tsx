@@ -18,6 +18,7 @@ import {
     selectProductPackage,
     selectProductsSelectedWithoutPackagesWithAdjustedPrice
 } from "../../store/products/products_selectors"
+import { formatCurrency } from "../../utils/format_currency"
 
 export function SummaryFormPage() {
     const dispatch = useDispatch()
@@ -83,7 +84,7 @@ export function SummaryFormPage() {
         selectedProducts.reduce((acc, current) => acc + current.price, 0) +
         (productPackage?.unit_price ?? 0)
 
-    const grossPrice = Intl.NumberFormat("sv").format(totalPrice * 1.25)
+    const grossPrice = formatCurrency(totalPrice * 1.25)
 
     return (
         <div className="flex flex-col items-center">
@@ -138,7 +139,10 @@ export function SummaryFormPage() {
                         }
                     />
                     <p>
-                        I understand that the Final Registration is binding and <i>{company.companyName}</i> will be invoiced <b>{grossPrice} kr</b> inc. VAT, by THS Armada, through Tekniska Högskolans Studentkår, org. nr. 802005-9153
+                        I understand that the Final Registration is binding and{" "}
+                        <i>{company.companyName}</i> will be invoiced{" "}
+                        <b>{grossPrice} kr</b> inc. VAT, by THS Armada, through
+                        Tekniska Högskolans Studentkår, org. nr. 802005-9153
                     </p>
                 </div>
 

@@ -7,6 +7,7 @@ import {
     selectUnitAdjustedProductPrice
 } from "../../../store/products/products_selectors"
 import { RootState } from "../../../store/store"
+import { formatCurrency } from "../../../utils/format_currency"
 
 export default function ProductCard({
     product
@@ -31,7 +32,7 @@ export default function ProductCard({
                 </p>
             )}
             <p className="text-slate-400">
-                {Intl.NumberFormat("sv").format(totalPrice)} kr
+                Total: {formatCurrency(totalPrice)} kr
             </p>
         </Card>
     )
