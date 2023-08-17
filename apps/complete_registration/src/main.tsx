@@ -3,7 +3,6 @@ import "./store/store"
 
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { App } from "./App.tsx"
 import "./input.css"
 import "primereact/resources/primereact.min.css"
 import "primereact/resources/themes/tailwind-light/theme.css"
@@ -18,6 +17,9 @@ import {
 } from "@tanstack/react-router"
 import { InfoScreen } from "./shared/InfoScreen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
+import { ThankYouScreen } from "./screens/thank_you/screen.tsx"
+import { DashboardScreen } from "./screens/dashboard/screen.tsx"
+import useLoadData from "./shared/useLoadData.tsx"
 
 const rootRoute = new RootRoute({
     errorComponent: () => <div>404</div>
@@ -25,7 +27,7 @@ const rootRoute = new RootRoute({
 const dashboard = new Route({
     path: "/",
     getParentRoute: () => rootRoute,
-    component: () => <App />
+    component: () => <DashboardScreen />
 })
 const form = new Route({
     path: "/form",
@@ -35,12 +37,7 @@ const form = new Route({
 const thankYou = new Route({
     path: "/thank-you",
     getParentRoute: () => rootRoute,
-    component: () => (
-        <InfoScreen
-            title="You're in!"
-            subText="Thank you for being a part of Armada, we look forward to seeing you at the fair"
-        />
-    )
+    component: ThankYouScreen
 })
 
 const notFoundRoute = new Route({
@@ -67,10 +64,15 @@ declare module "@tanstack/react-router" {
     }
 }
 
+export function IndexMainLogicWrapper() {
+    useLoadData()
+    return <RouterProvider router={router} />
+}
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <Provider store={store}>
-            <RouterProvider router={router} />
+            <IndexMainLogicWrapper />
         </Provider>
     </React.StrictMode>
 )
