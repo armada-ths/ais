@@ -13,14 +13,24 @@ import { setCompanyRegistrationStatus } from "../../store/company/company_slice"
 import { setActiveForm } from "../../store/form/form_slice"
 import { Toast } from "primereact/toast"
 import { HOST } from "../../shared/vars"
-import { selectProductPackage } from "../../store/products/products_selectors"
+import { selectCompany } from "../../store/company/company_selectors"
+import {
+    selectProductPackage,
+    selectProductsSelectedWithoutPackagesWithAdjustedPrice
+} from "../../store/products/products_selectors"
 
 export function SummaryFormPage() {
     const dispatch = useDispatch()
     const toastRef = useRef<Toast>(null)
+    const [confirmTerms, setConfirmTerms] = useState(false)
+    const [confirmBinding, setConfirmBinding] = useState(false)
     const [confirmEligibility, setConfirmEligibility] = useState(false)
-    const [confirmDataProcessing, setConfirmDataProcessing] = useState(false)
     const productPackage = useSelector(selectProductPackage)
+
+    const company = useSelector(selectCompany)
+    const selectedProducts = useSelector(
+        selectProductsSelectedWithoutPackagesWithAdjustedPrice
+    )
 
     const activeForm = useSelector(selectActiveForm)
     const unfilledFields = useSelector((state: RootState) =>
@@ -28,8 +38,9 @@ export function SummaryFormPage() {
     )
 
     const readyToSign =
+        confirmTerms &&
+        confirmBinding &&
         confirmEligibility &&
-        confirmDataProcessing &&
         unfilledFields.length === 0 &&
         productPackage != null
 
@@ -55,7 +66,11 @@ export function SummaryFormPage() {
             target: event.currentTarget,
             message: (
                 <div className="flex flex-col">
-                    <p>Lock your product selection</p>
+                    <p>
+                        Have you filled in everything you want? Once your Final
+                        Registration has been made, you can only make changes by
+                        contacting us.
+                    </p>
                 </div>
             ),
             icon: "pi pi-info-circle",
@@ -63,6 +78,12 @@ export function SummaryFormPage() {
             reject: () => {}
         })
     }
+
+    const totalPrice =
+        selectedProducts.reduce((acc, current) => acc + current.price, 0) +
+        (productPackage?.unit_price ?? 0)
+
+    const grossPrice = Intl.NumberFormat("sv").format(totalPrice * 1.25)
 
     return (
         <div className="flex flex-col items-center">
@@ -87,7 +108,41 @@ export function SummaryFormPage() {
                     </Card>
                 ))}
             </div>
-            <div className="mb-5 flex flex-col justify-center">
+            <div className="flex flex-col justify-center gap-4">
+                <div className="flex items-center gap-x-5">
+                    <Checkbox
+                        checked={confirmTerms}
+                        className=""
+                        onChange={value =>
+                            setConfirmTerms(value.checked ?? false)
+                        }
+                    />
+                    <p>
+                        I have read and understand the{" "}
+                        <a
+                            className="font-medium text-blue-600 hover:underline dark:text-blue-500"
+                            href={company.contract?.contract ?? ""}
+                        >
+                            Armada Terms and Conditions.
+                        </a>
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-x-5">
+                    <Checkbox
+                        checked={confirmBinding}
+                        className=""
+                        onChange={value =>
+                            setConfirmBinding(value.checked ?? false)
+                        }
+                    />
+                    <p>
+                        I understand that the Final Registration is binding and{" "}
+                        <i>{company.companyName}</i> will be invoiced{" "}
+                        <b>{grossPrice} kr</b> (incl. VAT)
+                    </p>
+                </div>
+
                 <div className="flex items-center gap-x-5">
                     <Checkbox
                         checked={confirmEligibility}
@@ -96,48 +151,37 @@ export function SummaryFormPage() {
                             setConfirmEligibility(value.checked ?? false)
                         }
                     />
-                    <p>I'm eligible to sign this</p>
-                </div>
-
-                <div className="mt-5 flex items-center gap-x-5">
-                    <Checkbox
-                        checked={confirmDataProcessing}
-                        className=""
-                        onChange={value =>
-                            setConfirmDataProcessing(value.checked ?? false)
-                        }
-                    />
-                    <p className="text-xs text-slate-500">
-                        THS Armada would like to process personal data about you
-                        and your organization to be able to contact you in
-                        conjunction with complete registration and send you
-                        information regarding the fair of 2023. The data we
-                        intend to collect and the process is forename, surname,
-                        the title of your organization, phone number, and email
-                        address. You decide for yourself if you want to leave
-                        any additional information to us. The data will only be
-                        processed by the project group in THS Armada and by THS
-                        Management. The data will be saved in the Armada
-                        Internal Systems, AIS. You are, according to GDPR
-                        (General Data Protection Regulation), entitled to
-                        receive information regarding what personal data we
-                        process and how we process these. You also have the
-                        right to request a correction as to what personal data
-                        we are processing about you. I consent for THS Armada to
-                        process my personal data in accordance with the above.*
+                    <p>
+                        I have the authority to enter into this agreement on
+                        behalf of <i>{company.companyName}</i>
                     </p>
                 </div>
             </div>
-            <div className="flex w-60 justify-center">
+            <div className="mt-16 flex justify-center">
                 <ConfirmPopup />
-                <div className="card justify-content-center flex flex-wrap gap-2">
+                <div className="card justify-content-center flex flex-wrap gap-2 whitespace-nowrap">
                     <Button
                         onClick={confirm}
                         disabled={!readyToSign}
                         icon="pi pi-check"
-                        label="Place Order"
+                        label="Confirm Final Registration"
                     />
                 </div>
+            </div>
+            <div
+                className="my-10 text-sm text-slate-400"
+                style={{ maxWidth: "50rem" }}
+            >
+                THS Armada will process any personal information you leave in
+                this registration on the basis of legitimate interests. Your
+                information will not be shared outside of THS (org. nr.
+                802005-9153) and be used to provide you the services you order
+                and to offer you similar services in the future. You are,
+                according to GDPR , entitled to receive information regarding
+                what personal data we process and how we process these. You also
+                have the right to request a correction as to what personal data
+                we are processing about you. To exercise these rights, contact
+                a@armada.nu.
             </div>
         </div>
     )

@@ -1,27 +1,26 @@
-# React + TypeScript + Vite
+# Armada Company Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This sub-project of Armada is primarly used by companies in order to configure information, add and manage products. As of right now this dashboard supports FR (final registration).
 
-Currently, two official plugins are available:
+## Commands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   `pnpm dev` - Starts the development server.
+-   `pnpm build` - Builds the project.
+-   `pnpm install` - Install dependencies.
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+-   [Node.js](https://nodejs.org/en/) 18.17.0, if you have `nvm` installed, you can run `nvm use` to switch to the correct version.
+-   [pnpm](https://pnpm.io/), if you have `npm` installed, you can run `npm i -g pnpm` to install it globally.
+-   [VS Code](https://code.visualstudio.com/) We recommend using vscode to get access to the recommended extensions. If you don't want to use vscode, make sure you set up eslint and prettier to use the configuration files in this project.
 
-- Configure the top-level `parserOptions` property like this:
+## About
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+Project is built with vite, react, typescript, tailwindcss, redux-toolkit and pnpm.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+---
+
+### Screenshots
+
+![](./meta/banner.png)
+![](./meta/product-select.png)
