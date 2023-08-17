@@ -138,13 +138,38 @@ function InputCard({ product }: { product: Product }) {
     )
 }
 
+export function DiscountCard({ product }: { product: Product }) {
+    return (
+        <div className="flex items-center justify-center">
+            <div className="w-full rounded bg-gradient-to-r from-yellow-500 to-yellow-300 p-1">
+                <div className="flex h-full w-full bg-white p-5">
+                    <div className="flex-[2]">
+                        <h3 className="bg-white text-lg text-yellow-600">
+                            {product.short_name || product.name}
+                        </h3>
+                        <p className="text-xs text-yellow-800">
+                            {product.description}
+                        </p>
+                    </div>
+                    <div className="flex flex-1 items-center justify-center">
+                        <p className="rounded bg-gradient-to-br from-yellow-600 to-yellow-500 p-2 px-4 font-bold text-white">
+                            {Intl.NumberFormat("sv").format(product.unit_price)}{" "}
+                            kr
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export function ProductFormPage({
     selector
 }: {
     selector: (state: RootState) => Product[]
 }) {
     const products = useSelector(selector)
-    const compartmentalizedProducts = useMemo(
+    const categorizedProducts = useMemo(
         () =>
             Object.entries(
                 products.reduce<Record<string, Product[]>>(
@@ -181,7 +206,7 @@ export function ProductFormPage({
             )}
             <FormWrapper>
                 <div className="flex flex-col gap-10">
-                    {compartmentalizedProducts.map(([section, products]) => (
+                    {categorizedProducts.map(([section, products]) => (
                         <React.Fragment key={section}>
                             {products.length > 0 && (
                                 <div className="flex flex-col gap-5">
@@ -191,12 +216,27 @@ export function ProductFormPage({
                                         </h3>
                                     )}
 
-                                    {products.map(current => (
-                                        <InputCard
-                                            key={current.id}
-                                            product={current}
-                                        />
-                                    ))}
+                                    {products
+                                        .filter(
+                                            current => current.unit_price < 0
+                                        )
+                                        .map(current => (
+                                            <DiscountCard
+                                                key={current.id}
+                                                product={current}
+                                            />
+                                        ))}
+
+                                    {products
+                                        .filter(
+                                            current => current.unit_price >= 0
+                                        )
+                                        .map(current => (
+                                            <InputCard
+                                                key={current.id}
+                                                product={current}
+                                            />
+                                        ))}
                                 </div>
                             )}
                         </React.Fragment>
