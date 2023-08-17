@@ -14,8 +14,7 @@ import {
     Router,
     RootRoute,
     Route,
-    RouterProvider,
-    Link
+    RouterProvider
 } from "@tanstack/react-router"
 import { InfoScreen } from "./shared/InfoScreen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
