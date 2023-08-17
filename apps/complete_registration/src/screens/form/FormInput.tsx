@@ -13,10 +13,10 @@ import { remoteSaveChanges } from "../../store/form/async_actions"
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect"
 import { HOST } from "../../shared/vars"
 import React, { useEffect, useState } from "react"
-import { FieldValue } from "./screen"
 import z from "zod"
 import { selectAdjustedProductPrice } from "../../store/products/products_selectors"
 import { formatCurrency } from "../../utils/format_currency"
+import { FieldValue } from "../../forms/form_types"
 
 export type FieldComponentProps = {
     label: string

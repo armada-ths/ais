@@ -1,4 +1,4 @@
-import { Form } from "../../screens/form/screen"
+import { Form } from "../form_types"
 import { CommingSoon } from "./comming_soon.page"
 
 const form: Form = {

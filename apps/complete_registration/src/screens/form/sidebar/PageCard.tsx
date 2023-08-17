@@ -6,9 +6,9 @@ import {
 import { setPage } from "../../../store/form/form_slice"
 import { AppDispatch, RootState } from "../../../store/store"
 import { cx } from "../../../utils/cx"
-import { FormPage } from "../screen"
 import { useDispatch, useSelector } from "react-redux"
 import { remoteSaveChanges } from "../../../store/form/async_actions"
+import { FormPage } from "../../../forms/form_types"
 
 type Props = React.HTMLAttributes<HTMLDivElement>
 

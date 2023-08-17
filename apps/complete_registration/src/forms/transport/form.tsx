@@ -1,4 +1,4 @@
-import { Form } from "../../screens/form/screen"
+import { Form } from "../form_types"
 import { TransportSummaryFormPage } from "./summary.page"
 import { TransportInfoFormPage } from "./transport_info.page"
 

@@ -1,10 +1,10 @@
-import { Form } from "../../screens/form/screen"
 import { FormSidebarCartSummary } from "../../screens/form/sidebar/FormSidebarCartSummary"
 import {
     selectProductEvents,
     selectProductExtras,
     selectSelectedProducts
 } from "../../store/products/products_selectors"
+import { Form } from "../form_types"
 import { InvoiceDetailsFormPage } from "./invoice_details.page"
 import { PackageSelectFormPage } from "./package_select.page"
 import { ProductFormPage } from "./product.page"
