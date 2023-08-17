@@ -1,13 +1,24 @@
 import { FormWrapper } from "../FormWrapper"
 import { FormField } from "../../screens/form/FormInput"
+import { ReactNode } from "react"
 
 function Title({ text }: { text: string }) {
     return <h3 className="mb-2 text-xl capitalize text-emerald-300">{text}</h3>
 }
 
+
+function Link({ children, href }: { children: ReactNode, href: string }) {
+    return <a href={href} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">{children}</a>
+}
+
+
 export function TransportInfoFormPage() {
     return (
         <FormWrapper>
+            <div className="mb-5 text-sm text-center">
+                <Link href="https://drive.google.com/file/d/1pgUdfE9IM3zEuKVuL8XYmviRWqd9y284/view?usp=sharing">Download book transport PDF-form</Link>
+                <div className="text-slate-400 text-xs">(read more below)</div>
+            </div>
             <p className="mb-5 text-sm">
                 This year Armada is proud to present the concept Armada
                 Transport which includes free transportation (limitations apply
@@ -20,6 +31,7 @@ export function TransportInfoFormPage() {
                 transportation solution leading to a higher climate impact with
                 more trucks driving to KTH and more complex logistics.
             </p>
+            <img style={{ float: 'right', maxWidth: '300px' }} src="/static/images/DHL_rgb.png" />
             <p className="mb-5 text-sm">
                 Armada is happy to announce that we have hired DHL to handle the
                 transportation. All of the administration of bookings will be
@@ -62,20 +74,25 @@ export function TransportInfoFormPage() {
             <Title text="How to book transport" />
             <p className="mb-5 text-sm">
                 The booking system for transportation of booth goods to and from
-                the fair is now open! In order to book transport you should
-                download this PDF-form and fill it in with information regarding
+                the fair is now open! In order to book transport you
+                should <Link href="https://drive.google.com/file/d/1pgUdfE9IM3zEuKVuL8XYmviRWqd9y284/view?usp=sharing">download this PDF-form</Link> and
+                fill it in with information regarding
                 pickup/return address, which transportation alternative you wish
                 to book and the dimensions and weight of your goods. After
-                filling in the PDF you should email it directly to DHL on
-                tfe.sweden@dhl.com. The deadline for booking is the 4th of
+                filling in the PDF you should email it directly to DHL
+                on <Link href="tfe.sweden@dhl.com">tfe.sweden@dhl.com</Link>.
+                The deadline for booking is the 4th of
                 November, but do not wait until it is too late! The goods must
                 be packed prior to DHL’s pick-up and you are responsible for
                 packaging the goods, the goods must be able to withstand normal
                 handling of goods in terminal. If you have any questions
-                regarding booking of transports you can email DHL on
-                tfe.sweden@dhl.com or call them at +46 31 799 4773. THS Armada’s
-                own transport team will also be at your service on
-                transport@armada.nu if you have any general questions regarding
+                regarding booking of transports you can email DHL
+                on <Link href="tfe.sweden@dhl.com">tfe.sweden@dhl.com</Link>
+                or call them
+                at <Link href="tel:+46 31 799 4773">+46 31 799 4773</Link>.
+                THS Armada’s own transport team will also be at your service
+                on <Link href="transport@armada.nu">transport@armada.nu</Link>
+                if you have any general questions regarding
                 transport or logistics.
             </p>
             <Title text="PACKAGING INSTRUCTIONS" />
@@ -98,7 +115,7 @@ export function TransportInfoFormPage() {
                 companies exhibiting at both events. The same options as above
                 are also included for transportation of company goods between
                 the fairs. Please get in touch with your contact person at ARKAD
-                in order to book this. Email fair.arkad@tlth.se if you are
+                in order to book this. Email <Link href="fair.arkad@tlth.se">fair.arkad@tlth.se</Link> if you are
                 uncertain who your contact person is at ARKAD.
             </p>
             <div className="mt-10 flex flex-1 justify-center">

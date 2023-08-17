@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux"
 import { selectErrors } from "../../store/form/form_selectors"
 import { PrimaryFormHeader } from "../../forms/primary/Header"
+import { LogoutButton } from "../../shared/LogoutButton"
 
 const ERRORS = {
     not_authorized: (
@@ -30,10 +31,9 @@ export function DashboardError() {
 
     if (typeof error !== "string") return null
 
-    console.log(error)
-
     return (
         <div className="flex h-[100vh] w-[100vw] flex-col items-center justify-center">
+            <LogoutButton />
             <p className="mb-4 text-4xl">Oups, something went wrong</p>
             <div className="max-w-xl text-center mb-10">{ERRORS[error]}</div>
             <PrimaryFormHeader />

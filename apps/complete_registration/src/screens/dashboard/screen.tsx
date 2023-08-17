@@ -15,6 +15,7 @@ import { RegistrationStatus } from "../../store/company/company_slice"
 import { FORMS } from "../../forms"
 import { Card } from "../form/sidebar/PageCard"
 import { DashboardError } from "./DashboardError"
+import { LogoutButton } from "../../shared/LogoutButton"
 
 export function DashboardScreen() {
     const forms = useSelector(selectForms)
@@ -117,12 +118,7 @@ export function DashboardScreen() {
                 </div>
             </div>
             <div className="flex flex-col items-center">
-                <a className="p-3 " href="/accounts/logout?next=/register">
-                    <div className="my-5 flex items-center gap-x-2 text-center text-slate-700 hover:text-slate-500">
-                        <p className="underline">Sign Out</p>
-                        <span className="pi pi-sign-out" />
-                    </div>
-                </a>
+                <LogoutButton />
                 <div className="flex-1" />
             </div>
         </div>

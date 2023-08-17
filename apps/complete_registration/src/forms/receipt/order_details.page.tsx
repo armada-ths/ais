@@ -40,6 +40,9 @@ export const OrderDetails = () => {
 		return <>Loading</>
 	}
 
+	const totalPrice = orders.reduce((acc, current) => acc + (current.unit_price ?? (current.quantity * current.product.unit_price)), 0)
+	const grossPrice = totalPrice * 1.25
+
 	return (
 		<FormWrapper>
 			<div className={cx("flex flex-col gap-2")}>
@@ -50,7 +53,7 @@ export const OrderDetails = () => {
 							"flex select-none flex-col rounded border-[0.5px] bg-white p-2 px-4 shadow-sm"
 						)}
 					>
-						<p className="">{order.product.name} x {order.quantity}</p>
+						<p className="">{order.product.short_name || order.product.name} x {order.quantity}</p>
 						{
 							order.comment ? <p className="text-slate-400">{order.comment}</p> : <></>
 						}
@@ -58,6 +61,32 @@ export const OrderDetails = () => {
 							{Intl.NumberFormat("sv").format(getOrderPrice(order))} kr
 						</p>
 					</div>)}
+			</div>
+			<div className="mt-5 flex flex-col items-center justify-between rounded bg-slate-200 p-1 px-3">
+				<div className="flex w-full justify-between">
+					<h2 className="text-lg">Net</h2>
+					<p className="text">
+						{Intl.NumberFormat("sv").format(
+							totalPrice
+						)}{" "}
+						kr
+					</p>
+				</div>
+				<div className="flex w-full justify-between">
+					<h2 className="text-lg">VAT</h2>
+					<p className="text">
+						25%
+					</p>
+				</div>
+				<div className="flex w-full justify-between">
+					<h2 className="text-lg">Gross</h2>
+					<p className="text font-bold">
+						{Intl.NumberFormat("sv").format(
+							grossPrice
+						)}{" "}
+						kr
+					</p>
+				</div>
 			</div>
 		</FormWrapper>
 	)
