@@ -122,6 +122,7 @@ export function SummaryFormPage() {
                         <a
                             className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                             href={company.contract?.contract ?? ""}
+                            target="_blank"
                         >
                             Armada Terms and Conditions.
                         </a>
