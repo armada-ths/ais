@@ -4,6 +4,7 @@ import { PACKAGE_KEY } from "../../shared/vars"
 export interface Category {
     id: number
     name: "Package" | "Additional booth area"
+    description: string
     allow_multiple_purchases: boolean
 }
 

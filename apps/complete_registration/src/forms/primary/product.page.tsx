@@ -7,6 +7,7 @@ import {
     selectSelectedProduct
 } from "../../store/products/products_selectors"
 import {
+    Category,
     Product,
     pickProduct,
     unpickProduct
@@ -71,7 +72,9 @@ function InputCard({ product }: { product: Product }) {
         >
             <div className="flex justify-between gap-10">
                 <div className="w-3/4">
-                    <p className="text text-slate-700">{product.short_name || product.name}</p>
+                    <p className="text text-slate-700">
+                        {product.short_name || product.name}
+                    </p>
                     <p className="text-xs text-slate-500">
                         {product.description}
                     </p>
@@ -172,22 +175,27 @@ export function ProductFormPage({
     const categorizedProducts = useMemo(
         () =>
             Object.entries(
-                products.reduce<Record<string, Product[]>>(
+                products.reduce<
+                    Record<string, { category?: Category; products: Product[] }>
+                >(
                     // Split products into categories
                     (total, current) => {
                         if (current.category == null) {
-                            total["none"].push(current)
+                            total["none"].products.push(current)
                             return total
                         }
 
                         const target = total[current.category.name]
                         if (target == null)
-                            total[current.category.name] = [current]
-                        else target.push(current)
+                            total[current.category.name] = {
+                                category: current.category,
+                                products: [current]
+                            }
+                        else target.products.push(current)
 
                         return total
                     },
-                    { none: [] }
+                    { none: { products: [] } }
                 )
             ),
         [products]
@@ -206,17 +214,25 @@ export function ProductFormPage({
             )}
             <FormWrapper>
                 <div className="flex flex-col gap-10">
-                    {categorizedProducts.map(([section, products]) => (
+                    {categorizedProducts.map(([section, categoryProducts]) => (
                         <React.Fragment key={section}>
-                            {products.length > 0 && (
+                            {categoryProducts.products.length > 0 && (
                                 <div className="flex flex-col gap-5">
-                                    {section !== "none" && (
-                                        <h3 className="text-xl text-emerald-400">
-                                            {section}
-                                        </h3>
-                                    )}
+                                    <div>
+                                        {section !== "none" && (
+                                            <h3 className="text-xl text-emerald-400">
+                                                {section}
+                                            </h3>
+                                        )}
+                                        <p className="mt-1 text-sm text-slate-500">
+                                            {
+                                                categoryProducts.category
+                                                    ?.description
+                                            }
+                                        </p>
+                                    </div>
 
-                                    {products
+                                    {categoryProducts.products
                                         .filter(
                                             current => current.unit_price < 0
                                         )
@@ -227,7 +243,7 @@ export function ProductFormPage({
                                             />
                                         ))}
 
-                                    {products
+                                    {categoryProducts.products
                                         .filter(
                                             current => current.unit_price >= 0
                                         )
