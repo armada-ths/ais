@@ -13,12 +13,14 @@ import { setCompanyRegistrationStatus } from "../../store/company/company_slice"
 import { setActiveForm } from "../../store/form/form_slice"
 import { Toast } from "primereact/toast"
 import { HOST } from "../../shared/vars"
+import { selectProductPackage } from "../../store/products/products_selectors"
 
 export function SummaryFormPage() {
     const dispatch = useDispatch()
     const toastRef = useRef<Toast>(null)
     const [confirmEligibility, setConfirmEligibility] = useState(false)
     const [confirmDataProcessing, setConfirmDataProcessing] = useState(false)
+    const productPackage = useSelector(selectProductPackage)
 
     const activeForm = useSelector(selectActiveForm)
     const unfilledFields = useSelector((state: RootState) =>
@@ -28,7 +30,8 @@ export function SummaryFormPage() {
     const readyToSign =
         confirmEligibility &&
         confirmDataProcessing &&
-        unfilledFields.length === 0
+        unfilledFields.length === 0 &&
+        productPackage != null
 
     async function submitRegistration() {
         const response = await fetch(`${HOST}/api/registration/submit`, {
@@ -64,12 +67,15 @@ export function SummaryFormPage() {
     return (
         <div className="flex flex-col items-center">
             <Toast ref={toastRef} />
-            {unfilledFields.length > 0 && (
+            {(unfilledFields.length > 0 || productPackage == null) && (
                 <h2 className="mb-2 text-lg text-red-400">
                     Missing information
                 </h2>
             )}
             <div className="mb-5 flex gap-5">
+                {productPackage == null && (
+                    <p className="mb-1 text-sm">No package selected</p>
+                )}
                 {unfilledFields.map(current => (
                     <Card key={current.page.id}>
                         <h3 className="mb-2">{current.page.title}</h3>
