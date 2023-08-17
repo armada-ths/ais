@@ -1,3 +1,6 @@
+// This has to be on top due to some weird circular import issue
+import "./store/store"
+
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { App } from "./App.tsx"
