@@ -13,10 +13,10 @@ export function FormSidebarCartSummary() {
     const selectedProducts = useSelector(
         selectProductsSelectedWithoutPackagesWithAdjustedPrice
     )
-    const packagePrice = useSelector(
-        (state: RootState) =>
-            productPackage &&
-            selectAdjustedProductPrice(state, productPackage?.id)
+    const packagePrice = useSelector((state: RootState) =>
+        productPackage == null
+            ? undefined
+            : selectAdjustedProductPrice(state, productPackage?.id)
     )
 
     const totalPrice =
