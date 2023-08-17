@@ -18,6 +18,13 @@ export function FormSidebarCartSummary() {
             selectAdjustedProductPrice(state, productPackage?.id)
     )
 
+    const totalPrice = selectedProducts.reduce(
+        (acc, current) => acc + current.price,
+        0
+    ) + (productPackage?.unit_price ?? 0)
+
+    const grossPrice = totalPrice * 1.25;
+
     return (
         <div className="relative h-full">
             <div className="sticky top-0 flex flex-col gap-y-2">
@@ -67,17 +74,31 @@ export function FormSidebarCartSummary() {
                         ))}
                     </div>
                     <div className="flex-1" />
-                    <div className="mt-5 flex items-center justify-between rounded bg-slate-200 p-1 px-3">
-                        <h2 className="text-lg">Total</h2>
-                        <p className="text font-bold">
-                            {Intl.NumberFormat("sv").format(
-                                selectedProducts.reduce(
-                                    (acc, current) => acc + current.price,
-                                    0
-                                ) + (productPackage?.unit_price ?? 0)
-                            )}{" "}
-                            kr
-                        </p>
+                    <div className="mt-5 flex flex-col items-center justify-between rounded bg-slate-200 p-1 px-3">
+                        <div className="flex w-full justify-between">
+                            <h2 className="text-lg">Net</h2>
+                            <p className="text">
+                                {Intl.NumberFormat("sv").format(
+                                    totalPrice
+                                )}{" "}
+                                kr
+                            </p>
+                        </div>
+                        <div className="flex w-full justify-between">
+                            <h2 className="text-lg">VAT</h2>
+                            <p className="text">
+                                25%
+                            </p>
+                        </div>
+                        <div className="flex w-full justify-between">
+                            <h2 className="text-lg">Gross</h2>
+                            <p className="text font-bold">
+                                {Intl.NumberFormat("sv").format(
+                                    grossPrice
+                                )}{" "}
+                                kr
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

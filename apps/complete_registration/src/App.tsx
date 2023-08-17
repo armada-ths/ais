@@ -16,7 +16,8 @@ import {
     RegistrationStatus,
     setCompanyName,
     setCompanyRegistrationStatus,
-    setUser
+    setUser,
+    setContract
 } from "./store/company/company_slice"
 import { HOST, PACKAGE_KEY } from "./shared/vars"
 
@@ -50,6 +51,7 @@ export function App() {
             )
             if (data.company?.name) dispatch(setCompanyName(data.company.name))
             if (data.contact) dispatch(setUser(data.contact))
+            if (data.contract) dispatch(setContract(data.contract))
 
             for (const current of awaitingMappings) {
                 dispatch(

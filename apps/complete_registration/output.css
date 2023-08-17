@@ -568,6 +568,11 @@ video {
   margin-right: 1.25rem;
 }
 
+.my-10 {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
 .my-5 {
   margin-top: 1.25rem;
   margin-bottom: 1.25rem;
@@ -607,6 +612,10 @@ video {
 
 .mt-14 {
   margin-top: 3.5rem;
+}
+
+.mt-16 {
+  margin-top: 4rem;
 }
 
 .mt-2 {
@@ -671,10 +680,6 @@ video {
 
 .w-40 {
   width: 10rem;
-}
-
-.w-60 {
-  width: 15rem;
 }
 
 .w-72 {
@@ -809,6 +814,10 @@ video {
 
 .gap-3 {
   gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
 }
 
 .gap-5 {
@@ -1077,8 +1086,17 @@ video {
   font-weight: 700;
 }
 
+.font-medium {
+  font-weight: 500;
+}
+
 .capitalize {
   text-transform: capitalize;
+}
+
+.text-blue-600 {
+  --tw-text-opacity: 1;
+  color: rgb(37 99 235 / var(--tw-text-opacity));
 }
 
 .text-emerald-300 {
@@ -1250,6 +1268,10 @@ video {
   color: rgb(100 116 139 / var(--tw-text-opacity));
 }
 
+.hover\:underline:hover {
+  text-decoration-line: underline;
+}
+
 .active\:scale-100:active {
   --tw-scale-x: 1;
   --tw-scale-y: 1;
@@ -1260,6 +1282,13 @@ video {
   --tw-scale-x: .95;
   --tw-scale-y: .95;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:text-blue-500 {
+    --tw-text-opacity: 1;
+    color: rgb(59 130 246 / var(--tw-text-opacity));
+  }
 }
 
 @media (min-width: 1024px) {
