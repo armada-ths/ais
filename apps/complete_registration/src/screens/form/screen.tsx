@@ -41,8 +41,7 @@ export interface FormPage {
 export interface Form {
     key: keyof typeof FORMS // The key field to map the form to the *.form.tsx
     name: string
-    isSkippable: boolean
-    forceFormDone?: boolean
+    forceFormDone?: boolean // The form will always be marked as done
     description: string
     pages: FormPage[]
     rightSidebar?: () => JSX.Element
@@ -62,12 +61,7 @@ export function FormScreen({ form }: Props) {
     return (
         <div>
             <Navbar />
-            <div
-                className={cx(
-                    "grid min-h-[92vh] grid-cols-[1fr_3fr_1fr]",
-                    form.isSkippable && "grid-rows-[80px_1fr]"
-                )}
-            >
+            <div className={cx("grid min-h-[92vh] grid-cols-[1fr_3fr_1fr]")}>
                 <FormSidebarProgressionSummary />
                 <PrimarySection>
                     <FormPageView

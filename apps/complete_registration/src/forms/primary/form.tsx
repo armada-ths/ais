@@ -15,7 +15,6 @@ export const form: Form = {
     name: "Order & Invoice Details",
     description:
         "On this page you select products and entry of company invoice details. Once submitted, no changes are permitted.",
-    isSkippable: false,
     rightSidebar: FormSidebarCartSummary,
     pages: [
         {
