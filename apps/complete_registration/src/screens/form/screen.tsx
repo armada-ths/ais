@@ -9,21 +9,24 @@ import {
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 import { cx } from "../../utils/cx"
 import { Navbar } from "../../shared/Navbar"
+import { InfoScreen } from "../../shared/InfoScreen"
+import { Link } from "@tanstack/react-router"
 
 export function FormScreen() {
     const activePage = useSelector(selectActivePage)
     const activePageIndex = useSelector(selectActivePageIndex)
     const activeForm = useSelector(selectActiveForm)
 
-    if (activeForm == null || activePage == null) return <p>No form selected</p>
-    /*         return (
+    if (activeForm == null || activePage == null) {
+        return (
             <InfoScreen
                 title="Oups, no form"
                 subText="We could not find the form you were looking form"
             >
                 <Link to="/">Navigate home</Link>
             </InfoScreen>
-        ) */
+        )
+    }
 
     return (
         <div>
