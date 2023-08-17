@@ -17,33 +17,32 @@ import { Card } from "../form/sidebar/PageCard"
 import { DashboardError } from "./DashboardError"
 import { LogoutButton } from "../../shared/LogoutButton"
 
+const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
+    primary: ["complete_registration"],
+    receipt: ["complete_registration_signed"],
+    lunch_tickets: ["complete_registration_signed"],
+    exhibitor_catalog: [
+        "complete_registration_signed",
+        "complete_registration",
+        "before_complete_registration"
+    ],
+    transport: ["complete_registration_signed"],
+    banquet_tickets: ["complete_registration_signed"]
+}
+
+const FORM_HIDDEN_DURING: Partial<
+    Record<keyof typeof FORMS, RegistrationStatus[]>
+> = {
+    primary: ["complete_registration_signed"],
+    receipt: ["complete_registration"]
+}
+
 export function DashboardScreen() {
     const forms = useSelector(selectForms)
     const companyStatus = useSelector(selectCompanyStatus)
     const companyProgress = useSelector(selectCompanyProgress)
     const selectError = useSelector(selectErrors)
     const companyName = useSelector(selectCompanyName)
-
-    const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
-        primary: ["complete_registration"],
-        receipt: ["complete_registration_signed"],
-        lunch_tickets: ["complete_registration_signed"],
-        exhibitor_catalog: [
-            "complete_registration_signed",
-            "complete_registration",
-            "before_complete_registration"
-        ],
-        transport: ["complete_registration_signed"],
-        banquet_tickets: ["complete_registration_signed"]
-    }
-
-    const FORM_HIDDEN_DURING: Partial<
-        Record<keyof typeof FORMS, RegistrationStatus[]>
-    > = {
-        primary: ["complete_registration_signed"],
-        receipt: ["complete_registration"]
-    }
-
     const user = useSelector(selectUser)
 
     const colorClassName = {
