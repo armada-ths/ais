@@ -7,7 +7,7 @@ export function PrimaryFormHeader() {
                     <a className="underline" href="mailto:sales@armada.nu">
                         sales@armada.nu
                     </a>{" "}
-                    if you have any questions
+                    if you have any questions.
                 </p>
             </div>
         </div>

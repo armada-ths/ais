@@ -20,6 +20,7 @@ import { selectAdjustedProductPrice } from "../../store/products/products_select
 export type FieldComponentProps = {
     label: string
     mapping: string
+    readOnly?: boolean,
     children?: React.ReactNode // Allow children in props
 } & React.HTMLAttributes<HTMLDivElement>
 export type FieldComponentType<T = FieldComponentProps> = (
@@ -34,7 +35,7 @@ const TextInput: FieldComponentType<
     FieldComponentProps & {
         inputClassName?: string
     }
-> = ({ label, mapping, inputClassName, className, ...rest }) => {
+> = ({ label, mapping, readOnly, inputClassName, className, ...rest }) => {
     const dispatch = useDispatch()
     const field = useSelector((state: RootState) => selectField(state, mapping))
     const fieldErrors = useSelector((state: RootState) =>
@@ -60,6 +61,7 @@ const TextInput: FieldComponentType<
                         "!border-2 !border-solid !border-slate-400",
                     fieldErrors && "p-invalid"
                 )}
+                readOnly={readOnly}
                 value={field.value ?? ""}
                 onChange={event =>
                     dispatch(
