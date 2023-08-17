@@ -59,6 +59,9 @@ function InputCard({ product }: { product: Product }) {
         }
     }
 
+    const packageName =
+        productPackage?.short_name || productPackage?.name || "package"
+
     return (
         <div
             className={cx(
@@ -111,7 +114,7 @@ function InputCard({ product }: { product: Product }) {
                     <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
                         {product.max_quantity <= 1 &&
                         packageProductBaseQuantity > 0
-                            ? `Included In ${productPackage?.name ?? "Package"}`
+                            ? `Included In ${packageName}`
                             : packageProductBaseQuantity > 0 &&
                               (selected?.quantity ?? 0) <= 0
                             ? "0 kr"
@@ -125,7 +128,7 @@ function InputCard({ product }: { product: Product }) {
                                 <p className="text-slate-500">in addition to</p>
                                 <p className="rounded bg-emerald-400 p-1 px-3 text-sm text-white">
                                     {packageProductBaseQuantity} included in{" "}
-                                    {productPackage?.name ?? "package"}
+                                    {packageName}
                                 </p>
                             </>
                         )}
