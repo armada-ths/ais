@@ -5,6 +5,7 @@ import { selectFormProgress } from "../../store/form/form_selectors"
 import { RootState } from "../../store/store"
 import { setActiveForm } from "../../store/form/form_slice"
 import { cx } from "../../utils/cx"
+import { useNavigate } from "@tanstack/react-router"
 
 export default function FormCard({
     form,
@@ -14,12 +15,16 @@ export default function FormCard({
     locked?: boolean
 }) {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const formProgress = useSelector((state: RootState) =>
         selectFormProgress(state, form.key)
     )
 
     function openForm() {
         dispatch(setActiveForm(form.key))
+        navigate({
+            to: "/form"
+        })
     }
 
     return (

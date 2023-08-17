@@ -78,6 +78,12 @@ export const selectAdjustedProductPrice = cs(
         )
     }
 )
+// Same as selectAdjustedProductPrice but without quantity
+export const selectUnitAdjustedProductPrice = cs(
+    [selectProduct, selectSelectedProduct],
+    (product, productMeta) =>
+        productMeta?.adjustedPrice ?? product?.unit_price ?? 0
+)
 
 export const selectPackageBaseProductQuantity = cs(
     [(_: RootState, productId: number) => productId, selectProductPackage],

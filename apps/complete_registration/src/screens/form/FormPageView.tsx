@@ -1,4 +1,3 @@
-import { Form, FormPage } from "./screen"
 import { Button } from "primereact/button"
 import { useDispatch } from "react-redux"
 import {
@@ -8,6 +7,7 @@ import {
 } from "../../store/form/form_slice"
 import { AppDispatch } from "../../store/store"
 import { remoteSaveChanges } from "../../store/form/async_actions"
+import { Form, FormPage } from "../../forms/form_types"
 
 export function FormPageView({
     form,

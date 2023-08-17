@@ -4,7 +4,8 @@ import {
     selectAdjustedProductPrice,
     selectProductPackage,
     selectPackageBaseProductQuantity,
-    selectSelectedProduct
+    selectSelectedProduct,
+    selectUnitAdjustedProductPrice
 } from "../../store/products/products_selectors"
 import {
     Category,
@@ -17,11 +18,15 @@ import { RootState } from "../../store/store"
 import { InputSwitch } from "primereact/inputswitch"
 import { cx } from "../../utils/cx"
 import React, { useMemo } from "react"
+import { formatCurrency } from "../../utils/format_currency"
 
 function InputCard({ product }: { product: Product }) {
     const dispatch = useDispatch()
     const selected = useSelector((state: RootState) =>
         selectSelectedProduct(state, product.id)
+    )
+    const adjustedUnitPrize = useSelector((state: RootState) =>
+        selectUnitAdjustedProductPrice(state, product.id)
     )
     const adjustedPrize = useSelector((state: RootState) =>
         selectAdjustedProductPrice(state, product.id)
@@ -113,6 +118,13 @@ function InputCard({ product }: { product: Product }) {
                 </div>
             </div>
             <div className="mt-5">
+                {selected != null && selected.quantity > 1 && (
+                    <div className="mb-1 inline-flex">
+                        <p className="rounded bg-gray-400 p-1 px-3 text-sm text-white">
+                            Unit price {formatCurrency(adjustedUnitPrize)} kr
+                        </p>
+                    </div>
+                )}
                 <div className="flex items-center gap-3">
                     <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
                         {product.max_quantity <= 1 &&
@@ -121,9 +133,7 @@ function InputCard({ product }: { product: Product }) {
                             : packageProductBaseQuantity > 0 &&
                               (selected?.quantity ?? 0) <= 0
                             ? "0 kr"
-                            : `${Intl.NumberFormat("sv").format(
-                                  adjustedPrize
-                              )} kr`}
+                            : `${formatCurrency(adjustedPrize)} kr`}
                     </p>
                     {product.max_quantity > 1 &&
                         packageProductBaseQuantity > 0 && (
@@ -156,8 +166,7 @@ export function DiscountCard({ product }: { product: Product }) {
                     </div>
                     <div className="flex flex-1 items-center justify-center">
                         <p className="rounded bg-gradient-to-br from-yellow-600 to-yellow-500 p-2 px-4 font-bold text-white">
-                            {Intl.NumberFormat("sv").format(product.unit_price)}{" "}
-                            kr
+                            {formatCurrency(product.unit_price)} kr
                         </p>
                     </div>
                 </div>

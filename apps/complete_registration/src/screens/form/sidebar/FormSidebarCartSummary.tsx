@@ -6,13 +6,14 @@ import {
 } from "../../../store/products/products_selectors"
 import ProductCard from "./ProductCard"
 import { RootState } from "../../../store/store"
+import { formatCurrency } from "../../../utils/format_currency"
 
 export function FormSidebarCartSummary() {
     const productPackage = useSelector(selectProductPackage)
     const selectedProducts = useSelector(
         selectProductsSelectedWithoutPackagesWithAdjustedPrice
     )
-    const price = useSelector(
+    const packagePrice = useSelector(
         (state: RootState) =>
             productPackage &&
             selectAdjustedProductPrice(state, productPackage?.id)
@@ -60,8 +61,9 @@ export function FormSidebarCartSummary() {
                                 </ul>
                                 <div>
                                     <h4 className="mt-5 rounded bg-white p-1 px-3 text-center text-emerald-400">
-                                        {Intl.NumberFormat("sv").format(
-                                            price ?? productPackage.unit_price
+                                        {formatCurrency(
+                                            packagePrice ??
+                                                productPackage.unit_price
                                         )}{" "}
                                         kr
                                     </h4>
@@ -73,16 +75,21 @@ export function FormSidebarCartSummary() {
                         <h2 className="mb-2 text-center text-xl">
                             Selected products
                         </h2>
-                        {selectedProducts.map(current => (
-                            <ProductCard key={current.id} product={current} />
-                        ))}
+                        {selectedProducts
+                            .filter(current => current.price >= 0)
+                            .map(current => (
+                                <ProductCard
+                                    key={current.id}
+                                    product={current}
+                                />
+                            ))}
                     </div>
                     <div className="flex-1" />
                     <div className="mt-5 flex flex-col items-center justify-between rounded bg-slate-200 p-1 px-3">
                         <div className="flex w-full justify-between">
                             <h2 className="text-lg">Net</h2>
                             <p className="text">
-                                {Intl.NumberFormat("sv").format(totalPrice)} kr
+                                {formatCurrency(totalPrice)} kr
                             </p>
                         </div>
                         <div className="flex w-full justify-between">
@@ -92,7 +99,7 @@ export function FormSidebarCartSummary() {
                         <div className="flex w-full justify-between">
                             <h2 className="text-lg">Gross</h2>
                             <p className="text font-bold">
-                                {Intl.NumberFormat("sv").format(grossPrice)} kr
+                                {formatCurrency(Math.round(grossPrice))} kr
                             </p>
                         </div>
                     </div>

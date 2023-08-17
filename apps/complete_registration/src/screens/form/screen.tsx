@@ -8,56 +8,22 @@ import {
 } from "../../store/form/form_selectors"
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 import { cx } from "../../utils/cx"
-import { RootState } from "../../store/store"
-import { FORMS } from "../../forms"
 import { Navbar } from "../../shared/Navbar"
+import { InfoScreen } from "../../shared/InfoScreen"
 
-export type FieldValue = string | boolean | undefined | File
-
-export interface FieldOption {
-    id: number
-    label: string
-    selected: boolean
-}
-
-export interface Field {
-    mapping: string
-    mandatory?: boolean
-    isMultiSelect?: boolean
-    multiSelectOptionMap?: never
-    value?: FieldValue | FieldOption[]
-}
-
-export interface FormPage {
-    id: string
-    title: string
-    fields?: Field[]
-    hasNextButton?: boolean // If true, the page will have a next and previous button
-    hasPrevButton?: boolean
-    getProgress?: (state: RootState) => number // If a page has custom progress logic this can be used
-    pageComponent: () => JSX.Element
-}
-
-export interface Form {
-    key: keyof typeof FORMS // The key field to map the form to the *.form.tsx
-    name: string
-    forceFormDone?: boolean // The form will always be marked as done
-    progression?: "none" | "silent" | "always" // none: no progression, silent: progression is shown but not included in company progress, always: progression is required, default is always
-    description: string
-    pages: FormPage[]
-    rightSidebar?: () => JSX.Element
-}
-
-type Props = {
-    form: Form
-}
-
-export function FormScreen({ form }: Props) {
+export function FormScreen() {
     const activePage = useSelector(selectActivePage)
     const activePageIndex = useSelector(selectActivePageIndex)
     const activeForm = useSelector(selectActiveForm)
 
-    if (activeForm == null || activePage == null) return <p>No form selected</p>
+    if (activeForm == null || activePage == null) {
+        return (
+            <InfoScreen
+                title="Oups, no form"
+                subText="We could not find the form you were looking form"
+            />
+        )
+    }
 
     return (
         <div>
@@ -71,7 +37,7 @@ export function FormScreen({ form }: Props) {
                         pageIndex={activePageIndex}
                     />
                 </PrimarySection>
-                {form.rightSidebar?.()}
+                {activeForm.rightSidebar?.()}
             </div>
         </div>
     )

@@ -1,4 +1,4 @@
-import { Form } from "../../screens/form/screen"
+import { Form } from "../form_types"
 import { BasicInfoFormPage } from "./basic_info.page"
 import { DetailedFormPage } from "./detailed.page"
 import { LogoFormPage } from "./logo.page"

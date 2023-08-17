@@ -13,14 +13,15 @@ import { remoteSaveChanges } from "../../store/form/async_actions"
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect"
 import { HOST } from "../../shared/vars"
 import React, { useEffect, useState } from "react"
-import { FieldValue } from "./screen"
 import z from "zod"
 import { selectAdjustedProductPrice } from "../../store/products/products_selectors"
+import { formatCurrency } from "../../utils/format_currency"
+import { FieldValue } from "../../forms/form_types"
 
 export type FieldComponentProps = {
     label: string
     mapping: string
-    readOnly?: boolean,
+    readOnly?: boolean
     children?: React.ReactNode // Allow children in props
 } & React.HTMLAttributes<HTMLDivElement>
 export type FieldComponentType<T = FieldComponentProps> = (
@@ -328,7 +329,9 @@ const PackageInput: FieldComponentType<
                     >
                         <i className="pi pi-check !font-bold text-emerald-400"></i>
                         <div className="flex gap-1 text-slate-500">
-                            <p className="">{child_product.short_name || product.name}</p>
+                            <p className="">
+                                {child_product.short_name || product.name}
+                            </p>
                             {quantity > 1 && <p> x {quantity}</p>}
                         </div>
                     </div>
@@ -336,7 +339,7 @@ const PackageInput: FieldComponentType<
             </div>
             <div className="flex flex-1 items-end justify-center p-5">
                 <p className="rounded bg-slate-500 p-1 px-3 text-center text-lg font-bold text-slate-50">
-                    {Intl.NumberFormat("sv").format(price)} kr
+                    {formatCurrency(price)} kr
                 </p>
             </div>
         </div>

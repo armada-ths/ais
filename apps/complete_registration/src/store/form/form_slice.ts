@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { FieldValue } from "../../screens/form/screen"
 import { FORMS, getMutableFormsInstance } from "../../forms"
 import { PayloadAction } from "@reduxjs/toolkit"
+import { FieldValue } from "../../forms/form_types"
 
 export function getPageComponent(formId: keyof typeof FORMS, pageId: string) {
     const form = FORMS[formId]

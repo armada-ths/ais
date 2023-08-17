@@ -1,5 +1,5 @@
 import { FORMS, getFieldFromForm } from "../forms"
-import { FieldOption, FieldValue } from "../screens/form/screen"
+import { FieldOption, FieldValue } from "../forms/form_types"
 
 export function mapToApi(forms: typeof FORMS) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

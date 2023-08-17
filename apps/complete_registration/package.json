@@ -11,7 +11,9 @@
     },
     "dependencies": {
         "@reduxjs/toolkit": "^1.9.5",
+        "@tanstack/react-router": "0.0.1-beta.151",
         "clsx": "^2.0.0",
+        "luxon": "^3.4.0",
         "prettier": "^3.0.1",
         "prettier-plugin-tailwindcss": "^0.4.1",
         "primeicons": "^6.0.1",
@@ -24,6 +26,7 @@
         "zod": "^3.21.4"
     },
     "devDependencies": {
+        "@types/luxon": "^3.3.1",
         "@types/react": "^18.2.15",
         "@types/react-dom": "^18.2.7",
         "@typescript-eslint/eslint-plugin": "^6.0.0",

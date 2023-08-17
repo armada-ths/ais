@@ -1,7 +1,7 @@
 import { createSelector as cs } from "reselect"
 import { RootState } from "../store"
 import { FORMS, getFieldFromForm } from "../../forms"
-import { Field, FormPage } from "../../screens/form/screen"
+import { Field, FormPage } from "../../forms/form_types"
 
 export const selectFormState = (state: RootState) => state.formMeta
 export const selectForms = cs(selectFormState, formMeta => formMeta.forms)
