@@ -48,7 +48,6 @@ class Fair(models.Model):
     name = models.CharField(max_length=100, default=default_name)
     year = models.IntegerField(default=date.today().year)
     description = models.TextField(max_length=500, default=default_name)
-    # terms = models.FileField(upload_to="terms/", null=True, blank=True)
 
     registration_start_date = models.DateTimeField(null=False, blank=False)
     registration_end_date = models.DateTimeField(null=False, blank=False)
