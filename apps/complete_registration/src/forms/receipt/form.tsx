@@ -7,7 +7,6 @@ export const form: Form = {
     name: "Order & Invoice Details",
     description:
         "On this page you select products and entry of company invoice details. Once submitted, no changes are permitted.",
-    isSkippable: false,
     forceFormDone: true,
     pages: [
         {
@@ -28,7 +27,7 @@ export const form: Form = {
             getProgress() {
                 return 100
             },
-            pageComponent: () => <InvoiceDetailsFormPage readOnly={true} />,
-        },
+            pageComponent: () => <InvoiceDetailsFormPage readOnly={true} />
+        }
     ]
 }

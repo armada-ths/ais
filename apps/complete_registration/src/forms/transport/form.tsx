@@ -6,7 +6,6 @@ export const form: Form = {
     key: "transport",
     name: "Armada Transport",
     description: "Armada transport system",
-    isSkippable: false,
     pages: [
         {
             id: "transport_info",
