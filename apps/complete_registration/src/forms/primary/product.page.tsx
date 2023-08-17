@@ -71,7 +71,7 @@ function InputCard({ product }: { product: Product }) {
         >
             <div className="flex justify-between gap-10">
                 <div className="w-3/4">
-                    <p className="text text-slate-700">{product.name}</p>
+                    <p className="text text-slate-700">{product.short_name || product.name}</p>
                     <p className="text-xs text-slate-500">
                         {product.description}
                     </p>

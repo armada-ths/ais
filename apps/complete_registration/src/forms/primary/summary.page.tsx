@@ -122,6 +122,7 @@ export function SummaryFormPage() {
                         <a
                             className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                             href={company.contract?.contract ?? ""}
+                            target="_blank"
                         >
                             Armada Terms and Conditions.
                         </a>
@@ -137,9 +138,7 @@ export function SummaryFormPage() {
                         }
                     />
                     <p>
-                        I understand that the Final Registration is binding and{" "}
-                        <i>{company.companyName}</i> will be invoiced{" "}
-                        <b>{grossPrice} kr</b> (incl. VAT)
+                        I understand that the Final Registration is binding and <i>{company.companyName}</i> will be invoiced <b>{grossPrice} kr</b> inc. VAT, by THS Armada, through Tekniska Högskolans Studentkår, org. nr. 802005-9153
                     </p>
                 </div>
 
