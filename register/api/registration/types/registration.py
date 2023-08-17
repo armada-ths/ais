@@ -63,7 +63,9 @@ class Registration:
             pass
 
     def ensure_cr_eligibility(self):
-        complete_contract = SignupContract.objects.filter(fair=get_fair(), type="COMPLETE", current=True).first()
+        complete_contract = SignupContract.objects.filter(
+            fair=get_fair(), type="COMPLETE", current=True
+        ).first()
         if complete_contract == None:
             raise JSONError(status.CR_NOT_OPEN)
 
