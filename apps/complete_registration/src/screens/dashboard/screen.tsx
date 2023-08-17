@@ -36,7 +36,9 @@ export function DashboardScreen() {
         banquet_tickets: ["complete_registration_signed"]
     }
 
-    const FORM_HIDDEN_DURING: Partial<Record<keyof typeof FORMS, RegistrationStatus[]>> = {
+    const FORM_HIDDEN_DURING: Partial<
+        Record<keyof typeof FORMS, RegistrationStatus[]>
+    > = {
         primary: ["complete_registration_signed"],
         receipt: ["complete_registration"]
     }
@@ -54,8 +56,11 @@ export function DashboardScreen() {
         return <DashboardError />
     }
 
-    const formCardsData = Object.entries(forms)
-        .filter(([, formMeta]) => companyStatus == null || !FORM_HIDDEN_DURING[formMeta.key]?.includes(companyStatus))
+    const formCardsData = Object.entries(forms).filter(
+        ([, formMeta]) =>
+            companyStatus == null ||
+            !FORM_HIDDEN_DURING[formMeta.key]?.includes(companyStatus)
+    )
 
     return (
         <div className={cx("grid min-h-[100dvh] grid-cols-[1fr_6fr_1fr]")}>
@@ -111,7 +116,15 @@ export function DashboardScreen() {
                     </div>
                 </div>
             </div>
-            <div>{/* SIDEBAR */}</div>
+            <div className="flex flex-col items-center">
+                <a className="p-3 " href="/accounts/logout?next=/register">
+                    <div className="my-5 flex items-center gap-x-2 text-center text-slate-700 hover:text-slate-500">
+                        <p className="underline">Sign Out</p>
+                        <span className="pi pi-sign-out" />
+                    </div>
+                </a>
+                <div className="flex-1" />
+            </div>
         </div>
     )
 }

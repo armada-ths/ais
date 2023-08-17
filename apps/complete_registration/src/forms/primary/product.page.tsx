@@ -32,7 +32,8 @@ function InputCard({ product }: { product: Product }) {
 
     function onChange(quantity: number) {
         if (isNaN(quantity)) quantity = 0
-        if (quantity > product.max_quantity) quantity = product.max_quantity
+        if (product.max_quantity != null && quantity > product.max_quantity)
+            quantity = product.max_quantity
         if (quantity <= 0 || quantity == null) {
             dispatch(
                 unpickProduct({
@@ -40,8 +41,13 @@ function InputCard({ product }: { product: Product }) {
                 })
             )
         } else {
-            if (product.max_quantity <= 1 && packageProductBaseQuantity > 0)
+            if (
+                product.max_quantity != null &&
+                product.max_quantity <= 1 &&
+                packageProductBaseQuantity > 0
+            ) {
                 return
+            }
 
             dispatch(
                 pickProduct({
@@ -104,14 +110,14 @@ function InputCard({ product }: { product: Product }) {
                 <div className="flex items-center gap-3">
                     <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
                         {product.max_quantity <= 1 &&
-                            packageProductBaseQuantity > 0
+                        packageProductBaseQuantity > 0
                             ? `Included In ${productPackage?.name ?? "Package"}`
                             : packageProductBaseQuantity > 0 &&
-                                (selected?.quantity ?? 0) <= 0
-                                ? "0 kr"
-                                : `${Intl.NumberFormat("sv").format(
-                                    adjustedPrize
-                                )} kr`}
+                              (selected?.quantity ?? 0) <= 0
+                            ? "0 kr"
+                            : `${Intl.NumberFormat("sv").format(
+                                  adjustedPrize
+                              )} kr`}
                     </p>
                     {product.max_quantity > 1 &&
                         packageProductBaseQuantity > 0 && (
@@ -163,16 +169,13 @@ export function ProductFormPage({
 
     return (
         <>
-            {description
-                ? <div className="flex w-full justify-center">
+            {description && (
+                <div className="flex w-full justify-center">
                     <div className="w-[450px] rounded bg-slate-200 p-2 px-4">
-                        <p className="text-slate-600">
-                            {description}
-                        </p>
+                        <p className="text-slate-600">{description}</p>
                     </div>
                 </div>
-                : <></>
-            }
+            )}
             <FormWrapper>
                 <div className="flex flex-col gap-10">
                     {compartmentalizedProducts.map(([section, products]) => (
