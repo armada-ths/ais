@@ -807,8 +807,12 @@ def recruitment_period_delete(request, year, pk):
 def recruitment_period_edit(request, year, pk=None):
     recruitment_period = RecruitmentPeriod.objects.filter(pk=pk).first()
 
-    if not user_can_access_recruitment_period(request.user, recruitment_period):
-        return HttpResponseForbidden()
+    if pk != None:
+        if not user_can_access_recruitment_period(request.user, recruitment_period):
+            return HttpResponseForbidden()
+    else:
+        if not request.user.has_perm("recruitment.add_recruitmentperiod"):
+            return HttpResponseForbidden()
 
     fair = get_object_or_404(Fair, year=year)
     form = RecruitmentPeriodForm(request.POST or None, instance=recruitment_period)

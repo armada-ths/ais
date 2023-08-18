@@ -18,6 +18,7 @@
 		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
 		{% if perms.exhibitors.modify_check_in %}<a href="{% url 'exhibitor_check_in' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Check in</a>{% endif %}
 		{% if perms.exhibitors.modify_details %}<a href="{% url 'exhibitor_details' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Details</a>{% endif %}
+		{% if perms.companies.base %}<a href="{% url 'companies_view' fair.year exhibitor.company.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company</a>{% endif %}
 		<a href="{% url 'anmalan:registration' exhibitor.company.pk %}" class="btn btn-default pull-right"><span class="glyphicon glyphicon-th"></span> Go to registration</a>
 	</p>
 	
@@ -162,6 +163,12 @@
 										
 										{% if order.comment %}
 											<br /><span style="font-style: italic;">{{ order.comment }}</span>
+										{% endif %}
+
+										{% if order.stock_when_bought <= 0 %}
+											<br /><span style="font-style: italic; color: red;">
+												Note: this product was ordered without being in stock.
+											</span>
 										{% endif %}
 									</td>
 									<td style="text-align: right;">{{ order.quantity }}</td>

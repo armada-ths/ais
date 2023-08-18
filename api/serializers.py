@@ -219,6 +219,7 @@ def person_v2(user):
             [
                 ("id", profile.user.pk),
                 ("name", profile.user.get_full_name()),
+                ("email", profile.armada_email),
                 (
                     "picture",
                     image_url_or_missing_relative(

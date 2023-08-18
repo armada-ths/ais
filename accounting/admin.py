@@ -18,9 +18,14 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(RegistrationSection)
-class CategoryAdmin(admin.ModelAdmin):
+class RegistrationSectionAdmin(admin.ModelAdmin):
     ordering = ["name"]
     list_display = ["name"]
+
+
+@admin.register(ChildProduct)
+class ChildProductAdmin(admin.ModelAdmin):
+    fields = ("child_product", "quantity")
 
 
 @admin.register(Product)
@@ -30,7 +35,19 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ["revenue", "category", "registration_section", "revenue__fair__year"]
 
 
+@admin.register(Stock)
+class StockAdmin(admin.ModelAdmin):
+    list_display = ["name", "amount"]
+
+
 @admin.register(Order)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name"]
+class OrderAdmin(admin.ModelAdmin):
+    readonly_fields = ("amount",)
+    list_display = ["name", "purchasing_company", "product", "quantity", "amount"]
     list_filter = ["purchasing_company__name"]
+
+    def amount(self, obj):
+        if obj.unit_price:
+            return "%s (D)" % obj.unit_price
+        else:
+            return obj.product.unit_price * obj.quantity

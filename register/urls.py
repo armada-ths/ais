@@ -29,7 +29,6 @@ urlpatterns = [
     url(r"^(?P<company_pk>[0-9]+)/registration$", views.form, name="registration"),
     url(r"^(?P<company_pk>[0-9]+)/events$", views.events, name="events"),
     url(r"^user", views.create_user, name="create_user"),
-    url(r"^company", views.create_company, name="create_company"),
     url(r"^password/change", views.change_password, name="change_password"),
     url(
         r"^login/$",

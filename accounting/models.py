@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.postgres.fields import ArrayField
+from django.forms import MultipleChoiceField
+from django.utils import timezone
 
 from fair.models import Fair
 
@@ -16,11 +20,12 @@ class Revenue(models.Model):
         default_permissions = []
 
     def __str__(self):
-        return "%s – %s" % (self.name, self.description)
+        return "[%s] %s – %s" % (self.fair.year, self.name, self.description)
 
 
 class Category(models.Model):
     name = models.CharField(max_length=100, blank=False)
+    description = models.TextField(blank=True, null=True)
     fair = models.ForeignKey("fair.Fair", blank=False, on_delete=models.CASCADE)
     allow_multiple_purchases = models.BooleanField(default=False)
 
@@ -30,7 +35,7 @@ class Category(models.Model):
         default_permissions = []
 
     def __str__(self):
-        return self.name
+        return "[%s] %s" % (self.fair.year, self.name)
 
 
 class RegistrationSection(models.Model):
@@ -48,13 +53,65 @@ class RegistrationSection(models.Model):
         return self.name
 
 
+class ChildProduct(models.Model):
+    quantity = models.PositiveIntegerField(blank=False)
+    description = models.TextField(blank=True, null=True)
+    child_product = models.ForeignKey("Product", blank=False, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s x %s" % (self.child_product, self.quantity)
+
+
+class ChoiceArrayField(ArrayField):
+    """
+    A choices ArrayField that uses the `horizontal_filter` style of an M2M in the Admin
+
+    Usage::
+
+        class MyModel(models.Model):
+            tags = ChoiceArrayField(
+                models.TextField(choices=TAG_CHOICES),
+                verbose_name="Tags",
+                help_text="Some tags help",
+                blank=True,
+                default=list,
+            )
+    """
+
+    def formfield(self, **kwargs):
+        widget = FilteredSelectMultiple(self.verbose_name, False)
+        defaults = {
+            "form_class": MultipleChoiceField,
+            "widget": widget,
+            "choices": self.base_field.choices,
+        }
+        defaults.update(kwargs)
+        # Skip our parent's formfield implementation completely as we don't
+        # care for it.
+        return super(ArrayField, self).formfield(**defaults)
+
+
+class Stock(models.Model):
+    name = models.CharField(max_length=100, blank=False)
+    amount = models.PositiveIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return "(%d) %s" % (self.amount, self.name)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, blank=False)
+    short_name = models.CharField(max_length=100, blank=True)
     max_quantity = models.PositiveIntegerField(blank=True, null=True)
     unit_price = models.IntegerField(blank=False)
+    stock = models.ForeignKey(Stock, blank=True, null=True, on_delete=models.CASCADE)
     revenue = models.ForeignKey(Revenue, blank=False, on_delete=models.CASCADE)
     result_center = models.PositiveIntegerField(blank=False, null=False)
     cost_unit = models.PositiveIntegerField(blank=False, null=False)
+    ordering = models.IntegerField(
+        default=1000,
+        help_text="Order the product. The higher the number, the higher the sorting.",
+    )
     category = models.ForeignKey(
         Category, blank=True, null=True, on_delete=models.CASCADE
     )
@@ -63,9 +120,52 @@ class Product(models.Model):
         RegistrationSection, blank=True, null=True, on_delete=models.CASCADE
     )
 
+    EXCLUSIVELY_FOR_CHOICES = [
+        ("ir-signed", "Companies who have signed IR"),
+        ("ir-unsigned", "Companies who have NOT signed IR"),
+    ]
+
+    exclusively_for = ChoiceArrayField(
+        models.CharField(max_length=31, choices=EXCLUSIVELY_FOR_CHOICES),
+        help_text=" ".join(
+            [
+                "Show this product only to the selected company types.",
+                "An empty selection means showing it to every company.",
+            ]
+        ),
+        blank=True,
+        default=list,
+    )
+
+    child_products = models.ManyToManyField(
+        ChildProduct,
+        blank=True,
+        help_text=" ".join(
+            [
+                "This product will automatically add these products when added.",
+                'Recommended (but not neccessary) is to toggle the "Display in product list" to false on',
+                "the child products in order to make the package automatically add packages",
+                "which can only be removed by a salesperson.",
+                "This feature was used in 2023 when selling gold, silver, and bronze packages.",
+            ]
+        ),
+    )
+
+    display_in_product_list = models.BooleanField(
+        default=True,
+        help_text=" ".join(
+            [
+                "This product will not be shown to the customer unless a salesperson has added it,",
+                "or it was ordered with a package",
+                "Only a salesperson can add and remove it.",
+                "Used among other things to be a child product to a package product.",
+            ]
+        ),
+    )
+
     class Meta:
         verbose_name_plural = "Products"
-        ordering = ["category", "name"]
+        ordering = ["ordering"]
         default_permissions = []
         permissions = [
             ("base", "View the Accounting tab"),
@@ -74,7 +174,7 @@ class Product(models.Model):
         ]
 
     def __str__(self):
-        return "%s – %s" % (self.revenue, self.name)
+        return "%s – %s" % (self.category, self.name)
 
 
 class ExportBatch(models.Model):
@@ -100,6 +200,14 @@ class Order(models.Model):
     comment = models.TextField(blank=True)
     export_batch = models.ForeignKey(
         ExportBatch, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    created_at = models.DateTimeField(default=timezone.now)
+    stock_when_bought = models.IntegerField(
+        blank=True,
+        null=True,
+        help_text=" ".join(
+            ["When this order was placed, what was the stock level of the product?"]
+        ),
     )
 
     class Meta:

@@ -19,6 +19,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap3"
 
 INSTALLED_APPS = (
     "whitenoise.runserver_nostatic",
+    "magic_link",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -56,6 +57,7 @@ INSTALLED_APPS = (
     "testpage",
     "kth_login",
     "raven.contrib.django.raven_compat",
+    "rest_framework",
 )
 
 MIDDLEWARE = [

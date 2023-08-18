@@ -165,7 +165,9 @@ def choose_company(request):
     )
 
     if len(company_contacts) == 1:
-        return redirect("anmalan:registration", company_contacts.first().company.pk)
+        # Note: This is the old FR page
+        # return redirect("anmalan:registration", company_contacts.first().company.pk)
+        return new_react_cr_view(request)
 
     # if zero or several company_contacts connections
     return render(
@@ -380,6 +382,10 @@ def form_initial(request, company, company_contact, fair):
             "contacts": contact_cards,
         },
     )
+
+
+def new_react_cr_view(request):
+    return render(request, "register/inside/registration_complete_new.html")
 
 
 def form_complete(request, company, company_contact, fair, exhibitor):
@@ -737,57 +743,93 @@ def to_dict_contact_card(delegated_role, profile):
 
 
 def create_user(request, template_name="register/outside/create_user.html"):
+    company_form = NewCompanyForm(request.POST or None, prefix="company")
     contact_form = CreateCompanyContactForm(request.POST or None, prefix="contact")
-    user_form = UserForm(request.POST or None, prefix="user")
-
-    if request.POST and contact_form.is_valid() and user_form.is_valid():
-        user = user_form.save(commit=False)
-        contact = contact_form.save(commit=False)
-        user.username = contact.email_address
-        user.email = contact.email_address
-        user.save()
-        contact.user = user
-        contact.save()
-        user = authenticate(
-            username=contact_form.cleaned_data["email_address"],
-            password=user_form.cleaned_data["password1"],
-        )
-        login(request, user)
-        return redirect("anmalan:choose_company")
-
-    return render(
-        request, template_name, dict(contact_form=contact_form, user_form=user_form)
-    )
-
-
-def create_company(request, template_name="register/outside/create_company.html"):
-    form = NewCompanyForm(request.POST or None)
-    contact_form = CreateCompanyContactNoCompanyForm(
-        request.POST or None, prefix="contact"
+    contact_no_company = CreateCompanyContactNoCompanyForm(
+        request.POST or None, prefix="no-company"
     )
     user_form = UserForm(request.POST or None, prefix="user")
 
-    if contact_form.is_valid() and user_form.is_valid() and form.is_valid():
-        company = form.save()
-        user = user_form.save(commit=False)
-        contact = contact_form.save(commit=False)
-        user.username = contact.email_address
-        user.email = contact.email_address
-        user.save()
-        contact.user = user
-        contact.confirmed = True  # Auto confirm contacts who register a new company
-        contact.company = company
-        contact.save()
-        user = authenticate(
-            username=contact_form.cleaned_data["email_address"],
-            password=user_form.cleaned_data["password1"],
-        )
-        login(request, user)
-        return redirect("anmalan:choose_company")
+    if request.POST:
+        # Check if a company has been provided in the POST message. This decides what to check: user registration (company provided) or user registration + company registration
+        if len(request.POST["contact-company"]) > 0 or (
+            len(request.POST["contact-company"]) == 0
+            and len(request.POST["company-name"]) == 0
+            and len(request.POST["company-type"]) == 0
+        ):
+            # Set new company form to None in order to avoid error messages being displayed in that portion of the form
+            company_form = NewCompanyForm(None, prefix="company")
+
+            # Register user if both forms (contact info and passwords) are valid
+            if contact_form.is_valid() and user_form.is_valid():
+                user = user_form.save(commit=False)
+                contact = contact_form.save(commit=False)
+                user.username = contact.email_address
+                user.email = contact.email_address
+                user.save()
+                contact.user = user
+                contact.save()
+                user = authenticate(
+                    username=contact_form.cleaned_data["email_address"],
+                    password=user_form.cleaned_data["password1"],
+                )
+                login(request, user)
+                return redirect("anmalan:choose_company")
+
+        else:
+            # Populate contact_no_company info with contact_form info for validation purposes
+            post = request.POST.copy()
+            post["no-company-first_name"] = post["contact-first_name"]
+            post["no-company-last_name"] = post["contact-last_name"]
+            post["no-company-email_address"] = post["contact-email_address"]
+            post["no-no-company-alternative_email_address-first_name"] = post[
+                "contact-alternative_email_address"
+            ]
+            post["no-company-no-company-title"] = post["contact-title"]
+            post["no-company-mobile_phone_number"] = post["contact-title"]
+            post["no-company-work_phone_number"] = post["contact-work_phone_number"]
+            post["no-company-preferred_language"] = post["contact-preferred_language"]
+
+            contact_no_company = CreateCompanyContactNoCompanyForm(
+                post or None, prefix="no-company"
+            )
+
+            # Set new company form to None in order to avoid error messages being displayed in that portion of the form
+            contact_form = CreateCompanyContactForm(None, prefix="contact")
+
+            if (
+                contact_no_company.is_valid()
+                and user_form.is_valid()
+                and company_form.is_valid()
+            ):
+                company = company_form.save()
+                user = user_form.save(commit=False)
+                contact = contact_no_company.save(commit=False)
+                user.username = contact.email_address
+                user.email = contact.email_address
+                user.save()
+                contact.user = user
+                contact.confirmed = (
+                    True  # Auto confirm contacts who register a new company
+                )
+                contact.company = company
+                contact.save()
+                user = authenticate(
+                    username=contact_no_company.cleaned_data["email_address"],
+                    password=user_form.cleaned_data["password1"],
+                )
+                login(request, user)
+                return redirect("anmalan:choose_company")
+
     return render(
         request,
         template_name,
-        dict(form=form, contact_form=contact_form, user_form=user_form),
+        dict(
+            company_form=company_form,
+            contact_form=contact_form,
+            user_form=user_form,
+            contact_no_company=contact_no_company,
+        ),
     )
 
 
