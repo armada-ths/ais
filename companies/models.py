@@ -115,20 +115,8 @@ class Company(models.Model):
     invoice_zip_code = models.CharField(max_length=300, null=True, blank=True)
     show_externally = models.BooleanField(default=True, null=False, blank=False)
 
-    countries = [
-        ("DENMARK", "Denmark"),
-        ("FINLAND", "Finland"),
-        ("FRANCE", "France"),
-        ("GERMANY", "Germany"),
-        ("NORWAY", "Norway"),
-        ("POLAND", "Poland"),
-        ("SWEDEN", "Sweden"),
-        ("UNITED_KINGDOM", "United Kingdom"),
-        ("NETHERLANDS", "Netherlands"),
-    ]
-
     invoice_country = models.CharField(
-        max_length=200, choices=countries, default="SWEDEN", null=True, blank=True
+        max_length=200, default="SWEDEN", null=True, blank=True
     )
     invoice_reference = models.CharField(max_length=300, null=True, blank=True)
     invoice_email_address = models.EmailField(
