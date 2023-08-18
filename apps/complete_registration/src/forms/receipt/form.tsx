@@ -27,7 +27,17 @@ export const form: Form = {
             getProgress() {
                 return 100
             },
-            pageComponent: () => <InvoiceDetailsFormPage readOnly={true} />
+            pageComponent: () => <div>
+                <div className="flex w-full justify-center">
+                    <div className="mb-2 w-[450px] rounded bg-slate-200 p-2 px-4">
+                        <p className="text-slate-600">
+                            If you want to change invoice details,
+                            please contact your sales representatives.
+                        </p>
+                    </div>
+                </div>
+                <InvoiceDetailsFormPage readOnly={true} />
+            </div>
         }
     ]
 }

@@ -6,7 +6,7 @@ export function DetailedFormPage() {
     return (
         <FormWrapper>
             <FormField.MultiSelect
-                label="Your industries"
+                label="Your industries (Think about everything an interesting student might search for)"
                 mapping="exhibitor.catalogue_industries"
                 className="w-full"
                 filter
