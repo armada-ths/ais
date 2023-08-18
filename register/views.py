@@ -73,7 +73,7 @@ def get_contract(company, fair, registration_type):
             contract = SignupContract.objects.get(
                 fair=fair,
                 type=registration_type,
-                contract_company_type=company.type,
+                # contract_company_type=company.type, # temporary fix Didrik 2023
                 current=True,
             )
         except SignupContract.DoesNotExist:
