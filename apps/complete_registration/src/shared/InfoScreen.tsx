@@ -10,7 +10,8 @@ export function InfoScreen({
     title,
     subText,
     link,
-    fullscreen
+    fullscreen,
+    severity
 }: {
     children?: React.ReactNode
     title: string
@@ -20,6 +21,7 @@ export function InfoScreen({
     } | null
     subText?: string
     fullscreen?: boolean
+    severity?: "error" | "warning" | "info"
 }) {
     return (
         <div
@@ -30,7 +32,14 @@ export function InfoScreen({
         >
             {fullscreen !== false && <div className="flex-1" />}
             <div className="mx-auto flex max-w-[30rem] flex-[2.5] flex-col items-center">
-                <h1 className="text-6xl font-bold text-emerald-400">{title}</h1>
+                <h1
+                    className={cx("text-6xl font-bold text-emerald-400", {
+                        "text-red-400": severity === "error",
+                        "text-yellow-400": severity === "warning"
+                    })}
+                >
+                    {title}
+                </h1>
                 {subText && (
                     <h3 className="mt-5 text-lg text-emerald-900">{subText}</h3>
                 )}

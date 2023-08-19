@@ -7,8 +7,8 @@ export const selectFormState = (state: RootState) => state.formMeta
 export const selectForms = cs(selectFormState, formMeta => formMeta.forms)
 export const selectForm = cs(
     selectForms,
-    (_: RootState, formKey: keyof typeof FORMS) => formKey,
-    (forms, formKey) => forms[formKey]
+    (_: RootState, formKey?: keyof typeof FORMS) => formKey,
+    (forms, formKey) => (formKey == null ? null : forms[formKey])
 )
 export const selectActiveForm = cs(selectFormState, formState =>
     formState.activeForm == null ? null : formState.forms[formState.activeForm]
@@ -112,7 +112,7 @@ export const selectUnfilledFields = cs(
         selectForm(state, formKey),
     selectedForm => {
         const unfilledFields: { page: FormPage; fields: Field[] }[] = []
-        for (const page of selectedForm.pages) {
+        for (const page of selectedForm?.pages ?? []) {
             const newUnfilledPage: (typeof unfilledFields)[number] = {
                 page,
                 fields: []

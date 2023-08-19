@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch } from "react-redux"
 import {
     setCompanyRegistrationStatus,
@@ -19,11 +19,13 @@ import { HOST, PACKAGE_KEY } from "./vars"
 
 export default function useLoadData() {
     const initialized = useRef(false)
+    const [loading, setLoading] = useState(true)
     const dispatch = useDispatch()
 
     useEffect(() => {
         if (initialized.current) return
         initialized.current = true
+        setLoading(false)
 
         fetch(`${HOST}/api/accounting/products`).then(async raw => {
             const data = await raw.json()
@@ -86,4 +88,8 @@ export default function useLoadData() {
         })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    return {
+        initialized: !loading
+    }
 }
