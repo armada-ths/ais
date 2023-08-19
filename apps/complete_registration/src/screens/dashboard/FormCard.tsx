@@ -23,7 +23,7 @@ export default function FormCard({
     function openForm() {
         dispatch(setActiveForm(form.key))
         navigate({
-            to: "/form"
+            to: `/form/${form.key}`
         })
     }
 
