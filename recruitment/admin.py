@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import *
+import django.forms as forms
 
 
 class CustomFieldInline(admin.TabularInline):
@@ -37,8 +38,12 @@ class SlotAdmin(admin.ModelAdmin):
     list_display = ["__str__", "location", "recruitment_period"]
     list_filter = ["location", "recruitment_period"]
 
+@admin.register(RecruitmentPeriod)
+class RecruitmentPeriodModelAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
+    }
 
-admin.site.register(RecruitmentPeriod)
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)
 admin.site.register(CustomField, CustomFieldAdmin)
 admin.site.register(CustomFieldAnswer)
