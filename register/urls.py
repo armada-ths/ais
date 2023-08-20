@@ -25,7 +25,7 @@ app_name = "anmalan"
 """
 
 urlpatterns = [
-    url(r"^$", views.choose_company, name="choose_company"),
+    url(r"^$|^form(?:/.*)?$", views.choose_company, name="choose_company"),
     url(r"^(?P<company_pk>[0-9]+)/registration$", views.form, name="registration"),
     url(r"^(?P<company_pk>[0-9]+)/events$", views.events, name="events"),
     url(r"^user", views.create_user, name="create_user"),
