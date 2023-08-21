@@ -728,14 +728,17 @@ def email(request, year):
                     missing_contact_information.append(signature.company)
                     continue
 
-                name = "%s %s" % (signature.company_contact.first_name, signature.company_contact.last_name)
+                name = "%s %s" % (
+                    signature.company_contact.first_name,
+                    signature.company_contact.last_name,
+                )
                 email = signature.company_contact.email_address
 
                 categories[1]["users"].append(
                     {
                         "i": len(categories[1]["users"]) + 1,
                         "name": name,
-                        "email_address": email
+                        "email_address": email,
                     }
                 )
 
@@ -756,11 +759,13 @@ def email(request, year):
                     )
 
     return render(
-        request, "companies/email.html", {
+        request,
+        "companies/email.html",
+        {
             "fair": fair,
             "categories": categories,
-            "missing_contact_information": missing_contact_information
-        }
+            "missing_contact_information": missing_contact_information,
+        },
     )
 
 
