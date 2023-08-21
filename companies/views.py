@@ -689,26 +689,33 @@ def email(request, year):
             "name": "Has signed CR",
             "help_text": "Contacts that have signed a complete registration contract.",
             "users": [],
+            "missing": [],
         },
         {
             "name": "Has signed IR but not CR",
             "help_text": "Contacts that have signed an initial registration contract.",
             "users": [],
+            "missing": [],
         },
         {
             "name": "Has not signed IR or CR",
             "help_text": "All contacts connected to any company which has not signed any contract for the current year.",
             "users": [],
+            "missing": [],
         },
     ]
 
-    missing_contact_information = []
     signed_companies = []
 
     for contract in complete_contracts:
         complete_signatures = SignupLog.objects.filter(contract=contract)
         for signature in complete_signatures:
             signed_companies.append(signature.company)
+
+            if signature.company_contact == None:
+                categories[0]["missing"].append(signature.company)
+                continue
+
             categories[0]["users"].append(
                 {
                     "i": len(categories[0]["users"]) + 1,
@@ -724,8 +731,9 @@ def email(request, year):
         for signature in initial_signatures:
             if signature.company not in signed_companies:
                 signed_companies.append(signature.company)
+
                 if signature.company_contact == None:
-                    missing_contact_information.append(signature.company)
+                    categories[1]["missing"].append(signature.company)
                     continue
 
                 name = "%s %s" % (
@@ -750,6 +758,11 @@ def email(request, year):
             for contact in contacts:
                 if contact.email_address not in added_email_addresses:
                     added_email_addresses.append(contact.email_address)
+
+                    if signature.company_contact == None:
+                        categories[2]["missing"].append(signature.company)
+                        continue
+
                     categories[2]["users"].append(
                         {
                             "i": len(categories[2]["users"]) + 1,
@@ -761,11 +774,7 @@ def email(request, year):
     return render(
         request,
         "companies/email.html",
-        {
-            "fair": fair,
-            "categories": categories,
-            "missing_contact_information": missing_contact_information,
-        },
+        {"fair": fair, "categories": categories},
     )
 
 
