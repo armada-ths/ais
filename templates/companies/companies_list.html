@@ -2,6 +2,8 @@
 
 {% load crispy_forms_tags %}
 
+{% load companies_filter %}
+
 {% block nav-companies %}<li role="presentation" class="active"><a href="{% url 'companies_list' fair.year %}">CRM</a></li>{% endblock %}
 
 {% block content %}
@@ -38,8 +40,7 @@
 	}
 </style>
 
-<form method="post" class="form_no_ul" enctype="multipart/form-data">
-	{% csrf_token %}
+<form action="" method="get" class="form_no_ul" enctype="multipart/form-data">
 
 	<div class="row">
 		<div class="col-md-6">
@@ -61,6 +62,8 @@
 		</div>
 	</div>
 
+	<label for="{{ form.q.id_for_label }}">{{ form.q.label }}</label>
+	{{ form.q }}
 	<input class="btn btn-primary" type="submit" value="Refine search" />
 </form>
 
@@ -70,9 +73,6 @@
 		<thead>
 			<tr>
 				<th>Name</th>
-				<th>Contact</th>
-				<th>Phone</th>
-				<th>Email</th>
 				<th>Contracts</th>
 				<th>Groups</th>
 				<th>Responsibilities</th>
@@ -96,32 +96,7 @@
 						{% else %}<span class="label label-default">{% endif %}
 						{{ company.status.name }}</span>
 					{% endif %}
-				</td>
-
-				<td>
-					{% for contact in company.contacts %}
-						{{ contact.name }} <BR>
-					{% endfor %}
-				</td>
-
-				<td>
-					{% for contact in company.contacts %}
-						{% for number in contact.numbers %}
-							{% if number %} {{ number }} {% endif %} 
-						{% endfor %}
-						<BR>
-					{% endfor %}
-				</td>
-
-
-				<td>
-					{% for contact in company.contacts %}
-						{% for email in contact.emails %}
-							{% if email %}{{ email }} {% endif %} 
-						{% endfor %}
-						<BR>
-					{% endfor %}
-				</td>
+				</td>	
 
 				<td>
 					<ul class="list-unstyled">
@@ -157,26 +132,25 @@
 	</table>
 </div>
 
+<div class="pagination">
+    <span class="step-links">
+        {% if companies.has_previous %}
+            <a href="?{% param_replace page=1 %}">&laquo; first</a>
+            <a href="?{% param_replace page=companies.previous_page_number %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ companies.page }} of {{ companies.num_pages }}.
+        </span>
+
+        {% if companies.has_next %}
+            <a href="?{% param_replace page=companies.next_page_number %}">next</a>
+            <a href="?{% param_replace page=companies.num_pages %}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
 <a href="{% url 'send_order_summaries' fair.year %}?id={{ companies_ids | join:"&id=" }}" class="btn btn-primary pull-right"onclick="return confirm('Press OK to send out e-mail messages with confirmations to all companies in list above.')">Send order confirmations</a>
 
 
-{% endblock %}
-
-{% block scripts %}
-<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
-<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
-<script>
-	$(function()
-	{
-		$('#company_table').DataTable({ 'paging': false,
-										'columnDefs': [
-										{
-											"targets": [1, 2, 3],
-											"visible": false
-										}
-										] 
-									});
-	})
-</script>
 {% endblock %}

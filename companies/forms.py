@@ -497,6 +497,10 @@ class CompanySearchForm(forms.Form):
         label="Show only companies for which any of the following people are responsible",
         required=False,
     )
+    q = forms.CharField(
+        label="Search:",
+        required=False,
+    )
 
 
 class ContractExportForm(forms.Form):
