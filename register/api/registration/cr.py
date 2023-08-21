@@ -30,7 +30,10 @@ def put_cr_registration(request, registration, purchasing_company):
 
 
 def get_registration(company, fair, contact, exhibitor):
-    orders = Order.objects.filter(purchasing_company=company)
+    orders = Order.objects.filter(
+        purchasing_company=company,
+        product__revenue__fair=fair
+    )
 
     return Registration(
         company=company,
@@ -80,7 +83,9 @@ def submit_cr(request, company, fair, contact, exhibitor):
 
     # Add package products
     package_products = Order.objects.filter(
-        purchasing_company=company, product__category__name="Package"
+        purchasing_company=company,
+        product__revenue__fair=fair,
+        product__category__name="Package"
     )
     for package in package_products:
         for child in package.product.child_products.all():
