@@ -66,7 +66,10 @@ class Base64FieldMixin:
             file_name = self.get_file_name(decoded_file)
 
             # Get the file name extension:
-            file_extension = self.get_file_extension(file_name, decoded_file)
+            try:
+                file_extension = self.get_file_extension(file_name, decoded_file)
+            except ValidationError:
+                return empty
 
             if file_extension not in self.ALLOWED_TYPES:
                 raise ValidationError(self.INVALID_TYPE_MESSAGE)
