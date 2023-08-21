@@ -27,6 +27,15 @@
 
 <p class = 'text-danger'>Make sure to use blind carbon copies (BCC) when sending e-mail messages to the contacts below.</p>
 
+{% if missing_contact_information|length > 0 %}
+	<h2 style="color:red;">Warning: Missing contact information for:</h2>
+	<ul>
+		{% for company in missing_contact_information %}
+			<li><a href="{% url 'companies_view' fair.year company.id %}">{{ company.name }}</a></li>
+		{% endfor %}
+	</ul>
+{% endif %}
+
 {% for category in categories %}
 	<h2>{% if category.name %}{{ category.name }}{% else %}<span style="font-style: italic;">no status</span>{% endif %}</h2>
 	<p style="font-style: italic;">{% if category.help_text %}{{ category.help_text }}{% endif %}</p>

@@ -702,6 +702,7 @@ def email(request, year):
         },
     ]
 
+    missing_contact_information = []
     signed_companies = []
 
     for contract in complete_contracts:
@@ -723,13 +724,21 @@ def email(request, year):
         for signature in initial_signatures:
             if signature.company not in signed_companies:
                 signed_companies.append(signature.company)
+                if signature.company_contact == None:
+                    missing_contact_information.append(signature.company)
+                    continue
+
+                name = "%s %s" % (
+                    signature.company_contact.first_name,
+                    signature.company_contact.last_name,
+                )
+                email = signature.company_contact.email_address
+
                 categories[1]["users"].append(
                     {
                         "i": len(categories[1]["users"]) + 1,
-                        "name": signature.company_contact.first_name
-                        + " "
-                        + signature.company_contact.last_name,
-                        "email_address": signature.company_contact.email_address,
+                        "name": name,
+                        "email_address": email,
                     }
                 )
 
@@ -750,7 +759,13 @@ def email(request, year):
                     )
 
     return render(
-        request, "companies/email.html", {"fair": fair, "categories": categories}
+        request,
+        "companies/email.html",
+        {
+            "fair": fair,
+            "categories": categories,
+            "missing_contact_information": missing_contact_information,
+        },
     )
 
 
