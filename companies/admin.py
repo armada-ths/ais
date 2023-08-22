@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import *
 
+from improvedAdmin import ModelAdminImproved
 
 class CompanyAddressInline(admin.StackedInline):
     model = CompanyAddress
@@ -12,7 +13,7 @@ class CompanyLogInline(admin.StackedInline):
 
 
 @admin.register(Group)
-class GroupAdmin(admin.ModelAdmin):
+class GroupAdmin(ModelAdminImproved):
     ordering = (
         "fair__year",
         "parent__name",
@@ -26,7 +27,7 @@ class GroupAdmin(admin.ModelAdmin):
 
 
 @admin.register(CompanyContact)
-class CompanyContactAdmin(admin.ModelAdmin):
+class CompanyContactAdmin(ModelAdminImproved):
     ordering = (
         "first_name",
         "last_name",
@@ -39,7 +40,7 @@ class CompanyContactAdmin(admin.ModelAdmin):
 
 
 @admin.register(Company)
-class CompanyAdmin(admin.ModelAdmin):
+class CompanyAdmin(ModelAdminImproved):
     search_fields = ("name",)
     ordering = ("name",)
     inlines = [CompanyAddressInline, CompanyLogInline]
@@ -50,12 +51,12 @@ class CompanyAdmin(admin.ModelAdmin):
 
 
 @admin.register(CompanyType)
-class CompanyTypeAdmin(admin.ModelAdmin):
+class CompanyTypeAdmin(ModelAdminImproved):
     ordering = ("type",)
 
 
 @admin.register(CompanyCustomer)
-class CompanyCustomerAdmin(admin.ModelAdmin):
+class CompanyCustomerAdmin(ModelAdminImproved):
     ordering = (
         "fair__year",
         "company__name",

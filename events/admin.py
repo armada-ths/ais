@@ -8,16 +8,29 @@ from .models import (
     SignupQuestion,
     ParticipantCheckIn,
 )
-
+from improvedAdmin import ModelAdminImproved
 
 @admin.register(Participant)
-class ParticipantAdmin(admin.ModelAdmin):
+class ParticipantAdmin(ModelAdminImproved):
     list_display = ["__str__", "event"]
     list_filter = ["event__fair", "event"]
 
+@admin.register(Event)
+class EventAdmin(ModelAdminImproved):
+    pass
 
-admin.site.register(Event)
-admin.site.register(Team)
-admin.site.register(TeamMember)
-admin.site.register(SignupQuestion)
-admin.site.register(ParticipantCheckIn)
+@admin.register(Team)
+class TeamAdmin(ModelAdminImproved):
+    pass
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(ModelAdminImproved):
+    pass
+
+@admin.register(SignupQuestion)
+class SignupQuestionAdmin(ModelAdminImproved):
+    pass
+
+@admin.register(ParticipantCheckIn)
+class ParticipantCheckInAdmin(ModelAdminImproved):
+    pass

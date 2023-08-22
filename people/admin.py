@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from django.contrib import admin
 from .models import Language, Programme, Profile, DietaryRestriction
+from improvedAdmin import ModelAdminImproved
 
 """
 class ProfileInline(admin.StackedInline):
@@ -25,13 +26,21 @@ admin.site.register(User, CustomUserAdmin)
 
 
 @admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(ModelAdminImproved):
     search_fields = (
         "user__first_name",
         "user__last_name",
     )
 
 
-admin.site.register(Language)
-admin.site.register(Programme)
-admin.site.register(DietaryRestriction)
+@admin.register(Language)
+class LanguageAdmin(ModelAdminImproved):
+    pass
+
+@admin.register(Programme)
+class ProgrammeAdmin(ModelAdminImproved):
+    pass
+
+@admin.register(DietaryRestriction)
+class DietaryRestrictionAdmin(ModelAdminImproved):
+	pass

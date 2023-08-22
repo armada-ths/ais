@@ -3,57 +3,67 @@ from django.http import HttpResponse
 
 from orders.models import Order, Product
 from .models import *
-
+from improvedAdmin import ModelAdminImproved
 
 @admin.register(Exhibitor)
-class ExhibitorAdmin(admin.ModelAdmin):
+class ExhibitorAdmin(ModelAdminImproved):
     search_fields = ["company__name"]
     ordering = ["-fair__year", "company"]
     list_filter = ["fair"]
 
 
 @admin.register(CatalogueIndustry)
-class CatalogueIndustryAdmin(admin.ModelAdmin):
+class CatalogueIndustryAdmin(ModelAdminImproved):
     list_display = ("industry", "category", "include_in_form")
     list_filter = ["include_in_form"]
 
 
 @admin.register(CatalogueCompetence)
-class CatalogueCompetenceAdmin(admin.ModelAdmin):
+class CatalogueCompetenceAdmin(ModelAdminImproved):
     list_display = ("competence", "category", "include_in_form")
     list_filter = ["include_in_form"]
 
 
 @admin.register(CatalogueValue)
-class CatalogueValueAdmin(admin.ModelAdmin):
+class CatalogueValueAdmin(ModelAdminImproved):
     list_display = ("value", "include_in_form")
     list_filter = ["include_in_form"]
 
 
 @admin.register(CatalogueEmployment)
-class CatalogueEmploymentAdmin(admin.ModelAdmin):
+class CatalogueEmploymentAdmin(ModelAdminImproved):
     list_display = ("employment", "include_in_form")
     list_filter = ["include_in_form"]
 
 
 @admin.register(CatalogueLocation)
-class CatalogueLocationAdmin(admin.ModelAdmin):
+class CatalogueLocationAdmin(ModelAdminImproved):
     list_display = ("location", "include_in_form")
     list_filter = ["include_in_form"]
 
 
 @admin.register(CatalogueBenefit)
-class CatalogueBenefitAdmin(admin.ModelAdmin):
+class CatalogueBenefitAdmin(ModelAdminImproved):
     list_display = ("benefit", "include_in_form")
     list_filter = ["include_in_form"]
 
 
 @admin.register(CatalogueCategory)
-class CatalogueCategoryAdmin(admin.ModelAdmin):
+class CatalogueCategoryAdmin(ModelAdminImproved):
     list_display = ["category"]
 
+@admin.register(Location)
+class LocationAdmin(ModelAdminImproved):
+    pass
 
-admin.site.register(Location)
-admin.site.register(Booth)
-admin.site.register(ExhibitorInBooth)
-admin.site.register(FairLocationSpecial)
+@admin.register(Booth)
+class BoothAdmin(ModelAdminImproved):
+    pass
+
+@admin.register(ExhibitorInBooth)
+class ExhibitorInBoothAdmin(ModelAdminImproved):
+    pass
+
+@admin.register(FairLocationSpecial)
+class FairLocationSpecialAdmin(ModelAdminImproved):
+    pass
