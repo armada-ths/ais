@@ -10,7 +10,7 @@ const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
         "complete_registration",
         "before_complete_registration"
     ],
-    transport: ["complete_registration_signed"],
+    transport: ["complete_registration", "complete_registration_signed"],
     banquet_tickets: ["complete_registration_signed"]
 }
 
