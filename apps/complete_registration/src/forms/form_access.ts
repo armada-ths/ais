@@ -1,7 +1,10 @@
 import { FORMS } from "."
 import { RegistrationStatus } from "../store/company/company_slice"
 
-const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
+export const FORM_OPEN_DURING: Record<
+    keyof typeof FORMS,
+    RegistrationStatus[]
+> = {
     primary: ["complete_registration"],
     receipt: ["complete_registration_signed"],
     lunch_tickets: ["complete_registration_signed"],
@@ -14,7 +17,7 @@ const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
     banquet_tickets: ["complete_registration_signed"]
 }
 
-const FORM_HIDDEN_DURING: Partial<
+export const FORM_HIDDEN_DURING: Partial<
     Record<keyof typeof FORMS, RegistrationStatus[]>
 > = {
     primary: ["complete_registration_signed"],
