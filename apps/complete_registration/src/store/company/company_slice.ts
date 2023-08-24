@@ -18,10 +18,10 @@ export type CompanyState = {
         mobile_phone_number: string | null
         work_phone_number: string | null
         preferred_language: string | null
-    },
+    }
     contract?: {
-        name: string,
-        contract: string,
+        name: string
+        contract: string
     }
 }
 
@@ -43,14 +43,21 @@ export const companySlice = createSlice({
         setUser: (state, action: PayloadAction<CompanyState["user"]>) => {
             state.user = action.payload
         },
-        setContract: (state, action: PayloadAction<CompanyState["contract"]>) => {
+        setContract: (
+            state,
+            action: PayloadAction<CompanyState["contract"]>
+        ) => {
             state.contract = action.payload
         }
     }
 })
 
 // Action creators are generated for each case reducer function
-export const { setCompanyRegistrationStatus, setUser, setCompanyName, setContract } =
-    companySlice.actions
+export const {
+    setCompanyRegistrationStatus,
+    setUser,
+    setCompanyName,
+    setContract
+} = companySlice.actions
 
 export default companySlice.reducer

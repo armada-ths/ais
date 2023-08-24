@@ -71,7 +71,12 @@ declare module "@tanstack/react-router" {
 
 export function IndexMainLogicWrapper() {
     const { initialized } = useLoadData()
-    if (!initialized) return null
+    if (!initialized)
+        return (
+            <div className="flex h-[100vh] w-[100vw] items-center justify-center">
+                <p className="text-slate-600">Loading...</p>
+            </div>
+        )
     return <RouterProvider router={router} />
 }
 

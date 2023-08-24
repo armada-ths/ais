@@ -25,31 +25,35 @@ export default function useLoadData() {
     useEffect(() => {
         if (initialized.current) return
         initialized.current = true
-        setLoading(false)
 
         const load = async () => {
-            const data = await fetch(`${HOST}/api/accounting/products`).then(raw => raw.json())
+            const data = await fetch(`${HOST}/api/accounting/products`).then(
+                raw => raw.json()
+            )
             console.log("PRODUCTS", JSON.stringify(data))
             dispatch(loadProducts(data))
 
             fetch(`${HOST}/api/registration/`, {}).then(async raw => {
                 const data = await raw.json()
                 console.log("DATA", JSON.stringify(data))
-    
+
                 if (data.error != null) {
                     dispatch(setErrors(data.error))
                 }
-    
+
                 const awaitingMappings = reverseMap(data)
-    
+
                 // Set status for company
                 dispatch(
-                    setCompanyRegistrationStatus(data.type as RegistrationStatus)
+                    setCompanyRegistrationStatus(
+                        data.type as RegistrationStatus
+                    )
                 )
-                if (data.company?.name) dispatch(setCompanyName(data.company.name))
+                if (data.company?.name)
+                    dispatch(setCompanyName(data.company.name))
                 if (data.contact) dispatch(setUser(data.contact))
                 if (data.contract) dispatch(setContract(data.contract))
-    
+
                 for (const current of awaitingMappings) {
                     dispatch(
                         setField({
@@ -58,7 +62,7 @@ export default function useLoadData() {
                         })
                     )
                 }
-    
+
                 // Apply orders
                 const orders = data.orders
                 for (const productMeta of orders ?? []) {
@@ -67,14 +71,15 @@ export default function useLoadData() {
                             id: productMeta.product.id,
                             quantity: productMeta.quantity,
                             isPackage:
-                                productMeta.product.category?.name === PACKAGE_KEY
+                                productMeta.product.category?.name ===
+                                PACKAGE_KEY
                         })
                     )
                 }
-    
+
                 const productMetas = data.orders
                 const customPrices = [] as Omit<SelectedProduct, "isPackage">[]
-    
+
                 for (const productMeta of productMetas ?? []) {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     customPrices.push({
@@ -85,8 +90,9 @@ export default function useLoadData() {
                     })
                 }
                 dispatch(loadProductMeta(customPrices))
+                setLoading(false)
             })
-        };
+        }
 
         load()
         // eslint-disable-next-line react-hooks/exhaustive-deps
