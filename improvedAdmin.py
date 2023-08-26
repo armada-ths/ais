@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.admin.sites import AdminSite
 from django.db import models
 import django.forms as forms
-
+from recruitment.models import ExtraField
+EXCLUDED_FIELDS = [ExtraField]
 #Own subclass of ModelAdmin to override appearances of forms on admin panel.
 class ModelAdminImproved(admin.ModelAdmin):
 
@@ -15,7 +16,8 @@ class ModelAdminImproved(admin.ModelAdmin):
         autocomplete_fields = []
         for field in self.model._meta.fields:
             if isinstance(field, (models.ForeignKey, models.ManyToManyField)):
-                autocomplete_fields.append(field.name)
+                if field.related_model not in EXCLUDED_FIELDS:
+                    autocomplete_fields.append(field.name)
         return autocomplete_fields
     
     formfield_overrides = {
