@@ -72,11 +72,16 @@ export function FormSidebarCartSummary() {
                         </div>
                     )}
                     <div className="flex flex-col gap-y-2">
-                        <h2 className="mb-2 text-center text-xl">
-                            Selected products
-                        </h2>
+                        {selectedProducts.length > 0 && (
+                            <h2 className="mb-2 text-center text-xl">
+                                Selected products
+                            </h2>
+                        )}
                         {selectedProducts
-                            .filter(current => current.price >= 0)
+                            .filter(
+                                current =>
+                                    current.price >= 0 && current.category
+                            )
                             .map(current => (
                                 <ProductCard
                                     key={current.id}
