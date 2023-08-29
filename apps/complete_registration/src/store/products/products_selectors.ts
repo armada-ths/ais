@@ -14,7 +14,18 @@ export const selectProduct = cs(
         products.records.find(current => current.id === productId)
 )
 export const selectProductPackages = cs(selectProducts, products =>
-    products.records.filter(current => current.category?.name === "Package")
+    products.records.filter(
+        current =>
+            current.category?.name.toLowerCase() === "package" ||
+            current.category?.name.toLowerCase() === "non visible package"
+    )
+)
+export const selectVisibleProductPackages = cs(
+    selectProductPackages,
+    packages =>
+        packages.filter(
+            current => current.category?.name.toLowerCase() === "package"
+        )
 )
 export const selectSelectedProducts = cs(
     selectProducts,
