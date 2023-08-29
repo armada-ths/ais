@@ -3,7 +3,7 @@ import { PACKAGE_KEY } from "../../shared/vars"
 
 export interface Category {
     id: number
-    name: "Package" | "Additional booth area"
+    name: "Package" | "Additional booth area" | "Non Visible Package"
     description: string
     allow_multiple_purchases: boolean
 }
@@ -68,8 +68,9 @@ export const productSlice = createSlice({
     initialState,
     reducers: {
         loadProducts: (state, action: PayloadAction<Product[]>) => {
+            action.payload.forEach(console.log)
             state.records = action.payload.filter(
-                product => product.display_in_product_list
+                product => product.display_in_product_list || true
             )
         },
         loadProductMeta: (

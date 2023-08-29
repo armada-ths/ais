@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux"
 import { FormField } from "../../screens/form/FormInput"
 import { FormWrapper } from "../FormWrapper"
-import { selectProductPackages } from "../../store/products/products_selectors"
+import { selectVisibleProductPackages } from "../../store/products/products_selectors"
 
 export function PackageSelectFormPage() {
-    const packages = useSelector(selectProductPackages)
+    const packages = useSelector(selectVisibleProductPackages)
 
     return (
         <FormWrapper className="max-w-none">
