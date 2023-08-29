@@ -33,6 +33,8 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 COPY --from=frontend /usr/src/app/webpack-stats.js ./
 COPY --from=frontend /usr/src/app/ais_static/bundles ./ais_static/bundles
 
+RUN python manage.py collectstatic --noinput
+
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
 EXPOSE 3000
