@@ -24,3 +24,4 @@ env/
 node_modules/
 webpack-stats.js
 ais_static/bundles
+static/
