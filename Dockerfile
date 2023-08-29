@@ -1,6 +1,18 @@
 FROM python:3.10.1-alpine as base
 WORKDIR /usr/src/app
 
+FROM base as frontend-dashboard
+RUN apk add npm
+RUN npm add pnpm -g
+
+COPY ./apps/complete_registration/package.json ./apps/complete_registration/pnpm-lock.yaml ./apps/complete_registration/
+RUN cd ./apps/complete_registration && pnpm install
+
+COPY ./apps/complete_registration ./apps/complete_registration
+RUN cd ./apps/complete_registration && pnpm build
+
+COPY ./apps/complete_registration/output.css ./apps/complete_registration/build/index.css
+
 FROM base as frontend
 RUN apk add npm
 
@@ -32,8 +44,9 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 
 COPY --from=frontend /usr/src/app/webpack-stats.js ./
 COPY --from=frontend /usr/src/app/ais_static/bundles ./ais_static/bundles
+COPY --from=frontend-dashboard /usr/src/app/apps/complete_registration/build ./ais_static/apps/complete_registration
 
-RUN python manage.py collectstatic --noinput
+RUN SECRET_KEY=123 python manage.py collectstatic --noinput
 
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 
