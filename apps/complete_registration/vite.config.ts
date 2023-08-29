@@ -12,7 +12,6 @@ export default defineConfig({
 				chunkFileNames: `assets/[name].js`,
 				assetFileNames: `assets/[name].[ext]`
 			}
-		},
-		outDir: "../../static/apps/complete_registration"
+		}
 	}
 })

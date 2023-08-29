@@ -70,7 +70,7 @@ export const productSlice = createSlice({
         loadProducts: (state, action: PayloadAction<Product[]>) => {
             action.payload.forEach(console.log)
             state.records = action.payload.filter(
-                product => product.display_in_product_list || true
+                product => product.display_in_product_list
             )
         },
         loadProductMeta: (
