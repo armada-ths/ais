@@ -22,6 +22,10 @@ env/
 
 # JS build artifacts
 node_modules/
+apps/complete_registration/node_modules
+apps/complete_registration/dist
+apps/complete_registration/output.css
 webpack-stats.js
 ais_static/bundles
-static/
+ais_static/apps
+/static
