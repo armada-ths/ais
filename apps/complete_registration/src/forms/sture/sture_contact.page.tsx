@@ -1,7 +1,6 @@
 import React from "react"
 import { FormWrapper } from "../FormWrapper"
 import { CompleteButton } from "../../shared/CompleteButton"
-import StureLogo from "../../assets/logos/sture.jpg"
 
 export function LinkText({ children }: { children: React.ReactNode }) {
     return <p className="font-semibold text-blue-600">{children}</p>
@@ -13,7 +12,7 @@ export function StureContactPage() {
             <img
                 draggable={false}
                 className="my-5 h-72 select-none object-contain"
-                src={StureLogo}
+                src={"/static/images/sture_skolden_cmyk_75mm_bred.png"}
             />
             <p>
                 Armada are pleased to once again present Sture™ as our fair
