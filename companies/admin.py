@@ -4,6 +4,7 @@ from .models import *
 
 from improvedAdmin import ModelAdminImproved
 
+
 class CompanyAddressInline(admin.StackedInline):
     model = CompanyAddress
 

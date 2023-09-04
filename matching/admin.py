@@ -160,9 +160,12 @@ class ResponseAdmin(ModelAdminImproved):
 admin.site.register(Survey, SurveyAdmin)
 admin.site.register(Response, ResponseAdmin)
 
+
 @admin.register(Answer)
 class AnswerAdmin(ModelAdminImproved):
     pass
+
+
 # admin.site.register(Question, QuestionInline)
 # admin.site.register(TextAns)
 # admin.site.register(ChoiceAns)

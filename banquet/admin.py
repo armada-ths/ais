@@ -13,17 +13,21 @@ from .models import (
 
 from improvedAdmin import ModelAdminImproved
 
+
 @admin.register(Participant)
 class ParticipantAdmin(ModelAdminImproved):
     pass
+
 
 @admin.register(Banquet)
 class BanquetAdmin(ModelAdminImproved):
     pass
 
+
 @admin.register(InvitationGroup)
 class InvitationGroupAdmin(ModelAdminImproved):
     pass
+
 
 @admin.register(Invitation)
 class InvitationAdmin(ModelAdminImproved):

@@ -5,6 +5,7 @@ from orders.models import Order, Product
 from .models import *
 from improvedAdmin import ModelAdminImproved
 
+
 @admin.register(Exhibitor)
 class ExhibitorAdmin(ModelAdminImproved):
     search_fields = ["company__name"]
@@ -52,17 +53,21 @@ class CatalogueBenefitAdmin(ModelAdminImproved):
 class CatalogueCategoryAdmin(ModelAdminImproved):
     list_display = ["category"]
 
+
 @admin.register(Location)
 class LocationAdmin(ModelAdminImproved):
     pass
+
 
 @admin.register(Booth)
 class BoothAdmin(ModelAdminImproved):
     pass
 
+
 @admin.register(ExhibitorInBooth)
 class ExhibitorInBoothAdmin(ModelAdminImproved):
     pass
+
 
 @admin.register(FairLocationSpecial)
 class FairLocationSpecialAdmin(ModelAdminImproved):

@@ -11,28 +11,35 @@ from .models import (
 
 from improvedAdmin import ModelAdminImproved
 
+
 class FairDayAdmin(admin.TabularInline):
     model = FairDay
+
 
 @admin.register(Fair)
 class FairAdmin(ModelAdminImproved):
     inlines = [FairDayAdmin]
 
+
 @admin.register(Partner)
 class PartnerAdmin(ModelAdminImproved):
     pass
+
 
 @admin.register(Tag)
 class TagAdmin(ModelAdminImproved):
     pass
 
+
 @admin.register(OrganizationGroup)
 class OrganisationGroupAdmin(ModelAdminImproved):
     pass
 
+
 @admin.register(LunchTicket)
 class LunchTicketAdmin(ModelAdminImproved):
     pass
+
 
 @admin.register(LunchTicketTime)
 class LunchTicketTimeAdmin(ModelAdminImproved):

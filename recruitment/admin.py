@@ -39,9 +39,11 @@ class SlotAdmin(ModelAdminImproved):
     list_display = ["__str__", "location", "recruitment_period"]
     list_filter = ["location", "recruitment_period"]
 
+
 @admin.register(RecruitmentPeriod)
 class RecruitmentPeriodModelAdmin(ModelAdminImproved):
     pass
+
 
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)
 admin.site.register(CustomField, CustomFieldAdmin)

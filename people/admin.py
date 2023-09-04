@@ -37,10 +37,12 @@ class ProfileAdmin(ModelAdminImproved):
 class LanguageAdmin(ModelAdminImproved):
     pass
 
+
 @admin.register(Programme)
 class ProgrammeAdmin(ModelAdminImproved):
     pass
 
+
 @admin.register(DietaryRestriction)
 class DietaryRestrictionAdmin(ModelAdminImproved):
-	pass
+    pass

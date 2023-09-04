@@ -29,9 +29,11 @@ class ProductAdmin(ModelAdminImproved):
 # admin.site.register(Product)
 # admin.site.register(Order)
 
+
 @admin.register(ProductType)
 class ProductTypeAdmin(ModelAdminImproved):
     pass
+
 
 @admin.register(StandArea)
 class StandAreaAdmin(ModelAdminImproved):
