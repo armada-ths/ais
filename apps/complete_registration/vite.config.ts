@@ -13,6 +13,6 @@ export default defineConfig({
 				assetFileNames: `assets/[name].[ext]`
 			}
 		},
-		outDir: "../../static/apps/complete_registration"
+		outDir: "../../ais_static/apps/complete_registration"
 	}
 })

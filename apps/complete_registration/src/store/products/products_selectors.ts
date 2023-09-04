@@ -3,7 +3,8 @@ import { RootState } from "../store"
 import {
     PACKAGE_KEY,
     EVENTS_REGISTRATION_SECTION_KEY,
-    EXTRAS_REGISTRATION_SECTION_KEY
+    EXTRAS_REGISTRATION_SECTION_KEY,
+    PACKAGE_NOT_VISIBLE_KEY
 } from "../../shared/vars"
 
 export const selectProducts = (state: RootState) => state.products
@@ -14,7 +15,18 @@ export const selectProduct = cs(
         products.records.find(current => current.id === productId)
 )
 export const selectProductPackages = cs(selectProducts, products =>
-    products.records.filter(current => current.category?.name === "Package")
+    products.records.filter(
+        current =>
+            current.category?.name.toLowerCase() === "package" ||
+            current.category?.name.toLowerCase() === "non visible package"
+    )
+)
+export const selectVisibleProductPackages = cs(
+    selectProductPackages,
+    packages =>
+        packages.filter(
+            current => current.category?.name.toLowerCase() === "package"
+        )
 )
 export const selectSelectedProducts = cs(
     selectProducts,
@@ -26,7 +38,10 @@ export const selectProductsSelectedWithoutPackages = cs(
         products.records.filter(
             current =>
                 selected.map(current => current.id).includes(current.id) &&
-                current.category?.name !== PACKAGE_KEY
+                current.category?.name.toLowerCase() !==
+                    PACKAGE_KEY.toLowerCase() &&
+                current.category?.name.toLowerCase() !==
+                    PACKAGE_NOT_VISIBLE_KEY.toLowerCase()
         )
 )
 export const selectProductsSelectedWithoutPackagesWithAdjustedPrice = cs(

@@ -2,13 +2,15 @@ import { createSelector as cs } from "reselect"
 import { RootState } from "../store"
 import { FORMS, getFieldFromForm } from "../../forms"
 import { Field, FormPage } from "../../forms/form_types"
+import { FORM_HIDDEN_DURING, FORM_OPEN_DURING } from "../../forms/form_access"
+import { selectCompanyStatus } from "../company/company_selectors"
 
 export const selectFormState = (state: RootState) => state.formMeta
 export const selectForms = cs(selectFormState, formMeta => formMeta.forms)
 export const selectForm = cs(
     selectForms,
-    (_: RootState, formKey: keyof typeof FORMS) => formKey,
-    (forms, formKey) => forms[formKey]
+    (_: RootState, formKey?: keyof typeof FORMS) => formKey,
+    (forms, formKey) => (formKey == null ? null : forms[formKey])
 )
 export const selectActiveForm = cs(selectFormState, formState =>
     formState.activeForm == null ? null : formState.forms[formState.activeForm]
@@ -75,16 +77,39 @@ export const selectFormProgress = cs(
 )
 
 export const selectCompanyProgress = cs(
-    [(state: RootState) => state, selectForms],
-    (state, forms) => {
+    [(state: RootState) => state, selectForms, selectCompanyStatus],
+    (state, forms, companyStatus) => {
         let averageProgress = 0
         let formCount = 0
-        for (const form of Object.values(forms)) {
-            if (form.progression === "none" || form.progression === "silent")
+
+        // Filter forms that are not relevant
+        const listOfSkippedForms = []
+        for (const current of Object.values(forms)) {
+            if (companyStatus == null) {
+                listOfSkippedForms.push(current.key)
                 continue
+            }
+            if (
+                !FORM_OPEN_DURING[current.key].includes(companyStatus) ||
+                FORM_HIDDEN_DURING[current.key]?.includes(companyStatus)
+            ) {
+                listOfSkippedForms.push(current.key)
+                continue
+            }
+        }
+
+        for (const form of Object.values(forms)) {
+            if (
+                form.progression === "none" ||
+                form.progression === "silent" ||
+                listOfSkippedForms.includes(form.key)
+            ) {
+                continue
+            }
             averageProgress += selectFormProgress(state, form.key)
             formCount++
         }
+
         return averageProgress / (formCount || 1)
     }
 )
@@ -112,7 +137,7 @@ export const selectUnfilledFields = cs(
         selectForm(state, formKey),
     selectedForm => {
         const unfilledFields: { page: FormPage; fields: Field[] }[] = []
-        for (const page of selectedForm.pages) {
+        for (const page of selectedForm?.pages ?? []) {
             const newUnfilledPage: (typeof unfilledFields)[number] = {
                 page,
                 fields: []

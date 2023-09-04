@@ -31,7 +31,11 @@ const dashboard = new Route({
 })
 const form = new Route({
     path: "/form",
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => rootRoute
+})
+const formPage = new Route({
+    path: "$formKey",
+    getParentRoute: () => form,
     component: () => <FormScreen />
 })
 const thankYou = new Route({
@@ -51,7 +55,7 @@ const notFoundRoute = new Route({
 const routeTree = rootRoute.addChildren([
     dashboard,
     thankYou,
-    form,
+    form.addChildren([formPage]),
     notFoundRoute
 ])
 
@@ -66,7 +70,13 @@ declare module "@tanstack/react-router" {
 }
 
 export function IndexMainLogicWrapper() {
-    useLoadData()
+    const { initialized } = useLoadData()
+    if (!initialized)
+        return (
+            <div className="flex h-[100vh] w-[100vw] items-center justify-center">
+                <p className="text-slate-600">Loading...</p>
+            </div>
+        )
     return <RouterProvider router={router} />
 }
 

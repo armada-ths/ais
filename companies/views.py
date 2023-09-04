@@ -1,6 +1,8 @@
 from slackclient import SlackClient
 import csv
 
+import re
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
@@ -8,7 +10,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.conf import settings
-
+from django.db.models import CharField, Q, Case, When, Value, IntegerField
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
 from email.mime.text import MIMEText
@@ -255,15 +257,14 @@ def statistics(request, year):
 
 @permission_required("companies.base")
 def companies_list(request, year):
-    form = CompanySearchForm(request.POST or None)
-    exhibitor_year = year
+    form = CompanySearchForm(request.GET or None)
     num_fairs = Fair.objects.count()
     year_list = range(int(year), int(year) - int(num_fairs), -1)
     form.fields["exhibitors_year"].choices = [
         (str(year), str(year)) for year in year_list
     ]
     form.fields["exhibitors_year"].initial = str(year)
-    exhibitor_year = int(form["exhibitors_year"].value())
+    exhibitor_year = int(form["exhibitors_year"].value() or year)
     exhibitor_fair = get_object_or_404(Fair, year=exhibitor_year)
     fair = get_object_or_404(Fair, year=year)
 
@@ -274,9 +275,7 @@ def companies_list(request, year):
     form.fields["contracts_positive"].queryset = contracts
     form.fields["contracts_negative"].queryset = contracts
 
-    has_filtering = request.POST and form.is_valid()
-
-    companies = Company.objects.prefetch_related("groups", "companycontact_set")
+    has_filtering = request.GET and form.is_valid()
 
     responsibles_list = list(
         CompanyCustomerResponsible.objects.select_related("company")
@@ -310,12 +309,11 @@ def companies_list(request, year):
     signatures_list = []
     signatures = {}
 
-    for contract in SignupContract.objects.filter(fair=fair):
-        signatures_list = signatures_list + list(
-            SignupLog.objects.select_related("company")
-            .select_related("contract")
-            .filter(contract=contract)
-        )
+    signatures_list = list(
+        SignupLog.objects.select_related("company")
+        .select_related("contract")
+        .filter(contract__in=SignupContract.objects.filter(fair=fair))
+    )
 
     for signature in signatures_list:
         if signature.company not in signatures:
@@ -324,100 +322,155 @@ def companies_list(request, year):
         else:
             signatures[signature.company].append(signature)
 
-    exhibitors = [
-        x.company
-        for x in Exhibitor.objects.select_related("company").filter(fair=exhibitor_fair)
-    ]
+    # Pagination variables
+    COMPANIES_PER_PAGE = 50
+    page_number = int(request.GET.get("page") or 1)
+
+    # SQL level filtering
+    total_companies = Company.objects.prefetch_related("groups", "companycontact_set")
+    filtered_companies = total_companies
+    exhibitors = Exhibitor.objects.select_related("company").filter(fair=exhibitor_fair)
+    if has_filtering:
+        if form.cleaned_data["exhibitors"] == "YES":
+            filtered_companies = filtered_companies.filter(pk__in=exhibitors)
+        elif form.cleaned_data["exhibitors"] == "NO":
+            filtered_companies = filtered_companies.exclude(pk__in=exhibitors)
+        if len(form.cleaned_data["contracts_positive"]) != 0:
+            contract_signing_companies = (
+                SignupLog.objects.select_related("company")
+                .select_related("contract")
+                .filter(contract__in=form.cleaned_data["contracts_positive"])
+            )
+            filtered_companies = filtered_companies.filter(
+                pk__in=contract_signing_companies.values_list("company")
+            )
+        if len(form.cleaned_data["contracts_negative"]) != 0:
+            contract_signing_companies = (
+                SignupLog.objects.select_related("company")
+                .select_related("contract")
+                .filter(contract__in=form.cleaned_data["contracts_negative"])
+            )
+            filtered_companies = filtered_companies.exclude(
+                pk__in=contract_signing_companies.values_list("company")
+            )
+        if len(form.cleaned_data["users"]) != 0:
+            companies_with_sought_responsibles = (
+                CompanyCustomerResponsible.objects.select_related("company")
+                .select_related("group")
+                .filter(group__fair=fair)
+                .prefetch_related("users")
+                .filter(users__in=form.cleaned_data["users"])
+                .values_list("company")
+            )
+            filtered_companies = filtered_companies.filter(
+                pk__in=companies_with_sought_responsibles
+            )
+        if form.cleaned_data["q"]:
+            # Free text search
+            search_query = form.cleaned_data["q"]
+
+            # Name search (highest in matches on company name will appear highest in results)
+            name_q = get_query(search_query, ["name"])
+
+            # Include every CharField in Company model in search
+            field_names = [
+                f.name for f in Company._meta.fields if isinstance(f, CharField)
+            ]
+            qs = get_query(search_query, field_names)
+
+            # Responsibles
+            query = get_query(search_query, ["first_name", "last_name"])
+            matched_responsibles = (
+                CompanyCustomerResponsible.objects.select_related("company")
+                .select_related("group")
+                .filter(group__fair=fair)
+                .prefetch_related("users")
+                .filter(users__in=User.objects.filter(query))
+                .values_list("company")
+            )
+
+            qs = qs | Q(pk__in=matched_responsibles)
+
+            # Contracts
+            query = get_query(search_query, ["name", "type"])
+            matched_contracts = (
+                SignupLog.objects.select_related("company")
+                .select_related("contract")
+                .filter(contract__in=SignupContract.objects.filter(query))
+                .values_list("company")
+            )
+
+            qs = qs | Q(pk__in=matched_contracts)
+
+            # Contacts
+            query = get_query(
+                search_query,
+                [
+                    "first_name",
+                    "last_name",
+                    "email_address",
+                    "alternative_email_address",
+                    "mobile_phone_number",
+                    "work_phone_number",
+                ],
+            )
+
+            # Enable searching for phone numbers with a leading 0 by removing it
+            # (since all phone numbers in database begin with +46)
+            search_query_stripped = search_query.strip()
+            if search_query_stripped[0] == "0":
+                query = (
+                    query
+                    | Q(mobile_phone_number__icontains=search_query_stripped[1:])
+                    | Q(work_phone_number__icontains=search_query_stripped[1:])
+                )
+
+            matched_contacts = CompanyContact.objects.filter(query).values_list(
+                "company"
+            )
+
+            qs = qs | Q(pk__in=matched_contacts)
+
+            # Groups
+            query = get_query(search_query, ["name", "name_full"])
+            matched_groups = (
+                Group.objects.filter(query)
+                .select_related("company")
+                .values_list("company")
+            )
+            qs = qs | Q(pk__in=matched_groups)
+
+            # Apply filters, ranking matches on company name higher than matches on other fields
+            filtered_companies = (
+                filtered_companies.annotate(
+                    rank=Case(
+                        When(
+                            name_q,
+                            then=Value(1),
+                        ),
+                        When(
+                            qs,
+                            then=Value(2),
+                        ),
+                        default=Value(99),
+                        output_field=IntegerField(),
+                    )
+                )
+                .order_by("rank", "name")
+                .exclude(rank=99)
+            )
 
     companies_modified = []
-
-    for company in companies:
+    companies_current_page = filtered_companies[
+        (page_number - 1) * COMPANIES_PER_PAGE : page_number * COMPANIES_PER_PAGE
+    ]
+    for company in companies_current_page:
         exhibitor = company in exhibitors
-
-        if has_filtering:
-            if not exhibitor and form.cleaned_data["exhibitors"] == "YES":
-                continue
-            if exhibitor and form.cleaned_data["exhibitors"] == "NO":
-                continue
-
-            if len(form.cleaned_data["contracts_positive"]) != 0:
-                if company not in signatures:
-                    continue
-
-                if (
-                    len(
-                        [
-                            signature
-                            for signature in signatures[company]
-                            if signature.contract
-                            in form.cleaned_data["contracts_positive"]
-                        ]
-                    )
-                    == 0
-                ):
-                    continue
-
-            if len(form.cleaned_data["contracts_negative"]) > 0:
-                if (
-                    company in signatures
-                    and len(
-                        [
-                            signature
-                            for signature in signatures[company]
-                            if signature.contract
-                            in form.cleaned_data["contracts_negative"]
-                        ]
-                    )
-                    != 0
-                ):
-                    continue
-
-            if len(form.cleaned_data["users"]) != 0:
-                if company not in responsibles:
-                    continue
-
-                found = False
-
-                for r in responsibles[company]:
-                    if (
-                        len([u for u in r["users"] if u in form.cleaned_data["users"]])
-                        != 0
-                    ):
-                        found = True
-                        break
-
-                if not found:
-                    continue
-
-        # Related company contacts
-        contacts = []
-        for contact in company.companycontact_set.values():
-            contacts.append(
-                {
-                    "name": contact["first_name"] + " " + contact["last_name"],
-                    "emails": [
-                        contact["email_address"],
-                        contact["alternative_email_address"],
-                    ],
-                    "numbers": [
-                        contact["mobile_phone_number"],
-                        contact["work_phone_number"],
-                    ],
-                }
-            )
-            # The numbers all start with +46, it would be nice to able to search numbers
-            # without the country code so for every number +46701234567, we append 0701234567.
-            # Note: some numbers do not have swedish country codes, and cannot be searched
-            # for with a leading 0.
-            for number in contacts[-1]["numbers"]:
-                if number is not None and number[:3] == "+46":
-                    contacts[-1]["numbers"].append(number.replace("+46", "0"))
 
         companies_modified.append(
             {
                 "pk": company.pk,
                 "name": company.name,
-                "contacts": contacts,
                 "status": None,  # TODO: fix status!
                 "groups": company.groups.filter(fair=fair),
                 "responsibles": responsibles[company]
@@ -429,16 +482,77 @@ def companies_list(request, year):
             }
         )
 
+    total_pages = filtered_companies.count() // COMPANIES_PER_PAGE
     return render(
         request,
         "companies/companies_list.html",
         {
             "fair": fair,
-            "companies": companies_modified,
-            "companies_ids": [x["pk"] for x in companies_modified],
+            "companies": CompanyPage(companies_modified, total_pages, page_number),
+            "companies_ids": [company["pk"] for company in companies_modified],
             "form": form,
         },
     )
+
+
+def normalize_query(
+    query_string,
+    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+    normspace=re.compile(r"\s{2,}").sub,
+):
+    """Splits the query string in invidual keywords, getting rid of unecessary spaces
+    and grouping quoted words together.
+    Example:
+
+    normalize_query('  some random  words "with   quotes  " and   spaces')
+    ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
+
+    """
+    return [normspace(" ", (t[0] or t[1]).strip()) for t in findterms(query_string)]
+
+
+def get_query(query_string, search_fields):
+    """Returns a query, that is a combination of Q objects. That combination
+    aims to search keywords within a model by testing the given search fields.
+
+    """
+    query = None  # Query to search for every search term
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None  # Query to search for a given term in each field
+        for field_name in search_fields:
+            q = Q(**{"%s__icontains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
+
+
+class CompanyPage:
+    def __init__(self, companies, total_pages, page_number):
+        self.num_pages = total_pages
+        self.object_list = companies
+        self.page = page_number
+
+    def has_previous(self):
+        return self.page > 1
+
+    def has_next(self):
+        return self.page < self.num_pages
+
+    def previous_page_number(self):
+        return self.page - 1
+
+    def next_page_number(self):
+        return self.page + 1
+
+    def __iter__(self):
+        yield from self.object_list
 
 
 @permission_required("companies.base")
@@ -689,16 +803,19 @@ def email(request, year):
             "name": "Has signed CR",
             "help_text": "Contacts that have signed a complete registration contract.",
             "users": [],
+            "missing": [],
         },
         {
             "name": "Has signed IR but not CR",
             "help_text": "Contacts that have signed an initial registration contract.",
             "users": [],
+            "missing": [],
         },
         {
             "name": "Has not signed IR or CR",
             "help_text": "All contacts connected to any company which has not signed any contract for the current year.",
             "users": [],
+            "missing": [],
         },
     ]
 
@@ -708,6 +825,11 @@ def email(request, year):
         complete_signatures = SignupLog.objects.filter(contract=contract)
         for signature in complete_signatures:
             signed_companies.append(signature.company)
+
+            if signature.company_contact == None:
+                categories[0]["missing"].append(signature.company)
+                continue
+
             categories[0]["users"].append(
                 {
                     "i": len(categories[0]["users"]) + 1,
@@ -723,13 +845,22 @@ def email(request, year):
         for signature in initial_signatures:
             if signature.company not in signed_companies:
                 signed_companies.append(signature.company)
+
+                if signature.company_contact == None:
+                    categories[1]["missing"].append(signature.company)
+                    continue
+
+                name = "%s %s" % (
+                    signature.company_contact.first_name,
+                    signature.company_contact.last_name,
+                )
+                email = signature.company_contact.email_address
+
                 categories[1]["users"].append(
                     {
                         "i": len(categories[1]["users"]) + 1,
-                        "name": signature.company_contact.first_name
-                        + " "
-                        + signature.company_contact.last_name,
-                        "email_address": signature.company_contact.email_address,
+                        "name": name,
+                        "email_address": email,
                     }
                 )
 
@@ -741,6 +872,11 @@ def email(request, year):
             for contact in contacts:
                 if contact.email_address not in added_email_addresses:
                     added_email_addresses.append(contact.email_address)
+
+                    if signature.company_contact == None:
+                        categories[2]["missing"].append(signature.company)
+                        continue
+
                     categories[2]["users"].append(
                         {
                             "i": len(categories[2]["users"]) + 1,
@@ -750,7 +886,9 @@ def email(request, year):
                     )
 
     return render(
-        request, "companies/email.html", {"fair": fair, "categories": categories}
+        request,
+        "companies/email.html",
+        {"fair": fair, "categories": categories},
     )
 
 

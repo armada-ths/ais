@@ -30,6 +30,16 @@
 {% for category in categories %}
 	<h2>{% if category.name %}{{ category.name }}{% else %}<span style="font-style: italic;">no status</span>{% endif %}</h2>
 	<p style="font-style: italic;">{% if category.help_text %}{{ category.help_text }}{% endif %}</p>
+
+	{% if category.missing|length > 0 %}
+		<h5 style="color:red;">Warning: Missing contact information for:</h2>
+		<ul>
+			{% for company in category.missing %}
+				<li><a href="{% url 'companies_view' fair.year company.id %}">{{ company.name }}</a></li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+
 	<textarea>{% for user in category.users %}{% if user.i != 1 %}, {% endif %}{{ user.name }} <{{ user.email_address }}>{% endfor %}</textarea>
 {% endfor %}
 

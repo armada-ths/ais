@@ -3,7 +3,7 @@ import { PACKAGE_KEY } from "../../shared/vars"
 
 export interface Category {
     id: number
-    name: "Package" | "Additional booth area"
+    name: "Package" | "Additional booth area" | "Non Visible Package"
     description: string
     allow_multiple_purchases: boolean
 }
@@ -68,6 +68,7 @@ export const productSlice = createSlice({
     initialState,
     reducers: {
         loadProducts: (state, action: PayloadAction<Product[]>) => {
+            action.payload.forEach(console.log)
             state.records = action.payload.filter(
                 product => product.display_in_product_list
             )
@@ -81,7 +82,6 @@ export const productSlice = createSlice({
                     selected => selected.id === adjustedPrice.id
                 )
                 if (selectedProduct) {
-                    console.log("#1")
                     selectedProduct.quantity = adjustedPrice.quantity
                     selectedProduct.comment = adjustedPrice.comment
                     selectedProduct.adjustedPrice = adjustedPrice.adjustedPrice
@@ -91,13 +91,6 @@ export const productSlice = createSlice({
                     product => product.id === adjustedPrice.id
                 )
                 if (product != null) {
-                    console.log("BEFORE", state.selected)
-                    console.log("#2", {
-                        id: product.id,
-                        isPackage: product.category?.name === PACKAGE_KEY,
-                        quantity: adjustedPrice.quantity,
-                        comment: adjustedPrice.comment
-                    })
                     state.selected.push({
                         id: product.id,
                         isPackage: product.category?.name === PACKAGE_KEY,

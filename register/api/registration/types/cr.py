@@ -55,7 +55,8 @@ class CRRegistrationSerializer(RegistrationSerializer):
             if orders_serializer.is_valid():
                 # Completely replace the orders with the orders in the request
                 Order.objects.filter(
-                    purchasing_company=self.context["purchasing_company"]
+                    product__revenue__fair=instance.fair,
+                    purchasing_company=self.context["purchasing_company"],
                 ).delete()
                 instance.orders = orders_serializer.create(validated_data=orders)
 

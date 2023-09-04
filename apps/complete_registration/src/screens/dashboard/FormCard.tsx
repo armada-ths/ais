@@ -23,7 +23,7 @@ export default function FormCard({
     function openForm() {
         dispatch(setActiveForm(form.key))
         navigate({
-            to: "/form"
+            to: `/form/${form.key}`
         })
     }
 
@@ -51,7 +51,7 @@ export default function FormCard({
             <div className="flex-1" />
             {form.key === "primary" && !locked && (
                 <p className="mt-4 rounded bg-yellow-500 p-1 px-3 text-white">
-                    Contract has not been signed
+                    Order not confirmed
                 </p>
             )}
         </Card>

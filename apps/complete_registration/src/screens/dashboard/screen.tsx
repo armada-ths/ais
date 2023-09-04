@@ -11,31 +11,10 @@ import {
     selectCompanyStatus,
     selectUser
 } from "../../store/company/company_selectors"
-import { RegistrationStatus } from "../../store/company/company_slice"
-import { FORMS } from "../../forms"
 import { Card } from "../form/sidebar/PageCard"
 import { DashboardError } from "./DashboardError"
 import { LogoutButton } from "../../shared/LogoutButton"
-
-const FORM_OPEN_DURING: Record<keyof typeof FORMS, RegistrationStatus[]> = {
-    primary: ["complete_registration"],
-    receipt: ["complete_registration_signed"],
-    lunch_tickets: ["complete_registration_signed"],
-    exhibitor_catalog: [
-        "complete_registration_signed",
-        "complete_registration",
-        "before_complete_registration"
-    ],
-    transport: ["complete_registration_signed"],
-    banquet_tickets: ["complete_registration_signed"]
-}
-
-const FORM_HIDDEN_DURING: Partial<
-    Record<keyof typeof FORMS, RegistrationStatus[]>
-> = {
-    primary: ["complete_registration_signed"],
-    receipt: ["complete_registration"]
-}
+import { isFormHidden, isFormOpen } from "../../forms/form_access"
 
 export function DashboardScreen() {
     const forms = useSelector(selectForms)
@@ -58,8 +37,7 @@ export function DashboardScreen() {
 
     const formCardsData = Object.entries(forms).filter(
         ([, formMeta]) =>
-            companyStatus == null ||
-            !FORM_HIDDEN_DURING[formMeta.key]?.includes(companyStatus)
+            isFormHidden(formMeta.key, companyStatus ?? null) === false
     )
 
     return (
@@ -106,9 +84,9 @@ export function DashboardScreen() {
                                 key={key}
                                 form={formMeta}
                                 locked={
-                                    companyStatus == null ||
-                                    !FORM_OPEN_DURING[formMeta.key].includes(
-                                        companyStatus
+                                    !isFormOpen(
+                                        formMeta.key,
+                                        companyStatus ?? null
                                     )
                                 }
                             />

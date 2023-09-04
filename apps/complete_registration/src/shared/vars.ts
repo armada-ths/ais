@@ -1,4 +1,5 @@
 export const HOST = import.meta.env.DEV ? "http://localhost:3000" : ""
 export const PACKAGE_KEY = "Package"
+export const PACKAGE_NOT_VISIBLE_KEY = "Non Visible Package"
 export const EVENTS_REGISTRATION_SECTION_KEY = "Events"
 export const EXTRAS_REGISTRATION_SECTION_KEY = "Extras"
