@@ -11,7 +11,7 @@ from .models import (
     TableMatching,
 )
 
-from improvedAdmin import ModelAdminImproved
+from improved_admin import ModelAdminImproved
 
 
 @admin.register(Participant)

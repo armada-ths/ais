@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from django.contrib import admin
 from .models import Language, Programme, Profile, DietaryRestriction
-from improvedAdmin import ModelAdminImproved
+from improved_admin import ModelAdminImproved
 
 """
 class ProfileInline(admin.StackedInline):

@@ -9,7 +9,7 @@ from .models import (
     LunchTicket,
 )
 
-from improvedAdmin import ModelAdminImproved
+from improved_admin import ModelAdminImproved
 
 
 class FairDayAdmin(admin.TabularInline):

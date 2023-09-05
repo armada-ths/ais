@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import *
 import django.forms as forms
-from improvedAdmin import ModelAdminImproved
+from improved_admin import ModelAdminImproved
 
 
 class CustomFieldInline(admin.TabularInline):

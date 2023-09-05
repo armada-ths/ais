@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Product, Order, ProductType, StandArea
-from improvedAdmin import ModelAdminImproved
+from improved_admin import ModelAdminImproved
 
 
 @admin.register(Order)

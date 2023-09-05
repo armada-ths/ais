@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from orders.models import Order, Product
 from .models import *
-from improvedAdmin import ModelAdminImproved
+from improved_admin import ModelAdminImproved
 
 
 @admin.register(Exhibitor)
