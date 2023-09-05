@@ -70,6 +70,10 @@ After setting up the AIS with Docker, you can access it in a web browser with th
 
 4. Now you need to fill out some information. Fill out the necessary fields (Registration start date & end date, Complete registration start date & end date). Make sure end dates come after start dates. Tick the "Current" box, and press save at the bottom of the page. The fair will be created, and you can go back to `localhost:3000` to see the landing page for the fair.
 
+**Issue:** "entrypoint.sh not found"
+
+**Solution:** If you're on Windows, you need to change the CRLF line endings in the file `entrypoint.sh` to LF line endings.
+
 ## Creating Database Migrations
 
 When adding new fields to models, you will need to create a database migration. This migration will be performed on the server to update the database to the latest structure. After adding a field, and making sure the docker instance of AIS is up and running through docker compose, you run the following command:
