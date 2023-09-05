@@ -16,6 +16,8 @@ from email.utils import formatdate
 from email.mime.text import MIMEText
 import smtplib
 
+from math import ceil
+
 from companies.models import (
     Company,
     CompanyAddress,
@@ -482,13 +484,18 @@ def companies_list(request, year):
             }
         )
 
-    total_pages = filtered_companies.count() // COMPANIES_PER_PAGE
+    total_companies = filtered_companies.count()
     return render(
         request,
         "companies/companies_list.html",
         {
             "fair": fair,
-            "companies": CompanyPage(companies_modified, total_pages, page_number),
+            "companies": CompanyPage(
+                companies_modified,
+                total_companies,
+                page_number,
+                ceil(total_companies / COMPANIES_PER_PAGE),
+            ),
             "companies_ids": [company["pk"] for company in companies_modified],
             "form": form,
         },
@@ -534,8 +541,9 @@ def get_query(query_string, search_fields):
 
 
 class CompanyPage:
-    def __init__(self, companies, total_pages, page_number):
-        self.num_pages = total_pages
+    def __init__(self, companies, total_companies, page_number, num_pages):
+        self.total_companies = total_companies
+        self.num_pages = num_pages
         self.object_list = companies
         self.page = page_number
 
