@@ -490,7 +490,12 @@ def companies_list(request, year):
         "companies/companies_list.html",
         {
             "fair": fair,
-            "companies": CompanyPage(companies_modified, total_companies, page_number, ceil(total_companies / COMPANIES_PER_PAGE)),
+            "companies": CompanyPage(
+                companies_modified,
+                total_companies,
+                page_number,
+                ceil(total_companies / COMPANIES_PER_PAGE),
+            ),
             "companies_ids": [company["pk"] for company in companies_modified],
             "form": form,
         },
