@@ -45,3 +45,73 @@
 	font-weight: 700;
 	src: local(""), url(Inter-Bold.woff2) format("woff2"), url(Inter-Bold.woff) format("woff")
 }
+
+/*Loading Animation Style Rules*/
+#loading-animation{
+	color:  #e73953;
+}
+.la-parallax > use {
+	animation: load-wave-animation 5s ease-in-out infinite;
+	transform: scale(1.5);
+}
+/*Ship (child 1)*/
+.la-parallax > use:nth-child(1) {
+	bottom: 0px;
+	animation: load-ship-animation 3s ease-in-out infinite;
+}
+/*Waves: from 1 (child 2) to 4 (child 5)*/
+.la-parallax > use:nth-child(2) {
+	animation: load-first-wave-animation 5s ease-in-out infinite;
+	animation-delay: -2s;
+	animation-duration: 4s;
+}
+.la-parallax > use:nth-child(3) {
+	animation-delay: -3s;
+	animation-duration: 6s;
+}
+.la-parallax > use:nth-child(4) {
+	animation-delay: -4s;
+	animation-duration: 8s;
+}
+.la-parallax > use:nth-child(5) {
+	animation-delay: -5s;
+	animation-duration: 10s;
+}
+
+/*Loading Animations*/
+@keyframes load-first-wave-animation {
+	0% {
+		transform: translate3d(0px,-30px,0);
+	}
+	50% { 
+		transform: translate3d(70px,0px,0);
+	}
+	100% {
+		transform: translate3d(0px,-30px,0);
+	}
+}
+@keyframes load-wave-animation {
+	0% {
+		transform: translate3d(0px,-40px,0);
+	}
+	50% { 
+		transform: translate3d(70px,40px,0);
+	}
+	100% {
+		transform: translate3d(0px,-40px,0);
+	}
+}
+@keyframes load-ship-animation {
+	0% {
+		transform: translate3d(0px,40px,0);
+		transform: rotate(-1deg);
+	}
+	50% { 
+		transform: translate3d(0px,60px,0);
+		transform: rotate(1deg);
+	}
+	100% {
+		transform: translate3d(0px,40px,0);
+		transform: rotate(-1deg);
+	}
+}
