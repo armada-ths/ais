@@ -21,6 +21,7 @@ import { ThankYouScreen } from "./screens/thank_you/screen.tsx"
 import { DashboardScreen } from "./screens/dashboard/screen.tsx"
 import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 import useLoadData from "./shared/useLoadData.tsx"
+import ArmadaLogoGreen from "./assets/ship-green.png"
 
 const rootRoute = new RootRoute({
     errorComponent: () => <div>404</div>
