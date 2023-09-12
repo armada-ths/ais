@@ -4,7 +4,7 @@ import { DiversityIndexPage } from "./diversity_index.page"
 export const form: Form = {
     key: "core_values",
     name: "Core Values",
-    description: "Core values and very important stuff",
+    description: "Allow students to understand your values better. Complete the form for an opportunity to join our Diversity Focus Room.",
     progression: "none",
     pages: [
         {
