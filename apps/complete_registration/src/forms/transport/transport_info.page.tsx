@@ -21,7 +21,7 @@ export function TransportInfoFormPage() {
     return (
         <FormWrapper>
             <div className="mb-5 text-center text-sm">
-                <Link href="https://drive.google.com/file/d/1pgUdfE9IM3zEuKVuL8XYmviRWqd9y284/view?usp=sharing">
+                <Link href="https://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_linkhttps://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_link">
                     Download book transport PDF-form
                 </Link>
                 <div className="text-xs text-slate-400">(read more below)</div>
