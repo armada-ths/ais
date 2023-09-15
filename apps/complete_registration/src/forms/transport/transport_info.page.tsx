@@ -149,7 +149,9 @@ export function TransportInfoFormPage() {
                 if you have any general questions regarding transport or
                 logistics. THS Armada's own transport team will also be at your
                 service on Email:{" "}
-                <Link href="transport@armada.nu">transport@armada.nu</Link>
+                <Link href="sustomer.support@armada.nu">
+                    customer.support@armada.nu
+                </Link>
             </p>
             <div className="mt-10 flex flex-1 justify-center">
                 <FormField.Checkbox
