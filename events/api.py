@@ -57,6 +57,7 @@ def signup(request, event_pk):
     """
     Endpoint to signup to events
     """
+    print("REACHED!!!!")
 
     event = get_object_or_404(Event, pk=event_pk)
     if not request.user:

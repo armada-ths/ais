@@ -140,6 +140,7 @@ def event_edit(request, year, pk):
 
 @login_required
 def event_signup(request, year, event_pk):
+    print("REEEACCCHED!!")
     event = get_object_or_404(Event, pk=event_pk)
 
     if not event.published:
