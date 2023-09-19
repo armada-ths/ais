@@ -10,6 +10,7 @@ from banquet.models import Banquet, Participant
 from recruitment.models import RecruitmentApplication
 from fair.models import Fair, FairDay
 from people.models import DietaryRestriction
+from django.contrib.postgres.fields import JSONField
 
 
 def get_random_32_length_string():
@@ -211,8 +212,7 @@ class Exhibitor(models.Model):
     fair_location = models.ForeignKey(
         Location, blank=True, null=True, on_delete=models.SET_NULL
     )
-    map_coordinates_x = models.FloatField(blank=True, null=True)
-    map_coordinates_y = models.FloatField(blank=True, null=True)
+    map_coordinates = JSONField(blank=True, null=True)
     vyer_position = models.CharField(blank=True, null=True, max_length=255)
     flyer = models.FileField(
         upload_to="exhibitors/flyers/%Y%m%d/", default=None, blank=True, null=True
