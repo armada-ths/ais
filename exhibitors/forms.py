@@ -100,6 +100,12 @@ class DetailsForm(forms.ModelForm):
         }
 
 
+class CoordinatesForm(forms.ModelForm):
+    class Meta:
+        model = Exhibitor
+        fields = ["map_coordinates_x", "map_coordinates_y"]
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = CompanyCustomerComment
