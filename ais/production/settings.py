@@ -29,9 +29,8 @@ CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 # Stripe test keys
-# todo: remove and send secret through env
-STRIPE_SECRET = "sk_test_l4sPsGIoc2f8sD5N4D2fZkBY"
-STRIPE_PUBLISHABLE = "pk_test_IzgUj9oJhednbt4EIf78esBE"
+STRIPE_SECRET = os.environ.get("STRIPE_SECRET")
+STRIPE_PUBLISHABLE = os.environ.get("STRIPE_PUBLISHABLE")
 
 # The system sends out system-related emails to these addresses.
 ADMINS = MANAGERS = (("System", "system@armada.nu"),)
