@@ -347,6 +347,7 @@ class Exhibitor(models.Model):
             ("modify_details", "Modify details"),
             ("modify_booths", "Modify booths"),
             ("people_count", "Count people in locations"),
+            ("modify_coordinates", "Modify coordinates"),
         ]
 
 
