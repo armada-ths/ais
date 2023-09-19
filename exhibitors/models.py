@@ -211,6 +211,8 @@ class Exhibitor(models.Model):
     fair_location = models.ForeignKey(
         Location, blank=True, null=True, on_delete=models.SET_NULL
     )
+    map_coordinates_x = models.FloatField(blank=True, null=True)
+    map_coordinates_y = models.FloatField(blank=True, null=True)
     vyer_position = models.CharField(blank=True, null=True, max_length=255)
     flyer = models.FileField(
         upload_to="exhibitors/flyers/%Y%m%d/", default=None, blank=True, null=True
@@ -384,6 +386,7 @@ class ExhibitorView(models.Model):
         "booths": "Booths",
         "fair_location": "Fair location",
         "fair_location_special": "Special Location",
+        "coordinates": "Coordinates",
     }
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
