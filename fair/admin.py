@@ -23,7 +23,7 @@ class FairDayAdmin(ModelAdminImproved):
 
 @admin.register(Fair)
 class FairAdmin(ModelAdminImproved):
-    inlines = [FairDayAdmin]
+    inlines = [FairDayInlineAdmin]
 
 
 @admin.register(Partner)
