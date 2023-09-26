@@ -17,7 +17,7 @@ class FairDayAdmin(admin.TabularInline):
 
 
 @admin.register(FairDay)
-class FairAdmin(ModelAdminImproved):
+class FairDayAdmin(ModelAdminImproved):
     pass
 
 
