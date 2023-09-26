@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from improved_admin import ModelAdminImproved
 
 from .models import (
     Question,
@@ -30,7 +31,7 @@ from .models import (
 )
 
 
-class QuestionInline(admin.ModelAdmin):
+class QuestionInline(ModelAdminImproved):
     list_display = ("text", "question_type")
 
 
@@ -58,7 +59,7 @@ class WorkFieldInline(admin.TabularInline):
     model = WorkField
 
 
-class WorkFieldAreaAdmin(admin.ModelAdmin):
+class WorkFieldAreaAdmin(ModelAdminImproved):
     list_display = ("work_area",)
     inlines = [WorkFieldInline]
 
@@ -68,61 +69,61 @@ class StudentAnswerWFieldInline(admin.TabularInline):
     model = StudentAnswerWorkField
 
 
-class WorkFieldAdmin(admin.ModelAdmin):
+class WorkFieldAdmin(ModelAdminImproved):
     list_display = ("work_field", "work_area")
     inlines = [StudentAnswerWFieldInline]
 
 
-class AnswerSliderAdmin(admin.ModelAdmin):
+class AnswerSliderAdmin(ModelAdminImproved):
     list_display = ("student", "question", "answer_min", "answer_max")
     model = StudentAnswerSlider
 
 
-class AnswerGradingAdmin(admin.ModelAdmin):
+class AnswerGradingAdmin(ModelAdminImproved):
     list_display = ("student", "question", "answer")
     model = StudentAnswerGrading
 
 
 # Student Questions
-class StudentQuestionSliderAdmin(admin.ModelAdmin):
+class StudentQuestionSliderAdmin(ModelAdminImproved):
     exclude = ("question_type",)
     model = StudentQuestionSlider
 
 
-class StudentQuestionGradingAdmin(admin.ModelAdmin):
+class StudentQuestionGradingAdmin(ModelAdminImproved):
     exclude = ("question_type",)
     model = StudentQuestionGrading
 
 
-class SwedenRegionAdmin(admin.ModelAdmin):
+class SwedenRegionAdmin(ModelAdminImproved):
     model = SwedenRegion
 
 
-class ContinentAdmin(admin.ModelAdmin):
+class ContinentAdmin(ModelAdminImproved):
     model = Continent
 
 
-class SwedenCityAdmin(admin.ModelAdmin):
+class SwedenCityAdmin(ModelAdminImproved):
     model = SwedenCity
 
 
-class StudentAnswerContinentAdmin(admin.ModelAdmin):
+class StudentAnswerContinentAdmin(ModelAdminImproved):
     model = StudentAnswerContinent
 
 
-class StudentAnswerRegionAdmin(admin.ModelAdmin):
+class StudentAnswerRegionAdmin(ModelAdminImproved):
     model = StudentAnswerRegion
 
 
-class CountryAdmin(admin.ModelAdmin):
+class CountryAdmin(ModelAdminImproved):
     model = Country
 
 
-class JobTypeAdmin(admin.ModelAdmin):
+class JobTypeAdmin(ModelAdminImproved):
     model = JobType
 
 
-class StudentAnswerJobTypeAdmin(admin.ModelAdmin):
+class StudentAnswerJobTypeAdmin(ModelAdminImproved):
     model = StudentAnswerJobType
 
 
@@ -140,13 +141,13 @@ class CategoryInline(admin.TabularInline):
     extra = 0
 
 
-class SurveyAdmin(admin.ModelAdmin):
+class SurveyAdmin(ModelAdminImproved):
     list_display = ("name",)
     list_filter = ("fair",)
     inlines = [CategoryInline, QuestionInline]
 
 
-class ResponseAdmin(admin.ModelAdmin):
+class ResponseAdmin(ModelAdminImproved):
     list_display = ("survey", "exhibitor")
     list_filter = ("survey", "exhibitor")
     inlines = [TextAnsInline, ChoiceAnsInline, IntegerAnsInline, BooleanAnsInline]
@@ -159,7 +160,12 @@ class ResponseAdmin(admin.ModelAdmin):
 admin.site.register(Survey, SurveyAdmin)
 admin.site.register(Response, ResponseAdmin)
 
-admin.site.register(Answer)
+
+@admin.register(Answer)
+class AnswerAdmin(ModelAdminImproved):
+    pass
+
+
 # admin.site.register(Question, QuestionInline)
 # admin.site.register(TextAns)
 # admin.site.register(ChoiceAns)

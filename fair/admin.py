@@ -9,19 +9,38 @@ from .models import (
     LunchTicket,
 )
 
+from improved_admin import ModelAdminImproved
+
 
 class FairDayAdmin(admin.TabularInline):
     model = FairDay
 
 
-class FairAdmin(admin.ModelAdmin):
+@admin.register(Fair)
+class FairAdmin(ModelAdminImproved):
     inlines = [FairDayAdmin]
 
 
-admin.site.register(Fair, FairAdmin)
+@admin.register(Partner)
+class PartnerAdmin(ModelAdminImproved):
+    pass
 
-admin.site.register(Partner)
-admin.site.register(Tag)
-admin.site.register(OrganizationGroup)
-admin.site.register(LunchTicketTime)
-admin.site.register(LunchTicket)
+
+@admin.register(Tag)
+class TagAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(OrganizationGroup)
+class OrganisationGroupAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(LunchTicket)
+class LunchTicketAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(LunchTicketTime)
+class LunchTicketTimeAdmin(ModelAdminImproved):
+    pass

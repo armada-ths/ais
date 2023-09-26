@@ -143,7 +143,7 @@ def event_signup(request, year, event_pk):
     event = get_object_or_404(Event, pk=event_pk)
 
     if not event.published:
-        raise Http404
+        return render(request, "events/event_not_published.html", {"event": event})
 
     payment_url = reverse("events_api:payment", args=[event_pk])
     signup_url = reverse("events_api:signup", args=[event_pk])

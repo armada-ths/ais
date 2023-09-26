@@ -85,12 +85,12 @@ export function TransportInfoFormPage() {
             <Title text="How to book transport" />
             <p className="mb-5 text-sm">
                 To book Armada you need to download{" "}
-                <Link href="https://drive.google.com/file/d/1pgUdfE9IM3zEuKVuL8XYmviRWqd9y284/view?usp=sharing">
+                <Link href="https://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_linkhttps://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_link">
                     download this PDF-form
                 </Link>{" "}
                 and fill it in with information regarding pickup/return address,
                 What type of parcel and the dimensions and weight of your goods.
-                After filling in the PDF you should email it directly to DHL on
+                After filling in the PDF you should email it directly to DHL on{" "}
                 <Link href="booking.armada@dhl.com">
                     booking.armada@dhl.com
                 </Link>
