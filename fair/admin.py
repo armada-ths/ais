@@ -16,6 +16,11 @@ class FairDayAdmin(admin.TabularInline):
     model = FairDay
 
 
+@admin.register(FairDay)
+class FairAdmin(ModelAdminImproved):
+    pass
+
+
 @admin.register(Fair)
 class FairAdmin(ModelAdminImproved):
     inlines = [FairDayAdmin]
