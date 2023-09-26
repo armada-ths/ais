@@ -14,7 +14,6 @@ export const FORM_OPEN_DURING: Record<
         "before_complete_registration"
     ],
     transport: ["complete_registration", "complete_registration_signed"],
-    //@ts-ignore
     banquet_tickets: ["complete_registration_signed"],
     sture: ["complete_registration", "complete_registration_signed"],
     core_values: [
