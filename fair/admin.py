@@ -12,13 +12,18 @@ from .models import (
 from improved_admin import ModelAdminImproved
 
 
-class FairDayAdmin(admin.TabularInline):
+class FairDayInlineAdmin(admin.TabularInline):
     model = FairDay
+
+
+@admin.register(FairDay)
+class FairDayAdmin(ModelAdminImproved):
+    pass
 
 
 @admin.register(Fair)
 class FairAdmin(ModelAdminImproved):
-    inlines = [FairDayAdmin]
+    inlines = [FairDayInlineAdmin]
 
 
 @admin.register(Partner)
