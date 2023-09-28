@@ -19,6 +19,7 @@ import { InfoScreen } from "./shared/InfoScreen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
 import { ThankYouScreen } from "./screens/thank_you/screen.tsx"
 import { DashboardScreen } from "./screens/dashboard/screen.tsx"
+import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 import useLoadData from "./shared/useLoadData.tsx"
 
 const rootRoute = new RootRoute({
@@ -73,9 +74,7 @@ export function IndexMainLogicWrapper() {
     const { initialized } = useLoadData()
     if (!initialized)
         return (
-            <div className="flex h-[100vh] w-[100vw] items-center justify-center">
-                <p className="text-slate-600">Loading...</p>
-            </div>
+            <LoadingAnimation></LoadingAnimation>
         )
     return <RouterProvider router={router} />
 }
