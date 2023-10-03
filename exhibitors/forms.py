@@ -106,6 +106,12 @@ class CoordinatesForm(forms.ModelForm):
         fields = ["map_coordinates"]
 
 
+class FairLocationForm(forms.ModelForm):
+    class Meta:
+        model = Exhibitor
+        fields = ["fair_location"]
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = CompanyCustomerComment
