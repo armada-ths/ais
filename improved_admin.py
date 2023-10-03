@@ -11,7 +11,8 @@ EXCLUDED_FIELDS = [ExtraField]
 class ModelAdminImproved(admin.ModelAdmin):
     def __init__(self, model, admin_site: AdminSite | None):
         super().__init__(model, admin_site)
-        self.search_fields = ["name"]  # Default search field
+        # Default search field, will need to be overridden for models without a name field
+        self.search_fields = ["name"]
 
     # Overrides get_autocomplete_fields to be all foreignkey fields.
     def get_autocomplete_fields(self, request):
