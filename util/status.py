@@ -22,7 +22,10 @@ INVALID_REGISTRATION_PERIOD = JsonResponse(
     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
 )
 CR_NOT_OPEN = JsonResponse(
-    {"error": "cr_not_open"},
+    {
+        "error": "cr_not_open",
+        "message": "There is no active final registration contract",
+    },
     status=status.HTTP_403_FORBIDDEN,
 )
 USER_HAS_NO_COMPANY = JsonResponse(
