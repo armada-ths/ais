@@ -43,7 +43,7 @@ def get_user(request):
     user = request.user
     if not user.is_authenticated:
         if is_dev:
-            user = User.objects.filter(email="didrik.munther@armada.nu").first()
+            user = User.objects.filter(email="dashboard@armada.nu").first()
         else:
             return None
 

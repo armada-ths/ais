@@ -34,6 +34,10 @@ DB_HOST=db
 
 You can choose to use a copy of the production database for your local development. Create a directory called `ais-developer-database.sql` in the root directory, and add the production database copy `init.sql` to it.
 
+#### Prepare static files
+
+Run `npm install && npm build` in the root folder to create the static files for e.g. the banquett and events systems.
+
 #### Run the server
 
 The server will run in a `docker compose` instance. To start the server, run the following command:
@@ -47,6 +51,14 @@ The web-server will setup everything and connect itself to a postgis database. T
 #### Migrate the database and create a super user
 
 The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user.
+
+#### Developing the dashboard
+
+The dashboard is where initial and final registration is made, as well as lunch tickets creation, exhibitor information, core values, logistics information, sture information. Development of this dashboard is done through in the folder `apps/complete_registration`. Follow the instructions in the folder for starting the local React project. When running the React project, it will use `localhost:3000` as the URL for the backend, so you need to have AIS running in the background. The dashboard will be served the user `dashboard@armada.nu` in development mode, meaning you need to make sure this company contact exists. If you are e.g. doing final registration development, you need to make sure the company which this email belongs to is an exhibitor.
+
+#### Deployment of dashboard
+
+The dashboard is currently not being built in the automatic pipeline, meaning you need to build it yourself when deploying (TODO: add this to the automatic pipeline). Therefore, you need to run `pnpm build` in the `apps/complete_registration` folder before merging into production.
 
 ## Accessing the local server
 
@@ -73,6 +85,10 @@ After setting up the AIS with Docker, you can access it in a web browser with th
 **Issue:** "entrypoint.sh not found"
 
 **Solution:** If you're on Windows, you need to change the CRLF line endings in the file `entrypoint.sh` to LF line endings.
+
+**Issue:** `'JSONError' object has no attribute 'get'`
+
+**Solution:** This error can occur when running the local version of the dashboard. In this case, it could mean that the development user for the dashboard does not exist. You need to create a company contact (for any company) with the email `dashboard@armada.nu`. The function `get_user` in `util/__init__.py` will use this user for all requests if you are in development mode.
 
 ## Creating Database Migrations
 
