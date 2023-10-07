@@ -389,6 +389,7 @@ def dashboard(request, year):
                 price = str(current_banquet.afterparty_price_discount)
                 location = current_banquet.location
                 date = current_banquet.afterparty_date
+                print("Sending mail")
                 send_mail(
                     "Your invite to the After Party",
                     "Hello "
@@ -406,7 +407,7 @@ def dashboard(request, year):
                     + "kr will appear at checkout.\n\nSee you at the party!",
                     "noreply@armada.nu",
                     [invite.email_address],
-                    fail_silently=True,
+                    fail_silently=False,
                 )
             except IntegrityError as e:
                 # This will catch the uniqueness constraint between banquet/email
@@ -772,6 +773,10 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 
     if request.POST and form.is_valid():
         form.instance.banquet = banquet
+        if invitation == None:
+            has_sent_email = False
+        else:
+            has_sent_email = invitation.has_sent_mail
         invitation = form.save()
 
         if (
@@ -781,6 +786,58 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
         ):
             invitation.participant.name = invitation.name
             invitation.participant.email_address = invitation.email_address
+
+        if invitation.participant == None:
+            # Not participant means not responded to invite
+            if invitation.user != None:
+                # Internal, get info from user
+                name = invitation.user.get_full_name()
+                email_address = invitation.user.email
+            else:
+                # External, info contained in form
+                name = invitation.name
+                email_address = invitation.email_address
+        else:
+            # Participant, info from participant instance
+            name = invitation.participant.name
+            email_address = invitation.participant.email_address
+
+        # Automatically send invite email if it hasn't been sent before
+        if not has_sent_email:
+            token = invitation.token
+            # External and internal user invitations look different
+            if invitation.user is None:
+                link = request.build_absolute_uri(
+                    reverse(
+                        "banquet_external_invitation",
+                        kwargs={"token": token},
+                    )
+                )
+            else:
+                link = request.build_absolute_uri(
+                    reverse(
+                        "banquet_invitation",
+                        kwargs={"year": year, "token": token},
+                    )
+                )
+
+            send_mail(
+                "Your invite to the banquet",
+                "Hello "
+                + name
+                + "!\n"
+                + " You have been invited to the Grand Banquet of THS Armada. The banquet takes place "
+                + str(banquet.date)
+                + " at "
+                + str(banquet.location)
+                + ". \n Access your invitation with the following link: "
+                + link
+                + "\n\nSee you at the party!",
+                "noreply@armada.nu",
+                [email_address],
+                fail_silently=False,
+            )
+            invitation.has_sent_email = True
 
         return redirect(
             "banquet_manage_invitation", fair.year, banquet.pk, invitation.pk
