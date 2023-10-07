@@ -389,7 +389,6 @@ def dashboard(request, year):
                 price = str(current_banquet.afterparty_price_discount)
                 location = current_banquet.location
                 date = current_banquet.afterparty_date
-                print("Sending mail")
                 send_mail(
                     "Your invite to the After Party",
                     "Hello "
@@ -407,7 +406,7 @@ def dashboard(request, year):
                     + "kr will appear at checkout.\n\nSee you at the party!",
                     "noreply@armada.nu",
                     [invite.email_address],
-                    fail_silently=False,
+                    fail_silently=True,
                 )
             except IntegrityError as e:
                 # This will catch the uniqueness constraint between banquet/email
@@ -835,7 +834,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
                 + "\n\nSee you at the party!",
                 "noreply@armada.nu",
                 [email_address],
-                fail_silently=False,
+                fail_silently=True,
             )
             invitation.has_sent_email = True
 
