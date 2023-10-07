@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('banquet', '0046_auto_20230427_1920'),
+        ("banquet", "0046_auto_20230427_1920"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='invitation',
-            name='has_sent_mail',
+            model_name="invitation",
+            name="has_sent_mail",
             field=models.BooleanField(default=False),
         ),
     ]
