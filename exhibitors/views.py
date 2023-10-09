@@ -30,6 +30,7 @@ from .forms import (
     BoothForm,
     ExhibitorInBoothForm,
     CoordinatesForm,
+    FairLocationForm,
 )
 from .models import Exhibitor, ExhibitorView, Booth, ExhibitorInBooth, Location
 
@@ -520,6 +521,24 @@ def exhibitor_coordinates(request, year, pk):
     return render(
         request,
         "exhibitors/exhibitor_coordinates.html",
+        {"fair": fair, "exhibitor": exhibitor, "form": form},
+    )
+
+
+@permission_required("exhibitors.modify_fair_location")
+def exhibitor_fair_location(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+
+    form = FairLocationForm(request.POST or None, instance=exhibitor)
+
+    if request.POST and form.is_valid():
+        form.save()
+        return redirect("exhibitor", fair.year, exhibitor.pk)
+
+    return render(
+        request,
+        "exhibitors/exhibitor_fair_location.html",
         {"fair": fair, "exhibitor": exhibitor, "form": form},
     )
 

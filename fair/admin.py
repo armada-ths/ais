@@ -8,7 +8,7 @@ from .models import (
     LunchTicketTime,
     LunchTicket,
 )
-
+from django.contrib.admin.sites import AdminSite
 from improved_admin import ModelAdminImproved
 
 
@@ -18,7 +18,10 @@ class FairDayInlineAdmin(admin.TabularInline):
 
 @admin.register(FairDay)
 class FairDayAdmin(ModelAdminImproved):
-    pass
+    # We need to override search_fields to be date instead of name.
+    def __init__(self, model, admin_site: AdminSite | None):
+        super().__init__(model, admin_site)
+        self.search_fields = ["date"]
 
 
 @admin.register(Fair)

@@ -5,6 +5,8 @@ export type RegistrationStatus =
     | "before_complete_registration" // We are in FR, but no contract uploaded
     | "complete_registration"
     | "complete_registration_signed"
+    | "after_complete_registration"
+    | "after_complete_registration_signed"
 
 export type CompanyState = {
     status?: RegistrationStatus
