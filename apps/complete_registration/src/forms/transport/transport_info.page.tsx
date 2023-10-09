@@ -99,7 +99,7 @@ export function TransportInfoFormPage() {
 
             <p className="mb-5 text-sm">
                 The deadline for booking is the{" "}
-                <span className="underline">16th of October</span>, but do not
+                <span className="underline">23rd of October</span>, but do not
                 wait until it is too late! The goods must be packed prior to
                 week 45
                 <span className="underline">(6th of november)</span>. You are
