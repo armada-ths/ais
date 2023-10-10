@@ -8,20 +8,47 @@ from .models import (
     LunchTicketTime,
     LunchTicket,
 )
+from django.contrib.admin.sites import AdminSite
+from improved_admin import ModelAdminImproved
 
 
-class FairDayAdmin(admin.TabularInline):
+class FairDayInlineAdmin(admin.TabularInline):
     model = FairDay
 
 
-class FairAdmin(admin.ModelAdmin):
-    inlines = [FairDayAdmin]
+@admin.register(FairDay)
+class FairDayAdmin(ModelAdminImproved):
+    # We need to override search_fields to be date instead of name.
+    def __init__(self, model, admin_site: AdminSite | None):
+        super().__init__(model, admin_site)
+        self.search_fields = ["date"]
 
 
-admin.site.register(Fair, FairAdmin)
+@admin.register(Fair)
+class FairAdmin(ModelAdminImproved):
+    inlines = [FairDayInlineAdmin]
 
-admin.site.register(Partner)
-admin.site.register(Tag)
-admin.site.register(OrganizationGroup)
-admin.site.register(LunchTicketTime)
-admin.site.register(LunchTicket)
+
+@admin.register(Partner)
+class PartnerAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(Tag)
+class TagAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(OrganizationGroup)
+class OrganisationGroupAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(LunchTicket)
+class LunchTicketAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(LunchTicketTime)
+class LunchTicketTimeAdmin(ModelAdminImproved):
+    pass

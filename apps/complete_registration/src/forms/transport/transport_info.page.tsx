@@ -21,7 +21,7 @@ export function TransportInfoFormPage() {
     return (
         <FormWrapper>
             <div className="mb-5 text-center text-sm">
-                <Link href="https://drive.google.com/file/d/1pgUdfE9IM3zEuKVuL8XYmviRWqd9y284/view?usp=sharing">
+                <Link href="https://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_linkhttps://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_link">
                     Download book transport PDF-form
                 </Link>
                 <div className="text-xs text-slate-400">(read more below)</div>
@@ -85,12 +85,12 @@ export function TransportInfoFormPage() {
             <Title text="How to book transport" />
             <p className="mb-5 text-sm">
                 To book Armada you need to download{" "}
-                <Link href="https://drive.google.com/file/d/1pgUdfE9IM3zEuKVuL8XYmviRWqd9y284/view?usp=sharing">
+                <Link href="https://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_linkhttps://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_link">
                     download this PDF-form
                 </Link>{" "}
                 and fill it in with information regarding pickup/return address,
                 What type of parcel and the dimensions and weight of your goods.
-                After filling in the PDF you should email it directly to DHL on
+                After filling in the PDF you should email it directly to DHL on{" "}
                 <Link href="booking.armada@dhl.com">
                     booking.armada@dhl.com
                 </Link>
@@ -99,7 +99,7 @@ export function TransportInfoFormPage() {
 
             <p className="mb-5 text-sm">
                 The deadline for booking is the{" "}
-                <span className="underline">16th of October</span>, but do not
+                <span className="underline">23rd of October</span>, but do not
                 wait until it is too late! The goods must be packed prior to
                 week 45
                 <span className="underline">(6th of november)</span>. You are
@@ -149,7 +149,9 @@ export function TransportInfoFormPage() {
                 if you have any general questions regarding transport or
                 logistics. THS Armada's own transport team will also be at your
                 service on Email:{" "}
-                <Link href="transport@armada.nu">transport@armada.nu</Link>
+                <Link href="sustomer.support@armada.nu">
+                    customer.support@armada.nu
+                </Link>
             </p>
             <div className="mt-10 flex flex-1 justify-center">
                 <FormField.Checkbox

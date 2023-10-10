@@ -4,6 +4,7 @@ import CreateLunchTicketsForm from "./lunch_tickets/form"
 import { form as ExhibitorCatalogForm } from "./exhibitor_catalog/form"
 import { form as TransportForm } from "./transport/form"
 import { form as BanquetForm } from "./banquet/form"
+import { form as CoreValues } from "./core_values/form"
 import { form as StureForm } from "./sture/form"
 
 export function getMutableFormsInstance() {
@@ -14,7 +15,8 @@ export function getMutableFormsInstance() {
         transport: TransportForm,
         lunch_tickets: CreateLunchTicketsForm,
         banquet_tickets: BanquetForm,
-        sture: StureForm
+        sture: StureForm,
+        core_values: CoreValues
     }
 }
 export const FORMS = Object.freeze(getMutableFormsInstance())

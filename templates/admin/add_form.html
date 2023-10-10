@@ -1,0 +1,18 @@
+{% extends "admin/change_form.html" %}
+
+{% load static %}
+
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/forms.css" %}"><style>
+    .related-widget-wrapper ul {
+        overflow-y: auto !important;
+        height: 400px !important;
+        white-space: nowrap;
+        padding-right: 50px;
+    }
+    .related-widget-wrapper select[multiple] {
+        overflow-y: auto !important;
+        white-space: nowrap;
+        padding-right: 50px;
+    }
+</style>{% endblock %}

@@ -138,6 +138,7 @@ def serialize_exhibitor(exhibitor, request):
                     for eib in ExhibitorInBooth.objects.filter(exhibitor=exhibitor)
                 ],
             ),
+            ("map_coordinates", exhibitor.map_coordinates),
         ]
     )
 

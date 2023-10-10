@@ -9,20 +9,63 @@
 	<ol class="breadcrumb">
 		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
 		<li><a href="{% url 'exhibitor' fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></li>
-		<li class="active">Transport</li>
+		<li class="active">Coordinates</li>
 	</ol>
 	
-	<h1>Transport for {{ exhibitor.company }}</h1>
+	<h1>Coordinates for {{ exhibitor.company }}</h1>
 	
 	<p>
-		<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>
+		{% if perms.exhibitors.transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
 		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
 		{% if perms.exhibitors.modify_check_in %}<a href="{% url 'exhibitor_check_in' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Check in</a>{% endif %}
 		{% if perms.exhibitors.modify_details %}<a href="{% url 'exhibitor_details' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Details</a>{% endif %}
-		{% if perms.exhibitors.modify_coordinates %}<a href="{% url 'exhibitor_coordinates' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Coordinates</a>{% endif %}
+		<a href="{% url 'exhibitor_coordinates' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Coordinates</a>
 		{% if perms.exhibitors.modify_fair_location %}<a href="{% url 'exhibitor_fair_location' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Fair Location</a>{% endif %}
 	</p>
 	
+	<p>Coordinate JSON should be formatted like below; a 3 level nested list consisting of floor number, vertex numbers, and coordinates of vertices:</p>
+	<pre>
+		{
+			"(Floor number 1)": {
+				"(vertex number 1)": {
+					"x" : some decimal number,
+					"y" : some decimal number
+				},
+				"(vertex number 2)": {
+					"x" : some decimal number,
+					"y" : some decimal number
+				},
+				...
+			},
+			"(Floor number 2)": {
+				"(vertex number 1)": {
+					"x" : some decimal number,
+					"y" : some decimal number
+				},
+				...
+			}
+		}
+	</pre>
+	<p>For example, if the company is only on floor 1, and its position on the map is defined by 3 vertices (1,1), (2,2), (3,3), the JSON would look like this:</p>
+	<pre>
+	{
+		"1": {
+			"1": {
+				"x": 1,
+				"y": 1
+			},
+			"2": {
+				"x": 2,
+				"y": 2
+			},
+			"3": {
+				"x": 3,
+				"y": 3
+			}
+		}
+	}
+	</pre>
+
 	<form method="post" enctype="multipart/form-data">
 		{% csrf_token %}
 		{{ form | crispy }}

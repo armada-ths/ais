@@ -2,6 +2,18 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
+<style type="text/css">
+	pre
+	{
+		white-space: pre-wrap;
+        background-color: white;
+        border: 0cap;
+        font-family: Arial, Helvetica, sans-serif; 
+        font-size: 14px; 
+        line-height: 1.42857143;
+        word-break: break-word
+	}
+</style>
 
     <ol class="breadcrumb">
         <li><a href="{% url 'recruitment' fair.year %}">Recruitment</a></li>
@@ -49,7 +61,7 @@
     <div class="col-sm-6">
         {% for role in recruitment_period.recruitable_roles.all %}
             <label>{{ role.name }}</label>
-            <p>{{ role.description }}</p>
+            <pre>{{ role.description }}</pre>
             <br>
         {% endfor %}
     </div>

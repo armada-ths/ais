@@ -10,6 +10,8 @@ class RegistrationType(Enum):
     BeforeCompleteRegistration = 0
     CompleteRegistration = 1
     CompleteRegistrationSigned = 2
+    AfterCompleteRegistration = 3
+    AfterCompleteRegistrationSigned = 4
 
     def __str__(self):
         if self == RegistrationType.BeforeCompleteRegistration:
@@ -18,6 +20,12 @@ class RegistrationType(Enum):
             return "complete_registration"
         elif self == RegistrationType.CompleteRegistrationSigned:
             return "complete_registration_signed"
+        elif self == RegistrationType.AfterCompleteRegistration:
+            return "after_complete_registration"
+        elif self == RegistrationType.AfterCompleteRegistrationSigned:
+            return "after_complete_registration_signed"
+        else:
+            return "unknown"
 
 
 class Registration:
@@ -58,7 +66,16 @@ class Registration:
             else:
                 self.type = RegistrationType.CompleteRegistration
         elif period == RegistrationState.AFTER_CR:
-            pass
+            self.ensure_cr_eligibility()
+
+            if contract == None:
+                # This should not happen in a normal fair
+                # This means FR is over, but there is no contract
+                self.type = RegistrationType.BeforeCompleteRegistration
+            elif signature != None:
+                self.type = RegistrationType.AfterCompleteRegistrationSigned
+            else:
+                self.type = RegistrationType.AfterCompleteRegistration
         else:
             pass
 

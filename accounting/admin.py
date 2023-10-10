@@ -1,47 +1,48 @@
 from django.contrib import admin
 
 from .models import *
+from improved_admin import ModelAdminImproved
 
 
 @admin.register(Revenue)
-class RevenueAdmin(admin.ModelAdmin):
+class RevenueAdmin(ModelAdminImproved):
     ordering = ["name"]
     list_display = ["name", "description", "fair"]
     list_filter = ["fair__year"]
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ModelAdminImproved):
     ordering = ["name"]
     list_display = ["name"]
     list_filter = ["fair__year"]
 
 
 @admin.register(RegistrationSection)
-class RegistrationSectionAdmin(admin.ModelAdmin):
+class RegistrationSectionAdmin(ModelAdminImproved):
     ordering = ["name"]
     list_display = ["name"]
 
 
 @admin.register(ChildProduct)
-class ChildProductAdmin(admin.ModelAdmin):
+class ChildProductAdmin(ModelAdminImproved):
     fields = ("child_product", "quantity")
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ModelAdminImproved):
     ordering = ["revenue", "category", "name"]
     list_display = ["name", "revenue", "registration_section", "category"]
     list_filter = ["revenue", "category", "registration_section", "revenue__fair__year"]
 
 
 @admin.register(Stock)
-class StockAdmin(admin.ModelAdmin):
+class StockAdmin(ModelAdminImproved):
     list_display = ["name", "amount"]
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(ModelAdminImproved):
     readonly_fields = ("amount",)
     list_display = ["name", "purchasing_company", "product", "quantity", "amount"]
     list_filter = ["purchasing_company__name"]

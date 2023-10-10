@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import *
+import django.forms as forms
+from improved_admin import ModelAdminImproved
 
 
 class CustomFieldInline(admin.TabularInline):
@@ -14,7 +16,7 @@ class CustomFieldArgumentInline(admin.TabularInline):
     model = CustomFieldArgument
 
 
-class CustomFieldAdmin(admin.ModelAdmin):
+class CustomFieldAdmin(ModelAdminImproved):
     inlines = [CustomFieldArgumentInline]
 
 
@@ -22,23 +24,27 @@ class RoleApplicationInline(admin.TabularInline):
     model = RoleApplication
 
 
-class RecruitmentApplicationAdmin(admin.ModelAdmin):
+class RecruitmentApplicationAdmin(ModelAdminImproved):
     inlines = [RoleApplicationInline]
 
 
 @admin.register(Role)
-class RoleAdmin(admin.ModelAdmin):
+class RoleAdmin(ModelAdminImproved):
     list_display = ["name", "organization_group", "recruitment_period"]
     list_filter = ["recruitment_period", "organization_group"]
 
 
 @admin.register(Slot)
-class SlotAdmin(admin.ModelAdmin):
+class SlotAdmin(ModelAdminImproved):
     list_display = ["__str__", "location", "recruitment_period"]
     list_filter = ["location", "recruitment_period"]
 
 
-admin.site.register(RecruitmentPeriod)
+@admin.register(RecruitmentPeriod)
+class RecruitmentPeriodModelAdmin(ModelAdminImproved):
+    pass
+
+
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)
 admin.site.register(CustomField, CustomFieldAdmin)
 admin.site.register(CustomFieldAnswer)

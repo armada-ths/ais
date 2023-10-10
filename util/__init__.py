@@ -43,7 +43,11 @@ def get_user(request):
     user = request.user
     if not user.is_authenticated:
         if is_dev:
-            user = User.objects.filter(email="didrik.munther@armada.nu").first()
+            user = User.objects.filter(email="dashboard@armada.nu").first()
+            if user == None:
+                raise Exception(
+                    "No user with email dashboard@armada.nu. Please create one for local development."
+                )
         else:
             return None
 
