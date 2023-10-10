@@ -820,21 +820,8 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
                     )
                 )
 
-            send_mail(
-                "Your invite to the banquet",
-                "Hello "
-                + name
-                + "!\n"
-                + " You have been invited to the Grand Banquet of THS Armada. The banquet takes place "
-                + str(banquet.date)
-                + " at "
-                + str(banquet.location)
-                + ". \n Access your invitation with the following link: "
-                + link
-                + "\n\nSee you at the party!",
-                "noreply@armada.nu",
-                [email_address],
-                fail_silently=True,
+            send_invitation_mail(
+                name, banquet.date, banquet.location, link, email_address
             )
             invitation.has_sent_email = True
 
@@ -1111,6 +1098,64 @@ def invitation(request, year, token):
             "can_edit": can_edit,
             "form_catalogue_details": tableMatchingForm,
         },
+    )
+
+
+@permission_required("banquet.base")
+def send_invitation_button(request, year, banquet_pk, invitation_pk):
+    """Called when "Send invitation Mail" is pressed on the manage_invitation page."""
+
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+    invitation = get_object_or_404(Invitation, banquet=banquet, pk=invitation_pk)
+
+    if invitation.user is None:
+        name = invitation.name
+        email = invitation.email_address
+        link = request.build_absolute_uri(
+            reverse(
+                "banquet_external_invitation",
+                kwargs={"token": invitation.token},
+            )
+        )
+    else:
+        name = invitation.user.get_full_name()
+        email = invitation.user.email
+        link = request.build_absolute_uri(
+            reverse(
+                "banquet_invitation",
+                kwargs={"year": year, "token": invitation.token},
+            )
+        )
+
+    send_invitation_mail(name, banquet.date, banquet.location, link, email)
+
+    return render(
+        request,
+        "banquet/invite_sent.html",
+        {
+            "fair": fair,
+        },
+    )
+
+
+def send_invitation_mail(name, date, location, link, email):
+    """Send banquet invitation mail"""
+    send_mail(
+        "Your invite to the banquet",
+        "Hello "
+        + name
+        + "!\n"
+        + " You have been invited to the Grand Banquet of THS Armada. The banquet takes place "
+        + str(date)
+        + " at "
+        + str(location)
+        + ". \n Access your invitation with the following link: "
+        + link
+        + "\n\nSee you at the party!",
+        "noreply@armada.nu",
+        [email],
+        fail_silently=True,
     )
 
 
