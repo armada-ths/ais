@@ -1127,8 +1127,9 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
                 kwargs={"year": year, "token": invitation.token},
             )
         )
-
     send_invitation_mail(name, banquet.date, banquet.location, link, email)
+    invitation.has_sent_mail = True
+    invitation.save()
 
     return render(
         request,
