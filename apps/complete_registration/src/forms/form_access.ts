@@ -24,10 +24,6 @@ export const FORM_OPEN_DURING: Record<
         "after_complete_registration",
         "after_complete_registration_signed"
     ],
-    banquet_tickets: [
-        "complete_registration_signed",
-        "after_complete_registration_signed"
-    ],
     sture: [
         "complete_registration",
         "complete_registration_signed",
