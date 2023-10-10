@@ -6,27 +6,51 @@ export const FORM_OPEN_DURING: Record<
     RegistrationStatus[]
 > = {
     primary: ["complete_registration"],
-    receipt: ["complete_registration_signed"],
-    lunch_tickets: ["complete_registration_signed"],
+    receipt: [
+        "complete_registration_signed",
+        "after_complete_registration_signed"
+    ],
+    lunch_tickets: ["after_complete_registration_signed"],
     exhibitor_catalog: [
         "complete_registration_signed",
         "complete_registration",
-        "before_complete_registration"
+        "before_complete_registration",
+        "after_complete_registration",
+        "after_complete_registration_signed"
     ],
-    transport: ["complete_registration", "complete_registration_signed"],
-    banquet_tickets: ["complete_registration_signed"],
-    sture: ["complete_registration", "complete_registration_signed"],
+    transport: [
+        "complete_registration",
+        "complete_registration_signed",
+        "after_complete_registration",
+        "after_complete_registration_signed"
+    ],
+    banquet_tickets: [
+        "complete_registration_signed",
+        "after_complete_registration_signed"
+    ],
+    sture: [
+        "complete_registration",
+        "complete_registration_signed",
+        "after_complete_registration",
+        "after_complete_registration_signed"
+    ],
     core_values: [
         "before_complete_registration",
         "complete_registration",
-        "complete_registration_signed"
+        "complete_registration_signed",
+        "after_complete_registration",
+        "after_complete_registration_signed"
     ]
 }
 
 export const FORM_HIDDEN_DURING: Partial<
     Record<keyof typeof FORMS, RegistrationStatus[]>
 > = {
-    primary: ["complete_registration_signed"],
+    primary: [
+        "complete_registration_signed",
+        "after_complete_registration",
+        "after_complete_registration_signed"
+    ],
     receipt: ["complete_registration"]
 }
 

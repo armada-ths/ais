@@ -26,7 +26,9 @@ def render_company(request, company, contact, exhibitor):
     elif period == RegistrationState.CR:
         return handle_cr(request, company, fair, contact, exhibitor)
     elif period == RegistrationState.AFTER_CR:
-        return status.NOT_IMPLEMENTED
+        return handle_cr(
+            request, company, fair, contact, exhibitor
+        )  # todo: temporary. What should really happen after CR?
     else:
         return status.INVALID_REGISTRATION_PERIOD
 

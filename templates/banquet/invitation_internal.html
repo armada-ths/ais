@@ -9,6 +9,10 @@
 {% block content %}
 	<h1>{{ invitation.banquet.name }}</h1>
 
+	<div style="margin-top: 3rem; margin-bottom: 3rem; text-align: center;">
+		<a style="font-size: xx-large;" href="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}">VIEW MY TICKET</a>
+	</div>
+
 	<ul class="list-unstyled">
 		{% if invitation.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>{% endif %}
 		{% if invitation.banquet.location %}<li><span style="font-weight: bold;">Location:</span> {{ invitation.banquet.location }}</li>{% endif %}

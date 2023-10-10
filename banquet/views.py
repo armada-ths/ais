@@ -1097,6 +1097,7 @@ def invitation(request, year, token):
             "stripe_amount": invitation.price * 100,
             "can_edit": can_edit,
             "form_catalogue_details": tableMatchingForm,
+            "participant": {"token": participant.token},
         },
     )
 
@@ -1307,6 +1308,7 @@ def external_invitation(request, token):
             "stripe_amount": invitation.price * 100,
             "can_edit": can_edit,
             "form_catalogue_details": tableMatchingForm,
+            "participant": {"token": participant.token},
         },
     )
 
