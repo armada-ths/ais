@@ -50,6 +50,32 @@ def lunchtickets_search(request):
 
     return JsonResponse(data, safe=False)
 
+@require_GET
+def lunchtickets_companysearch(request):
+    """
+    Search lunch tickets for the current fair & company
+    """
+
+    fair = Fair.objects.get(current=True)
+    search_query = request.GET.get("company", "")
+
+    if search_query == "":
+        return JsonResponse({"message": "Company is empty."}, status=400)
+
+    lunch_tickets = LunchTicket.objects.filter(
+        Q(fair=fair)
+        & (
+            Q(company__name__icontains=search_query)
+        )
+    ).all()
+
+    data = {
+        "result": [
+            serializers.lunch_ticket(lunch_ticket) for lunch_ticket in lunch_tickets
+        ]
+    }
+
+    return JsonResponse(data, safe=False)
 
 @require_POST
 @permission_required("fair.lunchtickets")

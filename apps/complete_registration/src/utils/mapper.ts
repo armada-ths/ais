@@ -74,14 +74,18 @@ export function reverseMap(parent: any) {
                 const path = field.mapping.split(".")
                 let parentCopy = { ...parent }
                 for (const part of path) {
-                    if (parentCopy == null || parentCopy[part] === undefined)
+                    console.log(part);
+                    console.log(parentCopy);
+                    if (parentCopy == null || parentCopy[part] === undefined){
+                        
                         continue
-
+                    }
                     if (
                         part === path[path.length - 1] &&
                         parentCopy[part] != null &&
                         typeof parentCopy[part] !== "object"
                     ) {
+                        console.log("ddfkndfjkh");
                         awaitingMappings.push({
                             mapping: field.mapping,
                             value: parentCopy[part]
@@ -92,6 +96,7 @@ export function reverseMap(parent: any) {
                             FORMS,
                             field.mapping
                         )
+                        console.log("337346");
                         if (
                             // Make sure that array is end-node
                             stateField != null &&

@@ -1,5 +1,6 @@
 import { Form } from "../form_types"
-import { CommingSoon } from "./comming_soon.page"
+import { ViewLunchTicketsPage } from "./lunch_tickets.page"
+import { CreateLunchTicketsPage } from "./lunch_ticket_create.page"
 
 const form: Form = {
     key: "lunch_tickets",
@@ -9,11 +10,18 @@ const form: Form = {
     progression: "none",
     pages: [
         {
-            id: "",
-            title: "Select Events",
+            id: "view_ticket",
+            title: "Company Lunch Tickets",
             hasNextButton: false,
             hasPrevButton: false,
-            pageComponent: CommingSoon
+            pageComponent: ViewLunchTicketsPage,
+        },
+        {
+            id: "create_ticket",
+            title: "Create a new ticket",
+            hasNextButton: false,
+            hasPrevButton: false,
+            pageComponent: CreateLunchTicketsPage,
         }
     ]
 }
