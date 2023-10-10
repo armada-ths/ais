@@ -772,6 +772,11 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 
     if request.POST and form.is_valid():
         form.instance.banquet = banquet
+        if invitation == None:
+            has_sent_mail = False
+        else:
+            has_sent_mail = invitation.has_sent_mail
+        form.instance.has_sent_mail = True
         invitation = form.save()
 
         if (
@@ -782,6 +787,43 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
             invitation.participant.name = invitation.name
             invitation.participant.email_address = invitation.email_address
 
+        if invitation.participant == None:
+            # Not participant means not responded to invite
+            if invitation.user != None:
+                # Internal, get info from user
+                name = invitation.user.get_full_name()
+                email_address = invitation.user.email
+            else:
+                # External, info contained in form
+                name = invitation.name
+                email_address = invitation.email_address
+        else:
+            # Participant, info from participant instance
+            name = invitation.participant.name
+            email_address = invitation.participant.email_address
+
+        # Automatically send invite email if it hasn't been sent before
+        if not has_sent_mail:
+            token = invitation.token
+            # External and internal user invitations look different
+            if invitation.user is None:
+                link = request.build_absolute_uri(
+                    reverse(
+                        "banquet_external_invitation",
+                        kwargs={"token": token},
+                    )
+                )
+            else:
+                link = request.build_absolute_uri(
+                    reverse(
+                        "banquet_invitation",
+                        kwargs={"year": year, "token": token},
+                    )
+                )
+
+            send_invitation_mail(
+                name, banquet.date, banquet.location, link, email_address
+            )
         return redirect(
             "banquet_manage_invitation", fair.year, banquet.pk, invitation.pk
         )
@@ -1056,6 +1098,65 @@ def invitation(request, year, token):
             "form_catalogue_details": tableMatchingForm,
             "participant": {"token": participant.token},
         },
+    )
+
+
+@permission_required("banquet.base")
+def send_invitation_button(request, year, banquet_pk, invitation_pk):
+    """Called when "Send invitation Mail" is pressed on the manage_invitation page."""
+
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+    invitation = get_object_or_404(Invitation, banquet=banquet, pk=invitation_pk)
+
+    if invitation.user is None:
+        name = invitation.name
+        email = invitation.email_address
+        link = request.build_absolute_uri(
+            reverse(
+                "banquet_external_invitation",
+                kwargs={"token": invitation.token},
+            )
+        )
+    else:
+        name = invitation.user.get_full_name()
+        email = invitation.user.email
+        link = request.build_absolute_uri(
+            reverse(
+                "banquet_invitation",
+                kwargs={"year": year, "token": invitation.token},
+            )
+        )
+    send_invitation_mail(name, banquet.date, banquet.location, link, email)
+    invitation.has_sent_mail = True
+    invitation.save()
+
+    return render(
+        request,
+        "banquet/invite_sent.html",
+        {
+            "fair": fair,
+        },
+    )
+
+
+def send_invitation_mail(name, date, location, link, email):
+    """Send banquet invitation mail"""
+    send_mail(
+        "Your invite to the banquet",
+        "Hello "
+        + name
+        + "!\n"
+        + " You have been invited to the Grand Banquet of THS Armada. The banquet takes place "
+        + str(date)
+        + " at "
+        + str(location)
+        + ". \n Access your invitation with the following link: "
+        + link
+        + "\n\nSee you at the party!",
+        "noreply@armada.nu",
+        [email],
+        fail_silently=True,
     )
 
 

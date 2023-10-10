@@ -27,6 +27,7 @@
 			{% if invitation.status == 'PENDING' %}<span class="text-default">Pending</span>{% endif %}
 		</li>
 		<li><span style="font-weight: bold;">Part of matching:</span> {{ invitation.get_part_of_matching_display }}</li>
+		<li><span style="font-weight: bold;">Has sent invitation mail:</span> {{ invitation.has_sent_mail }}</li>
 	</ul>
 
 	<a href="{% url 'banquet_manage_invitation_edit' fair.year banquet.pk invitation.pk %}" class="btn btn-default">Edit invitation</a>
@@ -38,6 +39,11 @@
 		<input type="text" value="https://ais.armada.nu{% url 'banquet_external_invitation' invitation.token %}" />
 	{% else %}
 		<p>This invitation is tied to a user account. Ask {{ invitation.user.get_full_name }} to sign in to the AIS and click Banquet in the menu.</p>
+	{% endif %}
+	{% if invitation.has_sent_mail == True %}
+		<a href="{% url 'banquet_send_invitation_button' fair.year banquet.pk invitation.pk %}" class="btn btn-default" onclick="return confirm('An invite mail has already been sent to this person. Send again?')">Send invitation mail</a>
+	{% else %}
+		<a href="{% url 'banquet_send_invitation_button' fair.year banquet.pk invitation.pk %}" class="btn btn-default">Send invitation mail</a>
 	{% endif %}
 {% endblock %}
 

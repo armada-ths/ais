@@ -72,6 +72,11 @@ urlpatterns = [
         views.manage_participant_remove,
         name="banquet_manage_participant_remove",
     ),
+    url(
+        r"^(?P<banquet_pk>[0-9]+)/invitations/(?P<invitation_pk>[0-9]+)/mail_sent$",
+        views.send_invitation_button,
+        name="banquet_send_invitation_button",
+    ),
     url(r"^participants$", ParticipantsListView.as_view(), name="participant_list"),
     url(r"^send$", SendInviteCreateView.as_view(), name="send_invite"),
     url(r"^export$", export_invitations, name="export_invitations"),
