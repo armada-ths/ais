@@ -15,6 +15,11 @@ const form: Form = {
             hasNextButton: false,
             hasPrevButton: false,
             pageComponent: ViewLunchTicketsPage,
+            fields: [
+                {
+                    mapping: "result"
+                }
+            ]
         },
         {
             id: "create_ticket",

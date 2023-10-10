@@ -26,7 +26,6 @@ export function CreateLunchTicketsPage() {
                     <option value="12.30">12:30</option>
                     <option value="13">13:00</option>
                     <option value="13.30">13:30</option>
-                    <option value="14">14:00</option>
                 </select>
                 <label htmlFor="dietary-restrictions" className="pr-2">Dietary restrictions:</label>
                 <div id="dietary-restrictions-list" className="grid grid-cols-2 [&>div]:pt-2">

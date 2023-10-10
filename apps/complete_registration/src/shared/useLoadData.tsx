@@ -22,6 +22,8 @@ export default function useLoadData() {
     const [loading, setLoading] = useState(true)
     const dispatch = useDispatch()
 
+    console.log("HELLO")
+
     useEffect(() => {
         if (initialized.current) return
         initialized.current = true
@@ -42,7 +44,7 @@ export default function useLoadData() {
                 }
 
                 const awaitingMappings = reverseMap(data)
-                console.log("knsdjsd", awaitingMappings);
+                console.log(awaitingMappings)
                 // Set status for company
                 dispatch(
                     setCompanyRegistrationStatus(
@@ -59,7 +61,16 @@ export default function useLoadData() {
                         console.log("LUNCH TICKETS", JSON.stringify(data))
                         //data.result[0].id
                         const maps = reverseMap(data);
-                        console.log(maps)
+
+                        for (const current of maps) {
+                            dispatch(
+                                setField({
+                                    mapping: current.mapping,
+                                    value: current.value
+                                })
+                            )
+                        }
+
                     });
 
                 }

@@ -4,5 +4,6 @@
 	"tabWidth": 4,
 	"arrowParens": "avoid",
 	"useTabs": false,
+	"singleQuote": false,
 	"plugins": ["prettier-plugin-tailwindcss"]
 }
