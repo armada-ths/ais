@@ -773,9 +773,10 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
     if request.POST and form.is_valid():
         form.instance.banquet = banquet
         if invitation == None:
-            has_sent_email = False
+            has_sent_mail = False
         else:
-            has_sent_email = invitation.has_sent_mail
+            has_sent_mail = invitation.has_sent_mail
+        form.instance.has_sent_mail = True
         invitation = form.save()
 
         if (
@@ -802,7 +803,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
             email_address = invitation.participant.email_address
 
         # Automatically send invite email if it hasn't been sent before
-        if not has_sent_email:
+        if not has_sent_mail:
             token = invitation.token
             # External and internal user invitations look different
             if invitation.user is None:
@@ -823,8 +824,6 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
             send_invitation_mail(
                 name, banquet.date, banquet.location, link, email_address
             )
-            invitation.has_sent_email = True
-
         return redirect(
             "banquet_manage_invitation", fair.year, banquet.pk, invitation.pk
         )
