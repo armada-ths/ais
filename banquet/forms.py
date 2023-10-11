@@ -236,7 +236,7 @@ class ImportInvitationsForm(forms.Form):
                 row["invalid_name"] = True
                 row["name"] = ""
 
-            if row["price"] != None or row["price"] != "":
+            if row["price"] == None or row["price"] == "":
                 row["price"] = 0
             elif not row["price"].isdigit():
                 row["invalid_price"] = True
