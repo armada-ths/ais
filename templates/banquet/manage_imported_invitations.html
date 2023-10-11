@@ -70,13 +70,13 @@ price	name	title	email
 			{% for row in imported %}
 			<tr style="{% if row.duplicate %}background-color: #c3e6cb;{% endif %}">
 				<td style="{% if row.invalid_name %}background-color: #ffeeba;{% endif %}">
-					{% if row.duplicate %}
-					<a href="{% url 'banquet_manage_invitation' fair.year banquet.pk row.duplicate.pk %}"
-						target="_blank">{{ row.name }} (duplicate)</a>
-					{% else %} {{ row.name }} {% endif %}
+					{{ row.name }}
 				</td>
 				<td style="{% if row.invalid_email %}background-color: #f5c6cb;{% endif %}">
-					{{ row.email }}
+					{% if row.duplicate %}
+					<a href="{% url 'banquet_manage_invitation' fair.year banquet.pk row.duplicate.pk %}"
+						target="_blank">{{ row.email }} (duplicate)</a>
+					{% else %} {{ row.email }} {% endif %}
 				</td>
 				<td style="{% if row.invalid_price %}background-color: #f5c6cb;{% endif %}">
 					{{ row.price }}
