@@ -709,8 +709,9 @@ def manage_import_invitations(request, year, banquet_pk):
     imported = None
     has_errors = False
     has_warnings = False
+    all_invited = False
 
-    form = ImportInvitationsForm(request.POST or None)
+    form = ImportInvitationsForm(request.POST or None, banquet=banquet)
     form.fields["group"].queryset = InvitationGroup.objects.filter(banquet=banquet)
 
     if request.POST and form.is_valid():
@@ -731,7 +732,7 @@ def manage_import_invitations(request, year, banquet_pk):
                 for invite in imported:
                     # Invite already exists
                     if Invitation.objects.filter(
-                        email_address=invite["email"]
+                        email_address=invite["email"], banquet=banquet
                     ).exists():
                         continue
 

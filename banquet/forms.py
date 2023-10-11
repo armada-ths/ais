@@ -187,6 +187,10 @@ class ParticipantAdminForm(forms.ModelForm):
 
 
 class ImportInvitationsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.banquet = kwargs.pop("banquet")
+        super().__init__(*args, **kwargs)
+
     excel_text = forms.CharField(
         widget=forms.Textarea(attrs={"rows": 10, "cols": 100}),
         label="Paste Excel data here",
@@ -221,6 +225,7 @@ class ImportInvitationsForm(forms.Form):
         for row in rows:
             if row["email"] == None:
                 row["invalid_email"] = True
+                row["email"] = ""
             else:
                 try:
                     validator(row["email"])
@@ -229,13 +234,16 @@ class ImportInvitationsForm(forms.Form):
 
             if row["name"] == None or len(row["name"]) == 0:
                 row["invalid_name"] = True
+                row["name"] = ""
 
             if row["price"] != None or row["price"] != "":
                 row["price"] = 0
             elif not row["price"].isdigit():
                 row["invalid_price"] = True
 
-            duplicate = Invitation.objects.filter(email_address=row["email"]).first()
+            duplicate = Invitation.objects.filter(
+                email_address=row["email"], banquet=self.banquet
+            ).first()
             if duplicate != None:
                 row["duplicate"] = duplicate
 
