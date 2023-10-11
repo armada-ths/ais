@@ -6,8 +6,13 @@ from django.forms import (
     ModelChoiceField,
     ChoiceField,
 )
+
+from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator
+
 from django.contrib.auth.models import User
 import re
+import csv
 
 from .models import (
     Participant,
@@ -179,6 +184,70 @@ class ParticipantAdminForm(forms.ModelForm):
             "alcohol": forms.RadioSelect(),
             "giveaway": forms.RadioSelect(),
         }
+
+
+class ImportInvitationsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.banquet = kwargs.pop("banquet")
+        super().__init__(*args, **kwargs)
+
+    excel_text = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 10, "cols": 100}),
+        label="Paste Excel data here",
+    )
+    group = forms.ModelChoiceField(
+        queryset=InvitationGroup.objects.all(),
+        label="Select a group to add these invitations to",
+        required=False,
+    )
+
+    def clean_excel_text(self):
+        rows = [row.rstrip() for row in self.cleaned_data.get("excel_text").split("\n")]
+        rows = [row for row in rows if len(row) > 0]
+        reader = csv.DictReader(rows, delimiter="\t")
+
+        required_field_headers = ["price", "name", "email"]
+        required_not_found = []
+        for field in required_field_headers:
+            if field not in reader.fieldnames:
+                required_not_found.append(field)
+
+        if len(required_not_found) > 0:
+            raise forms.ValidationError(
+                "The following required fields were not found in the data: {}".format(
+                    ", ".join(required_not_found)
+                )
+            )
+
+        validator = EmailValidator()
+        rows = [row for row in reader]
+
+        for row in rows:
+            if row["email"] == None:
+                row["invalid_email"] = True
+                row["email"] = ""
+            else:
+                try:
+                    validator(row["email"])
+                except ValidationError:
+                    row["invalid_email"] = True
+
+            if row["name"] == None or len(row["name"]) == 0:
+                row["invalid_name"] = True
+                row["name"] = ""
+
+            if row["price"] != None or row["price"] != "":
+                row["price"] = 0
+            elif not row["price"].isdigit():
+                row["invalid_price"] = True
+
+            duplicate = Invitation.objects.filter(
+                email_address=row["email"], banquet=self.banquet
+            ).first()
+            if duplicate != None:
+                row["duplicate"] = duplicate
+
+        return rows
 
 
 class InvitationForm(forms.ModelForm):

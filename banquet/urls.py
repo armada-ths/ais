@@ -43,6 +43,11 @@ urlpatterns = [
         name="banquet_manage_invitation_new",
     ),
     url(
+        r"^(?P<banquet_pk>[0-9]+)/invitations/import$",
+        views.manage_import_invitations,
+        name="banquet_import_invitations",
+    ),
+    url(
         r"^(?P<banquet_pk>[0-9]+)/participants$",
         views.manage_participants,
         name="banquet_manage_participants",
