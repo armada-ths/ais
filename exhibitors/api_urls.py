@@ -2,7 +2,16 @@ from django.conf.urls import url
 
 from exhibitors import api
 
+from corsheaders.signals import check_request_enabled
+
 app_name = "exhibitors_api"
+
+
+def cors_allow_api_to_exhibitors(sender, request, **kwargs):
+    return request.path.startswith("/api/exhibitors")
+
+
+check_request_enabled.connect(cors_allow_api_to_exhibitors)
 
 urlpatterns = [
     url(r"^$", api.exhibitors),
