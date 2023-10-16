@@ -195,6 +195,12 @@ class ImportInvitationsForm(forms.Form):
         widget=forms.Textarea(attrs={"rows": 10, "cols": 100}),
         label="Paste Excel data here",
     )
+    send_email = forms.BooleanField(
+        label="Send invitation emails",
+        required=False,
+        initial=False,
+        help_text="Send an invitation email to the invitees.",
+    )
     group = forms.ModelChoiceField(
         queryset=InvitationGroup.objects.all(),
         label="Select a group to add these invitations to",
@@ -251,6 +257,13 @@ class ImportInvitationsForm(forms.Form):
 
 
 class InvitationForm(forms.ModelForm):
+    send_email = forms.BooleanField(
+        label="Send invitation email",
+        required=False,
+        initial=False,
+        help_text="Send an invitation email to the invitee.",
+    )
+
     def clean(self):
         super(InvitationForm, self).clean()
 

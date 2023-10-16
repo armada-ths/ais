@@ -104,8 +104,12 @@ price	name	title	email
 		<div class="col-xs-4">{{ form.group | as_crispy_field }}</div>
 	</div>
 
+	<div class="row">
+		<div class="col-xs-4">{{ form.send_email | as_crispy_field }}</div>
+	</div>
+
 	<input class="btn btn-primary" {% if has_errors or all_invited %} disabled {% endif %} style="margin-top: 10px"
-		name="invite" type="submit" value="Create invitations (will send invitations to emails)" />
+		name="invite" type="submit" value="Create invitations" />
 	{% endif %}
 </form>
 {% endblock %}

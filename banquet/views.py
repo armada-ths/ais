@@ -723,7 +723,10 @@ def manage_import_invitations(request, year, banquet_pk):
         all_invited = all("duplicate" in row for row in imported)
 
         if "invite" in request.POST:
-            if form.cleaned_data["group"] is None:
+            send_mail = form.cleaned_data["send_email"]
+            group = form.cleaned_data["group"]
+
+            if group is None:
                 form.add_error(
                     "group",
                     "You must select a group to invite to the banquet.",
@@ -741,13 +744,18 @@ def manage_import_invitations(request, year, banquet_pk):
                         name=invite["name"],
                         email_address=invite["email"],
                         price=invite["price"] or 0,
-                        group=form.cleaned_data["group"],
+                        group=group,
                     )
 
                     invitation.save()
-                    send_confirmation_email(
-                        request, invitation, invite["name"], invite["email"]
-                    )
+
+                    if send_mail:
+                        send_confirmation_email(
+                            request, invitation, invite["name"], invite["email"]
+                        )
+
+                        invitation.has_sent_mail = True
+                        invitation.save()
 
                 return redirect(
                     "banquet_manage_invitations",
@@ -847,7 +855,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
             has_sent_mail = False
         else:
             has_sent_mail = invitation.has_sent_mail
-        form.instance.has_sent_mail = True
+
         invitation = form.save()
 
         if (
@@ -873,9 +881,14 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
             name = invitation.participant.name
             email_address = invitation.participant.email_address
 
+        send_mail = form.cleaned_data["send_email"]
+
         # Automatically send invite email if it hasn't been sent before
-        if not has_sent_mail:
+        if send_mail and not has_sent_mail:
             send_confirmation_email(request, invitation, name, email_address)
+            form.instance.has_sent_mail = True
+            form.save()
+
         return redirect(
             "banquet_manage_invitation", fair.year, banquet.pk, invitation.pk
         )
@@ -1180,6 +1193,17 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
             )
         )
 
+    print(
+        "Sending invitation mail",
+        {
+            "invitation": invitation,
+            "name": name,
+            "banquet.date": banquet.date,
+            "banquet.location": banquet.location,
+            "link": link,
+            "email": email,
+        },
+    )
     send_invitation_mail(invitation, name, banquet.date, banquet.location, link, email)
 
     return render(
