@@ -9,14 +9,16 @@ def send_invitation_mail(invitation, name, date, location, link, email):
         "Hello "
         + name
         + "!\n"
-        + " You have been invited to the Grand Banquet of THS Armada. The banquet takes place "
+        + "You have been invited to the Grand Banquet of THS Armada.\n"
+        + "The banquet takes place "
         + str(date)
         + " at "
         + str(location)
-        + ". \n Access your invitation with the following link: "
+        + ". \n Access your invitation with the following link:\n"
         + link
-        + "\n\nSee you at the party!",
-        "noreply@armada.nu",
+        + "\n\nSee you at the banquet!\b",
+        +"Best Regards,\n",
+        +"The Banquet Team of THS Armada 2023" "Armada Banquet <noreply@armada.nu>",
         [email],
         fail_silently=True,
     )
