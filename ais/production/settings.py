@@ -18,6 +18,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
 ]
 
+CORS_ALLOWED_ORIGINS_REGEXES = ["^https:\/\/\w+--armada\.netlify\.app$"]
+
 DEBUG = False
 
 # The URL scheme is slightly different in a production environment
