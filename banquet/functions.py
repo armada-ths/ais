@@ -16,7 +16,7 @@ def send_invitation_mail(invitation, name, date, location, link, email):
         + str(location)
         + ". \nAccess your invitation with the following link:\n"
         + link
-        + "\n\nSee you at the banquet!\b"
+        + "\n\nSee you at the banquet!\n"
         + "Best Regards,\n"
         + "The Banquet Team of THS Armada 2023",
         "Armada Banquet <noreply@armada.nu>",
