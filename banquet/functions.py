@@ -14,7 +14,7 @@ def send_invitation_mail(invitation, name, date, location, link, email):
         + str(date)
         + " at "
         + str(location)
-        + ". \n Access your invitation with the following link:\n"
+        + ". \nAccess your invitation with the following link:\n"
         + link
         + "\n\nSee you at the banquet!\b"
         + "Best Regards,\n"
