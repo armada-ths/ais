@@ -7,7 +7,7 @@ def send_invitation_mail(invitation, name, date, location, link, email):
     send_mail(
         "Your invite to the banquet",
         "Hello "
-        + name
+        + str(name)
         + "!\n"
         + "You have been invited to the Grand Banquet of THS Armada.\n"
         + "The banquet takes place "

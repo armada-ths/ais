@@ -40,8 +40,8 @@
 	{% else %}
 		<p>This invitation is tied to a user account. Ask {{ invitation.user.get_full_name }} to sign in to the AIS and click Banquet in the menu.</p>
 	{% endif %}
-	{% if invitation.has_sent_mail == True %}
-		<a href="{% url 'banquet_send_invitation_button' fair.year banquet.pk invitation.pk %}" class="btn btn-default" onclick="return confirm('An invite mail has already been sent to this person. Send again?')">Send invitation mail</a>
+	{% if invitation.has_sent_mail %}
+		<a href="{% url 'banquet_send_invitation_button' fair.year banquet.pk invitation.pk %}" class="btn btn-default" onclick="return confirm('An invite mail has already been sent to this person. Send again?')">Send invitation mail (already sent)</a>
 	{% else %}
 		<a href="{% url 'banquet_send_invitation_button' fair.year banquet.pk invitation.pk %}" class="btn btn-default">Send invitation mail</a>
 	{% endif %}
