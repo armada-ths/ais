@@ -12,6 +12,7 @@ from events import serializers
 from events.forms import EventForm, TeamForm
 from events.models import Event, Team, Participant, SignupQuestion
 from fair.models import Fair
+from people.models import Programme
 from recruitment.models import RecruitmentApplication
 
 
@@ -160,6 +161,7 @@ def event_signup(request, year, event_pk):
         "signup_url": signup_url,
         "stripe_publishable": settings.STRIPE_PUBLISHABLE,
         "participant": serializers.participant(participant) if participant else None,
+        "student_programs": [program.name for program in Programme.objects.all()],
     }
 
     return render(
