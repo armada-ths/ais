@@ -107,7 +107,11 @@ class SignupForm extends Component {
     return (
         <Grid container spacing={16}>
         <div className='image-section' >
-          <img alt='Event image' src={event.image_url} style={{"max-width":"100%",}}/>
+          {
+            event.image_url && (
+              <img alt='Event image' src={event.image_url} style={{"max-width":"100%",}}/>
+            )
+          }
         </div>
           <Grid item>
 						<Grid container spacing={16}>

@@ -8,6 +8,7 @@ import Radio from "@material-ui/core/es/Radio/Radio";
 import RadioGroup from "@material-ui/core/es/RadioGroup/RadioGroup";
 import FormControl from "@material-ui/core/es/FormControl/FormControl";
 import FormLabel from "@material-ui/core/es/FormLabel/FormLabel";
+import NativeSelect from "@material-ui/core/es/NativeSelect/NativeSelect";
 import xor from 'lodash/xor';
 import includes from 'lodash/includes';
 
@@ -38,6 +39,7 @@ class Question extends PureComponent {
     } = this.props;
 
     let answerElement;
+    const student_programs = window.reactProps.student_programs;
 
     switch (type) {
       case 'text_field':
@@ -101,6 +103,24 @@ class Question extends PureComponent {
                     }/>)}
               </FormGroup>
             </FormControl>
+        );
+        break;
+      }
+      case 'student_program': {
+        answerElement = (
+          <FormControl error={error} component="fieldset" required={required}>
+            <FormLabel component="legend">Choose your student program</FormLabel>
+            <NativeSelect
+                value={value}
+                onChange={(e) => handleChange(id, e.target.value)}
+            >
+              <option value="" disabled={required}>Choose a program</option>
+              {student_programs.map(option => <option
+                  key={option}
+                  label={option}
+              >{option}</option>)}
+            </NativeSelect>
+          </FormControl>
         );
         break;
       }

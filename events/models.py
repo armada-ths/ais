@@ -235,6 +235,7 @@ class SignupQuestion(models.Model):
         ("text_area", "Long Text"),
         ("single_choice", "Single Choice"),
         ("multiple_choice", "Multiple Choice"),
+        ("student_program", "Student Program"),
     )
 
     class Meta:
