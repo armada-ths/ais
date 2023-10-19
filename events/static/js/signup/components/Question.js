@@ -19,6 +19,7 @@ const FileUpload = ({ error, required, question, onChange }) => {
   const { upload_url } = window.reactProps
 
   const [file, setFile] = useState();
+  const [fileUploadError, setFileUploadError] = useState();
   const [loading, setLoading] = useState(false);
 
   const handleFile = useCallback((file) => {
@@ -35,17 +36,34 @@ const FileUpload = ({ error, required, question, onChange }) => {
         "X-CSRFToken": Cookie.get('csrftoken')
       }
     })
-      .then(response => response.json())
-      .then(({ file_pk }) => {
+      .then(response => response.json().then(json => [json, response.status]))
+      .then(([json, status]) => {
+        console.log({ status, json })
+
+        if (status !== 201) {
+          const { reason: { file } } = json
+          const error = file.map(v => v.message).join(', ')
+
+          console.log({ file })
+
+          setFileUploadError(error)
+          setLoading(false)
+          return
+        }
+
+        const { file_pk } = json
+
         onChange(`${file_pk}`)
+        setFileUploadError(undefined)
         setLoading(false)
       })
       .catch((error) => {
         console.error('Error:', error);
         setLoading(false)
-      }
-      )
+      })
   }, [setFile])
+
+  const hasError = !!(fileUploadError || error)
 
   const label = <>
     {question}
@@ -53,14 +71,16 @@ const FileUpload = ({ error, required, question, onChange }) => {
   </>
 
   return (
-    <FormControl error={error} component="fieldset" required={required}>
+    <FormControl error={hasError} component="fieldset" required={required}>
       <FormLabel component="legend">{label}</FormLabel>
+      {fileUploadError && <FormLabel error>{fileUploadError}</FormLabel>}
       <TextField
         fullWidth
         required={required}
         value={file?.filename}
-        error={error}
+        error={hasError}
         onChange={(e) => handleFile(e.target.files[0])}
+        accept="image/*,application/pdf"
         type="file"
       />
     </FormControl>
