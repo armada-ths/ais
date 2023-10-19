@@ -1,6 +1,12 @@
 from django.forms import ModelForm, TextInput
 
-from events.models import Event, Team
+from events.models import Event, SignupQuestionAnswerFile, Team
+
+
+class SignupQuestionAnswerFileForm(ModelForm):
+    class Meta:
+        model = SignupQuestionAnswerFile
+        fields = ["file"]
 
 
 class EventForm(ModelForm):
