@@ -1,6 +1,4 @@
-import React, { PureComponent, useCallback, useEffect, useState } from 'react';
-import Cookie from 'js-cookie';
-
+import React, {PureComponent} from 'react';
 import Grid from "@material-ui/core/es/Grid/Grid";
 import TextField from "@material-ui/core/es/TextField/TextField";
 import FormGroup from "@material-ui/core/es/FormGroup/FormGroup";
@@ -13,60 +11,6 @@ import FormLabel from "@material-ui/core/es/FormLabel/FormLabel";
 import NativeSelect from "@material-ui/core/es/NativeSelect/NativeSelect";
 import xor from 'lodash/xor';
 import includes from 'lodash/includes';
-import { CircularProgress } from '@material-ui/core/es';
-
-const FileUpload = ({ error, required, question, onChange }) => {
-  const { upload_url } = window.reactProps
-
-  const [file, setFile] = useState();
-  const [loading, setLoading] = useState(false);
-
-  const handleFile = useCallback((file) => {
-    setFile(file)
-    setLoading(true)
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    fetch(upload_url, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        "X-CSRFToken": Cookie.get('csrftoken')
-      }
-    })
-      .then(response => response.json())
-      .then(({ file_pk }) => {
-        onChange(`${file_pk}`)
-        setLoading(false)
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        setLoading(false)
-      }
-      )
-  }, [setFile])
-
-  const label = <>
-    {question}
-    {loading && <CircularProgress style={{ marginLeft: "0.5rem", display: 'inline-block' }} size="10" />}
-  </>
-
-  return (
-    <FormControl error={error} component="fieldset" required={required}>
-      <FormLabel component="legend">{label}</FormLabel>
-      <TextField
-        fullWidth
-        required={required}
-        value={file?.filename}
-        error={error}
-        onChange={(e) => handleFile(e.target.files[0])}
-        type="file"
-      />
-    </FormControl>
-  )
-}
-
 
 class Question extends PureComponent {
   constructor() {
@@ -75,11 +19,12 @@ class Question extends PureComponent {
   }
 
   handleMultiChoiceChange(toggledOption) {
-    const { id, value, handleChange } = this.props;
+    const {id, value, handleChange} = this.props;
     const updatedValue = xor(value, [toggledOption]);
 
     handleChange(id, updatedValue);
   }
+
 
   render() {
     const {
@@ -99,65 +44,65 @@ class Question extends PureComponent {
     switch (type) {
       case 'text_field':
         answerElement = <TextField
-          fullWidth
-          required={required}
-          label={question}
-          value={value}
-          error={error}
-          onChange={(e) => handleChange(id, e.target.value)}
+            fullWidth
+            required={required}
+            label={question}
+            value={value}
+            error={error}
+            onChange={(e) => handleChange(id, e.target.value)}
         />;
         break;
       case 'text_area':
         answerElement = <TextField
-          fullWidth
-          required={required}
-          label={question}
-          value={value}
-          error={error}
-          onChange={(e) => handleChange(id, e.target.value)}
-          multiline
-          rows={4}
+            fullWidth
+            required={required}
+            label={question}
+            value={value}
+            error={error}
+            onChange={(e) => handleChange(id, e.target.value)}
+            multiline
+            rows={4}
         />;
         break;
       case 'single_choice': {
         answerElement = (
-          <FormControl error={error} component="fieldset" required={required}>
-            <FormLabel component="legend">{question}</FormLabel>
-            <RadioGroup
-              row
-              value={value}
-              onChange={(e) => handleChange(id, e.target.value)}
-            >
-              {options.map(option => <FormControlLabel
-                key={option}
-                label={option}
-                value={option}
-                control={
-                  <Radio color="primary" />
-                }
-              />)}
-            </RadioGroup>
-          </FormControl>
+            <FormControl error={error} component="fieldset" required={required}>
+              <FormLabel component="legend">{question}</FormLabel>
+              <RadioGroup
+                  row
+                  value={value}
+                  onChange={(e) => handleChange(id, e.target.value)}
+              >
+                {options.map(option => <FormControlLabel
+                    key={option}
+                    label={option}
+                    value={option}
+                    control={
+                      <Radio color="primary"/>
+                    }
+                />)}
+              </RadioGroup>
+            </FormControl>
         );
         break;
       }
       case 'multiple_choice': {
         answerElement = (
-          <FormControl error={error} required component="fieldset">
-            <FormLabel component="legend">{question}</FormLabel>
-            <FormGroup row>
-              {options.map(option => <FormControlLabel
-                key={option}
-                label={option}
-                control={
-                  <Checkbox
-                    checked={includes(value, option)}
-                    onChange={() => this.handleMultiChoiceChange(option)}
-                    color="primary"
-                  />
-                } />)}
-            </FormGroup>
-          </FormControl>
+            <FormControl error={error} required component="fieldset">
+              <FormLabel component="legend">{question}</FormLabel>
+              <FormGroup row>
+                {options.map(option => <FormControlLabel
+                    key={option}
+                    label={option}
+                    control={
+                      <Checkbox
+                          checked={includes(value, option)}
+                          onChange={() => this.handleMultiChoiceChange(option)}
+                          color="primary"
+                      />
+                    }/>)}
+              </FormGroup>
+            </FormControl>
         );
         break;
       }
@@ -166,31 +111,25 @@ class Question extends PureComponent {
           <FormControl error={error} component="fieldset" required={required}>
             <FormLabel component="legend">Choose your student program</FormLabel>
             <NativeSelect
-              value={value}
-              onChange={(e) => handleChange(id, e.target.value)}
+                value={value}
+                onChange={(e) => handleChange(id, e.target.value)}
             >
               <option value="" disabled={required}>Choose a program</option>
               {student_programs.map(option => <option
-                key={option}
-                label={option}
+                  key={option}
+                  label={option}
               >{option}</option>)}
             </NativeSelect>
           </FormControl>
         );
         break;
       }
-      case 'file_upload': {
-        answerElement = (
-          <FileUpload error={error} required={required} question={question} onChange={v => handleChange(id, v)} />
-        );
-        break;
-      }
     }
 
     return (
-      <Grid item xs={12}>
-        {answerElement}
-      </Grid>
+        <Grid item xs={12}>
+          {answerElement}
+        </Grid>
     )
   }
 }

@@ -9,13 +9,11 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required, login_required
 
 from events import serializers
-from events.forms import SignupQuestionAnswerFileForm
 from events.models import (
     Event,
     Participant,
     SignupQuestion,
     SignupQuestionAnswer,
-    SignupQuestionAnswerFile,
     Team,
     TeamMember,
     ParticipantCheckIn,
@@ -52,24 +50,6 @@ def show(request, event_pk):
     data = serializers.event(event, request)
 
     return JsonResponse(data, safe=False)
-
-
-@require_POST
-def upload_file(request, event_pk):
-    event = get_object_or_404(Event, pk=event_pk)
-    if not request.user:
-        return JsonResponse({"error": "Authentication required."}, status=403)
-
-    if not event.open_for_signup:
-        return JsonResponse({"error": "Event not open for sign ups."}, status=403)
-
-    form = SignupQuestionAnswerFileForm(request.POST, request.FILES)
-    form.save()
-
-    return JsonResponse(
-        {"file_pk": form.instance.pk},
-        status=201,
-    )
 
 
 @require_POST
@@ -118,20 +98,10 @@ def signup(request, event_pk):
     questions = SignupQuestion.objects.filter(event=event).all()
 
     for question in questions:
-        file = None
-        answer = answers[str(question.pk)]
-
-        if question.type == "file_upload" and answer != None:
-            try:
-                file = SignupQuestionAnswerFile.objects.get(pk=answer)
-            except:
-                file = None
-
         SignupQuestionAnswer.objects.update_or_create(
             participant=participant,
             signup_question=question,
-            file=file,
-            defaults={"answer": answer},
+            defaults={"answer": answers[str(question.pk)]},
         )
 
     # TODO Check that all required questions have been answered

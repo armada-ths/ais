@@ -86,8 +86,6 @@ class SignupForm extends Component {
     forEach(answers, (answer, id) => {
       const question = find(signup_questions, {id: parseInt(id)});
 
-      console.log({question, answer}, isEmpty(answer))
-
       if (question.required && isEmpty(answer)) {
         errors[id] = true;
       }
