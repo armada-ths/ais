@@ -148,6 +148,7 @@ def event_signup(request, year, event_pk):
 
     payment_url = reverse("events_api:payment", args=[event_pk])
     signup_url = reverse("events_api:signup", args=[event_pk])
+    upload_url = reverse("events_api:upload", args=[event_pk])
 
     # Will be populated if user has completed signup before
     participant = Participant.objects.filter(user_s=request.user, event=event).first()
@@ -159,6 +160,7 @@ def event_signup(request, year, event_pk):
         "teams": [serializers.team(team) for team in open_student_teams],
         "payment_url": payment_url,
         "signup_url": signup_url,
+        "upload_url": upload_url,
         "stripe_publishable": settings.STRIPE_PUBLISHABLE,
         "participant": serializers.participant(participant) if participant else None,
         "student_programs": [program.name for program in Programme.objects.all()],

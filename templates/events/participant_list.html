@@ -40,7 +40,15 @@
 						{% else %} Student {% endif %}
 					</td>
 					{% for answer in participant.signupquestionanswer_set.all %}
-						<td style="text-align: right;">{{ answer.answer }}</td>
+						<td style="text-align: right;">
+							{% if answer.file %}
+								<a href="{{ answer.file.file.url }}" target="_blank">
+									Download File
+								</a>
+							{% else %}
+								{{ answer.answer }}
+							{% endif %}
+						</td>
 					{% endfor %}
 				</tr>
 			{% endfor %}

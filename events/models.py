@@ -236,6 +236,7 @@ class SignupQuestion(models.Model):
         ("single_choice", "Single Choice"),
         ("multiple_choice", "Multiple Choice"),
         ("student_program", "Student Program"),
+        ("file_upload", "File Upload"),
     )
 
     class Meta:
@@ -250,6 +251,10 @@ class SignupQuestion(models.Model):
     options = ArrayField(models.TextField(blank=False, null=False), default=list)
 
 
+class SignupQuestionAnswerFile(models.Model):
+    file = models.FileField(upload_to=UploadToDirUUID("events", "files"))
+
+
 class SignupQuestionAnswer(models.Model):
     signup_question = models.ForeignKey(
         SignupQuestion, blank=False, null=False, on_delete=models.CASCADE
@@ -258,6 +263,12 @@ class SignupQuestionAnswer(models.Model):
         Participant, blank=False, null=False, on_delete=models.CASCADE
     )
     answer = models.TextField()  # Used for 'text_field' and 'text_area'
+    file = models.ForeignKey(
+        SignupQuestionAnswerFile,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         ordering = ["signup_question__pk"]
