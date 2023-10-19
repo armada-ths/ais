@@ -5,22 +5,46 @@ import lib.image
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0029_add_program_question'),
+        ("events", "0029_add_program_question"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SignupQuestionAnswerFile',
+            name="SignupQuestionAnswerFile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(blank=True, null=True, upload_to=lib.image.UploadToDirUUID('events', 'files'))),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "file",
+                    models.FileField(
+                        blank=True,
+                        null=True,
+                        upload_to=lib.image.UploadToDirUUID("events", "files"),
+                    ),
+                ),
             ],
         ),
         migrations.AlterField(
-            model_name='signupquestion',
-            name='type',
-            field=models.CharField(choices=[('text_field', 'Short Text'), ('text_area', 'Long Text'), ('single_choice', 'Single Choice'), ('multiple_choice', 'Multiple Choice'), ('student_program', 'Student Program'), ('file_upload', 'File Upload')], max_length=20),
+            model_name="signupquestion",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("text_field", "Short Text"),
+                    ("text_area", "Long Text"),
+                    ("single_choice", "Single Choice"),
+                    ("multiple_choice", "Multiple Choice"),
+                    ("student_program", "Student Program"),
+                    ("file_upload", "File Upload"),
+                ],
+                max_length=20,
+            ),
         ),
     ]

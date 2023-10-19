@@ -6,20 +6,26 @@ import lib.image
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0030_add_program_file_question'),
+        ("events", "0030_add_program_file_question"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signupquestionanswer',
-            name='file',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='events.SignupQuestionAnswerFile'),
+            model_name="signupquestionanswer",
+            name="file",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="events.SignupQuestionAnswerFile",
+            ),
         ),
         migrations.AlterField(
-            model_name='signupquestionanswerfile',
-            name='file',
-            field=models.FileField(upload_to=lib.image.UploadToDirUUID('events', 'files')),
+            model_name="signupquestionanswerfile",
+            name="file",
+            field=models.FileField(
+                upload_to=lib.image.UploadToDirUUID("events", "files")
+            ),
         ),
     ]
