@@ -14,7 +14,7 @@ from events.models import Event, SignupQuestionAnswerFile, Team
 # 100MB 104857600
 # 250MB - 214958080
 # 500MB - 429916160
-MAX_UPLOAD_SIZE = 2621440  # 2MB
+MAX_UPLOAD_SIZE = 10485760  # 10MB
 CONTENT_TYPES = ["png", "pdf"]
 
 

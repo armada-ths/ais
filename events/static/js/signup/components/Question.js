@@ -38,13 +38,9 @@ const FileUpload = ({ error, required, question, onChange }) => {
     })
       .then(response => response.json().then(json => [json, response.status]))
       .then(([json, status]) => {
-        console.log({ status, json })
-
         if (status !== 201) {
           const { reason: { file } } = json
           const error = file.map(v => v.message).join(', ')
-
-          console.log({ file })
 
           setFileUploadError(error)
           setLoading(false)
@@ -59,9 +55,11 @@ const FileUpload = ({ error, required, question, onChange }) => {
       })
       .catch((error) => {
         console.error('Error:', error);
+
         setLoading(false)
+        setFileUploadError('Something went wrong, please contact support.')
       })
-  }, [setFile])
+  }, [setFile, setLoading, setFileUploadError, onChange])
 
   const hasError = !!(fileUploadError || error)
 
