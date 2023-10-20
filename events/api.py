@@ -1,4 +1,5 @@
 import json
+from django import forms
 
 import stripe
 from django.conf import settings
@@ -64,6 +65,14 @@ def upload_file(request, event_pk):
         return JsonResponse({"error": "Event not open for sign ups."}, status=403)
 
     form = SignupQuestionAnswerFileForm(request.POST, request.FILES)
+
+    if not form.is_valid():
+        error = form.errors.get_json_data(escape_html=True)
+
+        return JsonResponse(
+            {"error": "Unable to save file.", "reason": error}, status=400
+        )
+
     form.save()
 
     return JsonResponse(
