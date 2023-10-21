@@ -7,6 +7,7 @@ app_name = "fair_api"
 urlpatterns = [
     url(r"^lunchtickets/search$", api.lunchtickets_search, name="lunchtickets_search"),
     url(r"^lunchtickets/companysearch$", api.lunchtickets_companysearch, name="lunchtickets_companysearch"),
+    url(r"^lunchtickets/reactcreate$", api.lunchticket_reactcreate, name="lunchtickets_reactcreate"),
     url(
         r"^lunchtickets/check_in/(?P<lunch_ticket_pk>\d+)$",
         api.lunchticket_check_in,

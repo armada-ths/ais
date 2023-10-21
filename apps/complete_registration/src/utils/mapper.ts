@@ -75,16 +75,14 @@ export function reverseMap(parent: any) {
                 let parentCopy = { ...parent }
                 for (const part of path) {
                     if (parentCopy == null || parentCopy[part] === undefined){
-                        
+
                         continue
                     }
-                    console.log("")
                     if (
                         part === path[path.length - 1] &&
                         parentCopy[part] != null &&
                         (typeof parentCopy[part] !== "object" || Array.isArray(parentCopy[part]))
                     ) {
-                        console.log("FIRST", "1", parentCopy[part])
                         awaitingMappings.push({
                             mapping: field.mapping,
                             value: parentCopy[part]

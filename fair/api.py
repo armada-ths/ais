@@ -1,15 +1,26 @@
 import operator
 from functools import reduce
-
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET, require_POST
 
+from django.http import QueryDict
 from fair import serializers
-from fair.models import Fair, LunchTicket, LunchTicketScan
+from fair.models import Fair, LunchTicket, LunchTicketScan, LunchTicketTime, FairDay
+from companies.models import Company
+from .forms import LunchTicketForm
 
+from util import (
+    JSONError,
+    get_company_contact,
+    get_contract_signature,
+    get_fair,
+    get_user,
+    status,
+)
 
 @require_GET
 def lunchtickets_search(request):
@@ -76,6 +87,44 @@ def lunchtickets_companysearch(request):
     }
 
     return JsonResponse(data, safe=False)
+
+@require_POST
+@csrf_exempt
+#This is an endpoint called by react
+def lunchticket_reactcreate(request):
+
+    #Preprocess data
+    companyName = request.POST['company']
+    year = request.POST['day'].split("-")[0]
+
+    #Get company's ID value
+    company = Company.objects.filter(name__exact=companyName).values('id').first()
+    if company:
+        company_id = company['id']
+        print(company_id)
+    else:
+        return HttpResponse(status=400)
+    
+    #Build date time 
+    fair = get_object_or_404(Fair, year=year)
+    day = get_object_or_404(FairDay, date=request.POST['day'], fair=fair)
+    time = get_object_or_404(LunchTicketTime, name=request.POST['time'], day=day)
+
+    #Modify request to adapt to what DJango expects
+    mutable_req = QueryDict('', mutable=True)
+    mutable_req.update(request.POST)
+    mutable_req['company'] = str(company_id)
+    mutable_req['day'] = str(day.id)
+    mutable_req['time'] = str(time.id)
+    mutable_req['user'] = ''
+
+    form = LunchTicketForm(mutable_req or None, initial={"fair": fair})
+    if form.is_valid():
+        form.instance.fair = fair
+        lunch_ticket = form.save()
+        return HttpResponse(status=200)
+
+    return HttpResponse(status=400)
 
 @require_POST
 @permission_required("fair.lunchtickets")
