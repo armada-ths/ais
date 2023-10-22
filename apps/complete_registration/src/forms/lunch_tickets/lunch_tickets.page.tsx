@@ -22,7 +22,7 @@ export function ViewLunchTicketsPage() {
         if(shownTickets == null)
             setShownTickets(tickets);
         searchTickets();
-    }, [tickets, filterUsedState, filterDateState])
+    }, [])
 
     const searchTickets = () => {
         //Filter tickets
@@ -39,10 +39,9 @@ export function ViewLunchTicketsPage() {
         }
     }
 
-    if (shownTickets == null) return null
 
     return (
-        <FormWrapper className="flex flex-col gap-y-5 text-slate-700 max-w-md max-w-md">
+        <FormWrapper className="flex flex-col gap-y-5 text-slate-700 max-w-md">
             <h2 className="font-bold text-md text-center">Here you can find all your lunch tickets</h2>
             <form className="flex w-lg" >
                 <div className="w-1/3 mr-auto">
@@ -64,7 +63,12 @@ export function ViewLunchTicketsPage() {
                         <LunchTicketView key={index} ticket={ticket} ></LunchTicketView>
                     </div>
                 );
-                })}
+            })}
+            {(shownTickets.length == 0 ?
+                <p className="font-semibold pt-4 text-center">No tickets found under your company.</p>
+                :
+                ""
+            )}
         </FormWrapper>
     )
 }
