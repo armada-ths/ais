@@ -39,6 +39,19 @@ export function ViewLunchTicketsPage() {
         }
     }
 
+
+    const displayMoreInfo: MouseEventHandler<HTMLButtonElement> = (event: MouseEvent) => {
+        const target = event.target as HTMLElement;
+        const moreInfoDiv = target.closest('.more-info-container');
+        const moreInfo = moreInfoDiv?.querySelector('.more-info') as HTMLElement;
+
+        if (moreInfo) {
+            // Toggle the visibility of the closest 'dietary-restrictions' div
+            const currentDisplay = moreInfo.style.display;
+            moreInfo.style.display = currentDisplay === 'none' ? 'flex' : 'none';
+        }
+    }
+
     const displayDietaryRestrictions: MouseEventHandler<HTMLButtonElement> = (event: MouseEvent) => {
         const target = event.target as HTMLElement;
         const dietaryRestrictionsDiv = target.closest('.dietary-restrictions-container');
@@ -54,7 +67,7 @@ export function ViewLunchTicketsPage() {
     if (shownTickets == null) return null
 
     return (
-        <FormWrapper className="flex flex-col gap-y-5 text-slate-700 max-w-md min-w-md">
+        <FormWrapper className="flex flex-col gap-y-5 text-slate-700 max-w-md max-w-md">
             <h2 className="font-bold text-md text-center">Here you can find all your lunch tickets</h2>
             <form className="flex w-lg" >
                 <div className="w-1/3 mr-auto">
@@ -71,10 +84,9 @@ export function ViewLunchTicketsPage() {
                 </div>
             </form>
             {shownTickets.map((ticket, index) => {
-                console.log(ticket);
                 return (
                     <div key={index} className="+mb-6 min-w-75">
-                        <LunchTicketView key={index} ticket={ticket} displayDietaryRestrictions={displayDietaryRestrictions}></LunchTicketView>
+                        <LunchTicketView key={index} ticket={ticket} displayDietaryRestrictions={displayDietaryRestrictions} displayMoreInfo={displayMoreInfo}></LunchTicketView>
                     </div>
                 );
                 })}

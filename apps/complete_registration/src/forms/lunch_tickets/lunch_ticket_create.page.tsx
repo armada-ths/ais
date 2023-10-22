@@ -65,11 +65,13 @@ export function CreateLunchTicketsPage() {
 
         try{
             validateLunchTicket(ticket);
-        }catch(error){
-            console.error("Error:", error);
-            const errorString = error.toString();
-            setErrorString(errorString);
-            return;
+        }catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Error:", error);
+                const errorString = error.toString();
+                setErrorString(errorString);
+                return;
+            }
         }
 
         try{

@@ -1,15 +1,18 @@
 import { MouseEventHandler } from "react";
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils";
+import { Button } from 'primereact/button';
 
 interface LunchTicketsProps{
     ticket:LunchTicket;
     displayDietaryRestrictions: MouseEventHandler<HTMLButtonElement>;
+    displayMoreInfo: MouseEventHandler<HTMLButtonElement>;
 }
 
 const LunchTicketView: React.FC<LunchTicketsProps> = (
     {
         ticket,
         displayDietaryRestrictions,
+        displayMoreInfo
     }
 ) => {
     return(
@@ -21,17 +24,34 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                 <p>{ticket.time}</p>
                             </div>
                         </div>
-                        <div className="flex pl-4 pb-1">
+                        <div className="flex pl-4">
                             <div className={"lunch-ticket-availability" + ((ticket.used ? " used" : ""))} />
                             <p className="pl-2 font-semibold">{(ticket.used ? 'Used' : 'Assigned')}</p>
                         </div>
-                        <div className="pl-4 pb-1">
-                            <p><span className="font-semibold">Email:</span> {ticket.email_address}</p>
-                            {(ticket.comment ?
-                                <p><span className="font-semibold">Comment:</span> {ticket.comment}</p>
-                                :
-                                ""
-                            )}
+                        <div className="more-info-container pt-2">
+                            <button className="justify-center cursor-pointer pb-2 pl-4" onClick={displayMoreInfo}>
+                                <span className="hover:underline text-indigo-700 before:content-['+']"> More Info</span>
+                            </button>
+                            <div className="more-info flex flex-row w-full pb-1 border-t-2 pt-2">
+                                <div className="w-2/3 [&>*]:pb-2 [&>*]:pl-4">
+                                    <div>
+                                        <p className="font-semibold">Email:</p>
+                                        <p>{ticket.email_address}</p>
+                                    </div>
+                                    {(ticket.comment ?
+                                        <div>
+                                            <p className="font-semibold">Comment:</p>
+                                            <p>{ticket.comment}</p>
+                                        </div>
+                                        :
+                                        ""
+                                )}
+                                </div>
+                                <div className="flex flex-row w-1/3 px-2 pb-2 gap-2 justify-center items-end [&>*]:p-0 [&>*]:border-none [&>*]:w-1/2 [&>*]:h-8">
+                                    <Button label="Send"/>
+                                    <Button severity="danger" label="Delete" />
+                                </div>
+                            </div>
                         </div>
                         <div className="dietary-restrictions-container">
                             <button className="w-full border-t-2 border-b-2 flex justify-center cursor-pointer" onClick={displayDietaryRestrictions}>

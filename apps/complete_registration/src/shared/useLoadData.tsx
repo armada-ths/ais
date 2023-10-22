@@ -22,8 +22,6 @@ export default function useLoadData() {
     const [loading, setLoading] = useState(true)
     const dispatch = useDispatch()
 
-    console.log("HELLO")
-
     useEffect(() => {
         if (initialized.current) return
         initialized.current = true
@@ -60,7 +58,6 @@ export default function useLoadData() {
                         const data = await raw.json()
                         //data.result[0].id
                         const maps = reverseMap(data);
-                        console.log("TICKETS:", maps);
                         for (const current of maps) {
                             dispatch(
                                 setField({
