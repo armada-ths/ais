@@ -46,8 +46,8 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                 </span>
                             </button>
                             {(moreInfoDisplayed ?
-                                <div className="more-info flex flex-row w-full pb-1 border-t-2 pt-2">
-                                    <div className="w-2/3 [&>*]:pb-2 [&>*]:pl-4">
+                                <div className="more-info flex flex-row w-full pb-1 border-t-2 pt-2 px-4">
+                                    <div className="w-2/3 [&>*]:pb-2">
                                         <div>
                                             <p className="font-semibold">Email:</p>
                                             <p>{ticket.email_address}</p>
@@ -59,11 +59,11 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                             </div>
                                             :
                                             ""
-                                    )}
+                                        )}
                                     </div>
-                                    <div className="flex flex-row w-1/3 px-2 pb-2 gap-2 justify-center items-end [&>*]:p-0 [&>*]:border-none [&>*]:w-1/2 [&>*]:h-8">
-                                        <Button label="Send"/>
-                                        <Button severity="danger" label="Delete" />
+                                    <div className="flex flex-row w-1/3 pb-2 gap-2 justify-center items-end [&>*]:mx-2 [&>*]:border-none [&>*]:w-1/2 [&>*]:h-8">
+                                        <Button style={{ padding: 0 }} className="lunch-ticket-button" label="Send"/>
+                                        <Button style={{ padding: 0 }} className="lunch-ticket-button" severity="danger" label="Delete" />
                                     </div>
                                 </div>
                             :
@@ -93,11 +93,11 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                         ""
                                         )}
                                         {(ticket.other_dietary_restrictions && ticket.other_dietary_restrictions.length > 0 ?
-                                            <div className="w-full"><p className="text-left px-4"><span className="font-semibold">Other dietary restrictions: </span>{ticket.other_dietary_restrictions}</p></div>
+                                            <div className="py-2"><p className="text-left px-4"><span className="font-semibold">Other dietary restrictions: </span>{ticket.other_dietary_restrictions}</p></div>
                                             :
                                             ""
                                         )}
-                                        {(<p className="pl-4" style={{ display: (Object.entries(ticket.dietary_restrictions).length > 0 || (ticket.other_dietary_restrictions && ticket.other_dietary_restrictions.length > 0) ? "none" : "block")}}>No dietary restrictions</p>)}
+                                        {(<p className="pl-4 py-2" style={{ display: (Object.entries(ticket.dietary_restrictions).length > 0 || (ticket.other_dietary_restrictions && ticket.other_dietary_restrictions.length > 0) ? "none" : "block")}}>No dietary restrictions</p>)}
                                     </div>
                                 </div>
                             :
