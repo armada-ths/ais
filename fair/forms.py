@@ -57,6 +57,41 @@ class LunchTicketForm(forms.ModelForm):
             valid = False
 
         return valid
+    
+    def is_valid_react(self):
+        valid = super(LunchTicketForm, self).is_valid()
+
+        if not valid:
+            return valid
+
+        email_address = self.cleaned_data["email_address"]
+        company = self.cleaned_data["company"]
+        day = self.cleaned_data["day"]
+        time = self.cleaned_data["time"]
+
+        if company is None:
+            self.add_error("company", "You have to specify a company")
+            valid = False
+        
+        if email_address is None:
+            self.add_error("email_address", "You have to specify an email address")
+            valid = False
+
+        if day is None:
+            self.add_error("day", "You have to specify a day")
+            valid = False
+
+        if time is None:
+            self.add_error("time", "You have to specify a time")
+            valid = False
+
+        if time is not None and time.day != day:
+            self.add_error(
+                "time", "The time needs to be on the same day as the ticket."
+            )
+            valid = False
+
+        return valid
 
     class Meta:
         model = LunchTicket

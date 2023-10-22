@@ -82,7 +82,7 @@ def lunchtickets_companysearch(request):
 
     data = {
         "result": [
-            serializers.lunch_ticket(lunch_ticket) for lunch_ticket in lunch_tickets
+            serializers.lunch_ticket_react(lunch_ticket) for lunch_ticket in lunch_tickets
         ]
     }
 
@@ -101,12 +101,11 @@ def lunchticket_reactcreate(request):
     company = Company.objects.filter(name__exact=companyName).values('id').first()
     if company:
         company_id = company['id']
-        print(company_id)
     else:
         return HttpResponse(status=400)
     
     #Build date time 
-    fair = get_object_or_404(Fair, year=year)
+    fair = Fair.objects.get(current=True)
     day = get_object_or_404(FairDay, date=request.POST['day'], fair=fair)
     time = get_object_or_404(LunchTicketTime, name=request.POST['time'], day=day)
 
@@ -119,7 +118,7 @@ def lunchticket_reactcreate(request):
     mutable_req['user'] = ''
 
     form = LunchTicketForm(mutable_req or None, initial={"fair": fair})
-    if form.is_valid():
+    if form.is_valid_react():
         form.instance.fair = fair
         lunch_ticket = form.save()
         return HttpResponse(status=200)

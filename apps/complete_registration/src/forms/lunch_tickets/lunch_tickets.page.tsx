@@ -47,16 +47,16 @@ export function ViewLunchTicketsPage() {
         if (dietaryRestrictionsList) {
             // Toggle the visibility of the closest 'dietary-restrictions' div
             const currentDisplay = dietaryRestrictionsList.style.display;
-            dietaryRestrictionsList.style.display = currentDisplay === 'none' ? 'grid' : 'none';
+            dietaryRestrictionsList.style.display = currentDisplay === 'none' ? 'block' : 'none';
         }
     }
 
     if (shownTickets == null) return null
 
     return (
-        <FormWrapper className="flex flex-col gap-y-5 text-slate-700">
+        <FormWrapper className="flex flex-col gap-y-5 text-slate-700 max-w-md min-w-md">
             <h2 className="font-bold text-md text-center">Here you can find all your lunch tickets</h2>
-            <form className="flex">
+            <form className="flex w-lg" >
                 <div className="w-1/3 mr-auto">
                     <label htmlFor="used-tickets" className="pr-2">Ticket Status:</label>
                     <Dropdown value={filterUsedState} onChange={(event) => {
@@ -71,8 +71,9 @@ export function ViewLunchTicketsPage() {
                 </div>
             </form>
             {shownTickets.map((ticket, index) => {
+                console.log(ticket);
                 return (
-                    <div key={index} className="+mb-6">
+                    <div key={index} className="+mb-6 min-w-75">
                         <LunchTicketView key={index} ticket={ticket} displayDietaryRestrictions={displayDietaryRestrictions}></LunchTicketView>
                     </div>
                 );

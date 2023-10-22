@@ -23,6 +23,31 @@ def lunch_ticket(lunch_ticket):
 
     return data
 
+def lunch_ticket_react(lunch_ticket):
+    data = {
+        "id": lunch_ticket.pk,
+        "name": lunch_ticket.user.get_full_name()
+        if lunch_ticket.user
+        else lunch_ticket.company.name,
+        "email_address": lunch_ticket.user.email
+        if lunch_ticket.user
+        else lunch_ticket.email_address,
+        "comment": lunch_ticket.comment,
+        "day": lunch_ticket.day.__str__(),
+        "time": lunch_ticket.time.__str__().split(" ")[1]
+        if len(lunch_ticket.time.__str__().split(" ")) > 1
+        else lunch_ticket.time.__str__(),
+        "used": lunch_ticket.used,
+        "type": lunch_ticket.get_ticket_type(),
+        "token": lunch_ticket.token,
+        "dietary_restrictions": [
+            dietary_restriction.name
+            for dietary_restriction in lunch_ticket.dietary_restrictions.all()
+        ],
+        "other_dietary_restrictions": lunch_ticket.other_dietary_restrictions,
+    }
+
+    return data
 
 def banquet_participant(banquet_participant):
     data = {

@@ -25,16 +25,31 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                             <div className={"lunch-ticket-availability" + ((ticket.used ? " used" : ""))} />
                             <p className="pl-2 font-semibold">{(ticket.used ? 'Used' : 'Assigned')}</p>
                         </div>
+                        <div className="pl-4 pb-1">
+                            <p><span className="font-semibold">Email:</span> {ticket.email_address}</p>
+                            {(ticket.comment ?
+                                <p><span className="font-semibold">Comment:</span> {ticket.comment}</p>
+                                :
+                                ""
+                            )}
+                        </div>
                         <div className="dietary-restrictions-container">
                             <button className="w-full border-t-2 border-b-2 flex justify-center cursor-pointer" onClick={displayDietaryRestrictions}>
                                 <span>Dietary Restrictions</span>
                                 <img src="/chevron_down_icon.svg" className="pl-2" alt="Chevron Down" />
                             </button>
-                            <div className="dietary-restrictions grid grid-cols-2 gap-4 text-center [&>*]:pt-2 border-b-2 pb-2" style={{display: 'none'}}>
-                            {Object.entries(ticket.dietary_restrictions).map((restriction) => {
-                                return <p key={restriction[0]}>{restriction[1]}</p>;
-                            })}
-                                <p style={{ display: (Object.entries(ticket.dietary_restrictions).length > 0 ? "none" : "block")}}>No dietary restrictions</p>
+                            <div className="dietary-restrictions border-b-2" style={{display: 'none'}}>
+                                <div className="grid grid-cols-2 gap-4 text-center [&>*]:pt-2 pb-2">
+                                    {Object.entries(ticket.dietary_restrictions).map((restriction) => {
+                                        return <p key={restriction[0]}>{restriction[1]}</p>;
+                                    })}
+                                    <p style={{ display: (Object.entries(ticket.dietary_restrictions).length > 0 || (ticket.other_dietary_restrictions && ticket.other_dietary_restrictions.length > 0) ? "none" : "block")}}>No dietary restrictions</p>
+                                </div>
+                                {(ticket.other_dietary_restrictions && ticket.other_dietary_restrictions.length > 0 ?
+                                    <div className="w-full"><p className="text-left px-4"><span className="font-semibold">Other dietary restrictions: </span>{ticket.other_dietary_restrictions}</p></div>
+                                    :
+                                    ""
+                                )}
                             </div>
                         </div>
                     </div>

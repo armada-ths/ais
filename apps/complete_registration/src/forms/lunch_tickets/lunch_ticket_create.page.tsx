@@ -4,7 +4,7 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
-import { LunchTicket, DietaryRestrictions, mapDietaryRestrictions } from "../../utils/lunch_tickets/lunch_tickets.utils";
+import { LunchTicket, DietaryRestrictions, mapDietaryRestrictions, validateLunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils";
 import { buildURLEncodedPayload } from "../../utils/django_format/django_format.utils";
 import { useSelector } from "react-redux";
 import {
@@ -53,18 +53,26 @@ export function CreateLunchTicketsPage() {
     const processForm = async(e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        try{
-            //const token = getCookie('csrftoken');
-            const ticket : Partial<LunchTicket> = {
-                company: companyName,
-                email_address: Email,
-                comment: OtherComments,
-                day: DateState,
-                time: TimeState,
-                dietary_restrictions: mapDietaryRestrictions(DietaryRestrictions),
-                other_dietary_restrictions: OtherDietRestrictions,
-            }
+        const ticket : Partial<LunchTicket> = {
+            company: companyName,
+            email_address: Email,
+            comment: OtherComments,
+            day: DateState,
+            time: TimeState,
+            dietary_restrictions: mapDietaryRestrictions(DietaryRestrictions),
+            other_dietary_restrictions: OtherDietRestrictions,
+        }
 
+        try{
+            validateLunchTicket(ticket);
+        }catch(error){
+            console.error("Error:", error);
+            const errorString = error.toString();
+            setErrorString(errorString);
+            return;
+        }
+
+        try{
             await fetch((`${HOST}/api/fair/lunchtickets/reactcreate`), {method: "POST", headers: {"Content-Type": "application/x-www-form-urlencoded"}, body: buildURLEncodedPayload(ticket),})
             .then(async (response) => {
                 //Return error
@@ -80,7 +88,7 @@ export function CreateLunchTicketsPage() {
                 const errorString = error.toString();
                 setErrorString(errorString);
             });
-        }catch(error: any){
+        }catch(error){
             console.error("Error:", error);
         }
     }
@@ -91,20 +99,20 @@ export function CreateLunchTicketsPage() {
             <form className="flex flex-col [&>label]:font-bold [&>label]:pt-4 [&>div]:mb-4" onSubmit={processForm}>
                 <p className="text-red-500">{ErrorString}</p>
                 <div>
-                    <label htmlFor="ticket-date" className="pr-2 font-bold">Day:</label>
-                    <Dropdown value={DateState} onChange={(event) => {
+                    <label htmlFor="ticket-date" className="pr-2 font-bold">Day:*</label>
+                    <Dropdown required={true} value={DateState} onChange={(event) => {
                             setDateState(event.value);
                         }} options={['2023-11-21', '2023-11-22']} className="w-full md:w-14rem" />
                 </div>
                 <div>
-                    <label htmlFor="ticket-date" className="pr-2 block font-bold">Timeslot:</label>
-                    <Dropdown value={TimeState} onChange={(event) => {
+                    <label htmlFor="ticket-date" className="pr-2 block font-bold">Timeslot:*</label>
+                    <Dropdown required={true} value={TimeState} onChange={(event) => {
                             setTimeState(event.value);
                         }} options={['11:00', '11:30', '12:00', '12:30', '13:00', '13:30']} className="w-full md:w-14rem" />
                 </div>
                 <div className="[&>*]:w-full">
-                    <label htmlFor="user-email" className="pr-2 font-bold">Email:</label>
-                    <InputText value={Email} onChange={(e) => setEmail(e.target.value)} />
+                    <label htmlFor="user-email" className="pr-2 font-bold">Email:*</label>
+                    <InputText required={true} value={Email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div>
                     <label htmlFor="dietary-restrictions" className="pr-2 font-bold">Dietary restrictions:</label>
