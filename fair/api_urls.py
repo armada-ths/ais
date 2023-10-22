@@ -9,6 +9,16 @@ urlpatterns = [
     url(r"^lunchtickets/companysearch$", api.lunchtickets_companysearch, name="lunchtickets_companysearch"),
     url(r"^lunchtickets/reactcreate$", api.lunchticket_reactcreate, name="lunchtickets_reactcreate"),
     url(
+        r"^lunchtickets/(?P<token>[A-Za-z0-9]+)/reactremove$",
+        api.lunchticket_reactremove,
+        name="lunchticket_reactremove",
+    ),
+    url(
+        r"^lunchtickets/(?P<token>[A-Za-z0-9]+)/reactsend$",
+        api.lunchticket_reactsend,
+        name="lunchticket_reactsend",
+    ),
+    url(
         r"^lunchtickets/check_in/(?P<lunch_ticket_pk>\d+)$",
         api.lunchticket_check_in,
         name="lunchtickets_check_in",

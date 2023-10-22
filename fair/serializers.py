@@ -40,6 +40,7 @@ def lunch_ticket_react(lunch_ticket):
         "used": lunch_ticket.used,
         "type": lunch_ticket.get_ticket_type(),
         "token": lunch_ticket.token,
+        "sent": lunch_ticket.sent,
         "dietary_restrictions": [
             dietary_restriction.name
             for dietary_restriction in lunch_ticket.dietary_restrictions.all()

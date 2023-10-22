@@ -9,9 +9,11 @@ from django.views.decorators.http import require_GET, require_POST
 
 from django.http import QueryDict
 from fair import serializers
-from fair.models import Fair, LunchTicket, LunchTicketScan, LunchTicketTime, FairDay
+from fair.models import Fair, LunchTicket, LunchTicketScan, LunchTicketTime, FairDay, LunchTicketSend
 from companies.models import Company
 from .forms import LunchTicketForm
+from django.core.mail import send_mail
+from django.urls import reverse, reverse_lazy
 
 from util import (
     JSONError,
@@ -124,6 +126,44 @@ def lunchticket_reactcreate(request):
         return HttpResponse(status=200)
 
     return HttpResponse(status=400)
+
+def lunchticket_reactremove(request, token):
+    fair = Fair.objects.get(current=True)
+    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+
+    lunch_ticket.delete()
+
+    return HttpResponse(status=200)
+
+
+def lunchticket_reactsend(request, token):
+    fair = Fair.objects.get(current=True)
+    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+
+    eat_by = str(lunch_ticket.time) if lunch_ticket.time else str(lunch_ticket.day)
+    email_address = (
+        lunch_ticket.user.email if lunch_ticket.user else lunch_ticket.email_address
+    )
+
+    send_mail(
+        "Lunch ticket " + eat_by,
+        "Open the link below to redeem your lunch ticket at "
+        + lunch_ticket.fair.name
+        + ".\n\nDate: "
+        + eat_by
+        + "\n"
+        + request.build_absolute_uri(
+            reverse("lunchticket_display", args=[lunch_ticket.token])
+        ),
+        "noreply@armada.nu",
+        [email_address],
+        fail_silently=True,
+    )
+
+    lunch_ticket.sent = True
+    lunch_ticket.save()
+
+    return HttpResponse(status=200)
 
 @require_POST
 @permission_required("fair.lunchtickets")

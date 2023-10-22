@@ -1,6 +1,7 @@
-import { MouseEventHandler, useState } from "react";
+import { useState } from "react";
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils";
 import { Button } from 'primereact/button';
+import { HOST } from "../../shared/vars"
 
 interface LunchTicketsProps{
     ticket:LunchTicket;
@@ -13,6 +14,8 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
 ) => {
     const [moreInfoDisplayed, setMoreInfoDisplayed] = useState<boolean>(false);
     const [dietaryDisplayed, setDietaryDisplayed] = useState<boolean>(false);
+    const [sendTicketError, setSendTicketError] =useState<string>("");
+    const [sendTicketStatus, setSendTicketStatus] =useState<string>("");
 
     const dietaryButtonClickHandler = () => {
         setDietaryDisplayed(!dietaryDisplayed);
@@ -22,7 +25,37 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
         setMoreInfoDisplayed(!moreInfoDisplayed);
     }
 
+    const sendTicket = async () => {
+        try {
+            const response = await fetch(`${HOST}/api/fair/lunchtickets/`+ticket.token+`/reactsend`);
+
+            if (!response.ok) {
+                setSendTicketError(`Could not send ticket. Status: ${response.status}`);
+            }else{
+                setSendTicketStatus("The ticket has been sent to "+ticket.email_address);
+            }
+
+            } catch (error) {
+                setSendTicketError("Could not send ticket. Internal Error: Contact the staff");
+            }
+    }
+
+    const deleteTicket = async () => {
+        try {
+            const response = await fetch(`${HOST}/api/fair/lunchtickets/`+ticket.token+`/reactremove`);
+
+            if (!response.ok) {
+                setSendTicketError(`Could not delete ticket. Status: ${response.status}`);
+            }
+
+            } catch (error) {
+                setSendTicketError("Could not delete ticket. Internal Error: Contact the staff");
+            }
+    }
+
     return(
+        <div>
+        {(sendTicketError.length > 0 ? <p className="text-red-500">{sendTicketError}</p> : "")}
         <div className="lunch-ticket border-solid border-2 border-b-0">
                         <div className="flex w-full pt-2 pb-4 pl-4 pr-4">
                             <p className="text-xl mb-5 grow font-bold">Lunch ticket</p>
@@ -33,7 +66,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                         </div>
                         <div className="flex pl-4">
                             <div className={"lunch-ticket-availability" + ((ticket.used ? " used" : ""))} />
-                            <p className="pl-2 font-semibold">{(ticket.used ? 'Used' : 'Assigned')}</p>
+                            <p className="pl-2 font-semibold">{(ticket.used ? 'Used' : (ticket.sent ? 'Sent' : 'Assigned'))}</p>
                         </div>
                         <div className="more-info-container pt-2">
                             <button className="justify-center cursor-pointer pb-2 pl-4" onClick={moreInfoButtonClickHandler}>
@@ -60,10 +93,11 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                             :
                                             ""
                                         )}
+                                        {(sendTicketStatus.length > 0 ? <div><p className="text-indigo-500">{sendTicketStatus}</p></div> : "")}
                                     </div>
                                     <div className="flex flex-row w-1/3 pb-2 gap-2 justify-center items-end [&>*]:mx-2 [&>*]:border-none [&>*]:w-1/2 [&>*]:h-8">
-                                        <Button style={{ padding: 0 }} className="lunch-ticket-button" label="Send"/>
-                                        <Button style={{ padding: 0 }} className="lunch-ticket-button" severity="danger" label="Delete" />
+                                        <Button style={{ padding: 0 }} className="lunch-ticket-button" label="Send" onClick={sendTicket}/>
+                                        <Button style={{ padding: 0 }} className="lunch-ticket-button" severity="danger" label="Delete" onClick={deleteTicket}/>
                                     </div>
                                 </div>
                             :
@@ -109,6 +143,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
 
                         </div>
                     </div>
+                </div>
     )
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, MouseEvent, MouseEventHandler } from "react"
+import { useEffect, useState} from "react"
 import { useSelector } from "react-redux"
 import { RootState } from "../../store/store"
 import { selectField } from "../../store/form/form_selectors"
@@ -61,7 +61,7 @@ export function ViewLunchTicketsPage() {
             {shownTickets.map((ticket, index) => {
                 return (
                     <div key={index} className="+mb-6 min-w-75">
-                        <LunchTicketView key={index} ticket={ticket}></LunchTicketView>
+                        <LunchTicketView key={index} ticket={ticket} ></LunchTicketView>
                     </div>
                 );
                 })}

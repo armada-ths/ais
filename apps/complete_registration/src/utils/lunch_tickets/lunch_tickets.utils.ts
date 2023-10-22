@@ -49,6 +49,8 @@ export interface DietaryRestrictions{
 }
 
 export interface LunchTicket{
+    token:string;
+    sent: boolean;
     company: string;
     user: string;
     email_address: string;
