@@ -36,7 +36,7 @@ export function ObjectToURLEncoded(object:object) : string{
 }
 
 export function buildURLEncodedPayload(data:object){
-    //const token = getCRSFToken();
-    return ObjectToURLEncoded(data);
-    //return "crsfmiddlewaretoken="+token+"&"+ObjectToURLEncoded(data);
+    const token = getCRSFToken();
+    //return ObjectToURLEncoded(data);
+    return "crsfmiddlewaretoken="+token+"&"+ObjectToURLEncoded(data);
 }

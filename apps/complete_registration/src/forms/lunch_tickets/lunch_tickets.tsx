@@ -95,7 +95,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                         )}
                                         {(sendTicketStatus.length > 0 ? <div><p className="text-indigo-500">{sendTicketStatus}</p></div> : "")}
                                     </div>
-                                    <div className="flex flex-row w-1/3 pb-2 gap-2 justify-center items-end [&>*]:mx-2 [&>*]:border-none [&>*]:w-1/2 [&>*]:h-8">
+                                    <div className="flex flex-row w-1/3 pb-2 gap-2 justify-center items-end [&>*]:bx-4 [&>*]:border-none [&>*]:w-1/2 [&>*]:h-8">
                                         <Button style={{ padding: 0 }} className="lunch-ticket-button" label="Send" onClick={sendTicket}/>
                                         <Button style={{ padding: 0 }} className="lunch-ticket-button" severity="danger" label="Delete" onClick={deleteTicket}/>
                                     </div>
@@ -109,7 +109,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                 <div>
                                     <button className="w-full border-t-2 border-b-2 flex justify-center items-center cursor-pointer bg-slate-100" onClick={dietaryButtonClickHandler}>
                                         <span>Dietary Restrictions</span>
-                                        <img src="/chevron_down_icon.svg" className="px-2 rotate-180" alt="Chevron Down" />
+                                        <img src="/static/images/chevron_down_icon.svg" className="px-2 rotate-180" alt="Chevron Down" />
                                     </button>
                                     <div className="dietary-restrictions border-b-2">
                                         {(Object.entries(ticket.dietary_restrictions).length > 0 ?
@@ -137,7 +137,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                             :
                                 <button className="w-full border-t-2 border-b-2 flex justify-center items-center cursor-pointer bg-slate-100" onClick={dietaryButtonClickHandler}>
                                     <span>Dietary Restrictions</span>
-                                    <img src="/chevron_down_icon.svg" className="px-2" alt="Chevron Down" />
+                                    <img src="/static/images/chevron_down_icon.svg" className="px-2" alt="Chevron Down" />
                                 </button>
                             )}
 

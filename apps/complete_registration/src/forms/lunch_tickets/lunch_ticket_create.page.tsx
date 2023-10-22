@@ -75,7 +75,7 @@ export function CreateLunchTicketsPage() {
         }
 
         try{
-            await fetch((`${HOST}/api/fair/lunchtickets/reactcreate`), {method: "POST", headers: {"Content-Type": "application/x-www-form-urlencoded"}, body: buildURLEncodedPayload(ticket),})
+            await fetch((`${HOST}/api/fair/lunchtickets/reactcreate`), {method: "POST", headers: {"Content-Type": "application/x-www-form-urlencoded"}, body: buildURLEncodedPayload(ticket)})
             .then(async (response) => {
                 //Return error
               if (!response.ok) {
