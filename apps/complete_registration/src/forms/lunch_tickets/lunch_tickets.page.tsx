@@ -39,31 +39,6 @@ export function ViewLunchTicketsPage() {
         }
     }
 
-
-    const displayMoreInfo: MouseEventHandler<HTMLButtonElement> = (event: MouseEvent) => {
-        const target = event.target as HTMLElement;
-        const moreInfoDiv = target.closest('.more-info-container');
-        const moreInfo = moreInfoDiv?.querySelector('.more-info') as HTMLElement;
-
-        if (moreInfo) {
-            // Toggle the visibility of the closest 'dietary-restrictions' div
-            const currentDisplay = moreInfo.style.display;
-            moreInfo.style.display = currentDisplay === 'none' ? 'flex' : 'none';
-        }
-    }
-
-    const displayDietaryRestrictions: MouseEventHandler<HTMLButtonElement> = (event: MouseEvent) => {
-        const target = event.target as HTMLElement;
-        const dietaryRestrictionsDiv = target.closest('.dietary-restrictions-container');
-        const dietaryRestrictionsList = dietaryRestrictionsDiv?.querySelector('.dietary-restrictions') as HTMLElement;
-
-        if (dietaryRestrictionsList) {
-            // Toggle the visibility of the closest 'dietary-restrictions' div
-            const currentDisplay = dietaryRestrictionsList.style.display;
-            dietaryRestrictionsList.style.display = currentDisplay === 'none' ? 'block' : 'none';
-        }
-    }
-
     if (shownTickets == null) return null
 
     return (
@@ -86,7 +61,7 @@ export function ViewLunchTicketsPage() {
             {shownTickets.map((ticket, index) => {
                 return (
                     <div key={index} className="+mb-6 min-w-75">
-                        <LunchTicketView key={index} ticket={ticket} displayDietaryRestrictions={displayDietaryRestrictions} displayMoreInfo={displayMoreInfo}></LunchTicketView>
+                        <LunchTicketView key={index} ticket={ticket}></LunchTicketView>
                     </div>
                 );
                 })}
