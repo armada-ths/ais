@@ -12,6 +12,8 @@ import {
 } from "../../store/company/company_selectors"
 import './lunch_ticket.css';
 import { HOST } from "../../shared/vars"
+import axios from 'axios';
+import Cookie from 'js-cookie';
 
 export function CreateLunchTicketsPage() {
     const initialDietaryRestrictions: DietaryRestrictions = {

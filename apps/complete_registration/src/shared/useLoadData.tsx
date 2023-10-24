@@ -35,27 +35,31 @@ export default function useLoadData() {
 
             fetch(`${HOST}/api/registration/`, {}).then(async raw => {
                 const data = await raw.json()
-                console.log("DATA", JSON.stringify(data))
+                console.log("DATA #", JSON.stringify(data))
 
                 if (data.error != null) {
                     dispatch(setErrors(data.error))
                 }
 
                 const awaitingMappings = reverseMap(data)
-                console.log(awaitingMappings)
+                console.log("AWAIT mappings", awaitingMappings)
                 // Set status for company
                 dispatch(
                     setCompanyRegistrationStatus(
                         data.type as RegistrationStatus
                     )
                 )
+                console.log("PRE HELLO")
                 if (data.company?.name){
+                    console.log("HELLO 123")
                     dispatch(setCompanyName(data.company.name));
 
                     //Get Lunch Tickets
 
                     fetch(`${HOST}/api/fair/lunchtickets/companysearch?company=`+data.company.name).then(async raw => {
+                        console.log("!")
                         const data = await raw.json()
+                        console.log("---!")
                         //data.result[0].id
                         const maps = reverseMap(data);
                         for (const current of maps) {
