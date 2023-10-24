@@ -2,14 +2,21 @@ import operator
 from functools import reduce
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import permission_required
-from django.db.models import Q
+from django.db.models import Q, Subquery, OuterRef
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET, require_POST
 
 from django.http import QueryDict
 from fair import serializers
-from fair.models import Fair, LunchTicket, LunchTicketScan, LunchTicketTime, FairDay, LunchTicketSend
+from fair.models import (
+    Fair,
+    LunchTicket,
+    LunchTicketScan,
+    LunchTicketTime,
+    FairDay,
+)
+from accounting.models import Order, Product, Category
 from companies.models import Company
 from .forms import LunchTicketForm
 from django.core.mail import send_mail
@@ -23,6 +30,7 @@ from util import (
     get_user,
     status,
 )
+
 
 @require_GET
 def lunchtickets_search(request):
@@ -63,6 +71,38 @@ def lunchtickets_search(request):
 
     return JsonResponse(data, safe=False)
 
+
+def company_total_lunch_tickets(fair: Fair, company_name: str):
+    """
+    Given a specific company get all unassigned lunch tickets,
+    meaning the total amount of tickets the company bought minus
+    the amount of tickets that they have already created.
+    """
+
+    lunch_tickets = LunchTicket.objects.filter(
+        fair=fair, company__name__exact=company_name
+    ).all()
+
+    # TODO Document this hardcoded query (relation to the category "Lunch Ticket")
+    categories = Category.objects.filter(
+        fair=fair, name__icontains="Lunch Ticket"  # Not case sensitive
+    ).all()
+
+    lunch_ticket_product = Product.objects.filter(
+        category__in=categories
+    ).all()  # Fetch all products that contain the category "[current_year]Lunch Ticket"
+
+    result = Order.objects.filter(product__in=lunch_ticket_product)
+
+    # Go through result and for each result get the quantity of the product
+    company_tickets = 0
+    for i in result:
+        company_tickets += i.quantity
+
+    unassigned_tickets = company_tickets - lunch_tickets.count()
+    return unassigned_tickets, lunch_tickets
+
+
 @require_GET
 def lunchtickets_companysearch(request):
     """
@@ -70,54 +110,60 @@ def lunchtickets_companysearch(request):
     """
 
     fair = Fair.objects.get(current=True)
+    # ! TODO we're not checking if the company is actually who they say they are, this has to be fixed later
+    # Check that auth-session matches a user that belongs to the company
     search_query = request.GET.get("company", "")
 
     if search_query == "":
         return JsonResponse({"message": "Company is empty."}, status=400)
 
-    lunch_tickets = LunchTicket.objects.filter(
-        Q(fair=fair)
-        & (
-            Q(company__name__icontains=search_query)
-        )
-    ).all()
+    unassigned_tickets, lunch_tickets = company_total_lunch_tickets(fair, search_query)
 
     data = {
-        "result": [
-            serializers.lunch_ticket_react(lunch_ticket) for lunch_ticket in lunch_tickets
-        ]
+        "assigned_lunch_tickets": [
+            serializers.lunch_ticket_react(lunch_ticket)
+            for lunch_ticket in lunch_tickets
+        ],
+        "unassigned_lunch_tickets": unassigned_tickets,
+        # TODO fix time slots & rest of fields
+        "time_slots": [],
     }
 
     return JsonResponse(data, safe=False)
 
+
 @require_POST
 @csrf_exempt
-#This is an endpoint called by react
+# This is an endpoint called by react
 def lunchticket_reactcreate(request):
+    # Preprocess data
+    companyName = request.POST["company"]
 
-    #Preprocess data
-    companyName = request.POST['company']
-    year = request.POST['day'].split("-")[0]
+    # Extract request variables
+    fair = Fair.objects.get(current=True)
+    day = get_object_or_404(FairDay, date=request.POST["day"], fair=fair)
+    time = get_object_or_404(LunchTicketTime, name=request.POST["time"], day=day)
 
-    #Get company's ID value
-    company = Company.objects.filter(name__exact=companyName).values('id').first()
+    (unassigned_tickets, _) = company_total_lunch_tickets(fair, companyName)
+    if unassigned_tickets <= 0:
+        return JsonResponse(
+            {"Error": "Company has no more available tickets"}, status=400
+        )
+
+    # Get company's ID value
+    company = Company.objects.filter(name__exact=companyName).values("id").first()
     if company:
-        company_id = company['id']
+        company_id = company["id"]
     else:
         return HttpResponse(status=400)
-    
-    #Build date time 
-    fair = Fair.objects.get(current=True)
-    day = get_object_or_404(FairDay, date=request.POST['day'], fair=fair)
-    time = get_object_or_404(LunchTicketTime, name=request.POST['time'], day=day)
 
-    #Modify request to adapt to what DJango expects
-    mutable_req = QueryDict('', mutable=True)
+    # Modify request to adapt to what DJango expects
+    mutable_req = QueryDict("", mutable=True)
     mutable_req.update(request.POST)
-    mutable_req['company'] = str(company_id)
-    mutable_req['day'] = str(day.id)
-    mutable_req['time'] = str(time.id)
-    mutable_req['user'] = ''
+    mutable_req["company"] = str(company_id)
+    mutable_req["day"] = str(day.id)
+    mutable_req["time"] = str(time.id)
+    mutable_req["user"] = ""
 
     form = LunchTicketForm(mutable_req or None, initial={"fair": fair})
     if form.is_valid_react():
@@ -125,7 +171,8 @@ def lunchticket_reactcreate(request):
         lunch_ticket = form.save()
         return HttpResponse(status=200)
 
-    return HttpResponse(status=400)
+    return JsonResponse({"Error": "Could not create a ticket"}, status=400)
+
 
 def lunchticket_reactremove(request, token):
     fair = Fair.objects.get(current=True)
@@ -164,6 +211,7 @@ def lunchticket_reactsend(request, token):
     lunch_ticket.save()
 
     return HttpResponse(status=200)
+
 
 @require_POST
 @permission_required("fair.lunchtickets")

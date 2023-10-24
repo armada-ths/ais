@@ -17,7 +17,7 @@ const form: Form = {
             pageComponent: ViewLunchTicketsPage,
             fields: [
                 {
-                    mapping: "result"
+                    mapping: "assigned_lunch_tickets"
                 }
             ]
         },
@@ -27,6 +27,11 @@ const form: Form = {
             hasNextButton: false,
             hasPrevButton: false,
             pageComponent: CreateLunchTicketsPage,
+            fields: [
+                {
+                    mapping: "unassigned_lunch_tickets"
+                }
+            ]
         }
     ]
 }

@@ -50,14 +50,18 @@ export default function useLoadData() {
                     )
                 )
                 if (data.company?.name) {
-                    dispatch(setCompanyName(data.company.name));
+                    dispatch(setCompanyName(data.company.name))
 
                     //Get Lunch Tickets
 
-                    fetch(`${HOST}/api/fair/lunchtickets/companysearch?company=` + data.company.name).then(async raw => {
+                    fetch(
+                        `${HOST}/api/fair/lunchtickets/companysearch?company=` +
+                            data.company.name
+                    ).then(async raw => {
                         const data = await raw.json()
+                        console.log("LUNCH DATA", data)
                         //data.result[0].id
-                        const maps = reverseMap(data);
+                        const maps = reverseMap(data)
                         for (const current of maps) {
                             dispatch(
                                 setField({
@@ -66,9 +70,7 @@ export default function useLoadData() {
                                 })
                             )
                         }
-
-                    });
-
+                    })
                 }
 
                 if (data.contact) dispatch(setUser(data.contact))
