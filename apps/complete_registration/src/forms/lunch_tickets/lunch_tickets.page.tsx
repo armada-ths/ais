@@ -20,25 +20,20 @@ export function ViewLunchTicketsPage() {
     // This should not be here... FIXUP LATER (move into redux state)
     useEffect(() => {
 
-        function searchTickets() {
-            //Filter tickets
-            if (tickets.length > 0) {
-                const filteredTickets = tickets.filter((ticket: LunchTicket) => {
-                    if (filterUsedState == 'All' || (ticket.used && filterUsedState == 'Used') || (!ticket.used && filterUsedState == 'Available')) {
-                        if (filterDateState === 'Any' || ticket.day.includes(filterDateState))
-                            return ticket;
-                    }
-                    return false;
-                });
-                //update
-                setShownTickets(filteredTickets as LunchTicket[]);
-            }
+        //Filter tickets
+        if (tickets.length > 0) {
+            const filteredTickets = tickets.filter((ticket: LunchTicket) => {
+                if (filterUsedState == 'All' || (ticket.used && filterUsedState == 'Used') || (!ticket.used && filterUsedState == 'Available')) {
+                    if (filterDateState === 'Any' || ticket.day.includes(filterDateState))
+                        return ticket;
+                }
+                return false;
+            });
+            //update
+            setShownTickets(filteredTickets as LunchTicket[]);
         }
 
-        if (shownTickets == null)
-            setShownTickets(tickets);
-        searchTickets();
-    }, [filterDateState, filterUsedState, shownTickets, tickets])
+    }, [filterDateState, filterUsedState, tickets])
 
     return (
         <FormWrapper className="flex flex-col gap-y-5 text-slate-700 max-w-md">
