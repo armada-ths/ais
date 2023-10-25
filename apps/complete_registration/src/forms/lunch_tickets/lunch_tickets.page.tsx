@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
 import { RootState } from "../../store/store"
 import { selectField } from "../../store/form/form_selectors"
 import { FormWrapper } from "../FormWrapper"
@@ -7,8 +7,11 @@ import { Dropdown } from "primereact/dropdown"
 import LunchTicketView from "./lunch_tickets"
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import "./lunch_ticket.css"
+import { setField } from "../../store/form/form_slice"
 
 export function ViewLunchTicketsPage() {
+    const dispatch = useDispatch()
+
     const result_tickets = useSelector((state: RootState) =>
         selectField(state, "assigned_lunch_tickets")
     );
@@ -16,20 +19,28 @@ export function ViewLunchTicketsPage() {
         selectField(state, "fair_days")
     );
 
+    const result_unassigned_tickets = useSelector((state: RootState) =>
+        selectField(state, "unassigned_lunch_tickets")
+    );
+
     const tickets = (result_tickets?.value ?? []) as LunchTicket[]
     const fair_days = (result_fair_days?.value ?? []) as string[]
+    const unassigned_tickets = (result_unassigned_tickets?.value ?? -1) as number
 
     const [initiated, setInitiated] = useState<boolean>(false)
     const [ticketTracker, setTicketTracker] = useState<LunchTicket[]>(tickets)
+    const [unassignedTicketsTracker, setUnassignedTicketsTracker] = useState<number>(unassigned_tickets)
     const [shownTickets, setShownTickets] = useState<LunchTicket[]>(tickets)
     const [filterUsedState, setFilterUsedState] = useState<string>("All")
     const [filterDateState, setFilterDateState] = useState<string>("Any")
 
     // This should not be here... FIXUP LATER (move into redux state)
     useEffect(() => {
-        if(!initiated && tickets.length > 0 && ticketTracker.length == 0){
+        //Updates the useState variables once we get everything from Redux (Dind't find a better way to do this, if values placed directly on useState, the View never updates when receiving data from Redux)
+        if (!initiated && tickets.length > 0 && ticketTracker.length == 0 && unassigned_tickets > -1) {
             setInitiated(true);
             setTicketTracker(tickets);
+            setUnassignedTicketsTracker(unassigned_tickets);
         }
 
         //Filter tickets
@@ -50,16 +61,33 @@ export function ViewLunchTicketsPage() {
             })
             //update
             setShownTickets(filteredTickets as LunchTicket[])
-        }else{
+        } else {
             setShownTickets([] as LunchTicket[])
         }
-    }, [filterDateState, filterUsedState, tickets, ticketTracker, initiated])
+    }, [filterDateState, filterUsedState, tickets, unassigned_tickets, ticketTracker, initiated, unassignedTicketsTracker])
 
-    const deleteTicket = (lunchTicket:LunchTicket) => {
+    const deleteTicket = (lunchTicket: LunchTicket) => {
+        //Delete lunchticket in view
         const auxTickets = [...ticketTracker]
         auxTickets.splice(ticketTracker.indexOf(lunchTicket), 1);
+
+        //Update the View
         setTicketTracker([...auxTickets]);
-        console.log(auxTickets)
+        setUnassignedTicketsTracker(unassignedTicketsTracker + 1);
+
+        //Update in Redux
+        dispatch(
+            setField({
+                mapping: "unassigned_lunch_tickets",
+                value: (unassignedTicketsTracker + 1)
+            })
+        )
+        dispatch(
+            setField({
+                mapping: "assigned_lunch_tickets",
+                value: (auxTickets)
+            })
+        )
     }
 
     return (

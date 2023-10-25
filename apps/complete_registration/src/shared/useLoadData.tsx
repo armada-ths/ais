@@ -59,7 +59,6 @@ export default function useLoadData() {
                             data.company.name
                     ).then(async raw => {
                         const data = await raw.json()
-                        console.log("LUNCH DATA", data)
                         //data.result[0].id
                         const maps = reverseMap(data)
                         for (const current of maps) {

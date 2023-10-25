@@ -25,6 +25,9 @@ const form: Form = {
                 {
                     mapping: "fair_days"
                 },
+                {
+                    mapping: "unassigned_lunch_tickets"
+                },
             ]
         },
         {

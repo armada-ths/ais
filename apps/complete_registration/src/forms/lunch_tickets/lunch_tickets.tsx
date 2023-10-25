@@ -32,8 +32,18 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
             const response = await fetch(`${HOST}/api/fair/lunchtickets/` + ticket.token + `/reactsend`);
 
             if (!response.ok) {
-                setSendTicketError(`Could not send ticket. Status: ${response.status}`);
-            } else {
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.message) {
+                        setSendTicketError(`Could not send ticket. Status: ${response.status}`);
+                    } else {
+                        setSendTicketError(`Could not send ticket. Status: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error("Error parsing response:", error);
+                    setSendTicketError(`Could not send ticket. Status: ${response.status}`);
+                }
+            }else {
                 setSendTicketStatus("The ticket has been sent to " + ticket.email_address);
             }
 
@@ -47,7 +57,17 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
             const response = await fetch(`${HOST}/api/fair/lunchtickets/` + ticket.token + `/reactremove`);
 
             if (!response.ok) {
-                setSendTicketError(`Could not delete ticket. Status: ${response.status}`);
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.message) {
+                        setSendTicketError(`Could not send ticket. Status: ${response.status}`);
+                    } else {
+                        setSendTicketError(`Could not send ticket. Status: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error("Error parsing response:", error);
+                    setSendTicketError(`Could not send ticket. Status: ${response.status}`);
+                }
             }else{
                 deleteTicketFromList(ticket);
             }

@@ -73,37 +73,41 @@ export function CreateLunchTicketsPage() {
                 console.error("Error:", error)
                 const errorString = error.toString()
                 setErrorString(errorString)
-                return
             }
         }
 
         try {
-            await fetch(`${HOST}/api/fair/lunchtickets/reactcreate`, {
+            const response = await fetch(`${HOST}/api/fair/lunchtickets/reactcreate`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: buildURLEncodedPayload(ticket)
-            })
-                .then(async response => {
-                    //Return error
-                    if (!response.ok) {
-                        const errorData = await response.json()
-                        setErrorString(errorData.error)
-                    } else{
-                        //Reload: Not best practice, but I need to retrieve the token of the recently created ticket and place it on the queue
-                        window.location.reload();
+            });
+
+            if (!response.ok) {
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.message) {
+                        setErrorString(errorData.message);
+                    } else {
+                        setErrorString("Unknown error");
                     }
-                })
-                .catch(error => {
-                    //Return error
-                    console.error("Error:", error)
-                    const errorString = error.toString()
-                    setErrorString(errorString)
-                })
-        } catch (error) {
-            console.error("Error:", error)
+                } catch (error) {
+                    console.error("Error parsing response:", error);
+                    setErrorString("Error parsing response");
+                }
+            } else {
+                // Reload: Not best practice, but I need to retrieve the token of the recently created ticket and place it on the queue
+                window.location.reload();
+            }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error:any) {
+            console.error("Error:", error);
+            const errorString = error.toString();
+            setErrorString(errorString);
         }
+
     }
 
     return (
