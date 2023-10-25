@@ -19,15 +19,22 @@ export function ViewLunchTicketsPage() {
     const tickets = (result_tickets?.value ?? []) as LunchTicket[]
     const fair_days = (result_fair_days?.value ?? []) as string[]
 
+    const [initiated, setInitiated] = useState<boolean>(false)
+    const [ticketTracker, setTicketTracker] = useState<LunchTicket[]>(tickets)
     const [shownTickets, setShownTickets] = useState<LunchTicket[]>(tickets)
     const [filterUsedState, setFilterUsedState] = useState<string>("All")
     const [filterDateState, setFilterDateState] = useState<string>("Any")
 
     // This should not be here... FIXUP LATER (move into redux state)
     useEffect(() => {
+        if(!initiated && tickets.length > 0 && ticketTracker.length == 0){
+            setInitiated(true);
+            setTicketTracker(tickets);
+        }
+
         //Filter tickets
-        if (tickets.length > 0) {
-            const filteredTickets = tickets.filter((ticket: LunchTicket) => {
+        if (ticketTracker.length > 0) {
+            const filteredTickets = ticketTracker.filter((ticket: LunchTicket) => {
                 if (
                     filterUsedState == "All" ||
                     (ticket.used && filterUsedState == "Used") ||
@@ -43,13 +50,16 @@ export function ViewLunchTicketsPage() {
             })
             //update
             setShownTickets(filteredTickets as LunchTicket[])
+        }else{
+            setShownTickets([] as LunchTicket[])
         }
-    }, [filterDateState, filterUsedState, tickets])
+    }, [filterDateState, filterUsedState, tickets, ticketTracker, initiated])
 
-    const deleteTicket = (index:number) => {
-        if (index >= 0 && index < tickets.length) {
-            tickets.splice(index, 1);
-        }
+    const deleteTicket = (lunchTicket:LunchTicket) => {
+        const auxTickets = [...ticketTracker]
+        auxTickets.splice(ticketTracker.indexOf(lunchTicket), 1);
+        setTicketTracker([...auxTickets]);
+        console.log(auxTickets)
     }
 
     return (
@@ -95,7 +105,6 @@ export function ViewLunchTicketsPage() {
                         <LunchTicketView
                             key={index}
                             ticket={ticket}
-                            index={tickets.indexOf(ticket)}
                             deleteTicketFromList={deleteTicket}
                         ></LunchTicketView>
                     </div>

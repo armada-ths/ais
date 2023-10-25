@@ -5,14 +5,12 @@ import { HOST } from "../../shared/vars"
 
 interface LunchTicketsProps {
     ticket: LunchTicket;
-    index: number;
-    deleteTicketFromList: (index: number) => void;
+    deleteTicketFromList: (ticket: LunchTicket) => void;
 }
 
 const LunchTicketView: React.FC<LunchTicketsProps> = (
     {
         ticket,
-        index,
         deleteTicketFromList,
     }
 ) => {
@@ -51,7 +49,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
             if (!response.ok) {
                 setSendTicketError(`Could not delete ticket. Status: ${response.status}`);
             }else{
-                deleteTicketFromList(index);
+                deleteTicketFromList(ticket);
             }
 
         } catch (error) {
