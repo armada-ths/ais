@@ -118,17 +118,21 @@ def lunchtickets_companysearch(request):
     if search_query == "":
         return JsonResponse({"message": "Company is empty."}, status=400)
 
-    unassigned_tickets, lunch_tickets = company_total_lunch_tickets(fair, search_query)
+    try:
+        unassigned_tickets, lunch_tickets = company_total_lunch_tickets(fair, search_query)
+    
+        #Get Fair days
+        days_result = FairDay.objects.filter(fair=fair).all()
+        days = [day.date.strftime('%Y-%m-%d') for day in days_result]
 
-    #Get Fair days
-    days_result = FairDay.objects.filter(fair=fair).all()
-    days = [day.date.strftime('%Y-%m-%d') for day in days_result]
+        lunch_time_result = LunchTicketTime.objects.filter(day__in=days_result).order_by('name').distinct('name')
 
-    lunch_time_result = LunchTicketTime.objects.filter(day__in=days_result).order_by('name').distinct('name')
-    lunch_times = [time.name for time in lunch_time_result]
+        lunch_times = [time.name for time in lunch_time_result]
 
-    dietary_restrictions = DietaryRestriction.objects.all()
-    dietary_restrictions_names = [restriction.name for restriction in dietary_restrictions]
+        dietary_restrictions = DietaryRestriction.objects.all()
+        dietary_restrictions_names = [restriction.name for restriction in dietary_restrictions]
+    except:
+        return JsonResponse({"message": "Could not load data from DB.Please contact the staff"}, status=500)
 
     data = {
         "assigned_lunch_tickets": [
@@ -149,26 +153,58 @@ def lunchtickets_companysearch(request):
 @csrf_exempt
 # This is an endpoint called by react
 def lunchticket_reactcreate(request):
+
+    #TODO: Add authentication and check right privileges
+
     # Preprocess data
-    companyName = request.POST["company"]
+    try:
+        companyName = request.POST["company"]
+    except:
+        return JsonResponse({"message": "Company is empty."}, status=400)
+    
+    try:
+        date = request.POST["day"]
+    except:
+        return JsonResponse({"message": "Date is empty."}, status=400)
+    
+    try:
+        lunch_time=request.POST["time"]
+    except:
+        return JsonResponse({"message": "Lunch time is empty."}, status=400)
 
     # Extract request variables
-    fair = Fair.objects.get(current=True)
-    day = get_object_or_404(FairDay, date=request.POST["day"], fair=fair)
-    time = get_object_or_404(LunchTicketTime, name=request.POST["time"], day=day)
+    try:
+        fair = Fair.objects.get(current=True)
+    except:
+        return JsonResponse({"message": "Couldn't find current fair. Plase contact the staff"}, status=500)
+    
+    try:
+        day = get_object_or_404(FairDay, date=date, fair=fair)
+    except:
+        return JsonResponse({"message": "Couldn't find requested day. Plase contact the staff"}, status=500)
+    
+    try:
+        time = get_object_or_404(LunchTicketTime, name=lunch_time, day=day)
+    except:
+        return JsonResponse({"message": "Couldn't find requested lunch time. Plase contact the staff"}, status=500)
 
-    (unassigned_tickets, _) = company_total_lunch_tickets(fair, companyName)
+    try:
+        (unassigned_tickets, _) = company_total_lunch_tickets(fair, companyName)
+    except:
+        return JsonResponse({"message": "Could not load data from DB. Plase contact the staff"}, status=500)
+    
     if unassigned_tickets <= 0:
         return JsonResponse(
             {"Error": "Company has no more available tickets"}, status=400
         )
 
     # Get company's ID value
+    
     company = Company.objects.filter(name__exact=companyName).values("id").first()
     if company:
         company_id = company["id"]
     else:
-        return HttpResponse(status=400)
+        return JsonResponse({"message": "Could not find your company in the database. Please contact the staff."}, status=400)
 
     # Modify request to adapt to what DJango expects
     mutable_req = QueryDict("", mutable=True)
@@ -188,10 +224,20 @@ def lunchticket_reactcreate(request):
 
 
 def lunchticket_reactremove(request, token):
-    fair = Fair.objects.get(current=True)
-    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
-
-    lunch_ticket.delete()
+    try:
+        fair = Fair.objects.get(current=True)
+    except:
+        return JsonResponse({"message": "Couldn't find current fair. Plase contact the staff"}, status=500)
+    
+    try:
+        lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+    except:
+        return JsonResponse({"message": "Couldn't find the selected ticket. Plase contact the staff"}, status=500)
+    
+    try:
+        lunch_ticket.delete()
+    except:
+        return JsonResponse({"message": "Couldn't delete the selected ticket. Plase contact the staff"}, status=500)
 
     return HttpResponse(status=200)
 

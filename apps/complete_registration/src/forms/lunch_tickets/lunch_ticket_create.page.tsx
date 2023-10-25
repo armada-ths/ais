@@ -109,7 +109,7 @@ export function CreateLunchTicketsPage() {
     return (
         <FormWrapper className="flex flex-col gap-y-5 text-slate-700">
             <h2 className="text-md text-center font-bold">
-                You can create{" "}
+                You can create
                 {(unassigned_lunch_tickets==0 ?
                 <Badge
                     value={unassigned_lunch_tickets.toString()}
