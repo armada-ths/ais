@@ -17,6 +17,14 @@
 				<h1>{{ invitation.banquet.name }}</h1>
 			</div>
 
+			{% if invitation.participant != None %}
+				<a style="font-size: xx-large; color: #fff;" href="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}">
+					<div style="margin-top: 3rem; margin-bottom: 3rem; text-align: center; background-color: #00d790; padding: 1rem 2rem; border-radius: 1rem;">
+						VIEW MY TICKET
+					</div>
+				</a>
+			{% endif %}
+
 			<p>
 				<ul class="list-unstyled">
 					{% if invitation.banquet.date %}<li><span style="font-weight: bold;">Time and date:</span> {{ invitation.banquet.date }}</li>{% endif %}

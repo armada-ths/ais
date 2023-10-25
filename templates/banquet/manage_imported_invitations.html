@@ -1,0 +1,115 @@
+{% extends "base.html" %} {% load crispy_forms_tags %} {% block nav-banquet %}
+<li role="presentation" class="active">
+	<a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a>
+</li>
+{% endblock %} {% block content %}
+<h1>
+	{{ banquet.name }} – {% if invitation %}Edit invitation{% else %}Import
+	invitations{% endif %}
+</h1>
+
+<p>
+	<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
+	<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
+	{% if banquet.background %}
+	<a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a>
+	{% endif %}
+</p>
+
+<form method="post">
+	{% csrf_token %}
+
+	<div class="row">
+		<div class="col-xs-12">
+			<p>
+				Insert the Excel data from the invitation list. It's important that you
+				write the column names in the first row.
+			</p>
+
+			<p>
+				The following columns are required: <i>price</i>, <i>name</i>,
+				<i>email</i>.
+			</p>
+
+			<p>
+				Example in which all needed columns are present, and there is an extra
+				column called title:
+			</p>
+
+			<pre>
+price	name	title	email
+0	Torsten Hökby	PM Leo	tom.hawk@telia.com																				
+0	Catharina Hökby	PM Leo	tom.hawk@telia.com																				
+0	Edward Hökby	PM Leo	tom.hawk@telia.com</pre>
+
+			<p>
+				After you've pressed "Parse", you will be able to confirm the imported
+				invitations before they are created. Before you invite the participants,
+				you will be able to assign them to a group.
+			</p>
+
+			{{ form.excel_text | as_crispy_field }}
+		</div>
+	</div>
+
+	<input class="btn btn-primary" style="margin-top: 10px" name="import_excel" type="submit"
+		value="Parse (will require confirmation)" />
+
+	{% if imported %}
+	<h2 style="margin-top: 5rem">Confirm imported invitations</h2>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Price</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for row in imported %}
+			<tr style="{% if row.duplicate %}background-color: #c3e6cb;{% endif %}">
+				<td style="{% if row.invalid_name %}background-color: #ffeeba;{% endif %}">
+					{{ row.name }}
+				</td>
+				<td style="{% if row.invalid_email %}background-color: #f5c6cb;{% endif %}">
+					{% if row.duplicate %}
+					<a href="{% url 'banquet_manage_invitation' fair.year banquet.pk row.duplicate.pk %}"
+						target="_blank">{{ row.email }} (duplicate)</a>
+					{% else %} {{ row.email }} {% endif %}
+				</td>
+				<td style="{% if row.invalid_price %}background-color: #f5c6cb;{% endif %}">
+					{{ row.price }}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<hr />
+
+	{% if has_errors %}
+	<div class="alert alert-danger">
+		You have errors. Please fix them before creating invitations.
+	</div>
+	{% endif %} {% if has_warnings %}
+	<div class="alert alert-warning">
+		You have warnings. You don't have to fix them, but something might be wrong.
+	</div>
+	{% endif %} {% if all_invited %}
+	<div class="alert alert-success">All participants are already invited.</div>
+	{% endif %}
+
+	<div class="row" style="margin-top: 2rem">
+		<div class="col-xs-4">{{ form.group | as_crispy_field }}</div>
+	</div>
+
+	<div class="row">
+		<div class="col-xs-4">{{ form.send_email | as_crispy_field }}</div>
+	</div>
+
+	<input class="btn btn-primary" {% if has_errors or all_invited %} disabled {% endif %} style="margin-top: 10px"
+		name="invite" type="submit" value="Create invitations" />
+	{% endif %}
+</form>
+{% endblock %}

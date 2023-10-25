@@ -27,6 +27,10 @@ def get_serializer(registration, data=empty, context={}):
             Serializer = CRRegistrationSerializer
         else:
             Serializer = CRSignedRegistrationSerializer
+    elif registration.type == RegistrationType.AfterCompleteRegistration:
+        Serializer = CRSignedRegistrationSerializer
+    elif registration.type == RegistrationType.AfterCompleteRegistrationSigned:
+        Serializer = CRSignedRegistrationSerializer
 
     return Serializer(
         registration,

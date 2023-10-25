@@ -86,6 +86,8 @@ class SignupForm extends Component {
     forEach(answers, (answer, id) => {
       const question = find(signup_questions, {id: parseInt(id)});
 
+      console.log({question, answer}, isEmpty(answer))
+
       if (question.required && isEmpty(answer)) {
         errors[id] = true;
       }
@@ -107,7 +109,11 @@ class SignupForm extends Component {
     return (
         <Grid container spacing={16}>
         <div className='image-section' >
-          <img alt='Event image' src={event.image_url} style={{"max-width":"100%",}}/>
+          {
+            event.image_url && (
+              <img alt='Event image' src={event.image_url} style={{"max-width":"100%",}}/>
+            )
+          }
         </div>
           <Grid item>
 						<Grid container spacing={16}>

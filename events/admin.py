@@ -3,6 +3,8 @@ from django.contrib import admin
 from .models import (
     Event,
     Participant,
+    SignupQuestionAnswer,
+    SignupQuestionAnswerFile,
     Team,
     TeamMember,
     SignupQuestion,
@@ -34,6 +36,16 @@ class TeamMemberAdmin(ModelAdminImproved):
 
 @admin.register(SignupQuestion)
 class SignupQuestionAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(SignupQuestionAnswer)
+class SignupQuestionAnswerAdmin(ModelAdminImproved):
+    pass
+
+
+@admin.register(SignupQuestionAnswerFile)
+class SignupQuestionAnswerFileAdmin(ModelAdminImproved):
     pass
 
 

@@ -227,6 +227,7 @@ class Invitation(models.Model):
     part_of_matching = models.BooleanField(
         default=False, choices=[(True, "Yes"), (False, "No")]
     )  # Indicates that this person is to fill in information for the matching functionality
+    has_sent_mail = models.BooleanField(default=False)
 
     @property
     def deadline_smart(self):
