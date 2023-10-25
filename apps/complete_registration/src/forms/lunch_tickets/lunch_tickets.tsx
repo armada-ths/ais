@@ -5,11 +5,15 @@ import { HOST } from "../../shared/vars"
 
 interface LunchTicketsProps {
     ticket: LunchTicket;
+    index: number;
+    deleteTicketFromList: (index: number) => void;
 }
 
 const LunchTicketView: React.FC<LunchTicketsProps> = (
     {
-        ticket
+        ticket,
+        index,
+        deleteTicketFromList,
     }
 ) => {
     const [moreInfoDisplayed, setMoreInfoDisplayed] = useState<boolean>(false);
@@ -46,6 +50,8 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
 
             if (!response.ok) {
                 setSendTicketError(`Could not delete ticket. Status: ${response.status}`);
+            }else{
+                deleteTicketFromList(index);
             }
 
         } catch (error) {
@@ -121,7 +127,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                                     :
                                     ""
                                 )}
-                                {(ticket.dietary_restrictions.length > 0 && (ticket.other_dietary_restrictions && ticket.other_dietary_restrictions.length > 0) ?
+                                {(Object.keys(ticket.dietary_restrictions).length > 0 && (ticket.other_dietary_restrictions && ticket.other_dietary_restrictions.length > 0) ?
                                     <div className="border-b-2" />
                                     :
                                     ""

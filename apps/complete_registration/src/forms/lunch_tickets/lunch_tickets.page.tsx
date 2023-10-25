@@ -9,10 +9,16 @@ import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import "./lunch_ticket.css"
 
 export function ViewLunchTicketsPage() {
-    const result = useSelector((state: RootState) =>
+    const result_tickets = useSelector((state: RootState) =>
         selectField(state, "assigned_lunch_tickets")
-    )
-    const tickets = (result?.value ?? []) as LunchTicket[]
+    );
+    const result_fair_days = useSelector((state: RootState) =>
+        selectField(state, "fair_days")
+    );
+
+    const tickets = (result_tickets?.value ?? []) as LunchTicket[]
+    const fair_days = (result_fair_days?.value ?? []) as string[]
+
     const [shownTickets, setShownTickets] = useState<LunchTicket[]>(tickets)
     const [filterUsedState, setFilterUsedState] = useState<string>("All")
     const [filterDateState, setFilterDateState] = useState<string>("Any")
@@ -39,6 +45,12 @@ export function ViewLunchTicketsPage() {
             setShownTickets(filteredTickets as LunchTicket[])
         }
     }, [filterDateState, filterUsedState, tickets])
+
+    const deleteTicket = (index:number) => {
+        if (index >= 0 && index < tickets.length) {
+            tickets.splice(index, 1);
+        }
+    }
 
     return (
         <FormWrapper className="flex max-w-md flex-col gap-y-5 text-slate-700">
@@ -68,7 +80,7 @@ export function ViewLunchTicketsPage() {
                         onChange={event => {
                             setFilterDateState(event.value)
                         }}
-                        options={["Any", "2023-11-21", "2023-11-22"]}
+                        options={["Any", ...fair_days]}
                         className="md:w-14rem w-full"
                     />
                 </div>
@@ -83,6 +95,8 @@ export function ViewLunchTicketsPage() {
                         <LunchTicketView
                             key={index}
                             ticket={ticket}
+                            index={tickets.indexOf(ticket)}
+                            deleteTicketFromList={deleteTicket}
                         ></LunchTicketView>
                     </div>
                 ))

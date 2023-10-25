@@ -18,6 +18,7 @@ from fair.models import (
 )
 from accounting.models import Order, Product, Category
 from companies.models import Company
+from people.models import DietaryRestriction
 from .forms import LunchTicketForm
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
@@ -119,6 +120,16 @@ def lunchtickets_companysearch(request):
 
     unassigned_tickets, lunch_tickets = company_total_lunch_tickets(fair, search_query)
 
+    #Get Fair days
+    days_result = FairDay.objects.filter(fair=fair).all()
+    days = [day.date.strftime('%Y-%m-%d') for day in days_result]
+
+    lunch_time_result = LunchTicketTime.objects.filter(day__in=days_result).order_by('name').distinct('name')
+    lunch_times = [time.name for time in lunch_time_result]
+
+    dietary_restrictions = DietaryRestriction.objects.all()
+    dietary_restrictions_names = [restriction.name for restriction in dietary_restrictions]
+
     data = {
         "assigned_lunch_tickets": [
             serializers.lunch_ticket_react(lunch_ticket)
@@ -126,7 +137,9 @@ def lunchtickets_companysearch(request):
         ],
         "unassigned_lunch_tickets": unassigned_tickets,
         # TODO fix time slots & rest of fields
-        "time_slots": [],
+        "fair_days": days,
+        "lunch_times": lunch_times,
+        "dietary_restrictions": dietary_restrictions_names
     }
 
     return JsonResponse(data, safe=False)

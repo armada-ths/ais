@@ -21,7 +21,10 @@ const form: Form = {
             fields: [
                 {
                     mapping: "assigned_lunch_tickets"
-                }
+                },
+                {
+                    mapping: "fair_days"
+                },
             ]
         },
         {
@@ -49,7 +52,16 @@ const form: Form = {
             fields: [
                 {
                     mapping: "unassigned_lunch_tickets"
-                }
+                },
+                {
+                    mapping: "fair_days"
+                },
+                {
+                    mapping: "lunch_times"
+                },
+                {
+                    mapping: "dietary_restrictions"
+                },
             ]
         }
     ]
