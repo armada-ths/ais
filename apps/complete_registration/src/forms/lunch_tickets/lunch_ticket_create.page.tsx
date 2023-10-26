@@ -39,9 +39,9 @@ export function CreateLunchTicketsPage() {
         initialDietaryRestrictions[name] = false;
     });
 
-
     const [DateState, setDateState] = useState<string>(fair_days[0])
     const [TimeState, setTimeState] = useState<string>(lunch_times[0])
+    const [selectableTimes, setSelectableTimes] = useState<string[]>(lunch_times.filter(time => time.includes(DateState)))
     const [Email, setEmail] = useState<string>("")
     const [DietaryRestrictions, setDietaryRestrictions] =
         useState<{ [key: string]: boolean }>(initialDietaryRestrictions)
@@ -50,8 +50,15 @@ export function CreateLunchTicketsPage() {
     const [OtherComments, setOtherComments] = useState<string>("")
     const [ErrorString, setErrorString] = useState<string>("")
 
-    useEffect(() => {}, [DietaryRestrictions])
+    useEffect(() => {
+    }, [DietaryRestrictions])
     const companyName = useSelector(selectCompanyName)
+
+    const modifySelectableTimes = (date: string) => {
+        const filteredTimes = lunch_times.filter(time => time.includes(date));
+        setSelectableTimes(filteredTimes);
+        setTimeState(filteredTimes[0])
+    }
 
     const processForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -142,6 +149,7 @@ export function CreateLunchTicketsPage() {
                         value={DateState}
                         onChange={event => {
                             setDateState(event.value)
+                            modifySelectableTimes(event.value)
                         }}
                         options={fair_days}
                         className="md:w-14rem w-full"
@@ -160,7 +168,7 @@ export function CreateLunchTicketsPage() {
                         onChange={event => {
                             setTimeState(event.value)
                         }}
-                        options={lunch_times}
+                        options={selectableTimes}
                         className="md:w-14rem w-full"
                     />
                 </div>

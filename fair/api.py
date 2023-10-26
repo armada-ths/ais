@@ -129,11 +129,9 @@ def lunchtickets_companysearch(request):
 
         lunch_time_result = (
             LunchTicketTime.objects.filter(day__in=days_result)
-            .order_by("name")
-            .distinct("name")
         )
 
-        lunch_times = [time.name for time in lunch_time_result]
+        lunch_times = [f'{time.day.date.strftime("%Y-%m-%d")} {time.name}' for time in lunch_time_result]
 
         dietary_restrictions = DietaryRestriction.objects.all()
         dietary_restrictions_names = [
