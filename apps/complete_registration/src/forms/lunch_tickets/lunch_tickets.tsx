@@ -5,12 +5,14 @@ import { HOST } from "../../shared/vars"
 
 interface LunchTicketsProps {
     ticket: LunchTicket;
+    sendTicketUpdateList: (ticket: LunchTicket) => void;
     deleteTicketFromList: (ticket: LunchTicket) => void;
 }
 
 const LunchTicketView: React.FC<LunchTicketsProps> = (
     {
         ticket,
+        sendTicketUpdateList,
         deleteTicketFromList,
     }
 ) => {
@@ -45,6 +47,7 @@ const LunchTicketView: React.FC<LunchTicketsProps> = (
                 }
             }else {
                 setSendTicketStatus("The ticket has been sent to " + ticket.email_address);
+                sendTicketUpdateList(ticket);
             }
 
         } catch (error) {

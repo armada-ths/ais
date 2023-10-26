@@ -66,6 +66,21 @@ export function ViewLunchTicketsPage() {
         }
     }, [filterDateState, filterUsedState, tickets, unassigned_tickets, ticketTracker, initiated, unassignedTicketsTracker])
 
+    const sendTicket = (lunchTicket: LunchTicket) => {
+        const updatedTickets = ticketTracker.map((ticket) => {
+            // Check if the current ticket is the one you want to update
+            if (ticket === lunchTicket) {
+              // Create a new object with the updated 'sent' property
+              return { ...ticket, sent: true };
+            }
+            // For other tickets, just return them as they are
+            return ticket;
+          });
+
+          // Update the state with the new array
+          setTicketTracker(updatedTickets);
+    }
+
     const deleteTicket = (lunchTicket: LunchTicket) => {
         //Delete lunchticket in view
         const auxTickets = [...ticketTracker]
@@ -133,6 +148,7 @@ export function ViewLunchTicketsPage() {
                         <LunchTicketView
                             key={index}
                             ticket={ticket}
+                            sendTicketUpdateList={sendTicket}
                             deleteTicketFromList={deleteTicket}
                         ></LunchTicketView>
                     </div>
