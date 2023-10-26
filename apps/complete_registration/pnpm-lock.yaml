@@ -73,6 +73,9 @@ devDependencies:
   eslint:
     specifier: ^8.45.0
     version: 8.45.0
+  eslint-plugin-prefer-function-declarations:
+    specifier: ^2.1.0
+    version: 2.1.0(@typescript-eslint/parser@6.0.0)(@typescript-eslint/utils@6.0.0)(eslint@8.45.0)
   eslint-plugin-react-hooks:
     specifier: ^4.6.0
     version: 4.6.0(eslint@8.45.0)
@@ -1227,6 +1230,18 @@ packages:
   /escape-string-regexp@4.0.0:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
+    dev: true
+
+  /eslint-plugin-prefer-function-declarations@2.1.0(@typescript-eslint/parser@6.0.0)(@typescript-eslint/utils@6.0.0)(eslint@8.45.0):
+    resolution: {integrity: sha512-0ejiFV+rRupZjxTuZhGOO+3kAQa2n7i21tA7krtkxHNfEvkmp8ZM6ePR7BbPma65bhB8qF/v4qRTst5kf7V8dw==}
+    peerDependencies:
+      '@typescript-eslint/parser': '>= 5.44.0'
+      '@typescript-eslint/utils': '>= 5.44.0'
+      eslint: '>= 8.28.0'
+    dependencies:
+      '@typescript-eslint/parser': 6.0.0(eslint@8.45.0)(typescript@5.0.2)
+      '@typescript-eslint/utils': 6.0.0(eslint@8.45.0)(typescript@5.0.2)
+      eslint: 8.45.0
     dev: true
 
   /eslint-plugin-react-hooks@4.6.0(eslint@8.45.0):
