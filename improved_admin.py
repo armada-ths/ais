@@ -17,12 +17,12 @@ class ModelAdminImproved(admin.ModelAdmin):
     # Overrides get_autocomplete_fields to be all foreignkey fields.
     def get_autocomplete_fields(self, request):
         autocomplete_fields = []
-        """
+        
         for field in self.model._meta.fields:
             if isinstance(field, (models.ForeignKey)):
                 if field.related_model not in EXCLUDED_FIELDS:
                     autocomplete_fields.append(field.name)
-        """
+        
         return autocomplete_fields
 
     formfield_overrides = {
