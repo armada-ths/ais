@@ -57,7 +57,7 @@ export function CreateLunchTicketsPage() {
     const modifySelectableTimes = (date: string) => {
         const filteredTimes = lunch_times.filter(time => time.includes(date));
         setSelectableTimes(filteredTimes);
-        setTimeState(filteredTimes[0])
+        setTimeState(filteredTimes[0]);
     }
 
     const processForm = async (e: React.FormEvent<HTMLFormElement>) => {
