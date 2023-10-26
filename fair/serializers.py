@@ -23,6 +23,7 @@ def lunch_ticket(lunch_ticket):
 
     return data
 
+
 def lunch_ticket_react(lunch_ticket):
     data = {
         "id": lunch_ticket.pk,
@@ -49,6 +50,7 @@ def lunch_ticket_react(lunch_ticket):
     }
 
     return data
+
 
 def banquet_participant(banquet_participant):
     data = {

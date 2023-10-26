@@ -6,8 +6,16 @@ app_name = "fair_api"
 
 urlpatterns = [
     url(r"^lunchtickets/search$", api.lunchtickets_search, name="lunchtickets_search"),
-    url(r"^lunchtickets/companysearch$", api.lunchtickets_companysearch, name="lunchtickets_companysearch"),
-    url(r"^lunchtickets/reactcreate$", api.lunchticket_reactcreate, name="lunchtickets_reactcreate"),
+    url(
+        r"^lunchtickets/companysearch$",
+        api.lunchtickets_companysearch,
+        name="lunchtickets_companysearch",
+    ),
+    url(
+        r"^lunchtickets/reactcreate$",
+        api.lunchticket_reactcreate,
+        name="lunchtickets_reactcreate",
+    ),
     url(
         r"^lunchtickets/(?P<token>[A-Za-z0-9]+)/reactremove$",
         api.lunchticket_reactremove,

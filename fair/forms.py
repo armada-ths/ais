@@ -57,7 +57,7 @@ class LunchTicketForm(forms.ModelForm):
             valid = False
 
         return valid
-    
+
     def is_valid_react(self):
         valid = super(LunchTicketForm, self).is_valid()
 
@@ -72,7 +72,7 @@ class LunchTicketForm(forms.ModelForm):
         if company is None:
             self.add_error("company", "You have to specify a company")
             valid = False
-        
+
         if email_address is None:
             self.add_error("email_address", "You have to specify an email address")
             valid = False
