@@ -141,7 +141,6 @@ def lunchtickets_companysearch(request):
     # ! TODO we're not checking if the company is actually who they say they are, this has to be fixed later
     # Check that auth-session matches a user that belongs to the company
     search_query = request.GET.get("company", "")
-    search_query = "3M"
     if search_query == "":
         return JsonResponse({"message": "Company is empty."}, status=400)
 
@@ -217,13 +216,10 @@ def lunchticket_reactcreate(request):
             status=500,
         )
 
-    try:
-        time = get_object_or_404(LunchTicketTime, name=lunch_time, day=day)
-    except:
-        return JsonResponse(
-            {"message": "Couldn't find requested lunch time. Plase contact the staff"},
-            status=500,
-        )
+    date_part, time_part = str(lunch_time).split(" ")
+
+    lunch_day = get_object_or_404(FairDay, date=date_part, fair=fair)
+    time = get_object_or_404(LunchTicketTime, name=time_part, day=lunch_day)
 
     try:
         (unassigned_tickets, _) = company_total_lunch_tickets(fair, companyName)
@@ -260,6 +256,7 @@ def lunchticket_reactcreate(request):
     mutable_req["user"] = ""
 
     form = LunchTicketForm(mutable_req or None, initial={"fair": fair})
+    print(form)
     if form.is_valid_react():
         form.instance.fair = fair
         lunch_ticket = form.save()

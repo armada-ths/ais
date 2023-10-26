@@ -10,11 +10,13 @@ export const FORM_OPEN_DURING: Record<
         "complete_registration_signed",
         "after_complete_registration_signed"
     ],
-    lunch_tickets: [        "complete_registration_signed",
-    "complete_registration",
-    "before_complete_registration",
-    "after_complete_registration",
-    "after_complete_registration_signed"],
+    lunch_tickets: [
+        "complete_registration_signed",
+        "complete_registration",
+        "before_complete_registration",
+        "after_complete_registration",
+        "after_complete_registration_signed"
+    ],
     exhibitor_catalog: [
         "complete_registration_signed",
         "complete_registration",

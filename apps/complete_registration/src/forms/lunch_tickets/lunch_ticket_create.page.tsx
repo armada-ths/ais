@@ -4,8 +4,11 @@ import { InputText } from "primereact/inputtext"
 import { Dropdown } from "primereact/dropdown"
 import { Checkbox } from "primereact/checkbox"
 import { Button } from "primereact/button"
-import { Badge  } from "primereact/badge"
-import {LunchTicket, validateLunchTicket} from "../../utils/lunch_tickets/lunch_tickets.utils"
+import { Badge } from "primereact/badge"
+import {
+    LunchTicket,
+    validateLunchTicket
+} from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { buildURLEncodedPayload } from "../../utils/django_format/django_format.utils"
 import { useSelector } from "react-redux"
 import { selectCompanyName } from "../../store/company/company_selectors"
@@ -17,47 +20,51 @@ import { selectField } from "../../store/form/form_selectors"
 export function CreateLunchTicketsPage() {
     const result_unassigned_lunch_tickets = useSelector((state: RootState) =>
         selectField(state, "unassigned_lunch_tickets")
-    );
+    )
     const result_fair_days = useSelector((state: RootState) =>
         selectField(state, "fair_days")
-    );
+    )
     const result_lunch_times = useSelector((state: RootState) =>
         selectField(state, "lunch_times")
-    );
+    )
     const result_dietary_restrictions = useSelector((state: RootState) =>
         selectField(state, "dietary_restrictions")
-    );
+    )
 
-    const unassigned_lunch_tickets = (result_unassigned_lunch_tickets?.value ?? []) as number
+    const unassigned_lunch_tickets = (result_unassigned_lunch_tickets?.value ??
+        []) as number
     const fair_days = (result_fair_days?.value ?? [""]) as string[]
     const lunch_times = (result_lunch_times?.value ?? [""]) as string[]
-    const dietary_restrictions = (result_dietary_restrictions?.value ?? []) as string[]
+    const dietary_restrictions = (result_dietary_restrictions?.value ??
+        []) as string[]
 
-    const initialDietaryRestrictions: { [key: string]: boolean } = {};
+    const initialDietaryRestrictions: { [key: string]: boolean } = {}
 
     dietary_restrictions.forEach(name => {
-        initialDietaryRestrictions[name] = false;
-    });
+        initialDietaryRestrictions[name] = false
+    })
 
     const [DateState, setDateState] = useState<string>(fair_days[0])
     const [TimeState, setTimeState] = useState<string>(lunch_times[0])
-    const [selectableTimes, setSelectableTimes] = useState<string[]>(lunch_times.filter(time => time.includes(DateState)))
+    const [selectableTimes, setSelectableTimes] = useState<string[]>(
+        lunch_times.filter(time => time.includes(DateState))
+    )
     const [Email, setEmail] = useState<string>("")
-    const [DietaryRestrictions, setDietaryRestrictions] =
-        useState<{ [key: string]: boolean }>(initialDietaryRestrictions)
+    const [DietaryRestrictions, setDietaryRestrictions] = useState<{
+        [key: string]: boolean
+    }>(initialDietaryRestrictions)
     const [OtherDietRestrictions, setOtherDietRestrictions] =
         useState<string>("")
     const [OtherComments, setOtherComments] = useState<string>("")
     const [ErrorString, setErrorString] = useState<string>("")
 
-    useEffect(() => {
-    }, [DietaryRestrictions])
+    useEffect(() => {}, [DietaryRestrictions])
     const companyName = useSelector(selectCompanyName)
 
     const modifySelectableTimes = (date: string) => {
-        const filteredTimes = lunch_times.filter(time => time.includes(date));
-        setSelectableTimes(filteredTimes);
-        setTimeState(filteredTimes[0]);
+        const filteredTimes = lunch_times.filter(time => time.includes(date))
+        setSelectableTimes(filteredTimes)
+        setTimeState(filteredTimes[0])
     }
 
     const processForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,54 +91,56 @@ export function CreateLunchTicketsPage() {
         }
 
         try {
-            const response = await fetch(`${HOST}/api/fair/lunchtickets/reactcreate`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: buildURLEncodedPayload(ticket)
-            });
+            const response = await fetch(
+                `${HOST}/api/fair/lunchtickets/reactcreate`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: buildURLEncodedPayload(ticket)
+                }
+            )
 
             if (!response.ok) {
                 try {
-                    const errorData = await response.json();
+                    const errorData = await response.json()
                     if (errorData && errorData.message) {
-                        setErrorString(errorData.message);
+                        setErrorString(errorData.message)
                     } else {
-                        setErrorString("Unknown error");
+                        setErrorString("Unknown error")
                     }
                 } catch (error) {
-                    console.error("Error parsing response:", error);
-                    setErrorString("Error parsing response");
+                    console.error("Error parsing response:", error)
+                    setErrorString("Error parsing response")
                 }
             } else {
                 // Reload: Not best practice, but I need to retrieve the token of the recently created ticket and place it on the queue
-                window.location.reload();
+                window.location.reload()
             }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error:any) {
-            console.error("Error:", error);
-            const errorString = error.toString();
-            setErrorString(errorString);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.error("Error:", error)
+            const errorString = error.toString()
+            setErrorString(errorString)
         }
-
     }
 
     return (
         <FormWrapper className="flex flex-col gap-y-5 text-slate-700">
             <h2 className="text-md text-center font-bold">
                 You can create
-                {(unassigned_lunch_tickets==0 ?
-                <Badge
-                    value={unassigned_lunch_tickets.toString()}
-                    severity="danger"
-                    className="mx-2"
-                />
-                :
-                <Badge
-                    value={unassigned_lunch_tickets.toString()}
-                    className="mx-2"
-                />
+                {unassigned_lunch_tickets == 0 ? (
+                    <Badge
+                        value={unassigned_lunch_tickets.toString()}
+                        severity="danger"
+                        className="mx-2"
+                    />
+                ) : (
+                    <Badge
+                        value={unassigned_lunch_tickets.toString()}
+                        className="mx-2"
+                    />
                 )}
                 lunch tickets
             </h2>
@@ -201,10 +210,18 @@ export function CreateLunchTicketsPage() {
                                             key={restriction}
                                             checked={value}
                                             onChange={isChecked => {
-                                                setDietaryRestrictions(prev => ({
-                                                    ...prev,
-                                                    [restriction]: isChecked.checked
-                                                  }) as { [key: string]: boolean });
+                                                setDietaryRestrictions(
+                                                    prev =>
+                                                        ({
+                                                            ...prev,
+                                                            [restriction]:
+                                                                isChecked.checked
+                                                        }) as {
+                                                            [
+                                                                key: string
+                                                            ]: boolean
+                                                        }
+                                                )
                                             }}
                                         />
                                         {restriction}
@@ -239,10 +256,10 @@ export function CreateLunchTicketsPage() {
                     />
                 </div>
                 <div className="m-auto mt-2 w-1/2 [&>*]:w-full [&>*]:py-1">
-                    {(unassigned_lunch_tickets==0 ?
-                    <Button label="Create lunch ticket" disabled/>
-                    :
-                    <Button label="Create lunch ticket" />
+                    {unassigned_lunch_tickets == 0 ? (
+                        <Button label="Create lunch ticket" disabled />
+                    ) : (
+                        <Button label="Create lunch ticket" />
                     )}
                 </div>
             </form>
