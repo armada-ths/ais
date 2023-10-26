@@ -12,6 +12,7 @@ export const FORM_OPEN_DURING: Record<
     ],
     lunch_tickets: [
         "complete_registration",
+        "complete_registration_signed",
         "after_complete_registration_signed",
         "after_complete_registration",
         "after_complete_registration_signed"
