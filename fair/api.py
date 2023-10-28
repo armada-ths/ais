@@ -16,7 +16,7 @@ from fair.models import (
     LunchTicketTime,
     FairDay,
 )
-from accounting.models import Order, Product, Category
+from accounting.models import Order, Product, Category, ChildProduct
 from companies.models import Company
 from people.models import DietaryRestriction
 from .forms import LunchTicketForm
@@ -93,11 +93,38 @@ def company_total_lunch_tickets(fair: Fair, company_name: str):
         category__in=categories
     ).all()  # Fetch all products that contain the category "[current_year]Lunch Ticket"
 
-    result = Order.objects.filter(product__in=lunch_ticket_product)
+    company = Company.objects.filter(name__exact=company_name).values("id").first()
+    # This list contains all the addition tickets that have been bought by the company this year
+    additional_tickets_order = Order.objects.filter(
+        product__in=lunch_ticket_product, purchasing_company__exact=company["id"]
+    )
+
+    # Find packages that contain tickets --> First: Find all ChildProducts related to LunchTickets[actual_year], Second: Find parent Products, Third: Find its correspondent orders for this company
+    ticket_as_child_product = ChildProduct.objects.filter(
+        child_product__in=lunch_ticket_product
+    )
+    products_containing_tickets = Product.objects.filter(
+        child_products__in=ticket_as_child_product
+    )
+    orders_containing_tickets = Order.objects.filter(
+        product__in=products_containing_tickets, purchasing_company__exact=company["id"]
+    )
+
+    # Let's count tickets
+    company_tickets = 0
+
+    # Now we got all the orders for this company that contain lunch tickets. Now let's count them going back to ChildProducts.quantity
+    try:
+        for order in orders_containing_tickets.select_related("product"):
+            product_children_list = order.product.child_products.all()
+            for child_product in product_children_list:
+                if child_product in ticket_as_child_product:
+                    company_tickets += child_product.quantity
+    except:
+        company_tickets = 0
 
     # Go through result and for each result get the quantity of the product
-    company_tickets = 0
-    for i in result:
+    for i in additional_tickets_order:
         company_tickets += i.quantity
 
     unassigned_tickets = company_tickets - lunch_tickets.count()
@@ -114,36 +141,26 @@ def lunchtickets_companysearch(request):
     # ! TODO we're not checking if the company is actually who they say they are, this has to be fixed later
     # Check that auth-session matches a user that belongs to the company
     search_query = request.GET.get("company", "")
-
     if search_query == "":
         return JsonResponse({"message": "Company is empty."}, status=400)
 
-    try:
-        unassigned_tickets, lunch_tickets = company_total_lunch_tickets(
-            fair, search_query
-        )
+    unassigned_tickets, lunch_tickets = company_total_lunch_tickets(fair, search_query)
 
-        # Get Fair days
-        days_result = FairDay.objects.filter(fair=fair).all()
-        days = [day.date.strftime("%Y-%m-%d") for day in days_result]
+    # Get Fair days
+    days_result = FairDay.objects.filter(fair=fair).all()
+    days = [day.date.strftime("%Y-%m-%d") for day in days_result]
 
-        lunch_time_result = (
-            LunchTicketTime.objects.filter(day__in=days_result)
-            .order_by("name")
-            .distinct("name")
-        )
+    lunch_time_result = LunchTicketTime.objects.filter(day__in=days_result)
 
-        lunch_times = [time.name for time in lunch_time_result]
+    lunch_times = [
+        f'{time.day.date.strftime("%Y-%m-%d")} {time.name}'
+        for time in lunch_time_result
+    ]
 
-        dietary_restrictions = DietaryRestriction.objects.all()
-        dietary_restrictions_names = [
-            restriction.name for restriction in dietary_restrictions
-        ]
-    except:
-        return JsonResponse(
-            {"message": "Could not load data from DB.Please contact the staff"},
-            status=500,
-        )
+    dietary_restrictions = DietaryRestriction.objects.all()
+    dietary_restrictions_names = [
+        restriction.name for restriction in dietary_restrictions
+    ]
 
     data = {
         "assigned_lunch_tickets": [
@@ -199,13 +216,10 @@ def lunchticket_reactcreate(request):
             status=500,
         )
 
-    try:
-        time = get_object_or_404(LunchTicketTime, name=lunch_time, day=day)
-    except:
-        return JsonResponse(
-            {"message": "Couldn't find requested lunch time. Plase contact the staff"},
-            status=500,
-        )
+    date_part, time_part = str(lunch_time).split(" ")
+
+    lunch_day = get_object_or_404(FairDay, date=date_part, fair=fair)
+    time = get_object_or_404(LunchTicketTime, name=time_part, day=lunch_day)
 
     try:
         (unassigned_tickets, _) = company_total_lunch_tickets(fair, companyName)
@@ -242,6 +256,7 @@ def lunchticket_reactcreate(request):
     mutable_req["user"] = ""
 
     form = LunchTicketForm(mutable_req or None, initial={"fair": fair})
+    print(form)
     if form.is_valid_react():
         form.instance.fair = fair
         lunch_ticket = form.save()
