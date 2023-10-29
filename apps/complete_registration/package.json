@@ -7,8 +7,8 @@
         "preinstall": "npx only-allow pnpm",
         "dev": "npx concurrently \"vite --host\" \"npx tailwindcss -i ./src/input.css -o ./output.css --watch\"",
         "build": "mkdir -p ../../ais_static/apps/complete_registration && rm -rf ../../ais_static/apps/complete_registration/* && tsc && npx tailwindcss -i ./src/input.css -o ./output.css && vite build && cat ./output.css >> ../../ais_static/apps/complete_registration/assets/index.css",
-        "lint": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-        "prettier-check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,json,css,md}'",
+        "ci-eslint-check": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "ci-prettier-check": "prettier --check",
         "preview": "vite preview"
     },
     "dependencies": {

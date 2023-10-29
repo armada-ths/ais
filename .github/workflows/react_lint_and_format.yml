@@ -34,7 +34,7 @@ jobs:
           echo "FILES=$files" >> $GITHUB_ENV
 
       - name: Run ESLint on changed files
-        run: cd apps/complete_registration && pnpm run lint -- ${{ env.FILES }}
+        run: cd apps/complete_registration && pnpm run ci-eslint-check -- ${{ env.FILES }}
 
       - name: Run Prettier on changed files
-        run: cd apps/complete_registration && pnpm run prettier-check -- ${{ env.FILES }}
+        run: cd apps/complete_registration && pnpm run ci-prettier-check -- ${{ env.FILES }}
