@@ -7,8 +7,8 @@ import { Dropdown } from "primereact/dropdown"
 import LunchTicketView from "./lunch_tickets"
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { Button } from "primereact/button"
-import "./lunch_ticket.css"
 import { nextPage, setField } from "../../store/form/form_slice"
+import "./lunch_ticket.css"
 
 export function ViewLunchTicketsPage() {
     const dispatch = useDispatch()
@@ -99,7 +99,7 @@ export function ViewLunchTicketsPage() {
         setTicketTracker(updatedTickets)
     }
 
-    function deleteTicket(lunchTicket: LunchTicket) {
+    function removeTicketLocally(lunchTicket: LunchTicket) {
         //Delete lunchticket in view
         const auxTickets = [...ticketTracker]
         auxTickets.splice(ticketTracker.indexOf(lunchTicket), 1)
@@ -160,13 +160,13 @@ export function ViewLunchTicketsPage() {
                 <div />
             ) : (
                 shownTickets.map((ticket, index) => (
-                    <div key={index} className="+mb-6 min-w-75">
+                    <div key={ticket.token} className="+mb-6 min-w-75">
                         <LunchTicketView
                             key={index}
                             ticket={ticket}
                             sendTicketUpdateList={sendTicket}
-                            deleteTicketFromList={deleteTicket}
-                        ></LunchTicketView>
+                            onRemoteDeleteSuccess={removeTicketLocally}
+                        />
                     </div>
                 ))
             )}
