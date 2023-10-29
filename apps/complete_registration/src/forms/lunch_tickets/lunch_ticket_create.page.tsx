@@ -12,10 +12,11 @@ import {
 import { buildURLEncodedPayload } from "../../utils/django_format/django_format.utils"
 import { useSelector } from "react-redux"
 import { selectCompanyName } from "../../store/company/company_selectors"
-import "./lunch_ticket.css"
 import { HOST } from "../../shared/vars"
 import { RootState } from "../../store/store"
 import { selectField } from "../../store/form/form_selectors"
+import { toast } from "sonner"
+import "./lunch_ticket.css"
 
 export function CreateLunchTicketsPage() {
     const result_unassigned_lunch_tickets = useSelector((state: RootState) =>
@@ -91,7 +92,7 @@ export function CreateLunchTicketsPage() {
         }
 
         try {
-            const response = await fetch(
+            const create_ticket_promise = fetch(
                 `${HOST}/api/fair/lunchtickets/reactcreate`,
                 {
                     method: "POST",
@@ -101,6 +102,14 @@ export function CreateLunchTicketsPage() {
                     body: buildURLEncodedPayload(ticket)
                 }
             )
+
+            toast.promise(create_ticket_promise, {
+                loading: "Creating ticket...",
+                success: "Ticket created!",
+                error: "Error creating ticket"
+            })
+
+            const response = await create_ticket_promise
 
             if (!response.ok) {
                 try {
@@ -212,31 +221,30 @@ export function CreateLunchTicketsPage() {
                         className="grid grid-cols-2 [&>div]:pt-2"
                     >
                         {Object.entries(DietaryRestrictions).map(
-                            ([restriction, value]) => {
-                                return (
-                                    <div key={restriction}>
-                                        <Checkbox
-                                            key={restriction}
-                                            checked={value}
-                                            onChange={isChecked => {
-                                                setDietaryRestrictions(
-                                                    prev =>
-                                                        ({
-                                                            ...prev,
-                                                            [restriction]:
-                                                                isChecked.checked
-                                                        }) as {
-                                                            [
-                                                                key: string
-                                                            ]: boolean
-                                                        }
-                                                )
-                                            }}
-                                        />
-                                        {restriction}
-                                    </div>
-                                )
-                            }
+                            ([restriction, value]) => (
+                                <div
+                                    key={restriction}
+                                    className="flex items-center gap-1"
+                                >
+                                    <Checkbox
+                                        key={restriction}
+                                        checked={value}
+                                        onChange={isChecked => {
+                                            setDietaryRestrictions(
+                                                prev =>
+                                                    ({
+                                                        ...prev,
+                                                        [restriction]:
+                                                            isChecked.checked
+                                                    }) as {
+                                                        [key: string]: boolean
+                                                    }
+                                            )
+                                        }}
+                                    />
+                                    {restriction}
+                                </div>
+                            )
                         )}
                     </div>
                 </div>
@@ -265,11 +273,10 @@ export function CreateLunchTicketsPage() {
                     />
                 </div>
                 <div className="m-auto mt-2 w-1/2 [&>*]:w-full [&>*]:py-1">
-                    {unassigned_lunch_tickets == 0 ? (
-                        <Button label="Create lunch ticket" disabled />
-                    ) : (
-                        <Button label="Create lunch ticket" />
-                    )}
+                    <Button
+                        label="Create lunch ticket"
+                        disabled={unassigned_lunch_tickets == 0}
+                    />
                 </div>
             </form>
         </FormWrapper>

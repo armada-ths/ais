@@ -2,17 +2,18 @@ import { useState } from "react"
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { Button } from "primereact/button"
 import { HOST } from "../../shared/vars"
+import { toast } from "sonner"
 
 interface LunchTicketsProps {
     ticket: LunchTicket
     sendTicketUpdateList: (ticket: LunchTicket) => void
-    deleteTicketFromList: (ticket: LunchTicket) => void
+    onRemoteDeleteSuccess: (ticket: LunchTicket) => void
 }
 
 function LunchTicketView({
     ticket,
     sendTicketUpdateList,
-    deleteTicketFromList
+    onRemoteDeleteSuccess
 }: LunchTicketsProps) {
     const [moreInfoDisplayed, setMoreInfoDisplayed] = useState<boolean>(false)
     const [dietaryDisplayed, setDietaryDisplayed] = useState<boolean>(false)
@@ -66,9 +67,17 @@ function LunchTicketView({
 
     async function deleteTicket() {
         try {
-            const response = await fetch(
+            const delete_ticket_promise = fetch(
                 `${HOST}/api/fair/lunchtickets/` + ticket.token + `/reactremove`
             )
+
+            toast.promise(delete_ticket_promise, {
+                loading: "Deleting ticket...",
+                success: "Ticket deleted!",
+                error: "Could not delete ticket"
+            })
+
+            const response = await delete_ticket_promise
 
             if (!response.ok) {
                 try {
@@ -89,7 +98,7 @@ function LunchTicketView({
                     )
                 }
             } else {
-                deleteTicketFromList(ticket)
+                onRemoteDeleteSuccess(ticket)
             }
         } catch (error) {
             setSendTicketError(

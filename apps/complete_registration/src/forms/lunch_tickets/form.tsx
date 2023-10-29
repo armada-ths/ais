@@ -27,7 +27,7 @@ const form: Form = {
                 },
                 {
                     mapping: "unassigned_lunch_tickets"
-                },
+                }
             ]
         },
         {
@@ -64,7 +64,7 @@ const form: Form = {
                 },
                 {
                     mapping: "dietary_restrictions"
-                },
+                }
             ]
         }
     ]
