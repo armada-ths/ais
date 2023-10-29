@@ -103,11 +103,8 @@ def company_total_lunch_tickets(fair: Fair, company_name: str):
     ticket_as_child_product = ChildProduct.objects.filter(
         child_product__in=lunch_ticket_product
     )
-    products_containing_tickets = Product.objects.filter(
-        child_products__in=ticket_as_child_product
-    )
     orders_containing_tickets = Order.objects.filter(
-        product__in=products_containing_tickets, purchasing_company__exact=company["id"]
+        purchasing_company__exact=company["id"]
     )
 
     # Let's count tickets
@@ -116,10 +113,8 @@ def company_total_lunch_tickets(fair: Fair, company_name: str):
     # Now we got all the orders for this company that contain lunch tickets. Now let's count them going back to ChildProducts.quantity
     try:
         for order in orders_containing_tickets.select_related("product"):
-            product_children_list = order.product.child_products.all()
-            for child_product in product_children_list:
-                if child_product in ticket_as_child_product:
-                    company_tickets += child_product.quantity
+            if order.product in ticket_as_child_product:
+                company_tickets += order.quantity
     except:
         company_tickets = 0
 
