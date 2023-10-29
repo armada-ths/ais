@@ -61,13 +61,13 @@ export function CreateLunchTicketsPage() {
     useEffect(() => {}, [DietaryRestrictions])
     const companyName = useSelector(selectCompanyName)
 
-    const modifySelectableTimes = (date: string) => {
+    function modifySelectableTimes(date: string) {
         const filteredTimes = lunch_times.filter(time => time.includes(date))
         setSelectableTimes(filteredTimes)
         setTimeState(filteredTimes[0])
     }
 
-    const processForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    async function processForm(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
 
         const ticket: Partial<LunchTicket> = {
@@ -128,6 +128,15 @@ export function CreateLunchTicketsPage() {
 
     return (
         <FormWrapper className="flex flex-col gap-y-5 text-slate-700">
+            <div className="mb-2 w-[450px] rounded bg-sky-100 p-2 px-4">
+                <p className="text-sm text-sky-600">
+                    Here you create your lunch tickets by specifying a timeslot
+                    and dietary restictions. One lunch tickets corresponds to
+                    one lunch, so for example 4 representatives both days will
+                    need 8 lunch tickets. Reach out to your Host if you need to
+                    buy more lunch tickets.
+                </p>
+            </div>
             <h2 className="text-md text-center font-bold">
                 You can create
                 {unassigned_lunch_tickets == 0 ? (
