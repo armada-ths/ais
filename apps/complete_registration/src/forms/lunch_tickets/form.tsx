@@ -37,6 +37,7 @@ const form: Form = {
             hasPrevButton: false,
             pageComponent: CreateLunchTicketsPage,
             getProgress: state => {
+                return 0 // Temporary override since system is not working properly yet (there is a bug with the numbers when a ticket is added, then removed, then added again)
                 const unassigned =
                     (selectField(state, "unassigned_lunch_tickets")
                         ?.value as number) ?? 0
