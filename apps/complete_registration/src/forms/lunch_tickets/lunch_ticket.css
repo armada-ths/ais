@@ -1,17 +1,3 @@
-
-
-.lunch-ticket-availability{
-    width: 8px;
-    height: 8px;
-    background-color: #00d790;
-    border-radius: 500px;
-    margin: auto 0px;
-}
-
-.lunch-ticket-availability.used{
-    background-color: #e73953;
-}
-
 .content {
     max-height: 0;
     overflow: hidden;
