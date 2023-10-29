@@ -1,11 +1,7 @@
 import { useSelector } from "react-redux"
 import { cx } from "../../utils/cx"
 import FormCard from "./FormCard"
-import {
-    selectCompanyProgress,
-    selectErrors,
-    selectForms
-} from "../../store/form/form_selectors"
+import { selectErrors, selectForms } from "../../store/form/form_selectors"
 import {
     selectCompanyName,
     selectCompanyStatus,
@@ -19,16 +15,16 @@ import { isFormHidden, isFormOpen } from "../../forms/form_access"
 export function DashboardScreen() {
     const forms = useSelector(selectForms)
     const companyStatus = useSelector(selectCompanyStatus)
-    const companyProgress = useSelector(selectCompanyProgress)
+    /*     const companyProgress = useSelector(selectCompanyProgress) */
     const selectError = useSelector(selectErrors)
     const companyName = useSelector(selectCompanyName)
     const user = useSelector(selectUser)
 
-    const colorClassName = {
+    /*     const colorClassName = {
         "text-red-400": companyProgress < 0.5,
         "text-yellow-400": companyProgress < 0.8,
         "text-emerald-400": companyProgress <= 1
-    }
+    } */
 
     // Check if root error
     if (selectError != null && typeof selectError === "string") {
@@ -64,7 +60,7 @@ export function DashboardScreen() {
                             </p>
                         </Card>
                     )}
-                    <div className="mt-10 flex flex-col items-center justify-end">
+                    {/*                     <div className="mt-10 flex flex-col items-center justify-end">
                         <p className={cx("mb-2 text-xl", colorClassName)}>
                             {companyProgress < 1
                                 ? "Company Progress"
@@ -77,7 +73,7 @@ export function DashboardScreen() {
                                 <span className="pi pi-check-circle !text-4xl !font-bold" />
                             )}
                         </p>
-                    </div>
+                    </div> */}
                     <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
                         {formCardsData.map(([key, formMeta]) => (
                             <FormCard
