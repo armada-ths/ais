@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "Changed files:"
           git fetch origin ${{ github.event.pull_request.base.ref }}  # fetch the base branch
-          files=$(git diff --name-only FETCH_HEAD..HEAD | grep 'apps/complete_registration/.*\.\(js\|jsx\|ts\|tsx\)$')
+          files=$(git diff --name-only FETCH_HEAD..HEAD | grep 'apps/complete_registration/.*\.\(js\|jsx\|ts\|tsx\)$' | sed 's#apps/complete_registration/##')
           echo "$files"
           echo "FILES=$files" >> $GITHUB_ENV
 
