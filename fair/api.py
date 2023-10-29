@@ -239,7 +239,9 @@ def lunchticket_reactcreate(request):
     if form.is_valid_react():
         form.instance.fair = fair
         lunch_ticket = form.save()
-        return HttpResponse(status=200)
+        return JsonResponse(
+            {"token": lunch_ticket.token, "id": lunch_ticket.id}, status=200
+        )
 
     return JsonResponse({"Error": "Could not create a ticket"}, status=400)
 

@@ -3,6 +3,8 @@ import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { Button } from "primereact/button"
 import { HOST } from "../../shared/vars"
 import { toast } from "sonner"
+import { cx } from "../../utils/cx"
+import { sendTicket } from "./send_ticket"
 
 interface LunchTicketsProps {
     ticket: LunchTicket
@@ -26,43 +28,6 @@ function LunchTicketView({
 
     function moreInfoButtonClickHandler() {
         setMoreInfoDisplayed(!moreInfoDisplayed)
-    }
-
-    async function sendTicket() {
-        try {
-            const response = await fetch(
-                `${HOST}/api/fair/lunchtickets/` + ticket.token + `/reactsend`
-            )
-
-            if (!response.ok) {
-                try {
-                    const errorData = await response.json()
-                    if (errorData && errorData.message) {
-                        setSendTicketError(
-                            `Could not send ticket. Status: ${response.status}`
-                        )
-                    } else {
-                        setSendTicketError(
-                            `Could not send ticket. Status: ${response.status}`
-                        )
-                    }
-                } catch (error) {
-                    console.error("Error parsing response:", error)
-                    setSendTicketError(
-                        `Could not send ticket. Status: ${response.status}`
-                    )
-                }
-            } else {
-                setSendTicketStatus(
-                    "The ticket has been sent to " + ticket.email_address
-                )
-                sendTicketUpdateList(ticket)
-            }
-        } catch (error) {
-            setSendTicketError(
-                "Could not send ticket. Internal Error: Contact the staff"
-            )
-        }
     }
 
     async function deleteTicket() {
@@ -107,6 +72,11 @@ function LunchTicketView({
         }
     }
 
+    function triggerSend() {
+        sendTicket(ticket.token, setSendTicketError, setSendTicketStatus)
+        sendTicketUpdateList(ticket)
+    }
+
     return (
         <div>
             {sendTicketError.length > 0 ? (
@@ -122,32 +92,48 @@ function LunchTicketView({
                         <p>{ticket.time}</p>
                     </div>
                 </div>
-                <div className="flex pl-4">
+                <div className="flex items-center pl-4">
                     <div
-                        className={
-                            "lunch-ticket-availability" +
-                            (ticket.used ? " used" : "")
-                        }
+                        className={cx("h-2 w-2 rounded-full bg-yellow-400", {
+                            "bg-red-400": ticket.used,
+                            "bg-emerald-400": ticket.sent && !ticket.used
+                        })}
                     />
                     <p className="pl-2 font-semibold">
                         {ticket.used
                             ? "Used"
                             : ticket.sent
-                            ? "Sent"
-                            : "Assigned"}
+                            ? `Sent to ${ticket.email_address}`
+                            : "Created (not sent)"}
                     </p>
                 </div>
+
                 <div className="more-info-container pt-2">
-                    <button
-                        className="cursor-pointer justify-center pb-2 pl-4"
-                        onClick={moreInfoButtonClickHandler}
-                    >
-                        <span className="text-indigo-700 hover:underline">
-                            {moreInfoDisplayed
-                                ? "- See less details"
-                                : "+ See more details"}
-                        </span>
-                    </button>
+                    <div className="flex items-center justify-between">
+                        <button
+                            className="cursor-pointer justify-center pl-4"
+                            onClick={moreInfoButtonClickHandler}
+                        >
+                            <span className="text-indigo-700 hover:underline">
+                                {moreInfoDisplayed
+                                    ? "- See less details"
+                                    : "+ See more details"}
+                            </span>
+                        </button>
+                        <div className="my-2 mr-4 flex gap-2">
+                            <Button
+                                className="!p-2 !py-1"
+                                label={ticket.sent ? "Resend" : "Send"}
+                                onClick={triggerSend}
+                            />
+                            <Button
+                                className="!p-2 !py-1"
+                                severity="danger"
+                                label="Delete"
+                                onClick={deleteTicket}
+                            />
+                        </div>
+                    </div>
                     {moreInfoDisplayed ? (
                         <div className="more-info flex w-full flex-row border-t-2 px-4 pb-1 pt-2">
                             <div className="w-2/3 [&>*]:pb-2">
@@ -175,21 +161,7 @@ function LunchTicketView({
                                     ""
                                 )}
                             </div>
-                            <div className="[&>*]:bx-4 flex w-1/3 flex-row items-end justify-center gap-2 pb-2 [&>*]:h-8 [&>*]:w-1/2 [&>*]:border-none">
-                                <Button
-                                    style={{ padding: 0 }}
-                                    className="lunch-ticket-button"
-                                    label="Send"
-                                    onClick={sendTicket}
-                                />
-                                <Button
-                                    style={{ padding: 0 }}
-                                    className="lunch-ticket-button"
-                                    severity="danger"
-                                    label="Delete"
-                                    onClick={deleteTicket}
-                                />
-                            </div>
+                            <div className="[&>*]:bx-4 flex w-1/3 flex-row items-end justify-center gap-2 pb-2 [&>*]:h-8 [&>*]:w-1/2 [&>*]:border-none"></div>
                         </div>
                     ) : (
                         ""
