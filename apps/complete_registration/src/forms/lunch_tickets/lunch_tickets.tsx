@@ -4,6 +4,7 @@ import { Button } from "primereact/button"
 import { HOST } from "../../shared/vars"
 import { toast } from "sonner"
 import { cx } from "../../utils/cx"
+import { sendTicket } from "./send_ticket"
 
 interface LunchTicketsProps {
     ticket: LunchTicket
@@ -27,43 +28,6 @@ function LunchTicketView({
 
     function moreInfoButtonClickHandler() {
         setMoreInfoDisplayed(!moreInfoDisplayed)
-    }
-
-    async function sendTicket() {
-        try {
-            const response = await fetch(
-                `${HOST}/api/fair/lunchtickets/` + ticket.token + `/reactsend`
-            )
-
-            if (!response.ok) {
-                try {
-                    const errorData = await response.json()
-                    if (errorData && errorData.message) {
-                        setSendTicketError(
-                            `Could not send ticket. Status: ${response.status}`
-                        )
-                    } else {
-                        setSendTicketError(
-                            `Could not send ticket. Status: ${response.status}`
-                        )
-                    }
-                } catch (error) {
-                    console.error("Error parsing response:", error)
-                    setSendTicketError(
-                        `Could not send ticket. Status: ${response.status}`
-                    )
-                }
-            } else {
-                setSendTicketStatus(
-                    "The ticket has been sent to " + ticket.email_address
-                )
-                sendTicketUpdateList(ticket)
-            }
-        } catch (error) {
-            setSendTicketError(
-                "Could not send ticket. Internal Error: Contact the staff"
-            )
-        }
     }
 
     async function deleteTicket() {
@@ -108,6 +72,11 @@ function LunchTicketView({
         }
     }
 
+    function triggerSend() {
+        sendTicket(ticket.token, setSendTicketError, setSendTicketStatus)
+        sendTicketUpdateList(ticket)
+    }
+
     return (
         <div>
             {sendTicketError.length > 0 ? (
@@ -134,7 +103,7 @@ function LunchTicketView({
                         {ticket.used
                             ? "Used"
                             : ticket.sent
-                            ? "Sent"
+                            ? `Sent to ${ticket.email_address}`
                             : "Created (not sent)"}
                     </p>
                 </div>
@@ -154,8 +123,8 @@ function LunchTicketView({
                         <div className="my-2 mr-4 flex gap-2">
                             <Button
                                 className="!p-2 !py-1"
-                                label="Send"
-                                onClick={sendTicket}
+                                label={ticket.sent ? "Resend" : "Send"}
+                                onClick={triggerSend}
                             />
                             <Button
                                 className="!p-2 !py-1"

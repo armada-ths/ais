@@ -10,18 +10,25 @@ import {
     validateLunchTicket
 } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { buildURLEncodedPayload } from "../../utils/django_format/django_format.utils"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { selectCompanyName } from "../../store/company/company_selectors"
 import { HOST } from "../../shared/vars"
 import { RootState } from "../../store/store"
 import { selectField } from "../../store/form/form_selectors"
 import { toast } from "sonner"
 import "./lunch_ticket.css"
+import { setField, setPage } from "../../store/form/form_slice"
+import { sendTicket } from "./send_ticket"
 
 export function CreateLunchTicketsPage() {
+    const dispatch = useDispatch()
+
     const result_unassigned_lunch_tickets = useSelector((state: RootState) =>
         selectField(state, "unassigned_lunch_tickets")
     )
+    const assignedLunchTickets = useSelector((state: RootState) =>
+        selectField(state, "assigned_lunch_tickets")
+    )?.value as LunchTicket[] | null
     const result_fair_days = useSelector((state: RootState) =>
         selectField(state, "fair_days")
     )
@@ -124,8 +131,30 @@ export function CreateLunchTicketsPage() {
                     setErrorString("Error parsing response")
                 }
             } else {
-                // Reload: Not best practice, but I need to retrieve the token of the recently created ticket and place it on the queue
-                window.location.reload()
+                const data = await response.json()
+
+                if (data.token == null) {
+                    // Force browser to reload
+                    window.location.reload()
+                }
+                // Send the ticket to the user's email
+                sendTicket(data.token)
+                // Add the ticket to state and mark it as sent
+                dispatch(
+                    setField({
+                        mapping: "assigned_lunch_tickets",
+                        value: [
+                            ...(assignedLunchTickets ?? []),
+                            {
+                                ...ticket,
+                                token: data.token,
+                                sent: true
+                            } as LunchTicket
+                        ]
+                    })
+                )
+                // Navigate back to the start view
+                dispatch(setPage("view_ticket"))
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {

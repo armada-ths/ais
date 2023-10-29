@@ -7,7 +7,7 @@ import { Dropdown } from "primereact/dropdown"
 import LunchTicketView from "./lunch_tickets"
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { Button } from "primereact/button"
-import { nextPage, setField } from "../../store/form/form_slice"
+import { setField, setPage } from "../../store/form/form_slice"
 import "./lunch_ticket.css"
 
 export function ViewLunchTicketsPage() {
@@ -172,7 +172,7 @@ export function ViewLunchTicketsPage() {
             )}
             <Button
                 label="Create Lunch Ticket"
-                onClick={() => dispatch(nextPage())}
+                onClick={() => dispatch(setPage("create_ticket"))}
             />
         </FormWrapper>
     )

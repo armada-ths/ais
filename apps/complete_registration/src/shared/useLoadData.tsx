@@ -26,7 +26,7 @@ export default function useLoadData() {
         if (initialized.current) return
         initialized.current = true
 
-        const load = async () => {
+        async function load() {
             const data = await fetch(`${HOST}/api/accounting/products`).then(
                 raw => raw.json()
             )
@@ -55,8 +55,7 @@ export default function useLoadData() {
                     //Get Lunch Tickets
 
                     fetch(
-                        `${HOST}/api/fair/lunchtickets/companysearch?company=` +
-                            data.company.name
+                        `${HOST}/api/fair/lunchtickets/companysearch?company=${data.company.name}`
                     ).then(async raw => {
                         const data = await raw.json()
                         //data.result[0].id
