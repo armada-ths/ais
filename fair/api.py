@@ -80,50 +80,34 @@ def company_total_lunch_tickets(fair: Fair, company_name: str):
     the amount of tickets that they have already created.
     """
 
-    lunch_tickets = LunchTicket.objects.filter(
+    already_created_lunch_tickets = LunchTicket.objects.filter(
         fair=fair, company__name__exact=company_name
     ).all()
 
     # TODO Document this hardcoded query (relation to the category "Lunch Ticket")
-    categories = Category.objects.filter(
+    lunch_ticket_categories = Category.objects.filter(
         fair=fair, name__icontains="Lunch Ticket"  # Not case sensitive
     ).all()
 
-    lunch_ticket_product = Product.objects.filter(
-        category__in=categories
+    lunch_ticket_products = Product.objects.filter(
+        category__in=lunch_ticket_categories
     ).all()  # Fetch all products that contain the category "[current_year]Lunch Ticket"
 
     company = Company.objects.filter(name__exact=company_name).values("id").first()
     # This list contains all the addition tickets that have been bought by the company this year
-    additional_tickets_order = Order.objects.filter(
-        product__in=lunch_ticket_product, purchasing_company__exact=company["id"]
-    )
-
-    # Find packages that contain tickets --> First: Find all ChildProducts related to LunchTickets[actual_year], Second: Find parent Products, Third: Find its correspondent orders for this company
-    ticket_as_child_product = ChildProduct.objects.filter(
-        child_product__in=lunch_ticket_product
-    )
-    orders_containing_tickets = Order.objects.filter(
-        purchasing_company__exact=company["id"]
+    lunch_ticket_orders = Order.objects.filter(
+        product__in=lunch_ticket_products, purchasing_company__exact=company["id"]
     )
 
     # Let's count tickets
     company_tickets = 0
 
-    # Now we got all the orders for this company that contain lunch tickets. Now let's count them going back to ChildProducts.quantity
-    try:
-        for order in orders_containing_tickets.select_related("product"):
-            if order.product in ticket_as_child_product:
-                company_tickets += order.quantity
-    except:
-        company_tickets = 0
-
     # Go through result and for each result get the quantity of the product
-    for i in additional_tickets_order:
+    for i in lunch_ticket_orders:
         company_tickets += i.quantity
 
-    unassigned_tickets = company_tickets - lunch_tickets.count()
-    return unassigned_tickets, lunch_tickets
+    unassigned_tickets = company_tickets - already_created_lunch_tickets.count()
+    return unassigned_tickets, already_created_lunch_tickets
 
 
 @require_GET
