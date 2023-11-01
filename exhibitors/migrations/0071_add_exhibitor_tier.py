@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('exhibitors', '0070_add_modify_fair_location'),
+        ("exhibitors", "0070_add_modify_fair_location"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='tier',
-            field=models.CharField(blank=True, choices=[('1', 'Bronze'), ('2', 'Silver'), ('3', 'Gold')], max_length=255, null=True),
+            model_name="exhibitor",
+            name="tier",
+            field=models.CharField(
+                blank=True,
+                choices=[("1", "Bronze"), ("2", "Silver"), ("3", "Gold")],
+                max_length=255,
+                null=True,
+            ),
         ),
     ]
