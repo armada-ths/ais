@@ -23,6 +23,7 @@ def serialize_exhibitor(exhibitor, request):
             ("id", exhibitor.pk),
             ("name", exhibitor.company.name),
             ("type", exhibitor.company.type.type),
+            ("tier", exhibitor.tier),
             ("company_website", exhibitor.company.website),
             ("about", exhibitor.catalogue_about),
             ("purpose", exhibitor.catalogue_purpose),
