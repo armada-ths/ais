@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *
 import django.forms as forms
 from improved_admin import ModelAdminImproved
+from django.contrib.admin.sites import AdminSite
 
 
 class CustomFieldInline(admin.TabularInline):
@@ -25,6 +26,10 @@ class RoleApplicationInline(admin.TabularInline):
 
 
 class RecruitmentApplicationAdmin(ModelAdminImproved):
+    def __init__(self, model, admin_site: AdminSite | None):
+        super().__init__(model, admin_site)
+        self.search_fields = ["user__first_name", "user__last_name"]
+
     inlines = [RoleApplicationInline]
 
 
