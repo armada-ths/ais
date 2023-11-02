@@ -143,19 +143,36 @@ def serialize_exhibitor(exhibitor, request):
     )
 
 
-@cache_page(60 * 5)
+# @cache_page(60 * 5)
 def exhibitors(request):
-    f = (
-        Fair.objects.get(year=request.GET["year"])
-        if "year" in request.GET
-        else Fair.objects.get(current=True)
+    fair_criteria = (
+        {"year": request.GET["year"]} if "year" in request.GET else {"current": True}
     )
 
-    data = []
+    exhibitors = (
+        Exhibitor.objects.filter(fair__in=Fair.objects.filter(**fair_criteria))
+        .select_related(
+            "company",
+            "fair",
+            "contact",
+            "check_in_user",
+            "fair_location",
+        )
+        .prefetch_related(
+            "catalogue_industries",
+            "catalogue_values",
+            "catalogue_employments",
+            "catalogue_locations",
+            "catalogue_competences",
+            "catalogue_benefits",
+            "company__groups",
+            "exhibitorinbooth_set__booth__location__parent",
+            "exhibitorinbooth_set__booth__location",
+            "exhibitorinbooth_set__days",
+        )
+    )
 
-    for exhibitor in Exhibitor.objects.filter(fair=f):
-        data.append(serialize_exhibitor(exhibitor, request))
-
+    data = [serialize_exhibitor(exhibitor, request) for exhibitor in exhibitors]
     return JsonResponse(data, safe=False)
 
 
