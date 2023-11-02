@@ -144,7 +144,7 @@ def serialize_exhibitor(exhibitor, request):
     )
 
 
-# @cache_page(60 * 5)
+@cache_page(60 * 5)
 def exhibitors(request):
     fair_criteria = (
         {"year": request.GET["year"]} if "year" in request.GET else {"current": True}
