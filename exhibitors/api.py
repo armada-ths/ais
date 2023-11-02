@@ -15,6 +15,28 @@ from fair.models import Fair, FairDay
 MISSING_IMAGE = "/static/missing.png"
 
 
+def serialize_booths(exhibitor):
+    return [
+        {
+            "id": eib.booth.pk,
+            "location": {
+                "parent": {
+                    "id": eib.booth.location.parent.pk,
+                    "name": eib.booth.location.parent.name,
+                }
+                if eib.booth.location.parent
+                else None,
+                "id": eib.booth.location.pk,
+                "name": eib.booth.location.name,
+            },
+            "name": eib.booth.name,
+            "comment": eib.comment,
+            "days": [day.date for day in eib.days.all()],
+        }
+        for eib in exhibitor.exhibitorinbooth_set.all()
+    ]
+
+
 def serialize_exhibitor(exhibitor, request):
     img_placeholder = request.GET.get("img_placeholder") == "true"
 
@@ -116,28 +138,7 @@ def serialize_exhibitor(exhibitor, request):
             ),
             ("climate_compensation", exhibitor.climate_compensation),
             ("flyer", (exhibitor.flyer.url) if exhibitor.flyer else ""),
-            (
-                "booths",
-                [
-                    {
-                        "id": eib.booth.pk,
-                        "location": {
-                            "parent": {
-                                "id": eib.booth.location.parent.pk,
-                                "name": eib.booth.location.parent.name,
-                            }
-                            if eib.booth.location.parent
-                            else None,
-                            "id": eib.booth.location.pk,
-                            "name": eib.booth.location.name,
-                        },
-                        "name": eib.booth.name,
-                        "comment": eib.comment,
-                        "days": [day.date for day in eib.days.all()],
-                    }
-                    for eib in ExhibitorInBooth.objects.filter(exhibitor=exhibitor)
-                ],
-            ),
+            ("booths", serialize_booths(exhibitor)),
             ("map_coordinates", exhibitor.map_coordinates),
         ]
     )
