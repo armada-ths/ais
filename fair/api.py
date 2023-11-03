@@ -248,13 +248,10 @@ def lunchticket_reactcreate(request):
 
         # Handle many-to-many field for dietary_restrictions
         dietary_restrictions_data = data.get("dietary_restrictions", {})
-        selected_restrictions = [
-            item for item, selected in dietary_restrictions_data.items() if selected
-        ]
 
         # Fetch the DietaryRestriction objects that correspond to the selected items
         dietary_restrictions_objs = DietaryRestriction.objects.filter(
-            name__in=selected_restrictions
+            name__in=dietary_restrictions_data
         )
         # Set the many-to-many relationship
         lunch_ticket.dietary_restrictions.set(dietary_restrictions_objs)
