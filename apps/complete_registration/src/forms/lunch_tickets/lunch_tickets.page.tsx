@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { RootState } from "../../store/store"
 import { selectField } from "../../store/form/form_selectors"
@@ -29,60 +29,28 @@ export function ViewLunchTicketsPage() {
     const unassigned_tickets = (result_unassigned_tickets?.value ??
         -1) as number
 
-    const [initiated, setInitiated] = useState<boolean>(false)
     const [ticketTracker, setTicketTracker] = useState<LunchTicket[]>(tickets)
     const [unassignedTicketsTracker, setUnassignedTicketsTracker] =
         useState<number>(unassigned_tickets)
-    const [shownTickets, setShownTickets] = useState<LunchTicket[]>(tickets)
     const [filterUsedState, setFilterUsedState] = useState<string>("All")
     const [filterDateState, setFilterDateState] = useState<string>("Any")
 
-    // This should not be here... FIXUP LATER (move into redux state)
-    useEffect(() => {
-        //Updates the useState variables once we get everything from Redux (Dind't find a better way to do this, if values placed directly on useState, the View never updates when receiving data from Redux)
-        if (
-            !initiated &&
-            tickets.length > 0 &&
-            ticketTracker.length == 0 &&
-            unassigned_tickets > -1
-        ) {
-            setInitiated(true)
-            setTicketTracker(tickets)
-            setUnassignedTicketsTracker(unassigned_tickets)
-        }
-
-        //Filter tickets
-        if (ticketTracker.length > 0) {
-            const filteredTickets = ticketTracker.filter(
-                (ticket: LunchTicket) => {
-                    if (
-                        filterUsedState == "All" ||
-                        (ticket.used && filterUsedState == "Used") ||
-                        (!ticket.used && filterUsedState == "Available")
-                    ) {
-                        if (
-                            filterDateState === "Any" ||
-                            ticket.day.includes(filterDateState)
-                        )
-                            return ticket
-                    }
-                    return false
-                }
-            )
-            //update
-            setShownTickets(filteredTickets as LunchTicket[])
-        } else {
-            setShownTickets([] as LunchTicket[])
-        }
-    }, [
-        filterDateState,
-        filterUsedState,
-        tickets,
-        unassigned_tickets,
-        ticketTracker,
-        initiated,
-        unassignedTicketsTracker
-    ])
+    const shownTickets = useMemo(() => {
+        return tickets.filter((ticket: LunchTicket) => {
+            if (
+                filterUsedState == "All" ||
+                (ticket.used && filterUsedState == "Used") ||
+                (!ticket.used && filterUsedState == "Available")
+            ) {
+                if (
+                    filterDateState === "Any" ||
+                    ticket.day.includes(filterDateState)
+                )
+                    return true
+            }
+            return false
+        })
+    }, [filterDateState, filterUsedState, tickets])
 
     function sendTicket(lunchTicket: LunchTicket) {
         const updatedTickets = ticketTracker.map(ticket => {
