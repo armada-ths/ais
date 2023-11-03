@@ -1,4 +1,5 @@
 export interface LunchTicket {
+    id: number
     token: string
     sent: boolean
     company: string
