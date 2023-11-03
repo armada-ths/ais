@@ -128,7 +128,7 @@ export function ViewLunchTicketsPage() {
                 <div />
             ) : (
                 shownTickets.map((ticket, index) => (
-                    <div key={ticket.token} className="+mb-6 min-w-75">
+                    <div key={ticket.id} className="+mb-6 min-w-75">
                         <LunchTicketView
                             key={index}
                             ticket={ticket}
