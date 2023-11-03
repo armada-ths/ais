@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { FormWrapper } from "../FormWrapper"
 import { InputText } from "primereact/inputtext"
 import { Dropdown } from "primereact/dropdown"
@@ -9,7 +9,6 @@ import {
     LunchTicket,
     validateLunchTicket
 } from "../../utils/lunch_tickets/lunch_tickets.utils"
-import { buildURLEncodedPayload } from "../../utils/django_format/django_format.utils"
 import { useDispatch, useSelector } from "react-redux"
 import { selectCompanyName } from "../../store/company/company_selectors"
 import { HOST } from "../../shared/vars"
@@ -35,22 +34,14 @@ export function CreateLunchTicketsPage() {
     const result_lunch_times = useSelector((state: RootState) =>
         selectField(state, "lunch_times")
     )
-    const result_dietary_restrictions = useSelector((state: RootState) =>
+    const allExistingDietaryRestrictions = (useSelector((state: RootState) =>
         selectField(state, "dietary_restrictions")
-    )
+    )?.value ?? []) as string[]
 
     const unassigned_lunch_tickets = (result_unassigned_lunch_tickets?.value ??
         []) as number
     const fair_days = (result_fair_days?.value ?? [""]) as string[]
     const lunch_times = (result_lunch_times?.value ?? [""]) as string[]
-    const dietary_restrictions = (result_dietary_restrictions?.value ??
-        []) as string[]
-
-    const initialDietaryRestrictions: { [key: string]: boolean } = {}
-
-    dietary_restrictions.forEach(name => {
-        initialDietaryRestrictions[name] = false
-    })
 
     const [DateState, setDateState] = useState<string>(fair_days[0])
     const [TimeState, setTimeState] = useState<string>(lunch_times[0])
@@ -58,15 +49,12 @@ export function CreateLunchTicketsPage() {
         lunch_times.filter(time => time.includes(DateState))
     )
     const [Email, setEmail] = useState<string>("")
-    const [DietaryRestrictions, setDietaryRestrictions] = useState<{
-        [key: string]: boolean
-    }>(initialDietaryRestrictions)
+    const [DietaryRestrictions, setDietaryRestrictions] = useState<string[]>([])
     const [OtherDietRestrictions, setOtherDietRestrictions] =
         useState<string>("")
     const [OtherComments, setOtherComments] = useState<string>("")
     const [ErrorString, setErrorString] = useState<string>("")
 
-    useEffect(() => {}, [DietaryRestrictions])
     const companyName = useSelector(selectCompanyName)
 
     function modifySelectableTimes(date: string) {
@@ -249,32 +237,34 @@ export function CreateLunchTicketsPage() {
                         id="dietary-restrictions-list"
                         className="grid grid-cols-2 [&>div]:pt-2"
                     >
-                        {Object.entries(DietaryRestrictions).map(
-                            ([restriction, value]) => (
-                                <div
+                        {allExistingDietaryRestrictions.map(restriction => (
+                            <div
+                                key={restriction}
+                                className="flex items-center gap-1"
+                            >
+                                <Checkbox
                                     key={restriction}
-                                    className="flex items-center gap-1"
-                                >
-                                    <Checkbox
-                                        key={restriction}
-                                        checked={value}
-                                        onChange={isChecked => {
-                                            setDietaryRestrictions(
-                                                prev =>
-                                                    ({
-                                                        ...prev,
-                                                        [restriction]:
-                                                            isChecked.checked
-                                                    }) as {
-                                                        [key: string]: boolean
-                                                    }
-                                            )
-                                        }}
-                                    />
-                                    {restriction}
-                                </div>
-                            )
-                        )}
+                                    checked={DietaryRestrictions.includes(
+                                        restriction
+                                    )}
+                                    onChange={isChecked => {
+                                        if (isChecked.checked) {
+                                            setDietaryRestrictions(prev => [
+                                                ...prev,
+                                                restriction
+                                            ])
+                                        } else {
+                                            setDietaryRestrictions(prev => [
+                                                ...prev.filter(
+                                                    name => name != restriction
+                                                )
+                                            ])
+                                        }
+                                    }}
+                                />
+                                {restriction}
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className="[&>*]:w-full">
