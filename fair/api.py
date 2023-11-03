@@ -22,6 +22,8 @@ from people.models import DietaryRestriction
 from .forms import LunchTicketForm
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
+import json
+from django.db import transaction
 
 from util import (
     JSONError,
@@ -158,27 +160,28 @@ def lunchtickets_companysearch(request):
 
 @require_POST
 @csrf_exempt
-# This is an endpoint called by react
 def lunchticket_reactcreate(request):
+    # Parse the JSON data from request.body
+    data = json.loads(request.body)
+
     # TODO: Add authentication and check right privileges
 
-    # Preprocess data
+    # Validate the data
     try:
-        companyName = request.POST["company"]
+        companyName = data.get("company")
     except:
         return JsonResponse({"message": "Company is empty."}, status=400)
 
     try:
-        date = request.POST["day"]
+        date = data.get("day")
     except:
         return JsonResponse({"message": "Date is empty."}, status=400)
 
     try:
-        lunch_time = request.POST["time"]
+        lunch_time = data.get("time")
     except:
         return JsonResponse({"message": "Lunch time is empty."}, status=400)
 
-    # Extract request variables
     try:
         fair = Fair.objects.get(current=True)
     except:
@@ -200,50 +203,67 @@ def lunchticket_reactcreate(request):
     lunch_day = get_object_or_404(FairDay, date=date_part, fair=fair)
     time = get_object_or_404(LunchTicketTime, name=time_part, day=lunch_day)
 
+    # Check that company can create more tickets
     try:
         (unassigned_tickets, _) = company_total_lunch_tickets(fair, companyName)
+        if unassigned_tickets <= 0:
+            return JsonResponse(
+                {"Error": "Company has no more available tickets"}, status=400
+            )
     except:
         return JsonResponse(
             {"message": "Could not load data from DB. Plase contact the staff"},
             status=500,
         )
 
-    if unassigned_tickets <= 0:
-        return JsonResponse(
-            {"Error": "Company has no more available tickets"}, status=400
-        )
+    company = (
+        Company.objects.filter(name__exact=data.get("company")).values("id").first()
+    )
 
-    # Get company's ID value
-
-    company = Company.objects.filter(name__exact=companyName).values("id").first()
-    if company:
-        company_id = company["id"]
-    else:
+    if company is None:
         return JsonResponse(
             {
                 "message": "Could not find your company in the database. Please contact the staff."
             },
             status=400,
         )
+    company_id = company.get("id")
 
-    # Modify request to adapt to what DJango expects
-    mutable_req = QueryDict("", mutable=True)
-    mutable_req.update(request.POST)
-    mutable_req["company"] = str(company_id)
-    mutable_req["day"] = str(day.id)
-    mutable_req["time"] = str(time.id)
-    mutable_req["user"] = ""
-
-    form = LunchTicketForm(mutable_req or None, initial={"fair": fair})
-    print(form)
-    if form.is_valid_react():
-        form.instance.fair = fair
-        lunch_ticket = form.save()
-        return JsonResponse(
-            {"token": lunch_ticket.token, "id": lunch_ticket.id}, status=200
+    # Begin a transaction
+    with transaction.atomic():
+        # Create the LunchTicket object
+        lunch_ticket = LunchTicket(
+            fair=fair,
+            company_id=company_id,
+            email_address=data.get("email_address"),
+            comment=data.get("comment"),
+            day_id=day.id,
+            time_id=time.id,
+            other_dietary_restrictions=data.get("other_dietary_restrictions"),
         )
 
-    return JsonResponse({"Error": "Could not create a ticket"}, status=400)
+        # Validate and save the object
+        lunch_ticket.full_clean()  # This will raise ValidationError if any issues
+        lunch_ticket.save()
+
+        # Handle many-to-many field for dietary_restrictions
+        dietary_restrictions_data = data.get("dietary_restrictions", {})
+        selected_restrictions = [
+            item for item, selected in dietary_restrictions_data.items() if selected
+        ]
+
+        # Fetch the DietaryRestriction objects that correspond to the selected items
+        dietary_restrictions_objs = DietaryRestriction.objects.filter(
+            name__in=selected_restrictions
+        )
+        # Set the many-to-many relationship
+        lunch_ticket.dietary_restrictions.set(dietary_restrictions_objs)
+
+        lunch_ticket.save()  # Save the instance again to persist many-to-many changes
+
+    return JsonResponse(
+        {"token": lunch_ticket.token, "id": lunch_ticket.id}, status=200
+    )
 
 
 def lunchticket_reactremove(request, token):
