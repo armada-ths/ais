@@ -104,9 +104,9 @@ export function CreateLunchTicketsPage() {
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
+                        "Content-Type": "application/json"
                     },
-                    body: buildURLEncodedPayload(ticket)
+                    body: JSON.stringify(ticket)
                 }
             )
 
