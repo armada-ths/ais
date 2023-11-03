@@ -135,10 +135,17 @@ export function CreateLunchTicketsPage() {
                             ...(assignedLunchTickets ?? []),
                             {
                                 ...ticket,
+                                id: data.id,
                                 token: data.token,
                                 sent: true
                             } as LunchTicket
                         ]
+                    })
+                )
+                dispatch(
+                    setField({
+                        mapping: "unassigned_lunch_tickets",
+                        value: unassigned_lunch_tickets - 1
                     })
                 )
                 // Navigate back to the start view
