@@ -154,6 +154,16 @@ class Exhibitor(models.Model):
     contact = models.ForeignKey(
         "companies.CompanyContact", null=True, blank=True, on_delete=models.CASCADE
     )
+    tier = models.CharField(
+        blank=True,
+        null=True,
+        max_length=255,
+        choices=[
+            ("1", "Bronze"),
+            ("2", "Silver"),
+            ("3", "Gold"),
+        ],
+    )
     booth_height = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Height of the booth (cm)"
     )
