@@ -33,6 +33,7 @@ def save_seat(request, banquet_pk, seat_pk):
 
 
 @require_GET
+@permission_required("banquet.base")
 def ticket_search(request):
     fair = Fair.objects.get(current=True)
     banquet = get_object_or_404(Banquet, fair=fair)
@@ -46,13 +47,19 @@ def ticket_search(request):
     name_query = reduce(
         operator.__or__,
         [
-            Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query)
+            Q(user__first_name__icontains=query)
+            | Q(user__last_name__icontains=query)
+            | Q(user__email=query)
+            | Q(email_address__icontains=query)
+            | Q(name__icontains=query)
             for query in names
         ],
     )
 
+    company_name_query = Q(company__name__icontains=search_query)
+
     tickets = Participant.objects.filter(
-        Q(banquet=banquet) & (Q(company__name__icontains=search_query) | name_query)
+        Q(banquet=banquet) & (company_name_query | name_query)
     ).all()
 
     data = {"result": [serializers.ticket(ticket) for ticket in tickets]}
