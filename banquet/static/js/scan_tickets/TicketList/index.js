@@ -58,6 +58,10 @@ class TicketList extends Component {
     if (this.timeoutId) clearTimeout(this.timeoutId);
   }
 
+  componentDidMount() {
+    this.performSearch();
+  }
+
   handleSearchQueryChange(event) {
     const {value} = event.target;
 
@@ -72,17 +76,14 @@ class TicketList extends Component {
   performSearch() {
     const {searchQuery} = this.state;
 
-    if (searchQuery.trim() !== '') {
-      this.setState({loading: true});
-
-      API.search(searchQuery)
-          .then(response => {
-            this.setState({
-              tickets: response.data.result,
-              loading: false
-            })
-          });
-    }
+    this.setState({loading: true});
+    API.search(searchQuery)
+      .then(response => {
+        this.setState({
+          tickets: response.data.result,
+          loading: false
+        })
+      });
   }
 
   handleCheckboxChange(ticketId) {

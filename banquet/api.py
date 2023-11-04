@@ -39,28 +39,30 @@ def ticket_search(request):
     banquet = get_object_or_404(Banquet, fair=fair)
     search_query = request.GET.get("query", "")
 
+    banquet_query = Q(banquet=banquet)
+
     if search_query == "":
-        return JsonResponse({"message": "Query is empty."}, status=400)
+        ticket_scanned_query = Q(ticket_scanned=True)
+        tickets = Participant.objects.filter(banquet_query & ticket_scanned_query).all()
+    else:
+        names = search_query.split()
 
-    names = search_query.split()
+        company_name_query = Q(company__name__icontains=search_query)
+        name_query = reduce(
+            operator.__or__,
+            [
+                Q(user__first_name__icontains=query)
+                | Q(user__last_name__icontains=query)
+                | Q(user__email=query)
+                | Q(email_address__icontains=query)
+                | Q(name__icontains=query)
+                for query in names
+            ],
+        )
 
-    name_query = reduce(
-        operator.__or__,
-        [
-            Q(user__first_name__icontains=query)
-            | Q(user__last_name__icontains=query)
-            | Q(user__email=query)
-            | Q(email_address__icontains=query)
-            | Q(name__icontains=query)
-            for query in names
-        ],
-    )
-
-    company_name_query = Q(company__name__icontains=search_query)
-
-    tickets = Participant.objects.filter(
-        Q(banquet=banquet) & (company_name_query | name_query)
-    ).all()
+        tickets = Participant.objects.filter(
+            banquet_query & (company_name_query | name_query)
+        ).all()
 
     data = {"result": [serializers.ticket(ticket) for ticket in tickets]}
 
