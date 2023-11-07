@@ -15,7 +15,6 @@ import { HOST } from "../../shared/vars"
 import { RootState } from "../../store/store"
 import { selectField } from "../../store/form/form_selectors"
 import { toast } from "sonner"
-import "./lunch_ticket.css"
 import { setField, setPage } from "../../store/form/form_slice"
 import { sendTicket } from "./send_ticket"
 
@@ -23,16 +22,16 @@ export function CreateLunchTicketsPage() {
     const dispatch = useDispatch()
 
     const resultUnassignedLunchTickets = useSelector((state: RootState) =>
-        selectField(state, "unassignedLunchTickets")
+        selectField(state, "unassigned_lunch_tickets")
     )
     const assignedLunchTickets = useSelector((state: RootState) =>
         selectField(state, "assigned_lunch_tickets")
     )?.value as LunchTicket[] | null
     const resultFairDays = useSelector((state: RootState) =>
-        selectField(state, "fairDays")
+        selectField(state, "fair_days")
     )
     const resultLunchTimes = useSelector((state: RootState) =>
-        selectField(state, "lunchTimes")
+        selectField(state, "lunch_times")
     )
     const allExistingDietaryRestrictions = (useSelector((state: RootState) =>
         selectField(state, "dietary_restrictions")
@@ -203,7 +202,7 @@ export function CreateLunchTicketsPage() {
                             modifySelectableTimes(event.value)
                         }}
                         options={fairDays}
-                        className="md:w-14rem w-full"
+                        className="w-full"
                     />
                 </div>
                 <div>

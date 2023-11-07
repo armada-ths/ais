@@ -8,7 +8,6 @@ import LunchTicketView from "./lunch_tickets"
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { Button } from "primereact/button"
 import { setField, setPage } from "../../store/form/form_slice"
-import "./lunch_ticket.css"
 
 export function ViewLunchTicketsPage() {
     const dispatch = useDispatch()
