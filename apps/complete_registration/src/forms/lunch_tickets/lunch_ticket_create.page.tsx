@@ -17,6 +17,7 @@ import { selectField } from "../../store/form/form_selectors"
 import { toast } from "sonner"
 import { setField, setPage } from "../../store/form/form_slice"
 import { sendTicket } from "./send_ticket"
+import { getCRSFToken } from "../../utils/django_format/django_format.utils"
 
 export function CreateLunchTicketsPage() {
     const dispatch = useDispatch()
@@ -89,11 +90,13 @@ export function CreateLunchTicketsPage() {
             const create_ticket_promise = fetch(
                 `${HOST}/api/fair/lunchtickets/reactcreate`,
                 {
+                    mode: 'same-origin',
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': getCRSFToken()
                     },
-                    body: JSON.stringify(ticket)
+                    body: JSON.stringify(ticket),
                 }
             )
 
@@ -150,10 +153,9 @@ export function CreateLunchTicketsPage() {
                 // Navigate back to the start view
                 dispatch(setPage("view_ticket"))
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error:", error)
-            const errorString = error.toString()
+            const errorString = (error as Error).toString()
             setErrorString(errorString)
         }
     }

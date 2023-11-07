@@ -5,6 +5,7 @@ import { HOST } from "../../shared/vars"
 import { toast } from "sonner"
 import { cx } from "../../utils/cx"
 import { sendTicket } from "./send_ticket"
+import { getCRSFToken } from "../../utils/django_format/django_format.utils"
 
 interface LunchTicketsProps {
     ticket: LunchTicket
@@ -19,8 +20,8 @@ function LunchTicketView({
 }: LunchTicketsProps) {
     const [moreInfoDisplayed, setMoreInfoDisplayed] = useState<boolean>(false)
     const [dietaryDisplayed, setDietaryDisplayed] = useState<boolean>(false)
-    const [sendTicketError, setSendTicketError] = useState<string>("")
-    const [sendTicketStatus, setSendTicketStatus] = useState<string>("")
+    const [deleteTicketError, setDeleteTicketError] = useState<string>("")
+    const [deleteTicketStatus, setDeleteTicketStatus] = useState<string>("")
 
     function dietaryButtonClickHandler() {
         setDietaryDisplayed(!dietaryDisplayed)
@@ -33,7 +34,13 @@ function LunchTicketView({
     async function deleteTicket() {
         try {
             const delete_ticket_promise = fetch(
-                `${HOST}/api/fair/lunchtickets/${ticket.token}/reactremove`
+                `${HOST}/api/fair/lunchtickets/${ticket.token}/reactremove`,{
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': getCRSFToken()
+                    },
+                    mode: 'same-origin',
+                }
             )
 
             toast.promise(delete_ticket_promise, {
@@ -48,39 +55,39 @@ function LunchTicketView({
                 try {
                     const errorData = await response.json()
                     if (errorData && errorData.message) {
-                        setSendTicketError(
-                            `Could not send ticket. Status: ${response.status}`
+                        setDeleteTicketError(
+                            `Could not delete ticket. Status: ${response.status}`
                         )
                     } else {
-                        setSendTicketError(
-                            `Could not send ticket. Status: ${response.status}`
+                        setDeleteTicketError(
+                            `Could not delete ticket. Status: ${response.status}`
                         )
                     }
                 } catch (error) {
                     console.error("Error parsing response:", error)
-                    setSendTicketError(
-                        `Could not send ticket. Status: ${response.status}`
+                    setDeleteTicketError(
+                        `Could not delete ticket. Status: ${response.status}`
                     )
                 }
             } else {
                 onRemoteDeleteSuccess(ticket)
             }
         } catch (error) {
-            setSendTicketError(
+            setDeleteTicketError(
                 "Could not delete ticket. Internal Error: Contact the staff"
             )
         }
     }
 
     function triggerSend() {
-        sendTicket(ticket.token, setSendTicketError, setSendTicketStatus)
+        sendTicket(ticket.token, setDeleteTicketError, setDeleteTicketStatus)
         sendTicketUpdateList(ticket)
     }
 
     return (
         <div>
-            {sendTicketError.length > 0 ? (
-                <p className="text-red-500">{sendTicketError}</p>
+            {deleteTicketError.length > 0 ? (
+                <p className="text-red-500">{deleteTicketError}</p>
             ) : (
                 ""
             )}
@@ -151,10 +158,10 @@ function LunchTicketView({
                                 ) : (
                                     ""
                                 )}
-                                {sendTicketStatus.length > 0 ? (
+                                {deleteTicketStatus.length > 0 ? (
                                     <div>
                                         <p className="text-indigo-500">
-                                            {sendTicketStatus}
+                                            {deleteTicketStatus}
                                         </p>
                                     </div>
                                 ) : (
