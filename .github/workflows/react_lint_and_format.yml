@@ -1,0 +1,40 @@
+name: React Lint on PR
+
+on:
+  pull_request:
+    paths:
+      - "apps/complete_registration/**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18.17"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: cd apps/complete_registration && pnpm install
+
+      - name: Get list of changed files
+        id: getfile
+        run: |
+          echo "Changed files:"
+          git fetch origin ${{ github.event.pull_request.base.ref }}  # fetch the base branch
+          files=$(git diff --name-only FETCH_HEAD..HEAD | grep 'apps/complete_registration/.*\.\(js\|jsx\|ts\|tsx\)$' | sed 's#apps/complete_registration/##')
+          echo "$files"
+          echo "FILES=$files" >> $GITHUB_ENV
+
+      - name: Run ESLint on changed files
+        run: cd apps/complete_registration && pnpm run ci-eslint-check -- ${{ env.FILES }}
+
+      - name: Run Prettier on changed files
+        run: cd apps/complete_registration && pnpm run ci-prettier-check -- ${{ env.FILES }}

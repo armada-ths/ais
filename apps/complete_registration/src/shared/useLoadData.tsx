@@ -26,7 +26,7 @@ export default function useLoadData() {
         if (initialized.current) return
         initialized.current = true
 
-        const load = async () => {
+        async function load() {
             const data = await fetch(`${HOST}/api/accounting/products`).then(
                 raw => raw.json()
             )
@@ -35,22 +35,42 @@ export default function useLoadData() {
 
             fetch(`${HOST}/api/registration/`, {}).then(async raw => {
                 const data = await raw.json()
-                console.log("DATA", JSON.stringify(data))
+                console.log("DATA #", JSON.stringify(data))
 
                 if (data.error != null) {
                     dispatch(setErrors(data.error))
                 }
 
                 const awaitingMappings = reverseMap(data)
-
+                console.log("AWAIT mappings", awaitingMappings)
                 // Set status for company
                 dispatch(
                     setCompanyRegistrationStatus(
                         data.type as RegistrationStatus
                     )
                 )
-                if (data.company?.name)
+                if (data.company?.name) {
                     dispatch(setCompanyName(data.company.name))
+
+                    //Get Lunch Tickets
+
+                    fetch(
+                        `${HOST}/api/fair/lunchtickets/companysearch?company=${data.company.name}`
+                    ).then(async raw => {
+                        const data = await raw.json()
+                        //data.result[0].id
+                        const maps = reverseMap(data)
+                        for (const current of maps) {
+                            dispatch(
+                                setField({
+                                    mapping: current.mapping,
+                                    value: current.value
+                                })
+                            )
+                        }
+                    })
+                }
+
                 if (data.contact) dispatch(setUser(data.contact))
                 if (data.contract) dispatch(setContract(data.contract))
 

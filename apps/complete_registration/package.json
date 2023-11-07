@@ -4,9 +4,11 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "preinstall": "npx only-allow pnpm",
         "dev": "npx concurrently \"vite --host\" \"npx tailwindcss -i ./src/input.css -o ./output.css --watch\"",
         "build": "mkdir -p ../../ais_static/apps/complete_registration && rm -rf ../../ais_static/apps/complete_registration/* && tsc && npx tailwindcss -i ./src/input.css -o ./output.css && vite build && cat ./output.css >> ../../ais_static/apps/complete_registration/assets/index.css",
-        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "ci-eslint-check": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "ci-prettier-check": "prettier --check",
         "preview": "vite preview"
     },
     "dependencies": {
@@ -22,6 +24,7 @@
         "react-dom": "^18.2.0",
         "react-redux": "^8.1.2",
         "reselect": "^4.1.8",
+        "sonner": "^1.0.3",
         "tailwind-merge": "^1.14.0",
         "zod": "^3.21.4"
     },
@@ -34,6 +37,7 @@
         "@vitejs/plugin-react": "^4.0.3",
         "autoprefixer": "^10.4.14",
         "eslint": "^8.45.0",
+        "eslint-plugin-prefer-function-declarations": "^2.1.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.4.3",
         "postcss": "^8.4.27",

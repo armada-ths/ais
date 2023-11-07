@@ -74,13 +74,14 @@ export function reverseMap(parent: any) {
                 const path = field.mapping.split(".")
                 let parentCopy = { ...parent }
                 for (const part of path) {
-                    if (parentCopy == null || parentCopy[part] === undefined)
-                        continue
+                    if (parentCopy == null || parentCopy[part] === undefined){
 
+                        continue
+                    }
                     if (
                         part === path[path.length - 1] &&
                         parentCopy[part] != null &&
-                        typeof parentCopy[part] !== "object"
+                        (typeof parentCopy[part] !== "object" || Array.isArray(parentCopy[part]))
                     ) {
                         awaitingMappings.push({
                             mapping: field.mapping,

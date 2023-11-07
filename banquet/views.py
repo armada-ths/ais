@@ -22,6 +22,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 from accounting.models import Order
+from banquet.functions import send_confirmation_email, send_invitation_mail
 from fair.models import Fair
 from people.models import Profile
 from recruitment.models import OrganizationGroup, RecruitmentApplication
@@ -30,6 +31,7 @@ from .forms import (
     ExternalParticipantForm,
     SendInvitationForm,
     InvitationForm,
+    ImportInvitationsForm,
     InvitationSearchForm,
     ParticipantForm,
     ParticipantAdminForm,
@@ -700,6 +702,83 @@ def manage_invitation(request, year, banquet_pk, invitation_pk):
 
 
 @permission_required("banquet.base")
+def manage_import_invitations(request, year, banquet_pk):
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+
+    imported = None
+    has_errors = False
+    has_warnings = False
+    all_invited = False
+
+    form = ImportInvitationsForm(request.POST or None, banquet=banquet)
+    form.fields["group"].queryset = InvitationGroup.objects.filter(banquet=banquet)
+
+    if request.POST and form.is_valid():
+        imported = form.cleaned_data["excel_text"]
+        has_errors = any(
+            "invalid_price" in row or "invalid_email" in row for row in imported
+        )
+        has_warnings = any("invalid_name" in row for row in imported)
+        all_invited = all("duplicate" in row for row in imported)
+
+        if "invite" in request.POST:
+            send_mail = form.cleaned_data["send_email"]
+            group = form.cleaned_data["group"]
+
+            if group is None:
+                form.add_error(
+                    "group",
+                    "You must select a group to invite to the banquet.",
+                )
+            else:
+                for invite in imported:
+                    # Invite already exists
+                    if Invitation.objects.filter(
+                        email_address=invite["email"], banquet=banquet
+                    ).exists():
+                        continue
+
+                    invitation = Invitation(
+                        banquet=banquet,
+                        name=invite["name"],
+                        email_address=invite["email"],
+                        price=invite["price"] or 0,
+                        group=group,
+                    )
+
+                    invitation.save()
+
+                    if send_mail:
+                        send_confirmation_email(
+                            request, invitation, invite["name"], invite["email"]
+                        )
+
+                        invitation.has_sent_mail = True
+                        invitation.save()
+
+                return redirect(
+                    "banquet_manage_invitations",
+                    fair.year,
+                    banquet.pk,
+                )
+
+    return render(
+        request,
+        "banquet/manage_imported_invitations.html",
+        {
+            "fair": fair,
+            "banquet": banquet,
+            "form": form,
+            "imported": imported,
+            "has_errors": has_errors,
+            "has_warnings": has_warnings,
+            "all_invited": all_invited,
+        },
+    )
+
+
+@permission_required("banquet.base")
 def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
     fair = get_object_or_404(Fair, year=year)
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
@@ -772,6 +851,11 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 
     if request.POST and form.is_valid():
         form.instance.banquet = banquet
+        if invitation == None:
+            has_sent_mail = False
+        else:
+            has_sent_mail = invitation.has_sent_mail
+
         invitation = form.save()
 
         if (
@@ -781,6 +865,29 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
         ):
             invitation.participant.name = invitation.name
             invitation.participant.email_address = invitation.email_address
+
+        if invitation.participant == None:
+            # Not participant means not responded to invite
+            if invitation.user != None:
+                # Internal, get info from user
+                name = invitation.user.get_full_name()
+                email_address = invitation.user.email
+            else:
+                # External, info contained in form
+                name = invitation.name
+                email_address = invitation.email_address
+        else:
+            # Participant, info from participant instance
+            name = invitation.participant.name
+            email_address = invitation.participant.email_address
+
+        send_mail = form.cleaned_data["send_email"]
+
+        # Automatically send invite email if it hasn't been sent before
+        if send_mail and not has_sent_mail:
+            send_confirmation_email(request, invitation, name, email_address)
+            form.instance.has_sent_mail = True
+            form.save()
 
         return redirect(
             "banquet_manage_invitation", fair.year, banquet.pk, invitation.pk
@@ -1055,6 +1162,55 @@ def invitation(request, year, token):
             "can_edit": can_edit,
             "form_catalogue_details": tableMatchingForm,
             "participant": {"token": participant.token},
+        },
+    )
+
+
+@permission_required("banquet.base")
+def send_invitation_button(request, year, banquet_pk, invitation_pk):
+    """Called when "Send invitation Mail" is pressed on the manage_invitation page."""
+
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+    invitation = get_object_or_404(Invitation, banquet=banquet, pk=invitation_pk)
+
+    if invitation.user is None:
+        name = invitation.name
+        email = invitation.email_address
+        link = request.build_absolute_uri(
+            reverse(
+                "banquet_external_invitation",
+                kwargs={"token": invitation.token},
+            )
+        )
+    else:
+        name = invitation.user.get_full_name()
+        email = invitation.user.email
+        link = request.build_absolute_uri(
+            reverse(
+                "banquet_invitation",
+                kwargs={"year": year, "token": invitation.token},
+            )
+        )
+
+    print(
+        "Sending invitation mail",
+        {
+            "invitation": invitation,
+            "name": name,
+            "banquet.date": banquet.date,
+            "banquet.location": banquet.location,
+            "link": link,
+            "email": email,
+        },
+    )
+    send_invitation_mail(invitation, name, banquet.date, banquet.location, link, email)
+
+    return render(
+        request,
+        "banquet/invite_sent.html",
+        {
+            "fair": fair,
         },
     )
 

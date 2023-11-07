@@ -1,7 +1,7 @@
 import { FORMS } from "."
 import { RootState } from "../store/store"
 
-export type FieldValue = string | boolean | undefined | File
+export type FieldValue = string | boolean | undefined | File | Object
 
 export interface FieldOption {
     id: number

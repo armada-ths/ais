@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block nav-banquet %}
+	<li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+{% endblock %}
+
+{% block content %}
+	<h1>Invite has been sent!</h1>
+{% endblock %}

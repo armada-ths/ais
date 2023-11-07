@@ -41,6 +41,9 @@ dependencies:
   reselect:
     specifier: ^4.1.8
     version: 4.1.8
+  sonner:
+    specifier: ^1.0.3
+    version: 1.0.3(react-dom@18.2.0)(react@18.2.0)
   tailwind-merge:
     specifier: ^1.14.0
     version: 1.14.0
@@ -73,6 +76,9 @@ devDependencies:
   eslint:
     specifier: ^8.45.0
     version: 8.45.0
+  eslint-plugin-prefer-function-declarations:
+    specifier: ^2.1.0
+    version: 2.1.0(@typescript-eslint/parser@6.0.0)(@typescript-eslint/utils@6.0.0)(eslint@8.45.0)
   eslint-plugin-react-hooks:
     specifier: ^4.6.0
     version: 4.6.0(eslint@8.45.0)
@@ -1229,6 +1235,18 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /eslint-plugin-prefer-function-declarations@2.1.0(@typescript-eslint/parser@6.0.0)(@typescript-eslint/utils@6.0.0)(eslint@8.45.0):
+    resolution: {integrity: sha512-0ejiFV+rRupZjxTuZhGOO+3kAQa2n7i21tA7krtkxHNfEvkmp8ZM6ePR7BbPma65bhB8qF/v4qRTst5kf7V8dw==}
+    peerDependencies:
+      '@typescript-eslint/parser': '>= 5.44.0'
+      '@typescript-eslint/utils': '>= 5.44.0'
+      eslint: '>= 8.28.0'
+    dependencies:
+      '@typescript-eslint/parser': 6.0.0(eslint@8.45.0)(typescript@5.0.2)
+      '@typescript-eslint/utils': 6.0.0(eslint@8.45.0)(typescript@5.0.2)
+      eslint: 8.45.0
+    dev: true
+
   /eslint-plugin-react-hooks@4.6.0(eslint@8.45.0):
     resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}
     engines: {node: '>=10'}
@@ -2202,6 +2220,16 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
     dev: true
+
+  /sonner@1.0.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-hBoA2zKuYW3lUnpx4K0vAn8j77YuYiwvP9sLQfieNS2pd5FkT20sMyPTDJnl9S+5T27ZJbwQRPiujwvDBwhZQg==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}

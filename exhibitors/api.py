@@ -15,6 +15,28 @@ from fair.models import Fair, FairDay
 MISSING_IMAGE = "/static/missing.png"
 
 
+def serialize_booths(exhibitor):
+    return [
+        {
+            "id": eib.booth.pk,
+            "location": {
+                "parent": {
+                    "id": eib.booth.location.parent.pk,
+                    "name": eib.booth.location.parent.name,
+                }
+                if eib.booth.location.parent
+                else None,
+                "id": eib.booth.location.pk,
+                "name": eib.booth.location.name,
+            },
+            "name": eib.booth.name,
+            "comment": eib.comment,
+            "days": [day.date for day in eib.days.all()],
+        }
+        for eib in exhibitor.exhibitorinbooth_set.all()
+    ]
+
+
 def serialize_exhibitor(exhibitor, request):
     img_placeholder = request.GET.get("img_placeholder") == "true"
 
@@ -23,6 +45,7 @@ def serialize_exhibitor(exhibitor, request):
             ("id", exhibitor.pk),
             ("name", exhibitor.company.name),
             ("type", exhibitor.company.type.type),
+            ("tier", exhibitor.tier),
             ("company_website", exhibitor.company.website),
             ("about", exhibitor.catalogue_about),
             ("purpose", exhibitor.catalogue_purpose),
@@ -116,28 +139,7 @@ def serialize_exhibitor(exhibitor, request):
             ),
             ("climate_compensation", exhibitor.climate_compensation),
             ("flyer", (exhibitor.flyer.url) if exhibitor.flyer else ""),
-            (
-                "booths",
-                [
-                    {
-                        "id": eib.booth.pk,
-                        "location": {
-                            "parent": {
-                                "id": eib.booth.location.parent.pk,
-                                "name": eib.booth.location.parent.name,
-                            }
-                            if eib.booth.location.parent
-                            else None,
-                            "id": eib.booth.location.pk,
-                            "name": eib.booth.location.name,
-                        },
-                        "name": eib.booth.name,
-                        "comment": eib.comment,
-                        "days": [day.date for day in eib.days.all()],
-                    }
-                    for eib in ExhibitorInBooth.objects.filter(exhibitor=exhibitor)
-                ],
-            ),
+            ("booths", serialize_booths(exhibitor)),
             ("map_coordinates", exhibitor.map_coordinates),
         ]
     )
@@ -145,17 +147,34 @@ def serialize_exhibitor(exhibitor, request):
 
 @cache_page(60 * 5)
 def exhibitors(request):
-    f = (
-        Fair.objects.get(year=request.GET["year"])
-        if "year" in request.GET
-        else Fair.objects.get(current=True)
+    fair_criteria = (
+        {"year": request.GET["year"]} if "year" in request.GET else {"current": True}
     )
 
-    data = []
+    exhibitors = (
+        Exhibitor.objects.filter(fair__in=Fair.objects.filter(**fair_criteria))
+        .select_related(
+            "company",
+            "fair",
+            "contact",
+            "check_in_user",
+            "fair_location",
+        )
+        .prefetch_related(
+            "catalogue_industries",
+            "catalogue_values",
+            "catalogue_employments",
+            "catalogue_locations",
+            "catalogue_competences",
+            "catalogue_benefits",
+            "company__groups",
+            "exhibitorinbooth_set__booth__location__parent",
+            "exhibitorinbooth_set__booth__location",
+            "exhibitorinbooth_set__days",
+        )
+    )
 
-    for exhibitor in Exhibitor.objects.filter(fair=f):
-        data.append(serialize_exhibitor(exhibitor, request))
-
+    data = [serialize_exhibitor(exhibitor, request) for exhibitor in exhibitors]
     return JsonResponse(data, safe=False)
 
 
