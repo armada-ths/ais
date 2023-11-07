@@ -219,7 +219,7 @@ export function CreateLunchTicketsPage() {
                             setTimeState(event.value)
                         }}
                         options={selectableTimes}
-                        className="md:w-14rem w-full"
+                        className="w-full"
                     />
                 </div>
                 <div className="[&>*]:w-full">
