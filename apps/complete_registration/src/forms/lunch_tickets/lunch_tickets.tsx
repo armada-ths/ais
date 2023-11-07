@@ -33,7 +33,7 @@ function LunchTicketView({
     async function deleteTicket() {
         try {
             const delete_ticket_promise = fetch(
-                `${HOST}/api/fair/lunchtickets/${ticket.token}/reactsend`
+                `${HOST}/api/fair/lunchtickets/${ticket.token}/reactremove`
             )
 
             toast.promise(delete_ticket_promise, {
