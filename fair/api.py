@@ -310,7 +310,7 @@ def lunchticket_reactsend(request, token):
         + request.build_absolute_uri(
             reverse("lunchticket_display", args=[lunch_ticket.token])
         ),
-        "noreply@armada.nu",
+        "Armada Lunch Ticket <noreply@armada.nu>",
         [email_address],
         fail_silently=True,
     )
