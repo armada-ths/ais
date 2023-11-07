@@ -185,15 +185,7 @@ function LunchTicketView({
                                 {Object.entries(ticket.dietary_restrictions)
                                     .length > 0 ? (
                                     <div className="grid grid-cols-2 gap-4 pb-2 text-center [&>*]:pt-2">
-                                        {Object.entries(
-                                            ticket.dietary_restrictions
-                                        ).map(restriction => {
-                                            return (
-                                                <p key={restriction[0]}>
-                                                    {restriction[1]}
-                                                </p>
-                                            )
-                                        })}
+                                        {Object.entries(ticket.dietary_restrictions).map((restriction) => <p key={restriction[0]}>{restriction[1]}</p>)}
                                     </div>
                                 ) : (
                                     ""
