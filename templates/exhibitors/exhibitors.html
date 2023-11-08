@@ -49,7 +49,17 @@
 								<td style="white-space: nowrap;">
 									<ul class="list-unstyled">
 										{% for contact_person in field.value %}
-											<li><a href="{% url 'people:profile' fair.year contact_person.profile.pk %}">{{ contact_person }}</a></li>
+											{% if contact_person.profile is None %}
+												<li style="color: red;">Warning: contact person has no profile! Info:</li>
+												<pre>
+													username: {{ contact_person.username }}
+													first_name: {{ contact_person.first_name }}
+													last_name: {{ contact_person.last_name }}
+												</pre>
+											{% else %}
+												<li><a href="{% url 'people:profile' fair.year contact_person.profile.pk %}">{{ contact_person }}</a></li>
+											{% endif %}
+
 										{% endfor %}
 									</ul>
 								</td>
