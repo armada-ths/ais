@@ -49,7 +49,7 @@
 								<td style="white-space: nowrap;">
 									<ul class="list-unstyled">
 										{% for contact_person in field.value %}
-											{% if contact_person.profile is None %}
+											{% if contact_person.profile.pk == '' %}
 												<li style="color: red;">Warning: contact person has no profile! Info:</li>
 												<pre>
 													username: {{ contact_person.username }}
