@@ -159,26 +159,31 @@ def lunchtickets_companysearch(request):
 
     return JsonResponse(data, safe=False)
 
+
 def checkUserPermissionOnCompany(user, company):
     try:
-        selectedCompanyID = Company.objects.filter(name__exact=company).values("id").first()
+        selectedCompanyID = (
+            Company.objects.filter(name__exact=company).values("id").first()
+        )
     except:
         return JsonResponse({"message": "Selected company is invalid."}, status=400)
 
     try:
-        authCompanyID = Company.objects.filter(name__exact=user.company).values("id").first()
+        authCompanyID = (
+            Company.objects.filter(name__exact=user.company).values("id").first()
+        )
     except:
         return JsonResponse({"message": "Selected company is invalid."}, status=400)
-    
-    return authCompanyID==selectedCompanyID
+
+    return authCompanyID == selectedCompanyID
+
 
 @require_POST
 def lunchticket_reactcreate(request):
-    
-    #Get authenticated's user company
+    # Get authenticated's user company
     if not request.user.is_authenticated:
         return JsonResponse({"message": "User is not authenticated"}, status=403)
-    
+
     user = get_object_or_404(CompanyContact, email_address=request.user)
 
     # Parse the JSON data from request.body
@@ -192,8 +197,8 @@ def lunchticket_reactcreate(request):
     except:
         return JsonResponse({"message": "Company is empty."}, status=400)
 
-    #Check user permission on this company
-    
+    # Check user permission on this company
+
     if not checkUserPermissionOnCompany(user, companyName):
         return JsonResponse({"message": "Can't access this company data."}, status=403)
 
@@ -289,10 +294,9 @@ def lunchticket_reactcreate(request):
 
 
 def lunchticket_reactremove(request, token):
-    
     if not request.user.is_authenticated:
         return JsonResponse({"message": "User is not authenticated"}, status=403)
-    
+
     try:
         fair = Fair.objects.get(current=True)
     except:
@@ -309,7 +313,7 @@ def lunchticket_reactremove(request, token):
             status=500,
         )
 
-    #Check if user has the right privileges over the lunch ticket company
+    # Check if user has the right privileges over the lunch ticket company
     user = get_object_or_404(CompanyContact, email_address=request.user)
     if not checkUserPermissionOnCompany(user, lunch_ticket.company):
         return JsonResponse({"message": "Can't access this company data."}, status=403)
@@ -328,7 +332,7 @@ def lunchticket_reactremove(request, token):
 def lunchticket_reactsend(request, token):
     if not request.user.is_authenticated:
         return JsonResponse({"message": "User is not authenticated"}, status=403)
-    
+
     try:
         fair = Fair.objects.get(current=True)
     except:
@@ -336,7 +340,7 @@ def lunchticket_reactsend(request, token):
             {"message": "Couldn't find current fair. Plase contact the staff"},
             status=500,
         )
-    
+
     try:
         lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
     except:
@@ -345,7 +349,7 @@ def lunchticket_reactsend(request, token):
             status=500,
         )
 
-    #Check if user has the right privileges over the lunch ticket company
+    # Check if user has the right privileges over the lunch ticket company
     user = get_object_or_404(CompanyContact, email_address=request.user)
     if not checkUserPermissionOnCompany(user, lunch_ticket.company):
         return JsonResponse({"message": "Can't access this company data."}, status=403)
