@@ -83,7 +83,7 @@ export function CreateLunchTicketsPage() {
                 console.error("Error:", error)
                 const errorString = error.toString()
                 setErrorString(errorString)
-                return;
+                return
             }
         }
 
@@ -91,13 +91,13 @@ export function CreateLunchTicketsPage() {
             const create_ticket_promise = fetch(
                 `${HOST}/api/fair/lunchtickets/reactcreate`,
                 {
-                    mode: 'same-origin',
+                    mode: "same-origin",
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        'X-CSRFToken': getCRSFToken()
+                        "X-CSRFToken": getCRSFToken()
                     },
-                    body: JSON.stringify(ticket),
+                    body: JSON.stringify(ticket)
                 }
             )
 
