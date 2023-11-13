@@ -83,6 +83,7 @@ export function CreateLunchTicketsPage() {
                 console.error("Error:", error)
                 const errorString = error.toString()
                 setErrorString(errorString)
+                return;
             }
         }
 
@@ -146,7 +147,7 @@ export function CreateLunchTicketsPage() {
                 )
                 dispatch(
                     setField({
-                        mapping: "unassignedLunchTickets",
+                        mapping: "unassigned_lunch_tickets",
                         value: unassignedLunchTickets - 1
                     })
                 )

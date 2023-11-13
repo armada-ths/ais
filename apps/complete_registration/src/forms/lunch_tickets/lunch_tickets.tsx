@@ -114,7 +114,17 @@ function LunchTicketView({
                             : "Created (not sent)"}
                     </p>
                 </div>
-
+                <div className="pl-4">
+                {deleteTicketStatus.length > 0 ? (
+                        <div>
+                            <p className="text-indigo-500">
+                                {deleteTicketStatus}
+                            </p>
+                        </div>
+                    ) : (
+                        ""
+                )}
+                </div>
                 <div className="more-info-container pt-2">
                     <div className="flex items-center justify-between">
                         <button
@@ -154,15 +164,6 @@ function LunchTicketView({
                                             Comment:
                                         </p>
                                         <p>{ticket.comment}</p>
-                                    </div>
-                                ) : (
-                                    ""
-                                )}
-                                {deleteTicketStatus.length > 0 ? (
-                                    <div>
-                                        <p className="text-indigo-500">
-                                            {deleteTicketStatus}
-                                        </p>
                                     </div>
                                 ) : (
                                     ""
