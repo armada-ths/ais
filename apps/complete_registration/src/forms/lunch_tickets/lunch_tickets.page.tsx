@@ -25,8 +25,7 @@ export function ViewLunchTicketsPage() {
 
     const tickets = (resultTickets?.value ?? []) as LunchTicket[]
     const fairDays = (resultFairDays?.value ?? []) as string[]
-    const unassignedTickets = (resultUnassignedTickets?.value ??
-        -1) as number
+    const unassignedTickets = (resultUnassignedTickets?.value ?? -1) as number
 
     const [ticketTracker, setTicketTracker] = useState<LunchTicket[]>(tickets)
     const [unassignedTicketsTracker, setUnassignedTicketsTracker] =
