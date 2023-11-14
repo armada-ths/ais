@@ -15,38 +15,38 @@ import { HOST } from "../../shared/vars"
 import { RootState } from "../../store/store"
 import { selectField } from "../../store/form/form_selectors"
 import { toast } from "sonner"
-import "./lunch_ticket.css"
 import { setField, setPage } from "../../store/form/form_slice"
 import { sendTicket } from "./send_ticket"
+import { getCRSFToken } from "../../utils/django_format/django_format.utils"
 
 export function CreateLunchTicketsPage() {
     const dispatch = useDispatch()
 
-    const result_unassigned_lunch_tickets = useSelector((state: RootState) =>
+    const resultUnassignedLunchTickets = useSelector((state: RootState) =>
         selectField(state, "unassigned_lunch_tickets")
     )
     const assignedLunchTickets = useSelector((state: RootState) =>
         selectField(state, "assigned_lunch_tickets")
     )?.value as LunchTicket[] | null
-    const result_fair_days = useSelector((state: RootState) =>
+    const resultFairDays = useSelector((state: RootState) =>
         selectField(state, "fair_days")
     )
-    const result_lunch_times = useSelector((state: RootState) =>
+    const resultLunchTimes = useSelector((state: RootState) =>
         selectField(state, "lunch_times")
     )
     const allExistingDietaryRestrictions = (useSelector((state: RootState) =>
         selectField(state, "dietary_restrictions")
     )?.value ?? []) as string[]
 
-    const unassigned_lunch_tickets = (result_unassigned_lunch_tickets?.value ??
+    const unassignedLunchTickets = (resultUnassignedLunchTickets?.value ??
         []) as number
-    const fair_days = (result_fair_days?.value ?? [""]) as string[]
-    const lunch_times = (result_lunch_times?.value ?? [""]) as string[]
+    const fairDays = (resultFairDays?.value ?? [""]) as string[]
+    const lunchTimes = (resultLunchTimes?.value ?? [""]) as string[]
 
-    const [DateState, setDateState] = useState<string>(fair_days[0])
-    const [TimeState, setTimeState] = useState<string>(lunch_times[0])
+    const [DateState, setDateState] = useState<string>(fairDays[0])
+    const [TimeState, setTimeState] = useState<string>(lunchTimes[0])
     const [selectableTimes, setSelectableTimes] = useState<string[]>(
-        lunch_times.filter(time => time.includes(DateState))
+        lunchTimes.filter(time => time.includes(DateState))
     )
     const [Email, setEmail] = useState<string>("")
     const [DietaryRestrictions, setDietaryRestrictions] = useState<string[]>([])
@@ -58,7 +58,7 @@ export function CreateLunchTicketsPage() {
     const companyName = useSelector(selectCompanyName)
 
     function modifySelectableTimes(date: string) {
-        const filteredTimes = lunch_times.filter(time => time.includes(date))
+        const filteredTimes = lunchTimes.filter(time => time.includes(date))
         setSelectableTimes(filteredTimes)
         setTimeState(filteredTimes[0])
     }
@@ -77,12 +77,13 @@ export function CreateLunchTicketsPage() {
         }
 
         try {
-            validateLunchTicket(ticket, unassigned_lunch_tickets)
+            validateLunchTicket(ticket, unassignedLunchTickets)
         } catch (error: unknown) {
             if (error instanceof Error) {
                 console.error("Error:", error)
                 const errorString = error.toString()
                 setErrorString(errorString)
+                return
             }
         }
 
@@ -90,9 +91,11 @@ export function CreateLunchTicketsPage() {
             const create_ticket_promise = fetch(
                 `${HOST}/api/fair/lunchtickets/reactcreate`,
                 {
+                    mode: "same-origin",
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCRSFToken()
                     },
                     body: JSON.stringify(ticket)
                 }
@@ -145,16 +148,15 @@ export function CreateLunchTicketsPage() {
                 dispatch(
                     setField({
                         mapping: "unassigned_lunch_tickets",
-                        value: unassigned_lunch_tickets - 1
+                        value: unassignedLunchTickets - 1
                     })
                 )
                 // Navigate back to the start view
                 dispatch(setPage("view_ticket"))
             }
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error:", error)
-            const errorString = error.toString()
+            const errorString = (error as Error).toString()
             setErrorString(errorString)
         }
     }
@@ -172,15 +174,15 @@ export function CreateLunchTicketsPage() {
             </div>
             <h2 className="text-md text-center font-bold">
                 You can create
-                {unassigned_lunch_tickets == 0 ? (
+                {unassignedLunchTickets == 0 ? (
                     <Badge
-                        value={unassigned_lunch_tickets.toString()}
+                        value={unassignedLunchTickets.toString()}
                         severity="danger"
                         className="mx-2"
                     />
                 ) : (
                     <Badge
-                        value={unassigned_lunch_tickets.toString()}
+                        value={unassignedLunchTickets.toString()}
                         className="mx-2"
                     />
                 )}
@@ -202,8 +204,8 @@ export function CreateLunchTicketsPage() {
                             setDateState(event.value)
                             modifySelectableTimes(event.value)
                         }}
-                        options={fair_days}
-                        className="md:w-14rem w-full"
+                        options={fairDays}
+                        className="w-full"
                     />
                 </div>
                 <div>
@@ -220,7 +222,7 @@ export function CreateLunchTicketsPage() {
                             setTimeState(event.value)
                         }}
                         options={selectableTimes}
-                        className="md:w-14rem w-full"
+                        className="w-full"
                     />
                 </div>
                 <div className="[&>*]:w-full">
@@ -301,7 +303,7 @@ export function CreateLunchTicketsPage() {
                 <div className="m-auto mt-2 w-1/2 [&>*]:w-full [&>*]:py-1">
                     <Button
                         label="Create lunch ticket"
-                        disabled={unassigned_lunch_tickets == 0}
+                        disabled={unassignedLunchTickets == 0}
                     />
                 </div>
             </form>

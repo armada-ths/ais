@@ -16,10 +16,12 @@ from fair.models import (
     LunchTicketTime,
     FairDay,
 )
+
 from accounting.models import Order, Product, Category, ChildProduct
-from companies.models import Company
+from companies.models import Company, CompanyContact
 from people.models import DietaryRestriction
 from .forms import LunchTicketForm
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 import json
@@ -158,9 +160,32 @@ def lunchtickets_companysearch(request):
     return JsonResponse(data, safe=False)
 
 
+def checkUserPermissionOnCompany(user, company):
+    try:
+        selectedCompanyID = (
+            Company.objects.filter(name__exact=company).values("id").first()
+        )
+    except:
+        return JsonResponse({"message": "Selected company is invalid."}, status=400)
+
+    try:
+        authCompanyID = (
+            Company.objects.filter(name__exact=user.company).values("id").first()
+        )
+    except:
+        return JsonResponse({"message": "Selected company is invalid."}, status=400)
+
+    return authCompanyID == selectedCompanyID
+
+
 @require_POST
-@csrf_exempt
 def lunchticket_reactcreate(request):
+    # Get authenticated's user company
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "User is not authenticated"}, status=403)
+
+    user = get_object_or_404(CompanyContact, email_address=request.user)
+
     # Parse the JSON data from request.body
     data = json.loads(request.body)
 
@@ -171,6 +196,11 @@ def lunchticket_reactcreate(request):
         companyName = data.get("company")
     except:
         return JsonResponse({"message": "Company is empty."}, status=400)
+
+    # Check user permission on this company
+
+    if not checkUserPermissionOnCompany(user, companyName):
+        return JsonResponse({"message": "Can't access this company data."}, status=403)
 
     try:
         date = data.get("day")
@@ -264,6 +294,9 @@ def lunchticket_reactcreate(request):
 
 
 def lunchticket_reactremove(request, token):
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "User is not authenticated"}, status=403)
+
     try:
         fair = Fair.objects.get(current=True)
     except:
@@ -280,6 +313,11 @@ def lunchticket_reactremove(request, token):
             status=500,
         )
 
+    # Check if user has the right privileges over the lunch ticket company
+    user = get_object_or_404(CompanyContact, email_address=request.user)
+    if not checkUserPermissionOnCompany(user, lunch_ticket.company):
+        return JsonResponse({"message": "Can't access this company data."}, status=403)
+
     try:
         lunch_ticket.delete()
     except:
@@ -292,8 +330,29 @@ def lunchticket_reactremove(request, token):
 
 
 def lunchticket_reactsend(request, token):
-    fair = Fair.objects.get(current=True)
-    lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+    if not request.user.is_authenticated:
+        return JsonResponse({"message": "User is not authenticated"}, status=403)
+
+    try:
+        fair = Fair.objects.get(current=True)
+    except:
+        return JsonResponse(
+            {"message": "Couldn't find current fair. Plase contact the staff"},
+            status=500,
+        )
+
+    try:
+        lunch_ticket = get_object_or_404(LunchTicket, fair=fair, token=token)
+    except:
+        return JsonResponse(
+            {"message": "Couldn't find the selected ticket. Plase contact the staff"},
+            status=500,
+        )
+
+    # Check if user has the right privileges over the lunch ticket company
+    user = get_object_or_404(CompanyContact, email_address=request.user)
+    if not checkUserPermissionOnCompany(user, lunch_ticket.company):
+        return JsonResponse({"message": "Can't access this company data."}, status=403)
 
     eat_by = str(lunch_ticket.time) if lunch_ticket.time else str(lunch_ticket.day)
     email_address = (
@@ -310,7 +369,7 @@ def lunchticket_reactsend(request, token):
         + request.build_absolute_uri(
             reverse("lunchticket_display", args=[lunch_ticket.token])
         ),
-        "noreply@armada.nu",
+        "Armada Lunch Ticket <noreply@armada.nu>",
         [email_address],
         fail_silently=True,
     )
