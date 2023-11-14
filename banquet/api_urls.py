@@ -6,7 +6,9 @@ app_name = "banquet_api"
 
 urlpatterns = [
     url(r"^(?P<banquet_pk>[0-9]+)/seats/(?P<seat_pk>[0-9]+)$", api.save_seat),
-    url(r"^tickets/search$", api.ticket_search, name="ticket_search"),
+    url(
+        r"^tickets/search/(?P<banquet_pk>\d+)$", api.ticket_search, name="ticket_search"
+    ),
     url(
         r"^tickets/check_in/(?P<ticket_pk>\d+)$",
         api.ticket_check_in,
