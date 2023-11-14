@@ -85,5 +85,9 @@ urlpatterns = [
     url(r"^participants$", ParticipantsListView.as_view(), name="participant_list"),
     url(r"^send$", SendInviteCreateView.as_view(), name="send_invite"),
     url(r"^export$", export_invitations, name="export_invitations"),
-    url(r"^scan_tickets$", views.scan_tickets, name="scan_tickets"),
+    url(
+        r"^scan_tickets/(?P<banquet_pk>[0-9]+)$",
+        views.scan_tickets,
+        name="scan_tickets",
+    ),
 ]

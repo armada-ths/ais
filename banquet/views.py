@@ -1561,9 +1561,8 @@ def external_banquet_afterparty(request, token=None):
 
 
 @permission_required("banquet.base")
-def scan_tickets(request, year):
-    fair = get_object_or_404(Fair, year=year)
-    banquet = get_object_or_404(Banquet, fair=fair)
+def scan_tickets(request, banquet_pk):
+    banquet = get_object_or_404(Banquet, id=banquet_pk)
 
     react_props = {"banquet": banquet.pk}
 
