@@ -4,6 +4,9 @@ from django.http import HttpResponse
 from orders.models import Order, Product
 from .models import *
 from improved_admin import ModelAdminImproved
+from django import forms
+from django.contrib.auth.admin import UserAdmin
+from .forms import ExhibitorForm
 
 
 @admin.register(Exhibitor)
@@ -11,6 +14,7 @@ class ExhibitorAdmin(ModelAdminImproved):
     search_fields = ["company__name"]
     ordering = ["-fair__year", "company"]
     list_filter = ["fair"]
+    form = ExhibitorForm
 
 
 @admin.register(CatalogueIndustry)
