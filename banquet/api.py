@@ -34,9 +34,8 @@ def save_seat(request, banquet_pk, seat_pk):
 
 @require_GET
 @permission_required("banquet.base")
-def ticket_search(request):
-    fair = Fair.objects.get(current=True)
-    banquet = get_object_or_404(Banquet, fair=fair)
+def ticket_search(request, banquet_pk):
+    banquet = get_object_or_404(Banquet, id=banquet_pk)
     search_query = request.GET.get("query", "")
 
     banquet_query = Q(banquet=banquet)

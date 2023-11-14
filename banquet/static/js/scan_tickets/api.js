@@ -10,7 +10,7 @@ const client = axios.create({
 });
 
 export const search = (query) => {
-  return client.get(`tickets/search?query=${query}`)
+  return client.get(`tickets/search/${window.reactProps.banquet}?query=${query}`)
 };
 
 export const checkIn = (ticketId) => {
