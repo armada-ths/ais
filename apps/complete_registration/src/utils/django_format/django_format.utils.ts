@@ -10,7 +10,7 @@ export function getCRSFToken() {
     throw new Error("Cookie not found")
 }
 
-export function objectToUrlEncoded(object: object): string {
+export function ObjectToURLEncoded(object: object): string {
     const mapping = Object.keys(object)
         .map(key => {
             const objectKey = key as keyof object
@@ -26,7 +26,7 @@ export function objectToUrlEncoded(object: object): string {
                 return result
             }
             if (typeof object[objectKey] === "object")
-                return objectToUrlEncoded(object[objectKey])
+                return ObjectToURLEncoded(object[objectKey])
             else {
                 return objectKey + "=" + object[objectKey]
             }
@@ -39,5 +39,6 @@ export function objectToUrlEncoded(object: object): string {
 export function buildURLEncodedPayload(data: object) {
     const token = getCRSFToken()
     //return ObjectToURLEncoded(data);
-    return "crsfmiddlewaretoken=" + token + "&" + objectToUrlEncoded(data)
+    console.log("test", ObjectToURLEncoded(data))
+    return "crsfmiddlewaretoken=" + token + "&" + ObjectToURLEncoded(data)
 }

@@ -5,7 +5,6 @@ import { HOST } from "../../shared/vars"
 import { toast } from "sonner"
 import { cx } from "../../utils/cx"
 import { sendTicket } from "./send_ticket"
-import { getCRSFToken } from "../../utils/django_format/django_format.utils"
 
 interface LunchTicketsProps {
     ticket: LunchTicket
@@ -20,8 +19,8 @@ function LunchTicketView({
 }: LunchTicketsProps) {
     const [moreInfoDisplayed, setMoreInfoDisplayed] = useState<boolean>(false)
     const [dietaryDisplayed, setDietaryDisplayed] = useState<boolean>(false)
-    const [deleteTicketError, setDeleteTicketError] = useState<string>("")
-    const [deleteTicketStatus, setDeleteTicketStatus] = useState<string>("")
+    const [sendTicketError, setSendTicketError] = useState<string>("")
+    const [sendTicketStatus, setSendTicketStatus] = useState<string>("")
 
     function dietaryButtonClickHandler() {
         setDietaryDisplayed(!dietaryDisplayed)
@@ -34,13 +33,7 @@ function LunchTicketView({
     async function deleteTicket() {
         try {
             const delete_ticket_promise = fetch(
-                `${HOST}/api/fair/lunchtickets/${ticket.token}/reactremove`,{
-                    headers: {
-                        "Content-Type": "application/json",
-                        'X-CSRFToken': getCRSFToken()
-                    },
-                    mode: 'same-origin',
-                }
+                `${HOST}/api/fair/lunchtickets/` + ticket.token + `/reactremove`
             )
 
             toast.promise(delete_ticket_promise, {
@@ -55,39 +48,39 @@ function LunchTicketView({
                 try {
                     const errorData = await response.json()
                     if (errorData && errorData.message) {
-                        setDeleteTicketError(
-                            `Could not delete ticket. Status: ${response.status}`
+                        setSendTicketError(
+                            `Could not send ticket. Status: ${response.status}`
                         )
                     } else {
-                        setDeleteTicketError(
-                            `Could not delete ticket. Status: ${response.status}`
+                        setSendTicketError(
+                            `Could not send ticket. Status: ${response.status}`
                         )
                     }
                 } catch (error) {
                     console.error("Error parsing response:", error)
-                    setDeleteTicketError(
-                        `Could not delete ticket. Status: ${response.status}`
+                    setSendTicketError(
+                        `Could not send ticket. Status: ${response.status}`
                     )
                 }
             } else {
                 onRemoteDeleteSuccess(ticket)
             }
         } catch (error) {
-            setDeleteTicketError(
+            setSendTicketError(
                 "Could not delete ticket. Internal Error: Contact the staff"
             )
         }
     }
 
     function triggerSend() {
-        sendTicket(ticket.token, setDeleteTicketError, setDeleteTicketStatus)
+        sendTicket(ticket.token, setSendTicketError, setSendTicketStatus)
         sendTicketUpdateList(ticket)
     }
 
     return (
         <div>
-            {deleteTicketError.length > 0 ? (
-                <p className="text-red-500">{deleteTicketError}</p>
+            {sendTicketError.length > 0 ? (
+                <p className="text-red-500">{sendTicketError}</p>
             ) : (
                 ""
             )}
@@ -114,17 +107,7 @@ function LunchTicketView({
                             : "Created (not sent)"}
                     </p>
                 </div>
-                <div className="pl-4">
-                {deleteTicketStatus.length > 0 ? (
-                        <div>
-                            <p className="text-indigo-500">
-                                {deleteTicketStatus}
-                            </p>
-                        </div>
-                    ) : (
-                        ""
-                )}
-                </div>
+
                 <div className="more-info-container pt-2">
                     <div className="flex items-center justify-between">
                         <button
@@ -168,6 +151,15 @@ function LunchTicketView({
                                 ) : (
                                     ""
                                 )}
+                                {sendTicketStatus.length > 0 ? (
+                                    <div>
+                                        <p className="text-indigo-500">
+                                            {sendTicketStatus}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    ""
+                                )}
                             </div>
                             <div className="[&>*]:bx-4 flex w-1/3 flex-row items-end justify-center gap-2 pb-2 [&>*]:h-8 [&>*]:w-1/2 [&>*]:border-none"></div>
                         </div>
@@ -193,7 +185,15 @@ function LunchTicketView({
                                 {Object.entries(ticket.dietary_restrictions)
                                     .length > 0 ? (
                                     <div className="grid grid-cols-2 gap-4 pb-2 text-center [&>*]:pt-2">
-                                        {Object.entries(ticket.dietary_restrictions).map((restriction) => <p key={restriction[0]}>{restriction[1]}</p>)}
+                                        {Object.entries(
+                                            ticket.dietary_restrictions
+                                        ).map(restriction => {
+                                            return (
+                                                <p key={restriction[0]}>
+                                                    {restriction[1]}
+                                                </p>
+                                            )
+                                        })}
                                     </div>
                                 ) : (
                                     ""

@@ -8,28 +8,30 @@ import LunchTicketView from "./lunch_tickets"
 import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
 import { Button } from "primereact/button"
 import { setField, setPage } from "../../store/form/form_slice"
+import "./lunch_ticket.css"
 
 export function ViewLunchTicketsPage() {
     const dispatch = useDispatch()
 
-    const resultTickets = useSelector((state: RootState) =>
+    const result_tickets = useSelector((state: RootState) =>
         selectField(state, "assigned_lunch_tickets")
     )
-    const resultFairDays = useSelector((state: RootState) =>
-        selectField(state, "fairDays")
+    const result_fair_days = useSelector((state: RootState) =>
+        selectField(state, "fair_days")
     )
 
-    const resultUnassignedTickets = useSelector((state: RootState) =>
+    const result_unassigned_tickets = useSelector((state: RootState) =>
         selectField(state, "unassigned_lunch_tickets")
     )
 
-    const tickets = (resultTickets?.value ?? []) as LunchTicket[]
-    const fairDays = (resultFairDays?.value ?? []) as string[]
-    const unassignedTickets = (resultUnassignedTickets?.value ?? -1) as number
+    const tickets = (result_tickets?.value ?? []) as LunchTicket[]
+    const fair_days = (result_fair_days?.value ?? []) as string[]
+    const unassigned_tickets = (result_unassigned_tickets?.value ??
+        -1) as number
 
     const [ticketTracker, setTicketTracker] = useState<LunchTicket[]>(tickets)
     const [unassignedTicketsTracker, setUnassignedTicketsTracker] =
-        useState<number>(unassignedTickets)
+        useState<number>(unassigned_tickets)
     const [filterUsedState, setFilterUsedState] = useState<string>("All")
     const [filterDateState, setFilterDateState] = useState<string>("Any")
 
@@ -117,7 +119,7 @@ export function ViewLunchTicketsPage() {
                         onChange={event => {
                             setFilterDateState(event.value)
                         }}
-                        options={["Any", ...fairDays]}
+                        options={["Any", ...fair_days]}
                         className="md:w-14rem w-full"
                     />
                 </div>
