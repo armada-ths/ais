@@ -403,9 +403,9 @@ def dashboard(request, year):
                     + str(location)
                     + ". Your ticket can be purchased at a discounted price of only "
                     + price
-                    + "kr. You can get your ticket here:\n\nhttps://ais.armada.nu/banquet/afterparty\n\nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of "
+                    + " kr. \n\nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of "
                     + price
-                    + "kr will appear at checkout.\n\nSee you at the party!",
+                    + " kr will appear at checkout.\n\nSee you at the party!",
                     "noreply@armada.nu",
                     [invite.email_address],
                     fail_silently=True,
