@@ -5,6 +5,8 @@ import inspect
 from companies.models import Company, CompanyCustomerComment
 from .models import ExhibitorView, Exhibitor, Booth, ExhibitorInBooth
 
+from dal import autocomplete
+
 
 class ExhibitorViewForm(forms.Form):
     instance = None
@@ -122,6 +124,17 @@ class BoothForm(forms.ModelForm):
     class Meta:
         model = Booth
         fields = ["location", "name"]
+
+
+class ExhibitorForm(forms.ModelForm):
+    class Meta:
+        model = Exhibitor
+        fields = "__all__"
+        widgets = {
+            "contact_persons": autocomplete.ModelSelect2Multiple(
+                url="user-autocomplete", attrs={"data-html": True}
+            )
+        }
 
 
 class ExhibitorInBoothForm(forms.ModelForm):
