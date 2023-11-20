@@ -68,6 +68,7 @@
           <th>Name</th>
           <th>E-mail address</th>
           <th>Comment</th>
+          <th>Other dietary restrictions</th>
           {% for dietary_restriction in dietary_restrictions %}
             <th style="white-space: nowrap;">{{ dietary_restriction.name }} ({{ dietary_restriction.count }})</th>
           {% endfor %}
@@ -102,6 +103,9 @@
               {% else %} <a href="mailto:{{ l.t.email_address }}">{{ l.t.email_address }}</a> {% endif %}
             </td>
             <td>{% if l.t.comment %} {{ l.t.comment }} {% endif %}
+            <td>
+              {% if l.t.other_dietary_restrictions %} {{ l.t.other_dietary_restrictions }} {% endif %}
+            </td>
               {% for d in l.drl %}
                 {% if d %}
                   <td style="text-align: center;" class="bg-danger">yes</td>
