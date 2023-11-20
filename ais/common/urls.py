@@ -4,6 +4,7 @@ from ais.common import settings
 from django.conf.urls.static import static
 from fair.views import login_redirect
 from testpage.views import testpage
+from exhibitors.views import UserAutocomplete
 from magic_link import urls as magic_link_urls
 
 urlpatterns = [
@@ -23,6 +24,11 @@ urlpatterns = [
     url(r"^payments/", include("payments.urls")),
     url(r"^hijack/", include("hijack.urls")),
     url(r"^magic_link/", include(magic_link_urls)),
+    url(
+        r"^user-autocomplete/$",
+        UserAutocomplete.as_view(),
+        name="user-autocomplete",
+    ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

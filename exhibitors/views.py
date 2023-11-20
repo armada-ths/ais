@@ -32,7 +32,13 @@ from .forms import (
     CoordinatesForm,
     FairLocationForm,
 )
-from .models import Exhibitor, ExhibitorView, Booth, ExhibitorInBooth, Location
+from .models import Exhibitor, ExhibitorView, Booth, ExhibitorInBooth, Location, User
+
+from dal import autocomplete
+from django.utils.html import format_html
+from django.db.models import Q
+from django.db.models import Value as V
+from django.db.models.functions import Concat
 
 
 def possible_contact_persons(fair):
@@ -56,6 +62,31 @@ def possible_contact_persons(fair):
             contact_persons.append((application.delegated_role, [user]))
 
     return contact_persons
+
+
+class UserAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        if not self.request.user.is_authenticated:
+            return User.objects.none()
+
+        qs = (
+            User.objects.order_by("username")
+            .annotate(full_name=Concat("first_name", V(" "), "last_name"))
+            .all()
+        )
+
+        if self.q:
+            qs = qs.filter(
+                Q(email__istartswith=self.q)
+                | Q(username__istartswith=self.q)
+                | Q(full_name__icontains=self.q)
+            )
+
+        return qs
+
+    def get_result_label(self, result):
+        return format_html("{}", result.email)
 
 
 @permission_required("exhibitors.base")
