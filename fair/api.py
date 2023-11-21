@@ -145,7 +145,7 @@ def lunchtickets_companysearch(request):
 
     data = {
         "assigned_lunch_tickets": [
-            serializers.lunch_ticket_react(lunch_ticket)
+            serializers.lunch_ticket_react(request, lunch_ticket)
             for lunch_ticket in lunch_tickets
         ],
         "unassigned_lunch_tickets": unassigned_tickets,
@@ -312,7 +312,6 @@ def lunchticket_reactsend(request, token):
         ),
         "noreply@armada.nu",
         [email_address],
-        fail_silently=True,
     )
 
     lunch_ticket.sent = True

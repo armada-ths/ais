@@ -1,3 +1,6 @@
+from django.urls import reverse
+
+
 def lunch_ticket(lunch_ticket):
     data = {
         "id": lunch_ticket.pk,
@@ -24,7 +27,7 @@ def lunch_ticket(lunch_ticket):
     return data
 
 
-def lunch_ticket_react(lunch_ticket):
+def lunch_ticket_react(request, lunch_ticket):
     data = {
         "id": lunch_ticket.pk,
         "name": lunch_ticket.user.get_full_name()
@@ -41,6 +44,9 @@ def lunch_ticket_react(lunch_ticket):
         "used": lunch_ticket.used,
         "type": lunch_ticket.get_ticket_type(),
         "token": lunch_ticket.token,
+        "url": request.build_absolute_uri(
+            reverse("lunchticket_display", args=[lunch_ticket.token])
+        ),
         "sent": lunch_ticket.sent,
         "dietary_restrictions": [
             dietary_restriction.name
