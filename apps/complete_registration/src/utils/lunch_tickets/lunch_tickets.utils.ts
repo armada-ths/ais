@@ -11,6 +11,7 @@ export interface LunchTicket {
     used: boolean
     dietary_restrictions: string[]
     other_dietary_restrictions: string
+    url: string
 }
 
 export function validateLunchTicket(

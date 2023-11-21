@@ -107,6 +107,9 @@ function LunchTicketView({
                             : "Created (not sent)"}
                     </p>
                 </div>
+                <p className="pl-8 font-semibold text-blue-600">
+                    <a href={ticket.url}>View lunch ticket</a>
+                </p>
 
                 <div className="more-info-container pt-2">
                     <div className="flex items-center justify-between">
