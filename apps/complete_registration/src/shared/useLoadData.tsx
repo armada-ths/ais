@@ -60,6 +60,7 @@ export default function useLoadData() {
                         const data = await raw.json()
                         //data.result[0].id
                         const maps = reverseMap(data)
+                        console.log("MAPS", maps)
                         for (const current of maps) {
                             dispatch(
                                 setField({
