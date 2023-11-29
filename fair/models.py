@@ -113,7 +113,7 @@ class FairDay(models.Model):
 
     class Meta:
         default_permissions = []
-        ordering = ["fair", "date"]
+        ordering = ["-fair", "date"]
 
     def __str__(self):
         return str(self.date)
@@ -127,7 +127,7 @@ class OrganizationGroup(models.Model):
         return "[%s] - %s" % (self.fair, self.name)
 
     class Meta:
-        ordering = ["fair", "name"]
+        ordering = ["-fair", "name"]
 
 
 class Partner(models.Model):
@@ -190,10 +190,13 @@ class LunchTicket(models.Model):
     def get_ticket_type(self):
         return "student" if self.user else "company"
 
+    def __str__(self) -> str:
+        return f"{str(self.company)} - {str(self.day)}"
+
     class Meta:
         permissions = [("lunchtickets", "Manage lunch tickets")]
         default_permissions = []
-        ordering = ["pk"]
+        ordering = ["-fair", "pk"]
 
 
 class LunchTicketScan(models.Model):

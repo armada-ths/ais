@@ -1,7 +1,9 @@
 from django.contrib import admin
+
+from recruitment.admin_filters import SortedRecruitmentPeriod
 from .models import *
 import django.forms as forms
-from improved_admin import ModelAdminImproved
+from improved_admin import ModelAdminImproved, SortedFairYear
 from django.contrib.admin.sites import AdminSite
 
 
@@ -36,7 +38,7 @@ class RecruitmentApplicationAdmin(ModelAdminImproved):
 @admin.register(Role)
 class RoleAdmin(ModelAdminImproved):
     list_display = ["name", "organization_group", "recruitment_period"]
-    list_filter = ["recruitment_period", "organization_group"]
+    list_filter = [SortedRecruitmentPeriod, "organization_group"]
 
 
 @admin.register(Slot)
@@ -47,7 +49,8 @@ class SlotAdmin(ModelAdminImproved):
 
 @admin.register(RecruitmentPeriod)
 class RecruitmentPeriodModelAdmin(ModelAdminImproved):
-    pass
+    list_display = ["__str__"]
+    list_filter = [SortedFairYear]
 
 
 admin.site.register(RecruitmentApplication, RecruitmentApplicationAdmin)
