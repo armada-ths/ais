@@ -10,6 +10,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 In order to run the project locally, you need the following tools:
 
+- [NPM v16](https://nodejs.org/en/download) (used to compile front end projects)
+- [NVM](https://github.com/nvm-sh/nvm) (optional, used to change to version 16 of node)
+- [PNPM](https://pnpm.io/installation) (used to compile dashboard)
 - [Docker](https://docs.docker.com/get-docker/) (used to run the server and database)
 - [Pip](https://pip.pypa.io/en/stable/installation/) (used to install `black`)
 - [Black](https://pypi.org/project/black/) (used to format code)
@@ -36,7 +39,8 @@ You can choose to use a copy of the production database for your local developme
 
 #### Prepare static files
 
-Run `npm install && npm build` in the root folder to create the static files for e.g. the banquett and events systems.
+1. Run `npm install && npm run build` in the root folder to compile the static files for e.g. the banquett and events systems.
+2. Run `pnpm install && pnpm build` in `apps/complete_registration` to compile the static files for the dashboard system.
 
 #### Run the server
 
