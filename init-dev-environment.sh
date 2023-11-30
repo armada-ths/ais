@@ -1,10 +1,10 @@
 #!/bin/bash
 
-ID=$(docker ps | grep ais-web | awk '{ print $1 }')
+ID=$(docker ps | grep ${1:-ais-web} | awk '{ print $1 }')
 
 if [ -z "$ID" ]
 then
-	echo 1>&2 "$0: Could not find the ais-web container. Is AIS running?"
+	echo 1>&2 "$0: Could not find the ${1:-ais-web} container. Is AIS running?"
 	exit 2
 fi
 
