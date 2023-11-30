@@ -10,6 +10,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 In order to run the project locally, you need the following tools:
 
+- [NPM v16](https://nodejs.org/en/download) (used to compile front end projects)
+- [NVM](https://github.com/nvm-sh/nvm) (optional, used to change to version 16 of node)
+- [PNPM](https://pnpm.io/installation) (used to compile dashboard)
 - [Docker](https://docs.docker.com/get-docker/) (used to run the server and database)
 - [Pip](https://pip.pypa.io/en/stable/installation/) (used to install `black`)
 - [Black](https://pypi.org/project/black/) (used to format code)
@@ -36,7 +39,8 @@ You can choose to use a copy of the production database for your local developme
 
 #### Prepare static files
 
-Run `npm install && npm build` in the root folder to create the static files for e.g. the banquett and events systems.
+1. Run `npm install && npm run build` in the root folder to compile the static files for e.g. the banquett and events systems.
+2. Run `pnpm install && pnpm build` in `apps/complete_registration` to compile the static files for the dashboard system.
 
 #### Run the server
 
@@ -46,23 +50,25 @@ The server will run in a `docker compose` instance. To start the server, run the
 
 The web-server will setup everything and connect itself to a postgis database. The server will listen for code changes, and restart itself thereafter (that is, you don't need to run this command after every change you make). If everything went right you see the output:
 
-> `ais-web-1  | Starting development server at http://0.0.0.0:3000/`
-
 #### Migrate the database and create a super user
 
-The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user.
+The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user. The server must be running in order to run this command.
 
-#### Developing the dashboard
+> `ais-web-1  | Starting development server at http://0.0.0.0:3000/`
+
+#### Accessing the local server
+
+After setting up the AIS with Docker, you can access it in a web browser with the address `http://localhost:3000`
+
+## Dashboard
+
+### Development
 
 The dashboard is where initial and final registration is made, as well as lunch tickets creation, exhibitor information, core values, logistics information, sture information. Development of this dashboard is done through in the folder `apps/complete_registration`. Follow the instructions in the folder for starting the local React project. When running the React project, it will use `localhost:3000` as the URL for the backend, so you need to have AIS running in the background. The dashboard will be served the user `dashboard@armada.nu` in development mode, meaning you need to make sure this company contact exists. If you are e.g. doing final registration development, you need to make sure the company which this email belongs to is an exhibitor.
 
-#### Deployment of dashboard
+### Deployment
 
 The dashboard is currently not being built in the automatic pipeline, meaning you need to build it yourself when deploying (TODO: add this to the automatic pipeline). Therefore, you need to run `pnpm build` in the `apps/complete_registration` folder before merging into production.
-
-## Accessing the local server
-
-After setting up the AIS with Docker, you can access it in a web browser with the address `localhost:3000`
 
 ## Common issues
 
