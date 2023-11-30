@@ -42,6 +42,10 @@ You can choose to use a copy of the production database for your local developme
 1. Run `npm install && npm run build` in the root folder to compile the static files for e.g. the banquett and events systems.
 2. Run `pnpm install && pnpm build` in `apps/complete_registration` to compile the static files for the dashboard system.
 
+#### Migrate the database and create a super user
+
+The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user.
+
 #### Run the server
 
 The server will run in a `docker compose` instance. To start the server, run the following command:
@@ -52,21 +56,19 @@ The web-server will setup everything and connect itself to a postgis database. T
 
 > `ais-web-1  | Starting development server at http://0.0.0.0:3000/`
 
-#### Migrate the database and create a super user
+## Accessing the local server
 
-The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user.
+After setting up the AIS with Docker, you can access it in a web browser with the address `http://localhost:3000`
 
-#### Developing the dashboard
+# Dashboard
+
+## Development
 
 The dashboard is where initial and final registration is made, as well as lunch tickets creation, exhibitor information, core values, logistics information, sture information. Development of this dashboard is done through in the folder `apps/complete_registration`. Follow the instructions in the folder for starting the local React project. When running the React project, it will use `localhost:3000` as the URL for the backend, so you need to have AIS running in the background. The dashboard will be served the user `dashboard@armada.nu` in development mode, meaning you need to make sure this company contact exists. If you are e.g. doing final registration development, you need to make sure the company which this email belongs to is an exhibitor.
 
-#### Deployment of dashboard
+## Deployment
 
 The dashboard is currently not being built in the automatic pipeline, meaning you need to build it yourself when deploying (TODO: add this to the automatic pipeline). Therefore, you need to run `pnpm build` in the `apps/complete_registration` folder before merging into production.
-
-## Accessing the local server
-
-After setting up the AIS with Docker, you can access it in a web browser with the address `localhost:3000`
 
 ## Common issues
 
