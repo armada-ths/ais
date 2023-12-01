@@ -1056,10 +1056,10 @@ def send_confirmation_email(user, recruitment_period):
 		""" % (
         str(recruitment_period.fair),
         url_to_application,
-        """hr_profile.get("name"),
-        hr_profile.get("role"),
-        hr_profile.get("email"),
-        hr_profile.get("email"), """,
+        # hr_profile.get("name"),
+        # hr_profile.get("role"),
+        # hr_profile.get("email"),
+        # hr_profile.get("email"),
     )
 
     plain_text_message = """We have received your application for Armada %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
