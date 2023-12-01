@@ -1047,24 +1047,24 @@ def send_confirmation_email(user, recruitment_period):
 					}
 				</style>
 				<div>
-					  We have received your application for %s. You can view and edit your application <a href="%s">here</a>. All applicants will be contacted and offered an interview.
+					  We have received your application for Armada %s. You can view and edit your application <a href="%s">here</a>. All applicants will be contacted and offered an interview. Please send your CV to a@armada.nu
 					  <br/><br/>
-					  If you have any questions, do not hesitate to contact %s, %s, at <a href="mailto:%s">%s</a>.
+					  If you have any questions, Jeffrey Chang, Project Manager, at <a href="mailto:a@armada.nu>a@armada.nu</a>.
 				</div>
 			</body>
 		</html>
 		""" % (
         str(recruitment_period.fair),
         url_to_application,
-        hr_profile.get("name"),
+        """hr_profile.get("name"),
         hr_profile.get("role"),
         hr_profile.get("email"),
-        hr_profile.get("email"),
+        hr_profile.get("email"), """,
     )
 
-    plain_text_message = """We have received your application for %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
+    plain_text_message = """We have received your application for Armada %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
 
-If you have any questions, do not hesitate to contact %s, %s, at %s.
+If you have any questions, Jeffrey Chang, Project Manager, at a@armada.nu.
 """ % (
         str(recruitment_period.fair),
         url_to_application,
@@ -1076,7 +1076,7 @@ If you have any questions, do not hesitate to contact %s, %s, at %s.
     email = EmailMultiAlternatives(
         "Thank you for applying to THS Armada!",
         plain_text_message,
-        "noreply@armada.nu",
+        "Armada Recruitment <noreply@armada.nu>",
         [user.email],
     )
 
