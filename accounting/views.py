@@ -300,7 +300,7 @@ def export_companys(request, year):
         .exclude(purchasing_company=None)
         .exclude(unit_price=0)
     )
-    companies_with_orders = []
+    company_order_total = dict()
 
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = 'attachment; filename="companys.csv"'
@@ -319,12 +319,19 @@ def export_companys(request, year):
             "Mail",
             "THS Customer ID",
             "Kommentar",
+            "Order total without VAT",
         ]
     )
 
     for order in orders:
-        if order.purchasing_company.pk not in companies_with_orders:
-            companies_with_orders.append(order.purchasing_company.pk)
+        if company_order_total.get(order.purchasing_company.pk) is None:
+            company_order_total[order.purchasing_company.pk] = (
+                order.quantity * order.unit_price
+            )
+        else:
+            company_order_total[order.purchasing_company.pk] += (
+                order.quantity * order.unit_price
+            )
 
     for e in Exhibitor.objects.filter(fair__year=year):
         writer.writerow(
@@ -340,6 +347,9 @@ def export_companys(request, year):
                 e.company.invoice_email_address,
                 e.company.ths_customer_id,
                 e.company.invoice_reference,
+                company_order_total.get(e.company.pk)
+                if company_order_total.get(e.company.pk)
+                else None,
             ]
         )
 
