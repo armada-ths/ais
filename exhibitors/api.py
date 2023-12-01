@@ -61,9 +61,6 @@ def serialize_exhibitor(exhibitor, request):
                 if exhibitor.catalogue_logo_freesize
                 else (MISSING_IMAGE if img_placeholder else None),
             ),
-            ("contact_name", exhibitor.catalogue_contact_name),
-            ("contact_email_address", exhibitor.catalogue_contact_email_address),
-            ("contact_phone_number", exhibitor.catalogue_contact_phone_number),
             (
                 "industries",
                 [
@@ -156,7 +153,6 @@ def exhibitors(request):
         .select_related(
             "company",
             "fair",
-            "contact",
             "check_in_user",
             "fair_location",
         )
