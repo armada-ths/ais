@@ -1031,13 +1031,13 @@ def recruitment_application_new(
 
 
 def send_confirmation_email(user, recruitment_period):
-    hr_profile = get_recruiter_information(recruitment_period)
+    hr_profile = get_recruiter_information(recruitment_period.fair)
     url_to_application = "https://ais.armada.nu/fairs/%s/recruitment/%s" % (
         str(recruitment_period.fair.year),
         str(recruitment_period.pk),
     )
 
-    print(hr_profile)
+    print("HR profile", hr_profile)
 
     html_message = """
 		<html>
@@ -1051,7 +1051,7 @@ def send_confirmation_email(user, recruitment_period):
 				<div>
 					  We have received your application for Armada %s. You can view and edit your application <a href="%s">here</a>. All applicants will be contacted and offered an interview. Please send your CV to a@armada.nu
 					  <br/><br/>
-					  If you have any questions, %s, %s, at <a href="mailto:%s>%s</a>.
+					  If you have any questions, contact %s, %s, at <a href="mailto:%s">%s</a>.
 				</div>
 			</body>
 		</html>
@@ -1066,7 +1066,7 @@ def send_confirmation_email(user, recruitment_period):
 
     plain_text_message = """We have received your application for Armada %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
 
-If you have any questions, %s, %s, at %s.
+If you have any questions, contact %s, %s, at %s.
 """ % (
         str(recruitment_period.fair),
         url_to_application,
@@ -1086,12 +1086,13 @@ If you have any questions, %s, %s, at %s.
     email.send()
 
 
-def get_recruiter_information(recruitment_period):
+def get_recruiter_information(fair):
     roles = ["Head of Human Resources", "Project Manager"]
     for role in roles:
         for applicant in RecruitmentApplication.objects.filter(
-            status="accepted", delegated_role__name=role,
-            recruitment_period=recruitment_period,
+            status="accepted",
+            delegated_role__name=role,
+            recruitment_period__fair=fair,
         ).all():
             hr_profile = create_profile(applicant)
             if hr_profile is not None:
