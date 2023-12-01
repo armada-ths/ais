@@ -127,9 +127,7 @@ def export_orders(request, year):
                 + invoice["company"].invoice_city
             )
             if invoice["company"].invoice_country != "SWEDEN":
-                fields_invoice[26] += (
-                    "<CR>" + invoice["company"].get_invoice_country_display()
-                )
+                fields_invoice[26] += "<CR>" + invoice["company"].invoice_country
             if invoice["company"].invoice_name is not None:
                 fields_invoice[27] = invoice["company"].invoice_name
             if invoice["company"].e_invoice is not True:
