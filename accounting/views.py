@@ -325,12 +325,12 @@ def export_companys(request, year):
 
     for order in orders:
         if company_order_total.get(order.purchasing_company.pk) is None:
-            company_order_total[order.purchasing_company.pk] = (
-                order.quantity * order.unit_price
+            company_order_total[order.purchasing_company.pk] = order.quantity * (
+                order.unit_price if order.unit_price else 0
             )
         else:
-            company_order_total[order.purchasing_company.pk] += (
-                order.quantity * order.unit_price
+            company_order_total[order.purchasing_company.pk] += order.quantity * (
+                order.unit_price if order.unit_price else 0
             )
 
     for e in Exhibitor.objects.filter(fair__year=year):
