@@ -297,6 +297,7 @@ def export_companys(request, year):
     fair = get_object_or_404(Fair, year=year)
     orders = (
         Order.objects.filter(product__revenue__fair=fair)
+        .select_related("product")
         .exclude(purchasing_company=None)
         .exclude(unit_price=0)
     )
@@ -326,11 +327,11 @@ def export_companys(request, year):
     for order in orders:
         if company_order_total.get(order.purchasing_company.pk) is None:
             company_order_total[order.purchasing_company.pk] = order.quantity * (
-                order.unit_price if order.unit_price else 0
+                order.unit_price if order.unit_price else order.product.unit_price
             )
         else:
             company_order_total[order.purchasing_company.pk] += order.quantity * (
-                order.unit_price if order.unit_price else 0
+                order.unit_price if order.unit_price else order.product.unit_price
             )
 
     for e in Exhibitor.objects.filter(fair__year=year):
