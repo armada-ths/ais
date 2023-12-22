@@ -32,6 +32,9 @@ class RecruitmentApplicationAdmin(ModelAdminImproved):
         super().__init__(model, admin_site)
         self.search_fields = ["user__first_name", "user__last_name"]
 
+    list_display = ["__str__", "recruitment_period", "status"]
+    list_filter = ["recruitment_period"]
+
     inlines = [RoleApplicationInline]
 
 

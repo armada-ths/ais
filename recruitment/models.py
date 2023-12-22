@@ -342,7 +342,7 @@ class Slot(models.Model):
 
         return (
             nice_start.strftime("%Y-%m-%d %H:%M")
-            + "–"
+            + "-"
             + nice_end.strftime("%Y-%m-%d %H:%M")
         )
 
@@ -467,7 +467,7 @@ class RecruitmentApplication(models.Model):
     status = models.CharField(choices=statuses, null=True, blank=True, max_length=20)
 
     class Meta:
-        ordering = ["submission_date"]
+        ordering = ["-submission_date"]
         permissions = (
             (
                 "administer_recruitment_applications",
