@@ -238,7 +238,7 @@ class RecruitmentPeriod(models.Model):
     message_to_applicants.help_text = "If a message is given it will be displayed to the applicant in the application form before the Apply/Save button."
 
     class Meta:
-        ordering = ["fair", "start_date", "name"]
+        ordering = ["-fair", "start_date", "name"]
         permissions = (("administer_recruitment", "Administer recruitment"),)
 
     @property
