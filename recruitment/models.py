@@ -314,7 +314,7 @@ class Slot(models.Model):
     )
 
     class Meta:
-        ordering = ["start", "location", "recruitment_period"]
+        ordering = ["-start", "location", "-recruitment_period"]
 
     @property
     def start_iso8601(self):
