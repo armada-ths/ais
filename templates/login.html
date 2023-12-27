@@ -12,25 +12,39 @@
       <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
       <link href="{% static 'bootstrap/css/bootstrap-theme.css' %}" rel="stylesheet">
       <link href="{% static 'complete_registration.css' %}" rel="stylesheet" media="screen">
+      <script src="https://cdn.tailwindcss.com"></script>
   </head>
 <body>
-
-
-<div class="text-center container" style="max-width: 555px">
-    <svg class="text-center" viewBox="155 16 480 150" width="555px" height="250px" version="1.1">
-        <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
-      </svg>
-      <!--<h4>We are currently experiencing some technical issues with the login functionality. If you cannot log in please use <u><a target="_blank" href="https://goo.gl/forms/kD9mCF3YccFN7XwV2">this link</a></u>.
-      </h4>-->
-
-<form method="post">
-    {% csrf_token %}
-
-        <p>To continue, please click the KTH Single Sign-On button below to sign in with you KTH account.</p>
-      <a href="/login{% if next %}?next={{ next }}{% endif %}"><img src="{% static "images/kth_login_button.png" %}" alt="Login with KTH"></a>
-    <p>If you don't have an KTH account log in <a href="/accounts/login">here</a>.</p>
-    <a class="btn-signin btn-green" href="/register/">Exhibitor Registration</a>
-</form>
+  <div class="text-center container flex flex-col max-w-5xl">
+    <div class="row flex justify-center px-5">
+      <div class="headline">
+            <svg class="armada-logo" viewBox="305 16 320 150" version="1.1">
+                <image xlink:href="{% static 'images/armada_logo_text_left_green.svg' %}" alt="Armada" height="250px" width="780px"/>
+            </svg>
+            <h2 class="text-2xl mt-2">Welcome to the Armada Platform</h2>
+        </div>
     </div>
+    <h2 class="mt-10 text-3xl">Who are you?</h2>
+    <div class="flex flex-col pt-2 gap-y-14 gap-x-14 items-center md:flex-row md:justify-center md:items-start">
+      <div class="flex-1 flex flex-col max-w-sm items-center">
+          <h3 class="text-xl mb-5">Company</h3>
+          <p class="max-w-xs">Get access to Armada dashbaord, your entire exhibitor experience in one place</p>
+          <div class="flex flex-1 justify-center p-8">
+            <div>
+              <a class="btn-signin btn-green" href="/register/">Sigin & Registration</a>
+            </div>
+          </div>
+      </div>
+      <div class="flex flex-col items-center flex-1 max-w-sm">
+        <h3 class="text-xl mb-5">Student</h3>
+        <p class="max-w-xs">To continue, login using KTH Single Sign On</p>
+        <form method="post" class="flex flex-col gap-y-2">
+            {% csrf_token %}
+              <a class="flex justify-center" href="/login{% if next %}?next={{ next }}{% endif %}"><img src="{% static "images/kth_login_button.png" %}" alt="Login with KTH"></a>
+            <p>If you don't have an KTH account log in <a href="/accounts/login">here</a>.</p>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
