@@ -22,6 +22,8 @@ services:
       - POSTGRES_USER=ais_dev
       - POSTGRES_PASSWORD=ais_dev
       - POSTGRES_DB=ais_dev
+    ports:
+      - 5432:5432
 
 volumes:
   postgres_data:
