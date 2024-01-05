@@ -107,7 +107,7 @@ def recruitment_statistics(request, year):
 
             for application in RecruitmentApplication.objects.filter(
                 recruitment_period=recruitment_period
-            ):
+            ).order_by("submission_date"):
                 if (
                     application.submission_date > recruitment_period.end_date
                     and not form.cleaned_data["include_late"]
