@@ -23,16 +23,22 @@ import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 import useLoadData from "./shared/useLoadData.tsx"
 
 const rootRoute = new RootRoute({
-    errorComponent: () => <div>404</div>
+    errorComponent: () => <div>404</div>,
 })
+
+const appRoute =  new Route({
+    path: "$companyId",
+    getParentRoute: () => rootRoute,
+})
+
 const dashboard = new Route({
     path: "/",
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => appRoute,
     component: () => <DashboardScreen />
 })
 const form = new Route({
     path: "/form",
-    getParentRoute: () => rootRoute
+    getParentRoute: () => appRoute
 })
 const formPage = new Route({
     path: "$formKey",
@@ -41,7 +47,7 @@ const formPage = new Route({
 })
 const thankYou = new Route({
     path: "/thank-you",
-    getParentRoute: () => rootRoute,
+    getParentRoute: () => appRoute,
     component: ThankYouScreen
 })
 
@@ -54,9 +60,11 @@ const notFoundRoute = new Route({
 })
 
 const routeTree = rootRoute.addChildren([
-    dashboard,
-    thankYou,
-    form.addChildren([formPage]),
+    appRoute.addChildren([
+        dashboard,
+        thankYou,
+        form.addChildren([formPage]),
+    ]),
     notFoundRoute
 ])
 

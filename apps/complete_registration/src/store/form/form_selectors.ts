@@ -5,6 +5,7 @@ import { Field, FormPage } from "../../forms/form_types"
 import { FORM_HIDDEN_DURING, FORM_OPEN_DURING } from "../../forms/form_access"
 import { selectCompanyStatus } from "../company/company_selectors"
 
+// eslint-disable-next-line prefer-function-declarations/prefer-function-declarations
 export const selectFormState = (state: RootState) => state.formMeta
 export const selectForms = cs(selectFormState, formMeta => formMeta.forms)
 export const selectForm = cs(
