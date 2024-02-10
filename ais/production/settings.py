@@ -16,6 +16,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://armada.nu",
     "http://www.armada.nu",
     "http://localhost:8000",
+    "http://localhost:4321",  # For astro site
+    "https://armada-nu.pages.dev",  # Temporary deployment
 ]
 
 CORS_ALLOWED_ORIGINS_REGEXES = ["^https:\/\/\w+--armada\.netlify\.app$"]
