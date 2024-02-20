@@ -7,10 +7,10 @@ settings:
 dependencies:
   '@material-ui/core':
     specifier: ^3.1.0
-    version: 3.1.0(react-dom@16.5.1)(react@16.5.1)
+    version: 3.1.0(react-dom@16.5.1)(react@16.14.0)
   axios:
-    specifier: ^0.18.0
-    version: 0.18.0
+    specifier: ^0.28.0
+    version: 0.28.0
   classnames:
     specifier: ^2.2.6
     version: 2.2.6
@@ -25,25 +25,25 @@ dependencies:
     version: 4.17.11
   mdi-material-ui:
     specifier: ^5.5.0
-    version: 5.5.0(@material-ui/core@3.1.0)(react@16.5.1)
+    version: 5.5.0(@material-ui/core@3.1.0)(react@16.14.0)
   qrcode.react:
     specifier: ^0.8.0
-    version: 0.8.0(react@16.5.1)
+    version: 0.8.0(react@16.14.0)
   react:
-    specifier: ^16.5.1
-    version: 16.5.1
+    specifier: ^16.14.0
+    version: 16.14.0
   react-dom:
     specifier: ^16.5.1
-    version: 16.5.1(react@16.5.1)
+    version: 16.5.1(react@16.14.0)
   react-jss:
     specifier: ^8.6.1
-    version: 8.6.1(react@16.5.1)
+    version: 8.6.1(react@16.14.0)
   react-stripe-elements:
     specifier: ^5.0.1
-    version: 5.0.1(react-dom@16.5.1)(react@16.5.1)
+    version: 5.0.1(react-dom@16.5.1)(react@16.14.0)
   recompose:
     specifier: ^0.30.0
-    version: 0.30.0(react@16.5.1)
+    version: 0.30.0(react@16.14.0)
 
 devDependencies:
   '@babel/core':
@@ -902,7 +902,7 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@material-ui/core@3.1.0(react-dom@16.5.1)(react@16.5.1):
+  /@material-ui/core@3.1.0(react-dom@16.5.1)(react@16.14.0):
     resolution: {integrity: sha512-Tq9xO1CsaPq+TGQtMz7B0Hs2Wz9Sf2W8C9ydcZT8cP1ud9cuZZ/2izRvqNZEp1fCaL5+8K0DJvuu8Di98kNuJw==}
     engines: {node: '>=6.0.0'}
     deprecated: Material UI v4 doesn't receive active development since September 2021. See the guide https://mui.com/material-ui/migration/migration-v4/ to upgrade to v5.
@@ -932,12 +932,12 @@ packages:
       normalize-scroll-left: 0.1.2
       popper.js: 1.16.1
       prop-types: 15.8.1
-      react: 16.5.1
-      react-dom: 16.5.1(react@16.5.1)
-      react-event-listener: 0.6.6(react@16.5.1)
-      react-jss: 8.6.1(react@16.5.1)
-      react-transition-group: 2.9.0(react-dom@16.5.1)(react@16.5.1)
-      recompose: 0.30.0(react@16.5.1)
+      react: 16.14.0
+      react-dom: 16.5.1(react@16.14.0)
+      react-event-listener: 0.6.6(react@16.14.0)
+      react-jss: 8.6.1(react@16.14.0)
+      react-transition-group: 2.9.0(react-dom@16.5.1)(react@16.14.0)
+      recompose: 0.30.0(react@16.14.0)
       warning: 4.0.3
     dev: false
 
@@ -1275,6 +1275,10 @@ packages:
     dev: true
     optional: true
 
+  /asynckit@0.4.0:
+    resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+    dev: false
+
   /atob@2.1.2:
     resolution: {integrity: sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==}
     engines: {node: '>= 4.5.0'}
@@ -1286,12 +1290,12 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axios@0.18.0:
-    resolution: {integrity: sha512-14hgP2oTu6SPu+26Ofye6Se8u5Mmjc07a0ACHTJ5POKFU1Mtxz2IxSvaWy1O+QnbSa8XHy1gYz2E1l+G26XJdA==}
-    deprecated: Critical security vulnerability fixed in v0.21.1. For more information, see https://github.com/axios/axios/pull/3410
+  /axios@0.28.0:
+    resolution: {integrity: sha512-Tu7NYoGY4Yoc7I+Npf9HhUMtEEpV7ZiLH9yndTCoNhcpBH0kwcvFbzYN9/u5QKI5A6uefjsNNWaz5olJVYS62Q==}
     dependencies:
       follow-redirects: 1.15.2
-      is-buffer: 1.1.6
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: false
@@ -1682,6 +1686,13 @@ packages:
     resolution: {integrity: sha512-72fSenhMw2HZMTVHeCA9KCmpEIbzWiQsjN+BHcBbS9vr1mtt+vJjPdksIBNUmKAW8TFUDPJK5SUU3QhE9NEXDw==}
     dev: true
 
+  /combined-stream@1.0.8:
+    resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
+    engines: {node: '>= 0.8'}
+    dependencies:
+      delayed-stream: 1.0.0
+    dev: false
+
   /commander@2.13.0:
     resolution: {integrity: sha512-MVuS359B+YzaWqjCL/c+22gfryv+mCBPHAv3zyVI2GN8EY6IRP8VwtasXn8jyyhvvq84R4ImN1OKRtcbIasjYA==}
     dev: true
@@ -1905,6 +1916,11 @@ packages:
       is-descriptor: 1.0.2
       isobject: 3.0.1
     dev: true
+
+  /delayed-stream@1.0.0:
+    resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
+    engines: {node: '>=0.4.0'}
+    dev: false
 
   /des.js@1.1.0:
     resolution: {integrity: sha512-r17GxjhUCjSRy8aiJpr8/UadFIzMzJGexI3Nmz4ADi9LYSFx4gTBp80+NaX/YsXWWLhpZ7v/v/ubEc/bCNfKwg==}
@@ -2274,6 +2290,15 @@ packages:
     resolution: {integrity: sha512-7EwmXrOjyL+ChxMhmG5lnW9MPt1aIeZEwKhQzoBUdTV0N3zuwWDZYVJatDvZ2OyzPUvdIAZDsCetk3coyMfcnQ==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /form-data@4.0.0:
+    resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
+    engines: {node: '>= 6'}
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
+    dev: false
 
   /fragment-cache@0.2.1:
     resolution: {integrity: sha512-GMBAbW9antB8iZRHLoGw0b3HANt57diZYFO/HL1JGIC1MjKrdmhxvrJbupnVvpys0zsz7yBApXdQyfepKly2kA==}
@@ -2695,6 +2720,7 @@ packages:
 
   /is-buffer@1.1.6:
     resolution: {integrity: sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==}
+    dev: true
 
   /is-callable@1.2.7:
     resolution: {integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==}
@@ -3205,14 +3231,14 @@ packages:
       safe-buffer: 5.2.1
     dev: true
 
-  /mdi-material-ui@5.5.0(@material-ui/core@3.1.0)(react@16.5.1):
+  /mdi-material-ui@5.5.0(@material-ui/core@3.1.0)(react@16.14.0):
     resolution: {integrity: sha512-lHF8ZOZa/keyLIIj+BQsDAJHaTY1FfW5dNxsTi7qd5VeitvE8/EZXSBiAnuE8p1JmN1K6DwKQ9FkmM7fB4hLuA==}
     peerDependencies:
       '@material-ui/core': ^1.0.0 || ^3.0.0
       react: ^16.3.0
     dependencies:
-      '@material-ui/core': 3.1.0(react-dom@16.5.1)(react@16.5.1)
-      react: 16.5.1
+      '@material-ui/core': 3.1.0(react-dom@16.5.1)(react@16.14.0)
+      react: 16.14.0
     dev: false
 
   /mem@4.3.0:
@@ -3267,6 +3293,18 @@ packages:
       bn.js: 4.12.0
       brorand: 1.1.0
     dev: true
+
+  /mime-db@1.52.0:
+    resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
+    engines: {node: '>= 0.6'}
+    dev: false
+
+  /mime-types@2.1.35:
+    resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
+    engines: {node: '>= 0.6'}
+    dependencies:
+      mime-db: 1.52.0
+    dev: false
 
   /mimic-fn@1.2.0:
     resolution: {integrity: sha512-jf84uxzwiuiIVKiOLpfYk7N46TSy8ubTonmneY9vrpHNAnp0QBt2BxWV9dO3/j+BoVAb+a5G6YDPW3M5HOdMWQ==}
@@ -3741,6 +3779,10 @@ packages:
       react-is: 16.13.1
     dev: false
 
+  /proxy-from-env@1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+    dev: false
+
   /prr@1.0.1:
     resolution: {integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==}
     dev: true
@@ -3795,14 +3837,14 @@ packages:
     resolution: {integrity: sha512-c4iYnWb+k2E+vYpRimHqSu575b1/wKl4XFeJGpFmrJQz5I88v9aY2czh7s0w36srfCM1sXgC/xpoJz5dJfq+OQ==}
     dev: false
 
-  /qrcode.react@0.8.0(react@16.5.1):
+  /qrcode.react@0.8.0(react@16.14.0):
     resolution: {integrity: sha512-16wKpuFvLwciIq2YAsfmPUCnSR8GrYPsXRK5KVdcIuX0+W/MKZbBkFhl44ttRx4TWZHqRjfztoWOxdPF0Hb9JA==}
     peerDependencies:
       react: ^15.5.3 || ^16.0.0
     dependencies:
       prop-types: 15.8.1
       qr.js: 0.0.0
-      react: 16.5.1
+      react: 16.14.0
     dev: false
 
   /qs@6.11.2:
@@ -3830,7 +3872,7 @@ packages:
       safe-buffer: 5.2.1
     dev: true
 
-  /react-dom@16.5.1(react@16.5.1):
+  /react-dom@16.5.1(react@16.14.0):
     resolution: {integrity: sha512-l4L9GtX7ezgnDIIr6AaNvGBM4BiK0fSs4/V8bdsu9X6xqrtHr+jp6auT0hbHpN7bH9WRvDBZceWQ9WJ3lGCIvQ==}
     peerDependencies:
       react: ^16.0.0
@@ -3838,18 +3880,18 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       prop-types: 15.8.1
-      react: 16.5.1
+      react: 16.14.0
       schedule: 0.4.0
     dev: false
 
-  /react-event-listener@0.6.6(react@16.5.1):
+  /react-event-listener@0.6.6(react@16.14.0):
     resolution: {integrity: sha512-+hCNqfy7o9wvO6UgjqFmBzARJS7qrNoda0VqzvOuioEpoEXKutiKuv92dSz6kP7rYLmyHPyYNLesi5t/aH1gfw==}
     peerDependencies:
       react: ^16.3.0
     dependencies:
       '@babel/runtime': 7.22.10
       prop-types: 15.8.1
-      react: 16.5.1
+      react: 16.14.0
       warning: 4.0.3
     dev: false
 
@@ -3857,7 +3899,7 @@ packages:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: false
 
-  /react-jss@8.6.1(react@16.5.1):
+  /react-jss@8.6.1(react@16.14.0):
     resolution: {integrity: sha512-SH6XrJDJkAphp602J14JTy3puB2Zxz1FkM3bKVE8wON+va99jnUTKWnzGECb3NfIn9JPR5vHykge7K3/A747xQ==}
     engines: {node: '>=4'}
     peerDependencies:
@@ -3867,26 +3909,26 @@ packages:
       jss: 9.8.7
       jss-preset-default: 4.5.0(jss@9.8.7)
       prop-types: 15.8.1
-      react: 16.5.1
-      theming: 1.3.0(react@16.5.1)
+      react: 16.14.0
+      theming: 1.3.0(react@16.14.0)
     dev: false
 
   /react-lifecycles-compat@3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
     dev: false
 
-  /react-stripe-elements@5.0.1(react-dom@16.5.1)(react@16.5.1):
+  /react-stripe-elements@5.0.1(react-dom@16.5.1)(react@16.14.0):
     resolution: {integrity: sha512-4fKjN1jXIo1T19lp7TE/Zwad6wolNVRzzQBxwounm6pDcJPdNeYVTr3TS4D1blVo9StGdf1Q8WbVa1nx1E7Yng==}
     peerDependencies:
       react: ^15.5.4 || ^16.0.0-0
       react-dom: ^15.5.4 || ^16.0.0-0
     dependencies:
       prop-types: 15.7.2
-      react: 16.5.1
-      react-dom: 16.5.1(react@16.5.1)
+      react: 16.14.0
+      react-dom: 16.5.1(react@16.14.0)
     dev: false
 
-  /react-transition-group@2.9.0(react-dom@16.5.1)(react@16.5.1):
+  /react-transition-group@2.9.0(react-dom@16.5.1)(react@16.14.0):
     resolution: {integrity: sha512-+HzNTCHpeQyl4MJ/bdE0u6XRMe9+XG/+aL4mCxVN4DnPBQ0/5bfHWPDuOZUzYdMj94daZaZdCCc1Dzt9R/xSSg==}
     peerDependencies:
       react: '>=15.0.0'
@@ -3895,19 +3937,18 @@ packages:
       dom-helpers: 3.4.0
       loose-envify: 1.4.0
       prop-types: 15.8.1
-      react: 16.5.1
-      react-dom: 16.5.1(react@16.5.1)
+      react: 16.14.0
+      react-dom: 16.5.1(react@16.14.0)
       react-lifecycles-compat: 3.0.4
     dev: false
 
-  /react@16.5.1:
-    resolution: {integrity: sha512-E+23+rbpPsJgSX812LQkwupUCFnbVE84+L8uxlkqN5MU0DcraWMlVf9cRvKCKtGu0XvScyRnW7Z+9d7ymkjy3A==}
+  /react@16.14.0:
+    resolution: {integrity: sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g==}
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       prop-types: 15.8.1
-      schedule: 0.4.0
     dev: false
 
   /readable-stream@2.3.8:
@@ -3953,7 +3994,7 @@ packages:
     dev: true
     optional: true
 
-  /recompose@0.30.0(react@16.5.1):
+  /recompose@0.30.0(react@16.14.0):
     resolution: {integrity: sha512-ZTrzzUDa9AqUIhRk4KmVFihH0rapdCSMFXjhHbNrjAWxBuUD/guYlyysMnuHjlZC/KRiOKRtB4jf96yYSkKE8w==}
     peerDependencies:
       react: ^0.14.0 || ^15.0.0 || ^16.0.0
@@ -3962,7 +4003,7 @@ packages:
       change-emitter: 0.1.6
       fbjs: 0.8.18
       hoist-non-react-statics: 2.5.5
-      react: 16.5.1
+      react: 16.14.0
       react-lifecycles-compat: 3.0.4
       symbol-observable: 1.2.0
     dev: false
@@ -4456,7 +4497,7 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /theming@1.3.0(react@16.5.1):
+  /theming@1.3.0(react@16.14.0):
     resolution: {integrity: sha512-ya5Ef7XDGbTPBv5ENTwrwkPUexrlPeiAg/EI9kdlUAZhNlRbCdhMKRgjNX1IcmsmiPcqDQZE6BpSaH+cr31FKw==}
     peerDependencies:
       react: '>=0.15'
@@ -4465,7 +4506,7 @@ packages:
       is-function: 1.0.2
       is-plain-object: 2.0.4
       prop-types: 15.8.1
-      react: 16.5.1
+      react: 16.14.0
     dev: false
 
   /through2@2.0.5:
