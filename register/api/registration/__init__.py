@@ -23,7 +23,7 @@ def render_company(request, company, contact, exhibitor):
     elif period == RegistrationState.IR:
         return handle_ir(request, company, fair, contact)
     elif period == RegistrationState.AFTER_IR:
-        return status.NOT_IMPLEMENTED
+        return handle_ir(request, company, fair, contact)
     elif period == RegistrationState.CR:
         return handle_cr(request, company, fair, contact, exhibitor)
     elif period == RegistrationState.AFTER_CR:
