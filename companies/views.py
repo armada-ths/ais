@@ -287,6 +287,8 @@ def companies_list(request, year):
     )
     responsibles = {}
 
+    print("HELLO")
+
     for responsible in responsibles_list:
         users = responsible.users.all()
 
@@ -391,7 +393,7 @@ def companies_list(request, year):
                 .values_list("company")
             )
 
-            qs = qs | Q(pk__in=matched_responsibles)
+            qs |= Q(pk__in=matched_responsibles)
 
             # Contracts
             query = get_query(search_query, ["name", "type"])
@@ -440,7 +442,7 @@ def companies_list(request, year):
                 .select_related("company")
                 .values_list("company")
             )
-            qs = qs | Q(pk__in=matched_groups)
+            qs |= Q(pk__in=matched_groups)
 
             # Apply filters, ranking matches on company name higher than matches on other fields
             filtered_companies = (
@@ -475,9 +477,9 @@ def companies_list(request, year):
                 "name": company.name,
                 "status": None,  # TODO: fix status!
                 "groups": company.groups.filter(fair=fair),
-                "responsibles": responsibles[company]
-                if company in responsibles
-                else None,
+                "responsibles": (
+                    responsibles[company] if company in responsibles else None
+                ),
                 "signatures": signatures[company] if company in signatures else None,
                 "exhibitor": exhibitor,
                 "show_externally": company.show_externally,
@@ -1298,9 +1300,9 @@ def contracts_export(request, year):
 
         response = HttpResponse(csv, content_type="text/csv; charset=utf-8")
         response["Content-Length"] = len(csv)
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="exported signatures.csv"'
+        response["Content-Disposition"] = (
+            'attachment; filename="exported signatures.csv"'
+        )
 
         return response
 

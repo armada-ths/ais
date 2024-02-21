@@ -1,12 +1,12 @@
 {
-    "name": "complete_registration",
+    "name": "dashboard",
     "private": true,
     "version": "0.0.0",
     "type": "module",
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "dev": "npx concurrently \"vite --host\" \"npx tailwindcss -i ./src/input.css -o ./output.css --watch\"",
-        "build": "mkdir -p ../../ais_static/apps/complete_registration && rm -rf ../../ais_static/apps/complete_registration/* && tsc && npx tailwindcss -i ./src/input.css -o ./output.css && vite build && cat ./output.css >> ../../ais_static/apps/complete_registration/assets/index.css",
+        "build": "mkdir -p ../../ais_static/apps/dashboard && rm -rf ../../ais_static/apps/dashboard/* && tsc && npx tailwindcss -i ./src/input.css -o ./output.css && vite build && cat ./output.css >> ../../ais_static/apps/dashboard/assets/index.css",
         "ci-eslint-check": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "ci-prettier-check": "prettier --check",
         "preview": "vite preview"
