@@ -1,13 +1,15 @@
+import { form as CoreValues } from "./core_values/form"
+import { form as ExhibitorCatalogForm } from "./exhibitor_catalog/form"
+import { form as IrSignupForm } from "./ir_signup/form"
+import CreateLunchTicketsForm from "./lunch_tickets/form"
 import { form as PrimaryForm } from "./primary/form"
 import { form as ReceiptForm } from "./receipt/form"
-import CreateLunchTicketsForm from "./lunch_tickets/form"
-import { form as ExhibitorCatalogForm } from "./exhibitor_catalog/form"
-import { form as TransportForm } from "./transport/form"
-import { form as CoreValues } from "./core_values/form"
 import { form as StureForm } from "./sture/form"
+import { form as TransportForm } from "./transport/form"
 
 export function getMutableFormsInstance() {
     return {
+        ir_signup: IrSignupForm,
         primary: PrimaryForm,
         receipt: ReceiptForm,
         exhibitor_catalog: ExhibitorCatalogForm,

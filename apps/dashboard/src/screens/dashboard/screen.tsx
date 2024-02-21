@@ -1,22 +1,33 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+    Card,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
+import { useRegistration } from "@/shared/hooks/useRegistration"
+import { cx } from "@/utils/cx"
+import LoadingAnimation from "@/utils/loading_animation/loading_animation"
+import { BadgeInfo } from "lucide-react"
 import { useSelector } from "react-redux"
-import { cx } from "../../utils/cx"
-import FormCard from "./FormCard"
-import { selectErrors, selectForms } from "../../store/form/form_selectors"
+import { isFormOpen, isFormVisible } from "../../forms/form_access"
+import { LogoutButton } from "../../shared/LogoutButton"
 import {
     selectCompanyName,
     selectCompanyStatus,
     selectUser
 } from "../../store/company/company_selectors"
-import { Card } from "../form/sidebar/PageCard"
+import { selectForms } from "../../store/form/form_selectors"
 import { DashboardError } from "./DashboardError"
-import { LogoutButton } from "../../shared/LogoutButton"
-import { isFormHidden, isFormOpen } from "../../forms/form_access"
+import FormCard from "./FormCard"
 
 export function DashboardScreen() {
+    const { data, isLoading, isError } = useRegistration()
     const forms = useSelector(selectForms)
     const companyStatus = useSelector(selectCompanyStatus)
     /*     const companyProgress = useSelector(selectCompanyProgress) */
-    const selectError = useSelector(selectErrors)
+    //const selectError = useSelector(selectErrors)
     const companyName = useSelector(selectCompanyName)
     const user = useSelector(selectUser)
 
@@ -26,14 +37,17 @@ export function DashboardScreen() {
         "text-emerald-400": companyProgress <= 1
     } */
 
+    if (isLoading) {
+        return <LoadingAnimation />
+    }
+
     // Check if root error
-    if (selectError != null && typeof selectError === "string") {
+    if (isError || data == null) {
         return <DashboardError />
     }
 
-    const formCardsData = Object.entries(forms).filter(
-        ([, formMeta]) =>
-            isFormHidden(formMeta.key, companyStatus ?? null) === false
+    const formCardsData = Object.entries(forms).filter(([, formMeta]) =>
+        isFormVisible(formMeta.key, companyStatus ?? null)
     )
 
     return (
@@ -48,17 +62,41 @@ export function DashboardScreen() {
                         </h1>
                     </div>
                     {user?.first_name != null && (
-                        <Card className="col-span-full mt-10 max-w-xl border-0 bg-transparent bg-white p-5 text-gray-400">
-                            <h2 className="mb-2 text-2xl">
-                                Welcome <b>{user.first_name}</b>!
-                            </h2>
-                            <p className="text-sm">
-                                From this dashboard you will be able to
-                                configure your Armada experience. You will be
-                                able to provide information, by products and
-                                read about our procedures
-                            </p>
+                        <Card className="max-w-[700px]">
+                            <CardHeader>
+                                <CardTitle>
+                                    Welcome <b>{user.first_name}</b>!
+                                </CardTitle>
+                                <CardDescription>
+                                    From this dashboard you will be able to
+                                    configure your Armada experience. You will
+                                    be able to provide information, buy products
+                                    and read about our procedures
+                                </CardDescription>
+                            </CardHeader>
                         </Card>
+                    )}
+                    {getTimelinePhaseMessage(data.type) != null && (
+                        <Alert className="mt-5 max-w-[700px]">
+                            <BadgeInfo />
+                            <AlertTitle className="ml-3">
+                                <span className="font-bold">
+                                    {getTimelinePhaseMessage(data.type)
+                                        ?.title ?? (
+                                        <span>
+                                            Current step:{" "}
+                                            {data.type.split("_").join(" ")}
+                                        </span>
+                                    )}
+                                </span>
+                            </AlertTitle>
+                            <AlertDescription className="ml-3">
+                                {
+                                    getTimelinePhaseMessage(data.type)
+                                        ?.description
+                                }
+                            </AlertDescription>
+                        </Alert>
                     )}
                     {/*                     <div className="mt-10 flex flex-col items-center justify-end">
                         <p className={cx("mb-2 text-xl", colorClassName)}>

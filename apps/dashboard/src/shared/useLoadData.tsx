@@ -1,20 +1,20 @@
-import { useEffect, useRef, useState } from "react"
-import { useDispatch } from "react-redux"
 import {
-    setCompanyRegistrationStatus,
     RegistrationStatus,
     setCompanyName,
-    setUser,
-    setContract
-} from "../store/company/company_slice"
-import { setErrors, setField } from "../store/form/form_slice"
+    setCompanyRegistrationStatus,
+    setContract,
+    setUser
+} from "@/store/company/company_slice"
+import { setErrors, setField } from "@/store/form/form_slice"
 import {
-    loadProducts,
-    pickProduct,
     SelectedProduct,
-    loadProductMeta
-} from "../store/products/products_slice"
-import { reverseMap } from "../utils/mapper"
+    loadProductMeta,
+    loadProducts,
+    pickProduct
+} from "@/store/products/products_slice"
+import { reverseMap } from "@/utils/mapper"
+import { useEffect, useRef, useState } from "react"
+import { useDispatch } from "react-redux"
 import { HOST, PACKAGE_KEY } from "./vars"
 
 export default function useLoadData() {

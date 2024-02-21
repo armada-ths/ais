@@ -1,26 +1,29 @@
 // This has to be on top due to some weird circular import issue
 import "./store/store"
 
-import React from "react"
-import ReactDOM from "react-dom/client"
-import "./input.css"
-import "primereact/resources/primereact.min.css"
-import "primereact/resources/themes/tailwind-light/theme.css"
-import "primeicons/primeicons.css"
-import { store } from "./store/store.ts"
-import { Provider } from "react-redux"
+import { Toaster } from "@/components/ui/sonner.tsx"
+import { queryClient } from "@/utils/query_client.ts"
+import { QueryClientProvider } from "@tanstack/react-query"
 import {
-    Router,
     RootRoute,
     Route,
+    Router,
     RouterProvider
 } from "@tanstack/react-router"
-import { InfoScreen } from "./shared/InfoScreen.tsx"
+import "primeicons/primeicons.css"
+import "primereact/resources/primereact.min.css"
+import "primereact/resources/themes/tailwind-light/theme.css"
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { Provider } from "react-redux"
+import "./input.css"
+import { DashboardScreen } from "./screens/dashboard/screen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
 import { ThankYouScreen } from "./screens/thank_you/screen.tsx"
-import { DashboardScreen } from "./screens/dashboard/screen.tsx"
-import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
+import { InfoScreen } from "./shared/InfoScreen.tsx"
 import useLoadData from "./shared/useLoadData.tsx"
+import { store } from "./store/store.ts"
+import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 
 const rootRoute = new RootRoute({
     errorComponent: () => <div>404</div>
@@ -72,17 +75,17 @@ declare module "@tanstack/react-router" {
 
 export function IndexMainLogicWrapper() {
     const { initialized } = useLoadData()
-    if (!initialized)
-        return (
-            <LoadingAnimation></LoadingAnimation>
-        )
+    if (!initialized) return <LoadingAnimation />
     return <RouterProvider router={router} />
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        <Provider store={store}>
-            <IndexMainLogicWrapper />
-        </Provider>
+        <QueryClientProvider client={queryClient}>
+            <Provider store={store}>
+                <Toaster />
+                <IndexMainLogicWrapper />
+            </Provider>
+        </QueryClientProvider>
     </React.StrictMode>
 )

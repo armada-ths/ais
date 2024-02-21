@@ -1,11 +1,13 @@
 import { createSelector as cs } from "reselect"
-import { RootState } from "../store"
 import { FORMS, getFieldFromForm } from "../../forms"
+import { FORM_ACCESS } from "../../forms/form_access"
 import { Field, FormPage } from "../../forms/form_types"
-import { FORM_HIDDEN_DURING, FORM_OPEN_DURING } from "../../forms/form_access"
 import { selectCompanyStatus } from "../company/company_selectors"
+import { RootState } from "../store"
 
-export const selectFormState = (state: RootState) => state.formMeta
+export function selectFormState(state: RootState) {
+    return state.formMeta
+}
 export const selectForms = cs(selectFormState, formMeta => formMeta.forms)
 export const selectForm = cs(
     selectForms,
@@ -89,13 +91,8 @@ export const selectCompanyProgress = cs(
                 listOfSkippedForms.push(current.key)
                 continue
             }
-            if (
-                !FORM_OPEN_DURING[current.key].includes(companyStatus) ||
-                FORM_HIDDEN_DURING[current.key]?.includes(companyStatus)
-            ) {
-                listOfSkippedForms.push(current.key)
-                continue
-            }
+            if (FORM_ACCESS[companyStatus]?.[current.key] === "shown") continue
+            listOfSkippedForms.push(current.key)
         }
 
         for (const form of Object.values(forms)) {

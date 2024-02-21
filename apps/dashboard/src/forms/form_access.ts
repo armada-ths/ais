@@ -1,10 +1,65 @@
 import { FORMS } from "."
 import { RegistrationStatus } from "../store/company/company_slice"
 
-export const FORM_OPEN_DURING: Record<
+// If not specified hidden_locked is default
+export const FORM_ACCESS: Record<
+    RegistrationStatus,
+    Partial<
+        Record<keyof typeof FORMS, "shown" | "shown_locked" | "hidden_locked">
+    >
+> = {
+    before_initial_registration: {
+        ir_signup: "shown"
+    },
+    initial_registration: {
+        ir_signup: "shown"
+    },
+    initial_registration_signed: {
+        ir_signup: "shown_locked"
+    },
+    after_initial_registration: {},
+    after_initial_registration_signed: {},
+    before_complete_registration: {
+        lunch_tickets: "shown",
+        exhibitor_catalog: "shown",
+        core_values: "shown"
+    }, // FR "Active" but no contract exists
+    complete_registration: {
+        primary: "shown",
+        lunch_tickets: "shown",
+        transport: "shown",
+        sture: "shown",
+        core_values: "shown"
+    },
+    complete_registration_signed: {
+        receipt: "shown",
+        lunch_tickets: "shown",
+        exhibitor_catalog: "shown",
+        transport: "shown",
+        sture: "shown",
+        core_values: "shown"
+    },
+    after_complete_registration: {
+        lunch_tickets: "shown",
+        exhibitor_catalog: "shown",
+        transport: "shown",
+        sture: "shown",
+        core_values: "shown"
+    },
+    after_complete_registration_signed: {
+        lunch_tickets: "shown",
+        exhibitor_catalog: "shown",
+        transport: "shown",
+        sture: "shown",
+        core_values: "shown"
+    }
+}
+
+/* export const FORM_OPEN_DURING: Record<
     keyof typeof FORMS,
     RegistrationStatus[]
 > = {
+    ir_signup: ["initial_registration"],
     primary: ["complete_registration"],
     receipt: [
         "complete_registration_signed",
@@ -48,25 +103,29 @@ export const FORM_OPEN_DURING: Record<
 export const FORM_HIDDEN_DURING: Partial<
     Record<keyof typeof FORMS, RegistrationStatus[]>
 > = {
+    ir_signup: ["after_complete_registration"],
     primary: [
         "complete_registration_signed",
         "after_complete_registration",
         "after_complete_registration_signed"
     ],
     receipt: ["complete_registration"]
-}
+} */
 
 export function isFormOpen(
     form: keyof typeof FORMS,
     status: RegistrationStatus | null
 ): boolean {
     if (!status) return false
-    return FORM_OPEN_DURING[form]?.includes(status)
+    return FORM_ACCESS[status]?.[form] === "shown"
 }
-export function isFormHidden(
+export function isFormVisible(
     form: keyof typeof FORMS,
     status: RegistrationStatus | null
 ): boolean {
     if (!status) return false
-    return FORM_HIDDEN_DURING[form]?.includes(status) ?? false
+    return (
+        FORM_ACCESS[status]?.[form] === "shown" ||
+        FORM_ACCESS[status]?.[form] === "shown_locked"
+    )
 }

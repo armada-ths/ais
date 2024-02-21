@@ -1,8 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { PayloadAction } from "@reduxjs/toolkit"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 export type RegistrationStatus =
-    | "before_complete_registration" // We are in FR, but no contract uploaded
+    | "before_initial_registration" // Before IR period, and no contract exists
+    | "initial_registration"
+    | "initial_registration_signed"
+    | "after_initial_registration"
+    | "after_initial_registration_signed" // The time period between initial registration and complete registration
+    | "before_complete_registration" // We are in FR, but no contract uploaded (shoudn't happen)
     | "complete_registration"
     | "complete_registration_signed"
     | "after_complete_registration"
@@ -37,10 +41,10 @@ export const companySlice = createSlice({
             state.companyName = action.payload
         },
         setCompanyRegistrationStatus: (
-            status,
+            state,
             action: PayloadAction<RegistrationStatus>
         ) => {
-            status.status = action.payload
+            state.status = action.payload
         },
         setUser: (state, action: PayloadAction<CompanyState["user"]>) => {
             state.user = action.payload
