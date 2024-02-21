@@ -158,7 +158,6 @@ class RegistrationSerializer(serializers.Serializer):
     # Read only fields
     type = serializers.StringRelatedField(read_only=True)
     deadline = serializers.DateTimeField(read_only=True)
-    has_signed_ir = serializers.SerializerMethodField(read_only=True)
     fair = FairSerializer(read_only=True)
     ir_contract = SignupContractSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
@@ -172,6 +171,3 @@ class RegistrationSerializer(serializers.Serializer):
         update_field(instance, validated_data, "contact", ContactSerializer)
 
         return instance
-
-    def get_has_signed_ir(self, obj):
-        return obj.ir_signature != None
