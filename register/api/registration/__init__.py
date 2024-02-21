@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from register.api.registration.ir import handle_ir
 
 from util import get_company_contact, get_exhibitor, get_fair, get_user, status
 
@@ -20,7 +21,7 @@ def render_company(request, company, contact, exhibitor):
     if period == RegistrationState.BEFORE_IR:
         return status.NOT_IMPLEMENTED
     elif period == RegistrationState.IR:
-        return status.NOT_IMPLEMENTED
+        return handle_ir(request, company, fair, contact, exhibitor)
     elif period == RegistrationState.AFTER_IR:
         return status.NOT_IMPLEMENTED
     elif period == RegistrationState.CR:
