@@ -48,9 +48,7 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
     other_dietary_restrictions = models.CharField(max_length=75, blank=True, null=True)
-    no_dietary_restrictions = models.BooleanField(
-        null=False, blank=False
-    )  # required if no dietary_restrictions are selected
+    no_dietary_restrictions = models.BooleanField(default=False)
     programme = models.ForeignKey(
         Programme,
         null=True,

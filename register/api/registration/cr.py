@@ -1,3 +1,4 @@
+from ais.common import settings
 from register.api.registration.types.registration import get_registration
 from util import JSONError, get_user, status
 
@@ -9,7 +10,7 @@ from register.api.registration.types.util import get_serializer, put_registratio
 from register.models import SignupLog
 from accounting.models import Order
 
-from register.views import send_CR_confirmation_email
+from util.email import send_mail
 
 
 def handle_cr(request, company, fair, contact, exhibitor):
@@ -64,10 +65,21 @@ def submit_cr(request, company, fair, contact, exhibitor):
                 unit_price=0,  # A package product is free
             )
 
-    try:
-        send_CR_confirmation_email(signature, registration.deadline)
-    except:
-        pass
+    # Untested
+    # Todo: Add packages to email
+    send_mail(
+        request,
+        template="register/email/cr_complete.html",
+        context={
+            "company": company,
+            "fair": fair,
+            "signature": signature,
+            "deadline": registration.deadline,
+        },
+        subject="Final registration received!",
+        to=[signature.company_contact.email_address],
+        file_paths=[settings.MEDIA_ROOT + signature.contract.contract.url[6:]],
+    )
 
     try:
         registration = get_registration(company, fair, contact, exhibitor)

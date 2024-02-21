@@ -87,6 +87,7 @@ def get_contract(company, fair, registration_type):
     return contract
 
 
+# Todo: deprecated, remove this function
 def send_CR_confirmation_email(signature, deadline):
     html_message = """
 		<html>
@@ -286,15 +287,19 @@ def form_initial(request, company, company_contact, fair):
     form_initial_registration = InitialRegistrationForm()
 
     form_company_details = NewCompanyForm(
-        request.POST
-        if request.POST and request.POST.get("save_company_details")
-        else None,
+        (
+            request.POST
+            if request.POST and request.POST.get("save_company_details")
+            else None
+        ),
         instance=company,
     )
     form_company_contact = InitialCompanyContactForm(
-        request.POST
-        if request.POST and request.POST.get("save_contact_details")
-        else None,
+        (
+            request.POST
+            if request.POST and request.POST.get("save_contact_details")
+            else None
+        ),
         instance=company_contact,
     )
 
@@ -399,15 +404,19 @@ def form_complete(request, company, company_contact, fair, exhibitor):
         contract = get_contract(company, fair, "COMPLETE")
 
     form_company_details = CompleteCompanyDetailsForm(
-        request.POST
-        if request.POST and request.POST.get("save_company_details")
-        else None,
+        (
+            request.POST
+            if request.POST and request.POST.get("save_company_details")
+            else None
+        ),
         instance=company,
     )
     form_logistics_details = CompleteLogisticsDetailsFormWithCheckbox(
-        request.POST
-        if request.POST and request.POST.get("save_logistics_details")
-        else None,
+        (
+            request.POST
+            if request.POST and request.POST.get("save_logistics_details")
+            else None
+        ),
         instance=exhibitor,
     )
     form_catalogue_details = CompleteCatalogueDetailsForm(
@@ -469,10 +478,12 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
             if product_raw.max_quantity == 1:
                 form_product = CompleteProductBooleanForm(
-                    request.POST
-                    if request.POST
-                    and request.POST.get("save_product_" + str(product_raw.id))
-                    else None,
+                    (
+                        request.POST
+                        if request.POST
+                        and request.POST.get("save_product_" + str(product_raw.id))
+                        else None
+                    ),
                     prefix="product_" + str(product_raw.id),
                     initial={"checkbox": True if quantity_initial == 1 else False},
                 )
@@ -481,19 +492,23 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
             else:
                 form_product = CompleteProductQuantityForm(
-                    request.POST
-                    if request.POST
-                    and request.POST.get("save_product_" + str(product_raw.id))
-                    else None,
+                    (
+                        request.POST
+                        if request.POST
+                        and request.POST.get("save_product_" + str(product_raw.id))
+                        else None
+                    ),
                     prefix="product_" + str(product_raw.id),
                 )
                 form_product.fields["quantity"].choices = [
                     (i, i)
                     for i in range(
                         0,
-                        (product_raw.max_quantity + 1)
-                        if product_raw.max_quantity is not None
-                        else 21,
+                        (
+                            (product_raw.max_quantity + 1)
+                            if product_raw.max_quantity is not None
+                            else 21
+                        ),
                     )
                 ]
                 form_product.fields["quantity"].initial = quantity_initial
@@ -600,13 +615,15 @@ def form_complete(request, company, company_contact, fair, exhibitor):
 
         orders.append(
             {
-                "category": order.product.category.name
-                if order.product.category
-                else None,
+                "category": (
+                    order.product.category.name if order.product.category else None
+                ),
                 "name": order.product.name if order.name is None else order.name,
-                "description": order.product.description
-                if order.product.registration_section is None
-                else None,
+                "description": (
+                    order.product.description
+                    if order.product.registration_section is None
+                    else None
+                ),
                 "quantity": order.quantity,
                 "product_total": product_total,
             }
@@ -876,14 +893,16 @@ def transport(request, company_pk):
 
         initial = {
             "contact_name": (
-                company_contact.first_name + " " + company_contact.last_name
-            )
-            if (company_contact.first_name and company_contact.last_name)
-            else None,
+                (company_contact.first_name + " " + company_contact.last_name)
+                if (company_contact.first_name and company_contact.last_name)
+                else None
+            ),
             "contact_email_address": company_contact.user.email,
-            "contact_phone_number": company_contact.mobile_phone_number
-            if company_contact.mobile_phone_number is not None
-            else company_contact.work_phone_number,
+            "contact_phone_number": (
+                company_contact.mobile_phone_number
+                if company_contact.mobile_phone_number is not None
+                else company_contact.work_phone_number
+            ),
         }
 
     form = TransportForm(request.POST or None, initial=initial)
