@@ -13,11 +13,13 @@ class RegistrationType(Enum):
     InitialRegistrationSigned = 2
     AfterInitialRegistration = 3
     AfterInitialRegistrationSigned = 4
-    BeforeCompleteRegistration = 5
-    CompleteRegistration = 6
-    CompleteRegistrationSigned = 7
-    AfterCompleteRegistration = 8
-    AfterCompleteRegistrationSigned = 9
+    BeforeCompleteRegistrationIRUnsigned = 5
+    BeforeCompleteRegistrationIRSigned = 6
+    CompleteRegistrationIRUnsigned = 7
+    CompleteRegistrationIRSigned = 8
+    CompleteRegistrationSigned = 9
+    AfterCompleteRegistration = 10
+    AfterCompleteRegistrationSigned = 11
 
     def __str__(self):
         if self == RegistrationType.BeforeInitialRegistration:
@@ -30,10 +32,14 @@ class RegistrationType(Enum):
             return "after_initial_registration"
         elif self == RegistrationType.AfterInitialRegistrationSigned:
             return "after_initial_registration_signed"
-        if self == RegistrationType.BeforeCompleteRegistration:
-            return "before_complete_registration"
-        if self == RegistrationType.CompleteRegistration:
-            return "complete_registration"
+        if self == RegistrationType.BeforeCompleteRegistrationIRUnsigned:
+            return "before_complete_registration_ir_unsigned"
+        if self == RegistrationType.BeforeCompleteRegistrationIRSigned:
+            return "before_complete_registration_ir_signed"
+        if self == RegistrationType.CompleteRegistrationIRUnsigned:
+            return "complete_registration_ir_unsigned"
+        if self == RegistrationType.CompleteRegistrationIRSigned:
+            return "complete_registration_ir_signed"
         elif self == RegistrationType.CompleteRegistrationSigned:
             return "complete_registration_signed"
         elif self == RegistrationType.AfterCompleteRegistration:
@@ -63,14 +69,14 @@ class Registration:
         period = fair.get_period()
 
         if period == RegistrationState.BEFORE_IR:
-            pass
+            self.type = RegistrationType.BeforeInitialRegistration
         elif period == RegistrationState.IR:
             self.ensure_ir_eligibility()
 
             self.deadline = fair.registration_end_date
 
             if ir_contract == None:
-                self.type = RegistrationType.BeforeCompleteRegistration
+                self.type = RegistrationType.BeforeInitialRegistration
             elif ir_signature != None:
                 self.type = RegistrationType.InitialRegistrationSigned
             else:
@@ -90,19 +96,21 @@ class Registration:
                 or fair.complete_registration_close_date
             )
             if cr_contract == None:
-                self.type = RegistrationType.BeforeCompleteRegistration
+                if self.ir_contract == None:
+                    self.type = RegistrationType.BeforeCompleteRegistrationIRUnsigned
+                else:
+                    self.type = RegistrationType.BeforeCompleteRegistrationIRSigned
             elif cr_signature != None:
                 self.type = RegistrationType.CompleteRegistrationSigned
             else:
-                self.type = RegistrationType.CompleteRegistration
+                if self.ir_contract == None:
+                    self.type = RegistrationType.CompleteRegistrationIRUnsigned
+                else:
+                    self.type = RegistrationType.CompleteRegistrationIRSigned
         elif period == RegistrationState.AFTER_CR:
             self.ensure_cr_eligibility()
 
-            if cr_contract == None:
-                # This should not happen in a normal fair
-                # This means FR is over, but there is no contract
-                self.type = RegistrationType.BeforeCompleteRegistration
-            elif cr_signature != None:
+            if cr_signature != None:
                 self.type = RegistrationType.AfterCompleteRegistrationSigned
             else:
                 self.type = RegistrationType.AfterCompleteRegistration
@@ -124,9 +132,8 @@ class Registration:
 
         if self.exhibitor == None:
             if signature == None:
-                raise JSONError(
-                    status.USER_DID_NOT_SIGN_IR
-                )  # Todo: allow company to bypass this
+                # Todo: allow company to bypass this
+                raise JSONError(status.USER_DID_NOT_SIGN_IR)
             else:
                 raise JSONError(status.USER_IS_NOT_EXHIBITOR)
 

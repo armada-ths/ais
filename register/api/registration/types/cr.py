@@ -3,7 +3,10 @@ from accounting.models import Order
 from accounting.api import OrderSerializer
 
 from companies.serializers import CompanySerializer
-from register.api.registration.types.serializer import RegistrationSerializer
+from register.api.registration.types.serializer import (
+    ExhibitorSerializer,
+    RegistrationSerializer,
+)
 
 from util import update_field
 
@@ -47,6 +50,7 @@ class CRRegistrationSerializer(RegistrationSerializer):
 
     def update(self, instance, validated_data):
         update_field(instance, validated_data, "company", CRCompanySerializer)
+        update_field(instance, validated_data, "exhibitor", ExhibitorSerializer)
 
         orders = validated_data.pop("orders", None)
         if orders != None:

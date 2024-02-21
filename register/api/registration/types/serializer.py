@@ -169,7 +169,6 @@ class RegistrationSerializer(serializers.Serializer):
     exhibitor = ExhibitorSerializer()
 
     def update(self, instance, validated_data):
-        update_field(instance, validated_data, "exhibitor", ExhibitorSerializer)
         update_field(instance, validated_data, "contact", ContactSerializer)
 
         return instance

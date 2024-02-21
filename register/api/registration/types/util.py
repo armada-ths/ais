@@ -33,9 +33,13 @@ def get_serializer(registration, data=empty, context={}):
         Serializer = IRRegistrationSerializer
 
     # CR
-    elif registration.type == RegistrationType.BeforeCompleteRegistration:
+    elif registration.type == RegistrationType.BeforeCompleteRegistrationIRSigned:
         Serializer = CRRegistrationSerializer
-    elif registration.type == RegistrationType.CompleteRegistration:
+    elif registration.type == RegistrationType.BeforeCompleteRegistrationIRUnsigned:
+        Serializer = CRRegistrationSerializer
+    elif registration.type == RegistrationType.CompleteRegistrationIRSigned:
+        Serializer = CRRegistrationSerializer
+    elif registration.type == RegistrationType.CompleteRegistrationIRUnsigned:
         Serializer = CRRegistrationSerializer
     elif registration.type == RegistrationType.CompleteRegistrationSigned:
         # If user is sales, they may change anything he likes

@@ -1,0 +1,22 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Hello {{ signature.company_contact }}!
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Thank you for submitting the initial registration for THS Armada {{ fair.year }}. The initial registration contract was
+	signed by {{ signature.company_contact }} on the {{ signature.timestamp|date:"Y-m-d (H:i)" }} for {{ signature.company }}.
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Final registration will open {{ fair.complete_registration_start_date|date:"Y-m-d" }}. We will get back to you with more information regarding the details soon!</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Please note that this is an automatically generated email. If you have any questions, please contact your sales
+	contact person.
+</p>
+{% include 'email/button.html' with content="Go to dashboard" url="https://ais.armada.nu/register" %}
+{% include 'email/divider.html' %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	We look forward to seeing you at the fair!
+</p>
+{% endblock %}
