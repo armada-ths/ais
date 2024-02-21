@@ -1,5 +1,4 @@
 from django.views.decorators.csrf import csrf_exempt
-from register.api.registration.ir import handle_ir
 
 from util import get_company_contact, get_exhibitor, get_fair, get_user, status
 
@@ -8,6 +7,7 @@ from fair.models import RegistrationState
 from exhibitors.models import Exhibitor
 
 from register.api.registration.cr import handle_cr, submit_cr
+from register.api.registration.ir import handle_ir, submit_ir
 from register.api.registration.util import UserPermission
 
 
@@ -19,9 +19,9 @@ def render_company(request, company, contact, exhibitor):
 
     # Todo 2023 (Didrik Munther): implement periods other than CR
     if period == RegistrationState.BEFORE_IR:
-        return status.NOT_IMPLEMENTED
+        return status.IR_NOT_OPEN
     elif period == RegistrationState.IR:
-        return handle_ir(request, company, fair, contact, exhibitor)
+        return handle_ir(request, company, fair, contact)
     elif period == RegistrationState.AFTER_IR:
         return status.NOT_IMPLEMENTED
     elif period == RegistrationState.CR:
@@ -35,7 +35,27 @@ def render_company(request, company, contact, exhibitor):
 
 
 @csrf_exempt
-def submit(request):
+def sign_ir(request):
+    fair = get_fair()
+    period = fair.get_period()
+    if period != RegistrationState.IR:
+        return status.INVALID_SUBMIT_PERIOD
+
+    user = get_user(request)
+    if user == None:
+        return status.UNAUTHORIZED
+
+    contact = get_company_contact(user)
+    if contact == None:
+        return status.USER_HAS_NO_COMPANY
+
+    company = contact.company
+
+    return submit_ir(request, company, fair, contact)
+
+
+@csrf_exempt
+def sign_cr(request):
     fair = get_fair()
     period = fair.get_period()
     if period != RegistrationState.CR:
