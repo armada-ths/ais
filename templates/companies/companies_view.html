@@ -111,7 +111,20 @@
 
 				<div class="panel-body">
 					<ul class="list-unstyled">
-						<p>{% if contact.user %} {% if contact.confirmed %}<span class="label label-success">Confirmed</span>{% else %}<span class="label label-danger">Not confirmed</span>{% endif %} {% if contact.active %}<span class="label label-success">Active</span>{% else %}<span class="label label-danger">Not active</span>{% endif %}{% endif %}</p>
+						<p>
+							{% if contact.user %}
+								{% if contact.confirmed %}
+									<span class="label label-success" title="This contact has been confirmed to be a real contact in the company">Confirmed</span>
+								{% else %}
+									<span class="label label-danger" title="This contact has not been confirmed to be a real contact in the company">Not confirmed</span>
+								{% endif %}
+								{% if contact.active %}
+									<span class="label label-success" title="This contact answers actively on email or phone.">Active</span>
+								{% else %}
+									<span class="label label-danger" title="This contact does not answer actively on email or phone.">Not active</span>
+								{% endif %}
+							{% endif %}
+						</p>
 
 						{% if contact.user %}
 							<li><strong>Username:</strong> {{ contact.user.username }}</li>

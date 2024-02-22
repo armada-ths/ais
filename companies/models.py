@@ -345,7 +345,10 @@ class CompanyContact(models.Model):
         Language, null=True, blank=True, on_delete=models.CASCADE
     )
     active = models.BooleanField(default=True)
-    confirmed = models.BooleanField(default=False)
+    confirmed = models.BooleanField(
+        default=False,
+        verbose_name="This contact has been confirmed to be a real contact in the company",
+    )
 
     def __str__(self):
         return "%s %s" % (self.first_name, self.last_name)
