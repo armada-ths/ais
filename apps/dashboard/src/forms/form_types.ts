@@ -1,3 +1,5 @@
+import { Product } from "@/shared/hooks/useProducts"
+import { RegistrationResponse } from "@/shared/hooks/useRegistration"
 import { FORMS } from "."
 import { RootState } from "../store/store"
 
@@ -20,11 +22,22 @@ export interface Field {
 export interface FormPage {
     id: string
     title: string
+    /**
+     * @deprecated
+     */
     fields?: Field[]
     hasNextButton?: boolean // If true, the page will have a next and previous button
     hasPrevButton?: boolean
+    /**
+     * @deprecated use isDone instead
+     */
     getProgress?: (state: RootState) => number // If a page has custom progress logic this can be used
-    pageComponent: () => JSX.Element
+    isDone?: (args: {
+        form: Form
+        registration: RegistrationResponse
+        products: Product[]
+    }) => boolean // If a page has custom done logic this can be used
+    pageComponent: () => React.ReactNode
 }
 
 export interface Form {

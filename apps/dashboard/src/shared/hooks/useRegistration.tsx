@@ -30,37 +30,41 @@ export interface Contact {
     first_name: string
     last_name: string
     email_address: string
-    alternative_email_address: unknown
-    title: unknown
-    mobile_phone_number: unknown
-    work_phone_number: unknown
-    preferred_language: unknown
+    alternative_email_address: string
+    title: string
+    mobile_phone_number: string
+    work_phone_number: string
+    preferred_language: string
 }
 
 export interface Company {
     name: string
-    identity_number: unknown
-    website: unknown
-    general_email_address: unknown
-    invoice_name: unknown
-    invoice_address_line_1: unknown
-    invoice_address_line_2: unknown
-    invoice_address_line_3: unknown
-    invoice_city: unknown
-    invoice_zip_code: unknown
+    identity_number: string
+    website: string
+    general_email_address: string
+    invoice_name: string
+    invoice_address_line_1: string
+    invoice_address_line_2: string
+    invoice_address_line_3: string
+    invoice_city: string
+    invoice_zip_code: string
     invoice_country: string
-    invoice_reference: unknown
-    invoice_email_address: unknown
+    invoice_reference: string
+    invoice_email_address: string
     e_invoice: boolean
     id: number
+}
+
+export async function queryRegistration() {
+    const response = await fetch(`${HOST}/api/registration`)
+    const result = (await response.json()) as RegistrationResponse
+    console.log("REGISTRATION", result)
+    return result
 }
 
 export function useRegistration() {
     return useQuery({
         queryKey: ["registration"],
-        queryFn: async () => {
-            const response = await fetch(`${HOST}/api/registration`)
-            return (await response.json()) as RegistrationResponse
-        }
+        queryFn: queryRegistration
     })
 }

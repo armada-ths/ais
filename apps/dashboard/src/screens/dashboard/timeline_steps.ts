@@ -17,7 +17,7 @@ export const TIMELINE_STEPS: Partial<
     initial_registration: {
         title: "Welcome to Armada!",
         description:
-            "To participate in this year's event, please complete the initial registration"
+            "To get a spot in this year's event, please complete the initial registration"
     },
     initial_registration_signed: {
         title: "You have signed this year's contract",
@@ -31,9 +31,20 @@ export const TIMELINE_STEPS: Partial<
         title: "You have signed this year's contract",
         description: "We'll be in touch!"
     },
-    before_complete_registration: {
-        title: "",
-        description: ""
+    complete_registration_ir_signed: {
+        title: "Welcome to the Armada final registration!",
+        description:
+            "Complete the registration to participate in this year's event"
+    },
+    complete_registration_ir_unsigned: {
+        title: "Welcome to the Armada final registration!",
+        description:
+            "You have not signed an initial contract with us and can therefore not proceed with the final registration process until this is resolved"
+    },
+    complete_registration_signed: {
+        title: "You have completed the final registration",
+        description:
+            "Please make sure to fill in the remaining cards. See you at the fair!"
     }
 }
 

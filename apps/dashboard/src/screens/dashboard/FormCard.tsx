@@ -1,11 +1,11 @@
-import { Card } from "../form/sidebar/PageCard"
+import { useProducts } from "@/shared/hooks/useProducts"
+import { useRegistration } from "@/shared/hooks/useRegistration"
+import { useNavigate } from "@tanstack/react-router"
+import { useDispatch } from "react-redux"
 import { FORMS } from "../../forms"
-import { useDispatch, useSelector } from "react-redux"
-import { selectFormProgress } from "../../store/form/form_selectors"
-import { RootState } from "../../store/store"
 import { setActiveForm } from "../../store/form/form_slice"
 import { cx } from "../../utils/cx"
-import { useNavigate } from "@tanstack/react-router"
+import { Card } from "../form/sidebar/PageCard"
 
 export default function FormCard({
     form,
@@ -16,9 +16,9 @@ export default function FormCard({
 }) {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const formProgress = useSelector((state: RootState) =>
-        selectFormProgress(state, form.key)
-    )
+
+    const { data: dataRegistration } = useRegistration()
+    const { data: dataProducts } = useProducts()
 
     function openForm() {
         dispatch(setActiveForm(form.key))
@@ -26,6 +26,24 @@ export default function FormCard({
             to: `/form/${form.key}`
         })
     }
+
+    if (dataRegistration == null || dataProducts == null)
+        return <p>Could not load necessary data...</p>
+
+    // Go through the form and check which pages can be considered done
+    const results = form.pages.map(
+        page =>
+            page.isDone?.({
+                form,
+                registration: dataRegistration,
+                products: dataProducts
+            }) ?? null
+    )
+
+    // Only compare pages that have a isDone function
+    const progress =
+        results.filter(Boolean).length /
+        form.pages.filter(x => x.isDone != null).length
 
     return (
         <Card
@@ -39,9 +57,9 @@ export default function FormCard({
             <div className="mb-2 flex items-center justify-between gap-x-10">
                 <p className="text-lg">{form.name}</p>
                 {form.progression !== "none" &&
-                    (formProgress < 1 && !form.forceFormDone ? (
+                    (progress < 1 && !form.forceFormDone ? (
                         <p className="text-yellow-400">
-                            {(formProgress * 100).toFixed()}%
+                            {(progress * 100).toFixed()}%
                         </p>
                     ) : (
                         <span className="pi pi-check-circle !font-bold text-emerald-400"></span>

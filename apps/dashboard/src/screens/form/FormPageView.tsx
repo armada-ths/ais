@@ -1,13 +1,13 @@
-import { Button } from "primereact/button"
+import { Button } from "@/components/ui/button"
 import { useDispatch } from "react-redux"
+import { Form, FormPage } from "../../forms/form_types"
+import { remoteSaveChanges } from "../../store/form/async_actions"
 import {
     getPageComponent,
     nextPage,
     previousPage
 } from "../../store/form/form_slice"
 import { AppDispatch } from "../../store/store"
-import { remoteSaveChanges } from "../../store/form/async_actions"
-import { Form, FormPage } from "../../forms/form_types"
 
 export function FormPageView({
     form,
@@ -46,19 +46,10 @@ export function FormPageView({
                     {pageIndex <= 0 || page.hasPrevButton === false ? (
                         <div />
                     ) : (
-                        <Button
-                            icon="pi pi-arrow-left"
-                            label="Previous"
-                            onClick={handlePrevious}
-                        />
+                        <Button onClick={handlePrevious}>Previous</Button>
                     )}
                     {page.hasNextButton !== false && (
-                        <Button
-                            icon="pi pi-arrow-right"
-                            label="Next"
-                            iconPos="right"
-                            onClick={handleNext}
-                        />
+                        <Button onClick={handleNext}>Next</Button>
                     )}
                 </div>
             )}

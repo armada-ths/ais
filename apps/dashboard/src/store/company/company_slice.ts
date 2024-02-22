@@ -6,8 +6,10 @@ export type RegistrationStatus =
     | "initial_registration_signed"
     | "after_initial_registration"
     | "after_initial_registration_signed" // The time period between initial registration and complete registration
-    | "before_complete_registration" // We are in FR, but no contract uploaded (shoudn't happen)
-    | "complete_registration"
+    | "before_complete_registration_ir_unsigned"
+    | "before_complete_registration_ir_signed"
+    | "complete_registration_ir_unsigned"
+    | "complete_registration_ir_signed"
     | "complete_registration_signed"
     | "after_complete_registration"
     | "after_complete_registration_signed"

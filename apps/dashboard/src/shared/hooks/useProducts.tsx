@@ -33,7 +33,7 @@ export interface Product {
     child_products: ChildProduct[]
 }
 
-export async function useProducts() {
+export function useProducts() {
     return useQuery({
         queryKey: ["products"],
         queryFn: async () => {

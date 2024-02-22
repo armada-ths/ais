@@ -12,7 +12,12 @@ export const form: Form = {
             pageComponent: IrRegistrationPage,
             fields: [],
             hasNextButton: false,
-            getProgress: () => 0
+            isDone: ({ registration }) =>
+                [
+                    "initial_registration_signed",
+                    "complete_registration_ir_signed",
+                    "complete_registration_signed"
+                ].includes(registration.type)
         }
     ]
 }

@@ -1,5 +1,6 @@
 import { form as CoreValues } from "./core_values/form"
 import { form as ExhibitorCatalogForm } from "./exhibitor_catalog/form"
+import { form as IrAdditionalInfo } from "./ir_additional_info/form"
 import { form as IrSignupForm } from "./ir_signup/form"
 import CreateLunchTicketsForm from "./lunch_tickets/form"
 import { form as PrimaryForm } from "./primary/form"
@@ -10,6 +11,7 @@ import { form as TransportForm } from "./transport/form"
 export function getMutableFormsInstance() {
     return {
         ir_signup: IrSignupForm,
+        ir_additional_info: IrAdditionalInfo,
         primary: PrimaryForm,
         receipt: ReceiptForm,
         exhibitor_catalog: ExhibitorCatalogForm,

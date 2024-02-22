@@ -15,16 +15,29 @@ export const FORM_ACCESS: Record<
         ir_signup: "shown"
     },
     initial_registration_signed: {
-        ir_signup: "shown_locked"
+        ir_signup: "shown_locked",
+        ir_additional_info: "shown"
     },
     after_initial_registration: {},
     after_initial_registration_signed: {},
-    before_complete_registration: {
+    before_complete_registration_ir_signed: {
         lunch_tickets: "shown",
         exhibitor_catalog: "shown",
         core_values: "shown"
     }, // FR "Active" but no contract exists
-    complete_registration: {
+    before_complete_registration_ir_unsigned: {
+        lunch_tickets: "shown",
+        exhibitor_catalog: "shown",
+        core_values: "shown"
+    }, // FR "Active" but no contract exists
+    complete_registration_ir_signed: {
+        primary: "shown",
+        lunch_tickets: "shown",
+        transport: "shown",
+        sture: "shown",
+        core_values: "shown"
+    },
+    complete_registration_ir_unsigned: {
         primary: "shown",
         lunch_tickets: "shown",
         transport: "shown",
