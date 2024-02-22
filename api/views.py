@@ -441,6 +441,7 @@ def dates(request):
             "ticket": {"end": fair.companies_ticket_deadline},
             "ir": {
                 "start": fair.registration_start_date,
+                "acceptance": fair.registration_acceptance_date,
                 "end": fair.registration_end_date,
             },
             "fr": {
