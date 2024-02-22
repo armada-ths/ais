@@ -9,7 +9,7 @@ import {
     FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useRegistration } from "@/shared/hooks/useRegistration"
+import { useDashboard } from "@/shared/hooks/useRegistration"
 import { HOST } from "@/shared/vars"
 import { asOptionalField } from "@/utils/zod_optional_field"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -29,7 +29,7 @@ const formSchema = z.object({
 })
 
 export default function IrContactWrapper() {
-    const { data: dataRegistration, isLoading } = useRegistration()
+    const { data: dataRegistration, isLoading } = useDashboard()
 
     if (isLoading) return null
     if (!dataRegistration) return null
@@ -41,7 +41,7 @@ export function IrContactPage({
     dataRegistration
 }: {
     dataRegistration: NonNullable<
-        Awaited<ReturnType<typeof useRegistration>>
+        Awaited<ReturnType<typeof useDashboard>>
     >["data"]
 }) {
     const { mutateAsync } = useMutation({
@@ -54,7 +54,7 @@ export function IrContactPage({
             mobileNumber,
             workPhoneNumber
         }: z.infer<typeof formSchema>) => {
-            const response = fetch(`${HOST}/api/registration/`, {
+            const response = fetch(`${HOST}/api/dashboard/`, {
                 method: "PUT",
                 body: JSON.stringify({
                     contact: {

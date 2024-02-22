@@ -7,7 +7,7 @@ const ERRORS = {
     not_authorized: (
         <p>
             You are not logged in, you can{" "}
-            <a className="text-emerald-400 underline" href="/register">
+            <a className="text-emerald-400 underline" href="/dashboard">
                 sign in here
             </a>
         </p>

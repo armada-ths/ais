@@ -2,7 +2,7 @@ import { HOST } from "@/shared/vars"
 import { RegistrationStatus } from "@/store/company/company_slice"
 import { useQuery } from "@tanstack/react-query"
 
-export interface RegistrationResponse {
+export interface DashboardResponse {
     type: RegistrationStatus
     deadline: string
     has_signed_ir: boolean
@@ -65,16 +65,16 @@ export interface Company {
     id: number
 }
 
-export async function queryRegistration() {
-    const response = await fetch(`${HOST}/api/registration`)
-    const result = (await response.json()) as RegistrationResponse
+export async function queryDashboard() {
+    const response = await fetch(`${HOST}/api/dashboard`)
+    const result = (await response.json()) as DashboardResponse
     console.log("REGISTRATION", JSON.stringify(result))
     return result
 }
 
-export function useRegistration() {
+export function useDashboard() {
     return useQuery({
         queryKey: ["registration"],
-        queryFn: queryRegistration
+        queryFn: queryDashboard
     })
 }

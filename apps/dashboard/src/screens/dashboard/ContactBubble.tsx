@@ -9,11 +9,11 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer"
 import { Separator } from "@/components/ui/separator"
-import { useRegistration } from "@/shared/hooks/useRegistration"
+import { useDashboard } from "@/shared/hooks/useRegistration"
 import { X } from "lucide-react"
 
 export function ContactBubble() {
-    const { data } = useRegistration()
+    const { data } = useDashboard()
 
     const companyContact = data?.sales_contacts?.[0]
     const additionalCompanyContacts = data?.sales_contacts?.slice(1)

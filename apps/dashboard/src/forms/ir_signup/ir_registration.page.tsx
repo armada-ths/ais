@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useRegistration } from "@/shared/hooks/useRegistration"
+import { useDashboard } from "@/shared/hooks/useRegistration"
 import { HOST } from "@/shared/vars"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"
@@ -11,7 +11,7 @@ import { toast } from "sonner"
 
 export default function IrRegistrationPage() {
     const router = useRouter()
-    const { data, isLoading } = useRegistration()
+    const { data, isLoading } = useDashboard()
 
     const [terms, setTerms] = useState(false)
     const [processData, setProcessData] = useState(false)
@@ -22,7 +22,7 @@ export default function IrRegistrationPage() {
         isSuccess: mutationIsSuccess
     } = useMutation({
         mutationFn: async () =>
-            await fetch(`${HOST}/api/registration/sign_ir`, {
+            await fetch(`${HOST}/api/dashboard/sign_ir`, {
                 method: "POST"
             }),
         onSuccess: async () => {

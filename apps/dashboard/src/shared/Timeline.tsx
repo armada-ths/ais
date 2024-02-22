@@ -33,7 +33,16 @@ export function Timeline(
                     className="absolute h-full rounded-3xl bg-emerald-400"
                 />
                 {stages.map((stage, index) => (
-                    <div className="relative">
+                    <div
+                        key={
+                            Array.isArray(stage.id)
+                                ? stage.id.length <= 0
+                                    ? index
+                                    : stage.id.join("-")
+                                : stage.id
+                        }
+                        className="relative"
+                    >
                         <div
                             className={cx(
                                 "aspect-square h-full scale-[1.7] rounded-full bg-emerald-400",

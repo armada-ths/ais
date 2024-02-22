@@ -33,7 +33,7 @@ export default function useLoadData() {
             console.log("PRODUCTS", JSON.stringify(data))
             dispatch(loadProducts(data))
 
-            fetch(`${HOST}/api/registration/`, {}).then(async raw => {
+            fetch(`${HOST}/api/dashboard/`, {}).then(async raw => {
                 const data = await raw.json()
                 console.log("DATA #", JSON.stringify(data))
 

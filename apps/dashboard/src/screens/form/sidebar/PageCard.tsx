@@ -1,6 +1,6 @@
 import { FORMS } from "@/forms"
 import { useProducts } from "@/shared/hooks/useProducts"
-import { useRegistration } from "@/shared/hooks/useRegistration"
+import { useDashboard } from "@/shared/hooks/useRegistration"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { FormPage } from "../../../forms/form_types"
@@ -37,7 +37,7 @@ export function PageCard({
     const dispatch = useDispatch<AppDispatch>()
     const activePage = useSelector(selectActivePage)
 
-    const { data: dataRegistration } = useRegistration()
+    const { data: dataRegistration } = useDashboard()
     const { data: dataProducts } = useProducts()
 
     if (!dataRegistration || !dataProducts) return null

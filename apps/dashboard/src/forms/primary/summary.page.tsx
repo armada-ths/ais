@@ -1,25 +1,25 @@
+import { useNavigate } from "@tanstack/react-router"
 import { Button } from "primereact/button"
 import { Checkbox } from "primereact/checkbox"
-import { useState, MouseEvent, useRef } from "react"
+import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup"
+import { Toast } from "primereact/toast"
+import { MouseEvent, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { Card } from "../../screens/form/sidebar/PageCard"
+import { HOST } from "../../shared/vars"
+import { selectCompany } from "../../store/company/company_selectors"
+import { setCompanyRegistrationStatus } from "../../store/company/company_slice"
 import {
     selectActiveForm,
     selectUnfilledFields
 } from "../../store/form/form_selectors"
-import { RootState } from "../../store/store"
-import { Card } from "../../screens/form/sidebar/PageCard"
-import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup"
-import { setCompanyRegistrationStatus } from "../../store/company/company_slice"
 import { setActiveForm } from "../../store/form/form_slice"
-import { Toast } from "primereact/toast"
-import { HOST } from "../../shared/vars"
-import { selectCompany } from "../../store/company/company_selectors"
 import {
     selectProductPackage,
     selectProductsSelectedWithoutPackagesWithAdjustedPrice
 } from "../../store/products/products_selectors"
+import { RootState } from "../../store/store"
 import { formatCurrency } from "../../utils/format_currency"
-import { useNavigate } from "@tanstack/react-router"
 
 export function SummaryFormPage() {
     const dispatch = useDispatch()
@@ -48,7 +48,7 @@ export function SummaryFormPage() {
         productPackage != null
 
     async function submitRegistration() {
-        const response = await fetch(`${HOST}/api/registration/submit`, {
+        const response = await fetch(`${HOST}/api/dashboard/submit`, {
             method: "POST"
         })
         if (response.status < 200 || response.status >= 300) {

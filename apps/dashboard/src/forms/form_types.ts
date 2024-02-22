@@ -1,5 +1,5 @@
 import { Product } from "@/shared/hooks/useProducts"
-import { RegistrationResponse } from "@/shared/hooks/useRegistration"
+import { DashboardResponse } from "@/shared/hooks/useRegistration"
 import { FORMS } from "."
 import { RootState } from "../store/store"
 
@@ -34,7 +34,7 @@ export interface FormPage {
     getProgress?: (state: RootState) => number // If a page has custom progress logic this can be used
     isDone?: (args: {
         form: Form
-        registration: RegistrationResponse
+        registration: DashboardResponse
         products: Product[]
     }) => boolean // If a page has custom done logic this can be used
     pageComponent: () => React.ReactNode

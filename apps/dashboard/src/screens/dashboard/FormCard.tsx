@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { useProducts } from "@/shared/hooks/useProducts"
-import { useRegistration } from "@/shared/hooks/useRegistration"
+import { useDashboard } from "@/shared/hooks/useRegistration"
 import { useNavigate } from "@tanstack/react-router"
 import { useDispatch } from "react-redux"
 import { FORMS } from "../../forms"
@@ -18,7 +18,7 @@ export default function FormCard({
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const { data: dataRegistration } = useRegistration()
+    const { data: dataRegistration } = useDashboard()
     const { data: dataProducts } = useProducts()
 
     function openForm() {

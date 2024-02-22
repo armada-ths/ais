@@ -10,7 +10,7 @@ import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
 import { LogoutButton } from "@/shared/LogoutButton"
 import { Timeline } from "@/shared/Timeline"
-import { useRegistration } from "@/shared/hooks/useRegistration"
+import { useDashboard } from "@/shared/hooks/useRegistration"
 import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
@@ -20,7 +20,7 @@ import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
 
 export function DashboardScreen() {
-    const { data, isLoading, isError } = useRegistration()
+    const { data, isLoading, isError } = useDashboard()
     const forms = useSelector(selectForms)
 
     const companyContact = data?.sales_contacts?.[0]
@@ -156,11 +156,7 @@ export function DashboardScreen() {
                             badgeText: "Aug 20"
                         },
                         {
-                            id: [
-                                "complete_registration_ir_signed",
-                                "complete_registration_ir_unsigned",
-                                "complete_registration_signed"
-                            ],
+                            id: [],
                             title: "You have completed final registration"
                         },
                         {
