@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useDashboard } from "@/shared/hooks/useRegistration"
+import { useDashboard } from "@/shared/hooks/useDashboard"
 import { HOST } from "@/shared/vars"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"

@@ -1,6 +1,6 @@
 import { FORMS } from "@/forms"
+import { useDashboard } from "@/shared/hooks/useDashboard"
 import { useProducts } from "@/shared/hooks/useProducts"
-import { useDashboard } from "@/shared/hooks/useRegistration"
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { FormPage } from "../../../forms/form_types"

@@ -1,5 +1,5 @@
+import { DashboardResponse } from "@/shared/hooks/useDashboard"
 import { Product } from "@/shared/hooks/useProducts"
-import { DashboardResponse } from "@/shared/hooks/useRegistration"
 import { FORMS } from "."
 import { RootState } from "../store/store"
 

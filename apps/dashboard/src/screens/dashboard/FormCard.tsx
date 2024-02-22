@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
+import { useDashboard } from "@/shared/hooks/useDashboard"
 import { useProducts } from "@/shared/hooks/useProducts"
-import { useDashboard } from "@/shared/hooks/useRegistration"
 import { useNavigate } from "@tanstack/react-router"
 import { useDispatch } from "react-redux"
 import { FORMS } from "../../forms"
