@@ -11,6 +11,7 @@ from register.models import SignupLog
 from accounting.models import Order
 
 from util.email import send_mail
+from util.ip import get_client_ip
 
 
 def handle_cr(request, company, fair, contact, exhibitor):
@@ -47,7 +48,10 @@ def submit_cr(request, company, fair, contact, exhibitor):
         return status.EXHIBITOR_ALREADY_SIGNED
 
     signature = SignupLog.objects.create(
-        company_contact=contact, contract=registration.cr_contract, company=company
+        company_contact=contact,
+        contract=registration.cr_contract,
+        company=company,
+        ip_address=get_client_ip(request),
     )
 
     # Add package products

@@ -9,6 +9,7 @@ from register.api.registration.types.registration import get_registration
 from register.api.registration.types.util import get_serializer, put_registration
 
 from register.models import SignupLog
+from util.ip import get_client_ip
 
 
 def handle_ir(request, company, fair, contact):
@@ -42,7 +43,10 @@ def submit_ir(request, company, fair, contact):
         return status.COMPANY_ALREADY_SIGNED
 
     signature = SignupLog.objects.create(
-        company_contact=contact, contract=registration.ir_contract, company=company
+        company_contact=contact,
+        contract=registration.ir_contract,
+        company=company,
+        ip_address=get_client_ip(request),
     )
 
     send_mail(

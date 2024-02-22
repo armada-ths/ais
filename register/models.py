@@ -79,6 +79,7 @@ class SignupLog(models.Model):
     company_contact = models.ForeignKey(
         "companies.CompanyContact", on_delete=models.CASCADE, null=True, blank=True
     )
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
 
     types = [
         ("initial", "Initial"),
