@@ -9,6 +9,7 @@ import { isFormOpen, isFormVisible } from "@/forms/form_access"
 import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
 import { LogoutButton } from "@/shared/LogoutButton"
+import { Timeline } from "@/shared/Timeline"
 import { useRegistration } from "@/shared/hooks/useRegistration"
 import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
@@ -44,54 +45,50 @@ export function DashboardScreen() {
     )
 
     return (
-        <div className={cx("grid min-h-[100dvh] grid-cols-[1fr_6fr_1fr]")}>
-            <div>{/* SIDEBAR */}</div>
-            <div className="flex flex-col items-center p-5">
-                <div className="flex max-w-6xl flex-col items-center">
-                    <div className="grid w-full grid-cols-[1fr_2fr_1fr]">
-                        <div />
-                        <h1 className="rounded p-2 px-8 text-center text-4xl text-emerald-400">
-                            {data.company.name}
-                        </h1>
-                    </div>
-                    {data.contact?.first_name != null && (
-                        <Card className="max-w-[700px]">
-                            <CardHeader>
-                                <CardTitle>
-                                    Welcome <b>{data.contact.first_name}</b>!
-                                </CardTitle>
-                                <CardDescription>
-                                    From this dashboard you will be able to
-                                    configure your Armada experience. You will
-                                    be able to provide information, buy products
-                                    and read about our procedures
-                                </CardDescription>
-                            </CardHeader>
-                        </Card>
-                    )}
-                    {getTimelinePhaseMessage(data.type) != null && (
-                        <Alert className="mt-5 max-w-[700px]">
-                            <BadgeInfo />
-                            <AlertTitle className="ml-3">
-                                <span className="font-bold">
-                                    {getTimelinePhaseMessage(data.type)
-                                        ?.title ?? (
-                                        <span>
-                                            Current step:{" "}
-                                            {data.type.split("_").join(" ")}
-                                        </span>
-                                    )}
-                                </span>
-                            </AlertTitle>
-                            <AlertDescription className="ml-3">
-                                {
-                                    getTimelinePhaseMessage(data.type)
-                                        ?.description
-                                }
-                            </AlertDescription>
-                        </Alert>
-                    )}
-                    {/*                     <div className="mt-10 flex flex-col items-center justify-end">
+        <div className="flex min-h-[100dvh] flex-col">
+            <div className={cx("grid grid-cols-[1fr_6fr_1fr]")}>
+                <div>{/* SIDEBAR */}</div>
+                <div className="flex flex-col items-center p-5">
+                    <div className="mt-10 flex max-w-6xl flex-col items-center">
+                        {data.contact?.first_name != null && (
+                            <Card className="max-w-[700px]">
+                                <CardHeader>
+                                    <CardTitle>
+                                        Welcome <b>{data.contact.first_name}</b>
+                                        !
+                                    </CardTitle>
+                                    <CardDescription>
+                                        From this dashboard you will be able to
+                                        configure your Armada experience. You
+                                        will be able to provide information, buy
+                                        products and read about our procedures
+                                    </CardDescription>
+                                </CardHeader>
+                            </Card>
+                        )}
+                        {getTimelinePhaseMessage(data.type) != null && (
+                            <Alert className="mt-5 max-w-[700px]">
+                                <BadgeInfo />
+                                <AlertTitle className="ml-3">
+                                    <span className="font-bold">
+                                        {getTimelinePhaseMessage(data.type)
+                                            ?.title ?? (
+                                            <span>
+                                                Current step:{" "}
+                                                {data.type.split("_").join(" ")}
+                                            </span>
+                                        )}
+                                    </span>
+                                </AlertTitle>
+                                <AlertDescription className="ml-3">
+                                    {
+                                        getTimelinePhaseMessage(data.type)
+                                            ?.description
+                                    }
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        {/*                     <div className="mt-10 flex flex-col items-center justify-end">
                         <p className={cx("mb-2 text-xl", colorClassName)}>
                             {companyProgress < 1
                                 ? "Company Progress"
@@ -105,24 +102,76 @@ export function DashboardScreen() {
                             )}
                         </p>
                     </div> */}
-                    <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-                        {formCardsData.map(([key, formMeta]) => (
-                            <FormCard
-                                key={key}
-                                form={formMeta}
-                                locked={
-                                    !isFormOpen(formMeta.key, data.type ?? null)
-                                }
-                            />
-                        ))}
+                        <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
+                            {formCardsData.map(([key, formMeta]) => (
+                                <FormCard
+                                    key={key}
+                                    form={formMeta}
+                                    locked={
+                                        !isFormOpen(
+                                            formMeta.key,
+                                            data.type ?? null
+                                        )
+                                    }
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
+                <div className="flex flex-col items-center">
+                    <LogoutButton />
+                </div>
             </div>
-            <div className="flex flex-col items-center">
-                <LogoutButton />
-                <div className="flex-1" /> {/* Spacer */}
+            <div className="relative flex flex-1 items-end justify-center">
+                <Timeline
+                    className="mb-10 h-28 w-2/3"
+                    stages={[
+                        {
+                            id: [
+                                "initial_registration",
+                                "after_initial_registration"
+                            ],
+                            title: "Initial Registration"
+                        },
+                        {
+                            id: [
+                                "after_initial_registration_signed",
+                                "initial_registration_signed"
+                            ],
+                            title: "You have completed initial registration"
+                        },
+                        {
+                            id: [
+                                /*                                     "complete_registration_ir_unsigned", */
+                            ],
+                            title: "You got a spot at the fair"
+                        },
+                        {
+                            id: [
+                                "complete_registration_ir_signed",
+                                "complete_registration_ir_unsigned",
+                                "complete_registration_signed"
+                            ],
+                            title: "Final registration",
+                            badgeText: "Aug 20"
+                        },
+                        {
+                            id: [
+                                "complete_registration_ir_signed",
+                                "complete_registration_ir_unsigned",
+                                "complete_registration_signed"
+                            ],
+                            title: "You have completed final registration"
+                        },
+                        {
+                            id: [],
+                            title: "The fair 🥳"
+                        }
+                    ]}
+                    current={data.type}
+                />
                 {companyContact != null && (
-                    <div className="flex w-full justify-end p-4 lg:p-8">
+                    <div className="absolute flex w-full justify-end p-4 lg:p-8">
                         <ContactBubble />
                     </div>
                 )}
