@@ -35,7 +35,6 @@ export default function useLoadData() {
 
             fetch(`${HOST}/api/dashboard/`, {}).then(async raw => {
                 const data = await raw.json()
-                console.log("DATA #", JSON.stringify(data))
 
                 if (data.error != null) {
                     dispatch(setErrors(data.error))

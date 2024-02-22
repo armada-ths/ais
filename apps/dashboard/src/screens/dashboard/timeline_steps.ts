@@ -6,13 +6,14 @@ export const TIMELINE_STEPS: Partial<
         {
             title?: string
             description: string
+            variant?: "info" | "success" | "warning" // Default info
         }
     >
 > = {
     before_initial_registration: {
         title: "This year's fair is still under development",
         description:
-            "We haven't finalized this year's contract yet, come back later..."
+            "We're still working on the initial registration, come back later..."
     },
     initial_registration: {
         title: "Welcome to Armada!",
@@ -20,16 +21,31 @@ export const TIMELINE_STEPS: Partial<
             "To get a spot in this year's event, please complete the initial registration"
     },
     initial_registration_signed: {
-        title: "You have signed this year's contract",
-        description: "We'll be in touch!"
+        title: "You have completed this year's initial registration",
+        description:
+            "We'll be in touch! Feel free to add additional information about your company",
+        variant: "success"
     },
     after_initial_registration: {
         title: "You did not complete the initial registration",
-        description: "All hope is not lost! Please contact our sales team"
+        description: "All hope is not lost! Please contact our sales team",
+        variant: "warning"
     },
     after_initial_registration_signed: {
-        title: "You have signed this year's contract",
-        description: "We'll be in touch!"
+        title: "You have completed this year's initial registration",
+        description: "We'll be in touch!",
+        variant: "success"
+    },
+    after_initial_registration_acceptance_accepted: {
+        title: "You got a spot at the fair",
+        description: "We'll be in touch with more information",
+        variant: "success"
+    },
+    after_initial_registration_acceptance_rejected: {
+        title: "We are at full capacity",
+        description:
+            "Unfortunately, we are unable to offer you a spot at the fair, if any spot appears we will contact you",
+        variant: "warning"
     },
     complete_registration_ir_signed: {
         title: "Welcome to the Armada final registration!",
@@ -39,12 +55,14 @@ export const TIMELINE_STEPS: Partial<
     complete_registration_ir_unsigned: {
         title: "Welcome to the Armada final registration!",
         description:
-            "You have not signed an initial contract with us and can therefore not proceed with the final registration process until this is resolved"
+            "You have not completed the initial registration, please contact our sales team",
+        variant: "warning"
     },
     complete_registration_signed: {
         title: "You have completed the final registration",
         description:
-            "Please make sure to fill in the remaining cards. See you at the fair!"
+            "Please make sure to fill in the remaining cards. See you at the fair!",
+        variant: "success"
     }
 }
 

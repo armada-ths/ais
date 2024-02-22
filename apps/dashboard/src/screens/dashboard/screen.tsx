@@ -11,15 +11,22 @@ import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
 import { LogoutButton } from "@/shared/LogoutButton"
 import { Timeline } from "@/shared/Timeline"
 import { useDashboard } from "@/shared/hooks/useDashboard"
+import { useDates } from "@/shared/hooks/useDates"
 import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
-import { BadgeInfo } from "lucide-react"
+import { AlertTriangle, BadgeInfo, CheckCircle } from "lucide-react"
+import { DateTime } from "luxon"
 import { useSelector } from "react-redux"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
 
 export function DashboardScreen() {
+    const {
+        data: dates,
+        isLoading: isLoadingDates,
+        isError: isErrorDates
+    } = useDates()
     const { data, isLoading, isError } = useDashboard()
     const forms = useSelector(selectForms)
 
@@ -31,18 +38,20 @@ export function DashboardScreen() {
         "text-emerald-400": companyProgress <= 1
     } */
 
-    if (isLoading) {
+    if (isLoading || isLoadingDates) {
         return <LoadingAnimation />
     }
 
     // Check if root error
-    if (isError || data == null) {
+    if (isError || isErrorDates || data == null || dates == null) {
         return <DashboardError />
     }
 
     const formCardsData = Object.entries(forms).filter(([, formMeta]) =>
         isFormVisible(formMeta.key, data.type ?? null)
     )
+
+    const timelinePhaseAlert = getTimelinePhaseMessage(data.type)
 
     return (
         <div className="flex min-h-[100dvh] flex-col">
@@ -66,13 +75,19 @@ export function DashboardScreen() {
                                 </CardHeader>
                             </Card>
                         )}
-                        {getTimelinePhaseMessage(data.type) != null && (
+                        {timelinePhaseAlert != null && (
                             <Alert className="mt-5 max-w-[700px]">
-                                <BadgeInfo />
+                                {timelinePhaseAlert.variant == null ||
+                                timelinePhaseAlert.variant === "info" ? (
+                                    <BadgeInfo />
+                                ) : timelinePhaseAlert.variant === "success" ? (
+                                    <CheckCircle className="stroke-emerald-400" />
+                                ) : (
+                                    <AlertTriangle className="stroke-yellow-400" />
+                                )}
                                 <AlertTitle className="ml-3">
                                     <span className="font-bold">
-                                        {getTimelinePhaseMessage(data.type)
-                                            ?.title ?? (
+                                        {timelinePhaseAlert?.title ?? (
                                             <span>
                                                 Current step:{" "}
                                                 {data.type.split("_").join(" ")}
@@ -81,10 +96,7 @@ export function DashboardScreen() {
                                     </span>
                                 </AlertTitle>
                                 <AlertDescription className="ml-3">
-                                    {
-                                        getTimelinePhaseMessage(data.type)
-                                            ?.description
-                                    }
+                                    {timelinePhaseAlert?.description}
                                 </AlertDescription>
                             </Alert>
                         )}
@@ -131,7 +143,10 @@ export function DashboardScreen() {
                                 "initial_registration",
                                 "after_initial_registration"
                             ],
-                            title: "Initial Registration"
+                            title: "Initial Registration",
+                            badgeText: DateTime.fromISO(
+                                dates.ir.start
+                            ).toFormat("MMM d")
                         },
                         {
                             id: [
@@ -142,9 +157,13 @@ export function DashboardScreen() {
                         },
                         {
                             id: [
-                                /*                                     "complete_registration_ir_unsigned", */
+                                "after_initial_registration_acceptance_accepted"
+                                /*                                 "after_initial_registration_acceptance_rejected" */
                             ],
-                            title: "You got a spot at the fair"
+                            title: "You got a spot at the fair",
+                            badgeText: DateTime.fromISO(
+                                dates.ir.acceptance
+                            ).toFormat("MMM d")
                         },
                         {
                             id: [
@@ -153,7 +172,9 @@ export function DashboardScreen() {
                                 "complete_registration_signed"
                             ],
                             title: "Final registration",
-                            badgeText: "Aug 20"
+                            badgeText: DateTime.fromISO(
+                                dates.fr.start
+                            ).toFormat("MMM d")
                         },
                         {
                             id: [],
@@ -161,7 +182,17 @@ export function DashboardScreen() {
                         },
                         {
                             id: [],
-                            title: "The fair 🥳"
+                            title: "The fair 🥳",
+                            badgeText: DateTime.fromISO(
+                                dates.fair.days.reduce(
+                                    (acc, curr) =>
+                                        DateTime.fromISO(acc) <
+                                        DateTime.fromISO(curr)
+                                            ? acc
+                                            : curr,
+                                    dates.fair.days[0]
+                                )
+                            ).toFormat("MMM d")
                         }
                     ]}
                     current={data.type}

@@ -6,6 +6,8 @@ export type RegistrationStatus =
     | "initial_registration_signed"
     | "after_initial_registration"
     | "after_initial_registration_signed" // The time period between initial registration and complete registration
+    | "after_initial_registration_acceptance_accepted" // Past the "acceptance date", if company not marked as accepted, it is rejected
+    | "after_initial_registration_acceptance_rejected" // Past the "acceptance date", is rejected
     | "before_complete_registration_ir_unsigned"
     | "before_complete_registration_ir_signed"
     | "complete_registration_ir_unsigned"

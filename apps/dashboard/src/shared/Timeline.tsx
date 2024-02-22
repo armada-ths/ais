@@ -53,13 +53,30 @@ export function Timeline(
                         ></div>
                         {stage.badgeText != null && (
                             <Badge
-                                variant={"outline"}
-                                className="absolute bottom-8 flex w-20 -translate-x-[40%] justify-center text-center text-sm font-normal text-stone-600"
+                                variant={
+                                    index <= currentIndex
+                                        ? "outline"
+                                        : "default"
+                                }
+                                className={cx(
+                                    "absolute bottom-8 flex w-20 -translate-x-[40%] justify-center text-center text-sm font-normal",
+                                    {
+                                        "bg-stone-200 text-stone-600":
+                                            index > currentIndex
+                                    }
+                                )}
                             >
                                 {stage.badgeText}
                             </Badge>
                         )}
-                        <p className="absolute mt-4 w-32 -translate-x-[40%] text-center text-sm text-stone-500">
+                        <p
+                            className={cx(
+                                "absolute mt-4 w-32 -translate-x-[40%] text-center text-sm text-stone-600",
+                                {
+                                    "text-stone-500": index > currentIndex
+                                }
+                            )}
+                        >
                             {stage.title}
                         </p>
                     </div>

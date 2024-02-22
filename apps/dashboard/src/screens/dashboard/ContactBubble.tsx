@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/drawer"
 import { Separator } from "@/components/ui/separator"
 import { useDashboard } from "@/shared/hooks/useDashboard"
-import { X } from "lucide-react"
+import { MessageCircleQuestion, X } from "lucide-react"
 
 export function ContactBubble() {
     const { data } = useDashboard()
@@ -23,10 +23,16 @@ export function ContactBubble() {
     return (
         <Drawer>
             <DrawerTrigger>
-                <div className="h-20 w-20 overflow-hidden rounded-full transition-all duration-200 active:scale-95">
+                <div className="relative h-20 w-20 rounded-full transition-all duration-200 active:scale-95">
+                    <div className="absolute -right-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
+                        <MessageCircleQuestion
+                            size={20}
+                            className="text-emerald-500"
+                        />
+                    </div>
                     <img
                         src={companyContact.picture_original}
-                        className="h-full w-full bg-stone-500"
+                        className="h-full w-full rounded-full bg-stone-500"
                     />
                 </div>
             </DrawerTrigger>
