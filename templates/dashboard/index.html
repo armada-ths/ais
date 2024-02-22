@@ -1,0 +1,16 @@
+{% load staticfiles %} {% block content %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Armada Dashboard</title>
+  <base href="/static/apps/dashboard">
+
+  <link href="{% static 'apps/dashboard/assets/index.css' %}" rel="stylesheet" />
+</head>
+<body>
+  <div id="root" />
+  <script src="{% static 'apps/dashboard/assets/index.js' %}"></script>
+</body>
+</html>
+{% endblock %}

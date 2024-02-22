@@ -1,8 +1,8 @@
 from django.conf.urls import url
 
-from register.api.registration import registration
+from .api.registration import registration
 
-app_name = "register_api"
+app_name = "dashboard_api"
 
 urlpatterns = [
     url(r"^$", registration.index),

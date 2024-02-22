@@ -6,9 +6,9 @@ from companies.models import Company, CompanyContact
 from fair.models import RegistrationState
 from exhibitors.models import Exhibitor
 
-from register.api.registration.cr import handle_cr, submit_cr
-from register.api.registration.ir import handle_ir, submit_ir
-from register.api.registration.util import UserPermission
+from dashboard.api.registration.cr import handle_cr, submit_cr
+from dashboard.api.registration.ir import handle_ir, submit_ir
+from dashboard.api.registration.util import UserPermission
 
 
 # This function will receive a GET or PUT and return
@@ -17,7 +17,6 @@ def render_company(request, company, contact, exhibitor):
     fair = get_fair()
     period = fair.get_period()
 
-    # Todo 2023 (Didrik Munther): implement periods other than CR
     if period == RegistrationState.BEFORE_IR:
         return status.IR_NOT_OPEN
     elif period == RegistrationState.IR:

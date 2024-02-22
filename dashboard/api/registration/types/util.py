@@ -2,13 +2,13 @@ from rest_framework.fields import empty
 from rest_framework.parsers import JSONParser
 from django.http import JsonResponse
 
-from register.api.registration.types.cr import (
+from dashboard.api.registration.types.cr import (
     CRRegistrationSerializer,
     CRSignedRegistrationSerializer,
 )
-from register.api.registration.types.ir import IRRegistrationSerializer
-from register.api.registration.types.registration import RegistrationType
-from register.api.registration.util import (
+from dashboard.api.registration.types.ir import IRRegistrationSerializer
+from dashboard.api.registration.types.registration import RegistrationType
+from dashboard.api.registration.util import (
     UserPermission,
 )
 

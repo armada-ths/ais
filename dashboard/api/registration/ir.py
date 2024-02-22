@@ -8,8 +8,8 @@ from util import JSONError, get_user, status
 from util.email import send_mail
 from util.ip import get_client_ip
 
-from register.api.registration.types.registration import get_registration
-from register.api.registration.types.util import get_serializer, put_registration
+from dashboard.api.registration.types.registration import get_registration
+from dashboard.api.registration.types.util import get_serializer, put_registration
 
 from register.models import SignupLog
 

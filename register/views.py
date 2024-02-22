@@ -166,9 +166,7 @@ def choose_company(request):
     )
 
     if len(company_contacts) == 1:
-        # Note: This is the old FR page
-        # return redirect("anmalan:registration", company_contacts.first().company.pk)
-        return new_react_cr_view(request)
+        return redirect("dashboard:index", company_contacts.first().company.pk)
 
     # if zero or several company_contacts connections
     return render(
@@ -387,10 +385,6 @@ def form_initial(request, company, company_contact, fair):
             "contacts": contact_cards,
         },
     )
-
-
-def new_react_cr_view(request):
-    return render(request, "register/inside/registration_complete_new.html")
 
 
 def form_complete(request, company, company_contact, fair, exhibitor):

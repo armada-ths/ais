@@ -1,5 +1,5 @@
 from companies.serializers import CompanySerializer
-from register.api.registration.types.serializer import RegistrationSerializer
+from dashboard.api.registration.types.serializer import RegistrationSerializer
 from util import update_field
 
 

@@ -3,7 +3,7 @@ from accounting.models import Order
 from accounting.api import OrderSerializer
 
 from companies.serializers import CompanySerializer
-from register.api.registration.types.serializer import (
+from dashboard.api.registration.types.serializer import (
     ExhibitorSerializer,
     RegistrationSerializer,
 )

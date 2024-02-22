@@ -8,7 +8,7 @@ urlpatterns = [
     url(r"^exhibitors/", include("exhibitors.api_urls")),
     url(r"^banquet/", include("banquet.api_urls")),
     url(r"^fair/", include("fair.api_urls")),
-    url(r"^registration/", include("register.api_urls")),
+    url(r"^dashboard/", include("dashboard.api_urls")),
     url(r"^accounting/", include("accounting.api_urls")),
     url(r"^catalogueselections/", views.catalogueselections),
     url(r"^news/", views.news),

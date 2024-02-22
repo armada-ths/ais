@@ -1,11 +1,11 @@
 from ais.common import settings
-from register.api.registration.types.registration import get_registration
+from dashboard.api.registration.types.registration import get_registration
 from util import JSONError, get_user, status
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
-from register.api.registration.types.util import get_serializer, put_registration
+from dashboard.api.registration.types.util import get_serializer, put_registration
 
 from register.models import SignupLog
 from accounting.models import Order

@@ -5,7 +5,7 @@ from recruitment.models import RecruitmentApplication
 
 from util import update_field
 
-from register.api.registration.types.base64image import Base64ImageField
+from dashboard.api.registration.types.base64image import Base64ImageField
 
 from exhibitors.models import (
     CatalogueCategory,
