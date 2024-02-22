@@ -166,7 +166,7 @@ def choose_company(request):
     )
 
     if len(company_contacts) == 1:
-        return redirect("dashboard:index", company_contacts.first().company.pk)
+        return redirect("dashboard:index")
 
     # if zero or several company_contacts connections
     return render(
