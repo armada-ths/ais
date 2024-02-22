@@ -18,8 +18,13 @@ export const FORM_ACCESS: Record<
         ir_signup: "shown_locked",
         ir_additional_info: "shown"
     },
-    after_initial_registration: {},
-    after_initial_registration_signed: {},
+    after_initial_registration: {
+        ir_signup: "shown_locked"
+    },
+    after_initial_registration_signed: {
+        ir_signup: "shown_locked",
+        ir_additional_info: "shown"
+    },
     before_complete_registration_ir_signed: {
         lunch_tickets: "shown",
         exhibitor_catalog: "shown",

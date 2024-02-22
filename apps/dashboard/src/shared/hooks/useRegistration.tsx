@@ -58,7 +58,6 @@ export interface Company {
 export async function queryRegistration() {
     const response = await fetch(`${HOST}/api/registration`)
     const result = (await response.json()) as RegistrationResponse
-    console.log("REGISTRATION", result)
     return result
 }
 

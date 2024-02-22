@@ -16,6 +16,7 @@ export function FormSidebarProgressionSummary() {
                     <PageCard
                         key={page.id}
                         selected={activePage?.id === page.id}
+                        form={form}
                         page={page}
                     />
                 ))}

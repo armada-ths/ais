@@ -13,11 +13,6 @@ import { BadgeInfo } from "lucide-react"
 import { useSelector } from "react-redux"
 import { isFormOpen, isFormVisible } from "../../forms/form_access"
 import { LogoutButton } from "../../shared/LogoutButton"
-import {
-    selectCompanyName,
-    selectCompanyStatus,
-    selectUser
-} from "../../store/company/company_selectors"
 import { selectForms } from "../../store/form/form_selectors"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
@@ -25,11 +20,6 @@ import FormCard from "./FormCard"
 export function DashboardScreen() {
     const { data, isLoading, isError } = useRegistration()
     const forms = useSelector(selectForms)
-    const companyStatus = useSelector(selectCompanyStatus)
-    /*     const companyProgress = useSelector(selectCompanyProgress) */
-    //const selectError = useSelector(selectErrors)
-    const companyName = useSelector(selectCompanyName)
-    const user = useSelector(selectUser)
 
     /*     const colorClassName = {
         "text-red-400": companyProgress < 0.5,
@@ -47,7 +37,7 @@ export function DashboardScreen() {
     }
 
     const formCardsData = Object.entries(forms).filter(([, formMeta]) =>
-        isFormVisible(formMeta.key, companyStatus ?? null)
+        isFormVisible(formMeta.key, data.type ?? null)
     )
 
     return (
@@ -58,14 +48,14 @@ export function DashboardScreen() {
                     <div className="grid w-full grid-cols-[1fr_2fr_1fr]">
                         <div />
                         <h1 className="rounded p-2 px-8 text-center text-4xl text-emerald-400">
-                            {companyName}
+                            {data.company.name}
                         </h1>
                     </div>
-                    {user?.first_name != null && (
+                    {data.contact?.first_name != null && (
                         <Card className="max-w-[700px]">
                             <CardHeader>
                                 <CardTitle>
-                                    Welcome <b>{user.first_name}</b>!
+                                    Welcome <b>{data.contact.first_name}</b>!
                                 </CardTitle>
                                 <CardDescription>
                                     From this dashboard you will be able to
@@ -118,10 +108,7 @@ export function DashboardScreen() {
                                 key={key}
                                 form={formMeta}
                                 locked={
-                                    !isFormOpen(
-                                        formMeta.key,
-                                        companyStatus ?? null
-                                    )
+                                    !isFormOpen(formMeta.key, data.type ?? null)
                                 }
                             />
                         ))}

@@ -1,22 +1,22 @@
-import PrimarySection from "./PrimarySection"
-import { FormPageView } from "./FormPageView"
+import { useParams } from "@tanstack/react-router"
+import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { FORMS } from "../../forms"
+import { isFormOpen } from "../../forms/form_access"
+import { InfoScreen } from "../../shared/InfoScreen"
+import { Navbar } from "../../shared/Navbar"
+import { selectCompanyStatus } from "../../store/company/company_selectors"
 import {
     selectActivePage,
     selectActivePageIndex,
     selectForm
 } from "../../store/form/form_selectors"
-import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
-import { cx } from "../../utils/cx"
-import { Navbar } from "../../shared/Navbar"
-import { InfoScreen } from "../../shared/InfoScreen"
-import { useParams } from "@tanstack/react-router"
-import { FORMS } from "../../forms"
-import { useEffect } from "react"
 import { setActiveForm } from "../../store/form/form_slice"
-import { isFormOpen } from "../../forms/form_access"
-import { selectCompanyStatus } from "../../store/company/company_selectors"
 import { RootState } from "../../store/store"
+import { cx } from "../../utils/cx"
+import { FormPageView } from "./FormPageView"
+import PrimarySection from "./PrimarySection"
+import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 
 export function FormScreen() {
     const dispatch = useDispatch()
@@ -73,8 +73,17 @@ export function FormScreen() {
     return (
         <div>
             <Navbar />
-            <div className={cx("grid min-h-[92vh] grid-cols-[1fr_3fr_1fr]")}>
-                <FormSidebarProgressionSummary />
+            <div
+                className={cx("grid min-h-[92vh] grid-cols-[1fr_3fr_1fr]", {
+                    "grid-cols-[0_1fr_0]": !SideBar && form.pages.length <= 1
+                })}
+            >
+                {form.pages.length > 1 ? (
+                    // Only show the progression summary if there are multiple pages
+                    <FormSidebarProgressionSummary />
+                ) : (
+                    <div className="" />
+                )}
                 <PrimarySection>
                     <FormPageView
                         form={form}

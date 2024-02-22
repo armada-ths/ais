@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge"
 import { useProducts } from "@/shared/hooks/useProducts"
 import { useRegistration } from "@/shared/hooks/useRegistration"
 import { useNavigate } from "@tanstack/react-router"
@@ -51,13 +52,17 @@ export default function FormCard({
             key={form.key}
             className={cx(
                 "p-5 px-8 text-slate-700 transition-all hover:cursor-pointer active:scale-95",
-                locked && "opacity-50 hover:cursor-default active:scale-100"
+                {
+                    "opacity-50 hover:cursor-default active:scale-100": locked
+                }
             )}
         >
             <div className="mb-2 flex items-center justify-between gap-x-10">
                 <p className="text-lg">{form.name}</p>
                 {form.progression !== "none" &&
-                    (progress < 1 && !form.forceFormDone ? (
+                    (progress <= 0 && !form.forceFormDone ? (
+                        <Badge>Not Started</Badge>
+                    ) : progress < 1 && !form.forceFormDone ? (
                         <p className="text-yellow-400">
                             {(progress * 100).toFixed()}%
                         </p>

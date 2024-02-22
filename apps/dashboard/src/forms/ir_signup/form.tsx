@@ -1,4 +1,5 @@
 import IrRegistrationPage from "@/forms/ir_signup/ir_registration.page"
+import { RegistrationStatus } from "@/store/company/company_slice"
 import { Form } from "../form_types"
 
 export const form: Form = {
@@ -13,11 +14,15 @@ export const form: Form = {
             fields: [],
             hasNextButton: false,
             isDone: ({ registration }) =>
-                [
-                    "initial_registration_signed",
-                    "complete_registration_ir_signed",
-                    "complete_registration_signed"
-                ].includes(registration.type)
+                (
+                    [
+                        "initial_registration_signed",
+                        "complete_registration_ir_signed",
+                        "complete_registration_signed",
+                        "after_initial_registration_signed",
+                        "complete_registration_ir_signed"
+                    ] as RegistrationStatus[]
+                ).includes(registration.type)
         }
     ]
 }
