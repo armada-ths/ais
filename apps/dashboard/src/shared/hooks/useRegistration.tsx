@@ -8,11 +8,21 @@ export interface RegistrationResponse {
     has_signed_ir: boolean
     fair: RegistrationFair
     ir_contract: Contract
-    cr_contract: unknown
+    cr_contract: Contract
+    sales_contacts: SalesContact[]
     orders: unknown[]
     contact: Contact
     exhibitor: unknown
     company: Company
+}
+
+export interface SalesContact {
+    first_name: string
+    last_name: string
+    title: string
+    email: string
+    phone_number: string
+    picture_original: string
 }
 
 export interface RegistrationFair {
@@ -58,6 +68,7 @@ export interface Company {
 export async function queryRegistration() {
     const response = await fetch(`${HOST}/api/registration`)
     const result = (await response.json()) as RegistrationResponse
+    console.log("REGISTRATION", JSON.stringify(result))
     return result
 }
 

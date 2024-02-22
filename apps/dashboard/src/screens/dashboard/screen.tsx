@@ -5,21 +5,24 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import { isFormOpen, isFormVisible } from "@/forms/form_access"
+import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
+import { LogoutButton } from "@/shared/LogoutButton"
 import { useRegistration } from "@/shared/hooks/useRegistration"
+import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
 import { BadgeInfo } from "lucide-react"
 import { useSelector } from "react-redux"
-import { isFormOpen, isFormVisible } from "../../forms/form_access"
-import { LogoutButton } from "../../shared/LogoutButton"
-import { selectForms } from "../../store/form/form_selectors"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
 
 export function DashboardScreen() {
     const { data, isLoading, isError } = useRegistration()
     const forms = useSelector(selectForms)
+
+    const companyContact = data?.sales_contacts?.[0]
 
     /*     const colorClassName = {
         "text-red-400": companyProgress < 0.5,
@@ -117,7 +120,12 @@ export function DashboardScreen() {
             </div>
             <div className="flex flex-col items-center">
                 <LogoutButton />
-                <div className="flex-1" />
+                <div className="flex-1" /> {/* Spacer */}
+                {companyContact != null && (
+                    <div className="flex w-full justify-end p-4 lg:p-8">
+                        <ContactBubble />
+                    </div>
+                )}
             </div>
         </div>
     )
