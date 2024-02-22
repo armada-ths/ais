@@ -1,6 +1,6 @@
 from enum import Enum
 
-from util import JSONError, get_contract_signature, get_fair, status
+from util import JSONError, get_contract_signature, get_fair, get_sales_contacts, status
 
 from register.models import SignupContract
 from fair.models import RegistrationState
@@ -65,6 +65,8 @@ class Registration:
         ir_contract, ir_signature = get_contract_signature(company, fair, "INITIAL")
         self.ir_contract = ir_contract
         self.ir_signature = ir_signature
+
+        self.sales_contacts = get_sales_contacts(fair, company, exhibitor)
 
         period = fair.get_period()
 

@@ -20,7 +20,7 @@ def handle_ir(request, company, fair, contact):
     except JSONError as error:
         return error.status
 
-    serializer = get_serializer(registration, context={"user": get_user(request)})
+    serializer = get_serializer(request, registration)
 
     if request.method == "GET":
         return JsonResponse(serializer.data, safe=False)
@@ -100,6 +100,6 @@ def submit_ir(request, company, fair, contact):
     except JSONError as error:
         return error.status
 
-    serializer = get_serializer(registration, context={"user": get_user(request)})
+    serializer = get_serializer(request, registration)
 
     return JsonResponse(serializer.data, safe=False)

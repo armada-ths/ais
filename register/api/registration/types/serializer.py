@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
+from people.models import Profile
+from recruitment.models import RecruitmentApplication
 
 from util import update_field
 
@@ -15,6 +17,7 @@ from exhibitors.models import (
 from fair.models import Fair
 from companies.models import CompanyContact
 from register.models import SignupContract
+from django.contrib.auth.models import User
 
 from accounting.api import OrderSerializer
 
@@ -154,6 +157,47 @@ class ExhibitorSerializer(WritableNestedModelSerializer):
         )
 
 
+# Expects a profile object
+class SalesContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = (
+            "picture_original",
+            "phone_number",
+            "first_name",
+            "last_name",
+            "title",
+            "email",
+        )
+        read_only_fields = fields
+
+    first_name = serializers.SerializerMethodField(read_only=True)
+    last_name = serializers.SerializerMethodField(read_only=True)
+    title = serializers.SerializerMethodField(read_only=True)
+    email = serializers.SerializerMethodField(read_only=True)
+
+    def get_first_name(self, obj):
+        return obj.user.first_name
+
+    def get_last_name(self, obj):
+        return obj.user.last_name
+
+    def get_title(self, obj):
+        recruitment_application = RecruitmentApplication.objects.filter(
+            status="accepted",
+            recruitment_period__fair=self.context.get("fair"),
+            user=obj.user,
+        ).first()
+
+        if recruitment_application is None:
+            return None
+
+        return recruitment_application.delegated_role.name
+
+    def get_email(self, obj):
+        return obj.armada_email or obj.user.email
+
+
 class RegistrationSerializer(serializers.Serializer):
     # Read only fields
     type = serializers.StringRelatedField(read_only=True)
@@ -161,11 +205,27 @@ class RegistrationSerializer(serializers.Serializer):
     fair = FairSerializer(read_only=True)
     ir_contract = SignupContractSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
+    sales_contacts = SalesContactSerializer(read_only=True, many=True)
 
     # Editable fields
     orders = OrderSerializer(many=True)
     contact = ContactSerializer()
     exhibitor = ExhibitorSerializer()
+
+    # Add the 'fair' context to sales_contacts
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+
+        if "sales_contacts" in ret:
+            sales_contacts = SalesContactSerializer(
+                instance=instance.sales_contacts,
+                many=True,
+                context={"fair": instance.fair, **self.context},
+            )
+
+            ret["sales_contacts"] = sales_contacts.data
+
+        return ret
 
     def update(self, instance, validated_data):
         update_field(instance, validated_data, "contact", ContactSerializer)

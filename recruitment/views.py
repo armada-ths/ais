@@ -1035,6 +1035,25 @@ def recruitment_application_new(
     )
 
 
+def get_recruiter_information(fair):
+    roles = ["Head of Human Resources", "Project Manager"]
+    for role in roles:
+        for applicant in RecruitmentApplication.objects.filter(
+            status="accepted",
+            delegated_role__name=role,
+            recruitment_period__fair=fair,
+        ).all():
+            hr_profile = create_profile(applicant)
+            if hr_profile is not None:
+                return hr_profile
+
+    return {
+        "name": "Armada",
+        "role": "support",
+        "email": "recruitment@armada.nu",
+    }
+
+
 def send_confirmation_email(request, user, recruitment_period):
     hr_profile = get_recruiter_information(recruitment_period.fair)
     url_to_application = "https://ais.armada.nu/fairs/%s/recruitment/%s" % (
@@ -1056,25 +1075,6 @@ def send_confirmation_email(request, user, recruitment_period):
         subject="Thank you for applying to THS Armada!",
         to=[user.email],
     )
-
-
-def get_recruiter_information(fair):
-    roles = ["Head of Human Resources", "Project Manager"]
-    for role in roles:
-        for applicant in RecruitmentApplication.objects.filter(
-            status="accepted",
-            delegated_role__name=role,
-            recruitment_period__fair=fair,
-        ).all():
-            hr_profile = create_profile(applicant)
-            if hr_profile is not None:
-                return hr_profile
-
-    return {
-        "name": "Armada",
-        "role": "support",
-        "email": "recruitment@armada.nu",
-    }
 
 
 def create_profile(applicant):

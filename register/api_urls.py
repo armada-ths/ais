@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from register.api import registration
+from register.api.registration import registration
 
 app_name = "register_api"
 

@@ -15,8 +15,10 @@ from register.api.registration.util import (
 from util import status, get_user
 
 
-def get_serializer(registration, data=empty, context={}):
-    user = context["user"]
+def get_serializer(request, registration, data=empty, context={}):
+    context = {"request": request, **context}
+
+    user = get_user(request)
     if user != None:
         permission = UserPermission(user)
 
@@ -65,9 +67,10 @@ def get_serializer(registration, data=empty, context={}):
 def put_registration(request, registration, purchasing_company):
     data = JSONParser().parse(request)
     serializer = get_serializer(
+        request,
         registration,
-        context={"user": get_user(request), "purchasing_company": purchasing_company},
         data=data,
+        context={"purchasing_company": purchasing_company},
     )
 
     if serializer.is_valid():
