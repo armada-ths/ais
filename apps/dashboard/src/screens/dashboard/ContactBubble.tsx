@@ -30,7 +30,7 @@ export function ContactBubble() {
                     />
                 </div>
             </DrawerTrigger>
-            <DrawerContent className="mx-auto min-h-[400px] max-w-[700px] lg:px-8">
+            <DrawerContent className="mx-auto max-w-[700px] lg:px-8">
                 <DrawerClose className="absolute right-4 top-2 rounded-lg bg-stone-200 p-1">
                     <X size={20} className="text-stone-800" />
                 </DrawerClose>
@@ -43,8 +43,8 @@ export function ContactBubble() {
                             <DrawerDescription className="mt-2 text-start">
                                 I'm your host at Armada. If you have any
                                 questions don't hesitate to contact me!
-                                <div className="mt-2">
-                                    <p>
+                                <div className="mt-5 flex flex-col gap-y-2">
+                                    <p className="">
                                         Mail:{" "}
                                         <a
                                             href={`mailto:${companyContact.email}`}
@@ -53,12 +53,20 @@ export function ContactBubble() {
                                             {companyContact.email}
                                         </a>
                                     </p>
-                                    <p>Phone: {companyContact.phone_number}</p>
+                                    <p className="">
+                                        Phone:{" "}
+                                        <a
+                                            href={`tel:${companyContact.phone_number}`}
+                                            className="underline hover:cursor-pointer"
+                                        >
+                                            {companyContact.phone_number}
+                                        </a>
+                                    </p>
                                 </div>
                             </DrawerDescription>
                         </div>
                         <div className="flex flex-1 justify-end">
-                            <div className="aspect-square h-full max-h-20 overflow-hidden rounded-full transition-all duration-200 active:scale-95">
+                            <div className="aspect-square h-full max-h-20 overflow-hidden rounded-full">
                                 <img
                                     src={companyContact.picture_original}
                                     className="h-full w-full bg-stone-500"
@@ -70,13 +78,13 @@ export function ContactBubble() {
                 {additionalCompanyContacts != null &&
                     additionalCompanyContacts.length > 0 && (
                         <>
-                            <Separator />
+                            <Separator className="mt-5" />
                             <DrawerFooter>
-                                <DrawerTitle>Other Contacts</DrawerTitle>
-                                <div className="flex flex-col gap-4">
+                                <DrawerTitle>Secondary Contacts</DrawerTitle>
+                                <div className="flex flex-wrap justify-between gap-4">
                                     {additionalCompanyContacts.map(contact => (
                                         <div>
-                                            <p>
+                                            <p className="text-sm">
                                                 {contact.first_name} -{" "}
                                                 {contact.title}
                                             </p>
