@@ -23,12 +23,13 @@ def render_company(request, company, contact, exhibitor):
         return handle_ir(request, company, fair, contact)
     elif period == RegistrationState.AFTER_IR:
         return handle_ir(request, company, fair, contact)
+    elif period == RegistrationState.AFTER_IR_ACCEPTANCE:
+        return handle_ir(request, company, fair, contact)
     elif period == RegistrationState.CR:
         return handle_cr(request, company, fair, contact, exhibitor)
     elif period == RegistrationState.AFTER_CR:
-        return handle_cr(
-            request, company, fair, contact, exhibitor
-        )  # todo: temporary. What should really happen after CR?
+        # todo: temporary. What should really happen after CR?
+        return handle_cr(request, company, fair, contact, exhibitor)
     else:
         return status.INVALID_REGISTRATION_PERIOD
 

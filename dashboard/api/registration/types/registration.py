@@ -13,13 +13,15 @@ class RegistrationType(Enum):
     InitialRegistrationSigned = 2
     AfterInitialRegistration = 3
     AfterInitialRegistrationSigned = 4
-    BeforeCompleteRegistrationIRUnsigned = 5
-    BeforeCompleteRegistrationIRSigned = 6
-    CompleteRegistrationIRUnsigned = 7
-    CompleteRegistrationIRSigned = 8
-    CompleteRegistrationSigned = 9
-    AfterCompleteRegistration = 10
-    AfterCompleteRegistrationSigned = 11
+    AfterInitialRegistrationAcceptanceAccepted = 5
+    AfterInitialRegistrationAcceptanceRejected = 6
+    BeforeCompleteRegistrationIRUnsigned = 7
+    BeforeCompleteRegistrationIRSigned = 8
+    CompleteRegistrationIRUnsigned = 9
+    CompleteRegistrationIRSigned = 10
+    CompleteRegistrationSigned = 11
+    AfterCompleteRegistration = 12
+    AfterCompleteRegistrationSigned = 13
 
     def __str__(self):
         if self == RegistrationType.BeforeInitialRegistration:
@@ -32,6 +34,10 @@ class RegistrationType(Enum):
             return "after_initial_registration"
         elif self == RegistrationType.AfterInitialRegistrationSigned:
             return "after_initial_registration_signed"
+        elif self == RegistrationType.AfterInitialRegistrationAcceptanceAccepted:
+            return "after_initial_registration_acceptance_accepted"
+        elif self == RegistrationType.AfterInitialRegistrationAcceptanceRejected:
+            return "after_initial_registration_acceptance_rejected"
         if self == RegistrationType.BeforeCompleteRegistrationIRUnsigned:
             return "before_complete_registration_ir_unsigned"
         if self == RegistrationType.BeforeCompleteRegistrationIRSigned:
@@ -90,6 +96,13 @@ class Registration:
                 self.type = RegistrationType.AfterInitialRegistrationSigned
             else:
                 self.type = RegistrationType.AfterInitialRegistration
+        elif period == RegistrationState.AFTER_IR_ACCEPTANCE:
+            self.ensure_ir_eligibility()
+
+            if exhibitor == None:
+                self.type = RegistrationType.AfterInitialRegistrationAcceptanceRejected
+            else:
+                self.type = RegistrationType.AfterInitialRegistrationAcceptanceAccepted
         elif period == RegistrationState.CR:
             self.ensure_cr_eligibility()
 
