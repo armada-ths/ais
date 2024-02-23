@@ -25,6 +25,14 @@ export const FORM_ACCESS: Record<
         ir_signup: "shown_locked",
         ir_additional_info: "shown"
     },
+    after_initial_registration_acceptance_accepted: {
+        ir_signup: "shown_locked",
+        ir_additional_info: "shown"
+    },
+    after_initial_registration_acceptance_rejected: {
+        ir_signup: "shown_locked",
+        ir_additional_info: "shown"
+    },
     before_complete_registration_ir_signed: {
         lunch_tickets: "shown",
         exhibitor_catalog: "shown",
