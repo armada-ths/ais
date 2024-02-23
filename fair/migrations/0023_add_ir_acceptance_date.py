@@ -4,32 +4,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0022_auto_20230427_1920'),
+        ("fair", "0022_auto_20230427_1920"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='fairday',
-            options={'default_permissions': [], 'ordering': ['-fair', 'date']},
+            name="fairday",
+            options={"default_permissions": [], "ordering": ["-fair", "date"]},
         ),
         migrations.AlterModelOptions(
-            name='lunchticket',
-            options={'default_permissions': [], 'ordering': ['-fair', 'pk'], 'permissions': [('lunchtickets', 'Manage lunch tickets')]},
+            name="lunchticket",
+            options={
+                "default_permissions": [],
+                "ordering": ["-fair", "pk"],
+                "permissions": [("lunchtickets", "Manage lunch tickets")],
+            },
         ),
         migrations.AlterModelOptions(
-            name='organizationgroup',
-            options={'ordering': ['-fair', 'name']},
+            name="organizationgroup",
+            options={"ordering": ["-fair", "name"]},
         ),
         migrations.AddField(
-            model_name='fair',
-            name='registration_acceptance_date',
-            field=models.DateTimeField(default='2021-01-01 00:00:00+00:00', help_text='The date when the companies will be able to see if they have been accepted or not.'),
+            model_name="fair",
+            name="registration_acceptance_date",
+            field=models.DateTimeField(
+                default="2021-01-01 00:00:00+00:00",
+                help_text="The date when the companies will be able to see if they have been accepted or not.",
+            ),
         ),
         migrations.AlterField(
-            model_name='fair',
-            name='year',
+            model_name="fair",
+            name="year",
             field=models.IntegerField(default=2024),
         ),
     ]

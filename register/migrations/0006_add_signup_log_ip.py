@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('register', '0005_auto_20190505_1539'),
+        ("register", "0005_auto_20190505_1539"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signuplog',
-            name='ip_address',
+            model_name="signuplog",
+            name="ip_address",
             field=models.GenericIPAddressField(blank=True, null=True),
         ),
     ]

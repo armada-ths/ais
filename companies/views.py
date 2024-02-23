@@ -1300,9 +1300,9 @@ def contracts_export(request, year):
 
         response = HttpResponse(csv, content_type="text/csv; charset=utf-8")
         response["Content-Length"] = len(csv)
-        response["Content-Disposition"] = (
-            'attachment; filename="exported signatures.csv"'
-        )
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="exported signatures.csv"'
 
         return response
 
