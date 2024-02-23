@@ -8,9 +8,7 @@ export const FORM_ACCESS: Record<
         Record<keyof typeof FORMS, "shown" | "shown_locked" | "hidden_locked">
     >
 > = {
-    before_initial_registration: {
-        ir_signup: "shown"
-    },
+    before_initial_registration: {},
     initial_registration: {
         ir_signup: "shown"
     },

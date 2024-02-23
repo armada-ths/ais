@@ -68,7 +68,6 @@ export interface Company {
 export async function queryDashboard() {
     const response = await fetch(`${HOST}/api/dashboard`)
     const result = (await response.json()) as DashboardResponse
-    result.type = "after_initial_registration_acceptance_accepted"
     return result
 }
 

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/drawer"
 import { Separator } from "@/components/ui/separator"
 import { useDashboard } from "@/shared/hooks/useDashboard"
-import { MessageCircleQuestion, X } from "lucide-react"
+import { Mail, MessageCircleQuestion, Phone, X } from "lucide-react"
 
 export function ContactBubble() {
     const { data } = useDashboard()
@@ -50,8 +50,8 @@ export function ContactBubble() {
                                 I'm your host at Armada. If you have any
                                 questions don't hesitate to contact me!
                                 <div className="mt-5 flex flex-col gap-y-2">
-                                    <p className="">
-                                        Mail:{" "}
+                                    <p className="flex items-center gap-2">
+                                        <Mail />
                                         <a
                                             href={`mailto:${companyContact.email}`}
                                             className="text-emerald-400 underline hover:cursor-pointer"
@@ -59,8 +59,8 @@ export function ContactBubble() {
                                             {companyContact.email}
                                         </a>
                                     </p>
-                                    <p className="">
-                                        Phone:{" "}
+                                    <p className="flex items-center gap-2">
+                                        <Phone />
                                         <a
                                             href={`tel:${companyContact.phone_number}`}
                                             className="underline hover:cursor-pointer"

@@ -61,7 +61,7 @@ export function Timeline(
                                 className={cx(
                                     "absolute bottom-8 flex w-20 -translate-x-[40%] justify-center text-center text-sm font-normal",
                                     {
-                                        "bg-stone-200 text-stone-600":
+                                        "bg-stone-200 text-stone-600 hover:bg-stone-200":
                                             index > currentIndex
                                     }
                                 )}
@@ -73,7 +73,8 @@ export function Timeline(
                             className={cx(
                                 "absolute mt-4 w-32 -translate-x-[40%] text-center text-sm text-stone-600",
                                 {
-                                    "text-stone-500": index > currentIndex
+                                    "text-stone-500 hover:text-stone-500":
+                                        index > currentIndex
                                 }
                             )}
                         >
