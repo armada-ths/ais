@@ -58,10 +58,10 @@ export default function FormCard({
             )}
         >
             <div className="mb-2 flex items-center justify-between gap-x-10">
-                <p className="text-lg">{form.name}</p>
+                <p className="whitespace-nowrap text-lg">{form.name}</p>
                 {form.progression !== "none" &&
                     (progress <= 0 && !form.forceFormDone ? (
-                        <Badge>Not Started</Badge>
+                        <Badge className="whitespace-nowrap">Not Started</Badge>
                     ) : progress < 1 && !form.forceFormDone ? (
                         <p className="text-yellow-400">
                             {(progress * 100).toFixed()}%
