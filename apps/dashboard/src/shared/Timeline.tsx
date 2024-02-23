@@ -59,7 +59,7 @@ export function Timeline(
                                         : "default"
                                 }
                                 className={cx(
-                                    "absolute bottom-8 flex w-20 -translate-x-[40%] justify-center text-center text-sm font-normal",
+                                    "absolute bottom-8 flex -translate-x-[40%] justify-center whitespace-nowrap text-center text-sm font-normal",
                                     {
                                         "bg-stone-200 text-stone-600 hover:bg-stone-200":
                                             index > currentIndex

@@ -144,9 +144,11 @@ export function DashboardScreen() {
                                 "after_initial_registration"
                             ],
                             title: "Initial Registration",
-                            badgeText: DateTime.fromISO(
+                            badgeText: `${DateTime.fromISO(
                                 dates.ir.start
-                            ).toFormat("MMM d")
+                            ).toFormat("MMM d")} - ${DateTime.fromISO(
+                                dates.ir.end
+                            ).toFormat("MMM d")}`
                         },
                         {
                             id: [
@@ -172,9 +174,11 @@ export function DashboardScreen() {
                                 "complete_registration_signed"
                             ],
                             title: "Final registration",
-                            badgeText: DateTime.fromISO(
+                            badgeText: `${DateTime.fromISO(
                                 dates.fr.start
-                            ).toFormat("MMM d")
+                            ).toFormat("MMM d")} - ${DateTime.fromISO(
+                                dates.fr.end
+                            ).toFormat("MMM d")}`
                         },
                         {
                             id: [],
