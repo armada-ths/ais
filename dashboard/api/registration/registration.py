@@ -18,7 +18,7 @@ def render_company(request, company, contact, exhibitor):
     period = fair.get_period()
 
     if period == RegistrationState.BEFORE_IR:
-        return status.IR_NOT_OPEN
+        return handle_ir(request, company, fair, contact)
     elif period == RegistrationState.IR:
         return handle_ir(request, company, fair, contact)
     elif period == RegistrationState.AFTER_IR:
