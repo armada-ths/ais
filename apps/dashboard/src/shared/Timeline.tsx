@@ -24,7 +24,7 @@ export function Timeline(
     const currentPercentage = currentIndex / (stages.length - 1)
 
     return (
-        <div className={cx("flex h-16", className)} {...rest}>
+        <div className={cx("mt-10 flex h-16", className)} {...rest}>
             <div className="relative flex h-4 w-72 flex-1 justify-between rounded-3xl bg-stone-200">
                 <div
                     style={{

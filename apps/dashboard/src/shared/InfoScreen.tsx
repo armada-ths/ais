@@ -1,4 +1,4 @@
-import { Link, LinkComponent } from "@tanstack/react-router"
+import { Link, LinkComponent, useParams } from "@tanstack/react-router"
 import React from "react"
 import { cx } from "../utils/cx"
 
@@ -23,6 +23,7 @@ export function InfoScreen({
     fullscreen?: boolean
     severity?: "error" | "warning" | "info"
 }) {
+    const { companyId } = useParams()
     return (
         <div
             className={cx(
@@ -47,7 +48,10 @@ export function InfoScreen({
                     <Link
                         className="mt-5 underline "
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        to={(link?.to ?? "/") as any}
+                        to={
+                            (link?.to ??
+                                `/${companyId != null ? companyId : ""}`) as any
+                        }
                     >
                         {link?.text ?? "Return to dashboard"}
                     </Link>

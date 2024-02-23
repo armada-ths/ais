@@ -1,6 +1,7 @@
 import { HOST } from "@/shared/vars"
 import { RegistrationStatus } from "@/store/company/company_slice"
 import { useQuery } from "@tanstack/react-query"
+import { useNavigate, useParams } from "@tanstack/react-router"
 
 export interface DashboardResponse {
     type: RegistrationStatus
@@ -65,15 +66,47 @@ export interface Company {
     id: number
 }
 
-export async function queryDashboard() {
-    const response = await fetch(`${HOST}/api/dashboard`)
+export async function queryDashboard(args?: { companyId?: number }) {
+    const response = await fetch(
+        `${HOST}/api/dashboard${args?.companyId ? `/${args.companyId}` : ""}`
+    )
     const result = (await response.json()) as DashboardResponse
     return result
 }
 
 export function useDashboard() {
-    return useQuery({
-        queryKey: ["registration"],
-        queryFn: queryDashboard
+    const navigation = useNavigate()
+    const { companyId: rawCompanyId } = useParams()
+
+    // Check that if company is defined it is a positive number, otherwise set it to -1 to indicate that it is not a valid company
+    const companyId =
+        rawCompanyId === undefined
+            ? undefined
+            : isNaN(Number(rawCompanyId))
+            ? -1
+            : Number(rawCompanyId)
+
+    const args = useQuery({
+        queryKey: ["registration", companyId],
+        queryFn: async ({ queryKey: [, companyId] }) =>
+            queryDashboard({ companyId: companyId as number }),
+        enabled: companyId === undefined || companyId > 0
     })
+
+    if (
+        (companyId != null && companyId < 0) ||
+        (args.data &&
+            "error" in args.data &&
+            typeof args.data.error === "string" &&
+            ["not_authorized", "company_does_not_exist"].includes(
+                args.data.error
+            ))
+    ) {
+        navigation({
+            to: "/404",
+            replace: true
+        })
+    }
+
+    return args
 }

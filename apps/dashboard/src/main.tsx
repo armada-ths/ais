@@ -33,6 +33,11 @@ const dashboard = new Route({
     getParentRoute: () => rootRoute,
     component: () => <DashboardScreen />
 })
+const companyDashboard = new Route({
+    path: "/",
+    getParentRoute: () => companyRoute,
+    component: () => <DashboardScreen />
+})
 const form = new Route({
     path: "/form",
     getParentRoute: () => rootRoute
@@ -42,12 +47,34 @@ const formPage = new Route({
     getParentRoute: () => form,
     component: () => <FormScreen />
 })
+const companyForm = new Route({
+    path: "/form",
+    getParentRoute: () => companyRoute
+})
+const companyFormPage = new Route({
+    path: "$formKey",
+    getParentRoute: () => companyForm,
+    component: () => <FormScreen />
+})
+
 const thankYou = new Route({
     path: "/thank-you",
     getParentRoute: () => rootRoute,
     component: ThankYouScreen
 })
+const companyThankYou = new Route({
+    path: "/thank-you",
+    getParentRoute: () => companyRoute,
+    component: ThankYouScreen
+})
 
+const notFoundExplicitRoute = new Route({
+    path: "/404",
+    getParentRoute: () => rootRoute,
+    component: () => (
+        <InfoScreen title="404" subText="This page doesn't exist :(" />
+    )
+})
 const notFoundRoute = new Route({
     path: "*",
     getParentRoute: () => rootRoute,
@@ -55,11 +82,31 @@ const notFoundRoute = new Route({
         <InfoScreen title="404" subText="This page doesn't exist :(" />
     )
 })
+const companyNotFoundRoute = new Route({
+    path: "*",
+    getParentRoute: () => companyRoute,
+    component: () => (
+        <InfoScreen title="404" subText="This page doesn't exist :(" />
+    )
+})
+
+const companyRoute = new Route({
+    path: "$companyId",
+    getParentRoute: () => rootRoute
+})
 
 const routeTree = rootRoute.addChildren([
     dashboard,
     thankYou,
     form.addChildren([formPage]),
+    notFoundExplicitRoute,
+    // Duplicate routes but with /:companyId
+    companyRoute.addChildren([
+        companyDashboard,
+        companyThankYou,
+        companyForm.addChildren([companyFormPage]),
+        companyNotFoundRoute
+    ]),
     notFoundRoute
 ])
 
