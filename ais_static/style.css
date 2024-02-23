@@ -20,6 +20,28 @@
     animation: sailing linear 0.9s infinite;
 }
 
+.navbar-collapse.collapse {
+    display: flex !important;
+}
+
+.nav.navbar-nav {
+    overflow-x: scroll;
+    display: flex;
+    white-space: nowrap;
+}
+
+.nav.navbar-nav {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.nav.navbar-nav::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+.navbar-right {
+    white-space: nowrap;
+}
+
 @keyframes sailing {
     25% {
         transform: rotate(20deg) translate(0, -2px);
