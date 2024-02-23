@@ -84,7 +84,7 @@ class Fair(models.Model):
             return RegistrationState.AFTER_IR
         elif (
             time >= self.registration_acceptance_date
-            and time < self.self.complete_registration_start_date
+            and time < self.complete_registration_start_date
         ):
             return RegistrationState.AFTER_IR_ACCEPTANCE
         elif (

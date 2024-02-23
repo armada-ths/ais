@@ -6,6 +6,7 @@ urlpatterns = [
     url(r"^$", views.root),
     url(r"^events/", include("events.api_urls")),
     url(r"^exhibitors/", include("exhibitors.api_urls")),
+    url(r"^companies/", include("companies.api_urls")),
     url(r"^banquet/", include("banquet.api_urls")),
     url(r"^fair/", include("fair.api_urls")),
     url(r"^dashboard/", include("dashboard.api_urls")),
@@ -23,5 +24,4 @@ urlpatterns = [
     url(r"^student_profile$", views.student_profile),
     url(r"^matching/$", views.matching),
     url(r"^matching/choices$", views.matching_choices),
-    url(r"^companies", views.companies),
 ]
