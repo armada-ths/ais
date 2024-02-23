@@ -5,6 +5,13 @@ from companies.models import CompanyContact
 from fair.models import Fair
 
 
+def dashboard_company(request, company_id):
+    if not request.user.is_authenticated:
+        return redirect("anmalan:choose_company")
+
+    return render(request, "dashboard/index.html")
+
+
 def dashboard_index(request):
     if not request.user.is_authenticated:
         return redirect("anmalan:choose_company")

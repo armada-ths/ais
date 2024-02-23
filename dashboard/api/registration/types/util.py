@@ -8,11 +8,9 @@ from dashboard.api.registration.types.cr import (
 )
 from dashboard.api.registration.types.ir import IRRegistrationSerializer
 from dashboard.api.registration.types.registration import RegistrationType
-from dashboard.api.registration.util import (
-    UserPermission,
-)
 
 from util import status, get_user
+from util.permission import UserPermission
 
 
 def get_serializer(request, registration, data=empty, context={}):
