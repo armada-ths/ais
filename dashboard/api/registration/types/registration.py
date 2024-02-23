@@ -1,4 +1,5 @@
 from enum import Enum
+from companies.models import Group
 
 from util import JSONError, get_contract_signature, get_fair, get_sales_contacts, status
 
@@ -73,6 +74,7 @@ class Registration:
         self.ir_signature = ir_signature
 
         self.sales_contacts = get_sales_contacts(fair, company, exhibitor)
+        self.interested_in = company.groups.filter(fair=fair, allow_registration=True)
 
         period = fair.get_period()
 

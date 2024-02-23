@@ -15,7 +15,7 @@ from exhibitors.models import (
     Exhibitor,
 )
 from fair.models import Fair
-from companies.models import CompanyContact
+from companies.models import CompanyContact, Group
 from register.models import SignupContract
 from django.contrib.auth.models import User
 
@@ -198,6 +198,35 @@ class SalesContactSerializer(serializers.ModelSerializer):
         return obj.armada_email or obj.user.email
 
 
+class InterestedInSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = Group
+        fields = ("id",)
+
+    def validate(self, data):
+        try:
+            id = int(data["id"])
+            if int(data["id"]) < 0:
+                raise
+        except:
+            raise serializers.ValidationError("id must be a positive integer")
+
+        try:
+            if not Group.objects.get(id=id):
+                raise
+        except:
+            raise serializers.ValidationError("group does not exist")
+
+        return data
+
+    def create(self, validated_data):
+        group = Group.objects.get(id=validated_data["id"])
+        company = self.context["purchasing_company"]
+        company.groups.add(group)
+
+
 class RegistrationSerializer(serializers.Serializer):
     # Read only fields
     type = serializers.StringRelatedField(read_only=True)
@@ -211,6 +240,7 @@ class RegistrationSerializer(serializers.Serializer):
     orders = OrderSerializer(many=True)
     contact = ContactSerializer()
     exhibitor = ExhibitorSerializer()
+    interested_in = InterestedInSerializer(many=True)
 
     # Add the 'fair' context to sales_contacts
     def to_representation(self, instance):
@@ -229,5 +259,16 @@ class RegistrationSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         update_field(instance, validated_data, "contact", ContactSerializer)
+
+        interested_in = validated_data.pop("interested_in", None)
+        if interested_in != None:
+            serializer = InterestedInSerializer(
+                data=interested_in, partial=True, many=True, context=self.context
+            )
+
+            if serializer.is_valid():
+                company = self.context["purchasing_company"]
+                company.groups.clear()
+                serializer.create(validated_data=interested_in)
 
         return instance

@@ -367,28 +367,6 @@ def organization(request):
     return JsonResponse(data, safe=False)
 
 
-def companies(request):
-    """
-    Returns a query of customizable amount of companies (default= 10) based on user input
-    """
-    if request.method == "GET":
-        limit = request.GET.get("limit", 0)
-        input = request.GET.get("input", "")
-
-        limit = int(limit)
-
-        if limit == 0:
-            companies = Company.objects.filter(name__icontains=input)
-        else:
-            companies = Company.objects.filter(name__icontains=input)[:limit]
-
-        data = [serializers.companies(request, company) for company in companies]
-        return JsonResponse(data, safe=False)
-
-    else:
-        return HttpResponseBadRequest("Unsupported method!", content_type="text/plain")
-
-
 @cache_page(60 * 5)
 def organization_v2(request):
     fair = get_object_or_404(Fair, current=True)
