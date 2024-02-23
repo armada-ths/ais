@@ -40,8 +40,9 @@ class RegistrationState(Enum):
     BEFORE_IR = 1
     IR = 2
     AFTER_IR = 3
-    CR = 4
-    AFTER_CR = 5
+    AFTER_IR_ACCEPTANCE = 4
+    CR = 5
+    AFTER_CR = 6
 
 
 class Fair(models.Model):
@@ -50,6 +51,12 @@ class Fair(models.Model):
     description = models.TextField(max_length=500, default=default_name)
 
     registration_start_date = models.DateTimeField(null=False, blank=False)
+    registration_acceptance_date = models.DateTimeField(
+        null=False,
+        blank=False,
+        default="2021-01-01 00:00:00+00:00",
+        help_text="The date when the companies will be able to see if they have been accepted or not.",
+    )
     registration_end_date = models.DateTimeField(null=False, blank=False)
     complete_registration_start_date = models.DateTimeField(null=False, blank=False)
     complete_registration_close_date = models.DateTimeField(null=False, blank=False)
@@ -72,9 +79,14 @@ class Fair(models.Model):
             return RegistrationState.IR
         elif (
             time >= self.registration_end_date
-            and time < self.complete_registration_start_date
+            and time < self.registration_acceptance_date
         ):
             return RegistrationState.AFTER_IR
+        elif (
+            time >= self.registration_acceptance_date
+            and time < self.self.complete_registration_start_date
+        ):
+            return RegistrationState.AFTER_IR_ACCEPTANCE
         elif (
             time >= self.complete_registration_start_date
             and time < self.complete_registration_close_date

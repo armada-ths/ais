@@ -1,0 +1,34 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Hello {{ signature.company_contact }}!
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Thank you for registering {{ signature.company }} to Armada {{ fair.year }}.
+	We are really happy that you want to come to KTH and meet the students!
+</p>
+{% include 'email/button.html' with content="Go to dashboard" url="https://ais.armada.nu/register" %}
+{% include 'email/divider.html' %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	What happens now:
+</p>
+<ul>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		We are reviewing registrations and will confirm your registration by {{ ir_application_review_date|date:"Y-m-d" }}.
+		This is to make sure we do not take in more exhibitors than we have space for.
+	</li>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		Final registration opens {{ fair.complete_registration_start_date|date:"Y-m-d" }} on the same dashboard.
+		There you make your final choice of package, events and other products.
+		We will contact you with more information. 
+	</li>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		You can make changes to your application until {{ ir_application_change_deadline|date:"Y-m-d" }} by contacting {% include 'email/link.html' with url='mailto:sales@armada.nu' text='sales@armada.nu' %}.
+	</li>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		Please note that this is an automatic email, and you cannot respond to this email.
+		You can always reach out to your sales contact or to {% include 'email/link.html' with url='mailto:sales@armada.nu' text='sales@armada.nu' %} if you have any questions. 
+	</li>
+</ul>
+{% endblock %}

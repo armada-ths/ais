@@ -1,0 +1,20 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Hello {{ user }}!
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	We have received your application for Armada {{ recruitment_period.fair }}. You can view and edit your application
+	<a href="{{ url_to_application }}" style="color:#556cd6;text-decoration:none" target="_blank">here</a>
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	All applicants will be contacted and offered an interview. Please send your CV to <a href="mailto:a@armada.nu"
+	style="color:#556cd6;text-decoration:none" target="_blank">a@armada.nu</a>
+</p>
+{% include 'email/button.html' with content="Edit application" url=url_to_application %}
+{% include 'email/divider.html' %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	If you have any questions, contact {{ hr_name }}, {{ hr_role }}, at <a href="mailto:{{ hr_email }}">{{ hr_email }}</a>.
+</p>
+{% endblock %}

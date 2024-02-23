@@ -22,6 +22,7 @@ from fair.models import Fair
 from people.models import Profile
 from companies.models import Company
 from people.models import Language, Profile
+from util.email import send_mail
 from .models import (
     RecruitmentPeriod,
     RecruitmentApplication,
@@ -168,9 +169,9 @@ def recruitment_statistics(request, year):
         {
             "fair": fair,
             "form": form,
-            "recruitment_periods": form.cleaned_data["recruitment_periods"]
-            if table
-            else None,
+            "recruitment_periods": (
+                form.cleaned_data["recruitment_periods"] if table else None
+            ),
             "table": table,
         },
     )
@@ -721,9 +722,9 @@ def recruitment_period_locations(request, year, pk):
         locations[slot.location].append(
             {
                 "slot": slot,
-                "interviews": used_slots[slot]
-                if slot in used_slots
-                else None,  # note that interviews is a list of all interviews for a slot
+                "interviews": (
+                    used_slots[slot] if slot in used_slots else None
+                ),  # note that interviews is a list of all interviews for a slot
             }
         )
 
@@ -756,9 +757,9 @@ def recruitment_period_locations(request, year, pk):
             date_modified = date.strftime("%Y-%m-%d")
 
             location_modified["slots"][i] = {
-                "date": date_modified
-                if date_modified_previous != date_modified
-                else None,
+                "date": (
+                    date_modified if date_modified_previous != date_modified else None
+                ),
                 "rowspawn": None,
                 "time_start": time_start,
                 "time_end": time_end,
@@ -839,12 +840,16 @@ def recruitment_period_edit(request, year, pk=None):
         {
             "form": form,
             "recruitment_period": recruitment_period,
-            "interview_questions": []
-            if not recruitment_period
-            else recruitment_period.interview_questions.customfield_set.all(),
-            "application_questions": []
-            if not recruitment_period
-            else recruitment_period.application_questions.customfield_set.all(),
+            "interview_questions": (
+                []
+                if not recruitment_period
+                else recruitment_period.interview_questions.customfield_set.all()
+            ),
+            "application_questions": (
+                []
+                if not recruitment_period
+                else recruitment_period.application_questions.customfield_set.all()
+            ),
             "fair": fair,
         },
     )
@@ -978,7 +983,7 @@ def recruitment_application_new(
         if role_form.is_valid() and profile_form.is_valid():
             if not recruitment_application:
                 recruitment_application = RecruitmentApplication()
-                send_confirmation_email(user, recruitment_period)
+                send_confirmation_email(request, user, recruitment_period)
 
             recruitment_application.user = user
             recruitment_application.recruitment_period = recruitment_period
@@ -1030,62 +1035,6 @@ def recruitment_application_new(
     )
 
 
-def send_confirmation_email(user, recruitment_period):
-    hr_profile = get_recruiter_information(recruitment_period.fair)
-    url_to_application = "https://ais.armada.nu/fairs/%s/recruitment/%s" % (
-        str(recruitment_period.fair.year),
-        str(recruitment_period.pk),
-    )
-
-    print("HR profile", hr_profile)
-
-    html_message = """
-		<html>
-			<body>
-				<style>
-					* {
-					  font-family: sans-serif;
-					  font-size: 12px;
-					}
-				</style>
-				<div>
-					  We have received your application for Armada %s. You can view and edit your application <a href="%s">here</a>. All applicants will be contacted and offered an interview. Please send your CV to a@armada.nu
-					  <br/><br/>
-					  If you have any questions, contact %s, %s, at <a href="mailto:%s">%s</a>.
-				</div>
-			</body>
-		</html>
-		""" % (
-        str(recruitment_period.fair),
-        url_to_application,
-        hr_profile.get("name"),
-        hr_profile.get("role"),
-        hr_profile.get("email"),
-        hr_profile.get("email"),
-    )
-
-    plain_text_message = """We have received your application for Armada %s. You can view and edit your application at %s. All applicants will be contacted and offered an interview.
-
-If you have any questions, contact %s, %s, at %s.
-""" % (
-        str(recruitment_period.fair),
-        url_to_application,
-        hr_profile.get("name"),
-        hr_profile.get("role"),
-        hr_profile.get("email"),
-    )
-
-    email = EmailMultiAlternatives(
-        "Thank you for applying to THS Armada!",
-        plain_text_message,
-        "Armada Recruitment <noreply@armada.nu>",
-        [user.email],
-    )
-
-    email.attach_alternative(html_message, "text/html")
-    email.send()
-
-
 def get_recruiter_information(fair):
     roles = ["Head of Human Resources", "Project Manager"]
     for role in roles:
@@ -1103,6 +1052,29 @@ def get_recruiter_information(fair):
         "role": "support",
         "email": "recruitment@armada.nu",
     }
+
+
+def send_confirmation_email(request, user, recruitment_period):
+    hr_profile = get_recruiter_information(recruitment_period.fair)
+    url_to_application = "https://ais.armada.nu/fairs/%s/recruitment/%s" % (
+        str(recruitment_period.fair.year),
+        str(recruitment_period.pk),
+    )
+
+    send_mail(
+        request,
+        template="register/email/received_application.html",
+        context={
+            "user": user,
+            "recruitment_period": recruitment_period,
+            "url_to_application": url_to_application,
+            "hr_name": hr_profile.get("name"),
+            "hr_role": hr_profile.get("role"),
+            "hr_email": hr_profile.get("email"),
+        },
+        subject="Thank you for applying to THS Armada!",
+        to=[user.email],
+    )
 
 
 def create_profile(applicant):

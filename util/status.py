@@ -21,6 +21,13 @@ INVALID_REGISTRATION_PERIOD = JsonResponse(
     {"error": "invalid_registration_period"},
     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
 )
+IR_NOT_OPEN = JsonResponse(
+    {
+        "error": "ir_not_open",
+        "message": "There is no active initial registration contract",
+    },
+    status=status.HTTP_403_FORBIDDEN,
+)
 CR_NOT_OPEN = JsonResponse(
     {
         "error": "cr_not_open",
@@ -32,8 +39,12 @@ USER_HAS_NO_COMPANY = JsonResponse(
     {"error": "user_has_no_company"},
     status=status.HTTP_404_NOT_FOUND,
 )
+COMPANY_ALREADY_SIGNED = JsonResponse(
+    {"error": "company_already_signed", "message": "Company has already signed IR"},
+    status=status.HTTP_403_FORBIDDEN,
+)
 EXHIBITOR_ALREADY_SIGNED = JsonResponse(
-    {"error": "exhibitor_already_signed"},
+    {"error": "exhibitor_already_signed", "message": "Exhibitor has already signed CR"},
     status=status.HTTP_403_FORBIDDEN,
 )
 COMPANY_DOES_NOT_EXIST = JsonResponse(

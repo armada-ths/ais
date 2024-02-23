@@ -1,0 +1,58 @@
+{% load static %}
+
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" lang="en">
+
+<head>
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+</head>
+<div style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0">
+	{% block title %}Armada information{% endblock %}
+	<div></div>
+</div>
+
+<body
+	style="background-color:#f6f9fc;font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,&quot;Helvetica Neue&quot;,Ubuntu,sans-serif">
+	<table style="margin: 0 40px;">
+	</table>
+	<table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation"
+		style="max-width:37.5em;background-color:#ffffff;margin:0 auto;padding:20px 0 38px;margin-bottom:40px;margin-top: 40px;">
+		<tbody>
+			<tr style="width:100%">
+				<td>
+					<table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation"
+						style="padding:0 48px">
+						<tbody>
+							<tr>
+								<td><img alt="THS Armada" width="70%"
+										src="{% static 'images/armada_logo_text_left_green_contained.svg' %}"
+										style="display:block;outline:none;border:none;text-decoration:none;margin:0 auto;" />
+									{% include "email/divider.html" %}
+									{% block content %}{% endblock %}
+									<p
+										style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+										— THS Armada</p>
+									<hr
+										style="width:100%;border:none;border-top:1px solid #eaeaea;border-color:#e6ebf1;margin:20px 0" />
+									<p style="font-size:12px;line-height:16px;margin:16px 0;color:#8898aa">THS Armada,
+										Drottning Kristinas väg 15-19, 114 28 Stockholm, Sweden</p>
+									<p style="font-size:12px;line-height:16px;margin:16px 0;color:#8898aa">
+										<a href="mailto:{{ support_email }}" style="color:#556cd6;text-decoration:none"
+											target="_blank">Contact support</a>
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<table style="margin: 0 40px;">
+	<!-- Make sure gmail doesn't trim the email -->
+	<span style="opacity: 0">{% now "Y-m-d (H:i:s:u)" %}</span>
+	</table>
+</body>
+
+</html>
