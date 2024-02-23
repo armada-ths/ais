@@ -23,7 +23,7 @@ export function ContactBubble() {
     return (
         <Drawer>
             <DrawerTrigger>
-                <div className="relative h-20 w-20 rounded-full transition-all duration-200 active:scale-95">
+                <div className="fixed bottom-5 right-10 h-20 w-20 rounded-full transition-all duration-200 active:scale-95">
                     <div className="absolute -right-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
                         <MessageCircleQuestion
                             size={20}
