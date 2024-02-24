@@ -27,7 +27,7 @@ export default function IrRegistrationPage() {
             }),
         onSuccess: async () => {
             await queryClient.invalidateQueries({
-                queryKey: ["registration"]
+                queryKey: ["dashboard"]
             })
             // Redirect back to the dashboard
             toast.success("Signup complete", {
@@ -41,9 +41,11 @@ export default function IrRegistrationPage() {
     })
 
     function exitView() {
-        // Redirect back to the dashboard "/"
+        // Redirect to the next step
         router.navigate({
-            to: "/"
+            to: "/form/$formKey",
+            replace: true,
+            params: { formKey: "ir_additional_info" }
         })
     }
 

@@ -15,6 +15,40 @@ export interface DashboardResponse {
     contact: Contact
     exhibitor: unknown
     company: Company
+    products: Product[]
+    interested_in: Array<{ id: number }>
+}
+
+export interface Category {
+    id: number
+    name: "Package" | "Additional booth area" | "Non Visible Package"
+    description: string
+    allow_multiple_purchases: boolean
+}
+
+export interface RegistrationSection {
+    id: string
+    name: string
+    description: string
+    hide_from_registration: boolean
+}
+
+export interface ChildProduct {
+    quantity: number
+    child_product: Omit<Product, "child_products">
+}
+
+export interface Product {
+    id: number
+    name: string
+    short_name: string
+    max_quantity: number
+    unit_price: number
+    description: string
+    category: Category | null
+    display_in_product_list: boolean
+    registration_section: RegistrationSection | null
+    child_products: ChildProduct[]
 }
 
 export interface SalesContact {
@@ -87,7 +121,7 @@ export function useDashboard() {
             : Number(rawCompanyId)
 
     const args = useQuery({
-        queryKey: ["registration", companyId],
+        queryKey: ["dashboard", companyId],
         queryFn: async ({ queryKey: [, companyId] }) =>
             queryDashboard({ companyId: companyId as number }),
         enabled: companyId === undefined || companyId > 0
