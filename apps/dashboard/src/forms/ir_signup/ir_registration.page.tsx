@@ -4,13 +4,14 @@ import { useDashboard } from "@/shared/hooks/useDashboard"
 import { HOST } from "@/shared/vars"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"
-import { useRouter } from "@tanstack/react-router"
+import { useParams, useRouter } from "@tanstack/react-router"
 import { DateTime } from "luxon"
 import { useState } from "react"
 import { toast } from "sonner"
 
 export default function IrRegistrationPage() {
     const router = useRouter()
+    const { companyId } = useParams()
     const { data, isLoading } = useDashboard()
 
     const [terms, setTerms] = useState(false)
@@ -41,11 +42,12 @@ export default function IrRegistrationPage() {
     })
 
     function exitView() {
+        if (companyId == null) return
         // Redirect to the next step
         router.navigate({
-            to: "/form/$formKey",
+            to: "/$companyId/form/$formKey",
             replace: true,
-            params: { formKey: "ir_additional_info" }
+            params: { companyId, formKey: "ir_additional_info" }
         })
     }
 

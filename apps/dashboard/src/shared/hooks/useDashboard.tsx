@@ -100,10 +100,8 @@ export interface Company {
     id: number
 }
 
-export async function queryDashboard(args?: { companyId?: number }) {
-    const response = await fetch(
-        `${HOST}/api/dashboard${args?.companyId ? `/${args.companyId}` : ""}`
-    )
+export async function queryDashboard(args: { companyId: number }) {
+    const response = await fetch(`${HOST}/api/dashboard/${args.companyId}`)
     const result = (await response.json()) as DashboardResponse
     return result
 }
@@ -113,12 +111,7 @@ export function useDashboard() {
     const { companyId: rawCompanyId } = useParams()
 
     // Check that if company is defined it is a positive number, otherwise set it to -1 to indicate that it is not a valid company
-    const companyId =
-        rawCompanyId === undefined
-            ? undefined
-            : isNaN(Number(rawCompanyId))
-            ? -1
-            : Number(rawCompanyId)
+    const companyId = isNaN(Number(rawCompanyId)) ? -1 : Number(rawCompanyId)
 
     const args = useQuery({
         queryKey: ["dashboard", companyId],
