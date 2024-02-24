@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router"
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { Button } from "primereact/button"
 import { Checkbox } from "primereact/checkbox"
 import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup"
@@ -22,6 +22,7 @@ import { RootState } from "../../store/store"
 import { formatCurrency } from "../../utils/format_currency"
 
 export function SummaryFormPage() {
+    const { companyId } = useParams()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const toastRef = useRef<Toast>(null)
@@ -63,7 +64,8 @@ export function SummaryFormPage() {
         dispatch(setCompanyRegistrationStatus("complete_registration_signed"))
         dispatch(setActiveForm(null))
         navigate({
-            to: "/"
+            to: "/$companyId",
+            params: { companyId }
         })
     }
 

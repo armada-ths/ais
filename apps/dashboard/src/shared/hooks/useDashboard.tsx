@@ -117,7 +117,7 @@ export function useDashboard() {
         queryKey: ["dashboard", companyId],
         queryFn: async ({ queryKey: [, companyId] }) =>
             queryDashboard({ companyId: companyId as number }),
-        enabled: companyId === undefined || companyId > 0
+        enabled: companyId > 0
     })
 
     if (
@@ -130,8 +130,9 @@ export function useDashboard() {
             ))
     ) {
         navigation({
-            to: "/404",
-            replace: true
+            to: "/_/not-found",
+            replace: true,
+            params: { companyId }
         })
     }
 

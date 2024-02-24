@@ -1,11 +1,11 @@
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { Button } from "primereact/button"
-import { useDispatch } from "react-redux"
-import { setActiveForm } from "../store/form/form_slice"
-import { remoteSaveChanges } from "../store/form/async_actions"
-import { AppDispatch } from "../store/store"
 import { Toast } from "primereact/toast"
 import { useRef } from "react"
-import { useNavigate } from "@tanstack/react-router"
+import { useDispatch } from "react-redux"
+import { remoteSaveChanges } from "../store/form/async_actions"
+import { setActiveForm } from "../store/form/form_slice"
+import { AppDispatch } from "../store/store"
 
 export function CompleteButton({
     text,
@@ -14,6 +14,7 @@ export function CompleteButton({
     text?: string
     save?: boolean
 }) {
+    const { companyId } = useParams()
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
     const toastRef = useRef<Toast>(null)
@@ -26,7 +27,8 @@ export function CompleteButton({
         if (success) {
             dispatch(setActiveForm(null))
             navigate({
-                to: "/"
+                to: "/$companyId",
+                params: { companyId }
             })
         } else {
             toastRef.current?.show({

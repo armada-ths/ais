@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import { Link, LinkComponent, useParams } from "@tanstack/react-router"
 import React from "react"
 import { cx } from "../utils/cx"
@@ -45,16 +46,24 @@ export function InfoScreen({
                     <h3 className="mt-5 text-lg text-emerald-900">{subText}</h3>
                 )}
                 {link !== null && (
-                    <Link
-                        className="mt-5 underline "
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        to={
-                            (link?.to ??
-                                `/${companyId != null ? companyId : ""}`) as any
-                        }
-                    >
-                        {link?.text ?? "Return to dashboard"}
-                    </Link>
+                    <>
+                        {companyId == null || companyId === "_" ? (
+                            <Button
+                                className="mt-5"
+                                onClick={() => window.location.replace("/")}
+                            >
+                                Return to dashboard
+                            </Button>
+                        ) : (
+                            <Link
+                                className="mt-5 underline "
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                to={(link?.to ?? `/${companyId}`) as any}
+                            >
+                                {link?.text ?? "Return to dashboard"}
+                            </Link>
+                        )}
+                    </>
                 )}
                 {children}
             </div>
