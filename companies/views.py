@@ -704,7 +704,7 @@ def companies_edit(request, year, pk, group_pk=None, responsible_group_pk=None):
         company.save()
 
     groups_list = groups_to_tree_list(
-        Group.objects.filter(fair=fair), company.groups.all()
+        Group.objects.filter(fair=fair).order_by("id"), company.groups.all()
     )
 
     if responsible_group_pk is not None:
@@ -784,7 +784,7 @@ def companies_edit(request, year, pk, group_pk=None, responsible_group_pk=None):
 @permission_required("companies.base")
 def groups(request, year, pk=None):
     fair = get_object_or_404(Fair, year=year)
-    groups_list = groups_to_tree_list(Group.objects.filter(fair=fair))
+    groups_list = groups_to_tree_list(Group.objects.filter(fair=fair).order_by("id"))
 
     group = Group.objects.filter(pk=pk).first()
 

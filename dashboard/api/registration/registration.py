@@ -1,6 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 
 from util import get_company_contact, get_exhibitor, get_fair, get_user, status
+from util.permission import UserPermission
 
 from companies.models import Company, CompanyContact
 from fair.models import RegistrationState
@@ -8,7 +9,6 @@ from exhibitors.models import Exhibitor
 
 from dashboard.api.registration.cr import handle_cr, submit_cr
 from dashboard.api.registration.ir import handle_ir, submit_ir
-from dashboard.api.registration.util import UserPermission
 
 
 # This function will receive a GET or PUT and return

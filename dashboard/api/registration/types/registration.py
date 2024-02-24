@@ -6,6 +6,7 @@ from util import JSONError, get_contract_signature, get_fair, get_sales_contacts
 from register.models import SignupContract
 from fair.models import RegistrationState
 from accounting.models import Order
+from util.product import get_products
 
 
 class RegistrationType(Enum):
@@ -64,6 +65,7 @@ class Registration:
         self.contact = contact
         self.fair = fair
         self.orders = orders
+        self.products = get_products(fair, company)
 
         cr_contract, cr_signature = get_contract_signature(company, fair, "COMPLETE")
         self.cr_contract = cr_contract

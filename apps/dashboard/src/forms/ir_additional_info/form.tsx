@@ -1,5 +1,6 @@
 import IrContactPage from "@/forms/ir_additional_info/ir_company_contact.page"
 import IrAdditionalInfoPage from "@/forms/ir_additional_info/ir_company_info.page"
+import { IrInterestedInPage } from "@/forms/ir_additional_info/ir_interested_in.page"
 import { Form } from "../form_types"
 
 export const form: Form = {
@@ -7,6 +8,12 @@ export const form: Form = {
     name: "Additional Information",
     description: "Provide additional information about the company",
     pages: [
+        {
+            id: "ir_additional_info_interested_in",
+            title: "Preferences",
+            pageComponent: IrInterestedInPage,
+            isDone: ({ registration }) => registration.interested_in.length > 0
+        },
         {
             id: "ir_additional_info_company_details",
             title: "Company Details",

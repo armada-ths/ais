@@ -12,7 +12,7 @@ def get_registration_groups(request):
     fair = get_fair()
     groups = Group.objects.filter(
         fair=fair, allow_registration=True, parent__allow_registration=True
-    )
+    ).order_by("id")
 
     groups = groupby(groups, lambda group: group.parent)
 

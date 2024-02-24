@@ -21,7 +21,7 @@
 		{% if perms.companies.base %}<a href="{% url 'companies_view' fair.year exhibitor.company.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Company</a>{% endif %}
 		{% if perms.exhibitors.modify_coordinates %}<a href="{% url 'exhibitor_coordinates' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Coordinates</a>{% endif %}
 		{% if perms.exhibitors.modify_fair_location %}<a href="{% url 'exhibitor_fair_location' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Fair Location</a>{% endif %}
-		<a href="{% url 'anmalan:registration' exhibitor.company.pk %}" class="btn btn-default pull-right"><span class="glyphicon glyphicon-th"></span> Go to registration</a>
+		<a href="{% url 'dashboard:company_dashboard' exhibitor.company.pk %}" class="btn btn-default pull-right"><span class="glyphicon glyphicon-th"></span> Go to registration</a>
 	</p>
 	
 	<div class="row">

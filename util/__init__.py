@@ -58,8 +58,8 @@ def get_user(request):
 
 def get_company_contact(user):
     contact = CompanyContact.objects.filter(user=user).exclude(company=None).first()
-    if contact == None:
-        raise status.USER_HAS_NO_COMPANY
+    # if contact == None:
+    #     raise status.USER_HAS_NO_COMPANY
 
     return contact
 

@@ -1,21 +1,5 @@
-from companies.models import Company
-from exhibitors.models import Exhibitor
-from register.models import SignupLog
-from util import (
-    JSONError,
-    get_company_contact,
-    get_contract_signature,
-    get_fair,
-    get_user,
-    status,
-)
-
 from rest_framework import serializers
 
-from django.db.models import Q
-from django.http import JsonResponse
-
-from fair.models import Fair
 from accounting.models import (
     Category,
     ChildProduct,
@@ -141,24 +125,3 @@ class OrderSerializer(serializers.ModelSerializer):
             purchasing_company=self.context["purchasing_company"],
             stock_when_bought=stock_when_bought,
         )
-
-
-def list_products(request):
-    user = get_user(request)
-    if user == None:
-        return JSONError(status.UNAUTHORIZED)
-
-    fair = Fair.objects.get(current=True)
-    contact = get_company_contact(user)
-    company = contact.company
-    contract, signature = get_contract_signature(company, fair, type="INITIAL")
-
-    q = Q(exclusively_for=[])
-    if signature == None:
-        q |= Q(exclusively_for__contains=["ir-unsigned"])
-    else:
-        q |= Q(exclusively_for__contains=["ir-signed"])
-
-    products = Product.objects.filter(revenue__fair=fair).filter(q)
-
-    return JsonResponse(ProductSerializer(products, many=True).data, safe=False)

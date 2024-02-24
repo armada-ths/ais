@@ -1,12 +1,5 @@
 from enum import Enum
 
-from django.utils import timezone
-
-from fair.models import Fair
-from register.models import SignupLog
-
-from register.views import get_contract
-
 
 class UserPermission(Enum):
     COMPANY_CONTACT = 0

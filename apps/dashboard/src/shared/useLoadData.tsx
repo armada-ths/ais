@@ -27,21 +27,23 @@ export default function useLoadData() {
         initialized.current = true
 
         async function load() {
-            const data = await fetch(`${HOST}/api/accounting/products`).then(
+            /*             const data = await fetch(`${HOST}/api/accounting/products`).then(
                 raw => raw.json()
             )
-            console.log("PRODUCTS", JSON.stringify(data))
-            dispatch(loadProducts(data))
+            console.log("PRODUCTS", JSON.stringify(data)) */
 
             fetch(`${HOST}/api/dashboard/`, {}).then(async raw => {
                 const data = await raw.json()
+
+                // Load products
+                const products = data.products
+                dispatch(loadProducts(products))
 
                 if (data.error != null) {
                     dispatch(setErrors(data.error))
                 }
 
                 const awaitingMappings = reverseMap(data)
-                console.log("AWAIT mappings", awaitingMappings)
                 // Set status for company
                 dispatch(
                     setCompanyRegistrationStatus(
@@ -59,7 +61,6 @@ export default function useLoadData() {
                         const data = await raw.json()
                         //data.result[0].id
                         const maps = reverseMap(data)
-                        console.log("MAPS", maps)
                         for (const current of maps) {
                             dispatch(
                                 setField({

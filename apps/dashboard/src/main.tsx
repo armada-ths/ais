@@ -28,24 +28,10 @@ import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 const rootRoute = new RootRoute({
     errorComponent: () => <div>404</div>
 })
-const dashboard = new Route({
-    path: "/",
-    getParentRoute: () => rootRoute,
-    component: () => <DashboardScreen />
-})
 const companyDashboard = new Route({
     path: "/",
     getParentRoute: () => companyRoute,
     component: () => <DashboardScreen />
-})
-const form = new Route({
-    path: "/form",
-    getParentRoute: () => rootRoute
-})
-const formPage = new Route({
-    path: "$formKey",
-    getParentRoute: () => form,
-    component: () => <FormScreen />
 })
 const companyForm = new Route({
     path: "/form",
@@ -57,24 +43,12 @@ const companyFormPage = new Route({
     component: () => <FormScreen />
 })
 
-const thankYou = new Route({
-    path: "/thank-you",
-    getParentRoute: () => rootRoute,
-    component: ThankYouScreen
-})
 const companyThankYou = new Route({
     path: "/thank-you",
     getParentRoute: () => companyRoute,
     component: ThankYouScreen
 })
 
-const notFoundExplicitRoute = new Route({
-    path: "/404",
-    getParentRoute: () => rootRoute,
-    component: () => (
-        <InfoScreen title="404" subText="This page doesn't exist :(" />
-    )
-})
 const notFoundRoute = new Route({
     path: "*",
     getParentRoute: () => rootRoute,
@@ -96,10 +70,6 @@ const companyRoute = new Route({
 })
 
 const routeTree = rootRoute.addChildren([
-    dashboard,
-    thankYou,
-    form.addChildren([formPage]),
-    notFoundExplicitRoute,
     // Duplicate routes but with /:companyId
     companyRoute.addChildren([
         companyDashboard,

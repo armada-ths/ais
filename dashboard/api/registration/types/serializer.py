@@ -19,7 +19,7 @@ from companies.models import CompanyContact, Group
 from register.models import SignupContract
 from django.contrib.auth.models import User
 
-from accounting.api import OrderSerializer
+from accounting.api import OrderSerializer, ProductSerializer
 
 
 ### Didrik (2023) The below serializers could be placed in a more logical
@@ -235,6 +235,7 @@ class RegistrationSerializer(serializers.Serializer):
     ir_contract = SignupContractSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
     sales_contacts = SalesContactSerializer(read_only=True, many=True)
+    products = ProductSerializer(many=True)
 
     # Editable fields
     orders = OrderSerializer(many=True)
