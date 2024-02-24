@@ -3,7 +3,9 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 
 
-default_context = {"support_email": "support@armada.nu"}
+default_context = {
+    "support_email": "support@armada.nu",
+}
 
 
 def send_mail(
@@ -14,7 +16,11 @@ def send_mail(
     to=[],
     file_paths=[],
 ):
-    context = {**default_context, **context}
+    armada_logo_url = request.build_absolute_uri(
+        request, "/static/images/armada_logo_text_left_green_contained.svg"
+    )
+
+    context = {"armada_logo_url": armada_logo_url, **default_context, **context}
 
     html_content = render_to_string(template, context, request=request)
     plain_message = strip_tags(html_content)
