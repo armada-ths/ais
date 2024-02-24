@@ -17,7 +17,7 @@ def send_mail(
     file_paths=[],
 ):
     armada_logo_url = request.build_absolute_uri(
-        request, "/static/images/armada_logo_text_left_green_contained.svg"
+        "/static/images/armada_logo_text_left_green_contained.svg"
     )
 
     context = {"armada_logo_url": armada_logo_url, **default_context, **context}
