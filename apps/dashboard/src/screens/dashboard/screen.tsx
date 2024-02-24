@@ -15,7 +15,6 @@ import { useDates } from "@/shared/hooks/useDates"
 import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
-import { useParams } from "@tanstack/react-router"
 import { AlertTriangle, BadgeInfo, CheckCircle } from "lucide-react"
 import { DateTime } from "luxon"
 import { useSelector } from "react-redux"
@@ -23,7 +22,6 @@ import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
 
 export function DashboardScreen() {
-    const { companyId } = useParams()
     const {
         data: dates,
         isLoading: isLoadingDates,
@@ -61,7 +59,7 @@ export function DashboardScreen() {
                 <div>{/* SIDEBAR */}</div>
                 <div className="flex flex-col items-center p-5">
                     <div className=" flex max-w-6xl flex-col items-center">
-                        {companyId != null && (
+                        {/*                         {companyId != null && (
                             <Card>
                                 <CardHeader>
                                     <CardDescription>
@@ -70,11 +68,11 @@ export function DashboardScreen() {
                                     </CardDescription>
                                 </CardHeader>
                             </Card>
-                        )}
+                        )} */}
                         {data.contact?.first_name != null && (
                             <Card className="mt-5 max-w-[700px]">
                                 <CardHeader>
-                                    <CardTitle>
+                                    <CardTitle title={data.company.name}>
                                         Welcome <b>{data.contact.first_name}</b>
                                         !
                                     </CardTitle>
