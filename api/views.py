@@ -426,6 +426,10 @@ def dates(request):
                 "start": fair.complete_registration_start_date,
                 "end": fair.complete_registration_close_date,
             },
+            "events": {
+                "start": fair.events_start_date,
+                "end": fair.events_end_date,
+            }
         },
         safe=False,
     )
