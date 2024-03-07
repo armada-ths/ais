@@ -12,6 +12,12 @@ export function useFormMeta() {
         from: "/$companyId/form/$formKey/$formStepKey"
     })
 
+    if (companyId == null || formKey == null) {
+        console.error(
+            'Cannot use useFormMeta hook outside of "/$company/$formKey" route'
+        )
+    }
+
     const form = (FORMS[formKey as keyof typeof FORMS] ?? null) as Form | null
 
     // If the formPage is unrecognized, we will default to the first page
@@ -21,13 +27,13 @@ export function useFormMeta() {
     )
 
     const formPage =
-        formPageIndex < -1 ? null : form?.pages[formPageIndex] ?? null
+        formPageIndex < 0 ? null : form?.pages[formPageIndex] ?? null
 
-    if (form != null && formPage == null) {
+    if (form == null || formPage == null) {
         navigate({
             from: "/$companyId/form/$formKey/$formStepKey",
-            to: "/$companyId/form/$formKey",
-            params: { companyId, formKey },
+            to: "/$companyId/form/$formKey/$formStepKey",
+            params: { companyId, formKey, formStepKey: form?.pages[0].id },
             replace: true
         })
     }

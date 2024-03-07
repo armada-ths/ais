@@ -16,7 +16,9 @@ export default function FormCard({
     locked?: boolean
 }) {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const navigate = useNavigate({
+        from: "/$companyId/*"
+    })
 
     const { data: dataRegistration } = useDashboard()
     const { data: dataProducts } = useProducts()
@@ -24,7 +26,8 @@ export default function FormCard({
     function openForm() {
         dispatch(setActiveForm(form.key))
         navigate({
-            to: `form/${form.key}`
+            to: `/$companyId/form/$formKey/$formStepKey`,
+            params: { formKey: form.key, formStepKey: form.pages[0].id }
         })
     }
 

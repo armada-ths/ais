@@ -4,7 +4,13 @@ import { useDispatch } from "react-redux"
 import { remoteSaveChanges } from "../store/form/async_actions"
 import { AppDispatch } from "../store/store"
 
-export function Navbar() {
+export function Navbar({
+    titleRight,
+    titleLeft
+}: {
+    titleRight?: React.ReactNode
+    titleLeft?: React.ReactNode
+}) {
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
 
@@ -22,7 +28,7 @@ export function Navbar() {
     }
 
     return (
-        <div className="grid h-20 grid-cols-[1fr_3fr] items-center justify-center border-b-2 p-2 md:grid-cols-[1fr_3fr_1fr]">
+        <div className="sticky top-0 z-50 grid h-20 grid-cols-[1fr_3fr] items-center justify-center border-b-2 bg-white p-2 lg:grid-cols-[1fr_3fr_1fr]">
             <div
                 className="ml-8 flex items-center justify-start gap-x-2 hover:cursor-pointer"
                 onClick={closeForm}
@@ -33,9 +39,11 @@ export function Navbar() {
                 </p>
             </div>
             <div className="flex justify-center">
-                <h1 className="text-2xl text-slate-700 md:text-4xl">
+                {titleLeft}
+                <h1 className="px-4 text-end text-2xl text-slate-700 lg:text-center lg:text-4xl">
                     {form?.name}
                 </h1>
+                {titleRight}
             </div>
         </div>
     )

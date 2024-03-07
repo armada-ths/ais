@@ -1,13 +1,13 @@
-import { Card } from "./PageCard"
-import { ProductAdjustedPrice } from "../../../store/products/products_slice"
-import { useSelector } from "react-redux"
 import {
     selectAdjustedProductPrice,
     selectSelectedProduct,
     selectUnitAdjustedProductPrice
-} from "../../../store/products/products_selectors"
-import { RootState } from "../../../store/store"
-import { formatCurrency } from "../../../utils/format_currency"
+} from "@/store/products/products_selectors"
+import { ProductAdjustedPrice } from "@/store/products/products_slice"
+import { RootState } from "@/store/store"
+import { formatCurrency } from "@/utils/format_currency"
+import { useSelector } from "react-redux"
+import { Card } from "./PageCard"
 
 export default function ProductCard({
     product

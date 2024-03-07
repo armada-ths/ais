@@ -55,7 +55,6 @@ export function PageCard({
 
     function clickPageCard() {
         dispatch(remoteSaveChanges())
-        //dispatch(setPage(page.id))
         navigate({
             to: "/$companyId/form/$formKey/$formStepKey",
             params: { formStepKey: page.id }

@@ -4,13 +4,13 @@ import { useDashboard } from "@/shared/hooks/useDashboard"
 import { HOST } from "@/shared/vars"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"
-import { useParams, useRouter } from "@tanstack/react-router"
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { DateTime } from "luxon"
 import { useState } from "react"
 import { toast } from "sonner"
 
 export default function IrRegistrationPage() {
-    const router = useRouter()
+    const navigate = useNavigate()
     const { companyId } = useParams({
         from: "/$companyId/form/$formKey/$formStepKey"
     })
@@ -46,7 +46,8 @@ export default function IrRegistrationPage() {
     function exitView() {
         if (companyId == null) return
         // Redirect to the next step
-        router.navigate({
+        console.log("EXIT VIEW")
+        navigate({
             to: "/$companyId/form/$formKey",
             replace: true,
             params: { companyId, formKey: "ir_additional_info" }

@@ -5,11 +5,13 @@ import { Toaster } from "@/components/ui/sonner.tsx"
 import { queryClient } from "@/utils/query_client.ts"
 import { QueryClientProvider } from "@tanstack/react-query"
 import {
+    Outlet,
     RouterProvider,
     createRootRoute,
     createRoute,
     createRouter
 } from "@tanstack/react-router"
+import { TanStackRouterDevtools } from "@tanstack/router-devtools"
 import "primeicons/primeicons.css"
 import "primereact/resources/primereact.min.css"
 import "primereact/resources/themes/tailwind-light/theme.css"
@@ -26,7 +28,13 @@ import { store } from "./store/store.ts"
 import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 
 const rootRoute = createRootRoute({
-    errorComponent: () => <div>404</div>
+    errorComponent: () => <div>404</div>,
+    component: () => (
+        <>
+            <Outlet />
+            <TanStackRouterDevtools />
+        </>
+    )
 })
 const companyDashboard = createRoute({
     path: "/",
