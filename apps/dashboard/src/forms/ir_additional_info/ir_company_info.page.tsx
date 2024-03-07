@@ -48,7 +48,6 @@ export function IrAdditionalInfoPage({
             website,
             corporateEmail
         }: z.infer<typeof formSchema>) => {
-            console.log("SAVING....")
             const response = fetch(`${HOST}/api/dashboard/`, {
                 method: "PUT",
                 body: JSON.stringify({

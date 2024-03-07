@@ -48,7 +48,6 @@ export function FormScreen() {
     async function handlePrevious() {
         if (!form) return
         const previousPage = form.pages[formPageIndex - 1]
-        console.log("PREVIOUS")
         navigate({
             to: "/$companyId/form/$formKey/$formPageKey",
             params: { formPageKey: previousPage.id }
@@ -58,7 +57,6 @@ export function FormScreen() {
     async function handleNext() {
         if (!form) return
         const nextPage = form.pages[formPageIndex + 1]
-        console.log("NEXT PAGE", nextPage)
         navigate({
             from: "/$companyId/form/$formKey/$formPageKey",
             to: "/$companyId/form/$formKey/$formPageKey",

@@ -88,7 +88,6 @@ export function IrContactPage({
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log("SUBMIT", values)
         await mutateAsync(values)
     }
 
