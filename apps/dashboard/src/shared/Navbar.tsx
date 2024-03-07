@@ -1,19 +1,20 @@
-import { useNavigate, useParams } from "@tanstack/react-router"
-import { useDispatch, useSelector } from "react-redux"
+import { useFormMeta } from "@/useFormMeta"
+import { useNavigate } from "@tanstack/react-router"
+import { useDispatch } from "react-redux"
 import { remoteSaveChanges } from "../store/form/async_actions"
-import { selectActiveForm } from "../store/form/form_selectors"
-import { setActiveForm } from "../store/form/form_slice"
 import { AppDispatch } from "../store/store"
 
 export function Navbar() {
-    const { companyId } = useParams()
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
-    const form = useSelector(selectActiveForm)
 
-    function closeForm() {
-        dispatch(setActiveForm(null))
-        dispatch(remoteSaveChanges())
+    const {
+        form,
+        params: { companyId }
+    } = useFormMeta()
+
+    async function closeForm() {
+        await dispatch(remoteSaveChanges())
         navigate({
             to: "/$companyId",
             params: { companyId }
