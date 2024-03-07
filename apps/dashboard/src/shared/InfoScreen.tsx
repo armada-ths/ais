@@ -35,10 +35,13 @@ export function InfoScreen({
             {fullscreen !== false && <div className="flex-1" />}
             <div className="mx-auto flex max-w-[30rem] flex-[2.5] flex-col items-center">
                 <h1
-                    className={cx("text-6xl font-bold text-emerald-400", {
-                        "text-red-400": severity === "error",
-                        "text-yellow-400": severity === "warning"
-                    })}
+                    className={cx(
+                        "text-center text-6xl font-bold text-emerald-400",
+                        {
+                            "text-red-400": severity === "error",
+                            "text-yellow-400": severity === "warning"
+                        }
+                    )}
                 >
                     {title}
                 </h1>

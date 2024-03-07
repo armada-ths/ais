@@ -63,6 +63,17 @@ const companyNotFoundRoute = new Route({
         <InfoScreen title="404" subText="This page doesn't exist :(" />
     )
 })
+const root = new Route({
+    path: "/",
+    getParentRoute: () => rootRoute,
+    component: () => (
+        <InfoScreen
+            title="Armada Dasboard"
+            severity="warning"
+            subText="It seems like you are not logged in, this is not intended behavior. If you see this screen you should contact Armada"
+        />
+    )
+})
 
 const companyRoute = new Route({
     path: "$companyId",
@@ -70,7 +81,7 @@ const companyRoute = new Route({
 })
 
 const routeTree = rootRoute.addChildren([
-    // Duplicate routes but with /:companyId
+    root,
     companyRoute.addChildren([
         companyDashboard,
         companyThankYou,
