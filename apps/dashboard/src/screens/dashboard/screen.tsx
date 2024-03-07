@@ -109,30 +109,6 @@ export function DashboardScreen() {
                                     }
                                 />
                             ))}
-                            {formCardsData.map(([key, formMeta]) => (
-                                <FormCard
-                                    key={key}
-                                    form={formMeta}
-                                    locked={
-                                        !isFormOpen(
-                                            formMeta.key,
-                                            data.type ?? null
-                                        )
-                                    }
-                                />
-                            ))}
-                            {formCardsData.map(([key, formMeta]) => (
-                                <FormCard
-                                    key={key}
-                                    form={formMeta}
-                                    locked={
-                                        !isFormOpen(
-                                            formMeta.key,
-                                            data.type ?? null
-                                        )
-                                    }
-                                />
-                            ))}
                         </div>
                     </div>
                 </div>
