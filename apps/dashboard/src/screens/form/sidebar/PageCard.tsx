@@ -5,7 +5,6 @@ import { useDashboard } from "@/shared/hooks/useDashboard"
 import { useProducts } from "@/shared/hooks/useProducts"
 import { remoteSaveChanges } from "@/store/form/async_actions"
 import { AppDispatch } from "@/store/store"
-import { useFormMeta } from "@/useFormMeta"
 import { cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
 import React from "react"
@@ -39,8 +38,6 @@ export function PageCard({
         from: "/$companyId/form/$formKey/$formPageKey"
     })
 
-    const { formPage } = useFormMeta()
-
     const dispatch = useDispatch<AppDispatch>()
 
     const { data: dataRegistration } = useDashboard()
@@ -67,13 +64,13 @@ export function PageCard({
             onClick={clickPageCard}
             className={cx(
                 "flex-row items-center justify-between hover:cursor-pointer",
-                completed && page.id !== formPage?.id && "opacity-50"
+                completed && page.id !== page?.id && "opacity-50"
             )}
         >
             <div className="flex items-center gap-2">
                 <IfProgressDone
                     page={
-                        `${form.key}.${formPage?.id}` as `${FormIds}.${FormPageIds}`
+                        `${form.key}.${page?.id}` as `${FormIds}.${FormPageIds}`
                     }
                 >
                     <span className="pi pi-check-circle text-emerald-400"></span>
