@@ -101,7 +101,9 @@ export interface Company {
 }
 
 export async function queryDashboard(args: { companyId: number }) {
-    const response = await fetch(`${HOST}/api/dashboard/${args.companyId}`)
+    const response = await fetch(
+        `${HOST}/api/dashboard/${args.companyId ?? ""}`
+    )
     const result = (await response.json()) as DashboardResponse
     return result
 }
