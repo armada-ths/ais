@@ -1,3 +1,18 @@
+import { Card } from "@/screens/form/sidebar/PageCard"
+import { HOST } from "@/shared/vars"
+import { selectCompany } from "@/store/company/company_selectors"
+import { setCompanyRegistrationStatus } from "@/store/company/company_slice"
+import {
+    selectActiveForm,
+    selectUnfilledFields
+} from "@/store/form/form_selectors"
+import { setActiveForm } from "@/store/form/form_slice"
+import {
+    selectProductPackage,
+    selectProductsSelectedWithoutPackagesWithAdjustedPrice
+} from "@/store/products/products_selectors"
+import { RootState } from "@/store/store"
+import { formatCurrency } from "@/utils/format_currency"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { Button } from "primereact/button"
 import { Checkbox } from "primereact/checkbox"
@@ -5,21 +20,6 @@ import { ConfirmPopup, confirmPopup } from "primereact/confirmpopup"
 import { Toast } from "primereact/toast"
 import { MouseEvent, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Card } from "../../screens/form/sidebar/PageCard"
-import { HOST } from "../../shared/vars"
-import { selectCompany } from "../../store/company/company_selectors"
-import { setCompanyRegistrationStatus } from "../../store/company/company_slice"
-import {
-    selectActiveForm,
-    selectUnfilledFields
-} from "../../store/form/form_selectors"
-import { setActiveForm } from "../../store/form/form_slice"
-import {
-    selectProductPackage,
-    selectProductsSelectedWithoutPackagesWithAdjustedPrice
-} from "../../store/products/products_selectors"
-import { RootState } from "../../store/store"
-import { formatCurrency } from "../../utils/format_currency"
 
 export function SummaryFormPage() {
     const { companyId } = useParams()

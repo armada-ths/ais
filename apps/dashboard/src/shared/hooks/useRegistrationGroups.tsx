@@ -10,6 +10,10 @@ export type RegistrationGroup = {
     }>
 }
 
+/**
+ * These are groups that can be created in the AIS CRM,
+ * used for things such as "interested in" and "registration groups"
+ */
 export function useRegistrationGroups() {
     return useQuery({
         queryKey: ["registration_groups"],

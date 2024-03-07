@@ -120,6 +120,8 @@ export function useDashboard() {
         enabled: companyId > 0
     })
 
+    // If user tries to access a company that either doesn't exist
+    // or they don't have access to, send them to the not found page
     if (
         (companyId != null && companyId < 0) ||
         (args.data &&

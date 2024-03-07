@@ -19,7 +19,7 @@ import { Provider } from "react-redux"
 import "./input.css"
 import { DashboardScreen } from "./screens/dashboard/screen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
-import { ThankYouScreen } from "./screens/thank_you/screen.tsx"
+import { FinalRegistrationThankYouScreen } from "./screens/fr_thank_you/screen.tsx"
 import { InfoScreen } from "./shared/InfoScreen.tsx"
 import useLoadData from "./shared/useLoadData.tsx"
 import { store } from "./store/store.ts"
@@ -44,9 +44,9 @@ const companyFormPage = new Route({
 })
 
 const companyThankYou = new Route({
-    path: "/thank-you",
+    path: "/fr-thank-you",
     getParentRoute: () => companyRoute,
-    component: ThankYouScreen
+    component: FinalRegistrationThankYouScreen
 })
 
 const notFoundRoute = new Route({

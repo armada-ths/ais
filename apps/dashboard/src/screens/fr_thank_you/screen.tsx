@@ -1,15 +1,15 @@
-import { useSelector } from "react-redux"
-import { InfoScreen } from "../../shared/InfoScreen"
-import { selectUser } from "../../store/company/company_selectors"
-import { DateTime } from "luxon"
-import ArmadaLogoGreen from "../../assets/armada_logo_green.svg"
+import ArmadaLogoGreen from "@/assets/armada_logo_green.svg"
+import { InfoScreen } from "@/shared/InfoScreen"
+import { selectUser } from "@/store/company/company_selectors"
 import { Link } from "@tanstack/react-router"
+import { DateTime } from "luxon"
+import { useSelector } from "react-redux"
 
 function TextSection({ children }: { children: React.ReactNode }) {
     return <p className="mt-4 text-slate-500">{children}</p>
 }
 
-export function ThankYouScreen() {
+export function FinalRegistrationThankYouScreen() {
     const user = useSelector(selectUser)
 
     return (
