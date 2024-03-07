@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useRegistrationGroups } from "@/shared/hooks/api/useRegistrationGroups"
+import { useDebounce } from "@/shared/hooks/useDebounce"
 import { HOST } from "@/shared/vars"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"
@@ -29,7 +30,9 @@ export function IrInterestedInPage() {
         }
     })
 
-    useEffect(() => {})
+    useDebounce(groupPicks, async () => await mutateAsync(), {
+        delay: 1000 // Save every second if nothing changes
+    })
 
     async function toggleInterest(groupId: number) {
         const newInterestedIn = groupPicks?.slice() ?? []

@@ -49,3 +49,24 @@ export function useDebounceValue<T>(
 
     return debouncedValue
 }
+
+export const debounce = <T extends (...args: unknown[]) => unknown>(
+    callback: T,
+    options?: {
+        delay: number
+    }
+) => {
+    let timeout: NodeJS.Timeout | null = null
+    return (...args: Parameters<T>): ReturnType<T> => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let result: any
+        if (timeout) clearTimeout(timeout)
+        timeout = setTimeout(
+            () => {
+                result = callback(...args)
+            },
+            options?.delay ?? 200
+        )
+        return result
+    }
+}

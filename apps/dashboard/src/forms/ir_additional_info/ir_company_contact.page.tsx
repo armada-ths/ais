@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { debounce } from "@/shared/hooks/useDebounce"
 import { HOST } from "@/shared/vars"
 import { asOptionalField } from "@/utils/zod_optional_field"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import { z } from "zod"
 
 const formSchema = z.object({
@@ -44,7 +45,7 @@ export function IrContactPage({
         Awaited<ReturnType<typeof useDashboard>>
     >["data"]
 }) {
-    const { mutateAsync } = useMutation({
+    const { mutateAsync, isPending } = useMutation({
         mutationFn: async ({
             firstName,
             lastName,
@@ -58,13 +59,13 @@ export function IrContactPage({
                 method: "PUT",
                 body: JSON.stringify({
                     contact: {
-                        first_name: firstName,
-                        last_name: lastName,
-                        email_address: email,
-                        alternative_email_address: alternativeEmail,
-                        title,
-                        mobile_phone_number: mobileNumber,
-                        work_phone_number: workPhoneNumber
+                        first_name: firstName ?? null,
+                        last_name: lastName ?? null,
+                        email_address: email ?? null,
+                        alternative_email_address: alternativeEmail ?? null,
+                        title: title ?? null,
+                        mobile_phone_number: mobileNumber ?? null,
+                        work_phone_number: workPhoneNumber ?? null
                     }
                 })
             })
@@ -89,8 +90,15 @@ export function IrContactPage({
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log("SUBMIT", values)
         await mutateAsync(values)
-        toast.success("Information saved!")
     }
+
+    // Autosaving
+    useEffect(() => {
+        const subscriber = form.watch(
+            debounce(() => form.handleSubmit(onSubmit)(), { delay: 1000 })
+        )
+        return () => subscriber.unsubscribe()
+    })
 
     return (
         <div className="flex w-screen max-w-md flex-col">
@@ -207,7 +215,9 @@ export function IrContactPage({
                         />
                     </div>
                     <div className="flex justify-center">
-                        <Button type="submit">Save information</Button>
+                        <Button type="submit" disabled={isPending}>
+                            {isPending ? "Saving..." : "Save information"}
+                        </Button>
                     </div>
                 </form>
             </Form>
