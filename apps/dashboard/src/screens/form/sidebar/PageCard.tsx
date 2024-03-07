@@ -1,14 +1,15 @@
-import { FORMS } from "@/forms"
+import { FormIds, FormPageIds } from "@/forms"
+import { Form, FormPage } from "@/forms/form_types"
+import { IfProgressDone } from "@/shared/IfProgressDone"
 import { useDashboard } from "@/shared/hooks/useDashboard"
 import { useProducts } from "@/shared/hooks/useProducts"
+import { remoteSaveChanges } from "@/store/form/async_actions"
+import { AppDispatch } from "@/store/store"
 import { useFormMeta } from "@/useFormMeta"
+import { cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
 import React from "react"
 import { useDispatch } from "react-redux"
-import { FormPage } from "../../../forms/form_types"
-import { remoteSaveChanges } from "../../../store/form/async_actions"
-import { AppDispatch } from "../../../store/store"
-import { cx } from "../../../utils/cx"
 
 type Props = React.HTMLAttributes<HTMLDivElement>
 
@@ -32,7 +33,7 @@ export function PageCard({
 }: {
     selected: boolean
     page: FormPage
-    form: (typeof FORMS)[keyof typeof FORMS]
+    form: Form
 }) {
     const navigate = useNavigate({
         from: "/$companyId/form/$formKey/$formPageKey"
@@ -70,9 +71,13 @@ export function PageCard({
             )}
         >
             <div className="flex items-center gap-2">
-                {completed && (
+                <IfProgressDone
+                    page={
+                        `${form.key}.${formPage?.id}` as `${FormIds}.${FormPageIds}`
+                    }
+                >
                     <span className="pi pi-check-circle text-emerald-400"></span>
-                )}
+                </IfProgressDone>
                 <h3>{page.title}</h3>
             </div>
         </Card>

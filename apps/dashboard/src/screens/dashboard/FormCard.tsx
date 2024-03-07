@@ -1,18 +1,19 @@
 import { Badge } from "@/components/ui/badge"
+import { FORMS } from "@/forms"
+import { Form } from "@/forms/form_types"
 import { useDashboard } from "@/shared/hooks/useDashboard"
 import { useProducts } from "@/shared/hooks/useProducts"
+import { setActiveForm } from "@/store/form/form_slice"
+import { cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
 import { useDispatch } from "react-redux"
-import { FORMS } from "../../forms"
-import { setActiveForm } from "../../store/form/form_slice"
-import { cx } from "../../utils/cx"
 import { Card } from "../form/sidebar/PageCard"
 
 export default function FormCard({
     form,
     locked
 }: {
-    form: (typeof FORMS)[keyof typeof FORMS]
+    form: Form
     locked?: boolean
 }) {
     const dispatch = useDispatch()
@@ -24,7 +25,7 @@ export default function FormCard({
     const { data: dataProducts } = useProducts()
 
     function openForm() {
-        dispatch(setActiveForm(form.key))
+        dispatch(setActiveForm(form.key as keyof typeof FORMS))
         navigate({
             to: `/$companyId/form/$formKey/$formPageKey`,
             params: { formKey: form.key, formPageKey: form.pages[0].id }

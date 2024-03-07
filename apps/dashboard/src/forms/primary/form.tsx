@@ -1,16 +1,15 @@
-import { FormSidebarCartSummary } from "../../screens/form/sidebar/FormSidebarCartSummary"
+import { FormSidebarCartSummary } from "@/screens/form/sidebar/FormSidebarCartSummary"
 import {
     selectProductEvents,
-    selectProductExtras,
-    selectSelectedProducts
-} from "../../store/products/products_selectors"
+    selectProductExtras
+} from "@/store/products/products_selectors"
 import { Form } from "../form_types"
 import { InvoiceDetailsFormPage } from "./invoice_details.page"
 import { PackageSelectFormPage } from "./package_select.page"
 import { ProductFormPage } from "./product.page"
 import { SummaryFormPage } from "./summary.page"
 
-export const form: Form = {
+export const form = {
     key: "primary",
     name: "Order & Invoice Details",
     description:
@@ -22,19 +21,14 @@ export const form: Form = {
             title: "Select Package",
             hasNextButton: false,
             hasPrevButton: false,
-            getProgress(state) {
-                return selectSelectedProducts(state).find(
-                    current => current.isPackage
-                ) != null
-                    ? 100
-                    : 0
-            },
+            isDone: null,
             pageComponent: PackageSelectFormPage
         },
         {
             id: "events",
             title: "Select Events",
             hasPrevButton: false,
+            isDone: null,
             pageComponent: () => (
                 <ProductFormPage selector={selectProductEvents} />
             )
@@ -42,6 +36,7 @@ export const form: Form = {
         {
             id: "extras",
             title: "Select Extras",
+            isDone: null,
             pageComponent: () => (
                 <ProductFormPage selector={selectProductExtras} />
             )
@@ -50,6 +45,7 @@ export const form: Form = {
             id: "invoice",
             title: "Invoice Information",
             pageComponent: () => <InvoiceDetailsFormPage />,
+            isDone: null,
             fields: [
                 {
                     mapping: "company.invoice_name"
@@ -89,7 +85,8 @@ export const form: Form = {
             id: "summary",
             title: "Summary",
             hasNextButton: false,
+            isDone: null,
             pageComponent: SummaryFormPage
         }
     ]
-}
+} satisfies Form

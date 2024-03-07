@@ -2,7 +2,7 @@ import { Form } from "../form_types"
 import { TransportSummaryFormPage } from "./summary.page"
 import { TransportInfoFormPage } from "./transport_info.page"
 
-export const form: Form = {
+export const form = {
     key: "transport",
     name: "Armada Transport",
     description: "Armada transport system",
@@ -10,6 +10,7 @@ export const form: Form = {
         {
             id: "transport_info",
             title: "Transport",
+            isDone: null,
             pageComponent: TransportInfoFormPage,
             fields: [
                 {
@@ -22,6 +23,7 @@ export const form: Form = {
             title: "Transport Summary",
             hasNextButton: false,
             hasPrevButton: false,
+            isDone: null,
             pageComponent: TransportSummaryFormPage,
             fields: [
                 {
@@ -35,4 +37,4 @@ export const form: Form = {
             ]
         }
     ]
-}
+} as const satisfies Form

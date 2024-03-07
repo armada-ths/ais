@@ -1,7 +1,7 @@
 import { Form } from "../form_types"
 import { StureContactPage } from "./sture_contact.page"
 
-export const form: Form = {
+export const form = {
     key: "sture",
     name: "Content for your booth",
     description:
@@ -11,9 +11,10 @@ export const form: Form = {
         {
             id: "sture_contact_info",
             title: "Content for your booth",
+            isDone: null,
             pageComponent: StureContactPage,
             hasNextButton: false,
             fields: []
         }
     ]
-}
+} as const satisfies Form

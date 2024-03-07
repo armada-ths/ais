@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FORMS } from "@/forms"
+import { FORMS, FormIds, FormPageIds } from "@/forms"
 import { isFormOpen } from "@/forms/form_access"
+import { IfProgressDone } from "@/shared/IfProgressDone"
 import { InfoScreen } from "@/shared/InfoScreen"
 import { Navbar } from "@/shared/Navbar"
 import { useDashboard } from "@/shared/hooks/useDashboard"
@@ -10,7 +11,7 @@ import { AppDispatch } from "@/store/store"
 import { useFormMeta } from "@/useFormMeta"
 import { cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react"
 import { useDispatch } from "react-redux"
 import { FormPageView } from "./FormPageView"
 import PrimarySection from "./PrimarySection"
@@ -169,6 +170,16 @@ export function FormScreen() {
                                     })
                                 }}
                             >
+                                <IfProgressDone
+                                    page={
+                                        `${form.key}.${page.id}` as `${FormIds}.${FormPageIds}`
+                                    }
+                                >
+                                    <CheckCircle
+                                        size={20}
+                                        className="stroke-melon-700 pr-2"
+                                    />
+                                </IfProgressDone>
                                 {page.title}
                             </TabsTrigger>
                         ))}

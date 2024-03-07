@@ -2,7 +2,7 @@ import IrRegistrationPage from "@/forms/ir_signup/ir_registration.page"
 import { RegistrationStatus } from "@/store/company/company_slice"
 import { Form } from "../form_types"
 
-export const form: Form = {
+export const form = {
     key: "ir_signup",
     name: "Initial Registration",
     description: "Signup to become an exhibitor for Armada",
@@ -25,4 +25,4 @@ export const form: Form = {
                 ).includes(registration.type)
         }
     ]
-}
+} as const satisfies Form
