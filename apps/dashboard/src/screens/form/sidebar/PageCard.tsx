@@ -5,6 +5,7 @@ import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useProducts } from "@/shared/hooks/api/useProducts"
 import { remoteSaveChanges } from "@/store/form/async_actions"
 import { AppDispatch } from "@/store/store"
+import { useFormMeta } from "@/useFormMeta"
 import { cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
 import React from "react"
@@ -34,11 +35,12 @@ export function PageCard({
     page: FormPage
     form: Form
 }) {
+    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate({
         from: "/$companyId/form/$formKey/$formPageKey"
     })
 
-    const dispatch = useDispatch<AppDispatch>()
+    const { formPage } = useFormMeta()
 
     const { data: dataRegistration } = useDashboard()
     const { data: dataProducts } = useProducts()
@@ -63,8 +65,12 @@ export function PageCard({
         <Card
             onClick={clickPageCard}
             className={cx(
-                "flex-row items-center justify-between hover:cursor-pointer",
-                completed && page.id !== page?.id && "opacity-50"
+                "flex-row items-center justify-between border-[1px] hover:cursor-pointer",
+                {
+                    " border-liqorice-700 border-opacity-20":
+                        page.id === formPage?.id,
+                    "opacity-50": completed && page.id !== formPage?.id
+                }
             )}
         >
             <div className="flex items-center gap-2">

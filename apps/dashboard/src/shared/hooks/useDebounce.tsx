@@ -22,6 +22,10 @@ export function useDebounce<T>(
         )
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value])
+
+    return {
+        cancel: () => clearTimeout(timerRef.current)
+    }
 }
 
 export function useDebounceValue<T>(

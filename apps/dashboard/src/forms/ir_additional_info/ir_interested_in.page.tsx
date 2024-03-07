@@ -19,8 +19,23 @@ export function IrInterestedInPage() {
         setGroupPicks(data?.interested_in ?? [])
     }, [data?.interested_in])
 
+    // Autosave
+    const { cancel: cancelDebounce } = useDebounce(
+        groupPicks,
+        async () => {
+            await mutateAsync()
+            await queryClient.invalidateQueries({
+                queryKey: ["dashboard"]
+            })
+        },
+        {
+            delay: 1000 // Save every second if nothing changes
+        }
+    )
+
     const { mutateAsync, isPending } = useMutation({
         mutationFn: async () => {
+            cancelDebounce()
             return await fetch(`${HOST}/api/dashboard/`, {
                 method: "PUT",
                 body: JSON.stringify({
@@ -28,10 +43,6 @@ export function IrInterestedInPage() {
                 })
             })
         }
-    })
-
-    useDebounce(groupPicks, async () => await mutateAsync(), {
-        delay: 1000 // Save every second if nothing changes
     })
 
     async function toggleInterest(groupId: number) {
@@ -50,6 +61,7 @@ export function IrInterestedInPage() {
     }
 
     async function saveChangesToRemote() {
+        cancelDebounce()
         await mutateAsync()
         await queryClient.invalidateQueries({
             queryKey: ["dashboard"]
@@ -85,7 +97,7 @@ export function IrInterestedInPage() {
                 </div>
             ))}
             <Button disabled={isPending} onClick={saveChangesToRemote}>
-                Save information
+                {isPending ? "Saving..." : "Save information"}
             </Button>
         </div>
     )
