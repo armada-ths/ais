@@ -5,10 +5,10 @@ import { Toaster } from "@/components/ui/sonner.tsx"
 import { queryClient } from "@/utils/query_client.ts"
 import { QueryClientProvider } from "@tanstack/react-query"
 import {
-    RootRoute,
-    Route,
-    Router,
-    RouterProvider
+    RouterProvider,
+    createRootRoute,
+    createRoute,
+    createRouter
 } from "@tanstack/react-router"
 import "primeicons/primeicons.css"
 import "primereact/resources/primereact.min.css"
@@ -25,45 +25,50 @@ import useLoadData from "./shared/useLoadData.tsx"
 import { store } from "./store/store.ts"
 import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 
-const rootRoute = new RootRoute({
+const rootRoute = createRootRoute({
     errorComponent: () => <div>404</div>
 })
-const companyDashboard = new Route({
+const companyDashboard = createRoute({
     path: "/",
     getParentRoute: () => companyRoute,
     component: () => <DashboardScreen />
 })
-const companyForm = new Route({
+const companyForm = createRoute({
     path: "/form",
     getParentRoute: () => companyRoute
 })
-const companyFormPage = new Route({
+const companyFormPage = createRoute({
     path: "$formKey",
     getParentRoute: () => companyForm,
     component: () => <FormScreen />
 })
+const companyFormStep = createRoute({
+    path: "$formStepKey",
+    getParentRoute: () => companyFormPage,
+    component: () => <FormScreen />
+})
 
-const companyThankYou = new Route({
+const companyThankYou = createRoute({
     path: "/fr-thank-you",
     getParentRoute: () => companyRoute,
     component: FinalRegistrationThankYouScreen
 })
 
-const notFoundRoute = new Route({
+const notFoundRoute = createRoute({
     path: "*",
     getParentRoute: () => rootRoute,
     component: () => (
         <InfoScreen title="404" subText="This page doesn't exist :(" />
     )
 })
-const companyNotFoundRoute = new Route({
+const companyNotFoundRoute = createRoute({
     path: "*",
     getParentRoute: () => companyRoute,
     component: () => (
         <InfoScreen title="404" subText="This page doesn't exist :(" />
     )
 })
-const root = new Route({
+const root = createRoute({
     path: "/",
     getParentRoute: () => rootRoute,
     component: () => (
@@ -75,7 +80,7 @@ const root = new Route({
     )
 })
 
-const companyRoute = new Route({
+const companyRoute = createRoute({
     path: "$companyId",
     getParentRoute: () => rootRoute
 })
@@ -85,13 +90,15 @@ const routeTree = rootRoute.addChildren([
     companyRoute.addChildren([
         companyDashboard,
         companyThankYou,
-        companyForm.addChildren([companyFormPage]),
+        companyForm.addChildren([
+            companyFormPage.addChildren([companyFormStep])
+        ]),
         companyNotFoundRoute
     ]),
     notFoundRoute
 ])
 
-const router = new Router({
+const router = createRouter({
     routeTree,
     basepath: "/dashboard"
 })
