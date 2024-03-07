@@ -2,6 +2,7 @@ import { DashboardResponse, Product } from "@/shared/hooks/useDashboard"
 import { FORMS } from "."
 import { RootState } from "../store/store"
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type FieldValue = string | boolean | undefined | File | Object
 
 export interface FieldOption {
