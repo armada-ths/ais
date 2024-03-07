@@ -22,7 +22,7 @@ export function Navbar() {
     }
 
     return (
-        <div className="grid h-20 grid-cols-[1fr_3fr_1fr] items-center justify-center border-b-2 p-2">
+        <div className="grid h-20 grid-cols-[1fr_3fr] items-center justify-center border-b-2 p-2 md:grid-cols-[1fr_3fr_1fr]">
             <div
                 className="ml-8 flex items-center justify-start gap-x-2 hover:cursor-pointer"
                 onClick={closeForm}
@@ -33,7 +33,9 @@ export function Navbar() {
                 </p>
             </div>
             <div className="flex justify-center">
-                <h1 className="text-4xl text-slate-700">{form?.name}</h1>
+                <h1 className="text-2xl text-slate-700 md:text-4xl">
+                    {form?.name}
+                </h1>
             </div>
         </div>
     )
