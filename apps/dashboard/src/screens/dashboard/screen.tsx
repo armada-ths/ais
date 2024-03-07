@@ -55,9 +55,9 @@ export function DashboardScreen() {
 
     return (
         <div className="flex min-h-[100dvh] flex-col">
-            <div className={cx("grid grid-cols-[1fr_6fr_1fr]")}>
-                <div>{/* SIDEBAR */}</div>
-                <div className="flex flex-col items-center p-5">
+            <div className={cx("flex flex-col-reverse md:flex-row")}>
+                <div className="hidden flex-[0.5] md:flex">{/* SIDEBAR */}</div>
+                <div className="flex flex-1 flex-col items-center p-5">
                     <div className=" flex max-w-6xl flex-col items-center">
                         {/*                         {companyId != null && (
                             <Card>
@@ -140,7 +140,7 @@ export function DashboardScreen() {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="flex flex-[0.5] flex-col items-center">
                     <LogoutButton />
                 </div>
             </div>
