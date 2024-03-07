@@ -76,7 +76,6 @@ export function IrAdditionalInfoPage({
 
     const onSubmit = useCallback(
         async (values: z.infer<typeof formSchema>) => {
-            console.log(values)
             await mutateAsync(values)
         },
         [mutateAsync]
