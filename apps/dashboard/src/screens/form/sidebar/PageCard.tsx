@@ -1,12 +1,12 @@
 import { FORMS } from "@/forms"
 import { useDashboard } from "@/shared/hooks/useDashboard"
 import { useProducts } from "@/shared/hooks/useProducts"
+import { useFormMeta } from "@/useFormMeta"
+import { useNavigate } from "@tanstack/react-router"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import { FormPage } from "../../../forms/form_types"
 import { remoteSaveChanges } from "../../../store/form/async_actions"
-import { selectActivePage } from "../../../store/form/form_selectors"
-import { setPage } from "../../../store/form/form_slice"
 import { AppDispatch } from "../../../store/store"
 import { cx } from "../../../utils/cx"
 
@@ -34,8 +34,13 @@ export function PageCard({
     page: FormPage
     form: (typeof FORMS)[keyof typeof FORMS]
 }) {
+    const navigate = useNavigate({
+        from: "/$companyId/form/$formKey/$formStepKey"
+    })
+
+    const { formPage } = useFormMeta()
+
     const dispatch = useDispatch<AppDispatch>()
-    const activePage = useSelector(selectActivePage)
 
     const { data: dataRegistration } = useDashboard()
     const { data: dataProducts } = useProducts()
@@ -50,7 +55,11 @@ export function PageCard({
 
     function clickPageCard() {
         dispatch(remoteSaveChanges())
-        dispatch(setPage(page.id))
+        //dispatch(setPage(page.id))
+        navigate({
+            to: "/$companyId/form/$formKey/$formStepKey",
+            params: { formStepKey: page.id }
+        })
     }
 
     return (
@@ -58,7 +67,7 @@ export function PageCard({
             onClick={clickPageCard}
             className={cx(
                 "flex-row items-center justify-between hover:cursor-pointer",
-                completed && page.id !== activePage?.id && "opacity-50"
+                completed && page.id !== formPage?.id && "opacity-50"
             )}
         >
             <div className="flex items-center gap-2">

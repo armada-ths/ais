@@ -4,6 +4,8 @@ import { PageCard } from "./PageCard"
 export function FormSidebarProgressionSummary() {
     const { form, formPage } = useFormMeta()
 
+    console.log(formPage?.id)
+
     return (
         <div className="relative max-h-full">
             <div className="sticky top-0 flex max-h-full flex-col gap-y-2 p-5">
