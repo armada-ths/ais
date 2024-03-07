@@ -6,6 +6,10 @@ export interface DatesResponse {
     ticket: Ticket
     ir: Ir
     fr: Fr
+    events: {
+        start: string // Date
+        end: string // Date
+    }
 }
 
 export interface Fair {
