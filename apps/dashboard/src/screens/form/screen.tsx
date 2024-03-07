@@ -1,33 +1,25 @@
-import { useParams } from "@tanstack/react-router"
-import { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { FORMS } from "../../forms"
-import { isFormOpen } from "../../forms/form_access"
-import { InfoScreen } from "../../shared/InfoScreen"
-import { Navbar } from "../../shared/Navbar"
-import { selectCompanyStatus } from "../../store/company/company_selectors"
-import {
-    selectActivePage,
-    selectActivePageIndex,
-    selectForm
-} from "../../store/form/form_selectors"
-import { setActiveForm } from "../../store/form/form_slice"
-import { RootState } from "../../store/store"
-import { cx } from "../../utils/cx"
+import { FORMS } from "@/forms"
+import { isFormOpen } from "@/forms/form_access"
+import { InfoScreen } from "@/shared/InfoScreen"
+import { Navbar } from "@/shared/Navbar"
+import { useDashboard } from "@/shared/hooks/useDashboard"
+import { useFormMeta } from "@/useFormMeta"
+import { cx } from "@/utils/cx"
 import { FormPageView } from "./FormPageView"
 import PrimarySection from "./PrimarySection"
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 
 export function FormScreen() {
-    const dispatch = useDispatch()
-    const { formKey } = useParams()
+    const { data: dashboardData } = useDashboard()
 
-    const activePage = useSelector(selectActivePage)
-    const activePageIndex = useSelector(selectActivePageIndex)
-    const form = useSelector((state: RootState) =>
-        selectForm(state, formKey as keyof typeof FORMS)
-    )
-    const companyStatus = useSelector(selectCompanyStatus)
+    const {
+        form,
+        formPage,
+        formPageIndex,
+        params: { formKey }
+    } = useFormMeta()
+
+    const companyStatus = dashboardData?.type
 
     const SideBar = form?.rightSidebar
 
@@ -36,23 +28,13 @@ export function FormScreen() {
         companyStatus ?? null
     )
 
-    useEffect(() => {
-        if (
-            formKey != null &&
-            FORMS[formKey as keyof typeof FORMS] != null && // Form exists
-            isFormOpen(formKey as keyof typeof FORMS, companyStatus ?? null) // Form is open
-        ) {
-            dispatch(setActiveForm(formKey as keyof typeof FORMS))
-        }
-    }, [formKey, form, dispatch, companyStatus])
-
     if (
-        (form != null && activePage == null && formOpen) ||
+        (form != null && formPage == null && formOpen) ||
         companyStatus == null
     ) {
         return null // We are still waiting for activeForm to be applied, hence show nothing to reduce flickering
     }
-    if (form != null && activePage == null && !formOpen) {
+    if (form != null && formPage == null && !formOpen) {
         return (
             <InfoScreen
                 severity="error"
@@ -61,7 +43,7 @@ export function FormScreen() {
             />
         )
     }
-    if (form == null || activePage == null) {
+    if (form == null || formPage == null) {
         return (
             <InfoScreen
                 title="Oups, no form"
@@ -87,8 +69,8 @@ export function FormScreen() {
                 <PrimarySection>
                     <FormPageView
                         form={form}
-                        page={activePage}
-                        pageIndex={activePageIndex}
+                        page={formPage}
+                        pageIndex={formPageIndex}
                     />
                 </PrimarySection>
                 {SideBar != null && <SideBar />}

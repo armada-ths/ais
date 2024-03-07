@@ -58,7 +58,7 @@ export default function FormCard({
             )}
         >
             <div className="mb-2 flex items-center justify-between gap-x-10">
-                <p className="whitespace-nowrap text-lg">{form.name}</p>
+                <p className="text-lg">{form.name}</p>
                 {form.progression !== "none" &&
                     (progress <= 0 && !form.forceFormDone ? (
                         <Badge className="whitespace-nowrap">Not Started</Badge>

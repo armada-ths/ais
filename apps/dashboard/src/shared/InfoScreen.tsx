@@ -24,11 +24,11 @@ export function InfoScreen({
     fullscreen?: boolean
     severity?: "error" | "warning" | "info"
 }) {
-    const { companyId } = useParams()
+    const { companyId } = useParams({ from: "/$companyId/*" })
     return (
         <div
             className={cx(
-                "mx-10 flex flex-col justify-center",
+                "flex flex-col justify-center px-10",
                 fullscreen !== false && "h-screen w-screen"
             )}
         >
@@ -60,8 +60,8 @@ export function InfoScreen({
                         ) : (
                             <Link
                                 className="mt-5 underline "
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                to={(link?.to ?? `/${companyId}`) as any}
+                                from="/$companyId/*"
+                                to={link?.to ?? `/${companyId}`}
                             >
                                 {link?.text ?? "Return to dashboard"}
                             </Link>

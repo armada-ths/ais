@@ -10,6 +10,12 @@ export type RegistrationGroup = {
     }>
 }
 
+export async function queryRegistrationGroups() {
+    const response = await fetch(`${HOST}/api/companies/registration_groups`)
+    const data = (await response.json()) as RegistrationGroup[]
+    return data
+}
+
 /**
  * These are groups that can be created in the AIS CRM,
  * used for things such as "interested in" and "registration groups"
@@ -17,11 +23,6 @@ export type RegistrationGroup = {
 export function useRegistrationGroups() {
     return useQuery({
         queryKey: ["registration_groups"],
-        queryFn: async () => {
-            const response = await fetch(
-                `${HOST}/api/companies/registration_groups`
-            )
-            return (await response.json()) as RegistrationGroup[]
-        }
+        queryFn: queryRegistrationGroups
     })
 }

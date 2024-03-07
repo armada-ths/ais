@@ -11,7 +11,9 @@ import { toast } from "sonner"
 
 export default function IrRegistrationPage() {
     const router = useRouter()
-    const { companyId } = useParams()
+    const { companyId } = useParams({
+        from: "/$companyId/form/$formKey/$formStepKey"
+    })
     const { data, isLoading } = useDashboard()
 
     const [terms, setTerms] = useState(false)
@@ -117,7 +119,7 @@ export default function IrRegistrationPage() {
             <div className="mt-5">
                 {mutationIsSuccess ? (
                     <Button variant="link" onClick={exitView}>
-                        Return to dashboard
+                        Take the next step
                     </Button>
                 ) : (
                     <Button

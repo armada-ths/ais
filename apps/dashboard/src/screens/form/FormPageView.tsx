@@ -1,12 +1,9 @@
 import { Button } from "@/components/ui/button"
+import { useNavigate } from "@tanstack/react-router"
 import { useDispatch } from "react-redux"
 import { Form, FormPage } from "../../forms/form_types"
 import { remoteSaveChanges } from "../../store/form/async_actions"
-import {
-    getPageComponent,
-    nextPage,
-    previousPage
-} from "../../store/form/form_slice"
+import { getPageComponent } from "../../store/form/form_slice"
 import { AppDispatch } from "../../store/store"
 
 export function FormPageView({
@@ -18,6 +15,9 @@ export function FormPageView({
     page: FormPage
     pageIndex: number
 }) {
+    const navigate = useNavigate({
+        from: "/$companyId/form/$formKey/$formStepKey"
+    })
     const dispatch = useDispatch<AppDispatch>()
 
     const Page = getPageComponent(form.key, page.id)
@@ -28,11 +28,21 @@ export function FormPageView({
     }
 
     async function handlePrevious() {
-        if (await saveChanges()) dispatch(previousPage())
+        await saveChanges()
+        const previousPage = form.pages[pageIndex - 1]
+        navigate({
+            to: "/$companyId/form/$formKey/$formStepKey",
+            params: { formStepKey: previousPage.id }
+        })
     }
 
     async function handleNext() {
-        if (await saveChanges()) dispatch(nextPage())
+        await saveChanges()
+        const nextPage = form.pages[pageIndex + 1]
+        navigate({
+            to: "/$companyId/form/$formKey/$formStepKey",
+            params: { formStepKey: nextPage.id }
+        })
     }
 
     return (

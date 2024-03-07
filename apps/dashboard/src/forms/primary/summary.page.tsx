@@ -22,7 +22,9 @@ import { MouseEvent, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 export function SummaryFormPage() {
-    const { companyId } = useParams()
+    const { companyId } = useParams({
+        from: "/$companyId/form/$formKey/$formStepKey"
+    })
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const toastRef = useRef<Toast>(null)

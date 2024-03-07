@@ -110,7 +110,7 @@ export async function queryDashboard(args: { companyId: number }) {
 
 export function useDashboard() {
     const navigation = useNavigate()
-    const { companyId: rawCompanyId } = useParams()
+    const { companyId: rawCompanyId } = useParams({ from: "/$companyId" })
 
     // Check that if company is defined it is a positive number, otherwise set it to -1 to indicate that it is not a valid company
     const companyId = isNaN(Number(rawCompanyId)) ? -1 : Number(rawCompanyId)
@@ -134,9 +134,9 @@ export function useDashboard() {
             ))
     ) {
         navigation({
-            to: "/_/not-found",
+            to: "/$companyId/*",
             replace: true,
-            params: { companyId }
+            params: { companyId: "not_found" }
         })
     }
 
