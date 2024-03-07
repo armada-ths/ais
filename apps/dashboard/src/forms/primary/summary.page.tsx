@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux"
 
 export function SummaryFormPage() {
     const { companyId } = useParams({
-        from: "/$companyId/form/$formKey/$formStepKey"
+        from: "/$companyId/form/$formKey/$formPageKey"
     })
     const dispatch = useDispatch()
     const navigate = useNavigate()

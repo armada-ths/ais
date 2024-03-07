@@ -19,7 +19,7 @@ import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionS
 export function FormScreen() {
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate({
-        from: "/$companyId/form/$formKey/$formStepKey"
+        from: "/$companyId/form/$formKey/$formPageKey"
     })
     const { data: dashboardData } = useDashboard()
 
@@ -49,8 +49,8 @@ export function FormScreen() {
         const previousPage = form.pages[formPageIndex - 1]
         console.log("PREVIOUS")
         navigate({
-            to: "/$companyId/form/$formKey/$formStepKey",
-            params: { formStepKey: previousPage.id }
+            to: "/$companyId/form/$formKey/$formPageKey",
+            params: { formPageKey: previousPage.id }
         })
     }
 
@@ -59,9 +59,9 @@ export function FormScreen() {
         const nextPage = form.pages[formPageIndex + 1]
         console.log("NEXT PAGE", nextPage)
         navigate({
-            from: "/$companyId/form/$formKey/$formStepKey",
-            to: "/$companyId/form/$formKey/$formStepKey",
-            params: { formStepKey: nextPage.id }
+            from: "/$companyId/form/$formKey/$formPageKey",
+            to: "/$companyId/form/$formKey/$formPageKey",
+            params: { formPageKey: nextPage.id }
         })
     }
 
@@ -161,10 +161,10 @@ export function FormScreen() {
                                 onClick={async () => {
                                     await saveChanges()
                                     navigate({
-                                        from: "/$companyId/form/$formKey/$formStepKey",
-                                        to: "/$companyId/form/$formKey/$formStepKey",
+                                        from: "/$companyId/form/$formKey/$formPageKey",
+                                        to: "/$companyId/form/$formKey/$formPageKey",
                                         params: {
-                                            formStepKey: page.id
+                                            formPageKey: page.id
                                         }
                                     })
                                 }}

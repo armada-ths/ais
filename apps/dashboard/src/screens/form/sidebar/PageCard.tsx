@@ -35,7 +35,7 @@ export function PageCard({
     form: (typeof FORMS)[keyof typeof FORMS]
 }) {
     const navigate = useNavigate({
-        from: "/$companyId/form/$formKey/$formStepKey"
+        from: "/$companyId/form/$formKey/$formPageKey"
     })
 
     const { formPage } = useFormMeta()
@@ -56,8 +56,8 @@ export function PageCard({
     function clickPageCard() {
         dispatch(remoteSaveChanges())
         navigate({
-            to: "/$companyId/form/$formKey/$formStepKey",
-            params: { formStepKey: page.id }
+            to: "/$companyId/form/$formKey/$formPageKey",
+            params: { formPageKey: page.id }
         })
     }
 

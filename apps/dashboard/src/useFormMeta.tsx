@@ -8,8 +8,8 @@ import { useNavigate, useParams } from "@tanstack/react-router"
  */
 export function useFormMeta() {
     const navigate = useNavigate()
-    const { companyId, formKey, formStepKey } = useParams({
-        from: "/$companyId/form/$formKey/$formStepKey"
+    const { companyId, formKey, formPageKey } = useParams({
+        from: "/$companyId/form/$formKey/$formPageKey"
     })
 
     if (companyId == null || formKey == null) {
@@ -23,7 +23,7 @@ export function useFormMeta() {
     // If the formPage is unrecognized, we will default to the first page
     const formPageIndex = Math.max(
         0,
-        form?.pages.findIndex(x => x.id === formStepKey) ?? 0
+        form?.pages.findIndex(x => x.id === formPageKey) ?? 0
     )
 
     const formPage =
@@ -31,15 +31,15 @@ export function useFormMeta() {
 
     if (form == null || formPage == null) {
         navigate({
-            from: "/$companyId/form/$formKey/$formStepKey",
-            to: "/$companyId/form/$formKey/$formStepKey",
-            params: { companyId, formKey, formStepKey: form?.pages[0].id },
+            from: "/$companyId/form/$formKey/$formPageKey",
+            to: "/$companyId/form/$formKey/$formPageKey",
+            params: { companyId, formKey, formPageKey: form?.pages[0].id },
             replace: true
         })
     }
 
     return {
-        params: { companyId, formKey, formPageKey: formStepKey },
+        params: { companyId, formKey, formPageKey: formPageKey },
         form,
         formPage,
         formPageIndex

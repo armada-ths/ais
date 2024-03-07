@@ -26,8 +26,8 @@ export default function FormCard({
     function openForm() {
         dispatch(setActiveForm(form.key))
         navigate({
-            to: `/$companyId/form/$formKey/$formStepKey`,
-            params: { formKey: form.key, formStepKey: form.pages[0].id }
+            to: `/$companyId/form/$formKey/$formPageKey`,
+            params: { formKey: form.key, formPageKey: form.pages[0].id }
         })
     }
 

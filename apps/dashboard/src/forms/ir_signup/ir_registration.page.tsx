@@ -12,7 +12,7 @@ import { toast } from "sonner"
 export default function IrRegistrationPage() {
     const navigate = useNavigate()
     const { companyId } = useParams({
-        from: "/$companyId/form/$formKey/$formStepKey"
+        from: "/$companyId/form/$formKey/$formPageKey"
     })
     const { data, isLoading } = useDashboard()
 
@@ -46,7 +46,6 @@ export default function IrRegistrationPage() {
     function exitView() {
         if (companyId == null) return
         // Redirect to the next step
-        console.log("EXIT VIEW")
         navigate({
             to: "/$companyId/form/$formKey",
             replace: true,

@@ -51,7 +51,7 @@ const companyFormPage = createRoute({
     component: () => <FormScreen />
 })
 const companyFormStep = createRoute({
-    path: "$formStepKey",
+    path: "$formPageKey",
     getParentRoute: () => companyFormPage,
     component: () => <FormScreen />
 })
