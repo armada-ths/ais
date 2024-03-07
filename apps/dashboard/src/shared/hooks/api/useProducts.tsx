@@ -1,4 +1,4 @@
-import { useDashboard } from "@/shared/hooks/useDashboard"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
 
 export function useProducts() {
     const { data, ...rest } = useDashboard()

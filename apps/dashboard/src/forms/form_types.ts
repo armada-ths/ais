@@ -1,4 +1,4 @@
-import { DashboardResponse, Product } from "@/shared/hooks/useDashboard"
+import { DashboardResponse, Product } from "@/shared/hooks/api/useDashboard"
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type FieldValue = string | boolean | undefined | File | Object

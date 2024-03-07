@@ -9,7 +9,7 @@ import {
     FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useDashboard } from "@/shared/hooks/useDashboard"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { HOST } from "@/shared/vars"
 import { asOptionalField } from "@/utils/zod_optional_field"
 import { zodResolver } from "@hookform/resolvers/zod"

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { HOST } from "../vars"
+import { HOST } from "../../vars"
 
 export async function useLunchTickets(companyName: string) {
     return useQuery({

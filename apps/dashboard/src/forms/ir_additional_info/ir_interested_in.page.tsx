@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useDashboard } from "@/shared/hooks/useDashboard"
-import { useRegistrationGroups } from "@/shared/hooks/useRegistrationGroups"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { useRegistrationGroups } from "@/shared/hooks/api/useRegistrationGroups"
 import { HOST } from "@/shared/vars"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"
@@ -28,6 +28,8 @@ export function IrInterestedInPage() {
             })
         }
     })
+
+    useEffect(() => {})
 
     async function toggleInterest(groupId: number) {
         const newInterestedIn = groupPicks?.slice() ?? []

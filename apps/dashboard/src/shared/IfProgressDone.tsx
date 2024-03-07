@@ -1,7 +1,7 @@
 import { FORMS, FormIds, FormPageIds } from "@/forms"
 import { FormPage } from "@/forms/form_types"
-import { useDashboard } from "@/shared/hooks/useDashboard"
-import { useProducts } from "@/shared/hooks/useProducts"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { useProducts } from "@/shared/hooks/api/useProducts"
 import { useMemo } from "react"
 
 export function IfProgressDone({
