@@ -18,6 +18,26 @@ from companies.serializers import CompanySerializer
 
 from util import status
 
+COMPANY_ALREADY_EXISTS = {
+    "err": "company_already_exists",
+    "msg": "A company with this name already exists",
+}
+
+COMPANY_TYPE_DOES_NOT_EXIST = {
+    "err": "company_type_does_not_exist",
+    "msg": "This company type does not exist",
+}
+
+COMPANY_TYPE_OR_DEFAULT_DOES_NOT_EXIST = {
+    "err": "company_type_or_default_does_not_exist",
+    "msg": "A company type was not provided, and a default company type does not exists.",
+}
+
+EMAIL_ALREADY_IN_USE = {
+    "err": "email_address_already_in_use",
+    "msg": "This email address is already in use",
+}
+
 COMPANY_FIELDS = ["name", "identity_number", "website", "type", "general_email_address"]
 
 
@@ -47,8 +67,12 @@ class RegisterSerializer(serializers.Serializer):
 
         if "name" in data:
             name = data["name"]
-            if Company.objects.filter(name=name).exists():
-                errors["name"] = "A company with this name already exists"
+            existing_company = Company.objects.filter(name=name).first()
+            if existing_company is not None:
+                errors["name"] = {
+                    **COMPANY_ALREADY_EXISTS,
+                    "company_id": existing_company.id,
+                }
 
         if "type" in data:
             company_type_id = data["type"]
@@ -56,16 +80,13 @@ class RegisterSerializer(serializers.Serializer):
                 company_type = CompanyType.objects.get(type=company_type_id)
                 data["type"] = company_type
             except CompanyType.DoesNotExist:
-                errors["type"] += "This company type does not exist"
+                errors["type"] = COMPANY_TYPE_DOES_NOT_EXIST
         else:
             try:
                 company_type = CompanyType.objects.get(default=True)
+                data["type"] = company_type
             except CompanyType.DoesNotExist:
-                errors[
-                    "type"
-                ] += "A company type was not provided, and a default company type does not exists."
-
-            data["type"] = company_type
+                errors["type"] = COMPANY_TYPE_OR_DEFAULT_DOES_NOT_EXIST
 
         if errors:
             raise ValidationError(errors)
@@ -77,7 +98,9 @@ class RegisterSerializer(serializers.Serializer):
 
         if User.objects.filter(username=email_address).exists():
             raise ValidationError(
-                {"email_address": "This email address is already in use"}
+                {
+                    "email_address": EMAIL_ALREADY_IN_USE,
+                }
             )
 
         return data
