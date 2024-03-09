@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useSearch } from "@tanstack/react-router"
 import { cx } from "class-variance-authority"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 const formSchema = z.object({
@@ -70,7 +71,21 @@ export function RegisterCompanyUserScreen() {
                 return {
                     status: response.status,
                     error: "Could not create",
-                    data: (await response.json()) as unknown
+                    data: (await response.json()) as {
+                        company: {
+                            name: {
+                                err: "company_already_exists"
+                                msg: string
+                                company_id: string
+                            }
+                        }
+                        contact: {
+                            email_address: {
+                                err: string
+                                msg: string
+                            }
+                        }
+                    }
                 }
             }
             return {
@@ -83,20 +98,15 @@ export function RegisterCompanyUserScreen() {
 
     async function onSubmit() {
         const response = await mutateAsync(form.getValues())
-        if (response.status !== 200) {
-            if (
-                response.data != null &&
-                typeof response.data === "object" &&
-                "contact" in response.data &&
-                response.data.contact != null &&
-                typeof response.data.contact === "object" &&
-                "email_address" in response.data.contact &&
-                typeof response.data.contact.email_address === "string"
-            ) {
-                console.log("DING")
+        if (response.status !== 200 && response.error != null) {
+            if (response.data.contact.email_address != null) {
                 form.setError("email", {
                     type: "value",
-                    message: response.data.contact.email_address
+                    message: response.data.contact.email_address.msg
+                })
+            } else if (response.data.company.name != null) {
+                toast.error("Company name already exists", {
+                    description: response.data.company.name.msg
                 })
             }
         } else {
@@ -186,14 +196,11 @@ export function RegisterCompanyUserScreen() {
                                         {...field}
                                     />
                                 </FormControl>
-                                <FormDescription>
-                                    Account password
-                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <div className="flex justify-center">
+                    <div className="mt-4 flex justify-center">
                         <Button type="submit" disabled={isPending}>
                             {isPending ? "Saving..." : "Create account"}
                         </Button>

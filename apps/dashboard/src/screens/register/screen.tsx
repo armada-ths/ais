@@ -9,6 +9,7 @@ import {
     FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
 import { useCompanies } from "@/shared/hooks/api/useCompanies"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useNavigate } from "@tanstack/react-router"
@@ -32,7 +33,8 @@ export function RegisterScreen() {
     const [search, setSearch] = useState("")
     const [selectedCompany, setSelectedCompany] = useState("")
     const selectedCompanyId = data?.find(
-        company => company["Organization Name"] === selectedCompany
+        company =>
+            selectedCompany && company["Organization Name"] === selectedCompany
     )?.id
 
     const filteredCompanies = data?.filter(
@@ -65,33 +67,44 @@ export function RegisterScreen() {
                     "my-10 text-center text-4xl font-bold text-melon-700 md:my-10"
                 )}
             >
-                Welcome to armada
+                Armada Dashboard
             </h1>
-            <div className="mx-auto mb-10 mt-10 flex max-h-screen max-w-xl flex-col flex-wrap justify-between gap-y-20 md:flex-row">
-                <div className="flex flex-col items-center">
-                    <h3 className="mb-2 text-center text-xl">
-                        Find your company
-                    </h3>
+            <div className="mx-auto mb-10 mt-10 flex max-h-screen max-w-xl flex-col flex-wrap items-center justify-between gap-y-20 md:flex-row md:items-start">
+                <div className="flex max-w-xs flex-col items-center rounded-lg bg-stone-100 p-4 px-6">
+                    <div className="mx-auto flex max-w-[200px] flex-col items-center">
+                        <h3 className="text-center text-xl">
+                            Find your company
+                        </h3>
+                        <Separator className="mb-4 mt-2" />
 
-                    <ComboBox
-                        placeholder="Search company..."
-                        onSelect={x => setSelectedCompany(x)}
-                        onChange={x => setSearch(x.target.value)}
-                        options={
-                            filteredCompanies?.map(
-                                x => x["Organization Name"]
-                            ) ?? []
-                        }
-                    />
-                    {selectedCompany && (
-                        <div className="mt-4 w-full max-w-[200px] rounded bg-stone-100 p-2">
-                            <p>Selected company</p>
-                            <p className="font-bold">{selectedCompany}</p>
-                        </div>
-                    )}
-                    {selectedCompanyId && (
+                        <p className="mx-auto mb-2 text-sm text-stone-600">
+                            Have you been an exhibitor at Armada before?
+                        </p>
+                        <ComboBox
+                            placeholder="Select your company..."
+                            style={{
+                                backgroundColor: "white",
+                                fontSize: "0.9rem"
+                            }}
+                            onSelect={x => setSelectedCompany(x)}
+                            onChange={x => setSearch(x.target.value)}
+                            options={
+                                filteredCompanies?.map(
+                                    x => x["Organization Name"]
+                                ) ?? []
+                            }
+                        />
+                        <Separator className="my-4" />
+                        {selectedCompany && (
+                            <div className="w-full rounded bg-stone-100">
+                                <p>Selected company</p>
+                                <p className="font-bold">{selectedCompany}</p>
+                            </div>
+                        )}
+                        <div className="flex-1" />
                         <Button
-                            className="mt-4"
+                            disabled={selectedCompanyId == null}
+                            className="mt-4 w-full"
                             onClick={() =>
                                 navigate({
                                     from: "/register",
@@ -104,13 +117,14 @@ export function RegisterScreen() {
                         >
                             Continue <ArrowRight className="ml-2" size={20} />
                         </Button>
-                    )}
+                    </div>
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="flex max-w-xs flex-col rounded-lg bg-stone-100 p-4 px-6">
                     <h3 className="mb-2 text-center text-xl">
                         Register your company
                     </h3>
-                    <div className="flex max-w-xs flex-col items-center">
+                    <Separator className="mb-4 mt-2" />
+                    <div className="flex max-w-[200px] flex-col">
                         <Form {...form}>
                             <form
                                 onSubmit={form.handleSubmit(onSubmit)}
@@ -153,8 +167,9 @@ export function RegisterScreen() {
                                         </FormItem>
                                     )}
                                 />
+                                <div className="flex-1" />
                                 <div className="flex justify-center">
-                                    <Button type="submit">
+                                    <Button type="submit" className="w-full">
                                         Continue{" "}
                                         <ArrowRight
                                             className="ml-2"
