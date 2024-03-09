@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import serializers
 from rest_framework.parsers import JSONParser
@@ -57,7 +58,13 @@ class RegisterSerializer(serializers.Serializer):
             except CompanyType.DoesNotExist:
                 errors["type"] += "This company type does not exist"
         else:
-            company_type = CompanyType.objects.get(default=True)
+            try:
+                company_type = CompanyType.objects.get(default=True)
+            except CompanyType.DoesNotExist:
+                errors[
+                    "type"
+                ] += "A company type was not provided, and a default company type does not exists."
+
             data["type"] = company_type
 
         if errors:
@@ -103,6 +110,7 @@ class RegisterSerializer(serializers.Serializer):
 
 
 @require_POST
+@csrf_exempt
 def create_company_contact(request):
     data = JSONParser().parse(request)
     serializer = RegisterSerializer(
