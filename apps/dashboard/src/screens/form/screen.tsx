@@ -186,7 +186,10 @@ export function FormScreen() {
                 {form.pages.map(page => (
                     <TabsContent key={page.id} value={page.id}>
                         <PrimarySection>
-                            <FormPageView form={form} page={page} />
+                            <FormPageView
+                                formId={form.key as keyof typeof FORMS}
+                                page={page}
+                            />
                         </PrimarySection>
                     </TabsContent>
                 ))}
@@ -207,7 +210,10 @@ export function FormScreen() {
                     <div className="" />
                 )}
                 <PrimarySection>
-                    <FormPageView form={form} page={formPage} />
+                    <FormPageView
+                        formId={form.key as keyof typeof FORMS}
+                        page={formPage}
+                    />
                 </PrimarySection>
                 {SideBar != null && <SideBar />}
             </div>

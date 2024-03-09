@@ -1,6 +1,5 @@
 import { createSelector as cs } from "reselect"
 import { FORMS, getFieldFromForm } from "../../forms"
-import { FORM_ACCESS } from "../../forms/form_access"
 import { Field, FormPage } from "../../forms/form_types"
 import { selectCompanyStatus } from "../company/company_selectors"
 import { RootState } from "../store"
@@ -37,23 +36,9 @@ export const selectFormPageProgress = cs(
                 : selectForm(state, formKey),
         (_: RootState, pageId: string) => pageId
     ],
-    (state, form, pageId) => {
-        if (form == null) {
-            return null
-        }
-        const page = form.pages.find(p => p.id == pageId)
-        if (page == null) return null
-        if (page.getProgress != null) page.getProgress(state)
-
-        const totalFields =
-            page.fields?.filter(field => field.mandatory !== false).length ?? 0
-        const completedFields =
-            page.fields?.filter(
-                field => field.value && field.mandatory !== false
-            ).length ?? 0
-
-        if (totalFields <= 0) return null
-        return completedFields / totalFields
+    () => {
+        console.warn("[selectFormPageProgress] is deprecated")
+        return 0
     }
 )
 
@@ -63,51 +48,17 @@ export const selectFormProgress = cs(
         selectForms,
         (_: RootState, formKey: keyof typeof FORMS) => formKey
     ],
-    (state, forms, formKey) => {
-        const form = forms[formKey]
-        if (form.progression === "none" || form.progression === "silent")
-            return -1
-
-        const pageProgress = form.pages
-            .map(page => selectFormPageProgress(state, page.id, form.key))
-            .filter(Boolean) as number[]
-
-        return (
-            pageProgress.reduce((a, b) => a + b, 0) / (pageProgress.length || 1)
-        )
+    () => {
+        console.warn("[selectFormProgress] is deprecated")
+        return 0
     }
 )
 
 export const selectCompanyProgress = cs(
     [(state: RootState) => state, selectForms, selectCompanyStatus],
-    (state, forms, companyStatus) => {
-        let averageProgress = 0
-        let formCount = 0
-
-        // Filter forms that are not relevant
-        const listOfSkippedForms = []
-        for (const current of Object.values(forms)) {
-            if (companyStatus == null) {
-                listOfSkippedForms.push(current.key)
-                continue
-            }
-            if (FORM_ACCESS[companyStatus]?.[current.key] === "shown") continue
-            listOfSkippedForms.push(current.key)
-        }
-
-        for (const form of Object.values(forms)) {
-            if (
-                form.progression === "none" ||
-                form.progression === "silent" ||
-                listOfSkippedForms.includes(form.key)
-            ) {
-                continue
-            }
-            averageProgress += selectFormProgress(state, form.key)
-            formCount++
-        }
-
-        return averageProgress / (formCount || 1)
+    () => {
+        console.warn("[selectCompanyProgress] is deprecated")
+        return 0
     }
 )
 
@@ -139,6 +90,8 @@ export const selectUnfilledFields = cs(
                 page,
                 fields: []
             }
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             for (const field of page.fields ?? []) {
                 if (!field.value && field.mandatory !== false)
                     newUnfilledPage.fields.push(field)

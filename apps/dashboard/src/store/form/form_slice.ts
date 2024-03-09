@@ -1,6 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { FORMS, getMutableFormsInstance } from "../../forms"
-import { PayloadAction } from "@reduxjs/toolkit"
 import { FieldValue } from "../../forms/form_types"
 
 export function getPageComponent(formId: keyof typeof FORMS, pageId: string) {
@@ -97,7 +96,11 @@ export const formSlice = createSlice({
             for (const form of Object.values(state.forms)) {
                 // Const find a specific field in state
                 for (const page of form.pages) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     const result = page.fields?.find(
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
                         field => field.mapping === action.payload.mapping
                     )
                     if (result == null) continue

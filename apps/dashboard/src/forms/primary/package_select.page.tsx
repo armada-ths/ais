@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux"
 import { FormField } from "../../screens/form/FormInput"
-import { FormWrapper } from "../FormWrapper"
 import { selectVisibleProductPackages } from "../../store/products/products_selectors"
+import { FormWrapper } from "../FormWrapper"
 
 export function PackageSelectFormPage() {
     const packages = useSelector(selectVisibleProductPackages)
 
     return (
-        <FormWrapper className="max-w-none">
+        <FormWrapper>
             <div className="flex flex-wrap justify-center gap-5">
                 {packages.map(productPackageMeta => (
                     <FormField.Package
