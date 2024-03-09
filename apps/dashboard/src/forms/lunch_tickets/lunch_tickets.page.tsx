@@ -93,7 +93,7 @@ export function ViewLunchTicketsPage() {
     }
 
     return (
-        <FormWrapper className="flex max-w-md flex-col gap-y-5 text-slate-700">
+        <FormWrapper>
             <h2 className="text-md text-center font-bold">
                 Here you can find all your lunch tickets
             </h2>

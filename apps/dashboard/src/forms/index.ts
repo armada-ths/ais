@@ -37,10 +37,15 @@ export type FormIds = keyof typeof FORMS
 export type FormPageIds =
     (typeof FORMS)[keyof typeof FORMS]["pages"][number]["id"]
 
+/**
+ * @deprecated
+ */
 export function getFieldFromForm(forms: typeof FORMS, mapping: string) {
     // Iterate over all forms and pages to find the field with the given mapping
     for (const formMeta of Object.values(forms)) {
         for (const page of formMeta.pages) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             const field = page.fields?.find(f => f.mapping == mapping) ?? 0
             if (field) return field
         }

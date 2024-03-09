@@ -1,6 +1,6 @@
 import React from "react"
-import { FormWrapper } from "../FormWrapper"
 import { CompleteButton } from "../../shared/CompleteButton"
+import { FormWrapper } from "../FormWrapper"
 
 export function LinkText({ children }: { children: React.ReactNode }) {
     return <p className="font-semibold text-blue-600">{children}</p>
@@ -8,7 +8,7 @@ export function LinkText({ children }: { children: React.ReactNode }) {
 
 export function StureContactPage() {
     return (
-        <FormWrapper className="flex flex-col gap-y-5 text-slate-700">
+        <FormWrapper>
             <img
                 draggable={false}
                 className="my-5 h-72 select-none object-contain"

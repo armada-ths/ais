@@ -1,13 +1,19 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { FORMS, getFieldFromForm } from "../forms"
 import { FieldOption, FieldValue } from "../forms/form_types"
 
+/**
+ * @deprecated
+ */
 export function mapToApi(forms: typeof FORMS) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const output = {} as any
 
     for (const formMeta of Object.values(forms)) {
         for (const page of formMeta.pages) {
+            // @ts-ignore
             if (page.fields == null) continue
+            // @ts-ignore
             for (const field of page.fields) {
                 if (Array.isArray(field.value)) {
                     mapValueOptions(
@@ -70,6 +76,7 @@ export function reverseMap(parent: any) {
     const awaitingMappings: { mapping: string; value: FieldValue }[] = []
     for (const form of Object.values(FORMS)) {
         for (const page of form.pages) {
+            // @ts-ignore
             for (const field of page.fields ?? []) {
                 // Look for field in parent
                 const path = field.mapping.split(".")
