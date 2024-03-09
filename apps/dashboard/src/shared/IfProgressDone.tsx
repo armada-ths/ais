@@ -16,7 +16,8 @@ export function IfProgressDone({
     const [formId, pageId] = pagePath.split(".") as [FormIds, FormPageIds]
 
     const { data: dataProducts, isLoading: isLoadingProducts } = useProducts()
-    const { data: dataDashboard, isLoading: isLoadingDasboard } = useDashboard()
+    const { data: dataDashboard, isLoading: isLoadingDashboard } =
+        useDashboard()
 
     // If form is not provided, try to find the form by the pageId
     // This is slower but better DX
@@ -32,7 +33,7 @@ export function IfProgressDone({
         return fallback
     }
 
-    if (isLoadingProducts || isLoadingDasboard) return null
+    if (isLoadingProducts || isLoadingDashboard) return null
     if (dataProducts == null || dataDashboard == null) return fallback
 
     const isDone = page?.isDone?.({

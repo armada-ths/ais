@@ -2,6 +2,10 @@
 import "./store/store"
 
 import { Toaster } from "@/components/ui/sonner.tsx"
+import { RegisterScreen } from "@/screens/register/screen.tsx"
+import { RegisterCompanyUserScreen } from "@/screens/register_user/screen.tsx"
+import useLoadData from "@/shared/useLoadData.tsx"
+import LoadingAnimation from "@/utils/loading_animation/loading_animation.tsx"
 import { queryClient } from "@/utils/query_client.ts"
 import { QueryClientProvider } from "@tanstack/react-query"
 import {
@@ -23,16 +27,14 @@ import { DashboardScreen } from "./screens/dashboard/screen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
 import { FinalRegistrationThankYouScreen } from "./screens/fr_thank_you/screen.tsx"
 import { InfoScreen } from "./shared/InfoScreen.tsx"
-import useLoadData from "./shared/useLoadData.tsx"
 import { store } from "./store/store.ts"
-import LoadingAnimation from "./utils/loading_animation/loading_animation.tsx"
 
 const rootRoute = createRootRoute({
     errorComponent: () => <div>404</div>,
     component: () => (
         <>
             <Outlet />
-            <TanStackRouterDevtools />
+            {import.meta.env.DEV && <TanStackRouterDevtools />}
         </>
     )
 })
@@ -76,12 +78,25 @@ const companyNotFoundRoute = createRoute({
         <InfoScreen title="404" subText="This page doesn't exist :(" />
     )
 })
+
+const companyRegister = createRoute({
+    path: "/register",
+    getParentRoute: () => rootRoute,
+    component: () => <RegisterScreen />
+})
+
+const companyRegisterUser = createRoute({
+    path: "/register_user",
+    getParentRoute: () => rootRoute,
+    component: () => <RegisterCompanyUserScreen />
+})
+
 const root = createRoute({
     path: "/",
     getParentRoute: () => rootRoute,
     component: () => (
         <InfoScreen
-            title="Armada Dasboard"
+            title="Armada Dashboard"
             severity="warning"
             subText="It seems like you are not logged in, this is not intended behavior. If you see this screen you should contact Armada"
         />
@@ -95,6 +110,8 @@ const companyRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
     root,
+    companyRegisterUser,
+    companyRegister,
     companyRoute.addChildren([
         companyDashboard,
         companyThankYou,
