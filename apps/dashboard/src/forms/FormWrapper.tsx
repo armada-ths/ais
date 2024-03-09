@@ -1,15 +1,15 @@
+import { ConfirmSaveAlert } from "@/shared/ConfirmSaveAlert"
 import React from "react"
-import { cx } from "../utils/cx"
 import { PrimaryFormHeader } from "./primary/Header"
 
-// Create attributes from html div
-type Props = React.HTMLAttributes<HTMLDivElement>
+// eslint-disable-next-line react-refresh/only-export-components
 
-export function FormWrapper({ className, children, ...rest }: Props) {
+export function FormWrapper({ children }: { children: React.ReactNode }) {
     return (
-        <div className={cx("my-5 max-w-lg", className)} {...rest}>
+        <>
+            <ConfirmSaveAlert />
             <PrimaryFormHeader />
             {children}
-        </div>
+        </>
     )
 }
