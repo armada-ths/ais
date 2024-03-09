@@ -2,7 +2,7 @@ import { form as CoreValues } from "./core_values/form"
 import { form as ExhibitorCatalogForm } from "./exhibitor_catalog/form"
 import { form as IrAdditionalInfo } from "./ir_additional_info/form"
 import { form as IrSignupForm } from "./ir_signup/form"
-import CreateLunchTicketsForm from "./lunch_tickets/form"
+import { form as CreateLunchTicketsForm } from "./lunch_tickets/form"
 import { form as PrimaryForm } from "./primary/form"
 import { form as ReceiptForm } from "./receipt/form"
 import { form as StureForm } from "./sture/form"
@@ -19,9 +19,23 @@ export function getMutableFormsInstance() {
         lunch_tickets: CreateLunchTicketsForm,
         sture: StureForm,
         core_values: CoreValues
-    }
+    } as const
 }
-export const FORMS = Object.freeze(getMutableFormsInstance())
+export const FORMS = {
+    ir_signup: IrSignupForm,
+    ir_additional_info: IrAdditionalInfo,
+    primary: PrimaryForm, //
+    receipt: ReceiptForm,
+    exhibitor_catalog: ExhibitorCatalogForm,
+    transport: TransportForm,
+    lunch_tickets: CreateLunchTicketsForm, //
+    sture: StureForm,
+    core_values: CoreValues
+} as const
+
+export type FormIds = keyof typeof FORMS
+export type FormPageIds =
+    (typeof FORMS)[keyof typeof FORMS]["pages"][number]["id"]
 
 export function getFieldFromForm(forms: typeof FORMS, mapping: string) {
     // Iterate over all forms and pages to find the field with the given mapping

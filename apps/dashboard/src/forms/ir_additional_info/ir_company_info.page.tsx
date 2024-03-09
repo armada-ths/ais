@@ -9,13 +9,14 @@ import {
     FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useDashboard } from "@/shared/hooks/useDashboard"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { debounce } from "@/shared/hooks/useDebounce"
 import { HOST } from "@/shared/vars"
 import { asOptionalField } from "@/utils/zod_optional_field"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import { useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import { z } from "zod"
 const formSchema = z.object({
     orgName: z.string().min(2).max(50),
@@ -40,7 +41,7 @@ export function IrAdditionalInfoPage({
         Awaited<ReturnType<typeof useDashboard>>
     >["data"]
 }) {
-    const { mutateAsync } = useMutation({
+    const { mutateAsync, isPending } = useMutation({
         mutationFn: async ({
             orgName,
             identityNumber,
@@ -51,10 +52,10 @@ export function IrAdditionalInfoPage({
                 method: "PUT",
                 body: JSON.stringify({
                     company: {
-                        identity_number: identityNumber,
-                        name: orgName,
-                        general_email_address: corporateEmail,
-                        website
+                        identity_number: identityNumber ?? null,
+                        name: orgName ?? null,
+                        general_email_address: corporateEmail ?? null,
+                        website: website ?? null
                     }
                 })
             })
@@ -73,11 +74,20 @@ export function IrAdditionalInfoPage({
         }
     })
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
-        await mutateAsync(values)
-        toast.success("Information saved!")
-    }
+    const onSubmit = useCallback(
+        async (values: z.infer<typeof formSchema>) => {
+            await mutateAsync(values)
+        },
+        [mutateAsync]
+    )
+
+    // Autosaving
+    useEffect(() => {
+        const subscriber = form.watch(
+            debounce(() => form.handleSubmit(onSubmit)(), { delay: 1000 })
+        )
+        return () => subscriber.unsubscribe()
+    }, [form, onSubmit])
 
     return (
         <div className="flex max-w-md flex-col gap-y-4">
@@ -163,7 +173,9 @@ export function IrAdditionalInfoPage({
                         )}
                     />
                     <div className="flex justify-center">
-                        <Button type="submit">Save information</Button>
+                        <Button type="submit" disabled={isPending}>
+                            {isPending ? "Saving..." : "Save information"}
+                        </Button>
                     </div>
                 </form>
             </Form>

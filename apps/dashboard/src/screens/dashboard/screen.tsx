@@ -10,8 +10,8 @@ import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
 import { LogoutButton } from "@/shared/LogoutButton"
 import { Timeline } from "@/shared/Timeline"
-import { useDashboard } from "@/shared/hooks/useDashboard"
-import { useDates } from "@/shared/hooks/useDates"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { useDates } from "@/shared/hooks/api/useDates"
 import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
@@ -32,12 +32,6 @@ export function DashboardScreen() {
 
     const companyContact = data?.sales_contacts?.[0]
 
-    /*     const colorClassName = {
-        "text-red-400": companyProgress < 0.5,
-        "text-yellow-400": companyProgress < 0.8,
-        "text-emerald-400": companyProgress <= 1
-    } */
-
     if (isLoading || isLoadingDates) {
         return <LoadingAnimation />
     }
@@ -55,22 +49,14 @@ export function DashboardScreen() {
 
     return (
         <div className="flex min-h-[100dvh] flex-col">
-            <div className={cx("grid grid-cols-[1fr_6fr_1fr]")}>
-                <div>{/* SIDEBAR */}</div>
-                <div className="flex flex-col items-center p-5">
-                    <div className=" flex max-w-6xl flex-col items-center">
-                        {/*                         {companyId != null && (
-                            <Card>
-                                <CardHeader>
-                                    <CardDescription>
-                                        Logged in as company{" "}
-                                        <b>{data.company.name}</b>
-                                    </CardDescription>
-                                </CardHeader>
-                            </Card>
-                        )} */}
+            <div className="flex w-full justify-end">
+                <LogoutButton />
+            </div>
+            <div className={cx("flex flex-col-reverse md:flex-row")}>
+                <div className="flex flex-1 flex-col items-center px-5">
+                    <div className="flex flex-col items-center">
                         {data.contact?.first_name != null && (
-                            <Card className="mt-5 max-w-[700px]">
+                            <Card className="max-w-[700px]">
                                 <CardHeader>
                                     <CardTitle title={data.company.name}>
                                         Welcome <b>{data.contact.first_name}</b>
@@ -110,21 +96,7 @@ export function DashboardScreen() {
                                 </AlertDescription>
                             </Alert>
                         )}
-                        {/*                     <div className="mt-10 flex flex-col items-center justify-end">
-                        <p className={cx("mb-2 text-xl", colorClassName)}>
-                            {companyProgress < 1
-                                ? "Company Progress"
-                                : "Fully Configured"}
-                        </p>
-                        <p className={cx("text-4xl font-bold", colorClassName)}>
-                            {companyProgress < 1 ? (
-                                `${(companyProgress * 100).toFixed()}%`
-                            ) : (
-                                <span className="pi pi-check-circle !text-4xl !font-bold" />
-                            )}
-                        </p>
-                    </div> */}
-                        <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:grid-cols-3">
+                        <div className="mt-10 grid w-full grid-cols-1 gap-5 sm:grid-cols-2 2xl:grid-cols-3">
                             {formCardsData.map(([key, formMeta]) => (
                                 <FormCard
                                     key={key}
@@ -140,13 +112,10 @@ export function DashboardScreen() {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-center">
-                    <LogoutButton />
-                </div>
             </div>
             <div className="relative flex flex-1 items-end justify-center">
                 <Timeline
-                    className="mb-10 h-28 w-2/3"
+                    className="mb-10 mt-20 h-28 w-2/3"
                     stages={[
                         {
                             id: [

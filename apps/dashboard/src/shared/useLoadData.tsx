@@ -38,87 +38,92 @@ export default function useLoadData() {
             )
             console.log("PRODUCTS", JSON.stringify(data)) */
 
-            fetch(`${HOST}/api/dashboard/${companyId}`, {}).then(async raw => {
-                const data = await raw.json()
+            fetch(`${HOST}/api/dashboard/${companyId ?? ""}`, {}).then(
+                async raw => {
+                    const data = await raw.json()
 
-                // Load products
-                const products = data.products
-                dispatch(loadProducts(products))
+                    // Load products
+                    const products = data.products
+                    dispatch(loadProducts(products ?? []))
 
-                if (data.error != null) {
-                    dispatch(setErrors(data.error))
-                }
+                    if (data.error != null) {
+                        dispatch(setErrors(data.error))
+                    }
 
-                const awaitingMappings = reverseMap(data)
-                // Set status for company
-                dispatch(
-                    setCompanyRegistrationStatus(
-                        data.type as RegistrationStatus
-                    )
-                )
-                if (data.company?.name) {
-                    dispatch(setCompanyName(data.company.name))
-
-                    //Get Lunch Tickets
-
-                    fetch(
-                        `${HOST}/api/fair/lunchtickets/companysearch?company=${data.company.name}`
-                    ).then(async raw => {
-                        const data = await raw.json()
-                        //data.result[0].id
-                        const maps = reverseMap(data)
-                        for (const current of maps) {
-                            dispatch(
-                                setField({
-                                    mapping: current.mapping,
-                                    value: current.value
-                                })
-                            )
-                        }
-                    })
-                }
-
-                if (data.contact) dispatch(setUser(data.contact))
-                if (data.contract) dispatch(setContract(data.contract))
-
-                for (const current of awaitingMappings) {
+                    const awaitingMappings = reverseMap(data)
+                    // Set status for company
                     dispatch(
-                        setField({
-                            mapping: current.mapping,
-                            value: current.value
+                        setCompanyRegistrationStatus(
+                            data.type as RegistrationStatus
+                        )
+                    )
+                    if (data.company?.name) {
+                        dispatch(setCompanyName(data.company.name))
+
+                        //Get Lunch Tickets
+
+                        fetch(
+                            `${HOST}/api/fair/lunchtickets/companysearch?company=${data.company.name}`
+                        ).then(async raw => {
+                            const data = await raw.json()
+                            //data.result[0].id
+                            const maps = reverseMap(data)
+                            for (const current of maps) {
+                                dispatch(
+                                    setField({
+                                        mapping: current.mapping,
+                                        value: current.value
+                                    })
+                                )
+                            }
                         })
-                    )
-                }
+                    }
 
-                // Apply orders
-                const orders = data.orders
-                for (const productMeta of orders ?? []) {
-                    dispatch(
-                        pickProduct({
+                    if (data.contact) dispatch(setUser(data.contact))
+                    if (data.contract) dispatch(setContract(data.contract))
+
+                    for (const current of awaitingMappings) {
+                        dispatch(
+                            setField({
+                                mapping: current.mapping,
+                                value: current.value
+                            })
+                        )
+                    }
+
+                    // Apply orders
+                    const orders = data.orders
+                    for (const productMeta of orders ?? []) {
+                        dispatch(
+                            pickProduct({
+                                id: productMeta.product.id,
+                                quantity: productMeta.quantity,
+                                isPackage:
+                                    productMeta.product.category?.name ===
+                                    PACKAGE_KEY
+                            })
+                        )
+                    }
+
+                    const productMetas = data.orders
+                    const customPrices = [] as Omit<
+                        SelectedProduct,
+                        "isPackage"
+                    >[]
+
+                    for (const productMeta of productMetas ?? []) {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        customPrices.push({
                             id: productMeta.product.id,
+                            comment: productMeta.comment,
                             quantity: productMeta.quantity,
-                            isPackage:
-                                productMeta.product.category?.name ===
-                                PACKAGE_KEY
+                            adjustedPrice: productMeta.unit_price
                         })
-                    )
+                    }
+                    dispatch(loadProductMeta(customPrices))
+                    setLoading(false)
                 }
-
-                const productMetas = data.orders
-                const customPrices = [] as Omit<SelectedProduct, "isPackage">[]
-
-                for (const productMeta of productMetas ?? []) {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    customPrices.push({
-                        id: productMeta.product.id,
-                        comment: productMeta.comment,
-                        quantity: productMeta.quantity,
-                        adjustedPrice: productMeta.unit_price
-                    })
-                }
-                dispatch(loadProductMeta(customPrices))
-                setLoading(false)
-            })
+            )
         }
 
         load()

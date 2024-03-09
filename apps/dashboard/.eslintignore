@@ -1,0 +1,5 @@
+*.config.ts
+*.config.js
+
+# Ignore shadcn files
+src/components/ui/*

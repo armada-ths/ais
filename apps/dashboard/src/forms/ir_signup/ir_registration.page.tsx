@@ -1,20 +1,26 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useDashboard } from "@/shared/hooks/useDashboard"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { useDates } from "@/shared/hooks/api/useDates"
 import { HOST } from "@/shared/vars"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"
-import { useParams, useRouter } from "@tanstack/react-router"
+import { useNavigate, useParams } from "@tanstack/react-router"
 import { DateTime } from "luxon"
 import { useState } from "react"
 import { toast } from "sonner"
 
 export default function IrRegistrationPage() {
-    const router = useRouter()
-    const { companyId } = useParams()
+    const navigate = useNavigate()
+    const { companyId } = useParams({
+        from: "/$companyId/form/$formKey/$formPageKey"
+    })
+
+    const { data: dataDates } = useDates()
     const { data, isLoading } = useDashboard()
 
-    const [terms, setTerms] = useState(false)
+    const [readTerms, setReadTerms] = useState(false)
+    const [acceptedBinding, setAcceptedBinding] = useState(false)
     const [processData, setProcessData] = useState(false)
 
     const {
@@ -44,7 +50,7 @@ export default function IrRegistrationPage() {
     function exitView() {
         if (companyId == null) return
         // Redirect to the next step
-        router.navigate({
+        navigate({
             to: "/$companyId/form/$formKey",
             replace: true,
             params: { companyId, formKey: "ir_additional_info" }
@@ -58,12 +64,12 @@ export default function IrRegistrationPage() {
     if (isLoading) {
         return <div>Loading...</div>
     }
-    if (data == null) {
+    if (data == null || dataDates == null) {
         return <div>We encountered an error</div>
     }
 
     return (
-        <div className="mt-6 flex max-w-[700px] flex-col items-center gap-y-5">
+        <div className="mt-6 flex max-w-[500px] flex-col items-center gap-y-5">
             <a href={`${HOST}${data?.ir_contract.contract}`} target="_blank">
                 <Button variant={"outline"}>
                     Open Armada {DateTime.now().year} Exhibitor Contract
@@ -71,17 +77,38 @@ export default function IrRegistrationPage() {
             </a>
             <div className="mt-6 flex items-center space-x-4">
                 <Checkbox
-                    id="terms"
-                    checked={terms}
-                    onCheckedChange={x => x != "indeterminate" && setTerms(x)}
+                    id="read"
+                    checked={readTerms}
+                    onCheckedChange={x =>
+                        x != "indeterminate" && setReadTerms(x)
+                    }
                 />
                 <label
-                    htmlFor="terms"
+                    htmlFor="read"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                    I have read the binding contract and agree to terms, and I
-                    am also authorized to register my organization for THS
-                    Armada {DateTime.now().year} and sign this contract.*
+                    I have read and accepted the terms and conditions and
+                    confirm that I have the right to enter this agreement on
+                    behalf of <b>{data?.company.name}</b>
+                </label>
+            </div>
+            <div className="mt-6 flex items-center space-x-4">
+                <Checkbox
+                    id="binding"
+                    checked={acceptedBinding}
+                    onCheckedChange={x =>
+                        x != "indeterminate" && setAcceptedBinding(x)
+                    }
+                />
+                <label
+                    htmlFor="binding"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                    I understand that this Initial Registration is binding after{" "}
+                    {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
+                        "yyyy MM dd"
+                    )}{" "}
+                    and have read the cancellation policy
                 </label>
             </div>
             <div className="mt-2 flex space-x-4">
@@ -96,32 +123,23 @@ export default function IrRegistrationPage() {
                     htmlFor="process_data"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                    THS Armada would like to process personal data about you and
-                    your organization to be able to contact you in conjunction
-                    with complete registration and send you information
-                    regarding the fair of {DateTime.now().year}. The data we
-                    intend to collect and the process is forename, surname, the
-                    title of your organization, phone number, and email address.
-                    You decide for yourself if you want to leave any additional
-                    information to us. The data will only be processed by the
-                    project group in THS Armada and by THS Management. The data
-                    will be saved in the Armada Internal Systems, AIS. You are,
-                    according to GDPR (General Data Protection Regulation),
-                    entitled to receive information regarding what personal data
-                    we process and how we process these. You also have the right
-                    to request a correction as to what personal data we are
-                    processing about you. I consent for THS Armada to process my
-                    personal data in accordance with the above.*
+                    I consent to letting THS Armada store my personal
+                    information according to THS personal information policy
                 </label>
             </div>
             <div className="mt-5">
                 {mutationIsSuccess ? (
                     <Button variant="link" onClick={exitView}>
-                        Return to dashboard
+                        Take the next step
                     </Button>
                 ) : (
                     <Button
-                        disabled={!terms || !processData || isPending}
+                        disabled={
+                            !readTerms ||
+                            !processData ||
+                            !acceptedBinding ||
+                            isPending
+                        }
                         onClick={onClickSign}
                     >
                         Sign up as Exhibitor

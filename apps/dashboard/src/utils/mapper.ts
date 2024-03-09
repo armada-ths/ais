@@ -42,6 +42,7 @@ export function map(mapping: string, parent: any, attachable: FieldValue) {
 
 export function mapValueOptions(
     mapping: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parent: any,
     attachable: FieldOption[]
 ) {
@@ -74,14 +75,14 @@ export function reverseMap(parent: any) {
                 const path = field.mapping.split(".")
                 let parentCopy = { ...parent }
                 for (const part of path) {
-                    if (parentCopy == null || parentCopy[part] === undefined){
-
+                    if (parentCopy == null || parentCopy[part] === undefined) {
                         continue
                     }
                     if (
                         part === path[path.length - 1] &&
                         parentCopy[part] != null &&
-                        (typeof parentCopy[part] !== "object" || Array.isArray(parentCopy[part]))
+                        (typeof parentCopy[part] !== "object" ||
+                            Array.isArray(parentCopy[part]))
                     ) {
                         awaitingMappings.push({
                             mapping: field.mapping,

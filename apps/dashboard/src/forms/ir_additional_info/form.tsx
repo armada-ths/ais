@@ -3,7 +3,7 @@ import IrAdditionalInfoPage from "@/forms/ir_additional_info/ir_company_info.pag
 import { IrInterestedInPage } from "@/forms/ir_additional_info/ir_interested_in.page"
 import { Form } from "../form_types"
 
-export const form: Form = {
+export const form = {
     key: "ir_additional_info",
     name: "Additional Information",
     description: "Provide additional information about the company",
@@ -33,4 +33,4 @@ export const form: Form = {
                 registration.contact.email_address != null
         }
     ]
-}
+} as const satisfies Form

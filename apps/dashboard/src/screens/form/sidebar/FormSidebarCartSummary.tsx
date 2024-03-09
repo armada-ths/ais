@@ -1,12 +1,12 @@
-import { useSelector } from "react-redux"
 import {
     selectAdjustedProductPrice,
     selectProductPackage,
     selectProductsSelectedWithoutPackagesWithAdjustedPrice
-} from "../../../store/products/products_selectors"
+} from "@/store/products/products_selectors"
+import { RootState } from "@/store/store"
+import { formatCurrency } from "@/utils/format_currency"
+import { useSelector } from "react-redux"
 import ProductCard from "./ProductCard"
-import { RootState } from "../../../store/store"
-import { formatCurrency } from "../../../utils/format_currency"
 
 export function FormSidebarCartSummary() {
     const productPackage = useSelector(selectProductPackage)

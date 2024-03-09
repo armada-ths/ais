@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { RootState } from "../../store/store"
-import { selectField } from "../../store/form/form_selectors"
-import { FormWrapper } from "../FormWrapper"
-import { Dropdown } from "primereact/dropdown"
-import LunchTicketView from "./lunch_tickets"
-import { LunchTicket } from "../../utils/lunch_tickets/lunch_tickets.utils"
+import { selectField } from "@/store/form/form_selectors"
+import { setField, setPage } from "@/store/form/form_slice"
+import { RootState } from "@/store/store"
+import { LunchTicket } from "@/utils/lunch_tickets/lunch_tickets.utils"
 import { Button } from "primereact/button"
-import { setField, setPage } from "../../store/form/form_slice"
+import { Dropdown } from "primereact/dropdown"
+import { useMemo, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { FormWrapper } from "../FormWrapper"
 import "./lunch_ticket.css"
+import LunchTicketView from "./lunch_tickets"
 
 export function ViewLunchTicketsPage() {
     const dispatch = useDispatch()
@@ -24,6 +24,7 @@ export function ViewLunchTicketsPage() {
         selectField(state, "unassigned_lunch_tickets")
     )
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const tickets = (result_tickets?.value ?? []) as LunchTicket[]
     const fair_days = (result_fair_days?.value ?? []) as string[]
     const unassigned_tickets = (result_unassigned_tickets?.value ??

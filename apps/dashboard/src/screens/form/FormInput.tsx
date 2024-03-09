@@ -1,22 +1,22 @@
 import { Checkbox } from "primereact/checkbox"
+import { Dropdown } from "primereact/dropdown"
 import { InputText } from "primereact/inputtext"
 import { InputTextarea } from "primereact/inputtextarea"
-import { Dropdown } from "primereact/dropdown"
-import { SelectButton } from "primereact/selectbutton"
-import { useDispatch, useSelector } from "react-redux"
-import { selectField, selectFieldErrors } from "../../store/form/form_selectors"
-import { AppDispatch, RootState } from "../../store/store"
-import { nextPage, setField } from "../../store/form/form_slice"
-import { cx } from "../../utils/cx"
-import { Product, pickProduct } from "../../store/products/products_slice"
-import { remoteSaveChanges } from "../../store/form/async_actions"
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect"
-import { HOST } from "../../shared/vars"
+import { SelectButton } from "primereact/selectbutton"
 import React, { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import z from "zod"
-import { selectAdjustedProductPrice } from "../../store/products/products_selectors"
-import { formatCurrency } from "../../utils/format_currency"
 import { FieldValue } from "../../forms/form_types"
+import { HOST } from "../../shared/vars"
+import { remoteSaveChanges } from "../../store/form/async_actions"
+import { selectField, selectFieldErrors } from "../../store/form/form_selectors"
+import { nextPage, setField } from "../../store/form/form_slice"
+import { selectAdjustedProductPrice } from "../../store/products/products_selectors"
+import { Product, pickProduct } from "../../store/products/products_slice"
+import { AppDispatch, RootState } from "../../store/store"
+import { cx } from "../../utils/cx"
+import { formatCurrency } from "../../utils/format_currency"
 
 export type FieldComponentProps = {
     label: string
@@ -215,6 +215,7 @@ const MultiSelectInput: FieldComponentType<
     const dispatch = useDispatch()
     const field = useSelector((state: RootState) => selectField(state, mapping))
     const mapped =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ((field?.value as unknown as FieldValue[]) ?? []).map((value: any) => ({
             id: value.id,
             label: value[optionLabel ?? "label"],

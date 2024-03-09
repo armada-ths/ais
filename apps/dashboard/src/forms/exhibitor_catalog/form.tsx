@@ -3,7 +3,7 @@ import { BasicInfoFormPage } from "./basic_info.page"
 import { DetailedFormPage } from "./detailed.page"
 import { LogoFormPage } from "./logo.page"
 
-export const form: Form = {
+export const form = {
     key: "exhibitor_catalog",
     name: "Exhibitor Catalog",
     description:
@@ -12,6 +12,7 @@ export const form: Form = {
         {
             id: "basic_info",
             title: "Basic Info",
+            isDone: null,
             pageComponent: BasicInfoFormPage,
             fields: [
                 {
@@ -34,6 +35,7 @@ export const form: Form = {
         {
             id: "logo",
             title: "Logo",
+            isDone: null,
             pageComponent: LogoFormPage,
             fields: [
                 {
@@ -48,6 +50,7 @@ export const form: Form = {
         {
             id: "detailed",
             title: "Exhibitor Specification",
+            isDone: null,
             pageComponent: DetailedFormPage,
             hasNextButton: false,
             fields: [
@@ -66,4 +69,4 @@ export const form: Form = {
             ]
         }
     ]
-}
+} as const satisfies Form

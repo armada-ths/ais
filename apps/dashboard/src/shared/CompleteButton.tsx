@@ -14,7 +14,9 @@ export function CompleteButton({
     text?: string
     save?: boolean
 }) {
-    const { companyId } = useParams()
+    const { companyId } = useParams({
+        from: "/$companyId/*"
+    })
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
     const toastRef = useRef<Toast>(null)

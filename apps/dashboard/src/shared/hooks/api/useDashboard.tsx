@@ -101,14 +101,16 @@ export interface Company {
 }
 
 export async function queryDashboard(args: { companyId: number }) {
-    const response = await fetch(`${HOST}/api/dashboard/${args.companyId}`)
+    const response = await fetch(
+        `${HOST}/api/dashboard/${args.companyId ?? ""}`
+    )
     const result = (await response.json()) as DashboardResponse
     return result
 }
 
 export function useDashboard() {
     const navigation = useNavigate()
-    const { companyId: rawCompanyId } = useParams()
+    const { companyId: rawCompanyId } = useParams({ from: "/$companyId" })
 
     // Check that if company is defined it is a positive number, otherwise set it to -1 to indicate that it is not a valid company
     const companyId = isNaN(Number(rawCompanyId)) ? -1 : Number(rawCompanyId)
@@ -120,6 +122,8 @@ export function useDashboard() {
         enabled: companyId > 0
     })
 
+    // If user tries to access a company that either doesn't exist
+    // or they don't have access to, send them to the not found page
     if (
         (companyId != null && companyId < 0) ||
         (args.data &&
@@ -130,9 +134,9 @@ export function useDashboard() {
             ))
     ) {
         navigation({
-            to: "/_/not-found",
+            to: "/$companyId/*",
             replace: true,
-            params: { companyId }
+            params: { companyId: "not_found" }
         })
     }
 

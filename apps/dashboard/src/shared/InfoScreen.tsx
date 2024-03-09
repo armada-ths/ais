@@ -24,21 +24,24 @@ export function InfoScreen({
     fullscreen?: boolean
     severity?: "error" | "warning" | "info"
 }) {
-    const { companyId } = useParams()
+    const { companyId } = useParams({ from: "/$companyId/*" })
     return (
         <div
             className={cx(
-                "mx-10 flex flex-col justify-center",
+                "flex flex-col justify-center px-10",
                 fullscreen !== false && "h-screen w-screen"
             )}
         >
             {fullscreen !== false && <div className="flex-1" />}
             <div className="mx-auto flex max-w-[30rem] flex-[2.5] flex-col items-center">
                 <h1
-                    className={cx("text-6xl font-bold text-emerald-400", {
-                        "text-red-400": severity === "error",
-                        "text-yellow-400": severity === "warning"
-                    })}
+                    className={cx(
+                        "text-center text-6xl font-bold text-emerald-400",
+                        {
+                            "text-red-400": severity === "error",
+                            "text-yellow-400": severity === "warning"
+                        }
+                    )}
                 >
                     {title}
                 </h1>
@@ -57,8 +60,8 @@ export function InfoScreen({
                         ) : (
                             <Link
                                 className="mt-5 underline "
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                to={(link?.to ?? `/${companyId}`) as any}
+                                from="/$companyId/*"
+                                to={link?.to ?? `/${companyId}`}
                             >
                                 {link?.text ?? "Return to dashboard"}
                             </Link>

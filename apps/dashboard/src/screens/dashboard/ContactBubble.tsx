@@ -9,7 +9,7 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer"
 import { Separator } from "@/components/ui/separator"
-import { useDashboard } from "@/shared/hooks/useDashboard"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { Mail, MessageCircleQuestion, Phone, X } from "lucide-react"
 
 export function ContactBubble() {

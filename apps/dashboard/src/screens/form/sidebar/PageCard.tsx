@@ -1,14 +1,15 @@
-import { FORMS } from "@/forms"
-import { useDashboard } from "@/shared/hooks/useDashboard"
-import { useProducts } from "@/shared/hooks/useProducts"
+import { FormIds, FormPageIds } from "@/forms"
+import { Form, FormPage } from "@/forms/form_types"
+import { IfProgressDone } from "@/shared/IfProgressDone"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { useProducts } from "@/shared/hooks/api/useProducts"
+import { remoteSaveChanges } from "@/store/form/async_actions"
+import { AppDispatch } from "@/store/store"
+import { useFormMeta } from "@/useFormMeta"
+import { cx } from "@/utils/cx"
+import { useNavigate } from "@tanstack/react-router"
 import React from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { FormPage } from "../../../forms/form_types"
-import { remoteSaveChanges } from "../../../store/form/async_actions"
-import { selectActivePage } from "../../../store/form/form_selectors"
-import { setPage } from "../../../store/form/form_slice"
-import { AppDispatch } from "../../../store/store"
-import { cx } from "../../../utils/cx"
+import { useDispatch } from "react-redux"
 
 type Props = React.HTMLAttributes<HTMLDivElement>
 
@@ -32,10 +33,14 @@ export function PageCard({
 }: {
     selected: boolean
     page: FormPage
-    form: (typeof FORMS)[keyof typeof FORMS]
+    form: Form
 }) {
     const dispatch = useDispatch<AppDispatch>()
-    const activePage = useSelector(selectActivePage)
+    const navigate = useNavigate({
+        from: "/$companyId/form/$formKey/$formPageKey"
+    })
+
+    const { formPage } = useFormMeta()
 
     const { data: dataRegistration } = useDashboard()
     const { data: dataProducts } = useProducts()
@@ -50,21 +55,32 @@ export function PageCard({
 
     function clickPageCard() {
         dispatch(remoteSaveChanges())
-        dispatch(setPage(page.id))
+        navigate({
+            to: "/$companyId/form/$formKey/$formPageKey",
+            params: { formPageKey: page.id }
+        })
     }
 
     return (
         <Card
             onClick={clickPageCard}
             className={cx(
-                "flex-row items-center justify-between hover:cursor-pointer",
-                completed && page.id !== activePage?.id && "opacity-50"
+                "flex-row items-center justify-between border-[1px] hover:cursor-pointer",
+                {
+                    " border-liqorice-700 border-opacity-20":
+                        page.id === formPage?.id,
+                    "opacity-50": completed && page.id !== formPage?.id
+                }
             )}
         >
             <div className="flex items-center gap-2">
-                {completed && (
+                <IfProgressDone
+                    page={
+                        `${form.key}.${page?.id}` as `${FormIds}.${FormPageIds}`
+                    }
+                >
                     <span className="pi pi-check-circle text-emerald-400"></span>
-                )}
+                </IfProgressDone>
                 <h3>{page.title}</h3>
             </div>
         </Card>

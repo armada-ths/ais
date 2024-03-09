@@ -2,7 +2,7 @@ import { Form } from "../form_types"
 import { InvoiceDetailsFormPage } from "../primary/invoice_details.page"
 import { OrderDetails } from "./order_details.page"
 
-export const form: Form = {
+export const form = {
     key: "receipt",
     name: "Order & Invoice Details",
     description:
@@ -14,9 +14,7 @@ export const form: Form = {
             title: "Order details",
             hasNextButton: false,
             hasPrevButton: false,
-            getProgress() {
-                return 100
-            },
+            isDone: null,
             pageComponent: OrderDetails
         },
         {
@@ -24,20 +22,20 @@ export const form: Form = {
             title: "Invoice Information",
             hasNextButton: false,
             hasPrevButton: false,
-            getProgress() {
-                return 100
-            },
-            pageComponent: () => <div>
-                <div className="flex w-full justify-center">
-                    <div className="mb-2 w-[450px] rounded bg-slate-200 p-2 px-4">
-                        <p className="text-slate-600">
-                            If you want to change invoice details,
-                            please contact your sales representatives.
-                        </p>
+            isDone: null,
+            pageComponent: () => (
+                <div>
+                    <div className="flex w-full justify-center">
+                        <div className="mb-2 w-[450px] rounded bg-slate-200 p-2 px-4">
+                            <p className="text-slate-600">
+                                If you want to change invoice details, please
+                                contact your sales representatives.
+                            </p>
+                        </div>
                     </div>
+                    <InvoiceDetailsFormPage readOnly={true} />
                 </div>
-                <InvoiceDetailsFormPage readOnly={true} />
-            </div>
+            )
         }
     ]
-}
+} as const satisfies Form
