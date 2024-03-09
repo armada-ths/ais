@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useDates } from "@/shared/hooks/api/useDates"
 import { HOST } from "@/shared/vars"
@@ -83,14 +84,14 @@ export default function IrRegistrationPage() {
                         x != "indeterminate" && setReadTerms(x)
                     }
                 />
-                <label
+                <Label
                     htmlFor="read"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     I have read and accepted the terms and conditions and
                     confirm that I have the right to enter this agreement on
                     behalf of <b>{data?.company.name}</b>
-                </label>
+                </Label>
             </div>
             <div className="mt-6 flex items-center space-x-4">
                 <Checkbox
@@ -100,7 +101,7 @@ export default function IrRegistrationPage() {
                         x != "indeterminate" && setAcceptedBinding(x)
                     }
                 />
-                <label
+                <Label
                     htmlFor="binding"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
@@ -109,7 +110,7 @@ export default function IrRegistrationPage() {
                         "yyyy MM dd"
                     )}{" "}
                     and have read the cancellation policy
-                </label>
+                </Label>
             </div>
             <div className="mt-2 flex space-x-4">
                 <Checkbox
@@ -119,13 +120,13 @@ export default function IrRegistrationPage() {
                         x != "indeterminate" && setProcessData(x)
                     }
                 />
-                <label
+                <Label
                     htmlFor="process_data"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     I consent to letting THS Armada store my personal
                     information according to THS personal information policy
-                </label>
+                </Label>
             </div>
             <div className="mt-5">
                 {mutationIsSuccess ? (

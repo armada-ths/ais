@@ -15,7 +15,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useSearch } from "@tanstack/react-router"
 import { cx } from "class-variance-authority"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import { z } from "zod"
 
 const formSchema = z.object({
@@ -31,8 +30,8 @@ export function RegisterCompanyUserScreen() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as Record<string, string>
 
-    const companyId = params.companyId
-    const companyName = params.companyName
+    const companyId = params.company_id
+    const companyName = params.orgName
     const orgNumber = params.orgNumber
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -49,15 +48,14 @@ export function RegisterCompanyUserScreen() {
             const response = await fetch(
                 `${HOST}/api/register/company_contact`,
                 {
-                    method: "PUT",
+                    method: "POST",
                     body: JSON.stringify({
-                        company:
-                            companyId != null
-                                ? null
-                                : {
-                                      name: companyName,
-                                      identity_number: orgNumber
-                                  },
+                        company: companyId
+                            ? undefined
+                            : {
+                                  name: companyName,
+                                  identity_number: orgNumber
+                              },
                         contact: {
                             first_name: firstName ?? null,
                             last_name: lastName ?? null,
@@ -70,10 +68,13 @@ export function RegisterCompanyUserScreen() {
             )
             if (response.status !== 200) {
                 return {
-                    error: "Could not create"
+                    status: response.status,
+                    error: "Could not create",
+                    data: (await response.json()) as unknown
                 }
             }
             return {
+                status: response.status,
                 error: null,
                 data: (await response.json()) as z.infer<typeof formSchema>
             }
@@ -82,19 +83,34 @@ export function RegisterCompanyUserScreen() {
 
     async function onSubmit() {
         const response = await mutateAsync(form.getValues())
-        if (response.error == null) {
-            console.log("OUPS")
+        if (response.status !== 200) {
+            if (
+                response.data != null &&
+                typeof response.data === "object" &&
+                "contact" in response.data &&
+                response.data.contact != null &&
+                typeof response.data.contact === "object" &&
+                "email_address" in response.data.contact &&
+                typeof response.data.contact.email_address === "string"
+            ) {
+                console.log("DING")
+                form.setError("email", {
+                    type: "value",
+                    message: response.data.contact.email_address
+                })
+            }
+        } else {
+            // foce reload
+            window.location.reload()
         }
-        console.log("SUCCESS")
-        toast.success("Succuessfully created account")
     }
 
     return (
-        <div className="mx-auto max-w-xl px-4">
+        <div className="mx-auto max-w-sm px-4">
             <div>
                 <h1
                     className={cx(
-                        "my-4 text-center text-4xl font-bold text-melon-700 md:my-10 md:text-5xl"
+                        "my-4 text-center text-4xl font-bold text-melon-700 md:my-10"
                     )}
                 >
                     Create your account
@@ -164,7 +180,11 @@ export function RegisterCompanyUserScreen() {
                                     Password*
                                 </FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Password" {...field} />
+                                    <Input
+                                        placeholder="Password"
+                                        type="password"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormDescription>
                                     Account password

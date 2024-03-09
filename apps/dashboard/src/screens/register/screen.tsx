@@ -21,10 +21,8 @@ import "react-responsive-combo-box/dist/index.css"
 import { z } from "zod"
 
 const formSchema = z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string().email(),
-    password: z.string()
+    orgName: z.string(),
+    orgNumber: z.string()
 })
 
 export function RegisterScreen() {
@@ -37,10 +35,12 @@ export function RegisterScreen() {
         company => company["Organization Name"] === selectedCompany
     )?.id
 
-    const filteredCompanies = data?.filter(company =>
-        company["Organization Name"]
-            .toLowerCase()
-            .includes(search.toLowerCase())
+    const filteredCompanies = data?.filter(
+        company =>
+            company["Organization Name"] &&
+            company["Organization Name"]
+                .toLowerCase()
+                .includes(search.toLowerCase())
     )
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -51,25 +51,23 @@ export function RegisterScreen() {
         const values = form.getValues()
         console.log(values)
 
-        /*         navigate({
+        navigate({
             from: "/register",
             to: `/register_user`,
-            search: {
-
-            }
-        }) */
+            search: values
+        })
     }
 
     return (
         <div>
             <h1
                 className={cx(
-                    "text-center text-6xl font-bold text-melon-700 md:my-10"
+                    "my-10 text-center text-4xl font-bold text-melon-700 md:my-10"
                 )}
             >
                 Welcome to armada
             </h1>
-            <div className="mx-auto mb-10 mt-5 flex max-h-screen max-w-2xl flex-col flex-wrap justify-between gap-y-10 md:flex-row">
+            <div className="mx-auto mb-10 mt-10 flex max-h-screen max-w-xl flex-col flex-wrap justify-between gap-y-20 md:flex-row">
                 <div className="flex flex-col items-center">
                     <h3 className="mb-2 text-center text-xl">
                         Find your company
@@ -119,82 +117,37 @@ export function RegisterScreen() {
                                 className="flex flex-col gap-y-4"
                             >
                                 <FormField
-                                    name="firstName"
+                                    name="orgName"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel htmlFor="firstName">
-                                                First name*
+                                            <FormLabel htmlFor="orgName">
+                                                Company Name*
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="First name"
+                                                    placeholder="Company Name"
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormDescription>
-                                                Your first name
-                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                                 <FormField
-                                    name="lastName"
+                                    name="orgNumber"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel htmlFor="lastName">
-                                                Last name*
+                                            <FormLabel htmlFor="orgNumber">
+                                                Organization number*
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="Last name"
+                                                    placeholder="Org number"
                                                     {...field}
                                                 />
                                             </FormControl>
                                             <FormDescription>
-                                                Your surname
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel htmlFor="email">
-                                                Email*
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Email"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Your personal email, if you have
-                                                a corporate email you will be
-                                                able to provide that later
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel htmlFor="password">
-                                                Password*
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Password"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Account password
+                                                (org.nr)
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
