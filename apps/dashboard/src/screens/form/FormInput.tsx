@@ -236,6 +236,8 @@ const MultiSelectInput: FieldComponentType<
         dispatch(
             setField({
                 mapping,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 value: field?.value?.map(current => ({
                     ...(current as object),
                     selected:

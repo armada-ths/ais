@@ -5,6 +5,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import { FORMS } from "@/forms"
 import { isFormOpen, isFormVisible } from "@/forms/form_access"
 import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
@@ -42,7 +43,7 @@ export function DashboardScreen() {
     }
 
     const formCardsData = Object.entries(forms).filter(([, formMeta]) =>
-        isFormVisible(formMeta.key, data.type ?? null)
+        isFormVisible(formMeta.key as keyof typeof FORMS, data.type ?? null)
     )
 
     const timelinePhaseAlert = getTimelinePhaseMessage(data.type)
@@ -103,7 +104,7 @@ export function DashboardScreen() {
                                     form={formMeta}
                                     locked={
                                         !isFormOpen(
-                                            formMeta.key,
+                                            formMeta.key as keyof typeof FORMS,
                                             data.type ?? null
                                         )
                                     }

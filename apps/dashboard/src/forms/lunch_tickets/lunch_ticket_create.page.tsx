@@ -1,22 +1,22 @@
-import { useState } from "react"
-import { FormWrapper } from "../FormWrapper"
-import { InputText } from "primereact/inputtext"
-import { Dropdown } from "primereact/dropdown"
-import { Checkbox } from "primereact/checkbox"
-import { Button } from "primereact/button"
 import { Badge } from "primereact/badge"
+import { Button } from "primereact/button"
+import { Checkbox } from "primereact/checkbox"
+import { Dropdown } from "primereact/dropdown"
+import { InputText } from "primereact/inputtext"
+import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { toast } from "sonner"
+import { HOST } from "../../shared/vars"
+import { selectCompanyName } from "../../store/company/company_selectors"
+import { selectField } from "../../store/form/form_selectors"
+import { setField, setPage } from "../../store/form/form_slice"
+import { RootState } from "../../store/store"
 import {
     LunchTicket,
     validateLunchTicket
 } from "../../utils/lunch_tickets/lunch_tickets.utils"
-import { useDispatch, useSelector } from "react-redux"
-import { selectCompanyName } from "../../store/company/company_selectors"
-import { HOST } from "../../shared/vars"
-import { RootState } from "../../store/store"
-import { selectField } from "../../store/form/form_selectors"
-import { toast } from "sonner"
+import { FormWrapper } from "../FormWrapper"
 import "./lunch_ticket.css"
-import { setField, setPage } from "../../store/form/form_slice"
 import { sendTicket } from "./send_ticket"
 
 export function CreateLunchTicketsPage() {
@@ -160,7 +160,7 @@ export function CreateLunchTicketsPage() {
     }
 
     return (
-        <FormWrapper className="flex flex-col gap-y-5 text-slate-700">
+        <FormWrapper>
             <div className="mb-2 w-[450px] rounded bg-sky-100 p-2 px-4">
                 <p className="text-sm text-sky-600">
                     Here you create your lunch tickets by specifying a timeslot

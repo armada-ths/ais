@@ -1,3 +1,4 @@
+import { FORMS } from "@/forms"
 import { Card } from "@/screens/form/sidebar/PageCard"
 import { HOST } from "@/shared/vars"
 import { selectCompany } from "@/store/company/company_selectors"
@@ -40,7 +41,10 @@ export function SummaryFormPage() {
 
     const activeForm = useSelector(selectActiveForm)
     const unfilledFields = useSelector((state: RootState) =>
-        selectUnfilledFields(state, activeForm?.key ?? "primary")
+        selectUnfilledFields(
+            state,
+            (activeForm?.key as keyof typeof FORMS) ?? "primary"
+        )
     )
 
     const readyToSign =
