@@ -1,4 +1,5 @@
 import re
+from rest_framework import serializers
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -75,6 +76,7 @@ class Group(models.Model):
 # Type of a company, e.g. government agency, company or non-profit organization
 class CompanyType(models.Model):
     type = models.CharField(max_length=100, null=False, blank=False)
+    default = models.BooleanField(default=False, null=False, blank=False)
 
     class Meta:
         verbose_name_plural = "Company types"
@@ -355,6 +357,21 @@ class CompanyContact(models.Model):
 
     class Meta:
         ordering = ["-active", "first_name"]
+
+
+class CompanyContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyContact
+        fields = (
+            "first_name",
+            "last_name",
+            "email_address",
+            "alternative_email_address",
+            "title",
+            "mobile_phone_number",
+            "work_phone_number",
+            "preferred_language",
+        )
 
 
 @receiver(post_save, sender=Company)

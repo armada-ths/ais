@@ -15,9 +15,8 @@ from exhibitors.models import (
     Exhibitor,
 )
 from fair.models import Fair
-from companies.models import CompanyContact, Group
+from companies.models import CompanyContactSerializer, Group
 from register.models import SignupContract
-from django.contrib.auth.models import User
 
 from accounting.api import OrderSerializer, ProductSerializer
 
@@ -54,21 +53,6 @@ class CheckboxSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("item does not exist")
 
         return super(CheckboxSerializer, self).validate(data)
-
-
-class ContactSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CompanyContact
-        fields = (
-            "first_name",
-            "last_name",
-            "email_address",
-            "alternative_email_address",
-            "title",
-            "mobile_phone_number",
-            "work_phone_number",
-            "preferred_language",
-        )
 
 
 class FairSerializer(serializers.ModelSerializer):
@@ -158,7 +142,7 @@ class ExhibitorSerializer(WritableNestedModelSerializer):
 
 
 # Expects a profile object
-class SalesContactSerializer(serializers.ModelSerializer):
+class SalesCompanyContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = (
@@ -234,12 +218,12 @@ class RegistrationSerializer(serializers.Serializer):
     fair = FairSerializer(read_only=True)
     ir_contract = SignupContractSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
-    sales_contacts = SalesContactSerializer(read_only=True, many=True)
+    sales_contacts = SalesCompanyContactSerializer(read_only=True, many=True)
     products = ProductSerializer(many=True)
 
     # Editable fields
     orders = OrderSerializer(many=True)
-    contact = ContactSerializer()
+    contact = CompanyContactSerializer()
     exhibitor = ExhibitorSerializer()
     interested_in = InterestedInSerializer(many=True)
 
@@ -248,7 +232,7 @@ class RegistrationSerializer(serializers.Serializer):
         ret = super().to_representation(instance)
 
         if "sales_contacts" in ret:
-            sales_contacts = SalesContactSerializer(
+            sales_contacts = SalesCompanyContactSerializer(
                 instance=instance.sales_contacts,
                 many=True,
                 context={"fair": instance.fair, **self.context},
@@ -259,7 +243,7 @@ class RegistrationSerializer(serializers.Serializer):
         return ret
 
     def update(self, instance, validated_data):
-        update_field(instance, validated_data, "contact", ContactSerializer)
+        update_field(instance, validated_data, "contact", CompanyContactSerializer)
 
         interested_in = validated_data.pop("interested_in", None)
         if interested_in != None:

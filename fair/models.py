@@ -53,9 +53,8 @@ class Fair(models.Model):
     registration_start_date = models.DateTimeField(null=False, blank=False)
     registration_end_date = models.DateTimeField(null=False, blank=False)
     registration_acceptance_date = models.DateTimeField(
-        null=False,
-        blank=False,
-        default="2021-01-01 00:00:00+00:00",
+        null=True,
+        blank=True,
         help_text="The date when the companies will be able to see if they have been accepted or not.",
     )
     complete_registration_start_date = models.DateTimeField(null=False, blank=False)
