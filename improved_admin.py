@@ -40,10 +40,11 @@ class SortedFairYear(admin.SimpleListFilter):
 
 # Own subclass of ModelAdmin to override appearances of forms on admin panel.
 class ModelAdminImproved(admin.ModelAdmin):
+    # Default search field, will need to be overridden for models without a name field
+    search_fields = ("name",)
+
     def __init__(self, model, admin_site: AdminSite | None):
         super().__init__(model, admin_site)
-        # Default search field, will need to be overridden for models without a name field
-        self.search_fields = ["name"]
 
     # Overrides get_autocomplete_fields to be all foreignkey fields.
     def get_autocomplete_fields(self, request):
