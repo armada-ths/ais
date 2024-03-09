@@ -2,9 +2,9 @@ from django.shortcuts import redirect, render
 from companies.models import CompanyContact
 
 
-def dashboard_company(request, company_id):
-    if not request.user.is_authenticated:
-        return redirect("anmalan:choose_company")
+def register_company_contact(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard:index")
 
     return render(request, "dashboard/index.html")
 
@@ -23,3 +23,10 @@ def dashboard_index(request):
         )
 
     return redirect("anmalan:choose_company")
+
+
+def company_dashboard(request, company_id):
+    if not request.user.is_authenticated:
+        return redirect("anmalan:choose_company")
+
+    return render(request, "dashboard/index.html")

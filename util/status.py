@@ -4,7 +4,7 @@ from django.http import JsonResponse
 
 
 def serializer_error(errors):
-    return JsonResponse(errors, status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse(errors, status=status.HTTP_400_BAD_REQUEST, safe=False)
 
 
 UNAUTHORIZED = JsonResponse(
@@ -69,4 +69,16 @@ USER_NOT_ALLOWED_TO_SUBMIT = JsonResponse(
 UNSUPPORTED_METHOD = JsonResponse(
     {"error": "unsupported_method"},
     status=status.HTTP_405_METHOD_NOT_ALLOWED,
+)
+
+COMPANY_TYPE_DOES_NOT_EXIST = JsonResponse(
+    {
+        "error": "company_type_does_not_exist",
+        "message": "Or there is no default company type",
+    },
+    status=status.HTTP_404_NOT_FOUND,
+)
+USER_ALREADY_EXISTS = JsonResponse(
+    {"error": "user_already_exists"},
+    status=status.HTTP_400_BAD_REQUEST,
 )
