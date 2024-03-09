@@ -429,7 +429,7 @@ def dates(request):
             "events": {
                 "start": fair.events_start_date,
                 "end": fair.events_end_date,
-            }
+            },
         },
         safe=False,
     )

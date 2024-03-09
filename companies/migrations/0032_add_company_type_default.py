@@ -4,20 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('companies', '0031_remove_countries_choice'),
+        ("companies", "0031_remove_countries_choice"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='companytype',
-            name='default',
+            model_name="companytype",
+            name="default",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='companycontact',
-            name='confirmed',
-            field=models.BooleanField(default=False, verbose_name='This contact has been confirmed to be a real contact in the company'),
+            model_name="companycontact",
+            name="confirmed",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="This contact has been confirmed to be a real contact in the company",
+            ),
         ),
     ]

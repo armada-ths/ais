@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fair', '0024_add_events_dates'),
+        ("fair", "0024_add_events_dates"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='fair',
-            name='registration_acceptance_date',
-            field=models.DateTimeField(blank=True, help_text='The date when the companies will be able to see if they have been accepted or not.', null=True),
+            model_name="fair",
+            name="registration_acceptance_date",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="The date when the companies will be able to see if they have been accepted or not.",
+                null=True,
+            ),
         ),
     ]
