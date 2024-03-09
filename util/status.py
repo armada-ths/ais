@@ -71,11 +71,6 @@ UNSUPPORTED_METHOD = JsonResponse(
     status=status.HTTP_405_METHOD_NOT_ALLOWED,
 )
 
-USER_HAS_NO_COMPANY = JsonResponse(
-    {"error": "user_has_no_company"},
-    status=status.HTTP_404_NOT_FOUND,
-)
-
 COMPANY_TYPE_DOES_NOT_EXIST = JsonResponse(
     {
         "error": "company_type_does_not_exist",
