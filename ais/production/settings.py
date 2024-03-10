@@ -31,6 +31,7 @@ ROOT_URLCONF = "ais.production.urls"
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+AWS_QUERYSTRING_EXPIRE = 60 * 60 * 24 * 7  # 1 week
 
 STRIPE_SECRET = os.environ.get("STRIPE_SECRET")
 STRIPE_PUBLISHABLE = os.environ.get("STRIPE_PUBLISHABLE")
