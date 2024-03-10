@@ -36,4 +36,5 @@ STRIPE_SECRET = os.environ.get("STRIPE_SECRET")
 STRIPE_PUBLISHABLE = os.environ.get("STRIPE_PUBLISHABLE")
 
 # The system sends out system-related emails to these addresses.
-ADMINS = MANAGERS = (("System", "system@armada.nu"),)
+# ADMINS = MANAGERS = (("System", "system@armada.nu"),)
+ADMINS = MANAGERS = ()
