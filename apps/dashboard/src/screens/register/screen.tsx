@@ -1,3 +1,4 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -69,9 +70,9 @@ export function RegisterScreen() {
             >
                 Armada Dashboard
             </h1>
-            <div className="mx-auto mb-10 mt-10 flex max-h-screen max-w-xl flex-col flex-wrap items-center justify-between gap-y-20 md:flex-row md:items-start">
+            <div className="mx-auto mb-10 mt-10 flex max-h-screen max-w-xl flex-col-reverse flex-wrap items-center justify-between gap-y-20 md:flex-row md:items-start">
                 <div className="flex max-w-xs flex-col items-center rounded-lg bg-stone-100 p-4 px-6">
-                    <div className="mx-auto flex max-w-[200px] flex-col items-center">
+                    <div className="mx-auto max-w-[200px] flex-col items-center">
                         <h3 className="text-center text-xl">
                             Find your company
                         </h3>
@@ -80,43 +81,57 @@ export function RegisterScreen() {
                         <p className="mx-auto mb-2 text-sm text-stone-600">
                             Have you been an exhibitor at Armada before?
                         </p>
-                        <ComboBox
-                            placeholder="Select your company..."
-                            style={{
-                                backgroundColor: "white",
-                                fontSize: "0.9rem"
-                            }}
-                            onSelect={x => setSelectedCompany(x)}
-                            onChange={x => setSearch(x.target.value)}
-                            options={
-                                filteredCompanies?.map(
-                                    x => x["Organization Name"]
-                                ) ?? []
-                            }
-                        />
-                        <Separator className="my-4" />
-                        {selectedCompany && (
-                            <div className="w-full rounded bg-stone-100">
-                                <p>Selected company</p>
-                                <p className="font-bold">{selectedCompany}</p>
-                            </div>
-                        )}
-                        <div className="flex-1" />
-                        <Button
-                            disabled={selectedCompanyId == null}
-                            className="mt-4 w-full"
-                            onClick={() =>
-                                navigate({
-                                    from: "/register",
-                                    to: `/register_user`,
-                                    search: {
-                                        company_id: selectedCompanyId
-                                    }
-                                })
-                            }
-                        >
-                            Continue <ArrowRight className="ml-2" size={20} />
-                        </Button>
+                        <div className="flex flex-col md:hidden">
+                            <Alert className="mt-2" variant={"destructive"}>
+                                <AlertTitle>Mobile not supported</AlertTitle>
+                                <AlertDescription>
+                                    You cannot connect to an existing company on
+                                    mobile
+                                </AlertDescription>
+                            </Alert>
+                        </div>
+                        <div className="hidden flex-col md:flex">
+                            <ComboBox
+                                placeholder="Select your company..."
+                                style={{
+                                    backgroundColor: "white",
+                                    fontSize: "0.9rem"
+                                }}
+                                onSelect={x => setSelectedCompany(x)}
+                                onChange={x => setSearch(x.target.value)}
+                                options={
+                                    filteredCompanies?.map(
+                                        x => x["Organization Name"]
+                                    ) ?? []
+                                }
+                            />
+                            <Separator className="my-4" />
+                            {selectedCompany && (
+                                <div className="w-full rounded bg-stone-100">
+                                    <p>Selected company</p>
+                                    <p className="font-bold">
+                                        {selectedCompany}
+                                    </p>
+                                </div>
+                            )}
+                            <div className="flex-1" />
+                            <Button
+                                disabled={selectedCompanyId == null}
+                                className="mt-4 w-full"
+                                onClick={() =>
+                                    navigate({
+                                        from: "/register",
+                                        to: `/register_user`,
+                                        search: {
+                                            company_id: selectedCompanyId
+                                        }
+                                    })
+                                }
+                            >
+                                Continue{" "}
+                                <ArrowRight className="ml-2" size={20} />
+                            </Button>
+                        </div>
                     </div>
                 </div>
                 <div className="flex max-w-xs flex-col rounded-lg bg-stone-100 p-4 px-6">
