@@ -70,13 +70,13 @@ export default function IrRegistrationPage() {
     }
 
     return (
-        <div className="mt-6 flex max-w-[500px] flex-col items-center gap-y-5">
+        <div className="mt-6 flex max-w-[400px] flex-col items-center gap-y-5">
             <a href={`${HOST}${data?.ir_contract.contract}`} target="_blank">
                 <Button variant={"outline"}>
                     Open Armada {DateTime.now().year} Exhibitor Contract
                 </Button>
             </a>
-            <div className="mt-6 flex items-center space-x-4">
+            <div className="mt-2 flex items-center space-x-4">
                 <Checkbox
                     id="read"
                     checked={readTerms}
@@ -86,14 +86,14 @@ export default function IrRegistrationPage() {
                 />
                 <Label
                     htmlFor="read"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                    I have read and accepted the terms and conditions and
-                    confirm that I have the right to enter this agreement on
-                    behalf of <b>{data?.company.name}</b>
+                    I have read and accepted the and confirm that I have the
+                    right to enter this agreement on behalf of{" "}
+                    <b>{data?.company.name}</b>
                 </Label>
             </div>
-            <div className="mt-6 flex items-center space-x-4">
+            <div className="mt-2 flex items-center space-x-4">
                 <Checkbox
                     id="binding"
                     checked={acceptedBinding}
@@ -103,16 +103,16 @@ export default function IrRegistrationPage() {
                 />
                 <Label
                     htmlFor="binding"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     I understand that this Initial Registration is binding after{" "}
                     {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
-                        "yyyy MM dd"
+                        "d MMMM yyyy"
                     )}{" "}
                     and have read the cancellation policy
                 </Label>
             </div>
-            <div className="mt-2 flex space-x-4">
+            <div className="mt-2 flex items-center space-x-4">
                 <Checkbox
                     id="process_data"
                     checked={processData}
@@ -122,7 +122,7 @@ export default function IrRegistrationPage() {
                 />
                 <Label
                     htmlFor="process_data"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     I consent to letting THS Armada store my personal
                     information according to THS personal information policy
