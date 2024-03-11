@@ -68,7 +68,7 @@ export function RegisterScreen() {
                     "my-10 text-center text-4xl font-bold text-melon-700 md:my-10"
                 )}
             >
-                Armada Dashboard
+                Exhibitor Registration
             </h1>
             <div className="mx-auto mb-10 mt-10 flex max-h-screen max-w-xl flex-col-reverse flex-wrap items-center justify-between gap-y-20 md:flex-row md:items-start">
                 <div className="flex max-w-xs flex-col items-center rounded-lg bg-stone-100 p-4 px-6">

@@ -32,7 +32,7 @@ export interface Fr {
     end: string // Date
 }
 
-export async function queryDates() {
+export async function fetchDates() {
     const response = await fetch(`${HOST}/api/dates`)
     const data = await response.json()
     return data as DatesResponse
@@ -41,6 +41,6 @@ export async function queryDates() {
 export function useDates() {
     return useQuery({
         queryKey: ["dates"],
-        queryFn: queryDates
+        queryFn: fetchDates
     })
 }
