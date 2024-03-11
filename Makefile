@@ -12,7 +12,7 @@ setup:
 	@echo "Are you ready to proceed? [y/n] " && read ans && [ $${ans:-N} = y ]
 	@echo "Installing dependencies"
 	npm install && npm run build
-	cd apps/dashboard && pnpm install && pnpm build
+	cd apps/dashboard && pnpm install && pnpm run build
 	@echo "Run 'make dev' in another terminal to start the development server"
 	@echo "Is the development server up? [y/n] " && read ans && [ $${ans:-N} = y ]
 	./init-dev-environment.sh
