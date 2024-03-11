@@ -28,7 +28,8 @@ export const TIMELINE_STEPS: Partial<
     },
     after_initial_registration: {
         title: "You did not complete the initial registration",
-        description: "All hope is not lost! Please contact our sales team",
+        description:
+            "All hope is not lost! Please contact our sales team: sales@armada.nu",
         variant: "warning"
     },
     after_initial_registration_signed: {
@@ -37,7 +38,7 @@ export const TIMELINE_STEPS: Partial<
         variant: "success"
     },
     after_initial_registration_acceptance_accepted: {
-        title: "You got a spot at the fair",
+        title: "Congratulations! You've got a spot at the fair",
         description: "We'll be in touch with more information",
         variant: "success"
     },

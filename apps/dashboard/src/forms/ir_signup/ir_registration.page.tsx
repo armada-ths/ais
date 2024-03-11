@@ -1,9 +1,18 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+    Drawer,
+    DrawerContent,
+    DrawerDescription,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger
+} from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useDates } from "@/shared/hooks/api/useDates"
 import { HOST } from "@/shared/vars"
+import { cx } from "@/utils/cx"
 import { queryClient } from "@/utils/query_client"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
@@ -13,6 +22,7 @@ import { toast } from "sonner"
 
 export default function IrRegistrationPage() {
     const navigate = useNavigate()
+
     const { companyId } = useParams({
         from: "/$companyId/form/$formKey/$formPageKey"
     })
@@ -69,11 +79,33 @@ export default function IrRegistrationPage() {
         return <div>We encountered an error</div>
     }
 
+    const signupDisabled =
+        !readTerms || !processData || !acceptedBinding || isPending
+
+    const acceptanceDate = DateTime.fromISO(dataDates.ir.acceptance).toFormat(
+        "d MMMM yyyy"
+    )
+    const frStartDate = DateTime.fromISO(dataDates.fr.start).toFormat(
+        "d MMMM yyyy"
+    )
+    const frEndDate = DateTime.fromISO(dataDates.fr.end).toFormat("d MMMM yyyy")
+
     return (
         <div className="mt-6 flex max-w-[400px] flex-col items-center gap-y-5">
+            <div className="rounded-lg bg-stone-200 p-2 px-4 ">
+                <p className="my-3 text-xs text-stone-600">
+                    Here you apply to participate in Armada{" "}
+                    {DateTime.now().year}. In order not to overfill the event,
+                    we will confirm your spot before{" "}
+                    {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
+                        "d MMMM"
+                    )}
+                    . Contact sales@armada.nu if you have any questions
+                </p>
+            </div>
             <a href={`${HOST}${data?.ir_contract.contract}`} target="_blank">
                 <Button variant={"outline"}>
-                    Open Armada {DateTime.now().year} Exhibitor Contract
+                    Open Armada {DateTime.now().year} Terms and Conditions
                 </Button>
             </a>
             <div className="mt-2 flex items-center space-x-4">
@@ -88,8 +120,8 @@ export default function IrRegistrationPage() {
                     htmlFor="read"
                     className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                    I have read and accepted the and confirm that I have the
-                    right to enter this agreement on behalf of{" "}
+                    I have read and accept the Terms and Conditions, and confirm
+                    that I have the right to enter this agreement on behalf of{" "}
                     <b>{data?.company.name}</b>
                 </Label>
             </div>
@@ -109,7 +141,51 @@ export default function IrRegistrationPage() {
                     {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
                         "d MMMM yyyy"
                     )}{" "}
-                    and have read the cancellation policy
+                    and have read the{" "}
+                    <Drawer>
+                        <DrawerTrigger className="underline hover:no-underline">
+                            cancelation policy
+                        </DrawerTrigger>
+                        <DrawerContent className="mx-auto max-w-[500px] p-4">
+                            <DrawerHeader>
+                                <DrawerTitle>
+                                    Initial Registration - Cancelation Policy
+                                </DrawerTitle>
+                                <DrawerDescription className="mt-5">
+                                    <p className="italic">
+                                        This is an excerpt from the terms and
+                                        conditions (terms). In case of any
+                                        differences between this and the terms,
+                                        the terms apply.
+                                    </p>
+                                    <ul className="mt-4 list-disc space-y-1 px-3">
+                                        <li>
+                                            Cancellation before{" "}
+                                            <b>{acceptanceDate}</b> is free of
+                                            charge
+                                        </li>
+                                        <li>
+                                            Cancellation after{" "}
+                                            <b>{acceptanceDate}</b>, but before{" "}
+                                            <b>{frStartDate}</b> costs 25% of a
+                                            bronze kit
+                                        </li>
+                                        <li>
+                                            Cancellation after{" "}
+                                            <b>{frStartDate}</b>, but before{" "}
+                                            <b>{frEndDate}</b> costs 75% of a
+                                            bronze kit
+                                        </li>
+                                        <li>
+                                            Cancellation after{" "}
+                                            <b>{frEndDate}</b> costs the full
+                                            price of any ordered products.
+                                        </li>
+                                    </ul>
+                                </DrawerDescription>
+                            </DrawerHeader>
+                        </DrawerContent>
+                    </Drawer>
                 </Label>
             </div>
             <div className="mt-2 flex items-center space-x-4">
@@ -135,12 +211,8 @@ export default function IrRegistrationPage() {
                     </Button>
                 ) : (
                     <Button
-                        disabled={
-                            !readTerms ||
-                            !processData ||
-                            !acceptedBinding ||
-                            isPending
-                        }
+                        disabled={signupDisabled}
+                        className={cx("transition-all duration-200", {})}
                         onClick={onClickSign}
                     >
                         Sign up as Exhibitor
