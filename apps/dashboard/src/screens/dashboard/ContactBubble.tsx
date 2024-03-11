@@ -47,8 +47,8 @@ export function ContactBubble() {
                                 Hi, I'm {companyContact.first_name}
                             </DrawerTitle>
                             <DrawerDescription className="mt-2 text-start">
-                                I'm your host at Armada. If you have any
-                                questions don't hesitate to contact me!
+                                I'm your representative at Armada. If you have
+                                any questions don't hesitate to contact me!
                                 <div className="mt-5 flex flex-col gap-y-2">
                                     <p className="flex items-center gap-2">
                                         <Mail />
