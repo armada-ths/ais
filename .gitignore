@@ -15,7 +15,7 @@ run_server.sh
 ais_venv/
 nohup.out
 env/
-.env*
+.env
 *.sql
 *.log
 
