@@ -1,9 +1,13 @@
 FROM python:3.10.1-alpine as base
 WORKDIR /usr/src/app
 
-FROM base as frontend
+FROM base as frontend-base
 RUN apk add npm
 
+FROM frontend-base as dashboard
+RUN npm install pnpm -g
+
+FROM frontend-base as frontend
 COPY package.json package-lock.json ./
 RUN npm ci
 
