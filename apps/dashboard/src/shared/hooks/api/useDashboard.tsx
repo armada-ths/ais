@@ -12,7 +12,7 @@ export interface DashboardResponse {
     cr_contract: Contract
     sales_contacts: SalesContact[]
     orders: unknown[]
-    contact: Contact
+    contact: Contact | null
     exhibitor: unknown
     company: Company
     products: Product[]

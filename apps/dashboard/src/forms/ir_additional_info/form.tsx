@@ -28,9 +28,11 @@ export const form = {
             pageComponent: IrContactPage,
             hasNextButton: false,
             isDone: ({ registration }) =>
-                registration.contact.first_name != null &&
-                registration.contact.last_name != null &&
-                registration.contact.email_address != null
+                registration.contact == null
+                    ? null
+                    : registration.contact.first_name != null &&
+                      registration.contact.last_name != null &&
+                      registration.contact.email_address != null
         }
     ]
 } as const satisfies Form

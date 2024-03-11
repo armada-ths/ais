@@ -49,14 +49,14 @@ export function IrContactPage({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            firstName: dataRegistration?.contact.first_name ?? "",
-            lastName: dataRegistration?.contact.last_name ?? "",
-            email: dataRegistration?.contact.email_address ?? "",
+            firstName: dataRegistration?.contact?.first_name ?? "",
+            lastName: dataRegistration?.contact?.last_name ?? "",
+            email: dataRegistration?.contact?.email_address ?? "",
             alternativeEmail:
-                dataRegistration?.contact.alternative_email_address ?? "",
-            title: dataRegistration?.contact.title ?? "",
-            mobileNumber: dataRegistration?.contact.mobile_phone_number ?? "",
-            workPhoneNumber: dataRegistration?.contact.work_phone_number ?? ""
+                dataRegistration?.contact?.alternative_email_address ?? "",
+            title: dataRegistration?.contact?.title ?? "",
+            mobileNumber: dataRegistration?.contact?.mobile_phone_number ?? "",
+            workPhoneNumber: dataRegistration?.contact?.work_phone_number ?? ""
         }
     })
 
