@@ -12,15 +12,15 @@ jobs:
         with:
           options: "--check"
           src: "."
-  check_pull_requests:
-    name: Require one linked issue
-    runs-on: ubuntu-latest
-    permissions:
-      issues: read
-      pull-requests: write
-    steps:
-      - uses: nearform-actions/github-action-check-linked-issues@v1
-        id: check-linked-issues
-        with:
-          exclude-branches: "release/**, dependabot/**"
-          comment: false
+  # check_pull_requests:
+  #   name: Require one linked issue
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     issues: read
+  #     pull-requests: write
+  #   steps:
+  #     - uses: nearform-actions/github-action-check-linked-issues@v1
+  #       id: check-linked-issues
+  #       with:
+  #         exclude-branches: "release/**, dependabot/**"
+  #         comment: false
