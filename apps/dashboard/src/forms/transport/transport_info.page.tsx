@@ -1,6 +1,6 @@
-import { FormWrapper } from "../FormWrapper"
-import { FormField } from "../../screens/form/FormInput"
 import { ReactNode } from "react"
+import { FormField } from "../../screens/form/FormInput"
+import { FormWrapper } from "../FormWrapper"
 
 function Title({ text }: { text: string }) {
     return <h3 className="mb-2 text-xl capitalize text-emerald-300">{text}</h3>
@@ -149,9 +149,7 @@ export function TransportInfoFormPage() {
                 if you have any general questions regarding transport or
                 logistics. THS Armada's own transport team will also be at your
                 service on Email:{" "}
-                <Link href="sustomer.support@armada.nu">
-                    customer.support@armada.nu
-                </Link>
+                <Link href="sustomer.support@armada.nu">sales@armada.nu</Link>
             </p>
             <div className="mt-10 flex flex-1 justify-center">
                 <FormField.Checkbox
