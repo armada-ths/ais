@@ -46,9 +46,9 @@ export default function FormCard({
     )
 
     // Only compare pages that have a isDone function
+    // if an isDone function returns null, it is also ignored
     const progress =
-        results.filter(Boolean).length /
-        form.pages.filter(x => x.isDone != null).length
+        results.filter(Boolean).length / results.filter(x => x != null).length
 
     return (
         <Card
