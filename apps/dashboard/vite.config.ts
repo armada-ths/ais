@@ -18,6 +18,6 @@ export default defineConfig({
                 assetFileNames: `assets/[name].[ext]`
             }
         },
-        outDir: "../../ais_static/apps/dashboard"
+        outDir: "dist"
     }
 })

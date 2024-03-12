@@ -25,3 +25,9 @@ node_modules/
 webpack-stats.js
 ais_static/bundles
 static/
+
+# Dashboard
+
+apps/dashboard/node_modules
+apps/dashboard/dist
+apps/dashboard/.env

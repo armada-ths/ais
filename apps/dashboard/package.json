@@ -6,7 +6,8 @@
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "dev": "npx concurrently \"vite --host\" \"npx tailwindcss -i ./src/input.css -o ./output.css --watch\"",
-        "build": "mkdir -p ../../ais_static/apps/dashboard && rm -rf ../../ais_static/apps/dashboard/* && tsc && npx tailwindcss -i ./src/input.css -o ./output.css && vite build && cat ./output.css >> ../../ais_static/apps/dashboard/assets/index.css",
+        "build-prod": "tsc && npx tailwindcss -i ./src/input.css -o ./output.css && vite build && mv ./output.css dist/assets/index.css",
+        "build": "tsc && npx tailwindcss -i ./src/input.css -o ./output.css && vite build && cp ./output.css ./dist/assets/index.css && mkdir -p ../../ais_static/apps/dashboard && rm -rf ../../ais_static/apps/dashboard/* && cp -r ./dist/* ../../ais_static/apps/dashboard",
         "ci-eslint-check": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "ci-prettier-check": "prettier --check",
         "preview": "vite preview"
