@@ -144,12 +144,12 @@ export default function IrRegistrationPage() {
                     and have read the{" "}
                     <Drawer>
                         <DrawerTrigger className="underline hover:no-underline">
-                            cancelation policy
+                            cancellation policy
                         </DrawerTrigger>
                         <DrawerContent className="mx-auto max-w-[500px] p-4">
                             <DrawerHeader>
                                 <DrawerTitle>
-                                    Initial Registration - Cancelation Policy
+                                    Initial Registration - Cancellation Policy
                                 </DrawerTitle>
                                 <DrawerDescription className="mt-5">
                                     <p className="italic">
