@@ -153,3 +153,24 @@ export function isFormVisible(
         FORM_ACCESS[status]?.[form] === "shown_locked"
     )
 }
+
+/**
+ * Check if company is in a certain phase
+ * @param match Match has two attributes, phase and search.
+ * Phase is an array of "allowed" registration statuses,
+ * search is a search string of partial matches, cor example
+ * "complete_registration" will match "complete_registration_signed"
+ * and "complete_registration_unsigned"
+ * @param status The status of the company RegistrationStatus
+ * @returns true/false
+ */
+export function inPhase(
+    match: { phase?: RegistrationStatus[]; search?: string[] },
+    status?: RegistrationStatus | null
+) {
+    if (status == null) return false
+    return (
+        match.phase?.includes(status) ||
+        match.search?.some(s => s.includes(status))
+    )
+}
