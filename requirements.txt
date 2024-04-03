@@ -8,7 +8,7 @@ ldap3
 whitenoise
 django-crispy-forms==1.13.0
 django-polymorphic==3.1.0
-Pillow==9.0.0
+Pillow==10.3.0
 raven==6.10.0
 requests
 openpyxl
