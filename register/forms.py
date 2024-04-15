@@ -344,7 +344,7 @@ class CompleteCatalogueDetailsForm(ModelForm):
             #'catalogue_purpose': 'Your organisation\'s purpose',
             "catalogue_logo_squared": "Upload your company's squared logotype. (required to sign contract)",
             "catalogue_logo_freesize": "Upload your company's logotype in any dimensions, in addition to the squared logotype.",
-            "catalogue_cities": "Please write the main cities where your company operates. Separate the cities with commas."
+            "catalogue_cities": "Please write the main cities where your company operates. Separate the cities with commas.",
             #'catalogue_founded': 'Which year was the company founded?'
         }
 

@@ -14,9 +14,9 @@ class ElectricityOrderForm(forms.ModelForm):
         super(ElectricityOrderForm, self).__init__(*args, **kwargs)
         if instance == None:
             self.fields["exhibitor"].initial = exhibitor.pk
-        self.fields[
-            "exhibitor"
-        ].disabled = True  # make sure exhibitor field is not editable
+        self.fields["exhibitor"].disabled = (
+            True  # make sure exhibitor field is not editable
+        )
         self.fields["exhibitor"].widget = HiddenInput()
 
 
@@ -31,12 +31,12 @@ class OrderForm(forms.ModelForm):
         if instance == None:
             self.fields["exhibitor"].initial = exhibitor.pk
             self.fields["amount"].initial = 1
-        self.fields[
-            "exhibitor"
-        ].disabled = True  # make sure exhibitor field is not editable
-        self.fields[
-            "amount"
-        ].disabled = True  # make sure exhibitor field is not editable
+        self.fields["exhibitor"].disabled = (
+            True  # make sure exhibitor field is not editable
+        )
+        self.fields["amount"].disabled = (
+            True  # make sure exhibitor field is not editable
+        )
         self.fields["exhibitor"].widget = HiddenInput()
         self.fields["amount"].widget = HiddenInput()
 

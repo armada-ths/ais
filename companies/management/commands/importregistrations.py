@@ -133,11 +133,13 @@ class Command(BaseCommand):
                                     "will_you_send_goods_to_ths_armadas_goods_reception_before_the_fair"
                                 ],
                             ),
-                            transport_from_fair_type="armada_transport"
-                            if row["we_would_like_to_use_armada_transport"] == "Yes"
-                            else tuple_value_matching_name(
-                                Exhibitor.transport_from_fair_types,
-                                row["if_no_please_select_one_from_fair"],
+                            transport_from_fair_type=(
+                                "armada_transport"
+                                if row["we_would_like_to_use_armada_transport"] == "Yes"
+                                else tuple_value_matching_name(
+                                    Exhibitor.transport_from_fair_types,
+                                    row["if_no_please_select_one_from_fair"],
+                                )
                             ),
                             number_of_packages_from_fair=to_int_or_default(
                                 row["number_of_packages_from_fair"], 0

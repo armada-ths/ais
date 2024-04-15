@@ -617,9 +617,11 @@ def manage_invitations(request, year, banquet_pk):
                 "pk": invitation.pk,
                 "group": invitation.group,
                 "user": invitation.user,
-                "name": invitation.user.get_full_name()
-                if invitation.user is not None
-                else invitation.name,
+                "name": (
+                    invitation.user.get_full_name()
+                    if invitation.user is not None
+                    else invitation.name
+                ),
                 "reason": invitation.reason,
                 "status": invitation.status,
                 "price": invitation.price,
@@ -843,9 +845,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 
     if invitation is not None and invitation.participant is not None:
         form.fields["price"].disabled = True
-        form.fields[
-            "price"
-        ].help_text = (
+        form.fields["price"].help_text = (
             "The price cannot be changed as the invitation has already been accepted."
         )
 
@@ -919,12 +919,16 @@ def manage_participant(request, year, banquet_pk, participant_pk):
             "banquet": banquet,
             "participant": {
                 "pk": participant.pk,
-                "name": participant.user.get_full_name()
-                if participant.user
-                else participant.name,
-                "email_address": participant.user.email
-                if participant.user
-                else participant.email_address,
+                "name": (
+                    participant.user.get_full_name()
+                    if participant.user
+                    else participant.name
+                ),
+                "email_address": (
+                    participant.user.email
+                    if participant.user
+                    else participant.email_address
+                ),
                 "phone_number": participant.phone_number,
                 "dietary_restrictions": participant.dietary_restrictions,
                 "other_dietary_restrictions": participant.other_dietary_restrictions,
@@ -948,12 +952,16 @@ def manage_participants(request, year, banquet_pk):
             "pk": participant.pk,
             "company": participant.company,
             "user": participant.user,
-            "name": participant.user.get_full_name()
-            if participant.user
-            else participant.name,
-            "email_address": participant.user.email
-            if participant.user
-            else participant.email_address,
+            "name": (
+                participant.user.get_full_name()
+                if participant.user
+                else participant.name
+            ),
+            "email_address": (
+                participant.user.email
+                if participant.user
+                else participant.email_address
+            ),
             "alcohol": participant.alcohol,
             "seat": participant.seat,
             "invitation": participant.invitation_set.first(),
@@ -1091,9 +1099,9 @@ def invitation(request, year, token):
     if invitation.banquet.caption_phone_number is not None:
         form.fields["phone_number"].help_text = invitation.banquet.caption_phone_number
     if invitation.banquet.caption_dietary_restrictions is not None:
-        form.fields[
-            "dietary_restrictions"
-        ].help_text = invitation.banquet.caption_dietary_restrictions
+        form.fields["dietary_restrictions"].help_text = (
+            invitation.banquet.caption_dietary_restrictions
+        )
 
     can_edit = (
         invitation.deadline_smart is None
@@ -1297,9 +1305,9 @@ def external_invitation(request, token):
     if invitation.banquet.caption_phone_number is not None:
         form.fields["phone_number"].help_text = invitation.banquet.caption_phone_number
     if invitation.banquet.caption_dietary_restrictions is not None:
-        form.fields[
-            "dietary_restrictions"
-        ].help_text = invitation.banquet.caption_dietary_restrictions
+        form.fields["dietary_restrictions"].help_text = (
+            invitation.banquet.caption_dietary_restrictions
+        )
 
     can_edit = (
         invitation.deadline_smart is None
@@ -1638,9 +1646,9 @@ def export_afterparty(request, year, banquet_pk):
     banquet = get_object_or_404(Banquet, pk=banquet_pk)
 
     response = HttpResponse(content_type="text/csv")
-    response[
-        "Content-Disposition"
-    ] = 'attachment; filename="afterparty_participants.csv"'
+    response["Content-Disposition"] = (
+        'attachment; filename="afterparty_participants.csv"'
+    )
 
     writer = csv.writer(response, delimiter=",", quoting=csv.QUOTE_ALL)
     writer.writerow(["Name", "Email Sent", "Email", "Inviter"])
