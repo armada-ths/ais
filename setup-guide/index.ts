@@ -7,7 +7,7 @@ import fs from "fs";
 async function pause() {
   console.log("Press any ENTER to continue...");
 
-  for await (const _ of console) {
+  for await (const line of console) {
     return;
   }
 }
@@ -32,7 +32,7 @@ async function notInstalled(command: string) {
 
 console.log(chalk.blue("Installing dependencies..."));
 if (await notInstalled("nvm")) {
-  console.log(chalk.yellow("\nNVM is not installed"));
+  console.log(chalk.yellow("\nMake sure NVM is installed"));
   console.log(chalk.blue("Install NVM from the following links:"));
   console.log(
     chalk.blue(

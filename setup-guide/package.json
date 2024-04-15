@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "bun run index.ts",
-    "postinstall": "bun run post_install.ts"
+    "postinstall": "bun run index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
