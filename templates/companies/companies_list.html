@@ -167,7 +167,10 @@
 	<script>
 		$(function()
 		{
-			$('#company_table').DataTable({ 'paging': false })
+			$('#company_table').DataTable({
+				'paging': false,
+				'searching': false
+			})
 		});
 	</script>
 {% endblock %}
