@@ -1,10 +1,12 @@
+.DEFAULT_GOAL := install
+
 dev:
 	docker compose up
 
 build-dev:
 	docker compose up --build
 
-setup: 
+install: 
 	@echo "########################\n* NVM (node version manager)\n* NodeJS\n* pnpm (npm install -g pnpm)\n* Docker\n* python3 (with pip)\n########################"
 	@echo "Have you installed everything listed above? [y/n] " && read ans && [ $${ans:-N} = y ]
 	cp .env.example .env

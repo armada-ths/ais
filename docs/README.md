@@ -4,51 +4,92 @@
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Development setup
+## Automatic Development Setup
+
+**Todo**
+
+## Manual Development Setup
 
 ### Section 1: Installation of Dependencies
 
 In order to run the project locally, you need the following tools:
 
-- [NPM v16](https://nodejs.org/en/download) (used to compile front end projects)
-- [NVM](https://github.com/nvm-sh/nvm) (optional, used to change to version 16 of node)
-- [PNPM](https://pnpm.io/installation) (used to compile dashboard)
-- [Docker](https://docs.docker.com/get-docker/) (used to run the server and database)
-- [Pip](https://pip.pypa.io/en/stable/installation/) (used to install `black`)
-- [Black](https://pypi.org/project/black/) (used to format code)
+#### [Docker](https://docs.docker.com/get-docker/) (used to run the server and database)
 
-### Section 2: Setup of Tools
+<details>
+<summary>Windows</summary>
 
-If you are using Visual Studio Code, python code will automatically format upon saving the file. If you are using another editor, you need to either setup automatic formatting upon saving, or run `black .` before every commit (we recommend putting this command in a pre-commit hook).
+1. [Download Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
 
-### Section 3: Creation of Initial Files
+</details>
 
-Create a `.env` file in the root directory of the project, and insert the following values:
+<details>
+<summary>Orbstack with MacOS</summary>
 
-```env
-SECRET_KEY=123
-DJANGO_SETTINGS_MODULE=ais.local.settings
-DB_HOST=db
-```
+1. [Download OrbStack](https://orbstack.dev/download)
 
-### Section 4: Execution of the Server
+</details>
+
+#### [NVM](https://github.com/nvm-sh/nvm) (used to install Node)
+
+<details>
+<summary>Windows</summary>
+
+1. `wsl`
+2. `sudo apt-get install curl`
+3. `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash`
+
+</details>
+
+<details>
+<summary>MacOS with Homebrew</summary>
+
+1. `brew install nvm`
+
+</details>
+
+#### [PNPM](https://pnpm.io/installation) (used to compile dashboard)
+
+<details>
+<summary>All platforms with NVM</summary>
+
+1. `nvm use 16`
+2. `npm install -g pnpm`
+
+</details>
+
+#### [Black](https://pypi.org/project/black/) (used to format code, **is not required to run the project**)
+
+<details>
+<summary>All platforms With PIP</summary>
+
+1. `pip install black==23.3.0`
+
+</details>
+
+### Section 2: Setup of the Server
 
 #### Prepare the production database copy
 
-You can choose to use a copy of the production database for your local development. Create a directory called `ais-developer-database.sql` in the root directory, and add the production database copy `init.sql` to it.
+You can choose to use a copy of the production database for your local development.
+
+1. Create a directory called `ais-developer-database` in the root directory.
+2. Add the production database file (a file you get from HoIS) to that directory.
+3. Rename the file `init.sql`.
 
 #### Prepare static files
 
-1. Run `npm install && npm run build` in the root folder to compile the static files for e.g. the banquett and events systems.
-2. Run `pnpm install && pnpm build` in `apps/complete_registration` to compile the static files for the dashboard system.
+1. `npm install && npm run build` (compile the static files for e.g. the banquett and events systems).
+2. `cd apps/dashboard` (goto dashboard project).
+3. `pnpm install && pnpm build` (compile the the dashboard system).
 
 #### Run the server
 
 The server will run in a `docker compose` instance. To start the server, run the following command:
 
-`docker compose up`
+1. `docker compose up`
 
-The web-server will setup everything and connect itself to a postgis database. The server will listen for code changes, and restart itself thereafter (that is, you don't need to run this command after every change you make). If everything went right you see the output:
+The web server will setup everything and connect itself to a postgis database. The server will listen for code changes, and restart itself thereafter (that is, you don't need to run this command after every change you make). If everything went right you see the output:
 
 #### Migrate the database and create a super user
 
@@ -64,21 +105,25 @@ After setting up the AIS with Docker, you can access it in a web browser with th
 
 ### Development
 
-The dashboard is where initial and final registration is made, as well as lunch tickets creation, exhibitor information, core values, logistics information, sture information. Development of this dashboard is done through in the folder `apps/complete_registration`. Follow the instructions in the folder for starting the local React project. When running the React project, it will use `localhost:3000` as the URL for the backend, so you need to have AIS running in the background. The dashboard will be served the user `dashboard@armada.nu` in development mode, meaning you need to make sure this company contact exists. If you are e.g. doing final registration development, you need to make sure the company which this email belongs to is an exhibitor.
+The dashboard is where initial and final registration is made, as well as lunch tickets creation, exhibitor information, core values, logistics information, sture information. Development of this dashboard is done through in the folder `apps/dashboard`. Follow the instructions in the folder for starting the local React project. When running the React project, it will use `localhost:3000` as the URL for the backend, so you need to have AIS running in the background. The dashboard will be served the user `dashboard@armada.nu` in development mode, meaning you need to make sure this company contact exists. If you are e.g. doing final registration development, you need to make sure the company which this email belongs to is an exhibitor.
 
 ### Deployment
 
-The dashboard is currently not being built in the automatic pipeline, meaning you need to build it yourself when deploying (TODO: add this to the automatic pipeline). Therefore, you need to run `pnpm build` in the `apps/complete_registration` folder before merging into production.
+The dashboard is currently not being built in the automatic pipeline, meaning you need to build it yourself when deploying (TODO: add this to the automatic pipeline). Therefore, you need to run `pnpm build` in the `apps/dashboard` folder before merging into production.
 
 ## Common issues
 
-**Issue:** "I cannot log in to AIS!"
+<details>
+<summary>I cannot log in to AIS!</summary>
 
-**Solution:** This is because there are no super users created in the system. Run `./init-dev-environment.sh` and enter the username and password for the super user. After doing this you can log into the AIS with these settings.
+This is because there are no super users created in the system. Run `./init-dev-environment.sh` and enter the username and password for the super user. After doing this you can log into the AIS with these settings.
 
-**Issue:** "I logged into my locally hosted AIS instance for the first time; but I can only see an error page!"
+</details>
 
-**Solution:** Most likely, you haven't created a fair yet. To do so, follow these steps:
+<details>
+<summary>I logged into my locally hosted AIS instance for the first time; but I can only see an error page!</summary>
+
+Most likely, you haven't created a fair yet. To do so, follow these steps:
 
 1. Go to the admin page (`localhost:3000/admin/`)
 
@@ -88,13 +133,21 @@ The dashboard is currently not being built in the automatic pipeline, meaning yo
 
 4. Now you need to fill out some information. Fill out the necessary fields (Registration start date & end date, Complete registration start date & end date). Make sure end dates come after start dates. Tick the "Current" box, and press save at the bottom of the page. The fair will be created, and you can go back to `localhost:3000` to see the landing page for the fair.
 
-**Issue:** "entrypoint.sh not found"
+</details>
 
-**Solution:** If you're on Windows, you need to change the CRLF line endings in the file `entrypoint.sh` to LF line endings.
+<details>
+<summary>entrypoint.sh not found</summary>
 
-**Issue:** `'JSONError' object has no attribute 'get'`
+If you're on Windows, you need to change the CRLF line endings in the file `entrypoint.sh` to LF line endings.
 
-**Solution:** This error can occur when running the local version of the dashboard. In this case, it could mean that the development user for the dashboard does not exist. You need to create a company contact (for any company) with the email `dashboard@armada.nu`. The function `get_user` in `util/__init__.py` will use this user for all requests if you are in development mode.
+</details>
+
+<details>
+<summary>'JSONError' object has no attribute 'get'</summary>
+
+This error can occur when running the local version of the dashboard. In this case, it could mean that the development user for the dashboard does not exist. You need to create a company contact (for any company) with the email `dashboard@armada.nu`. The function `get_user` in `util/__init__.py` will use this user for all requests if you are in development mode.
+
+</details>
 
 ## Creating Database Migrations
 

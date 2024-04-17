@@ -17,7 +17,7 @@ services:
     image: postgis/postgis:13-3.3
     volumes:
       # - postgres_data:/var/lib/postgresql/data/ # Production Development
-      - ./ais-developer-database.sql:/docker-entrypoint-initdb.d # Local Development
+      - ./ais-developer-database:/docker-entrypoint-initdb.d # Local Development
     environment:
       - POSTGRES_USER=ais_dev
       - POSTGRES_PASSWORD=ais_dev
