@@ -1,17 +1,16 @@
 FROM python:3.10.1-alpine as base
 WORKDIR /usr/src/app
 
-FROM base as frontend-base
-RUN apk add npm
-
-FROM frontend-base as dashboard
+FROM node:18-alpine as dashboard
+WORKDIR /usr/src/app
 RUN npm install pnpm -g
 COPY apps/dashboard/package.json apps/dashboard/pnpm-lock.yaml ./
 RUN pnpm install
 COPY apps/dashboard ./
 RUN pnpm build-prod
 
-FROM frontend-base as frontend
+FROM base as frontend
+RUN apk add npm
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
