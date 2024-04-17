@@ -104,7 +104,10 @@
 				<td>
 					<ul class="list-unstyled">
 						{% for signature in company.signatures %}
-							<li><span style="display: none;">{{ signature.timestamp|date:"U" }}</span>{{ signature.contract.name }} – {{ signature.timestamp }}</li>
+							<li>
+								<span style="display: none;">{{ signature.timestamp|date:"U" }}</span>
+								{{ signature.contract.name }} – {{ signature.timestamp }}
+							</li>
 						{% endfor %}
 					</ul>
 				</td>
@@ -156,4 +159,15 @@
 <a href="{% url 'send_order_summaries' fair.year %}?id={{ companies_ids | join:"&id=" }}" class="btn btn-primary pull-right"onclick="return confirm('Press OK to send out e-mail messages with confirmations to all companies in list above.')">Send order confirmations</a>
 
 
+{% endblock %}
+{% block scripts %}
+	<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+	<link href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet">
+	<script>
+		$(function()
+		{
+			$('#company_table').DataTable({ 'paging': false })
+		});
+	</script>
 {% endblock %}
