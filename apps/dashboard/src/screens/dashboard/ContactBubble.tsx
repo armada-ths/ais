@@ -9,7 +9,6 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer"
 import { Separator } from "@/components/ui/separator"
-import { inPhase } from "@/forms/form_access"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { Mail, MessageCircleQuestion, Phone, X } from "lucide-react"
 
@@ -18,17 +17,6 @@ export function ContactBubble() {
 
     const companyContact = data?.sales_contacts?.[0]
     const additionalCompanyContacts = data?.sales_contacts?.slice(1)
-
-    if (
-        !inPhase(
-            {
-                search: ["complete_registration"]
-            },
-            data?.type
-        )
-    ) {
-        return null
-    }
 
     if (companyContact == null) return null
 

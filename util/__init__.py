@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 from django.utils import timezone
-from companies.models import CompanyContact
+from companies.models import CompanyContact, CompanyCustomerResponsible
 from fair.models import Fair
 from register.models import SignupLog
 from exhibitors.models import Exhibitor
@@ -78,8 +78,12 @@ def update_field(
             serializer.save()
 
 
+# Get the sales contacts for a company.
+# If the company is an exhibitor for this fair, return the contact persons.
+# If the company has a responsible, return that person.
+# If no responsible, return the first person with a sales role.
 def get_sales_contacts(fair, company, exhibitor):
-    # Todo: test if these works
+    # Present the roles in this order if there is no sales responsible
     roles = ["Head of Sales", "Head of Business Relations", "Project Manager"]
 
     # Todo: test to see if exhibitor sort works
@@ -111,6 +115,16 @@ def get_sales_contacts(fair, company, exhibitor):
 
             if len(profiles) > 0:
                 return [profile[0] for profile in profiles]
+
+    responsibles = CompanyCustomerResponsible.objects.filter(
+        company=company, group__fair=fair, group__allow_responsibilities=True
+    ).first()
+
+    if responsibles is not None:
+        users = responsibles.users.all()
+        if len(users) > 0:
+            profiles = [Profile.objects.filter(user=user).first() for user in users]
+            return profiles
 
     for role in roles:
         for applicant in RecruitmentApplication.objects.filter(
