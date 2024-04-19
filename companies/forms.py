@@ -488,7 +488,9 @@ class CompanySearchForm(forms.Form):
     contracts_negative = forms.ModelMultipleChoiceField(
         queryset=SignupContract.objects.none(),
         widget=forms.CheckboxSelectMultiple(),
-        label="Show only companies who have NOT signed any of these",
+        # Note: Sales required that "NOT" is to be underlined, this is now done in
+        # the HTML file "companies/companies_list.html"
+        # label="Show only companies who have NOT signed any of these",
         required=False,
     )
     users = forms.ModelMultipleChoiceField(
