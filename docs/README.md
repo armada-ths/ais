@@ -4,10 +4,6 @@
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Automatic Development Setup
-
-**Todo**
-
 ## Manual Development Setup
 
 ### Section 1: Installation of Dependencies
@@ -53,7 +49,7 @@ In order to run the project locally, you need the following tools:
 <details>
 <summary>All platforms with NVM</summary>
 
-1. `nvm use 16`
+1. `nvm install 20 && nvm use 20`
 2. `npm install -g pnpm`
 
 </details>
@@ -69,6 +65,10 @@ In order to run the project locally, you need the following tools:
 
 ### Section 2: Setup of the Server
 
+#### Prepare environment variables
+
+1. `cp .env.example .env`
+
 #### Prepare the production database copy
 
 You can choose to use a copy of the production database for your local development.
@@ -79,9 +79,9 @@ You can choose to use a copy of the production database for your local developme
 
 #### Prepare static files
 
-1. `npm install && npm run build` (compile the static files for e.g. the banquett and events systems).
+1. `nvm install 16 && nvm use 16 && && npm install && npm run build` (compile the static files for e.g. the banquett and events systems).
 2. `cd apps/dashboard` (goto dashboard project).
-3. `pnpm install && pnpm build` (compile the the dashboard system).
+3. `nvm install 20 && nvm use 20 && pnpm install && pnpm build` (compile the the dashboard system).
 
 #### Run the server
 
