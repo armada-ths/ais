@@ -12,7 +12,6 @@ urlpatterns = [
     url(r"^admin/", admin.site.urls),
     url(r"^companies/", include("companies.urls")),
     url(r"^register/", include("register.urls")),
-    url(r"^party/", include("party.urls")),
     url(r"^dashboard/", include("dashboard.urls")),
     url(r"^api/", include("api.urls")),
     url(r"^banquet/", include("banquet.urls")),
