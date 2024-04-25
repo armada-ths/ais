@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     "polymorphic",
     "events",
     "companies",
+    "party",
     "fair",
     "people",
     "locations",
