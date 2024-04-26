@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     "locations",
     "recruitment",
     "api",
+    "party2",
     "news",
     "orders",
     "unirel",
