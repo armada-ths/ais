@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 
 ais_patterns = [
     url(r"^", include("fair.urls")),
+    url(r"^party/", include("party.urls")),
     url(r"^events/", include("events.urls")),
     url(r"^people/", include("people.urls")),
     url(r"^locations/", include("locations.urls")),

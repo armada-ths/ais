@@ -8,6 +8,7 @@ from exhibitors.views import UserAutocomplete
 from magic_link import urls as magic_link_urls
 
 urlpatterns = [
+    url(r"^party/", include("party.urls")),
     url(r"^accounts/", include("accounts.urls")),
     url(r"^admin/", admin.site.urls),
     url(r"^companies/", include("companies.urls")),
