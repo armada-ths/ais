@@ -32,6 +32,9 @@ export interface Fr {
     end: string // Date
 }
 
+/**
+ * Fetches relevant dates such as IR, FR etc...
+ */
 export async function fetchDates() {
     const response = await fetch(`${HOST}/api/dates`)
     const data = await response.json()
