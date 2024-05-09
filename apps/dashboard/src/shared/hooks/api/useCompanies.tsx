@@ -12,6 +12,10 @@ export async function queryCompanies() {
     return result
 }
 
+/**
+ * Get short information about all companies,
+ * contains name and id
+ */
 export function useCompanies() {
     return useQuery({
         queryKey: ["companies"],

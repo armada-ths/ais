@@ -108,6 +108,11 @@ export async function queryDashboard(args: { companyId: number }) {
     return result
 }
 
+/**
+ * useDashboard contains all information about the company
+ * logged in, such as sales contract, company information,
+ * their configuration, etc...
+ */
 export function useDashboard() {
     const navigation = useNavigate()
     const { companyId: rawCompanyId } = useParams({ from: "/$companyId" })
