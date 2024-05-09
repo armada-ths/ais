@@ -17,6 +17,9 @@ from recruitment.models import RecruitmentApplication
 from register.views import get_contract
 
 
+is_dev = os.environ["DJANGO_SETTINGS_MODULE"] == "ais.local.settings"
+
+
 def get_client_ip(request):
     return request.META["HTTP_REFERER"]
 
@@ -50,7 +53,7 @@ def get_fair():
 def get_user(request):
     user = request.user
     if not user.is_authenticated:
-        if is_react_dev_port(request):
+        if is_dev and is_react_dev_port(request):
             user = User.objects.filter(email="dashboard@armada.nu").first()
             if user == None:
                 raise Exception(
