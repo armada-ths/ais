@@ -37,13 +37,20 @@ def get_contract_signature(company, fair, type="COMPLETE"):
 
 
 def get_fair():
-    return Fair.objects.filter(current=True).first()
+    return Fair.objects.filter(year=timezone.now().year).first()
 
 
 def get_user(request):
     user = request.user
     if not user.is_authenticated:
-        return None
+        if is_dev:
+            user = User.objects.filter(email="dashboard@armada.nu").first()
+            if user == None:
+                raise Exception(
+                    "No user with email dashboard@armada.nu. Please create one for local development."
+                )
+        else:
+            return None
 
     return user
 
