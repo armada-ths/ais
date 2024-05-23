@@ -42,14 +42,14 @@ export const FORM_ACCESS: Record<
         core_values: "shown"
     }, // FR "Active" but no contract exists
     complete_registration_ir_signed: {
-        primary: "shown",
+        fr_accounting: "shown",
         lunch_tickets: "shown",
         transport: "shown",
         sture: "shown",
         core_values: "shown"
     },
     complete_registration_ir_unsigned: {
-        primary: "shown",
+        fr_accounting: "shown",
         lunch_tickets: "shown",
         transport: "shown",
         sture: "shown",
@@ -84,7 +84,7 @@ export const FORM_ACCESS: Record<
     RegistrationStatus[]
 > = {
     ir_signup: ["initial_registration"],
-    primary: ["complete_registration"],
+    fr_accounting: ["complete_registration"],
     receipt: [
         "complete_registration_signed",
         "after_complete_registration_signed"
@@ -128,7 +128,7 @@ export const FORM_HIDDEN_DURING: Partial<
     Record<keyof typeof FORMS, RegistrationStatus[]>
 > = {
     ir_signup: ["after_complete_registration"],
-    primary: [
+    fr_accounting: [
         "complete_registration_signed",
         "after_complete_registration",
         "after_complete_registration_signed"

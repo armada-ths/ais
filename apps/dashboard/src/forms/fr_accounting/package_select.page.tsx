@@ -6,6 +6,9 @@ import { FormWrapper } from "../FormWrapper"
 export function PackageSelectFormPage() {
     const packages = useSelector(selectVisibleProductPackages)
 
+    /*     const { data } = useProducts()
+    const packages_2 = data?.filter(x => ) */
+
     return (
         <FormWrapper>
             <div className="flex flex-wrap justify-center gap-5">
