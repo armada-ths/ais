@@ -22,6 +22,7 @@ import "primereact/resources/themes/tailwind-light/theme.css"
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { Provider } from "react-redux"
+import ArmadaLogo from "./assets/armada_logo_green.svg"
 import "./input.css"
 import { DashboardScreen } from "./screens/dashboard/screen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
@@ -134,7 +135,23 @@ declare module "@tanstack/react-router" {
 }
 
 export function IndexMainLogicWrapper() {
-    const { initialized } = useLoadData()
+    const { initialized, error } = useLoadData()
+    if (error) {
+        return (
+            <section className="min-w-screen flex min-h-screen items-center justify-center">
+                <div className="flex max-w-[400px] flex-col items-center">
+                    <img src={ArmadaLogo} alt="Armada" className="h-52 w-52" />
+                    <h1 className="mb-2 text-5xl">Could not load data</h1>
+                    <p>
+                        We could not load the data for you, if you are within an
+                        official period at Armada such as initial registration
+                        or final registration, please contact us. Otherwise
+                        please come back later
+                    </p>
+                </div>
+            </section>
+        )
+    }
     if (!initialized) return <LoadingAnimation />
     return <RouterProvider router={router} />
 }

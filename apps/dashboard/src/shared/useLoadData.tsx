@@ -25,6 +25,7 @@ export default function useLoadData() {
     const companyId = regex.exec(window.location.href)?.[1]
 
     const initialized = useRef(false)
+    const [error, setError] = useState(false)
     const [loading, setLoading] = useState(true)
     const dispatch = useDispatch()
 
@@ -38,8 +39,8 @@ export default function useLoadData() {
             )
             console.log("PRODUCTS", JSON.stringify(data)) */
 
-            fetch(`${HOST}/api/dashboard/${companyId ?? ""}`, {}).then(
-                async raw => {
+            fetch(`${HOST}/api/dashboard/${companyId ?? ""}`, {})
+                .then(async raw => {
                     const data = await raw.json()
 
                     // Load products
@@ -122,8 +123,8 @@ export default function useLoadData() {
                     }
                     dispatch(loadProductMeta(customPrices))
                     setLoading(false)
-                }
-            )
+                })
+                .catch(() => setError(true))
         }
 
         load()
@@ -131,6 +132,7 @@ export default function useLoadData() {
     }, [])
 
     return {
-        initialized: !loading
+        initialized: !loading,
+        error
     }
 }
