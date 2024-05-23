@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { useBlocker } from "@tanstack/react-router"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 
 const formSchema = z.object({
@@ -88,6 +89,17 @@ export function IrContactPage({
                 })
             })
             return await (await response).json()
+        },
+        onSuccess: () => {
+            toast.success("Saved changes", {
+                description: "Your contact information has been saved!"
+            })
+        },
+        onError: () => {
+            toast.error("Failed to save changes", {
+                description:
+                    "Something did not work trying to save your contact information. Please try again or contact us."
+            })
         }
     })
 
