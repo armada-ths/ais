@@ -41,6 +41,11 @@ class StockAdmin(ModelAdminImproved):
     list_display = ["name", "amount"]
 
 
+@admin.register(ExportBatch)
+class ExportBatchAdmin(ModelAdminImproved):
+    list_display = ["timestamp", "user"]
+
+
 @admin.register(Order)
 class OrderAdmin(ModelAdminImproved):
     readonly_fields = ("amount",)
