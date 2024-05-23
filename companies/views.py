@@ -606,7 +606,7 @@ def companies_view(request, year, pk):
 
     fairs = []
 
-    for f in Fair.objects.all():
+    for f in Fair.objects.all().order_by("year"):
         fairs.append(
             {
                 "fair": f,
@@ -1300,9 +1300,9 @@ def contracts_export(request, year):
 
         response = HttpResponse(csv, content_type="text/csv; charset=utf-8")
         response["Content-Length"] = len(csv)
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="exported signatures.csv"'
+        response["Content-Disposition"] = (
+            'attachment; filename="exported signatures.csv"'
+        )
 
         return response
 
