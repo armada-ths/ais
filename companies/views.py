@@ -606,7 +606,7 @@ def companies_view(request, year, pk):
 
     fairs = []
 
-    for f in Fair.objects.all().order_by("year"):
+    for f in Fair.objects.all().order_by("-year"):
         fairs.append(
             {
                 "fair": f,
