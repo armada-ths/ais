@@ -90,7 +90,13 @@ export function IrContactPage({
             })
             return await (await response).json()
         },
-        onSuccess: () => {
+        onSuccess: data => {
+            if ("error" in data) {
+                toast.error("Failed to save changes", {
+                    description: `Something did not work trying to save your contact information. Please try again or contact us. Error: ${data.error}`
+                })
+                return
+            }
             toast.success("Saved changes", {
                 description: "Your contact information has been saved!"
             })
