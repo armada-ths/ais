@@ -1,5 +1,5 @@
 import { Form } from "../form_types"
-import { InvoiceDetailsFormPage } from "../primary/invoice_details.page"
+import { InvoiceDetailsFormPage } from "../fr_accounting/invoice_details.page"
 import { OrderDetails } from "./order_details.page"
 
 export const form = {

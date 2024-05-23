@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import { PrimaryFormHeader } from "../../forms/primary/Header"
+import { PrimaryFormHeader } from "../../forms/Header"
 import { LogoutButton } from "../../shared/LogoutButton"
 import { selectErrors } from "../../store/form/form_selectors"
 

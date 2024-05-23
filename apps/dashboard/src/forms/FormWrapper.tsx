@@ -1,6 +1,6 @@
 import { ConfirmSaveAlert } from "@/shared/ConfirmSaveAlert"
 import React from "react"
-import { PrimaryFormHeader } from "./primary/Header"
+import { PrimaryFormHeader } from "./Header"
 
 // eslint-disable-next-line react-refresh/only-export-components
 

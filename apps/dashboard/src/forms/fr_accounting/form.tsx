@@ -10,7 +10,7 @@ import { ProductFormPage } from "./product.page"
 import { SummaryFormPage } from "./summary.page"
 
 export const form = {
-    key: "primary",
+    key: "fr_accounting",
     name: "Order & Invoice Details",
     description:
         "On this page you select products and entry of company invoice details. Once submitted, no changes are permitted.",
