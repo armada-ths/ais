@@ -175,6 +175,7 @@ def statistics(request, year):
         signatures_raw = SignupLog.objects.filter(contract=contract).order_by(
             "timestamp"
         )
+        
         signatures = []
 
         i = 0
@@ -205,7 +206,7 @@ def statistics(request, year):
                         }
                     )
 
-                    add = False
+                    add = False 
                     break
 
             if add:
@@ -219,24 +220,38 @@ def statistics(request, year):
                 )
 
                 i += 1
+    
+        rows += len(signatures) 
 
-        rows += len(signatures)
-
-        row_length = len(signatures)
+        row_length = len(signatures) + 1 #add a row for sum of all signatures
         table = []
-
+        all_sigs_timestamps =[] #save all timestamps
         for j in range(len(signatures)):
             for timestamp in signatures[j]["timestamps"]:
                 row = {"timestamp": timestamp["timestamp"], "cells": []}
-
+                all_sigs_timestamps.append(timestamp["timestamp"])
                 for k in range(row_length):
                     row["cells"].append(None)
 
                 row["cells"][j] = timestamp["count"]
+                
                 table.append(row)
 
             j += 1
 
+        all_sigs_timestamps.sort()
+        all_sum=0 #sum of all signatures
+        for timestamp in all_sigs_timestamps: #create the row with the sum of signatures
+            row = {"timestamp": timestamp, "cells": []}
+                
+            for k in range(row_length):
+                row["cells"].append(None)
+
+            row["cells"][-1] = all_sum +1
+            all_sum+=1
+            table.append(row) 
+    
+        print(table)
         contracts.append(
             {
                 "i": len(contracts),
@@ -249,7 +264,7 @@ def statistics(request, year):
         )
 
     form.fields["date_from"].initial = smallest
-
+    
     return render(
         request,
         "companies/statistics.html",
@@ -606,7 +621,7 @@ def companies_view(request, year, pk):
 
     fairs = []
 
-    for f in Fair.objects.all().order_by("-year"):
+    for f in Fair.objects.all():
         fairs.append(
             {
                 "fair": f,
@@ -1300,9 +1315,9 @@ def contracts_export(request, year):
 
         response = HttpResponse(csv, content_type="text/csv; charset=utf-8")
         response["Content-Length"] = len(csv)
-        response["Content-Disposition"] = (
-            'attachment; filename="exported signatures.csv"'
-        )
+        response[
+            "Content-Disposition"
+        ] = 'attachment; filename="exported signatures.csv"'
 
         return response
 
