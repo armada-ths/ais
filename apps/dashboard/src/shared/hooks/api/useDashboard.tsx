@@ -1,6 +1,6 @@
 import { HOST } from "@/shared/vars"
 import { RegistrationStatus } from "@/store/company/company_slice"
-import { useQuery } from "@tanstack/react-query"
+import { QueryClient, useQuery } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 
 export interface DashboardResponse {
@@ -11,12 +11,20 @@ export interface DashboardResponse {
     ir_contract: Contract
     cr_contract: Contract
     sales_contacts: SalesContact[]
-    orders: unknown[]
+    orders: Order[]
     contact: Contact | null
     exhibitor: unknown
     company: Company
     products: Product[]
     interested_in: Array<{ id: number }>
+}
+
+export interface Order {
+    id: number
+    comment: string
+    quantity: number
+    unit_price?: number
+    product: Product
 }
 
 export interface Category {
@@ -115,17 +123,25 @@ export async function queryDashboard(args: { companyId: number }) {
  */
 export function useDashboard() {
     const navigation = useNavigate()
+    const queryClient = new QueryClient()
     const { companyId: rawCompanyId } = useParams({ from: "/$companyId" })
 
     // Check that if company is defined it is a positive number, otherwise set it to -1 to indicate that it is not a valid company
     const companyId = isNaN(Number(rawCompanyId)) ? -1 : Number(rawCompanyId)
+    const queryKey = ["dashboard", companyId]
 
     const args = useQuery({
-        queryKey: ["dashboard", companyId],
+        queryKey,
         queryFn: async ({ queryKey: [, companyId] }) =>
             queryDashboard({ companyId: companyId as number }),
         enabled: companyId > 0
     })
+
+    function invalidate() {
+        queryClient.invalidateQueries({
+            queryKey
+        })
+    }
 
     // If user tries to access a company that either doesn't exist
     // or they don't have access to, send them to the not found page
@@ -145,5 +161,5 @@ export function useDashboard() {
         })
     }
 
-    return args
+    return { ...args, invalidate }
 }
