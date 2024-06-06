@@ -28,7 +28,7 @@ export function useAccountingMutation(
             const response = fetch(`${HOST}/api/dashboard/`, {
                 method: "PUT",
                 body: JSON.stringify({
-                    outgoing: getOrderMutationData(orders)
+                    orders: getOrderMutationData(orders)
                 })
             })
             return await (await response).json()
