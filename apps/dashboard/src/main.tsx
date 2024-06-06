@@ -2,6 +2,7 @@
 import "./store/store"
 
 import { Toaster } from "@/components/ui/sonner.tsx"
+import { TooltipProvider } from "@/components/ui/tooltip.tsx"
 import { RegisterScreen } from "@/screens/register/screen.tsx"
 import { RegisterCompanyUserScreen } from "@/screens/register_user/screen.tsx"
 import useLoadData from "@/shared/useLoadData.tsx"
@@ -158,11 +159,13 @@ export function IndexMainLogicWrapper() {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <Provider store={store}>
-                <Toaster />
-                <IndexMainLogicWrapper />
-            </Provider>
-        </QueryClientProvider>
+        <TooltipProvider>
+            <QueryClientProvider client={queryClient}>
+                <Provider store={store}>
+                    <Toaster />
+                    <IndexMainLogicWrapper />
+                </Provider>
+            </QueryClientProvider>
+        </TooltipProvider>
     </React.StrictMode>
 )
