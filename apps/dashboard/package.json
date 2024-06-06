@@ -67,5 +67,9 @@
         "tailwindcss": "^3.3.3",
         "typescript": "5.4.0-beta",
         "vite": "^4.4.5"
+    },
+    "engines": {
+        "node": "20.12",
+        "pnpm": "8.15"
     }
 }
