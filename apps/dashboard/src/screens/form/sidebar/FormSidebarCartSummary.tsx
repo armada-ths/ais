@@ -26,7 +26,10 @@ export function FormSidebarCartSummary() {
 
     const productsWithAdjustedPrices = getProductsWithAdjustedPrice(
         orders,
-        products
+        products,
+        {
+            ordersOnly: true
+        }
     )
 
     const totalPrice = productsWithAdjustedPrices.reduce(
