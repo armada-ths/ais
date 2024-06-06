@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge"
-import { getAdjustedProductPrice } from "@/forms/fr_accounting/accounting_utilities"
+import { getProductWithAdjustedPrice } from "@/forms/fr_accounting/accounting_utilities"
 import { useAccountingMutation } from "@/forms/fr_accounting/useAccounting"
 import { Product } from "@/shared/hooks/api/useDashboard"
 import { useOrders } from "@/shared/hooks/api/useOrders"
@@ -7,12 +7,11 @@ import { useProducts } from "@/shared/hooks/api/useProducts"
 import { PACKAGE_SECTION_KEY } from "@/shared/vars"
 import { cn } from "@/utils/cx"
 import { formatCurrency } from "@/utils/format_currency"
-import { toast } from "sonner"
 import { FormWrapper } from "../FormWrapper"
 
 export function PackageSelectFormPage() {
-    const { data: products } = useProducts()
-    const { data: orders, invalidate: invalidateOrders } = useOrders()
+    const { data: products, updateCache } = useProducts()
+    const { data: orders } = useOrders()
     const packages =
         products?.filter(
             x =>
@@ -21,10 +20,7 @@ export function PackageSelectFormPage() {
         ) ?? []
 
     const { mutateAsync, isPending } = useAccountingMutation({
-        onSuccess: () => {
-            invalidateOrders()
-            toast.success("Package added to cart")
-        }
+        onSuccess: updateCache
     })
 
     async function onClickPackage(product: Product) {
@@ -85,11 +81,11 @@ export function PackageSelectFormPage() {
                             <div className="flex flex-1 items-end justify-center p-5">
                                 <p className="rounded bg-slate-500 p-1 px-3 text-center text-lg font-bold text-slate-50">
                                     {formatCurrency(
-                                        getAdjustedProductPrice(
+                                        getProductWithAdjustedPrice(
                                             product.id,
                                             orders,
                                             products
-                                        )
+                                        )?.adjustedPrice ?? NaN
                                     )}{" "}
                                     kr
                                 </p>

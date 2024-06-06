@@ -1,4 +1,4 @@
-import { Order } from "@/shared/hooks/api/useDashboard"
+import { DashboardResponse, Order } from "@/shared/hooks/api/useDashboard"
 import { HOST } from "@/shared/vars"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -16,43 +16,45 @@ function getOrderMutationData(orders: OrderMutation[]) {
     }))
 }
 
-export function useAccountingMutation(
+export function useAccountingMutation<
+    TRes extends DashboardResponse,
+    TErr,
+    TParam extends OrderMutation[]
+>(
     params?: Omit<
-        Parameters<typeof useMutation>[0],
+        Parameters<typeof useMutation<TRes, TErr, TParam>>[0],
         "mutationFn" | "mutationKey"
     >
 ) {
     return useMutation({
         mutationKey: ["mutate_orders"],
-        mutationFn: async (orders: OrderMutation[]) => {
-            const response = fetch(`${HOST}/api/dashboard/`, {
+        mutationFn: async orders => {
+            const response = await fetch(`${HOST}/api/dashboard/`, {
                 method: "PUT",
                 body: JSON.stringify({
                     orders: getOrderMutationData(orders)
                 })
             })
-            return await (await response).json()
+            return await response.json()
         },
         ...params,
         onSuccess: (data, variables, context) => {
             if ("error" in data) {
                 if (params?.onError != null)
-                    params.onError(data, variables, context)
-                toast.error("Failed to save changes", {
+                    params.onError(data as TErr, variables, context)
+                toast.error("Operation failed", {
                     description: `Something did not work trying to save your contact information. Please try again or contact us. Error: ${data.error}`
                 })
                 return
             }
-            if (params?.onSuccess != null)
+
+            if (params?.onSuccess !== undefined)
                 return params?.onSuccess?.(data, variables, context)
-            toast.success("Saved changes", {
-                description: "Your contact information has been saved!"
-            })
         },
         onError: (data, variables, context) => {
             if (params?.onError)
                 return params?.onError?.(data, variables, context)
-            toast.error("Failed to save changes", {
+            toast.error("Operation failed", {
                 description:
                     "Something did not work trying to save your contact information. Please try again or contact us."
             })

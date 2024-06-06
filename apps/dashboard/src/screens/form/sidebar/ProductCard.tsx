@@ -1,19 +1,15 @@
+import { Product } from "@/shared/hooks/api/useDashboard"
 import {
     selectAdjustedProductPrice,
     selectSelectedProduct,
     selectUnitAdjustedProductPrice
 } from "@/store/products/products_selectors"
-import { ProductAdjustedPrice } from "@/store/products/products_slice"
 import { RootState } from "@/store/store"
 import { formatCurrency } from "@/utils/format_currency"
 import { useSelector } from "react-redux"
 import { Card } from "./PageCard"
 
-export default function ProductCard({
-    product
-}: {
-    product: ProductAdjustedPrice
-}) {
+export default function ProductCard({ product }: { product: Product }) {
     const totalPrice = useSelector((state: RootState) =>
         selectAdjustedProductPrice(state, product.id)
     )

@@ -143,6 +143,10 @@ export function useDashboard() {
         })
     }
 
+    function updateCache(data: DashboardResponse) {
+        queryClient.setQueryData(queryKey, data)
+    }
+
     // If user tries to access a company that either doesn't exist
     // or they don't have access to, send them to the not found page
     if (
@@ -161,5 +165,5 @@ export function useDashboard() {
         })
     }
 
-    return { ...args, invalidate }
+    return { ...args, invalidate, updateCache }
 }
