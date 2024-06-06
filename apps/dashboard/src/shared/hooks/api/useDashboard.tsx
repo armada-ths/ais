@@ -1,6 +1,6 @@
 import { HOST } from "@/shared/vars"
 import { RegistrationStatus } from "@/store/company/company_slice"
-import { QueryClient, useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 
 export interface DashboardResponse {
@@ -123,7 +123,7 @@ export async function queryDashboard(args: { companyId: number }) {
  */
 export function useDashboard() {
     const navigation = useNavigate()
-    const queryClient = new QueryClient()
+    const queryClient = useQueryClient()
     const { companyId: rawCompanyId } = useParams({ from: "/$companyId" })
 
     // Check that if company is defined it is a positive number, otherwise set it to -1 to indicate that it is not a valid company
