@@ -1,40 +1,61 @@
-import { useDispatch, useSelector } from "react-redux"
-import { FormWrapper } from "../FormWrapper"
 import {
-    selectAdjustedProductPrice,
-    selectProductPackage,
-    selectPackageBaseProductQuantity,
-    selectSelectedProduct,
-    selectUnitAdjustedProductPrice
-} from "../../store/products/products_selectors"
+    Card,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger
+} from "@/components/ui/tooltip"
+import {
+    belongsToSection,
+    getProductWithAdjustedPrice
+} from "@/forms/fr_accounting/accounting_utilities"
+import { useOrders } from "@/shared/hooks/api/useOrders"
+import { useProducts } from "@/shared/hooks/api/useProducts"
+import { RegistrationSection } from "@/shared/vars"
+import { InputText } from "primereact/inputtext"
+import React, { useMemo } from "react"
+import { useDispatch } from "react-redux"
 import {
     Category,
     Product,
     pickProduct,
     unpickProduct
 } from "../../store/products/products_slice"
-import { InputText } from "primereact/inputtext"
-import { RootState } from "../../store/store"
-import { InputSwitch } from "primereact/inputswitch"
 import { cx } from "../../utils/cx"
-import React, { useMemo } from "react"
 import { formatCurrency } from "../../utils/format_currency"
+import { FormWrapper } from "../FormWrapper"
 
 function InputCard({ product }: { product: Product }) {
     const dispatch = useDispatch()
-    const selected = useSelector((state: RootState) =>
-        selectSelectedProduct(state, product.id)
+    const { data: orders } = useOrders()
+    const { data: products } = useProducts()
+    const order = orders.find(x => x.product.id === product.id)
+    const productWithAdjustedPrice = getProductWithAdjustedPrice(
+        product.id,
+        orders,
+        products
     )
-    const adjustedUnitPrize = useSelector((state: RootState) =>
-        selectUnitAdjustedProductPrice(state, product.id)
+    const productAdjustedUnitPrice =
+        (productWithAdjustedPrice?.adjustedPrice ?? 0) / (order?.quantity ?? 1)
+
+    const selected = orders.find(x => x.product.id === product.id)
+
+    const productPackage = getProductWithAdjustedPrice(
+        order?.product.id,
+        orders,
+        products
     )
-    const adjustedPrize = useSelector((state: RootState) =>
-        selectAdjustedProductPrice(state, product.id)
-    )
-    const productPackage = useSelector(selectProductPackage)
-    const packageProductBaseQuantity = useSelector((state: RootState) =>
-        selectPackageBaseProductQuantity(state, product.id)
-    )
+
+    const packageProductBaseQuantity =
+        productPackage?.child_products?.find(
+            current => current.child_product.id === product.id
+        )?.quantity ?? 0
 
     function onChange(quantity: number) {
         if (isNaN(quantity)) quantity = 0
@@ -69,39 +90,39 @@ function InputCard({ product }: { product: Product }) {
         productPackage?.short_name || productPackage?.name || "package"
 
     return (
-        <div
-            className={cx(
-                "w-full rounded bg-white p-5 shadow-sm",
-                selected && "border-2 border-emerald-500"
-            )}
+        <Card
+            className={cx("w-full", {
+                "border-2 border-emerald-500": selected
+            })}
         >
-            <div className="flex justify-between gap-10">
-                <div className="w-3/4">
-                    <p className="text text-slate-700">
+            <CardHeader className="flex flex-row justify-between">
+                <div className="">
+                    <CardTitle className="text-xl">
                         {product.short_name || product.name}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                        {product.description}
-                    </p>
+                    </CardTitle>
+                    <CardDescription>{product.description}</CardDescription>
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="!mt-0 flex flex-1 items-start justify-end">
                     {product.max_quantity <= 1 ? (
-                        <InputSwitch
-                            onChange={() => onChange(selected == null ? 1 : 0)}
-                            checked={
-                                selected != null ||
-                                packageProductBaseQuantity > 0
-                            }
-                            disabled={packageProductBaseQuantity > 0}
-                            tooltip={
-                                packageProductBaseQuantity > 0
-                                    ? "Included in package"
-                                    : undefined
-                            }
-                            tooltipOptions={{
-                                showOnDisabled: true
-                            }}
-                        />
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <Switch
+                                    onChange={() =>
+                                        onChange(selected == null ? 1 : 0)
+                                    }
+                                    checked={
+                                        selected != null ||
+                                        packageProductBaseQuantity > 0
+                                    }
+                                    disabled={packageProductBaseQuantity > 0}
+                                />
+                            </TooltipTrigger>
+                            <TooltipContent
+                                hidden={packageProductBaseQuantity <= 0}
+                            >
+                                Included in package
+                            </TooltipContent>
+                        </Tooltip>
                     ) : (
                         <InputText
                             placeholder="Quantity"
@@ -116,12 +137,13 @@ function InputCard({ product }: { product: Product }) {
                         />
                     )}
                 </div>
-            </div>
-            <div className="mt-5">
+            </CardHeader>
+            <CardFooter>
                 {selected != null && selected.quantity > 1 && (
                     <div className="mb-1 inline-flex">
                         <p className="rounded bg-gray-400 p-1 px-3 text-sm text-white">
-                            Unit price {formatCurrency(adjustedUnitPrize)} kr
+                            Unit price{" "}
+                            {formatCurrency(productAdjustedUnitPrice)} kr
                         </p>
                     </div>
                 )}
@@ -133,7 +155,9 @@ function InputCard({ product }: { product: Product }) {
                             : packageProductBaseQuantity > 0 &&
                               (selected?.quantity ?? 0) <= 0
                             ? "0 kr"
-                            : `${formatCurrency(adjustedPrize)} kr`}
+                            : `${formatCurrency(
+                                  productWithAdjustedPrice?.adjustedPrice ?? NaN
+                              )} kr`}
                     </p>
                     {product.max_quantity > 1 &&
                         packageProductBaseQuantity > 0 && (
@@ -146,8 +170,8 @@ function InputCard({ product }: { product: Product }) {
                             </>
                         )}
                 </div>
-            </div>
-        </div>
+            </CardFooter>
+        </Card>
     )
 }
 
@@ -175,12 +199,14 @@ export function DiscountCard({ product }: { product: Product }) {
     )
 }
 
-export function ProductFormPage({
-    selector
-}: {
-    selector: (state: RootState) => Product[]
-}) {
-    const products = useSelector(selector)
+export function ProductFormPage({ section }: { section: RegistrationSection }) {
+    const { data: allProducts } = useProducts()
+    const products = allProducts.filter(product =>
+        belongsToSection(product, section)
+    )
+
+    console.log("PRODUCTS", products, allProducts)
+
     const categorizedProducts = useMemo(
         () =>
             Object.entries(
@@ -210,7 +236,7 @@ export function ProductFormPage({
         [products]
     )
 
-    const description = products[0]?.registration_section?.description
+    const description = allProducts[0]?.registration_section?.description
 
     return (
         <>
@@ -222,11 +248,11 @@ export function ProductFormPage({
                 </div>
             )}
             <FormWrapper>
-                <div className="flex flex-col gap-10">
+                <div className="flex w-[450px] flex-col gap-10">
                     {categorizedProducts.map(([section, categoryProducts]) => (
                         <React.Fragment key={section}>
                             {categoryProducts.products.length > 0 && (
-                                <div className="flex flex-col gap-5">
+                                <div className="flex w-full flex-col gap-5">
                                     <div>
                                         {section !== "none" && (
                                             <h3 className="text-xl text-emerald-400">

@@ -1,8 +1,5 @@
 import { FormSidebarCartSummary } from "@/screens/form/sidebar/FormSidebarCartSummary"
-import {
-    selectProductEvents,
-    selectProductExtras
-} from "@/store/products/products_selectors"
+import { RegistrationSection } from "@/shared/vars"
 import { Form } from "../form_types"
 import { InvoiceDetailsFormPage } from "./invoice_details.page"
 import { PackageSelectFormPage } from "./package_select.page"
@@ -27,10 +24,9 @@ export const form = {
         {
             id: "events",
             title: "Select Events",
-            hasPrevButton: false,
             isDone: null,
             pageComponent: () => (
-                <ProductFormPage selector={selectProductEvents} />
+                <ProductFormPage section={RegistrationSection.Events} />
             )
         },
         {
@@ -38,7 +34,7 @@ export const form = {
             title: "Select Extras",
             isDone: null,
             pageComponent: () => (
-                <ProductFormPage selector={selectProductExtras} />
+                <ProductFormPage section={RegistrationSection.Extras} />
             )
         },
         {
