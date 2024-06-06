@@ -19,7 +19,7 @@ export const form = {
         {
             id: "packages",
             title: "Select Package",
-            hasNextButton: false,
+            hasNextButton: true,
             hasPrevButton: false,
             isDone: null,
             pageComponent: PackageSelectFormPage
