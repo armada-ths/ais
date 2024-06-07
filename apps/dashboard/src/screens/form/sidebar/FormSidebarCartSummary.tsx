@@ -1,27 +1,41 @@
 import {
-    selectAdjustedProductPrice,
-    selectProductPackage,
-    selectProductsSelectedWithoutPackagesWithAdjustedPrice
-} from "@/store/products/products_selectors"
-import { RootState } from "@/store/store"
+    belongsToSection,
+    getProductWithAdjustedPrice,
+    getProductsWithAdjustedPrice
+} from "@/forms/fr_accounting/accounting_utilities"
+import { useOrders } from "@/shared/hooks/api/useOrders"
+import { useProducts } from "@/shared/hooks/api/useProducts"
+import { PACKAGE_SECTION_KEY } from "@/shared/vars"
 import { formatCurrency } from "@/utils/format_currency"
-import { useSelector } from "react-redux"
 import ProductCard from "./ProductCard"
 
 export function FormSidebarCartSummary() {
-    const productPackage = useSelector(selectProductPackage)
-    const selectedProducts = useSelector(
-        selectProductsSelectedWithoutPackagesWithAdjustedPrice
+    const { data: orders } = useOrders()
+    const { data: products } = useProducts()
+
+    const packageOrder = orders.find(
+        order =>
+            order.product.registration_section?.name.toLowerCase() ===
+            PACKAGE_SECTION_KEY.toLowerCase()
     )
-    const packagePrice = useSelector((state: RootState) =>
-        productPackage == null
-            ? undefined
-            : selectAdjustedProductPrice(state, productPackage?.id)
+    const productPackage = getProductWithAdjustedPrice(
+        packageOrder?.product.id,
+        orders,
+        products
     )
 
-    const totalPrice =
-        selectedProducts.reduce((acc, current) => acc + current.price, 0) +
-        (productPackage?.unit_price ?? 0)
+    const productsWithAdjustedPrices = getProductsWithAdjustedPrice(
+        orders,
+        products,
+        {
+            ordersOnly: true
+        }
+    )
+
+    const totalPrice = productsWithAdjustedPrices.reduce(
+        (acc, current) => acc + current.adjustedPrice,
+        0
+    )
 
     const grossPrice = totalPrice * 1.25
 
@@ -43,7 +57,7 @@ export function FormSidebarCartSummary() {
                                     Included in package
                                 </h4>
                                 <ul className="ml-4 list-inside list-disc text-white">
-                                    {productPackage.child_products.map(
+                                    {productPackage.child_products?.map(
                                         ({ child_product, quantity }) => (
                                             <p
                                                 key={child_product.id}
@@ -62,8 +76,7 @@ export function FormSidebarCartSummary() {
                                 <div>
                                     <h4 className="mt-5 rounded bg-white p-1 px-3 text-center text-emerald-400">
                                         {formatCurrency(
-                                            packagePrice ??
-                                                productPackage.unit_price
+                                            productPackage.adjustedPrice
                                         )}{" "}
                                         kr
                                     </h4>
@@ -72,16 +85,17 @@ export function FormSidebarCartSummary() {
                         </div>
                     )}
                     <div className="flex flex-col gap-y-2">
-                        {selectedProducts.length > 0 && (
+                        {productsWithAdjustedPrices.length > 0 && (
                             <h2 className="mb-2 text-center text-xl">
                                 Selected products
                             </h2>
                         )}
-                        {selectedProducts
+                        {productsWithAdjustedPrices
                             .filter(
-                                current =>
-                                    current.price >= 0 && current.category
+                                x => !belongsToSection(x, PACKAGE_SECTION_KEY)
                             )
+                            // Free items should be listed in the package card instead
+                            .filter(current => current.adjustedPrice >= 0)
                             .map(current => (
                                 <ProductCard
                                     key={current.id}

@@ -205,9 +205,7 @@ class Order(models.Model):
     stock_when_bought = models.IntegerField(
         blank=True,
         null=True,
-        help_text=" ".join(
-            ["When this order was placed, what was the stock level of the product?"]
-        ),
+        help_text="When this order was placed, what was the stock level of the product?",
     )
 
     class Meta:
@@ -218,7 +216,15 @@ class Order(models.Model):
     def __str__(self):
         return "%s – %s" % (
             self.name if self.name is not None else self.product.name,
-            self.purchasing_company.name
-            if self.purchasing_company is not None
-            else self.purchasing_user,
+            (
+                self.purchasing_company.name
+                if self.purchasing_company is not None
+                else self.purchasing_user
+            ),
         )
+
+    @property
+    def fair_year(self):
+        if self.product and self.product.category and self.product.category.fair:
+            return self.product.category.fair.year
+        return "N/A"

@@ -33,7 +33,7 @@ export interface FormPage {
     isDone:
         | ((args: {
               form: Form
-              registration: DashboardResponse
+              dashboard: DashboardResponse
               products: Product[]
           }) => boolean | null) // isDone returns null if the page should not be considered in the progress at all
         | null // If a page has custom done logic this can be used
