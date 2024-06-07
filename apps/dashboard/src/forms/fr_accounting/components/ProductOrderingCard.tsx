@@ -23,6 +23,7 @@ import { useOrders } from "@/shared/hooks/api/useOrders"
 import { useProducts } from "@/shared/hooks/api/useProducts"
 import { RegistrationSection } from "@/shared/vars"
 import { Product } from "@/store/products/products_slice"
+import { cn } from "@/utils/cx"
 import { formatCurrency } from "@/utils/format_currency"
 import { cx } from "class-variance-authority"
 
@@ -92,48 +93,56 @@ export function ProductOrderingCard({ product }: { product: Product }) {
                 "border-2 border-emerald-500": selected
             })}
         >
-            <CardHeader className="flex flex-row justify-between">
-                <div className="">
-                    <CardTitle className="text-xl">
-                        {product.short_name || product.name}
-                    </CardTitle>
-                    <CardDescription>{product.description}</CardDescription>
+            <CardHeader className="flex flex-col justify-between">
+                <div
+                    className={cn("flex", {
+                        "mb-1": product.description
+                    })}
+                >
+                    <div className="">
+                        <CardTitle className="text-xl">
+                            {product.short_name || product.name}
+                        </CardTitle>
+                    </div>
+                    <div className="!mt-0 flex flex-1 items-start justify-end">
+                        {product.max_quantity <= 1 ? (
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Switch
+                                        onCheckedChange={value =>
+                                            onChange(value ? 1 : 0)
+                                        }
+                                        checked={
+                                            selected != null ||
+                                            packageProductBaseQuantity > 0
+                                        }
+                                        disabled={
+                                            packageProductBaseQuantity > 0
+                                        }
+                                    />
+                                </TooltipTrigger>
+                                <TooltipContent
+                                    hidden={packageProductBaseQuantity <= 0}
+                                >
+                                    Included in package
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : (
+                            <Input
+                                placeholder="Quantity"
+                                className="w-40"
+                                value={selected?.quantity.toString() ?? "0"}
+                                min={0}
+                                max={product.max_quantity}
+                                type="number"
+                                onChange={event =>
+                                    onChange(parseInt(event.target.value))
+                                }
+                            />
+                        )}
+                    </div>
                 </div>
-                <div className="!mt-0 flex flex-1 items-start justify-end">
-                    {product.max_quantity <= 1 ? (
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <Switch
-                                    onCheckedChange={value =>
-                                        onChange(value ? 1 : 0)
-                                    }
-                                    checked={
-                                        selected != null ||
-                                        packageProductBaseQuantity > 0
-                                    }
-                                    disabled={packageProductBaseQuantity > 0}
-                                />
-                            </TooltipTrigger>
-                            <TooltipContent
-                                hidden={packageProductBaseQuantity <= 0}
-                            >
-                                Included in package
-                            </TooltipContent>
-                        </Tooltip>
-                    ) : (
-                        <Input
-                            placeholder="Quantity"
-                            className="w-40"
-                            value={selected?.quantity.toString() ?? "0"}
-                            min={0}
-                            max={product.max_quantity}
-                            type="number"
-                            onChange={event =>
-                                onChange(parseInt(event.target.value))
-                            }
-                        />
-                    )}
-                </div>
+                <CardDescription>{product.description}</CardDescription>
             </CardHeader>
             <CardFooter>
                 <div className="flex w-full items-end justify-between gap-3 ">
