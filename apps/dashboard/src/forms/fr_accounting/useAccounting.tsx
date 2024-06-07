@@ -1,4 +1,5 @@
 import { DashboardResponse, Order } from "@/shared/hooks/api/useDashboard"
+import { useOrders } from "@/shared/hooks/api/useOrders"
 import { HOST } from "@/shared/vars"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -17,16 +18,18 @@ function getOrderMutationData(orders: OrderMutation[]) {
 }
 
 export function useAccountingMutation<
-    TRes extends DashboardResponse,
+    TData extends DashboardResponse,
     TErr,
-    TParam extends OrderMutation[]
+    TVar extends OrderMutation[]
 >(
     params?: Omit<
-        Parameters<typeof useMutation<TRes, TErr, TParam>>[0],
+        Parameters<typeof useMutation<TData, TErr, TVar>>[0],
         "mutationFn" | "mutationKey"
     >
 ) {
-    return useMutation({
+    const { data: orders } = useOrders()
+
+    const mutation = useMutation<TData, TErr, TVar>({
         mutationKey: ["mutate_orders"],
         mutationFn: async orders => {
             const response = await fetch(`${HOST}/api/dashboard/`, {
@@ -35,7 +38,7 @@ export function useAccountingMutation<
                     orders: getOrderMutationData(orders)
                 })
             })
-            return await response.json()
+            return (await response.json()) as TData
         },
         ...params,
         onSuccess: (data, variables, context) => {
@@ -60,4 +63,23 @@ export function useAccountingMutation<
             })
         }
     })
+
+    /**
+     * Place product order
+     * @param productId The id of the product you're picking
+     * @param quantity How many instances of this product you want, 0 to remove it
+     */
+    async function setProductOrder(productId: number, quantity: number) {
+        const newOrders = orders.filter(
+            order => order.product.id !== productId
+        ) as OrderMutation[] as TVar
+        if (quantity > 0)
+            newOrders.push({ product: { id: productId }, quantity })
+        await mutation.mutateAsync(newOrders)
+    }
+
+    return {
+        ...mutation,
+        setProductOrder
+    }
 }

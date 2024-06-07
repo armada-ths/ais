@@ -15,26 +15,27 @@ import {
     belongsToSection,
     getProductWithAdjustedPrice
 } from "@/forms/fr_accounting/accounting_utilities"
+import { useAccountingMutation } from "@/forms/fr_accounting/useAccounting"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useOrders } from "@/shared/hooks/api/useOrders"
 import { useProducts } from "@/shared/hooks/api/useProducts"
 import { RegistrationSection } from "@/shared/vars"
 import { InputText } from "primereact/inputtext"
 import React, { useMemo } from "react"
-import { useDispatch } from "react-redux"
-import {
-    Category,
-    Product,
-    pickProduct,
-    unpickProduct
-} from "../../store/products/products_slice"
+import { Category, Product } from "../../store/products/products_slice"
 import { cx } from "../../utils/cx"
 import { formatCurrency } from "../../utils/format_currency"
 import { FormWrapper } from "../FormWrapper"
 
 function InputCard({ product }: { product: Product }) {
-    const dispatch = useDispatch()
+    const { updateCache } = useDashboard()
     const { data: orders } = useOrders()
     const { data: products } = useProducts()
+
+    const { setProductOrder } = useAccountingMutation({
+        onSuccess: updateCache
+    })
+
     const order = orders.find(x => x.product.id === product.id)
     const productWithAdjustedPrice = getProductWithAdjustedPrice(
         product.id,
@@ -57,16 +58,12 @@ function InputCard({ product }: { product: Product }) {
             current => current.child_product.id === product.id
         )?.quantity ?? 0
 
-    function onChange(quantity: number) {
+    async function onChange(quantity: number) {
         if (isNaN(quantity)) quantity = 0
         if (product.max_quantity != null && quantity > product.max_quantity)
             quantity = product.max_quantity
         if (quantity <= 0 || quantity == null) {
-            dispatch(
-                unpickProduct({
-                    id: product.id
-                })
-            )
+            await setProductOrder(product.id, 0)
         } else {
             if (
                 product.max_quantity != null &&
@@ -76,15 +73,18 @@ function InputCard({ product }: { product: Product }) {
                 return
             }
 
-            dispatch(
+            await setProductOrder(product.id, quantity)
+            /*             dispatch(
                 pickProduct({
                     id: product.id,
                     quantity,
                     isPackage: false
                 })
-            )
+            ) */
         }
     }
+
+    console.log("BASE include", packageProductBaseQuantity)
 
     const packageName =
         productPackage?.short_name || productPackage?.name || "package"
@@ -107,8 +107,8 @@ function InputCard({ product }: { product: Product }) {
                         <Tooltip>
                             <TooltipTrigger>
                                 <Switch
-                                    onChange={() =>
-                                        onChange(selected == null ? 1 : 0)
+                                    onCheckedChange={value =>
+                                        onChange(value ? 1 : 0)
                                     }
                                     checked={
                                         selected != null ||
