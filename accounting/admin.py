@@ -107,7 +107,7 @@ class OrderAdminYearDescendingFilter(admin.SimpleListFilter):
 
 
 class OrderFairYearFilter(admin.SimpleListFilter):
-    title = _("Year")
+    title = _("Category Fair Year")
     parameter_name = "fair_year"
 
     def lookups(self, request, model_admin):
@@ -138,6 +138,7 @@ class OrderAdmin(ModelAdminImproved):
         "fair_year",
     ]
     list_filter = [OrderFairYearFilter, "purchasing_company__name"]
+    ordering = ["-created_at"]
 
     def display_name(self, obj):
         if obj.name:
@@ -156,3 +157,4 @@ class OrderAdmin(ModelAdminImproved):
         return obj.fair_year or "N/A"
 
     fair_year.admin_order_field = "product__category__fair__year"
+    fair_year.short_description = "Category Fair Year"
