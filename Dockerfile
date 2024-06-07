@@ -1,9 +1,9 @@
 FROM python:3.10.1-alpine as base
 WORKDIR /usr/src/app
 
-FROM node:18-alpine as dashboard
+FROM node:20.12-alpine as dashboard
 WORKDIR /usr/src/app
-RUN npm install pnpm -g
+RUN npm install pnpm@8.15 -g
 COPY apps/dashboard/package.json apps/dashboard/pnpm-lock.yaml ./
 RUN pnpm install
 COPY apps/dashboard ./
