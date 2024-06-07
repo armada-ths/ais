@@ -1,10 +1,10 @@
 export function formatCurrency(
-    value: number,
+    value?: number | null,
     options?: {
         fractionalDigits?: number
     }
 ) {
-    if (isNaN(value)) {
+    if (value == null || isNaN(value)) {
         return "N/A"
     }
     return Intl.NumberFormat("sv").format(

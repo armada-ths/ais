@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge"
 import {
     Card,
     CardDescription,
@@ -5,6 +6,7 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import {
     Tooltip,
@@ -20,7 +22,6 @@ import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useOrders } from "@/shared/hooks/api/useOrders"
 import { useProducts } from "@/shared/hooks/api/useProducts"
 import { RegistrationSection } from "@/shared/vars"
-import { InputText } from "primereact/inputtext"
 import React, { useMemo } from "react"
 import { Category, Product } from "../../store/products/products_slice"
 import { cx } from "../../utils/cx"
@@ -64,27 +65,20 @@ function InputCard({ product }: { product: Product }) {
             quantity = product.max_quantity
         if (quantity <= 0 || quantity == null) {
             await setProductOrder(product.id, 0)
-        } else {
-            if (
-                product.max_quantity != null &&
-                product.max_quantity <= 1 &&
-                packageProductBaseQuantity > 0
-            ) {
-                return
-            }
-
+        } else if (
+            !(
+                // If the product has a max of 1 and is already
+                // included, don't allow it to be added or incremented
+                (
+                    product.max_quantity != null &&
+                    product.max_quantity <= 1 &&
+                    packageProductBaseQuantity > 0
+                )
+            )
+        ) {
             await setProductOrder(product.id, quantity)
-            /*             dispatch(
-                pickProduct({
-                    id: product.id,
-                    quantity,
-                    isPackage: false
-                })
-            ) */
         }
     }
-
-    console.log("BASE include", packageProductBaseQuantity)
 
     const packageName =
         productPackage?.short_name || productPackage?.name || "package"
@@ -124,7 +118,7 @@ function InputCard({ product }: { product: Product }) {
                             </TooltipContent>
                         </Tooltip>
                     ) : (
-                        <InputText
+                        <Input
                             placeholder="Quantity"
                             className="w-40"
                             value={selected?.quantity.toString() ?? "0"}
@@ -139,15 +133,13 @@ function InputCard({ product }: { product: Product }) {
                 </div>
             </CardHeader>
             <CardFooter>
-                {selected != null && selected.quantity > 1 && (
-                    <div className="mb-1 inline-flex">
-                        <p className="rounded bg-gray-400 p-1 px-3 text-sm text-white">
+                <div className="flex items-center gap-3">
+                    {selected != null && selected.quantity > 1 && (
+                        <Badge className="rounded p-2" variant={"outline"}>
                             Unit price{" "}
                             {formatCurrency(productAdjustedUnitPrice)} kr
-                        </p>
-                    </div>
-                )}
-                <div className="flex items-center gap-3">
+                        </Badge>
+                    )}
                     <p className="rounded bg-emerald-400 p-1 px-3 text-lg text-white">
                         {product.max_quantity <= 1 &&
                         packageProductBaseQuantity > 0
@@ -204,8 +196,6 @@ export function ProductFormPage({ section }: { section: RegistrationSection }) {
     const products = allProducts.filter(product =>
         belongsToSection(product, section)
     )
-
-    console.log("PRODUCTS", products, allProducts)
 
     const categorizedProducts = useMemo(
         () =>
