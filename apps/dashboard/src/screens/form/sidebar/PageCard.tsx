@@ -28,6 +28,7 @@ export function Card({ children, className, ...rest }: Props) {
 }
 
 export function PageCard({
+    selected,
     page,
     form
 }: {
@@ -67,8 +68,7 @@ export function PageCard({
             className={cx(
                 "flex-row items-center justify-between border-[1px] hover:cursor-pointer",
                 {
-                    " border-liqorice-700 border-opacity-20":
-                        page.id === formPage?.id,
+                    "border-liqorice-700 border-opacity-50": selected,
                     "opacity-50": completed && page.id !== formPage?.id
                 }
             )}
