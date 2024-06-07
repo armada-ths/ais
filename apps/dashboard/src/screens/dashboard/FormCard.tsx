@@ -40,7 +40,7 @@ export default function FormCard({
         page =>
             page.isDone?.({
                 form,
-                registration: dataRegistration,
+                dashboard: dataRegistration,
                 products: dataProducts
             }) ?? null
     )

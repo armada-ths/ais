@@ -13,7 +13,7 @@ export const form = {
             pageComponent: IrRegistrationPage,
             fields: [],
             hasNextButton: false,
-            isDone: ({ registration }) =>
+            isDone: ({ dashboard }) =>
                 (
                     [
                         "initial_registration_signed",
@@ -22,7 +22,7 @@ export const form = {
                         "after_initial_registration_signed",
                         "complete_registration_ir_signed"
                     ] as RegistrationStatus[]
-                ).includes(registration.type)
+                ).includes(dashboard.type)
         }
     ]
 } as const satisfies Form
