@@ -82,8 +82,6 @@ export function ProductOrderingCard({ product }: { product: Product }) {
         }
     }
 
-    console.log("DING DING", packageProductBaseQuantity, product.max_quantity)
-
     const packageName =
         productPackage?.short_name || productPackage?.name || "package"
 
