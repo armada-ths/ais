@@ -94,11 +94,8 @@ export function FormSidebarCartSummary() {
                             .filter(
                                 x => !belongsToSection(x, PACKAGE_SECTION_KEY)
                             )
-                            .filter(
-                                current =>
-                                    current.adjustedPrice >= 0 &&
-                                    current.category
-                            )
+                            // Free items should be listed in the package card instead
+                            .filter(current => current.adjustedPrice >= 0)
                             .map(current => (
                                 <ProductCard
                                     key={current.id}
