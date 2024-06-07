@@ -39,7 +39,7 @@ export function IfProgressDone({
     const isDone = page?.isDone?.({
         form: activeForm,
         products: dataProducts,
-        registration: dataDashboard
+        dashboard: dataDashboard
     })
 
     return isDone ? <>{children}</> : fallback

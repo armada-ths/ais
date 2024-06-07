@@ -12,27 +12,27 @@ export const form = {
             id: "ir_additional_info_interested_in",
             title: "Preferences",
             pageComponent: IrInterestedInPage,
-            isDone: ({ registration }) => registration.interested_in.length > 0
+            isDone: ({ dashboard }) => dashboard.interested_in.length > 0
         },
         {
             id: "ir_additional_info_company_details",
             title: "Company Details",
             pageComponent: IrAdditionalInfoPage,
-            isDone: ({ registration }) =>
-                registration.company.name != null &&
-                registration.company.identity_number != null
+            isDone: ({ dashboard }) =>
+                dashboard.company.name != null &&
+                dashboard.company.identity_number != null
         },
         {
             id: "ir_additional_info_contact_person",
             title: "Contact Person",
             pageComponent: IrContactPage,
             hasNextButton: false,
-            isDone: ({ registration }) =>
-                registration.contact == null
+            isDone: ({ dashboard }) =>
+                dashboard.contact == null
                     ? null
-                    : registration.contact.first_name != null &&
-                      registration.contact.last_name != null &&
-                      registration.contact.email_address != null
+                    : dashboard.contact.first_name != null &&
+                      dashboard.contact.last_name != null &&
+                      dashboard.contact.email_address != null
         }
     ]
 } as const satisfies Form
