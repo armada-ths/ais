@@ -50,7 +50,7 @@ export function PageCard({
     const completed = page.isDone?.({
         form,
         products: dataProducts,
-        registration: dataRegistration
+        dashboard: dataRegistration
     })
 
     function clickPageCard() {

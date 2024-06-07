@@ -1,3 +1,4 @@
+import { belongsToSection } from "@/forms/fr_accounting/accounting_utilities"
 import { FormSidebarCartSummary } from "@/screens/form/sidebar/FormSidebarCartSummary"
 import { RegistrationSection } from "@/shared/vars"
 import { Form } from "../form_types"
@@ -18,7 +19,13 @@ export const form = {
             title: "Select Package",
             hasNextButton: true,
             hasPrevButton: false,
-            isDone: null,
+            isDone: ({ dashboard }) =>
+                dashboard.orders.some(order =>
+                    belongsToSection(
+                        order.product,
+                        RegistrationSection.Packages
+                    )
+                ),
             pageComponent: PackageSelectFormPage
         },
         {
