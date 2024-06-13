@@ -164,6 +164,16 @@ class Exhibitor(models.Model):
             ("3", "Gold"),
         ],
     )
+    application_status = models.CharField(
+        blank=True,
+        null=True,
+        max_length=255,
+        choices=[
+            ("1", "accepted"),
+            ("2", "rejected"),
+            ("3", "reserve"),
+        ],
+    )
     booth_height = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Height of the booth (cm)"
     )
