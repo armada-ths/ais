@@ -165,13 +165,16 @@ class Exhibitor(models.Model):
         ],
     )
     application_status = models.CharField(
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         max_length=255,
+        default="0",
         choices=[
+            ("0", "pending"),
             ("1", "accepted"),
             ("2", "rejected"),
             ("3", "reserve"),
+            
         ],
     )
     booth_height = models.PositiveIntegerField(
@@ -369,6 +372,7 @@ class Exhibitor(models.Model):
             ("people_count", "Count people in locations"),
             ("modify_coordinates", "Modify coordinates"),
             ("modify_fair_location", "Modify Fair Location"),
+            ("modify_application_status", "Modify Application Status"),
         ]
 
 
