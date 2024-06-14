@@ -18,6 +18,7 @@ from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
 from .forms import (
+    ApplicationStatusForm,
     ExhibitorViewForm,
     ExhibitorCreateForm,
     ExhibitorCreateBypassedForm,
@@ -570,6 +571,24 @@ def exhibitor_fair_location(request, year, pk):
     return render(
         request,
         "exhibitors/exhibitor_fair_location.html",
+        {"fair": fair, "exhibitor": exhibitor, "form": form},
+    )
+
+
+@permission_required("exhibitors.modify_application_status")
+def exhibitor_application_status(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+
+    form = ApplicationStatusForm(request.POST or None, instance=exhibitor)
+
+    if request.POST and form.is_valid():
+        form.save()
+        return redirect("exhibitor", fair.year, exhibitor.pk)
+
+    return render(
+        request,
+        "exhibitors/exhibitor_application_status.html",
         {"fair": fair, "exhibitor": exhibitor, "form": form},
     )
 

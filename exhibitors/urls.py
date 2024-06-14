@@ -22,6 +22,11 @@ urlpatterns = [
         name="exhibitor_fair_location",
     ),
     url(
+        r"^(?P<pk>\d+)/application_status$",
+        views.exhibitor_application_status,
+        name="exhibitor_application_status",
+    ),
+    url(
         r"^(?P<pk>\d+)/contact_persons$",
         views.exhibitor_contact_persons,
         name="exhibitor_contact_persons",
