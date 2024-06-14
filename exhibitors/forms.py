@@ -114,6 +114,12 @@ class FairLocationForm(forms.ModelForm):
         fields = ["fair_location"]
 
 
+class ApplicationStatusForm(forms.ModelForm):
+    class Meta:
+        model = Exhibitor
+        fields = ["application_status"]
+
+
 class CommentForm(forms.ModelForm):
     class Meta:
         model = CompanyCustomerComment
