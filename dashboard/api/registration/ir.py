@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.conf import settings
 
+from exhibitors.models import Exhibitor
 from util import JSONError, get_user, status
 from util.email import send_mail
 from util.ip import get_client_ip
@@ -92,6 +93,8 @@ def submit_ir(request, company, fair, contact):
         company=company,
         ip_address=get_client_ip(request),
     )
+    
+    exhibitor = Exhibitor.objects.create(fair=fair, company=company)
 
     send_ir_confirmation_email(request, fair, signature, company)
 
