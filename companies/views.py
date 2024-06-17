@@ -250,7 +250,6 @@ def statistics(request, year):
             all_sum += 1
             table.append(row)
 
-        print(table)
         contracts.append(
             {
                 "i": len(contracts),
