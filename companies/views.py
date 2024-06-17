@@ -205,7 +205,7 @@ def statistics(request, year):
                         }
                     )
 
-                    add = False 
+                    add = False
                     break
 
             if add:
@@ -219,11 +219,11 @@ def statistics(request, year):
                 )
 
                 i += 1
-        rows += len(signatures) 
+        rows += len(signatures)
 
-        row_length = len(signatures) + 1 #add a row for sum of all signatures
+        row_length = len(signatures) + 1  # add a row for sum of all signatures
         table = []
-        all_sigs_timestamps =[] #save all timestamps
+        all_sigs_timestamps = []  # save all timestamps
         for j in range(len(signatures)):
             for timestamp in signatures[j]["timestamps"]:
                 row = {"timestamp": timestamp["timestamp"], "cells": []}
@@ -237,17 +237,19 @@ def statistics(request, year):
             j += 1
 
         all_sigs_timestamps.sort()
-        all_sum=0 #sum of all signatures
-        for timestamp in all_sigs_timestamps: #create the row with the sum of signatures
+        all_sum = 0  # sum of all signatures
+        for (
+            timestamp
+        ) in all_sigs_timestamps:  # create the row with the sum of signatures
             row = {"timestamp": timestamp, "cells": []}
-                
+
             for k in range(row_length):
                 row["cells"].append(None)
 
-            row["cells"][-1] = all_sum +1
-            all_sum+=1
-            table.append(row) 
-    
+            row["cells"][-1] = all_sum + 1
+            all_sum += 1
+            table.append(row)
+
         print(table)
         contracts.append(
             {
@@ -261,7 +263,7 @@ def statistics(request, year):
         )
 
     form.fields["date_from"].initial = smallest
-    
+
     return render(
         request,
         "companies/statistics.html",
@@ -1312,9 +1314,9 @@ def contracts_export(request, year):
 
         response = HttpResponse(csv, content_type="text/csv; charset=utf-8")
         response["Content-Length"] = len(csv)
-        response[
-            "Content-Disposition"
-        ] = 'attachment; filename="exported signatures.csv"'
+        response["Content-Disposition"] = (
+            'attachment; filename="exported signatures.csv"'
+        )
 
         return response
 
