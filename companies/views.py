@@ -175,7 +175,6 @@ def statistics(request, year):
         signatures_raw = SignupLog.objects.filter(contract=contract).order_by(
             "timestamp"
         )
-        
         signatures = []
 
         i = 0
@@ -220,7 +219,6 @@ def statistics(request, year):
                 )
 
                 i += 1
-    
         rows += len(signatures) 
 
         row_length = len(signatures) + 1 #add a row for sum of all signatures
@@ -234,7 +232,6 @@ def statistics(request, year):
                     row["cells"].append(None)
 
                 row["cells"][j] = timestamp["count"]
-                
                 table.append(row)
 
             j += 1
