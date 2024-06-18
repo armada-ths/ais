@@ -65,7 +65,7 @@
 </div>
 
 <h2>Day to day</h2>
-<p>Click on a person's name to traice their progress.</p>
+<p>Click on a person's name to trace their progress.</p>
 
 {% for contract in contracts %}
 	{% if contract.signatures %}
@@ -96,18 +96,21 @@
 		function drawChart()
 		{
 			var data = new google.visualization.DataTable();
-
+			
 			data.addColumn('datetime', 'Number of signatures');
-
+			
 			{% for signature in contract.signatures %}
-				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users.all | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');
+				data.addColumn('number', '{% if signature.responsibilities %} {% for responsibility in signature.responsibilities %}{% if responsibility.group.allow_statistics %}{{ responsibility.group }} – {{ responsibility.users.all | join:", " }}{% endif %}{% endfor %}{% else %}no responsibilities{% endif %}');		 
 			{% endfor %}
-
+			
+			data.addColumn('number','All signatures');
+			
 			data.addRows([
 			{% for row in contract.table %}
 				[
 					new Date({{ row.timestamp|date:'Y' }}, {{ row.timestamp|date:'m'|add:"-1" }}, {{ row.timestamp|date:'d' }}, {{ row.timestamp|date:'H' }}, {{ row.timestamp|date:'i' }}, {{ row.timestamp|date:'s' }})
-
+					
+					
 					{% for cell in row.cells %}
 						, {% if cell %} {{ cell }} {% else %} null {% endif %}
 					{% endfor %}
