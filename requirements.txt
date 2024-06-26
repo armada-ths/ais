@@ -24,7 +24,7 @@ postgis==1.0.4
 django-storages==1.12.3
 boto3==1.21.4
 django-cors-headers
-djangorestframework==3.9.3
+djangorestframework==3.15.2
 drf-writable-nested==0.7.0
 drf-extra-fields==3.7.0
 django-magic-link==0.5.1
