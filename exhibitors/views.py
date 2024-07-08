@@ -198,6 +198,8 @@ def exhibitors(request, year, template_name="exhibitors/exhibitors.html"):
                 value = e.fair_location
             if choice == "fair_location_special":
                 value = e.fair_location_special
+            if choice == "application_status":
+                value = e.application_status
 
             if choice == "count_lunch_tickets":
                 ordered = 0

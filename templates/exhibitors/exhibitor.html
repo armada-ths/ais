@@ -10,8 +10,14 @@
 		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
 		<li class="active">{{ exhibitor.company }}</li>
 	</ol>
-	
+
 	<h1>{{ exhibitor.company }}</h1>
+
+	{% if exhibitor.application_status == '0' %} <h4>Application status: <span class="bg-warning" title="The company's application to the fair is being processed.">{{ exhibitor.get_application_status_display }}</span> </h4>
+	{% elif exhibitor.application_status == '1' %} <h4>Application status: <span class="bg-success" title="The company's application to the fair has been accepted.">{{ exhibitor.get_application_status_display }}</span> </h4>
+	{% elif exhibitor.application_status == '2' %} <h4>Application status: <span class="bg-danger" title="The company's application to the fair has been accepted.">{{ exhibitor.get_application_status_display }}</span> </h4>
+	{% elif exhibitor.application_status == '3' %} <h4>Application status: <span class="bg-info" title="The company's application to the fair has been processed and put on the reserve list.">{{ exhibitor.get_application_status_display }}</span> </h4>
+	{% else %}<h4>Application status: unknown</h4>{% endif %}
 	
 	<p>
 		{% if perms.exhibitors.modify_transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}

@@ -169,7 +169,7 @@ class Exhibitor(models.Model):
         null=False,
         max_length=255,
         default="0",
-        choices=[
+        choices=[ # Changes to these choices must be reflected in templates/exhibitors/exhibitors.html and templates/exhibitors/exhibitor.html
             ("0", "pending"),
             ("1", "accepted"),
             ("2", "rejected"),
@@ -372,7 +372,7 @@ class Exhibitor(models.Model):
             ("people_count", "Count people in locations"),
             ("modify_coordinates", "Modify coordinates"),
             ("modify_fair_location", "Modify Fair Location"),
-            ("modify_application_status", "Modify Application Status"),
+            ("modify_application_status", "Modify application status"),
         ]
 
 
@@ -413,13 +413,14 @@ class ExhibitorView(models.Model):
         "fair_location": "Fair location",
         "fair_location_special": "Special Location",
         "coordinates": "Coordinates",
+        "application_status": "Application status",
     }
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     choices = models.TextField()
 
     def create(self):
-        self.choices = "contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets"
+        self.choices = "contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets application_status"
         self.save()
 
         return self
