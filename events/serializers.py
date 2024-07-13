@@ -19,9 +19,9 @@ def event(event, request):
         "event_end": int(event.date_end.strftime("%s")),
         "event_start_string": event.date_start.strftime("%Y-%m-%d %H:%M"),
         "registration_end": int(event.date_start.strftime("%s")),
-        "image_url": request.build_absolute_uri(event.picture.url)
-        if event.picture
-        else None,
+        "image_url": (
+            request.build_absolute_uri(event.picture.url) if event.picture else None
+        ),
         "fee": event.fee_s,
         "registration_required": True,
         "external_event_link": event.external_event_link,
@@ -31,6 +31,8 @@ def event(event, request):
         "signup_link": signup_url,
         "can_create_teams": event.teams_create_s,
         "can_join_teams": event.teams_participate_s,
+        "event_max_capacity": event.event_max_capacity,
+        "participant_count": event.participant_count,
         "open_for_signup": event.open_for_signup and event.signup_s,
     }
 
