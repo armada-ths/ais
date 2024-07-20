@@ -101,7 +101,6 @@ def get_company(request, company_pk):
         return status.COMPANY_DOES_NOT_EXIST
 
     exhibitor = Exhibitor.objects.filter(fair=get_fair(), company=company).first()
-    print("OUTER exhibitor", exhibitor)
     user = get_user(request)
     permission = UserPermission(user)
     user_is_contact_person = exhibitor and user in exhibitor.contact_persons.all()
