@@ -87,8 +87,8 @@ export function ProductOrderingCard({ product }: { product: Product }) {
 
     return (
         <Card
-            className={cx("w-full", {
-                "border-2 border-emerald-500": selected
+            className={cx("w-full border-2", {
+                "border-emerald-500": selected
             })}
         >
             <CardHeader className="flex flex-col justify-between">
