@@ -6,6 +6,9 @@ type InvoiceDetailsFormPageProps = {
 }
 
 export function InvoiceDetailsFormPage({ readOnly }: InvoiceDetailsFormPageProps) {
+    const { companyId } = useParams({
+        from: "/$companyId/form/$formKey/$formPageKey"
+    })
     return (
         <FormWrapper>
             <FormField.Text
