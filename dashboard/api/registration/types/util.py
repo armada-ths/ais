@@ -49,10 +49,10 @@ def get_serializer(request, registration, data=empty, context={}):
             Serializer = CRSignedRegistrationSerializer
     elif (
         registration.type == RegistrationType.AfterInitialRegistrationAcceptanceAccepted
-    ):
-        Serializer = CRRegistrationSerializer
-    elif (
-        registration.type == RegistrationType.AfterInitialRegistrationAcceptanceRejected
+        or registration.type
+        == RegistrationType.AfterInitialRegistrationAcceptanceRejected
+        or registration.type
+        == RegistrationType.AfterInitialRegistrationAcceptanceTentative
     ):
         Serializer = CRRegistrationSerializer
     elif registration.type == RegistrationType.AfterCompleteRegistration:

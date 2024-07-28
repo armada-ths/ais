@@ -8,6 +8,7 @@ export type RegistrationStatus =
     | "after_initial_registration_signed" // The time period between initial registration and complete registration
     | "after_initial_registration_acceptance_accepted" // Past the "acceptance date", if company not marked as accepted, it is rejected
     | "after_initial_registration_acceptance_rejected" // Past the "acceptance date", is rejected
+    | "after_initial_registration_acceptance_tentative" // Past the "acceptance date", but has not signed IR, temporary until IR bypass
     | "before_complete_registration_ir_unsigned"
     | "before_complete_registration_ir_signed"
     | "complete_registration_ir_unsigned"
