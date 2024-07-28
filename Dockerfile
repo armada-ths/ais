@@ -3,7 +3,7 @@ WORKDIR /usr/src/app
 
 FROM node:20.12-alpine as dashboard
 WORKDIR /usr/src/app
-RUN npm install pnpm@8.15 -g
+RUN npm install pnpm@9.6.0 -g
 COPY apps/dashboard/package.json apps/dashboard/pnpm-lock.yaml ./
 RUN pnpm install
 COPY apps/dashboard ./
