@@ -17,6 +17,7 @@ class RegistrationType(Enum):
     AfterInitialRegistrationSigned = 4
     AfterInitialRegistrationAcceptanceAccepted = 5
     AfterInitialRegistrationAcceptanceRejected = 6
+    AfterInitialRegistrationAcceptanceTentative = 61  # Temporary
     BeforeCompleteRegistrationIRUnsigned = 7
     BeforeCompleteRegistrationIRSigned = 8
     CompleteRegistrationIRUnsigned = 9
@@ -40,6 +41,8 @@ class RegistrationType(Enum):
             return "after_initial_registration_acceptance_accepted"
         elif self == RegistrationType.AfterInitialRegistrationAcceptanceRejected:
             return "after_initial_registration_acceptance_rejected"
+        elif self == RegistrationType.AfterInitialRegistrationAcceptanceTentative:
+            return "after_initial_registration_acceptance_tentative"
         if self == RegistrationType.BeforeCompleteRegistrationIRUnsigned:
             return "before_complete_registration_ir_unsigned"
         if self == RegistrationType.BeforeCompleteRegistrationIRSigned:
@@ -104,7 +107,14 @@ class Registration:
             self.ensure_ir_eligibility()
 
             if exhibitor == None:
-                self.type = RegistrationType.AfterInitialRegistrationAcceptanceRejected
+                if ir_signature != None:
+                    self.type = (
+                        RegistrationType.AfterInitialRegistrationAcceptanceRejected
+                    )
+                else:
+                    self.type = (
+                        RegistrationType.AfterInitialRegistrationAcceptanceTentative
+                    )
             else:
                 self.type = RegistrationType.AfterInitialRegistrationAcceptanceAccepted
         elif period == RegistrationState.CR:

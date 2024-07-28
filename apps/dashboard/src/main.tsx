@@ -30,6 +30,7 @@ import { FormScreen } from "./screens/form/screen.tsx"
 import { FinalRegistrationThankYouScreen } from "./screens/fr_thank_you/screen.tsx"
 import { InfoScreen } from "./shared/InfoScreen.tsx"
 import { store } from "./store/store.ts"
+import { LogoutButton } from "@/shared/LogoutButton.tsx"
 
 const rootRoute = createRootRoute({
     errorComponent: () => <div>404</div>,
@@ -139,18 +140,23 @@ export function IndexMainLogicWrapper() {
     const { initialized, error } = useLoadData()
     if (error) {
         return (
-            <section className="min-w-screen flex min-h-screen items-center justify-center">
-                <div className="flex max-w-[400px] flex-col items-center">
-                    <img src={ArmadaLogo} alt="Armada" className="h-52 w-52" />
-                    <h1 className="mb-2 text-5xl">Could not load data</h1>
-                    <p>
-                        We could not load the data for you, if you are within an
-                        official period at Armada such as initial registration
-                        or final registration, please contact us. Otherwise
-                        please come back later
-                    </p>
+            <>
+                <div className="absolute right-0">
+                    <LogoutButton />
                 </div>
-            </section>
+                <section className="min-w-screen flex min-h-screen items-center justify-center">
+                    <div className="flex max-w-[400px] flex-col items-center">
+                        <img src={ArmadaLogo} alt="Armada" className="h-52 w-52" />
+                        <h1 className="mb-2 text-5xl">Could not load data</h1>
+                        <p>
+                            We could not load the data for you, if you are within an
+                            official period at Armada such as initial registration
+                            or final registration, please contact us. Otherwise
+                            please come back later
+                        </p>
+                    </div>
+                </section>
+            </>
         )
     }
     if (!initialized) return <LoadingAnimation />

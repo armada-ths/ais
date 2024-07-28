@@ -4,8 +4,8 @@ export const TIMELINE_STEPS: Partial<
     Record<
         RegistrationStatus,
         {
-            title?: string
-            description: string
+            title?: React.ReactNode
+            description: React.ReactNode
             variant?: "info" | "success" | "warning" // Default info
         }
     >
@@ -29,7 +29,7 @@ export const TIMELINE_STEPS: Partial<
     after_initial_registration: {
         title: "You did not complete the initial registration",
         description:
-            "All hope is not lost! Please contact our sales team: sales@armada.nu",
+            <>All hope is not lost! Please contact our sales team: <a href="mailto:sales@armada.nu" className="underline">sales@armada.nu</a></>,
         variant: "warning"
     },
     after_initial_registration_signed: {
@@ -47,6 +47,13 @@ export const TIMELINE_STEPS: Partial<
         description:
             "Unfortunately, we are unable to offer you a spot at the fair, if any spot appears we will contact you",
         variant: "warning"
+    },
+    after_initial_registration_acceptance_tentative: {
+        title: "Welcome!",
+        description: (
+            <>Please contact our sales team <a href="mailto:sales@armada.nu" className="underline">sales@armada.nu</a> for a spot on the fair.</>
+        ),
+        variant: "info"
     },
     complete_registration_ir_signed: {
         title: "Welcome to the Armada final registration!",
