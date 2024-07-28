@@ -38,7 +38,7 @@ export function PackageSelectFormPage() {
         <FormWrapper>
             <div className="flex flex-wrap justify-center gap-5">
                 {packages.map(product => (
-                    <div>
+                    <div key={product.id}>
                         <div
                             className={cn(
                                 "flex w-72 select-none flex-col rounded-lg border-2 border-slate-500 transition-all duration-200 hover:cursor-pointer active:scale-95",
