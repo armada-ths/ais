@@ -36,14 +36,33 @@ def get_random_32_length_string():
     return get_random_string(32)
 
 
-class RegistrationState(Enum):
+class RegistrationPeriod(Enum):
     BEFORE_IR = 1
     IR = 2
-    AFTER_IR = 3
-    AFTER_IR_ACCEPTANCE = 4
-    CR = 5
-    AFTER_CR = 6
+    BETWEEN_IR_AND_CR = 3
+    CR = 4
+    AFTER_CR = 5
+    FAIR = 6
+    AFTER_FAIR = 7
 
+
+    def __str__(self):
+        if self == RegistrationPeriod.BEFORE_IR:
+            return "before_initial_registration"
+        elif self == RegistrationPeriod.IR:
+            return "initial_registration"
+        elif self == RegistrationPeriod.BETWEEN_IR_AND_CR:
+            return "between_ir_and_cr"
+        elif self == RegistrationPeriod.CR:
+            return "complete_registration"
+        elif self == RegistrationPeriod.AFTER_CR:
+            return "after_complete_registration"
+        elif self == RegistrationPeriod.FAIR:
+            return "fair"
+        elif self == RegistrationPeriod.AFTER_FAIR:
+            return "after_fair"
+        else:
+            return self.name
 
 class Fair(models.Model):
     name = models.CharField(max_length=100, default=default_name)
@@ -77,26 +96,30 @@ class Fair(models.Model):
         time = timezone.now()
 
         if time < self.registration_start_date:
-            return RegistrationState.BEFORE_IR
+            return RegistrationPeriod.BEFORE_IR
         elif time >= self.registration_start_date and time < self.registration_end_date:
-            return RegistrationState.IR
+            return RegistrationPeriod.IR
         elif (
             time >= self.registration_end_date
             and time < self.registration_acceptance_date
         ):
-            return RegistrationState.AFTER_IR
+            return RegistrationPeriod.BETWEEN_IR_AND_CR
         elif (
             time >= self.registration_acceptance_date
             and time < self.complete_registration_start_date
         ):
-            return RegistrationState.AFTER_IR_ACCEPTANCE
+            return RegistrationPeriod.BETWEEN_IR_AND_CR
         elif (
             time >= self.complete_registration_start_date
             and time < self.complete_registration_close_date
         ):
-            return RegistrationState.CR
-        elif time >= self.complete_registration_close_date:
-            return RegistrationState.AFTER_CR
+            return RegistrationPeriod.CR
+        elif time >= self.complete_registration_close_date and time < self.events_start_date:
+            return RegistrationPeriod.AFTER_CR
+        elif time >= self.events_start_date and time < self.events_end_date:
+            return RegistrationPeriod.FAIR
+        elif time >= self.events_end_date:
+            return RegistrationPeriod.AFTER_FAIR
 
     def is_member_of_fair(self, user):
         if user.is_superuser:

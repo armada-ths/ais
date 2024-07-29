@@ -16,7 +16,7 @@ from exhibitors.models import (
 )
 from fair.models import Fair
 from companies.models import CompanyContactSerializer, Group
-from register.models import SignupContract
+from register.models import SignupContract, SignupLog
 
 from accounting.api import OrderSerializer, ProductSerializer
 
@@ -66,6 +66,12 @@ class SignupContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = SignupContract
         read_only_fields = ("name", "contract")
+        fields = read_only_fields
+
+class SignupLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SignupLog
+        read_only_fields = ("timestamp",)
         fields = read_only_fields
 
 
@@ -220,11 +226,16 @@ class InterestedInSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.Serializer):
     # Read only fields
-    type = serializers.StringRelatedField(read_only=True)
+    
+    # type = serializers.StringRelatedField(read_only=True) # TODO: Remove this variable
+    
+    period = serializers.StringRelatedField(read_only=True)
     deadline = serializers.DateTimeField(read_only=True)
     fair = FairSerializer(read_only=True)
     ir_contract = SignupContractSerializer(read_only=True)
+    ir_signature = SignupLogSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
+    cr_signature = SignupLogSerializer(read_only=True)
     sales_contacts = SalesCompanyContactSerializer(read_only=True, many=True)
     products = ProductSerializer(many=True)
 

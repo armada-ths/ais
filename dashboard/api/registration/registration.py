@@ -4,41 +4,25 @@ from util import get_company_contact, get_exhibitor, get_fair, get_user, status
 from util.permission import UserPermission
 
 from companies.models import Company, CompanyContact
-from fair.models import RegistrationState
+from fair.models import RegistrationPeriod
 from exhibitors.models import Exhibitor
 
-from dashboard.api.registration.cr import handle_cr, submit_cr
-from dashboard.api.registration.ir import handle_ir, submit_ir
+from dashboard.api.registration.response import handle_response, submit_cr, submit_ir
 
 
 # This function will receive a GET or PUT and return
 # a json structure of the registration state.
 def render_company(request, company, contact, exhibitor):
     fair = get_fair()
-    period = fair.get_period()
 
-    ir_states = [
-        RegistrationState.BEFORE_IR,
-        RegistrationState.IR,
-        RegistrationState.AFTER_IR,
-        RegistrationState.AFTER_IR_ACCEPTANCE,
-    ]
-    if period in ir_states:
-        return handle_ir(request, company, fair, contact, exhibitor)
-    elif period == RegistrationState.CR:
-        return handle_cr(request, company, fair, contact, exhibitor)
-    elif period == RegistrationState.AFTER_CR:
-        # todo: temporary. What should really happen after CR?
-        return handle_cr(request, company, fair, contact, exhibitor)
-    else:
-        return status.INVALID_REGISTRATION_PERIOD
+    return handle_response(request, company, fair, contact, exhibitor)
 
 
 @csrf_exempt
 def sign_ir(request):
     fair = get_fair()
     period = fair.get_period()
-    if period != RegistrationState.IR:
+    if period != RegistrationPeriod.IR:
         return status.INVALID_SUBMIT_PERIOD
 
     user = get_user(request)
@@ -58,7 +42,7 @@ def sign_ir(request):
 def sign_cr(request):
     fair = get_fair()
     period = fair.get_period()
-    if period != RegistrationState.CR:
+    if period != RegistrationPeriod.CR:
         return status.INVALID_SUBMIT_PERIOD
 
     user = get_user(request)

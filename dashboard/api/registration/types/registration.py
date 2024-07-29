@@ -4,7 +4,7 @@ from companies.models import Group
 from util import JSONError, get_contract_signature, get_fair, get_sales_contacts, status
 
 from register.models import SignupContract
-from fair.models import RegistrationState
+from fair.models import RegistrationPeriod
 from accounting.models import Order
 from util.product import get_products
 
@@ -81,70 +81,25 @@ class Registration:
         self.sales_contacts = get_sales_contacts(fair, company, exhibitor)
         self.interested_in = company.groups.filter(fair=fair, allow_registration=True)
 
-        period = fair.get_period()
+        self.period = fair.get_period()
 
-        if period == RegistrationState.BEFORE_IR:
-            self.type = RegistrationType.BeforeInitialRegistration
-        elif period == RegistrationState.IR:
+        if self.period == RegistrationPeriod.IR:
             self.ensure_ir_eligibility()
-
             self.deadline = fair.registration_end_date
 
-            if ir_contract == None:
-                self.type = RegistrationType.BeforeInitialRegistration
-            elif ir_signature != None:
-                self.type = RegistrationType.InitialRegistrationSigned
-            else:
-                self.type = RegistrationType.InitialRegistration
-        elif period == RegistrationState.AFTER_IR:
+        elif self.period == RegistrationPeriod.BETWEEN_IR_AND_CR:
             self.ensure_ir_eligibility()
 
-            if ir_signature != None:
-                self.type = RegistrationType.AfterInitialRegistrationSigned
-            else:
-                self.type = RegistrationType.AfterInitialRegistration
-        elif period == RegistrationState.AFTER_IR_ACCEPTANCE:
-            self.ensure_ir_eligibility()
-
-            if exhibitor == None:
-                if ir_signature != None:
-                    self.type = (
-                        RegistrationType.AfterInitialRegistrationAcceptanceRejected
-                    )
-                else:
-                    self.type = (
-                        RegistrationType.AfterInitialRegistrationAcceptanceTentative
-                    )
-            else:
-                self.type = RegistrationType.AfterInitialRegistrationAcceptanceAccepted
-        elif period == RegistrationState.CR:
+        elif self.period == RegistrationPeriod.CR:
             self.ensure_cr_eligibility()
 
             self.deadline = (
                 exhibitor.deadline_complete_registration
                 or fair.complete_registration_close_date
             )
-            if cr_contract == None:
-                if self.ir_contract == None:
-                    self.type = RegistrationType.BeforeCompleteRegistrationIRUnsigned
-                else:
-                    self.type = RegistrationType.BeforeCompleteRegistrationIRSigned
-            elif cr_signature != None:
-                self.type = RegistrationType.CompleteRegistrationSigned
-            else:
-                if self.ir_contract == None:
-                    self.type = RegistrationType.CompleteRegistrationIRUnsigned
-                else:
-                    self.type = RegistrationType.CompleteRegistrationIRSigned
-        elif period == RegistrationState.AFTER_CR:
-            self.ensure_cr_eligibility()
 
-            if cr_signature != None:
-                self.type = RegistrationType.AfterCompleteRegistrationSigned
-            else:
-                self.type = RegistrationType.AfterCompleteRegistration
-        else:
-            pass
+        elif self.period == RegistrationPeriod.AFTER_CR:
+            self.ensure_cr_eligibility()
 
     def ensure_ir_eligibility(self):
         if self.ir_contract == None:
