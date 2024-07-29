@@ -164,19 +164,22 @@ class Exhibitor(models.Model):
             ("3", "Gold"),
         ],
     )
+
+    application_statuses = [ # Changes to these choices must be reflected in templates/exhibitors/exhibitors.html and templates/exhibitors/exhibitor.html
+        ("0", "pending"),
+        ("1", "accepted"),
+        ("2", "rejected"),
+        ("3", "reserve"),
+    ]
+
     application_status = models.CharField(
         blank=False,
         null=False,
         max_length=255,
         default="0",
-        choices=[ # Changes to these choices must be reflected in templates/exhibitors/exhibitors.html and templates/exhibitors/exhibitor.html
-            ("0", "pending"),
-            ("1", "accepted"),
-            ("2", "rejected"),
-            ("3", "reserve"),
-            
-        ],
+        choices=application_statuses,
     )
+    
     booth_height = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Height of the booth (cm)"
     )
