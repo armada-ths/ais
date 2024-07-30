@@ -10,15 +10,12 @@ import { isFormOpen, isFormVisible } from "@/forms/form_access"
 import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
 import { LogoutButton } from "@/shared/LogoutButton"
-import { Timeline } from "@/shared/Timeline"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useDates } from "@/shared/hooks/api/useDates"
-import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
 import { AlertTriangle, BadgeInfo, CheckCircle } from "lucide-react"
-import { DateTime } from "luxon"
-import { useSelector } from "react-redux"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
 
@@ -29,7 +26,8 @@ export function DashboardScreen() {
         isError: isErrorDates
     } = useDates()
     const { data, isLoading, isError } = useDashboard()
-    const forms = useSelector(selectForms)
+    const { data: accessDeclaration } = useAccessDeclaration()
+    const forms = FORMS
 
     const companyContact = data?.sales_contacts?.[0]
 
@@ -43,10 +41,10 @@ export function DashboardScreen() {
     }
 
     const formCardsData = Object.entries(forms).filter(([, formMeta]) =>
-        isFormVisible(formMeta.key as keyof typeof FORMS, data.type ?? null)
+        isFormVisible(accessDeclaration, formMeta.key as keyof typeof FORMS)
     )
 
-    const timelinePhaseAlert = getTimelinePhaseMessage(data.type)
+    const timelinePhaseAlert = getTimelinePhaseMessage(accessDeclaration)
 
     return (
         <div className="flex min-h-[100dvh] flex-col">
@@ -86,8 +84,7 @@ export function DashboardScreen() {
                                     <span className="font-bold">
                                         {timelinePhaseAlert?.title ?? (
                                             <span>
-                                                Current step:{" "}
-                                                {data.type.split("_").join(" ")}
+                                                Current step:{" unknown"}
                                             </span>
                                         )}
                                     </span>
@@ -104,8 +101,8 @@ export function DashboardScreen() {
                                     form={formMeta}
                                     locked={
                                         !isFormOpen(
-                                            formMeta.key as keyof typeof FORMS,
-                                            data.type ?? null
+                                            accessDeclaration,
+                                            formMeta.key as keyof typeof FORMS
                                         )
                                     }
                                 />
@@ -115,7 +112,7 @@ export function DashboardScreen() {
                 </div>
             </div>
             <div className="relative flex flex-1 items-end justify-center">
-                <Timeline
+                {/* <Timeline
                     className="mb-10 mt-20 h-28 w-2/3"
                     stages={[
                         {
@@ -140,7 +137,6 @@ export function DashboardScreen() {
                         {
                             id: [
                                 "after_initial_registration_acceptance_accepted"
-                                /*                                 "after_initial_registration_acceptance_rejected" */
                             ],
                             title: "You got a spot at the fair",
                             badgeText: DateTime.fromISO(
@@ -180,7 +176,7 @@ export function DashboardScreen() {
                         }
                     ]}
                     current={data.type}
-                />
+                /> */}
                 {companyContact != null && (
                     <div className="absolute flex w-full justify-end p-4 lg:p-8">
                         <ContactBubble />

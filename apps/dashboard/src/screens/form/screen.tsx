@@ -6,8 +6,6 @@ import { IfProgressDone } from "@/shared/IfProgressDone"
 import { InfoScreen } from "@/shared/InfoScreen"
 import { Navbar } from "@/shared/Navbar"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
-import { remoteSaveChanges } from "@/store/form/async_actions"
-import { AppDispatch } from "@/store/store"
 import { useFormMeta } from "@/useFormMeta"
 import { cn, cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
@@ -18,13 +16,11 @@ import {
     ArrowRightIcon,
     CheckCircle
 } from "lucide-react"
-import { useDispatch } from "react-redux"
 import { FormPageView } from "./FormPageView"
 import PrimarySection from "./PrimarySection"
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 
 export function FormScreen() {
-    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate({
         from: "/$companyId/form/$formKey/$formPageKey"
     })
@@ -45,11 +41,6 @@ export function FormScreen() {
         formKey as keyof typeof FORMS,
         companyStatus ?? null
     )
-
-    async function saveChanges() {
-        const response = await dispatch(remoteSaveChanges())
-        return (response.payload as { success: boolean }).success
-    }
 
     async function handlePrevious() {
         if (!form) return
@@ -164,7 +155,6 @@ export function FormScreen() {
                                 id={page.id} // Important to allow the tab to be clickable (see above comment)
                                 value={page.id}
                                 onClick={async () => {
-                                    await saveChanges()
                                     navigate({
                                         from: "/$companyId/form/$formKey/$formPageKey",
                                         to: "/$companyId/form/$formKey/$formPageKey",
