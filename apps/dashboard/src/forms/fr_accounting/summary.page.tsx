@@ -15,39 +15,21 @@ import { Label } from "@/components/ui/label"
 import { FORMS } from "@/forms"
 import { Card } from "@/screens/form/sidebar/PageCard"
 import { HOST } from "@/shared/vars"
-import { selectCompany } from "@/store/company/company_selectors"
-import { setCompanyRegistrationStatus } from "@/store/company/company_slice"
-import {
-    selectActiveForm,
-    selectUnfilledFields
-} from "@/store/form/form_selectors"
-import { setActiveForm } from "@/store/form/form_slice"
-import {
-    selectProductPackage,
-    selectProductsSelectedWithoutPackagesWithAdjustedPrice
-} from "@/store/products/products_selectors"
-import { RootState } from "@/store/store"
 import { formatCurrency } from "@/utils/format_currency"
 import { useNavigate, useParams } from "@tanstack/react-router"
 import { ConfirmPopup } from "primereact/confirmpopup"
 import { useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
 import { toast } from "sonner"
 
 export function SummaryFormPage() {
     const { companyId } = useParams({
         from: "/$companyId/form/$formKey/$formPageKey"
     })
-    const dispatch = useDispatch()
     const navigate = useNavigate()
     const [confirmTerms, setConfirmTerms] = useState<boolean>(false)
     const [confirmBinding, setConfirmBinding] = useState(false)
     const [confirmEligibility, setConfirmEligibility] = useState(false)
-    const productPackage = useSelector(selectProductPackage)
 
-    const company = useSelector(selectCompany)
-    const selectedProducts = useSelector(
-        selectProductsSelectedWithoutPackagesWithAdjustedPrice
     )
 
     const activeForm = useSelector(selectActiveForm)
@@ -77,8 +59,6 @@ export function SummaryFormPage() {
             return
         }
 
-        dispatch(setCompanyRegistrationStatus("complete_registration_signed"))
-        dispatch(setActiveForm(null))
         navigate({
             to: "/$companyId",
             params: { companyId }

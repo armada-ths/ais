@@ -1,6 +1,6 @@
+import { Checkbox } from "@/components/ui/checkbox"
+import { FormWrapper } from "@/forms/FormWrapper"
 import { ReactNode } from "react"
-import { FormField } from "../../screens/form/FormInput"
-import { FormWrapper } from "../FormWrapper"
 
 function Title({ text }: { text: string }) {
     return <h3 className="mb-2 text-xl capitalize text-emerald-300">{text}</h3>
@@ -152,10 +152,7 @@ export function TransportInfoFormPage() {
                 <Link href="sustomer.support@armada.nu">sales@armada.nu</Link>
             </p>
             <div className="mt-10 flex flex-1 justify-center">
-                <FormField.Checkbox
-                    label="I have read and understood this"
-                    mapping="exhibitor.transport_information_read"
-                />
+                <Checkbox />
             </div>
         </FormWrapper>
     )
