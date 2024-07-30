@@ -3,7 +3,7 @@ import { form as ExhibitorCatalogForm } from "./exhibitor_catalog/form"
 import { form as FrAccountingForm } from "./fr_accounting/form"
 import { form as IrAdditionalInfo } from "./ir_additional_info/form"
 import { form as IrSignupForm } from "./ir_signup/form"
-import { form as CreateLunchTicketsForm } from "./lunch_tickets/form"
+//import { form as CreateLunchTicketsForm } from "./lunch_tickets/form"
 import { form as ReceiptForm } from "./receipt/form"
 import { form as StureForm } from "./sture/form"
 import { form as TransportForm } from "./transport/form"
@@ -16,7 +16,7 @@ export function getMutableFormsInstance() {
         receipt: ReceiptForm,
         exhibitor_catalog: ExhibitorCatalogForm,
         transport: TransportForm,
-        lunch_tickets: CreateLunchTicketsForm,
+        //lunch_tickets: CreateLunchTicketsForm,
         sture: StureForm,
         core_values: CoreValues
     } as const
@@ -28,7 +28,7 @@ export const FORMS = {
     receipt: ReceiptForm,
     exhibitor_catalog: ExhibitorCatalogForm,
     transport: TransportForm,
-    lunch_tickets: CreateLunchTicketsForm, //
+    //lunch_tickets: CreateLunchTicketsForm, //
     sture: StureForm,
     core_values: CoreValues
 } as const
