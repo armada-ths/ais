@@ -1,4 +1,5 @@
 import ArmadaLogoGreen from "@/assets/armada_logo_green.svg"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { InfoScreen } from "@/shared/InfoScreen"
 import { Link } from "@tanstack/react-router"
 import { DateTime } from "luxon"
@@ -8,6 +9,8 @@ function TextSection({ children }: { children: React.ReactNode }) {
 }
 
 export function FinalRegistrationThankYouScreen() {
+    const { data } = useDashboard()
+    const email = data?.contact?.email_address
 
     return (
         <div className="my-20 flex flex-col items-center justify-center">
@@ -20,10 +23,10 @@ export function FinalRegistrationThankYouScreen() {
                         Thank you for compleating the final registration and
                         welcome to Armada! You have gotten an email to{" "}
                         <a
-                            href={`mailto:${user?.email_address}`}
+                            href={`mailto:${email}`}
                             className="text-blue-500 underline"
                         >
-                            {user?.email_address}
+                            {email ?? "your email"}
                         </a>{" "}
                         confirming your Final Registration.
                     </TextSection>
