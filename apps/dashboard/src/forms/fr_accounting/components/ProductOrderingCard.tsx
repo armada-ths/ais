@@ -18,11 +18,10 @@ import {
     getProductWithAdjustedPrice
 } from "@/forms/fr_accounting/accounting_utilities"
 import { useAccountingMutation } from "@/forms/fr_accounting/useAccounting"
-import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { Product, useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useOrders } from "@/shared/hooks/api/useOrders"
 import { useProducts } from "@/shared/hooks/api/useProducts"
 import { RegistrationSection } from "@/shared/vars"
-import { Product } from "@/store/products/products_slice"
 import { cn } from "@/utils/cx"
 import { formatCurrency } from "@/utils/format_currency"
 import { cx } from "class-variance-authority"
@@ -104,27 +103,16 @@ export function ProductOrderingCard({ product }: { product: Product }) {
                     </div>
                     <div className="!mt-0 flex flex-1 items-start justify-end">
                         {product.max_quantity <= 1 ? (
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Switch
-                                        onCheckedChange={value =>
-                                            onChange(value ? 1 : 0)
-                                        }
-                                        checked={
-                                            selected != null ||
-                                            packageProductBaseQuantity > 0
-                                        }
-                                        disabled={
-                                            packageProductBaseQuantity > 0
-                                        }
-                                    />
-                                </TooltipTrigger>
-                                <TooltipContent
-                                    hidden={packageProductBaseQuantity <= 0}
-                                >
-                                    Included in package
-                                </TooltipContent>
-                            </Tooltip>
+                            <Switch
+                                onCheckedChange={value =>
+                                    onChange(value ? 1 : 0)
+                                }
+                                checked={
+                                    selected != null ||
+                                    packageProductBaseQuantity > 0
+                                }
+                                disabled={packageProductBaseQuantity > 0}
+                            />
                         ) : (
                             <Input
                                 placeholder="Quantity"

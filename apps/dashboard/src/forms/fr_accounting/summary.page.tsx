@@ -12,8 +12,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { FORMS } from "@/forms"
-import { Card } from "@/screens/form/sidebar/PageCard"
+import { useDashboard } from "@/shared/hooks/api/useDashboard"
+import { useOrders } from "@/shared/hooks/api/useOrders"
 import { HOST } from "@/shared/vars"
 import { formatCurrency } from "@/utils/format_currency"
 import { useNavigate, useParams } from "@tanstack/react-router"
@@ -30,22 +30,16 @@ export function SummaryFormPage() {
     const [confirmBinding, setConfirmBinding] = useState(false)
     const [confirmEligibility, setConfirmEligibility] = useState(false)
 
+    const { data } = useDashboard()
+    const { data: orders, isLoading: isLoadingOrders } = useOrders()
+    const productPackage = orders.find(
+        order => order.product.registration_section?.name.match(/package/i)
     )
+    const company = data?.company
 
-    const activeForm = useSelector(selectActiveForm)
-    const unfilledFields = useSelector((state: RootState) =>
-        selectUnfilledFields(
-            state,
-            (activeForm?.key as keyof typeof FORMS) ?? "primary"
-        )
-    )
+    const unfilledFields: Array<unknown> = []
 
-    const readyToSign =
-        confirmTerms &&
-        confirmBinding &&
-        confirmEligibility &&
-        unfilledFields.length === 0 &&
-        productPackage != null
+    const readyToSign = confirmTerms && confirmBinding && confirmEligibility
 
     async function submitRegistration() {
         const response = await fetch(`${HOST}/api/dashboard/submit`, {
@@ -65,11 +59,11 @@ export function SummaryFormPage() {
         })
     }
 
-    const totalPrice =
-        selectedProducts.reduce((acc, current) => acc + current.price, 0) +
-        (productPackage?.unit_price ?? 0)
+    const totalPrice = 0
 
     const grossPrice = formatCurrency(totalPrice * 1.25)
+
+    if (isLoadingOrders) return null
 
     return (
         <div className="flex max-w-[450px] flex-col items-center">
@@ -82,7 +76,7 @@ export function SummaryFormPage() {
                 {productPackage == null && (
                     <p className="mb-1 text-sm">No package selected</p>
                 )}
-                {unfilledFields.map(current => (
+                {/*                 {unfilledFields.map(current => (
                     <Card key={current.page.id}>
                         <h3 className="mb-2">{current.page.title}</h3>
                         {current.fields.map(field => (
@@ -91,7 +85,7 @@ export function SummaryFormPage() {
                             </p>
                         ))}
                     </Card>
-                ))}
+                ))} */}
             </div>
             <div className="flex flex-col justify-center gap-4">
                 <div className="flex items-center gap-x-5">
@@ -109,7 +103,7 @@ export function SummaryFormPage() {
                         I have read and understand the{" "}
                         <a
                             className="font-medium text-melon-700 brightness-75 hover:underline dark:text-white"
-                            href={company.contract?.contract ?? ""}
+                            href={data?.cr_contract.contract ?? ""}
                             target="_blank"
                         >
                             Armada Terms and Conditions.
@@ -129,7 +123,7 @@ export function SummaryFormPage() {
                     />
                     <Label htmlFor="binding-checkbox" className="leading-tight">
                         I understand that the Final Registration is binding and{" "}
-                        <i>{company.companyName}</i> will be invoiced{" "}
+                        <i>{company?.name}</i> will be invoiced{" "}
                         <b>{grossPrice} kr</b> inc. VAT, by THS Armada, through
                         Tekniska Högskolans Studentkår, org. nr. 802005-9153
                     </Label>
@@ -148,7 +142,7 @@ export function SummaryFormPage() {
                     />
                     <Label htmlFor="eligibility-checkbox">
                         I have the authority to enter into this agreement on
-                        behalf of <i>{company.companyName}</i>
+                        behalf of <i>{company?.name}</i>
                     </Label>
                 </div>
             </div>

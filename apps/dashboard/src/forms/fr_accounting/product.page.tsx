@@ -1,16 +1,17 @@
 import { belongsToSection } from "@/forms/fr_accounting/accounting_utilities"
 import { DiscountCard } from "@/forms/fr_accounting/components/DiscountCard"
 import { ProductOrderingCard } from "@/forms/fr_accounting/components/ProductOrderingCard"
+import { Category, Product } from "@/shared/hooks/api/useDashboard"
 import { useProducts } from "@/shared/hooks/api/useProducts"
 import { RegistrationSection } from "@/shared/vars"
 import React, { useMemo } from "react"
-import { Category, Product } from "../../store/products/products_slice"
 import { FormWrapper } from "../FormWrapper"
 
 export function ProductFormPage({ section }: { section: RegistrationSection }) {
     const { data: allProducts } = useProducts()
-    const products = allProducts.filter(product =>
-        belongsToSection(product, section)
+    const products = useMemo(
+        () => allProducts.filter(product => belongsToSection(product, section)),
+        [allProducts, section]
     )
 
     const categorizedProducts = useMemo(
