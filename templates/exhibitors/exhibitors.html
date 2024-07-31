@@ -43,7 +43,6 @@
 				{% for exhibitor in exhibitors %}
 					<tr>
 						<td style="white-space: nowrap;"><a href="{% url 'exhibitor' fair.year exhibitor.id %}">{{ exhibitor.name }}</a></td>
-
 						{% for field in exhibitor.fields %}
 							{% if field.field == 'contact_persons' %}
 								<td style="white-space: nowrap;">
@@ -100,6 +99,10 @@
 										{% endfor %}
 									</ul>
 								</td>
+							{% elif field.field == 'application_status' %}
+								{% with exhibitor=exhibitor.exhibitor %}
+									<td style="white-space: nowrap;">{% include 'exhibitors/application_status.html' %}</td>
+								{% endwith %}
 							{% else %}
 								<td>
 									{% if field.value is not None %}{{ field.value }}{% endif %}

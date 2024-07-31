@@ -1,44 +1,52 @@
 from django.views.decorators.csrf import csrf_exempt
 
-from util import get_company_contact, get_exhibitor, get_fair, get_user, status
+from util import (
+    get_company_contact,
+    get_contract_signature,
+    get_exhibitor,
+    get_fair,
+    get_user,
+    status,
+)
 from util.permission import UserPermission
 
 from companies.models import Company, CompanyContact
-from fair.models import RegistrationState
+from fair.models import RegistrationPeriod
 from exhibitors.models import Exhibitor
 
-from dashboard.api.registration.cr import handle_cr, submit_cr
-from dashboard.api.registration.ir import handle_ir, submit_ir
+from dashboard.api.registration.response import handle_response, submit_cr, submit_ir
+
+
+# (Didrik 2024)
+# During the 2024 fair, we decided to add a IR-bypass system,
+# allowing companies to sign up for IR after the official IR period had ended.
+# We do this by creating an exhibitor after the company has signed the IR contract.
+# This function handles the creation of exhibitors for companies which had signed
+# IR before this change was implemented. It will not be needed in the future,
+# but also does not cause any harm to keep.
+def ensure_exhibitor_exists_after_ir_signup(fair, company):
+    _ir_contract, ir_signature = get_contract_signature(company, fair, "INITIAL")
+    exhibitor = Exhibitor.objects.filter(fair=fair, company=company).first()
+
+    if ir_signature != None and exhibitor == None:
+        Exhibitor.objects.create(fair=fair, company=company)
 
 
 # This function will receive a GET or PUT and return
 # a json structure of the registration state.
 def render_company(request, company, contact, exhibitor):
     fair = get_fair()
-    period = fair.get_period()
 
-    ir_states = [
-        RegistrationState.BEFORE_IR,
-        RegistrationState.IR,
-        RegistrationState.AFTER_IR,
-        RegistrationState.AFTER_IR_ACCEPTANCE,
-    ]
-    if period in ir_states:
-        return handle_ir(request, company, fair, contact, exhibitor)
-    elif period == RegistrationState.CR:
-        return handle_cr(request, company, fair, contact, exhibitor)
-    elif period == RegistrationState.AFTER_CR:
-        # todo: temporary. What should really happen after CR?
-        return handle_cr(request, company, fair, contact, exhibitor)
-    else:
-        return status.INVALID_REGISTRATION_PERIOD
+    ensure_exhibitor_exists_after_ir_signup(fair, company)
+
+    return handle_response(request, company, fair, contact, exhibitor)
 
 
 @csrf_exempt
 def sign_ir(request):
     fair = get_fair()
     period = fair.get_period()
-    if period != RegistrationState.IR:
+    if period != RegistrationPeriod.IR:
         return status.INVALID_SUBMIT_PERIOD
 
     user = get_user(request)
@@ -58,7 +66,7 @@ def sign_ir(request):
 def sign_cr(request):
     fair = get_fair()
     period = fair.get_period()
-    if period != RegistrationState.CR:
+    if period != RegistrationPeriod.CR:
         return status.INVALID_SUBMIT_PERIOD
 
     user = get_user(request)
