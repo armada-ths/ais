@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 
-import { HOST } from "../../shared/vars"
-import { Product } from "../../store/products/products_slice"
-import { cx } from "../../utils/cx"
-import { formatCurrency } from "../../utils/format_currency"
+import { Product } from "@/shared/hooks/api/useDashboard"
+import { HOST } from "@/shared/vars"
+import { cx } from "@/utils/cx"
+import { formatCurrency } from "@/utils/format_currency"
 import { FormWrapper } from "../FormWrapper"
 
 type Order = {
