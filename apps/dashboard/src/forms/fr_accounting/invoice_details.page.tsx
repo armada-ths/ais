@@ -1,30 +1,29 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger
-} from "@/components/ui/tooltip"
+    InputErrorMessageText,
+    InputLabel
+} from "@/forms/components/input_label"
 import { useConfirmSaveAlert } from "@/shared/ConfirmSaveAlert"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { HOST } from "@/shared/vars"
 import { cn } from "@/utils/cx"
 import { ErrorMessage } from "@hookform/error-message"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Label } from "@radix-ui/react-label"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useBlocker, useParams } from "@tanstack/react-router"
-import { InfoIcon, Loader2Icon } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { ZodType, z } from "zod"
+import { z } from "zod"
 import { FormWrapper } from "../FormWrapper"
 
 type InvoiceDetailsFormPageProps = {
     readOnly?: boolean
 }
 
-const formSchema: ZodType = z.object({
+const formSchema = z.object({
     identity_number: z.string(),
     invoice_name: z.string().nonempty(),
     invoice_email_address: z.string().email(),
@@ -66,25 +65,31 @@ export function InvoiceDetailsFormPage({
         }
     })
 
+    const [defaultFormValues, setDefaultFormValues] = useState<
+        z.infer<typeof formSchema>
+    >({
+        identity_number: data?.company.identity_number as string,
+        invoice_name: data?.company.invoice_name as string,
+        invoice_email_address: data?.company.invoice_email_address as string,
+        invoice_address_line_1: data?.company.invoice_address_line_1 as string,
+        invoice_address_line_2: data?.company.invoice_address_line_2,
+        invoice_address_line_3: data?.company.invoice_address_line_3,
+        invoice_zip_code: data?.company.invoice_zip_code as string,
+        invoice_city: data?.company.invoice_city as string,
+        invoice_country: data?.company.invoice_country as string,
+        invoice_reference: data?.company.invoice_reference
+    })
+
     const {
+        reset,
         register,
         handleSubmit,
         formState: { errors, isDirty }
     } = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            identity_number: data?.company.identity_number,
-            invoice_name: data?.company.invoice_name,
-            invoice_email_address: data?.company.invoice_email_address,
-            invoice_address_line_1: data?.company.invoice_address_line_1,
-            invoice_address_line_2: data?.company.invoice_address_line_2,
-            invoice_address_line_3: data?.company.invoice_address_line_3,
-            invoice_zip_code: data?.company.invoice_zip_code,
-            invoice_city: data?.company.invoice_city,
-            invoice_country: data?.company.invoice_country,
-            invoice_reference: data?.company.invoice_reference
-        }
+        defaultValues: defaultFormValues
     })
+
     const { confirm } = useConfirmSaveAlert()
     useBlocker(confirm, isDirty)
 
@@ -94,6 +99,8 @@ export function InvoiceDetailsFormPage({
         queryClient.invalidateQueries({
             queryKey: ["dashboard", companyId]
         })
+        setDefaultFormValues(data)
+        reset(data)
     }
 
     return (
@@ -287,44 +294,4 @@ export function InvoiceDetailsFormPage({
             </form>
         </FormWrapper>
     )
-}
-
-function InputLabel({
-    children,
-    htmlFor,
-    required,
-    tooltip
-}: {
-    children: React.ReactNode
-    htmlFor: string
-    required?: boolean
-    tooltip?: string
-}) {
-    return (
-        <div className="flex justify-between py-1">
-            <Label
-                htmlFor={htmlFor}
-                className={cn("flex items-center gap-2", {
-                    "font-thin": !required
-                })}
-            >
-                {children}
-                {!required && <p className="text-xs">(optional)</p>}
-            </Label>
-            {tooltip != null && (
-                <Tooltip>
-                    <TooltipTrigger type="button">
-                        <InfoIcon size={15} />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p className="text-sm">{tooltip}</p>
-                    </TooltipContent>
-                </Tooltip>
-            )}
-        </div>
-    )
-}
-
-function InputErrorMessageText({ message }: { message: string }) {
-    return <p className="text-xs text-red-500">{message}</p>
 }
