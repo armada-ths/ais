@@ -1,8 +1,8 @@
-import { useSelector } from "react-redux"
-import { PrimaryFormHeader } from "../../forms/Header"
-import { LogoutButton } from "../../shared/LogoutButton"
-import { selectErrors } from "../../store/form/form_selectors"
+import { PrimaryFormHeader } from "@/forms/Header"
+import { LogoutButton } from "@/shared/LogoutButton"
 
+// @ts-expect-error --- TODO should be connected
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ERRORS = {
     not_authorized: (
         <p>
@@ -29,15 +29,11 @@ const ERRORS = {
 }
 
 export function DashboardError() {
-    const error = useSelector(selectErrors)
-
-    if (typeof error !== "string") return null
-
     return (
         <div className="flex h-[100vh] w-[100vw] flex-col items-center justify-center">
             <LogoutButton />
             <p className="mb-4 text-4xl">Oups, something went wrong</p>
-            <div className="mb-10 max-w-xl text-center">{ERRORS[error]}</div>
+            <div className="mb-10 max-w-xl text-center">{}</div>
             <PrimaryFormHeader />
         </div>
     )

@@ -5,6 +5,7 @@ import { isFormOpen } from "@/forms/form_access"
 import { IfProgressDone } from "@/shared/IfProgressDone"
 import { InfoScreen } from "@/shared/InfoScreen"
 import { Navbar } from "@/shared/Navbar"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useFormMeta } from "@/useFormMeta"
 import { cn, cx } from "@/utils/cx"
@@ -25,6 +26,7 @@ export function FormScreen() {
         from: "/$companyId/form/$formKey/$formPageKey"
     })
     const { data: dashboardData } = useDashboard()
+    const { data: accessDeclaration } = useAccessDeclaration()
 
     const {
         form,
@@ -33,13 +35,13 @@ export function FormScreen() {
         params: { formKey }
     } = useFormMeta()
 
-    const companyStatus = dashboardData?.type
+    const period = dashboardData?.period
 
     const SideBar = form?.rightSidebar
 
     const formOpen = isFormOpen(
-        formKey as keyof typeof FORMS,
-        companyStatus ?? null
+        accessDeclaration,
+        formKey as keyof typeof FORMS
     )
 
     async function handlePrevious() {
@@ -61,10 +63,7 @@ export function FormScreen() {
         })
     }
 
-    if (
-        (form != null && formPage == null && formOpen) ||
-        companyStatus == null
-    ) {
+    if ((form != null && formPage == null && formOpen) || period == null) {
         return null // We are still waiting for activeForm to be applied, hence show nothing to reduce flickering
     }
     if (form != null && formPage == null && !formOpen) {

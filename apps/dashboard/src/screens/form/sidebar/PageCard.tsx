@@ -39,8 +39,18 @@ export function PageCard({
 
     const { formPage } = useFormMeta()
 
+    const { data: dataRegistration, isLoading: isLoadingDashboard } =
+        useDashboard()
+    const { data: dataProducts, isLoading: isLoadingProducts } = useProducts()
 
-    if (!dataRegistration || !dataProducts) return null
+    if (
+        !dataRegistration ||
+        !dataProducts ||
+        isLoadingDashboard ||
+        isLoadingProducts
+    ) {
+        return null
+    }
 
     const completed = page.isDone?.({
         form,
