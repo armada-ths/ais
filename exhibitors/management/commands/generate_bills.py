@@ -9,7 +9,6 @@ consider calling
 to list options
 """
 
-
 # Constants, that might change in the future?
 # Taken from the example php, you can probably change this if you know what you're doing
 static = {

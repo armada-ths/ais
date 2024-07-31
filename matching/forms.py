@@ -67,9 +67,9 @@ class ResponseForm(ModelForm):
         if widget:
             kwargs["widget"] = widget
         field = self.get_question_field(question, **kwargs)
-        self.fields[
-            "question_%d" % question.pk
-        ] = field  ## VERY IMPORTANT TO KEEP question_%d here. Other code is dependant on it
+        self.fields["question_%d" % question.pk] = (
+            field  ## VERY IMPORTANT TO KEEP question_%d here. Other code is dependant on it
+        )
 
     def get_question_initial(self, question, data):
         """Get the initial value that we should use in the Form

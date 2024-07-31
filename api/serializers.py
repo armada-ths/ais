@@ -65,15 +65,19 @@ def exhibitor(request, exhibitor, company):
             ("purpose", exhibitor.catalogue_purpose),
             (
                 "logo_squared",
-                (exhibitor.catalogue_logo_squared.url)
-                if exhibitor.catalogue_logo_squared
-                else (MISSING_IMAGE if img_placeholder else None),
+                (
+                    (exhibitor.catalogue_logo_squared.url)
+                    if exhibitor.catalogue_logo_squared
+                    else (MISSING_IMAGE if img_placeholder else None)
+                ),
             ),
             (
                 "logo_freesize",
-                (exhibitor.catalogue_logo_freesize.url)
-                if exhibitor.catalogue_logo_freesize
-                else (MISSING_IMAGE if img_placeholder else None),
+                (
+                    (exhibitor.catalogue_logo_freesize.url)
+                    if exhibitor.catalogue_logo_freesize
+                    else (MISSING_IMAGE if img_placeholder else None)
+                ),
             ),
             ("contact_name", exhibitor.catalogue_contact_name),
             ("contact_email_address", exhibitor.catalogue_contact_email_address),
@@ -115,9 +119,11 @@ def exhibitor(request, exhibitor, company):
             ),
             (
                 "cities",
-                exhibitor.catalogue_cities
-                if exhibitor.catalogue_cities is not None
-                else "",
+                (
+                    exhibitor.catalogue_cities
+                    if exhibitor.catalogue_cities is not None
+                    else ""
+                ),
             ),
             (
                 "benefits",
