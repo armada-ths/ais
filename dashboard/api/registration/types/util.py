@@ -27,27 +27,27 @@ def get_serializer(request, registration, data=empty, context={}):
         RegistrationPeriod.BETWEEN_IR_AND_CR,
     ]:
         Serializer = IRRegistrationSerializer
-
     elif registration.period in [RegistrationPeriod.CR]:
-
         Serializer = CRRegistrationSerializer
 
         if registration.ir_signature == None:  # If IR has not been signed
             Serializer = IRRegistrationSerializer
         elif registration.cr_signature:
             # If user is sales, they may change anything he likes
-            if permission != None and permission == UserPermission.SALES:
+            if permission == UserPermission.SALES:
                 Serializer = CRRegistrationSerializer
             else:
                 Serializer = CRSignedRegistrationSerializer
 
-    elif registration.period in [RegistrationPeriod.AFTER_CR]:
+    elif registration.period in [
+        RegistrationPeriod.AFTER_CR,
+        RegistrationPeriod.FAIR,
+        RegistrationPeriod.AFTER_FAIR,
+    ]:
         Serializer = CRSignedRegistrationSerializer
 
     else:
-        raise ValueError(
-            f"This should not happen: {registration.period, registration.ir_signature, registration.cr_signature}"
-        )
+        raise ValueError(f"Unhandled registration period: {registration.period}")
 
     return Serializer(
         registration,
