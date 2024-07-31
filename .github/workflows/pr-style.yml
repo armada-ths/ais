@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: psf/black@3.12.4
+      - uses: psf/black@24.4.2
         with:
           options: "--check"
           src: "."
