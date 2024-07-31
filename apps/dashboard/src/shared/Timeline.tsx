@@ -1,9 +1,8 @@
 import { Badge } from "@/components/ui/badge"
-import { RegistrationStatus } from "@/store/company/company_slice"
 import { cx } from "@/utils/cx"
 
 export interface TimelineStage {
-    id: RegistrationStatus | RegistrationStatus[]
+    id: unknown
     title: string
     badgeText?: string
 }
@@ -11,7 +10,7 @@ export interface TimelineStage {
 export function Timeline(
     props: {
         stages: TimelineStage[]
-        current: RegistrationStatus
+        current: unknown
     } & React.HTMLProps<HTMLDivElement>
 ) {
     const { stages, current, className, ...rest } = props
@@ -34,6 +33,7 @@ export function Timeline(
                 />
                 {stages.map((stage, index) => (
                     <div
+                        // @ts-expect-error oupsis this broke when migrating from redux
                         key={
                             Array.isArray(stage.id)
                                 ? stage.id.length <= 0
