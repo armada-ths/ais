@@ -1,22 +1,75 @@
 import { HOST } from "@/shared/vars"
-import { RegistrationStatus } from "@/store/company/company_slice"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 
+export enum RegistrationPeriod {
+    BeforeIr = "before_initial_registration",
+    InitialRegistration = "initial_registration",
+    BetweenIrAndCr = "between_ir_and_cr",
+    CompleteRegistration = "complete_registration",
+    AfterCompleteRegistration = "after_complete_registration",
+    Fair = "fair",
+    AfterFair = "after_fair"
+}
+
 export interface DashboardResponse {
-    type: RegistrationStatus
+    period: RegistrationPeriod
+    application_status: ApplicationStatus
     deadline: string
     has_signed_ir: boolean
+    has_signed_fr: boolean
     fair: RegistrationFair
     ir_contract: Contract
     cr_contract: Contract
     sales_contacts: SalesContact[]
     orders: Order[]
     contact: Contact | null
-    exhibitor: unknown
+    exhibitor: Exhibitor
     company: Company
     products: Product[]
     interested_in: Array<{ id: number }>
+}
+
+export enum ApplicationStatus {
+    ACCEPTED = "accepted", // Accepted, company has explicitly been accepted by armada
+    REJECTED = "rejected", // Rejected, company has explicitly been rejected by armada
+    PENDING = "pending", //  Pending, company has not yet been accepted or rejected by armada
+    WAITLIST = "waitlist" // Company is on the waitlist as a backup
+}
+
+export interface Exhibitor {
+    catalogue_about: string | null
+    catalogue_cities: null
+    catalogue_contact_email_address: string
+    catalogue_contact_name: string | null
+    catalogue_contact_phone_number: string | null
+    catalogue_employments: Array<{
+        id: number
+        employment: string
+        include_in_form: boolean
+        selected: boolean
+    }>
+    catalogue_industries: Array<{
+        id: number
+        industry: string
+        include_in_form: boolean
+        selected: boolean
+        category: number
+    }>
+    catalogue_locations: Array<{
+        id: number
+        location: string
+        include_in_form: boolean
+        selected: boolean
+    }>
+    catalogue_logo_freesize: string | null
+    catalogue_logo_squared: string | null
+    deadline_complete_registration: null
+    id: number
+    transport_comment: string | null
+    transport_from: string
+    transport_information_read: boolean
+    transport_to: string
 }
 
 export interface Order {
