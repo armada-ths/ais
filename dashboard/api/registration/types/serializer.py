@@ -68,6 +68,7 @@ class SignupContractSerializer(serializers.ModelSerializer):
         read_only_fields = ("name", "contract")
         fields = read_only_fields
 
+
 class SignupLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = SignupLog
@@ -147,7 +148,7 @@ class ExhibitorSerializer(WritableNestedModelSerializer):
         return dict(Exhibitor.transport_from_statuses).get(
             obj.transport_from, "Unknown"
         )
-    
+
     def get_application_status(self, obj):
         return dict(Exhibitor.application_statuses).get(
             obj.application_status, "Unknown"
@@ -225,17 +226,16 @@ class InterestedInSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(serializers.Serializer):
+
     # Read only fields
-    
-    # type = serializers.StringRelatedField(read_only=True) # TODO: Remove this variable
-    
-    period = serializers.StringRelatedField(read_only=True)
-    deadline = serializers.DateTimeField(read_only=True)
     fair = FairSerializer(read_only=True)
+    period = serializers.StringRelatedField(read_only=True)
+
     ir_contract = SignupContractSerializer(read_only=True)
-    ir_signature = SignupLogSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
+    ir_signature = SignupLogSerializer(read_only=True)
     cr_signature = SignupLogSerializer(read_only=True)
+
     sales_contacts = SalesCompanyContactSerializer(read_only=True, many=True)
     products = ProductSerializer(many=True)
 

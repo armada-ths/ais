@@ -45,7 +45,6 @@ class RegistrationPeriod(Enum):
     FAIR = 6
     AFTER_FAIR = 7
 
-
     def __str__(self):
         if self == RegistrationPeriod.BEFORE_IR:
             return "before_initial_registration"
@@ -63,6 +62,7 @@ class RegistrationPeriod(Enum):
             return "after_fair"
         else:
             return self.name
+
 
 class Fair(models.Model):
     name = models.CharField(max_length=100, default=default_name)
@@ -114,7 +114,10 @@ class Fair(models.Model):
             and time < self.complete_registration_close_date
         ):
             return RegistrationPeriod.CR
-        elif time >= self.complete_registration_close_date and time < self.events_start_date:
+        elif (
+            time >= self.complete_registration_close_date
+            and time < self.events_start_date
+        ):
             return RegistrationPeriod.AFTER_CR
         elif time >= self.events_start_date and time < self.events_end_date:
             return RegistrationPeriod.FAIR
