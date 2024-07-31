@@ -100,13 +100,9 @@
 									</ul>
 								</td>
 							{% elif field.field == 'application_status' %}
-								{% if field.value == '0' %}<td class="bg-warning" title="The company's application to the fair is being processed.">
-								{% elif field.value == '1' %}<td class="bg-success" title="The company's application to the fair has been accepted.">
-								{% elif field.value == '2' %}<td class="bg-danger" title="The company's application to the fair has been accepted.">
-								{% elif field.value == '3' %}<td class="bg-info" title="The company's application to the fair has been processed and put on the reserve list.">
-								{% else %}<td>{% endif %}
-							{{ exhibitor.exhibitor.get_application_status_display }}
-								</td>
+								{% with exhibitor=exhibitor.exhibitor %}
+									<td style="white-space: nowrap;">{% include 'exhibitors/application_status.html' %}</td>
+								{% endwith %}
 							{% else %}
 								<td>
 									{% if field.value is not None %}{{ field.value }}{% endif %}
