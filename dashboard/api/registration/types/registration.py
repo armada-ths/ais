@@ -9,58 +9,6 @@ from accounting.models import Order
 from util.product import get_products
 
 
-class RegistrationType(Enum):
-    BeforeInitialRegistration = 0
-    InitialRegistration = 1
-    InitialRegistrationSigned = 2
-    AfterInitialRegistration = 3
-    AfterInitialRegistrationSigned = 4
-    AfterInitialRegistrationAcceptanceAccepted = 5
-    AfterInitialRegistrationAcceptanceRejected = 6
-    AfterInitialRegistrationAcceptanceTentative = 61  # Temporary
-    BeforeCompleteRegistrationIRUnsigned = 7
-    BeforeCompleteRegistrationIRSigned = 8
-    CompleteRegistrationIRUnsigned = 9
-    CompleteRegistrationIRSigned = 10
-    CompleteRegistrationSigned = 11
-    AfterCompleteRegistration = 12
-    AfterCompleteRegistrationSigned = 13
-
-    def __str__(self):
-        if self == RegistrationType.BeforeInitialRegistration:
-            return "before_initial_registration"
-        elif self == RegistrationType.InitialRegistration:
-            return "initial_registration"
-        elif self == RegistrationType.InitialRegistrationSigned:
-            return "initial_registration_signed"
-        elif self == RegistrationType.AfterInitialRegistration:
-            return "after_initial_registration"
-        elif self == RegistrationType.AfterInitialRegistrationSigned:
-            return "after_initial_registration_signed"
-        elif self == RegistrationType.AfterInitialRegistrationAcceptanceAccepted:
-            return "after_initial_registration_acceptance_accepted"
-        elif self == RegistrationType.AfterInitialRegistrationAcceptanceRejected:
-            return "after_initial_registration_acceptance_rejected"
-        elif self == RegistrationType.AfterInitialRegistrationAcceptanceTentative:
-            return "after_initial_registration_acceptance_tentative"
-        if self == RegistrationType.BeforeCompleteRegistrationIRUnsigned:
-            return "before_complete_registration_ir_unsigned"
-        if self == RegistrationType.BeforeCompleteRegistrationIRSigned:
-            return "before_complete_registration_ir_signed"
-        if self == RegistrationType.CompleteRegistrationIRUnsigned:
-            return "complete_registration_ir_unsigned"
-        if self == RegistrationType.CompleteRegistrationIRSigned:
-            return "complete_registration_ir_signed"
-        elif self == RegistrationType.CompleteRegistrationSigned:
-            return "complete_registration_signed"
-        elif self == RegistrationType.AfterCompleteRegistration:
-            return "after_complete_registration"
-        elif self == RegistrationType.AfterCompleteRegistrationSigned:
-            return "after_complete_registration_signed"
-        else:
-            return "unknown"
-
-
 class Registration:
     def __init__(self, company, exhibitor, contact, fair, orders):
         self.company = company
