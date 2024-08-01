@@ -27,10 +27,15 @@
         {% if perms.events.base %}
           <td class="text-center">{{ event.num_participants }}</td> {% endif %}
         <td>
-          {% if event.open_for_signup %}
-            <span class="label label-success">Open</span>
-          {% else %}
+          {% if not event.open_for_signup %}
             <span class="label label-default">Closed</span>
+           
+          {% elif event.is_full%}
+            <span class="label label-danger">Fully Booked</span>
+                    
+          {% else %}
+            <span class="label label-success">Open</span>
+            
           {% endif %}
         </td>
         {% if perms.events.base %}

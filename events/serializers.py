@@ -32,8 +32,9 @@ def event(event, request):
         "can_create_teams": event.teams_create_s,
         "can_join_teams": event.teams_participate_s,
         "event_max_capacity": event.event_max_capacity,
-        "participant_count": event.participant_count,
+        "participant_count": event.participant_set.count(),
         "open_for_signup": event.open_for_signup and event.signup_s,
+        "fully_booked": event.is_full(),
     }
 
     return data

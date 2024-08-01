@@ -37,7 +37,7 @@ def index(request):
     events = (
         Event.objects.filter(fair=fair, published=True)
         .prefetch_related("signupquestion_set")
-        .annotate(participant_count=Count("participant"))
+        #.annotate(participant_count=Count("participant"))
     )
 
     data = [serializers.event(event, request) for event in events]
@@ -54,7 +54,7 @@ def show(request, event_pk):
     event = Event.objects.get(pk=event_pk)
 
     data = serializers.event(event, request)
-
+    
     return JsonResponse(data, safe=False)
 
 
@@ -96,6 +96,9 @@ def signup(request, event_pk):
 
     if not event.open_for_signup:
         return JsonResponse({"error": "Event not open for sign ups."}, status=403)
+
+    if event.is_full():
+        return JsonResponse({"message": "Event is fully booked."}, status=400)
 
     participant, _created = Participant.objects.get_or_create(
         user_s=request.user, event=event
