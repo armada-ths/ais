@@ -16,25 +16,27 @@ export interface DashboardResponse {
     period: RegistrationPeriod
     application_status: ApplicationStatus
     deadline: string
-    has_signed_ir: boolean
-    has_signed_fr: boolean
     fair: RegistrationFair
     ir_contract: Contract
     cr_contract: Contract
+    ir_signature: Signature | null
+    cr_signature: Signature | null
     sales_contacts: SalesContact[]
     orders: Order[]
     contact: Contact | null
-    exhibitor: Exhibitor
+    exhibitor: Exhibitor | null
     company: Company
     products: Product[]
     interested_in: Array<{ id: number }>
 }
 
 export enum ApplicationStatus {
+    UNSIGNED_IR = "unsigned_ir", // Unsigned, company has not yet signed the initial registration
     ACCEPTED = "accepted", // Accepted, company has explicitly been accepted by armada
     REJECTED = "rejected", // Rejected, company has explicitly been rejected by armada
     PENDING = "pending", //  Pending, company has not yet been accepted or rejected by armada
-    WAITLIST = "waitlist" // Company is on the waitlist as a backup
+    WAITLIST = "waitlist", // Company is on the waitlist as a backup
+    SIGNED_CR = "signed_cr" // Company has signed the complete registration
 }
 
 export interface Exhibitor {
@@ -130,6 +132,10 @@ export interface RegistrationFair {
 export interface Contract {
     name: string
     contract: string
+}
+
+export interface Signature {
+    timestamp: string
 }
 
 export interface Contact {

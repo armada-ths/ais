@@ -18,8 +18,8 @@ export function LogoFormPage() {
     const { data } = useDashboard()
     const companyName = data?.company.name
 
-    const defaultSquare = data?.exhibitor.catalogue_logo_squared
-    const defaultFreeSize = data?.exhibitor.catalogue_logo_freesize
+    const defaultSquare = data?.exhibitor?.catalogue_logo_squared
+    const defaultFreeSize = data?.exhibitor?.catalogue_logo_freesize
 
     const { mutate, isPending } = useMutation({
         mutationFn: async (data: { square: unknown; freeSize: unknown }) =>

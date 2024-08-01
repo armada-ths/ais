@@ -54,15 +54,15 @@ export function DetailedFormPage() {
 
     const [defaultData, setDefaultData] = useState<z.infer<typeof formSchema>>({
         catalogue_employments:
-            data?.exhibitor.catalogue_employments.filter(
+            data?.exhibitor?.catalogue_employments.filter(
                 employment => employment.selected && employment.include_in_form
             ) ?? [],
         catalogue_industries:
-            data?.exhibitor.catalogue_industries.filter(
+            data?.exhibitor?.catalogue_industries.filter(
                 industry => industry.selected && industry.include_in_form
             ) ?? [],
         catalogue_locations:
-            data?.exhibitor.catalogue_locations.filter(
+            data?.exhibitor?.catalogue_locations.filter(
                 location => location.selected && location.include_in_form
             ) ?? []
     })
@@ -157,7 +157,7 @@ export function DetailedFormPage() {
                                 placeholder="Select your employment types"
                                 value={field.value}
                                 options={
-                                    data?.exhibitor.catalogue_employments.filter(
+                                    data?.exhibitor?.catalogue_employments.filter(
                                         employment => employment.include_in_form
                                     ) ?? []
                                 }
@@ -185,7 +185,7 @@ export function DetailedFormPage() {
                                 optionLabel="industry"
                                 placeholder="Select your industries"
                                 options={
-                                    data?.exhibitor.catalogue_industries.filter(
+                                    data?.exhibitor?.catalogue_industries.filter(
                                         industry => industry.include_in_form
                                     ) ?? []
                                 }
@@ -214,7 +214,7 @@ export function DetailedFormPage() {
                                 optionLabel="location"
                                 placeholder="Select your locations"
                                 options={
-                                    data?.exhibitor.catalogue_locations.filter(
+                                    data?.exhibitor?.catalogue_locations.filter(
                                         location => location.include_in_form
                                     ) ?? []
                                 }

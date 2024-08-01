@@ -14,28 +14,28 @@ export const TIMELINE_STEPS: Partial<
         }
     >
 > = {
-    "before_initial_registration:::*:::*": {
+    "before_initial_registration:::*": {
         title: "This year's fair is still under development",
         description:
             "We're still working on the initial registration, come back later..."
     },
-    "initial_registration:::*:::*": {
+    "initial_registration:::*": {
         title: "Welcome to Armada!",
         description:
             "To get a spot in this year's event, please complete the initial registration"
     },
-    "initial_registration:::ir_signed:::*": {
+    "initial_registration:::!unsigned_ir": {
         title: "You have completed this year's initial registration",
         description:
             "We'll be in touch! Feel free to add additional information about your company",
         variant: "success"
     },
-    "between_ir_and_cr:::*:::*": {
+    "between_ir_and_cr:::*": {
         title: "You have completed this year's initial registration",
         description: "We'll be in touch!",
         variant: "success"
     },
-    "between_ir_and_cr:::unsigned:::*": {
+    "between_ir_and_cr:::unsigned_ir": {
         title: "You did not complete the initial registration",
         description: (
             <>
@@ -47,23 +47,23 @@ export const TIMELINE_STEPS: Partial<
         ),
         variant: "warning"
     },
-    "between_ir_and_cr:::*:::accepted": {
+    "between_ir_and_cr:::accepted": {
         title: "Congratulations! You've got a spot at the fair",
         description: "We'll be in touch with more information",
         variant: "success"
     },
-    "between_ir_and_cr:::*:::rejected": {
+    "*:::rejected": {
         title: "We are at full capacity",
         description:
             "Unfortunately, we are unable to offer you a spot at the fair, if any spot appears we will contact you",
         variant: "warning"
     },
-    "between_ir_and_cr:::*:::pending": {
+    "between_ir_and_cr:::pending": {
         title: "Welcome!",
         description: (
             <>
                 We are currently processing your application. If you have any
-                questions contact us at
+                questions contact us at{" "}
                 <a href="mailto:sales@armada.nu" className="underline">
                     sales@armada.nu
                 </a>{" "}
@@ -71,22 +71,22 @@ export const TIMELINE_STEPS: Partial<
         ),
         variant: "info"
     },
-    "complete_registration:::cr_signed:::*": {
+    "complete_registration:::signed_cr": {
         title: "You have completed the final registration",
         description:
             "Please make sure to fill in the remaining cards. See you at the fair!",
         variant: "success"
     },
-    "complete_registration:::ir_signed:::*": {
+    "complete_registration:::unsigned_ir": {
         title: "Welcome to the Armada final registration!",
         description:
-            "Complete the registration to participate in this year's event"
-    },
-    "complete_registration:::unsigned:::*": {
-        title: "Welcome to the Armada final registration!",
-        description:
-            "You have not completed the initial registration, please contact our sales team",
+            "Please complete the initial registration to request a spot in the fair.",
         variant: "warning"
+    },
+    "complete_registration:::!signed_cr": {
+        title: "Welcome to the Armada final registration!",
+        description:
+            "Please complete the registration to participate in this year's event."
     }
 }
 

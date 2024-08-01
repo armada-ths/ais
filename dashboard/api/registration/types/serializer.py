@@ -115,7 +115,6 @@ class ExhibitorSerializer(WritableNestedModelSerializer):
             "transport_to",
             "transport_from",
             "transport_comment",
-            "application_status",
         )
         fields = read_only_fields + (
             "transport_information_read",
@@ -139,7 +138,6 @@ class ExhibitorSerializer(WritableNestedModelSerializer):
 
     transport_to = serializers.SerializerMethodField(read_only=True)
     transport_from = serializers.SerializerMethodField(read_only=True)
-    application_status = serializers.SerializerMethodField(read_only=True)
 
     def get_transport_to(self, obj):
         return dict(Exhibitor.transport_to_statuses).get(obj.transport_to, "Unknown")
@@ -147,11 +145,6 @@ class ExhibitorSerializer(WritableNestedModelSerializer):
     def get_transport_from(self, obj):
         return dict(Exhibitor.transport_from_statuses).get(
             obj.transport_from, "Unknown"
-        )
-
-    def get_application_status(self, obj):
-        return dict(Exhibitor.application_statuses).get(
-            obj.application_status, "Unknown"
         )
 
 
@@ -230,6 +223,7 @@ class RegistrationSerializer(serializers.Serializer):
     # Read only fields
     fair = FairSerializer(read_only=True)
     period = serializers.StringRelatedField(read_only=True)
+    application_status = serializers.StringRelatedField(read_only=True)
 
     ir_contract = SignupContractSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)

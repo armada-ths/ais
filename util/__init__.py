@@ -33,6 +33,18 @@ class JSONError(BaseException):
         self.status = status
 
 
+def get_application_status(exhibitor, ir_signature, cr_signature):
+    if ir_signature is None or exhibitor is None:
+        return "unsigned_ir"
+
+    if cr_signature is not None:
+        return "signed_cr"
+
+    return dict(Exhibitor.application_statuses).get(
+        exhibitor.application_status, "unknown"
+    )
+
+
 def get_contract_signature(company, fair, type="COMPLETE"):
     signature = SignupLog.objects.filter(
         company=company, contract__fair=fair, contract__type=type

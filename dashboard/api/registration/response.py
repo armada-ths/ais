@@ -2,7 +2,7 @@ import datetime
 from ais.common import settings
 from dashboard.api.registration.types.registration import get_registration
 from exhibitors.models import Exhibitor
-from util import JSONError, get_user, status
+from util import JSONError, get_contract_signature, get_exhibitor, get_user, status
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -14,6 +14,14 @@ from accounting.models import Order
 
 from util.email import send_mail
 from util.ip import get_client_ip
+
+
+def ensure_exhibitor_exists_after_ir_signup(fair, company):
+    _ir_contract, ir_signature = get_contract_signature(company, fair, "INITIAL")
+    exhibitor = Exhibitor.objects.filter(fair=fair, company=company).first()
+
+    if ir_signature != None and exhibitor == None:
+        Exhibitor.objects.create(fair=fair, company=company)
 
 
 def handle_response(request, company, fair, contact, exhibitor):
@@ -44,10 +52,14 @@ def submit_cr(request, company, fair, contact, exhibitor):
     if registration.contact == None:
         return status.COMPANY_DOES_NOT_EXIST
 
-    signature = registration.cr_signature
-
-    if signature != None:
+    if registration.cr_signature != None:
         return status.EXHIBITOR_ALREADY_SIGNED
+
+    if registration.ir_signature is None:
+        return status.COMPANY_NOT_SIGNED_IR
+
+    if registration.application_status != "accepted":
+        return status.COMPANY_NOT_ACCEPTED
 
     signature = SignupLog.objects.create(
         company_contact=contact,
@@ -80,7 +92,8 @@ def submit_cr(request, company, fair, contact, exhibitor):
             "company": company,
             "fair": fair,
             "signature": signature,
-            "deadline": registration.deadline,
+            "deadline": exhibitor.deadline_complete_registration
+            or fair.complete_registration_close_date,
         },
         subject="Final registration received!",
         to=[signature.company_contact.email_address],
@@ -160,9 +173,10 @@ def submit_ir(request, company, fair, contact):
         ip_address=get_client_ip(request),
     )
 
-    exhibitor = Exhibitor.objects.create(fair=fair, company=company)
-
+    ensure_exhibitor_exists_after_ir_signup(fair, company)
     send_ir_confirmation_email(request, fair, signature, company)
+
+    exhibitor = get_exhibitor(company)
 
     try:
         registration = get_registration(company, fair, contact, exhibitor)

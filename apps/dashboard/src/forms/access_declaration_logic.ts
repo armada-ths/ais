@@ -3,20 +3,21 @@ import {
     RegistrationPeriod
 } from "@/shared/hooks/api/useDashboard"
 
-export enum SignupState {
-    Unsigned = "unsigned",
-    IrSigned = "ir_signed",
-    CrSigned = "cr_signed"
-}
-
 export type AccessDeclaration = `${RegistrationPeriod | "*"}:::${
-    | SignupState
-    | "*"}:::${ApplicationStatus | "*"}`
+    | (ApplicationStatus | `!${ApplicationStatus}`)
+    | "*"}`
 
 export interface AccessDeclarationArgs {
     period: RegistrationPeriod
-    exhibitorStatus: ApplicationStatus
-    signupState: SignupState
+    exhibitorStatus: ApplicationStatus | "unsigned_ir"
+}
+
+function accessPropertyMatches(variable: string, property: string): boolean {
+    if (property === "*") return true
+    if (property.startsWith("!")) {
+        return variable !== property.slice(1)
+    }
+    return variable === property
 }
 
 export function parseAccessDeclaration<TValue>(
@@ -25,7 +26,7 @@ export function parseAccessDeclaration<TValue>(
 ): {
     accessDeclaration: AccessDeclaration
     value: TValue
-    specificity: number
+    priority: number
 } | null {
     const debug = false
 
@@ -33,60 +34,34 @@ export function parseAccessDeclaration<TValue>(
     const matches: Array<{
         accessDeclaration: AccessDeclaration
         value: TValue
-        specificity: number
+        priority: number
     }> = []
 
-    for (const [key, value] of Object.entries(declaration)) {
-        const [period, signupState, exhibitorStatus] = key.split(":::")
+    for (const [i, [key, value]] of Object.entries(declaration).entries()) {
+        const [period, exhibitorStatus] = key.split(":::")
+
         if (
-            (period === "*" || period === state.period) &&
-            isSignupStateMatched(
-                state.signupState,
-                signupState as SignupState
-            ) &&
-            (exhibitorStatus === "*" ||
-                exhibitorStatus === state.exhibitorStatus)
+            accessPropertyMatches(state.period, period) &&
+            accessPropertyMatches(state.exhibitorStatus, exhibitorStatus)
         ) {
             matches.push({
                 accessDeclaration: key as AccessDeclaration,
                 value,
-                specificity: accessDeclarationSpecificity(
-                    key as AccessDeclaration
-                )
+                priority: i
             })
         }
     }
 
     if (matches.length === 0) return null
 
-    const sortedMatches = matches.sort((a, b) => b.specificity - a.specificity)
+    const sortedMatches = matches.sort((a, b) => a.priority - b.priority)
 
     if (debug && import.meta.env.MODE === "development") {
         console.log(`[DEBUG Access Declaration]: Picked`, sortedMatches[0])
         console.table(matches)
     }
+
+    console.log({ state, sortedMatches })
+
     return sortedMatches[0]
-}
-
-export function isSignupStateMatched(
-    signupState: SignupState,
-    min: SignupState | "*"
-): boolean {
-    if (min === "*") return true
-    const values: Record<SignupState, number> = {
-        unsigned: 0,
-        ir_signed: 1,
-        cr_signed: 2
-    }
-
-    return values[signupState] >= values[min]
-}
-
-export function accessDeclarationSpecificity(
-    declaration: AccessDeclaration
-): number {
-    return declaration
-        .split(":::")
-        .map(part => (part === "*" ? 0 : 1))
-        .reduce<number>((a, b) => a + b, 0)
 }

@@ -1,29 +1,19 @@
-import { SignupState } from "@/forms/access_declaration_logic"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
-
-export function getExhibitorStatus(
-    hasSignedIr?: boolean,
-    hasSignedCr?: boolean
-) {
-    if (hasSignedCr) {
-        return SignupState.CrSigned
-    } else if (hasSignedIr) {
-        return SignupState.IrSigned
-    }
-    return SignupState.Unsigned
-}
 
 export function useAccessDeclaration() {
     const { data, ...rest } = useDashboard()
 
-    const period = data?.period
-    const signupState = getExhibitorStatus(
-        data?.has_signed_ir,
-        data?.has_signed_fr
-    )
-    const exhibitorStatus = data?.application_status
+    if (data == null) {
+        return {
+            data: null,
+            ...rest
+        }
+    }
 
-    if (period == null || signupState == null || exhibitorStatus == null) {
+    const period = data.period
+    const exhibitorStatus = data.application_status
+
+    if (period == null) {
         return {
             data: null,
             ...rest
@@ -32,7 +22,6 @@ export function useAccessDeclaration() {
 
     const state = {
         period,
-        signupState,
         exhibitorStatus
     }
 

@@ -1,6 +1,5 @@
 import { parseAccessDeclaration } from "@/forms/access_declaration_logic"
 import IrRegistrationPage from "@/forms/ir_signup/ir_registration.page"
-import { getExhibitorStatus } from "@/shared/hooks/api/useAccessDeclaration"
 import { Form } from "../form_types"
 
 export const form = {
@@ -18,17 +17,10 @@ export const form = {
                 !!parseAccessDeclaration(
                     {
                         exhibitorStatus: dashboard.application_status,
-                        period: dashboard.period,
-                        signupState: getExhibitorStatus(
-                            dashboard.has_signed_ir,
-                            dashboard.has_signed_fr
-                        )
+                        period: dashboard.period
                     },
                     {
-                        "initial_registration:::ir_signed:::*": true,
-                        "complete_registration:::ir_signed:::*": true,
-                        "complete_registration:::cr_signed:::*": true,
-                        "after_complete_registration:::cr_signed:::*": true
+                        "*:::!unsigned_ir": true
                     }
                 )
         }

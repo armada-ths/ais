@@ -39,13 +39,13 @@ export function BasicInfoFormPage() {
     const [defaultFormValues, setDefaultFormValues] = useState<
         z.infer<typeof formSchema>
     >({
-        catalogue_about: data?.exhibitor.catalogue_about,
-        catalogue_cities: data?.exhibitor.catalogue_cities,
-        catalogue_contact_name: data?.exhibitor.catalogue_contact_name,
+        catalogue_about: data?.exhibitor?.catalogue_about,
+        catalogue_cities: data?.exhibitor?.catalogue_cities,
+        catalogue_contact_name: data?.exhibitor?.catalogue_contact_name,
         catalogue_contact_email_address:
-            data?.exhibitor.catalogue_contact_email_address,
+            data?.exhibitor?.catalogue_contact_email_address,
         catalogue_contact_phone_number:
-            data?.exhibitor.catalogue_contact_phone_number
+            data?.exhibitor?.catalogue_contact_phone_number
     })
 
     const { mutate, isPending } = useMutation({

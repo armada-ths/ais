@@ -1,4 +1,10 @@
-from util import JSONError, get_contract_signature, get_fair, get_sales_contacts, status
+from util import (
+    JSONError,
+    get_application_status,
+    get_contract_signature,
+    get_sales_contacts,
+    status,
+)
 
 from fair.models import RegistrationPeriod
 from accounting.models import Order
@@ -21,6 +27,10 @@ class Registration:
         cr_contract, cr_signature = get_contract_signature(company, fair, "COMPLETE")
         self.cr_contract = cr_contract
         self.cr_signature = cr_signature
+
+        self.application_status = get_application_status(
+            exhibitor, ir_signature, cr_signature
+        )
 
         self.sales_contacts = get_sales_contacts(fair, company, exhibitor)
         self.interested_in = company.groups.filter(fair=fair, allow_registration=True)

@@ -11,45 +11,44 @@ export enum CardStatus {
     HiddenLocked = "hidden_locked"
 }
 
-
 type FormAccessDeclaration = Record<
     keyof typeof FORMS,
     Partial<Record<AccessDeclaration, CardStatus>>
 >
 
 // follows format
-// PERIOD:::COMPANY_CONTRACT:::EXHIBITOR_ACCEPTANCE
+// PERIOD:::EXHIBITOR_STATE
 export const FORM_ACCESS: FormAccessDeclaration = {
     ir_signup: {
-        "initial_registration:::unsigned:::*": CardStatus.Shown,
-        "initial_registration:::ir_signed:::*": CardStatus.ShownLocked,
-        "between_ir_and_cr:::ir_signed:::*": CardStatus.ShownLocked
+        "*:::unsigned_ir": CardStatus.Shown,
+        "initial_registration:::!unsigned_ir": CardStatus.ShownLocked,
+        "between_ir_and_cr:::!unsigned_ir": CardStatus.ShownLocked
     },
     ir_additional_info: {
-        "initial_registration:::ir_signed:::*": CardStatus.Shown
+        "initial_registration:::!unsigned_ir": CardStatus.Shown,
+        "between_ir_and_cr:::!unsigned_ir": CardStatus.Shown
     },
     exhibitor_catalog: {
-        "between_ir_and_cr:::*:::*": CardStatus.Shown,
-        "complete_registration:::*:::*": CardStatus.Shown,
-        "after_complete_registration:::*:::*": CardStatus.Shown
+        "between_ir_and_cr:::*": CardStatus.Shown,
+        "complete_registration:::*": CardStatus.Shown,
+        "after_complete_registration:::*": CardStatus.Shown
     },
     fr_accounting: {
-        "complete_registration:::*:::*": CardStatus.Shown,
-        "complete_registration:::*:::rejected": CardStatus.HiddenLocked,
-        "complete_registration:::cr_signed:::*": CardStatus.HiddenLocked
+        "complete_registration:::rejected": CardStatus.HiddenLocked,
+        "complete_registration:::signed_cr": CardStatus.HiddenLocked,
+        "complete_registration:::*": CardStatus.Shown
     },
     receipt: {
-        "complete_registration:::*:::*": CardStatus.HiddenLocked,
-        "complete_registration:::cr_signed:::*": CardStatus.HiddenLocked
+        "*:::signed_cr": CardStatus.HiddenLocked
     },
     core_values: {
-        "complete_registration:::cr_signed:::*": CardStatus.Shown
+        "*:::signed_cr": CardStatus.Shown
     },
     transport: {
-        "complete_registration:::cr_signed:::*": CardStatus.Shown
+        "*:::signed_cr": CardStatus.Shown
     },
     sture: {
-        "complete_registration:::cr_signed:::*": CardStatus.Shown
+        "*:::signed_cr": CardStatus.Shown
     }
 }
 
