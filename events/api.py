@@ -35,9 +35,9 @@ def index(request):
     """
     fair = Fair.objects.get(current=True)
     events = (
-        Event.objects.filter(fair=fair, published=True)
-        .prefetch_related("signupquestion_set")
-        #.annotate(participant_count=Count("participant"))
+        Event.objects.filter(fair=fair, published=True).prefetch_related(
+            "signupquestion_set"
+        )
     )
 
     data = [serializers.event(event, request) for event in events]
@@ -54,7 +54,7 @@ def show(request, event_pk):
     event = Event.objects.get(pk=event_pk)
 
     data = serializers.event(event, request)
-    
+
     return JsonResponse(data, safe=False)
 
 
