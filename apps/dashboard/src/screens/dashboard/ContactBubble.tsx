@@ -23,7 +23,7 @@ export function ContactBubble() {
     return (
         <Drawer>
             <DrawerTrigger>
-                <div className="fixed bottom-5 right-10 h-20 w-20 rounded-full transition-all duration-200 active:scale-95">
+                <div className="fixed bottom-10 right-10 h-20 w-20 rounded-full transition-all duration-200 active:scale-95">
                     <div className="absolute -right-2 -top-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
                         <MessageCircleQuestion
                             size={20}
@@ -68,6 +68,8 @@ export function ContactBubble() {
                                             {companyContact.phone_number}
                                         </a>
                                     </p>
+                                    <p className="text-sm text-stone-400">
+                                        //Chatten ska vara här</p>
                                 </div>
                             </DrawerDescription>
                         </div>
@@ -89,7 +91,7 @@ export function ContactBubble() {
                                 <DrawerTitle>Secondary Contacts</DrawerTitle>
                                 <div className="flex flex-wrap justify-between gap-4">
                                     {additionalCompanyContacts.map(contact => (
-                                        <div>
+                                        <div key={contact.email}>
                                             <p className="text-sm">
                                                 {contact.first_name} -{" "}
                                                 {contact.title}

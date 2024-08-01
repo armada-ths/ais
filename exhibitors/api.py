@@ -8,9 +8,18 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
+from companies.models import CompanyContact
 from exhibitors import serializers
-from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth, LocationTick
+from exhibitors.models import (
+    Exhibitor,
+    Location,
+    Booth,
+    ExhibitorInBooth,
+    LocationTick,
+    ExhibitorChat,
+)
 from fair.models import Fair, FairDay
+from util.permission import UserPermission
 
 MISSING_IMAGE = "/static/missing.png"
 
@@ -303,6 +312,54 @@ def create_booth(request, location_pk):
     )
 
     return JsonResponse({"booth": serializers.booth(booth)}, status=201)
+
+
+@require_POST
+def post_chat_message(request, exhibitor_pk):
+
+    if not request.user:
+        return JsonResponse({"message": "Authentication required."}, status=403)
+
+    exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
+
+    company = exhibitor.company
+    contact = CompanyContact.objects.get(user=request.user, company=company)
+
+    if not contact:
+        return JsonResponse({"message": "Authentication required."}, status=403)
+
+    data = json.load(request.body)
+
+    chat = ExhibitorChat.objects.create(
+        exhibitor=exhibitor,
+        user=request.user,
+        is_armada_response=False,
+        chat=data["chat"],
+    )
+    return JsonResponse({"chat": serializers.exhibitor_chat(chat)}, status=201)
+
+
+def chat_messages(request, exhibitor_pk):
+    if not request.user:
+        return JsonResponse({"message": "Authentication required."}, status=403)
+
+    exhibitor = get_object_or_404(Exhibitor, pk=exhibitor_pk)
+
+    permission = UserPermission(request.user)
+    user_is_contact_person = request.user in exhibitor.contact_persons.all()
+
+    allowed = (
+        permission == UserPermission.SALES
+        or user_is_contact_person
+        or CompanyContact.objects.get(user=request.user, company=exhibitor.company)
+    )
+    if not allowed:
+        return JsonResponse({"message": "Authentication required."}, status=403)
+
+    chats = ExhibitorChat.objects.filter(exhibitor=exhibitor)
+    chat_list = [serializers.exhibitor_chat(chat) for chat in chats]
+
+    return JsonResponse({"chats": chat_list})
 
 
 @require_POST

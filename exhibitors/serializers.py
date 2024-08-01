@@ -65,6 +65,17 @@ def exhibitor(request, exhibitor, company):
     return data
 
 
+def exhibitor_chat(chat):
+    data = {
+        "name": f"{chat.user.first_name},{chat.user.last_name}",
+        "email": chat.user.email,
+        "comment": chat.chat,
+        "time": chat.timestamp,
+        "is_armada": chat.is_armada_response,
+    }
+    return data
+
+
 def lunch_ticket(lunch_ticket):
     data = {
         "id": lunch_ticket.pk,

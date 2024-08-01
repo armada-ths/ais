@@ -380,6 +380,24 @@ class Exhibitor(models.Model):
         ]
 
 
+# After signing the contract it should be possible to write comments to the CRM
+class ExhibitorChat(models.Model):
+    exhibitor = models.ForeignKey(
+        Exhibitor, null=True, on_delete=models.SET_NULL, db_index=True
+    )
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    is_armada_response = models.BooleanField()
+
+    chat = models.TextField(null=False, blank=False)
+    timestamp = models.DateTimeField(null=False, blank=False, auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        return self.chat
+
+
 class FairLocationSpecial(models.Model):
     name = models.CharField(blank=True, null=True, max_length=255)
     fair = models.ForeignKey("fair.Fair", on_delete=models.CASCADE)
