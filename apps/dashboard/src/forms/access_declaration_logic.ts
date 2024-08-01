@@ -26,7 +26,6 @@ export function parseAccessDeclaration<TValue>(
 ): {
     accessDeclaration: AccessDeclaration
     value: TValue
-    priority: number
 } | null {
     const debug = false
 
@@ -37,31 +36,26 @@ export function parseAccessDeclaration<TValue>(
         priority: number
     }> = []
 
-    for (const [i, [key, value]] of Object.entries(declaration).entries()) {
+    for (const [key, value] of Object.entries(declaration)) {
         const [period, exhibitorStatus] = key.split(":::")
 
         if (
             accessPropertyMatches(state.period, period) &&
             accessPropertyMatches(state.exhibitorStatus, exhibitorStatus)
         ) {
-            matches.push({
+            const result = {
                 accessDeclaration: key as AccessDeclaration,
-                value,
-                priority: i
-            })
+                value
+            }
+
+            if (debug && import.meta.env.MODE === "development") {
+                console.log(`[DEBUG Access Declaration]: Picked`, result)
+                console.table(matches)
+            }
+
+            return result
         }
     }
 
-    if (matches.length === 0) return null
-
-    const sortedMatches = matches.sort((a, b) => a.priority - b.priority)
-
-    if (debug && import.meta.env.MODE === "development") {
-        console.log(`[DEBUG Access Declaration]: Picked`, sortedMatches[0])
-        console.table(matches)
-    }
-
-    console.log({ state, sortedMatches })
-
-    return sortedMatches[0]
+    return null
 }
