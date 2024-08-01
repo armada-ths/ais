@@ -72,10 +72,10 @@ class Event(models.Model):
     )
 
     def is_full(self):
-        return self.number_of_signups() >= self.max_capacity
+        return self.number_of_signups() >= self.event_max_capacity
 
     def number_of_signups(self):
-        return self.participant_count.count()
+        return self.participant_set.count()
 
     class Meta:
         ordering = ["date_start", "name"]

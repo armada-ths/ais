@@ -38,7 +38,8 @@ def event(event, request):
         "open_for_signup_student": event.open_for_signup and event.signup_s,
         "open_for_signup_company": event.open_for_signup and event.signup_cr,
         "event_max_capacity": event.event_max_capacity,
-        "participant_count": event.participant_count,
+        "participant_count": event.participant_set.count(),
+        "fully_booked": event.is_full(),
     }
 
     return data
