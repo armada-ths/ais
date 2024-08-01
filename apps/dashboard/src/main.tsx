@@ -22,6 +22,7 @@ import { DashboardScreen } from "./screens/dashboard/screen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
 import { FinalRegistrationThankYouScreen } from "./screens/fr_thank_you/screen.tsx"
 import { InfoScreen } from "./shared/InfoScreen.tsx"
+import { VisualizeScreen } from "@/screens/visualize/VisualizeStates.tsx"
 
 const rootRoute = createRootRoute({
     errorComponent: () => <div>404</div>,
@@ -36,6 +37,11 @@ const companyDashboard = createRoute({
     path: "/",
     getParentRoute: () => companyRoute,
     component: () => <DashboardScreen />
+})
+const companyVisualizeStates = createRoute({
+    path: "/visualize",
+    getParentRoute: () => companyRoute,
+    component: () => <VisualizeScreen />
 })
 const companyForm = createRoute({
     path: "/form",
@@ -108,6 +114,7 @@ const routeTree = rootRoute.addChildren([
     companyRegister,
     companyRoute.addChildren([
         companyDashboard,
+        companyVisualizeStates,
         companyThankYou,
         companyForm.addChildren([
             companyFormPage.addChildren([companyFormStep])

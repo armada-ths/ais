@@ -18,16 +18,30 @@ import LoadingAnimation from "@/utils/loading_animation/loading_animation"
 import { AlertTriangle, BadgeInfo, CheckCircle } from "lucide-react"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
+import { AccessDeclarationArgs } from "@/forms/access_declaration_logic"
+import clsx from "clsx"
 
-export function DashboardScreen() {
+export function DashboardScreen({
+    forceAccessDeclaration,
+    hideContactBubble,
+    hideName,
+    hideLogout
+}: {
+    forceAccessDeclaration?: AccessDeclarationArgs
+    hideContactBubble?: boolean
+    hideName?: boolean
+    hideLogout?: boolean
+}) {
     const {
         data: dates,
         isLoading: isLoadingDates,
         isError: isErrorDates
     } = useDates()
     const { data, isLoading, isError } = useDashboard()
-    const { data: accessDeclaration } = useAccessDeclaration()
     const forms = FORMS
+
+    const _accessDeclaration = useAccessDeclaration()
+    const accessDeclaration = forceAccessDeclaration ?? _accessDeclaration
 
     const companyContact = data?.sales_contacts?.[0]
 
@@ -47,14 +61,20 @@ export function DashboardScreen() {
     const timelinePhaseAlert = getTimelinePhaseMessage(accessDeclaration)
 
     return (
-        <div className="flex min-h-[100dvh] flex-col">
-            <div className="flex w-full justify-end">
-                <LogoutButton />
-            </div>
+        <div
+            className={clsx("flex flex-col", {
+                "min-h-[100dvh]": !hideContactBubble
+            })}
+        >
+            {!hideLogout && (
+                <div className="flex w-full justify-end">
+                    <LogoutButton />
+                </div>
+            )}
             <div className={cx("flex flex-col-reverse md:flex-row")}>
                 <div className="flex flex-1 flex-col items-center px-5">
                     <div className="flex flex-col items-center">
-                        {data.contact?.first_name != null && (
+                        {!hideName && data.contact?.first_name != null && (
                             <Card className="max-w-[700px]">
                                 <CardHeader>
                                     <CardTitle title={data.company.name}>
@@ -111,8 +131,9 @@ export function DashboardScreen() {
                     </div>
                 </div>
             </div>
-            <div className="relative flex flex-1 items-end justify-center">
-                {/* <Timeline
+            {!hideContactBubble && (
+                <div className="relative flex flex-1 items-end justify-center">
+                    {/* <Timeline
                     className="mb-10 mt-20 h-28 w-2/3"
                     stages={[
                         {
@@ -177,12 +198,13 @@ export function DashboardScreen() {
                     ]}
                     current={data.type}
                 /> */}
-                {companyContact != null && (
-                    <div className="absolute flex w-full justify-end p-4 lg:p-8">
-                        <ContactBubble />
-                    </div>
-                )}
-            </div>
+                    {companyContact != null && (
+                        <div className="absolute flex w-full justify-end p-4 lg:p-8">
+                            <ContactBubble />
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

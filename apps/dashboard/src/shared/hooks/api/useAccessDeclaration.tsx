@@ -1,32 +1,15 @@
+import { AccessDeclarationArgs } from "@/forms/access_declaration_logic"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 
-export function useAccessDeclaration() {
-    const { data, ...rest } = useDashboard()
+export function useAccessDeclaration(): AccessDeclarationArgs | null {
+    const { data } = useDashboard()
 
-    if (data == null) {
-        return {
-            data: null,
-            ...rest
-        }
-    }
-
-    const period = data.period
-    const exhibitorStatus = data.application_status
-
-    if (period == null) {
-        return {
-            data: null,
-            ...rest
-        }
-    }
-
-    const state = {
-        period,
-        exhibitorStatus
+    if (data?.period == null) {
+        return null
     }
 
     return {
-        data: state,
-        ...rest
+        period: data.period,
+        exhibitorStatus: data.application_status
     }
 }

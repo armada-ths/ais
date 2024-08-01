@@ -20,26 +20,25 @@ type FormAccessDeclaration = Record<
 // PERIOD:::EXHIBITOR_STATE
 export const FORM_ACCESS: FormAccessDeclaration = {
     ir_signup: {
-        "*:::unsigned_ir": CardStatus.Shown,
-        "initial_registration:::!unsigned_ir": CardStatus.ShownLocked,
-        "between_ir_and_cr:::!unsigned_ir": CardStatus.ShownLocked
+        "initial_registration:::unsigned_ir": CardStatus.Shown,
+        "between_ir_and_cr:::unsigned_ir": CardStatus.Shown,
+        "complete_registration:::unsigned_ir": CardStatus.Shown
     },
     ir_additional_info: {
         "initial_registration:::!unsigned_ir": CardStatus.Shown,
         "between_ir_and_cr:::!unsigned_ir": CardStatus.Shown
     },
     exhibitor_catalog: {
-        "between_ir_and_cr:::*": CardStatus.Shown,
-        "complete_registration:::*": CardStatus.Shown,
-        "after_complete_registration:::*": CardStatus.Shown
+        "initial_registration:::!unsigned_ir": CardStatus.Shown,
+        "between_ir_and_cr:::!unsigned_ir": CardStatus.Shown,
+        "complete_registration:::!unsigned_ir": CardStatus.Shown,
+        "after_complete_registration:::signed_cr": CardStatus.Shown
     },
     fr_accounting: {
-        "complete_registration:::rejected": CardStatus.HiddenLocked,
-        "complete_registration:::signed_cr": CardStatus.HiddenLocked,
-        "complete_registration:::*": CardStatus.Shown
+        "complete_registration:::accepted": CardStatus.Shown
     },
     receipt: {
-        "*:::signed_cr": CardStatus.HiddenLocked
+        "*:::signed_cr": CardStatus.Shown
     },
     core_values: {
         "*:::signed_cr": CardStatus.Shown
