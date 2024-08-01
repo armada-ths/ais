@@ -4,6 +4,7 @@ import json
 from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
 from accounting.models import Order
 from banquet.models import Banquet, Participant
@@ -18,21 +19,30 @@ from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
 from .forms import (
-    ExhibitorViewForm,
-    ExhibitorCreateForm,
-    ExhibitorCreateBypassedForm,
-    TransportForm,
-    DetailsForm,
-    ContactPersonForm,
-    CheckInForm,
-    CommentForm,
-    ExhibitorSearchForm,
     BoothForm,
-    ExhibitorInBoothForm,
+    ChatForm,
+    CheckInForm,
+    ContactPersonForm,
+    CommentForm,
     CoordinatesForm,
+    DetailsForm,
     FairLocationForm,
+    ExhibitorCreateBypassedForm,
+    ExhibitorCreateForm,
+    ExhibitorInBoothForm,
+    ExhibitorSearchForm,
+    ExhibitorViewForm,
+    TransportForm,
 )
-from .models import Exhibitor, ExhibitorView, Booth, ExhibitorInBooth, Location, User
+from .models import (
+    Exhibitor,
+    ExhibitorView,
+    Booth,
+    ExhibitorInBooth,
+    Location,
+    User,
+    ExhibitorChat,
+)
 
 from dal import autocomplete
 from django.utils.html import format_html
@@ -372,24 +382,42 @@ def exhibitor(request, year, pk):
             {
                 "name": order.name if order.name is not None else order.product.name,
                 "comment": order.comment,
-                "unit_price": order.unit_price
-                if order.unit_price is not None
-                else order.product.unit_price,
+                "unit_price": (
+                    order.unit_price
+                    if order.unit_price is not None
+                    else order.product.unit_price
+                ),
                 "quantity": order.quantity,
             }
         )
 
-    form_comment = CommentForm(request.POST or None)
+    form_comment = CommentForm(prefix="form_comment")
+    form_chat = ChatForm(prefix="form_chat")
 
-    if request.POST and form_comment.is_valid():
-        comment = form_comment.save(commit=False)
-        comment.company = exhibitor.company
-        comment.user = request.user
-        comment.show_in_exhibitors = True
-        comment.save()
-        form_comment.save()
+    if request.method == "POST":
+        if "form_comment-submit" in request.POST:
+            form_comment = CommentForm(request.POST, prefix="form_comment")
 
-        form_comment = CommentForm()
+            if form_comment.is_valid():
+                comment = form_comment.save(commit=False)
+                comment.company = exhibitor.company
+                comment.user = request.user
+                comment.show_in_exhibitors = True
+                comment.save()
+
+                return redirect(request.path)
+
+        elif "form_chat-submit" in request.POST:
+            form_chat = ChatForm(request.POST, prefix="form_chat")
+
+            if form_chat.is_valid():
+                chat = form_chat.save(commit=False)
+                chat.exhibitor = exhibitor
+                chat.user = request.user
+                chat.is_armada_response = True
+                chat.save()
+
+                return redirect(request.path)
 
     contact_persons = []
 
@@ -424,9 +452,11 @@ def exhibitor(request, year, pk):
                 contact_persons.append(
                     {
                         "user": user,
-                        "role": application.delegated_role
-                        if application is not None
-                        else None,
+                        "role": (
+                            application.delegated_role
+                            if application is not None
+                            else None
+                        ),
                     }
                 )
 
@@ -465,6 +495,12 @@ def exhibitor(request, year, pk):
 
         banquets.append({"banquet": banquet, "banquet_tickets": banquet_tickets})
 
+    print(
+        ExhibitorChat.objects.filter(
+            # exhibitor=exhibitor,
+        )
+    )
+
     return render(
         request,
         "exhibitors/exhibitor.html",
@@ -480,6 +516,10 @@ def exhibitor(request, year, pk):
                 show_in_exhibitors=True,
                 timestamp__year=fair.year,
             ),
+            "chat": ExhibitorChat.objects.filter(
+                exhibitor=exhibitor,
+            ),
+            "form_chat": form_chat,
             "form_comment": form_comment,
             "contact_persons": contact_persons,
             "lunch_tickets_count_ordered": lunch_tickets_count_ordered,
@@ -672,6 +712,30 @@ def exhibitor_comment_remove(request, year, pk, comment_pk):
     comment.delete()
 
     return redirect("exhibitor", fair.year, exhibitor.pk)
+
+
+@permission_required("exhibitors.base")
+def exhibitor_chat_edit(request, year, pk, chat_pk):
+    fair = get_object_or_404(Fair, year=year)
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+    chat = get_object_or_404(
+        ExhibitorChat,
+        company=exhibitor.company,
+        pk=chat_pk,
+        user=request.user,
+    )
+
+    form = ChatForm(request.POST or None, instance=chat)
+
+    if request.POST and form.is_valid():
+        form.save()
+        return redirect("exhibitor", fair.year, exhibitor.pk)
+
+    return render(
+        request,
+        "exhibitors/exhibitor_chat_edit.html",
+        {"fair": fair, "exhibitor": exhibitor, "form": form},
+    )
 
 
 @permission_required("exhibitors.modify_booths")

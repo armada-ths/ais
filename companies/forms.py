@@ -10,7 +10,6 @@ from accounting.models import Product, Order
 from .models import (
     Company,
     CompanyAddress,
-    CompanyCustomer,
     CompanyCustomerResponsible,
     CompanyContact,
     CompanyCustomerComment,
