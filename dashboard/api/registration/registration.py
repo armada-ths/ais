@@ -17,14 +17,14 @@ def render_company(request, company, contact, exhibitor):
     fair = get_fair()
     period = fair.get_period()
 
-    if period == RegistrationState.BEFORE_IR:
-        return handle_ir(request, company, fair, contact)
-    elif period == RegistrationState.IR:
-        return handle_ir(request, company, fair, contact)
-    elif period == RegistrationState.AFTER_IR:
-        return handle_ir(request, company, fair, contact)
-    elif period == RegistrationState.AFTER_IR_ACCEPTANCE:
-        return handle_ir(request, company, fair, contact)
+    ir_states = [
+        RegistrationState.BEFORE_IR,
+        RegistrationState.IR,
+        RegistrationState.AFTER_IR,
+        RegistrationState.AFTER_IR_ACCEPTANCE,
+    ]
+    if period in ir_states:
+        return handle_ir(request, company, fair, contact, exhibitor)
     elif period == RegistrationState.CR:
         return handle_cr(request, company, fair, contact, exhibitor)
     elif period == RegistrationState.AFTER_CR:

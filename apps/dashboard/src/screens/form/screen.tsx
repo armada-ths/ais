@@ -9,9 +9,15 @@ import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { remoteSaveChanges } from "@/store/form/async_actions"
 import { AppDispatch } from "@/store/store"
 import { useFormMeta } from "@/useFormMeta"
-import { cx } from "@/utils/cx"
+import { cn, cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
-import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react"
+import {
+    ArrowLeft,
+    ArrowLeftIcon,
+    ArrowRight,
+    ArrowRightIcon,
+    CheckCircle
+} from "lucide-react"
 import { useDispatch } from "react-redux"
 import { FormPageView } from "./FormPageView"
 import PrimarySection from "./PrimarySection"
@@ -104,7 +110,7 @@ export function FormScreen() {
             })}
         >
             <ArrowLeft className="pr-2" size={25} />
-            Previous
+            Back
         </Button>
     )
 
@@ -128,24 +134,24 @@ export function FormScreen() {
         </Button>
     )
 
+    const prevButtonDisabled = !(
+        formPageIndex > 0 && formPage.hasPrevButton !== false
+    )
+    const nextButtonDisabled = formPage.hasNextButton === false
+
     return (
         <div>
             <Navbar
                 titleLeft={
                     <PrevButton
                         variant="outline"
-                        disabled={
-                            !(
-                                formPageIndex > 0 &&
-                                formPage.hasPrevButton !== false
-                            )
-                        }
+                        disabled={prevButtonDisabled}
                     />
                 }
                 titleRight={
                     <NextButton
                         variant="outline"
-                        disabled={formPage.hasNextButton === false}
+                        disabled={nextButtonDisabled}
                     />
                 }
             />
@@ -214,6 +220,30 @@ export function FormScreen() {
                         formId={form.key as keyof typeof FORMS}
                         page={formPage}
                     />
+                    <div className="flex-1" />
+                    <div className="flex w-full items-center gap-4 p-4">
+                        <Button
+                            onClick={handlePrevious}
+                            className={cn("flex gap-2", {
+                                "!opacity-0": prevButtonDisabled
+                            })}
+                            disabled={prevButtonDisabled}
+                        >
+                            <ArrowLeftIcon />
+                            Back
+                        </Button>
+                        <div className="flex-1" />
+                        <Button
+                            onClick={handleNext}
+                            className={cn("flex gap-2", {
+                                "!opacity-0": nextButtonDisabled
+                            })}
+                            disabled={nextButtonDisabled}
+                        >
+                            Next
+                            <ArrowRightIcon />
+                        </Button>
+                    </div>
                 </PrimarySection>
                 {SideBar != null && <SideBar />}
             </div>

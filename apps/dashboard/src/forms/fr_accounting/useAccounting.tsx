@@ -2,6 +2,7 @@ import { DashboardResponse, Order } from "@/shared/hooks/api/useDashboard"
 import { useOrders } from "@/shared/hooks/api/useOrders"
 import { HOST } from "@/shared/vars"
 import { useMutation } from "@tanstack/react-query"
+import { useParams } from "@tanstack/react-router"
 import { toast } from "sonner"
 
 export type OrderMutation = Pick<Order, "quantity"> & {
@@ -27,12 +28,15 @@ export function useAccountingMutation<
         "mutationFn" | "mutationKey"
     >
 ) {
+    const { companyId } = useParams({
+        from: "/$companyId/*"
+    })
     const { data: orders } = useOrders()
 
     const mutation = useMutation<TData, TErr, TVar>({
         mutationKey: ["mutate_orders"],
         mutationFn: async orders => {
-            const response = await fetch(`${HOST}/api/dashboard/`, {
+            const response = await fetch(`${HOST}/api/dashboard/${companyId}`, {
                 method: "PUT",
                 body: JSON.stringify({
                     orders: getOrderMutationData(orders)

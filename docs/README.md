@@ -79,7 +79,7 @@ You can choose to use a copy of the production database for your local developme
 
 #### Prepare static files
 
-1. `nvm install 16 && nvm use 16 && && npm install && npm run build` (compile the static files for e.g. the banquett and events systems).
+1. `nvm install 16 && nvm use 16 && npm install && npm run build` (compile the static files for e.g. the banquett and events systems).
 2. `cd apps/dashboard` (goto dashboard project).
 3. `nvm install 20 && nvm use 20 && pnpm install && pnpm build` (compile the the dashboard system).
 

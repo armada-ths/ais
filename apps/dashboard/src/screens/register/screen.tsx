@@ -52,7 +52,6 @@ export function RegisterScreen() {
 
     async function onSubmit() {
         const values = form.getValues()
-        console.log(values)
 
         navigate({
             from: "/register",

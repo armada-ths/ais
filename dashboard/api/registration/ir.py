@@ -14,9 +14,9 @@ from dashboard.api.registration.types.util import get_serializer, put_registrati
 from register.models import SignupLog
 
 
-def handle_ir(request, company, fair, contact):
+def handle_ir(request, company, fair, contact, exhibitor):
     try:
-        registration = get_registration(company, fair, contact, None)
+        registration = get_registration(company, fair, contact, exhibitor)
     except JSONError as error:
         return error.status
 
