@@ -136,7 +136,7 @@
           var input = inputs[inputIndex]
 
           if (input.required) {
-            var otherInputs = document.getElementsByName(input.name)
+            var otherInputs = form.getElementsByName(input.name)
             var j;
             var checked = false;
 
@@ -152,7 +152,7 @@
             }
 
             if (!checked) {
-              var labels = document.getElementsByTagName('label')
+              var labels = form.getElementsByTagName('label')
               var j;
 
               for (j = 0; j < labels.length; j++) {

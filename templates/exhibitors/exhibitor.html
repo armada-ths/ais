@@ -263,37 +263,60 @@
 			
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h2 class="panel-title">Write comment</h2>
+					<h2 class="panel-title">Internal comments</h2>
 				</div>
-				
+				<div class="panel-body" id="" style="overflow-y:auto; height:200px;">
+					{% for comment in comments %}
+						<div class="panel panel-info">
+							<div class="panel-heading">
+								{% if comment.user == user %}
+									<div class="pull-right">
+										<a onclick="confirm('Do you want to remove the comment?');" href="{% url 'exhibitor_comment_remove' fair.year exhibitor.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+										<a href="{% url 'exhibitor_comment_edit' fair.year exhibitor.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
+									</div>
+								{% endif %}
+								
+								<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
+								{{ comment.groups.all | join:", " }}
+							</div>
+							
+							<div class="panel-body">
+								<p>{{ comment.comment | linebreaks }}</p>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
 				<div class="panel-body">
 					<form method="post" enctype="multipart/form-data">
 						{% csrf_token %}
 						{{ form_comment | crispy }}
-						<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save comment</button>
+						<button name="form_comment-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save comment</button>
 					</form>
 				</div>
 			</div>
+
 			
-			{% for comment in comments %}
-				<div class="panel panel-info">
-					<div class="panel-heading">
-						{% if comment.user == user %}
-							<div class="pull-right">
-								<a onclick="confirm('Do you want to remove the comment?');" href="{% url 'exhibitor_comment_remove' fair.year exhibitor.pk comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-								<a href="{% url 'exhibitor_comment_edit' fair.year exhibitor.pk comment.pk %}"><span class="glyphicon glyphicon-edit"></span></a>
-							</div>
-						{% endif %}
-						
-						<h2 class="panel-title">{{ comment.user }} at {{ comment.timestamp }}</h2>
-						{{ comment.groups.all | join:", " }}
-					</div>
-					
-					<div class="panel-body">
-						<p>{{ comment.comment | linebreaks }}</p>
-					</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Exhibitor Chat</h2>
 				</div>
-			{% endfor %}
+				<div class="panel-body" id="" style="overflow-y:auto; height:400px;">
+					{% for comment in chat %}
+						<div class="panel panel-info" >
+							<div class="panel-body" >
+								<p>{{ comment.user }} at {{ comment.timestamp }} : {{ comment.chat| linebreaks }}</p>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+				<div class="panel-body">
+					<form method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+						{{ form_chat | crispy }}
+					<button name="form_chat-submit" type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Send</button>
+					</form>
+				</div>
+			</div>
 		</div>
 	</div>
 {% endblock %}

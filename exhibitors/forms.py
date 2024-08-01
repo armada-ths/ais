@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import inspect
 
 from companies.models import Company, CompanyCustomerComment
-from .models import ExhibitorView, Exhibitor, Booth, ExhibitorInBooth
+from .models import ExhibitorChat, ExhibitorView, Exhibitor, Booth, ExhibitorInBooth
 
 from dal import autocomplete
 
@@ -118,6 +118,15 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = CompanyCustomerComment
         fields = ["comment"]
+
+
+class ChatForm(forms.ModelForm):
+    class Meta:
+        model = ExhibitorChat
+        fields = ["chat"]
+        widgets = {
+            "chat": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }
 
 
 class BoothForm(forms.ModelForm):

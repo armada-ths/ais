@@ -3,7 +3,8 @@
 # This script will execute the makemigrations script inside
 # the ais-web docker container, given it's up and running.
 
-# Usage: ./make-migrations <name of migration> <name of module where field was added>
+# Usage: ./make-migration <name of migration> <name of module where field was added>
+# or ./make-migration.sh <name of migration> <name of module where field was added>
 
 if [ $# -lt 2 ]; then
 	echo 1>&2 "usage: $0 <name of migration> <name of module where field was added>"
