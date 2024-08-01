@@ -69,7 +69,7 @@ export function ContactBubble() {
                                         </a>
                                     </p>
                                     <p className="text-sm text-stone-400">
-                                       </p>
+                                        //Chatten ska vara här</p>
                                 </div>
                             </DrawerDescription>
                         </div>
