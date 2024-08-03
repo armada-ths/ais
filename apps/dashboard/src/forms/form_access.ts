@@ -35,6 +35,8 @@ export const FORM_ACCESS: FormAccessDeclaration = {
         "after_complete_registration:::signed_cr": CardStatus.Shown
     },
     fr_accounting: {
+        "complete_registration:::pending": CardStatus.Shown,
+        "complete_registration:::waitlist": CardStatus.Shown,
         "complete_registration:::accepted": CardStatus.Shown
     },
     receipt: {

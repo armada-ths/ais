@@ -5,6 +5,7 @@ import {
 } from "@/forms/access_declaration_logic"
 import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { cx } from "@/utils/cx"
+import { XIcon } from "lucide-react"
 
 export interface TimelineStage {
     when: AccessDeclaration[]
@@ -38,12 +39,25 @@ export function Timeline(
                     <div key={stage.when.join("-")} className="relative">
                         <div
                             className={cx(
-                                "aspect-square h-full scale-[1.7] rounded-full bg-emerald-400",
+                                "flex aspect-square h-full scale-[1.7] items-center justify-center rounded-full bg-stone-200 ",
                                 {
-                                    "bg-stone-200": index > currentIndex
+                                    "bg-emerald-400":
+                                        index <= currentIndex &&
+                                        checkAccessDeclarations(
+                                            accessDeclarationArgs,
+                                            stage.when
+                                        )
                                 }
                             )}
-                        ></div>
+                        >
+                            {index < currentIndex &&
+                                !checkAccessDeclarations(
+                                    accessDeclarationArgs,
+                                    stage.when
+                                ) && (
+                                    <XIcon className="h-3 w-3 text-stone-800" />
+                                )}
+                        </div>
                         {stage.badgeText != null && (
                             <Badge
                                 variant={
