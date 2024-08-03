@@ -26,7 +26,7 @@ export function FormScreen() {
         from: "/$companyId/form/$formKey/$formPageKey"
     })
     const { data: dashboardData } = useDashboard()
-    const { data: accessDeclaration } = useAccessDeclaration()
+    const accessDeclaration = useAccessDeclaration()
 
     const {
         form,
