@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/sonner.tsx"
 import { TooltipProvider } from "@/components/ui/tooltip.tsx"
 import { RegisterScreen } from "@/screens/register/screen.tsx"
 import { RegisterCompanyUserScreen } from "@/screens/register_user/screen.tsx"
+import { VisualizeScreen } from "@/screens/visualize/screen.tsx"
 import { queryClient } from "@/utils/query_client.ts"
 import { QueryClientProvider } from "@tanstack/react-query"
 import {
@@ -22,7 +23,6 @@ import { DashboardScreen } from "./screens/dashboard/screen.tsx"
 import { FormScreen } from "./screens/form/screen.tsx"
 import { FinalRegistrationThankYouScreen } from "./screens/fr_thank_you/screen.tsx"
 import { InfoScreen } from "./shared/InfoScreen.tsx"
-import { VisualizeScreen } from "@/screens/visualize/VisualizeStates.tsx"
 
 const rootRoute = createRootRoute({
     errorComponent: () => <div>404</div>,
