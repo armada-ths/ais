@@ -6,20 +6,22 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { FORMS } from "@/forms"
+import { AccessDeclarationArgs } from "@/forms/access_declaration_logic"
 import { isFormOpen, isFormVisible } from "@/forms/form_access"
 import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
 import { LogoutButton } from "@/shared/LogoutButton"
+import { Timeline } from "@/shared/Timeline"
 import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useDates } from "@/shared/hooks/api/useDates"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
+import clsx from "clsx"
 import { AlertTriangle, BadgeInfo, CheckCircle } from "lucide-react"
+import { DateTime } from "luxon"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
-import { AccessDeclarationArgs } from "@/forms/access_declaration_logic"
-import clsx from "clsx"
 
 export function DashboardScreen({
     forceAccessDeclaration,
@@ -133,71 +135,61 @@ export function DashboardScreen({
             </div>
             {!hideContactBubble && (
                 <div className="relative flex flex-1 items-end justify-center">
-                    {/* <Timeline
-                    className="mb-10 mt-20 h-28 w-2/3"
-                    stages={[
-                        {
-                            id: [
-                                "initial_registration",
-                                "after_initial_registration"
-                            ],
-                            title: "Initial Registration",
-                            badgeText: `${DateTime.fromISO(
-                                dates.ir.start
-                            ).toFormat("MMM d")} - ${DateTime.fromISO(
-                                dates.ir.end
-                            ).toFormat("MMM d")}`
-                        },
-                        {
-                            id: [
-                                "after_initial_registration_signed",
-                                "initial_registration_signed"
-                            ],
-                            title: "You have completed initial registration"
-                        },
-                        {
-                            id: [
-                                "after_initial_registration_acceptance_accepted"
-                            ],
-                            title: "You got a spot at the fair",
-                            badgeText: DateTime.fromISO(
-                                dates.ir.acceptance
-                            ).toFormat("MMM d")
-                        },
-                        {
-                            id: [
-                                "complete_registration_ir_signed",
-                                "complete_registration_ir_unsigned",
-                                "complete_registration_signed"
-                            ],
-                            title: "Final registration",
-                            badgeText: `${DateTime.fromISO(
-                                dates.fr.start
-                            ).toFormat("MMM d")} - ${DateTime.fromISO(
-                                dates.fr.end
-                            ).toFormat("MMM d")}`
-                        },
-                        {
-                            id: [],
-                            title: "You have completed final registration"
-                        },
-                        {
-                            id: [],
-                            title: "The fair 🥳",
-                            badgeText: DateTime.fromISO(
-                                dates.fair.days.reduce(
-                                    (acc, curr) =>
-                                        DateTime.fromISO(acc) <
-                                        DateTime.fromISO(curr)
-                                            ? acc
-                                            : curr,
-                                    dates.fair.days[0]
-                                )
-                            ).toFormat("MMM d")
-                        }
-                    ]}
-                    current={data.type}
-                /> */}
+                    <Timeline
+                        className="mb-10 mt-20 h-28 w-2/3"
+                        stages={[
+                            {
+                                when: ["initial_registration:::*"],
+                                title: "Initial Registration",
+                                badgeText: `${DateTime.fromISO(
+                                    dates.ir.start
+                                ).toFormat("MMM d")} - ${DateTime.fromISO(
+                                    dates.ir.end
+                                ).toFormat("MMM d")}`
+                            },
+                            {
+                                when: ["between_ir_and_cr:::!accepted"],
+                                title: "You have completed initial registration"
+                            },
+                            {
+                                when: ["between_ir_and_cr:::accepted"],
+                                title: "You got a spot at the fair",
+                                badgeText: DateTime.fromISO(
+                                    dates.ir.acceptance
+                                ).toFormat("MMM d")
+                            },
+                            {
+                                when: ["complete_registration:::!signed_cr"],
+                                title: "Final registration",
+                                badgeText: `${DateTime.fromISO(
+                                    dates.fr.start
+                                ).toFormat("MMM d")} - ${DateTime.fromISO(
+                                    dates.fr.end
+                                ).toFormat("MMM d")}`
+                            },
+                            {
+                                when: [
+                                    "complete_registration:::signed_cr",
+                                    "after_complete_registration:::signed_cr"
+                                ],
+                                title: "You have completed final registration"
+                            },
+                            {
+                                when: ["fair:::*"],
+                                title: "The fair 🥳",
+                                badgeText: DateTime.fromISO(
+                                    dates.fair.days.reduce(
+                                        (acc, curr) =>
+                                            DateTime.fromISO(acc) <
+                                            DateTime.fromISO(curr)
+                                                ? acc
+                                                : curr,
+                                        dates.fair.days[0]
+                                    )
+                                ).toFormat("MMM d")
+                            }
+                        ]}
+                    />
                     {companyContact != null && (
                         <div className="absolute flex w-full justify-end p-4 lg:p-8">
                             <ContactBubble />

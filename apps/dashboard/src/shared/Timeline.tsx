@@ -1,8 +1,13 @@
 import { Badge } from "@/components/ui/badge"
+import {
+    AccessDeclaration,
+    checkAccessDeclarations
+} from "@/forms/access_declaration_logic"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { cx } from "@/utils/cx"
 
 export interface TimelineStage {
-    id: unknown
+    when: AccessDeclaration[]
     title: string
     badgeText?: string
 }
@@ -10,15 +15,13 @@ export interface TimelineStage {
 export function Timeline(
     props: {
         stages: TimelineStage[]
-        current: unknown
     } & React.HTMLProps<HTMLDivElement>
 ) {
-    const { stages, current, className, ...rest } = props
+    const accessDeclarationArgs = useAccessDeclaration()
+    const { stages, className, ...rest } = props
 
     const currentIndex = stages.findIndex(stage =>
-        Array.isArray(stage.id)
-            ? stage.id.includes(current)
-            : stage.id === current
+        checkAccessDeclarations(accessDeclarationArgs, stage.when)
     )
     const currentPercentage = currentIndex / (stages.length - 1)
 
@@ -32,17 +35,7 @@ export function Timeline(
                     className="absolute h-full rounded-3xl bg-emerald-400"
                 />
                 {stages.map((stage, index) => (
-                    <div
-                        // @ts-expect-error oupsis this broke when migrating from redux
-                        key={
-                            Array.isArray(stage.id)
-                                ? stage.id.length <= 0
-                                    ? index
-                                    : stage.id.join("-")
-                                : stage.id
-                        }
-                        className="relative"
-                    >
+                    <div key={stage.when.join("-")} className="relative">
                         <div
                             className={cx(
                                 "aspect-square h-full scale-[1.7] rounded-full bg-emerald-400",
