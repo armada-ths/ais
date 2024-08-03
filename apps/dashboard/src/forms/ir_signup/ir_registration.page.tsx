@@ -43,7 +43,9 @@ export default function IrRegistrationPage() {
             await fetch(`${HOST}/api/dashboard/sign_ir`, {
                 method: "POST"
             }),
-        onSuccess: async () => {
+        onSuccess: async response => {
+            if (response.status < 200 || response.status >= 300)
+                return toast.error("Failed to sign up")
             await queryClient.invalidateQueries({
                 queryKey: ["dashboard"]
             })
