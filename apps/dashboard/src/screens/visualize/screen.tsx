@@ -53,6 +53,10 @@ const Combinations: AccessDeclarationArgs[] = [
 ]
 
 export function VisualizeScreen() {
+    if (!import.meta.env.DEV) {
+        return null
+    }
+
     return (
         <>
             {Combinations.map((arg, i) => (
