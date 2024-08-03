@@ -1,5 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 
+from dashboard.api.registration.types.registration import get_registration
 from util import (
     get_company_contact,
     get_exhibitor,
@@ -34,9 +35,6 @@ def render_company(request, company, contact, exhibitor):
 @csrf_exempt
 def sign_ir(request):
     fair = get_fair()
-    period = fair.get_period()
-    if period != RegistrationPeriod.IR:
-        return status.INVALID_SUBMIT_PERIOD
 
     user = get_user(request)
     if user == None:
@@ -45,6 +43,13 @@ def sign_ir(request):
     contact = get_company_contact(user)
     if contact == None:
         return status.USER_HAS_NO_COMPANY
+
+    company = get_exhibitor(contact.company)
+
+    # Cannot sign twice
+    registration = get_registration(contact.company, fair, contact, company)
+    if registration.ir_signature != None:
+        return status.COMPANY_ALREADY_SIGNED
 
     company = contact.company
 
