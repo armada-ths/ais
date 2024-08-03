@@ -28,12 +28,12 @@ const formSchema = z.object({
     invoice_name: z.string().nonempty(),
     invoice_email_address: z.string().email(),
     invoice_address_line_1: z.string().nonempty(),
-    invoice_address_line_2: z.string().optional(),
-    invoice_address_line_3: z.string().optional(),
+    invoice_address_line_2: z.string().nullable(),
+    invoice_address_line_3: z.string().nullable(),
     invoice_zip_code: z.string().min(4).max(10),
     invoice_city: z.string().nonempty(),
     invoice_country: z.string().nonempty(),
-    invoice_reference: z.string().optional()
+    invoice_reference: z.string().nullable()
 })
 
 export function InvoiceDetailsFormPage({
@@ -72,12 +72,12 @@ export function InvoiceDetailsFormPage({
         invoice_name: data?.company.invoice_name as string,
         invoice_email_address: data?.company.invoice_email_address as string,
         invoice_address_line_1: data?.company.invoice_address_line_1 as string,
-        invoice_address_line_2: data?.company.invoice_address_line_2,
-        invoice_address_line_3: data?.company.invoice_address_line_3,
+        invoice_address_line_2: data?.company.invoice_address_line_2 ?? null,
+        invoice_address_line_3: data?.company.invoice_address_line_3 ?? null,
         invoice_zip_code: data?.company.invoice_zip_code as string,
         invoice_city: data?.company.invoice_city as string,
         invoice_country: data?.company.invoice_country as string,
-        invoice_reference: data?.company.invoice_reference
+        invoice_reference: data?.company.invoice_reference ?? null
     })
 
     const {
