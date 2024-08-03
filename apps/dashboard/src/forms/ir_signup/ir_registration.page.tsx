@@ -53,9 +53,7 @@ export default function IrRegistrationPage() {
             toast.success("Signup complete", {
                 description: `You have successfully signed up for Armada ${
                     DateTime.now().year
-                }!`,
-                onAutoClose: exitView,
-                onDismiss: exitView
+                }!`
             })
         }
     })
@@ -64,9 +62,9 @@ export default function IrRegistrationPage() {
         if (companyId == null) return
         // Redirect to the next step
         navigate({
-            to: "/$companyId/form/$formKey",
+            to: "/$companyId",
             replace: true,
-            params: { companyId, formKey: "ir_additional_info" }
+            params: { companyId }
         })
     }
 
