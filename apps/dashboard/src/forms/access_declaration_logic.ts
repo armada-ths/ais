@@ -59,3 +59,16 @@ export function parseAccessDeclaration<TValue>(
 
     return null
 }
+
+export function checkAccessDeclarations(
+    state: AccessDeclarationArgs | null,
+    declarations: AccessDeclaration[]
+) {
+    const declarationObject = declarations.reduce<
+        Partial<Record<AccessDeclaration, boolean>>
+    >((acc, declaration) => {
+        acc[declaration] = true
+        return acc
+    }, {})
+    return parseAccessDeclaration(state, declarationObject)?.value ?? false
+}
