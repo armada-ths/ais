@@ -9,6 +9,9 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
+import { FormIds } from "@/forms"
+import { checkAccessDeclarations } from "@/forms/access_declaration_logic"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useDates } from "@/shared/hooks/api/useDates"
 import { HOST } from "@/shared/vars"
@@ -29,10 +32,15 @@ export default function IrRegistrationPage() {
 
     const { data: dataDates } = useDates()
     const { data, isLoading } = useDashboard()
+    const accessDeclarationArgs = useAccessDeclaration()
 
     const [readTerms, setReadTerms] = useState(false)
     const [acceptedBinding, setAcceptedBinding] = useState(false)
     const [processData, setProcessData] = useState(false)
+
+    const isFinalRegistration = checkAccessDeclarations(accessDeclarationArgs, [
+        "complete_registration:::*:::*"
+    ])
 
     const {
         mutate: signIr,
@@ -50,8 +58,16 @@ export default function IrRegistrationPage() {
                 queryKey: ["dashboard"]
             })
             // Redirect back to the dashboard
-            toast.success("Signup complete", {
-                description: `You have successfully signed up for Armada ${
+            if (!isFinalRegistration) {
+                toast.success("Signup complete", {
+                    description: `You have successfully signed up for Armada ${
+                        DateTime.now().year
+                    }!`
+                })
+            }
+
+            toast.success("First step done", {
+                description: `You have completed the first step of the registration, continue to ordering ${
                     DateTime.now().year
                 }!`
             })
@@ -59,12 +75,21 @@ export default function IrRegistrationPage() {
     })
 
     function exitView() {
-        if (companyId == null) return
-        // Redirect to the next step
+        if (!isFinalRegistration) {
+            navigate({
+                to: "/$companyId",
+                replace: true,
+                params: { companyId }
+            })
+        }
         navigate({
-            to: "/$companyId",
+            to: "/$companyId/form/$formKey/$formPageKey",
             replace: true,
-            params: { companyId }
+            params: {
+                companyId,
+                formKey: "fr_accounting" as FormIds,
+                formPageKey: "packages"
+            }
         })
     }
 
@@ -207,7 +232,9 @@ export default function IrRegistrationPage() {
             <div className="mt-5">
                 {mutationIsSuccess ? (
                     <Button variant="link" onClick={exitView}>
-                        Take the next step
+                        {isFinalRegistration
+                            ? "Continue to ordering"
+                            : "Take the next step"}
                     </Button>
                 ) : (
                     <Button

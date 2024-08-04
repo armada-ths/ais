@@ -9,7 +9,7 @@ import { cn } from "@/utils/cx"
 import { ErrorMessage } from "@hookform/error-message"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useBlocker, useParams } from "@tanstack/react-router"
+import { useBlocker, useNavigate, useParams } from "@tanstack/react-router"
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -48,6 +48,7 @@ export function DetailedFormPage() {
     const { companyId } = useParams({
         from: "/$companyId/*"
     })
+    const navigate = useNavigate()
 
     const queryClient = useQueryClient()
     const { data } = useDashboard()
@@ -228,9 +229,21 @@ export function DetailedFormPage() {
 
                 <Button type="submit" className={cn("flex gap-4")}>
                     {isPending && <Loader2Icon className="animate-spin" />}{" "}
-                    Submit
+                    Submit and save
                 </Button>
             </form>
+            <Button
+                onClick={() =>
+                    navigate({
+                        to: "/$companyId",
+                        params: { companyId }
+                    })
+                }
+                className="mt-10"
+                variant={"ghost"}
+            >
+                Take me home
+            </Button>
             {/*             <FormField.MultiSelect
                 label="Your industries (Think about everything an interesting student might search for)"
                 mapping="exhibitor.catalogue_industries"
