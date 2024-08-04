@@ -23,9 +23,9 @@ export function getMutableFormsInstance() {
 }
 export const FORMS = {
     ir_signup: IrSignupForm,
-    ir_additional_info: IrAdditionalInfo,
     fr_accounting: FrAccountingForm, //
     receipt: ReceiptForm,
+    ir_additional_info: IrAdditionalInfo,
     exhibitor_catalog: ExhibitorCatalogForm,
     transport: TransportForm,
     //lunch_tickets: CreateLunchTicketsForm, //
