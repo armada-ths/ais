@@ -28,7 +28,12 @@ class RegistrationSectionAdmin(ModelAdminImproved):
 
 @admin.register(ChildProduct)
 class ChildProductAdmin(ModelAdminImproved):
-    fields = ("child_product", "quantity")
+    fields = ("child_product", "description", "quantity")
+
+
+@admin.register(SpecificProduct)
+class SpecificProductAdmin(ModelAdminImproved):
+    fields = ("specific_product", "description", "unit_price")
 
 
 class YearDescendingFilter(admin.SimpleListFilter):

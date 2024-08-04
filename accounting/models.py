@@ -53,9 +53,28 @@ class RegistrationSection(models.Model):
         return self.name
 
 
+class SpecificProduct(models.Model):
+    unit_price = models.IntegerField(blank=False)
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Optional, describe why you created this specific product. This will not be shown to the customer.",
+    )
+    specific_product = models.ForeignKey(
+        "Product", blank=False, on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return "%s á %s SEK" % (self.specific_product, self.unit_price)
+
+
 class ChildProduct(models.Model):
     quantity = models.PositiveIntegerField(blank=False)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Optional, describe why you created this child product. This will not be shown to the customer.",
+    )
     child_product = models.ForeignKey("Product", blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -156,6 +175,19 @@ class Product(models.Model):
         ),
     )
 
+    specific_products = models.ManyToManyField(
+        SpecificProduct,
+        blank=True,
+        help_text=" ".join(
+            [
+                "(ONLY RELEVANT FOR PACKAGES AS ROOT PRODUCTS)",
+                "These products will only be shown to the customer if they select the current package",
+                "This feature was used in 2024 when silver and bronze packages lead to different prices on the same products",
+                'Neccessary is to toggle the "Display in product list" to false on for the specific product (otherwise it will be displayed with standard price).',
+            ]
+        ),
+    )
+
     display_in_product_list = models.BooleanField(
         default=True,
         help_text=" ".join(
@@ -164,6 +196,17 @@ class Product(models.Model):
                 "or it was ordered with a package",
                 "Only a salesperson can add and remove it.",
                 "Used among other things to be a child product to a package product.",
+            ]
+        ),
+    )
+
+    display_only_when_specific_for_packages = models.BooleanField(
+        default=False,
+        help_text=" ".join(
+            [
+                "This product will only be shown to the customer if they select a package that has this product as a specific product.",
+                "When to use this: e.g. A package is gatekeeping this product, only show the product when the package is selected.",
+                "When not to use this: e.g. This product's price is only affected by one or more packages, but the product is still available for purchase without the package.",
             ]
         ),
     )

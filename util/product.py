@@ -18,4 +18,7 @@ def get_products(fair, company):
     else:
         q |= Q(exclusively_for__contains=["ir-late"])
 
-    return Product.objects.filter(revenue__fair=fair).filter(q)
+    return Product.objects.filter(
+        revenue__fair=fair,
+        display_only_when_specific_for_packages=False,
+    ).filter(q)

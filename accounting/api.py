@@ -6,6 +6,7 @@ from accounting.models import (
     Order,
     Product,
     RegistrationSection,
+    SpecificProduct,
 )
 
 
@@ -70,14 +71,25 @@ class ChildProductSerializer(serializers.ModelSerializer):
     child_product = ProductChildSerializer()
 
 
+class SpecificProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecificProduct
+        read_only_fields = ("unit_price", "specific_product")
+        fields = read_only_fields
+
+    specific_product = ProductChildSerializer()
+
+
 class ProductSerializer(ProductChildSerializer):
     class Meta(ProductChildSerializer.Meta):
         read_only_fields = ProductChildSerializer.Meta.read_only_fields + (
             "child_products",
+            "specific_products",
         )
         fields = ProductChildSerializer.Meta.fields + read_only_fields
 
     child_products = ChildProductSerializer(many=True)
+    specific_products = SpecificProductSerializer(many=True)
 
 
 class OrderSerializer(serializers.ModelSerializer):
