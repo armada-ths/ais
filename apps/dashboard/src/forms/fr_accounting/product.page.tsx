@@ -2,6 +2,7 @@ import { belongsToSection } from "@/forms/fr_accounting/accounting_utilities"
 import { DiscountCard } from "@/forms/fr_accounting/components/DiscountCard"
 import { ProductOrderingCard } from "@/forms/fr_accounting/components/ProductOrderingCard"
 import { Category, Product } from "@/shared/hooks/api/useDashboard"
+import { useOrders } from "@/shared/hooks/api/useOrders"
 import { useProducts } from "@/shared/hooks/api/useProducts"
 import { RegistrationSection } from "@/shared/vars"
 import React, { useMemo } from "react"
@@ -9,21 +10,47 @@ import { FormWrapper } from "../FormWrapper"
 
 export function ProductFormPage({ section }: { section: RegistrationSection }) {
     const { data: allProducts } = useProducts()
+    const { data: orders } = useOrders()
+
+    const selectedPackage = orders.find(
+        order =>
+            order.product.registration_section?.name ===
+            RegistrationSection.Packages
+    )
     const products = useMemo(
-        () =>
-            allProducts.filter(
+        () => [
+            ...allProducts.filter(
                 product =>
                     belongsToSection(product, section) &&
                     product.display_in_product_list
             ),
-        [allProducts, section]
+            ...(selectedPackage?.product.specific_products
+                .filter(
+                    specificProduct =>
+                        specificProduct.specific_product.registration_section !=
+                            null &&
+                        specificProduct.specific_product.registration_section
+                            .name === section
+                )
+                .map(specificProduct => specificProduct.specific_product) ?? [])
+        ],
+        [allProducts, section, selectedPackage?.product.specific_products]
     )
 
     const categorizedProducts = useMemo(
         () =>
             Object.entries(
                 products.reduce<
-                    Record<string, { category?: Category; products: Product[] }>
+                    Record<
+                        string,
+                        {
+                            category?: Category
+                            products: Omit<
+                                Product,
+                                "child_products" | "specific_products"
+                            >[]
+                        }
+                    >
                 >(
                     // Split products into categories
                     (total, current) => {

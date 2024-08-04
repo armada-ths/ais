@@ -1,4 +1,4 @@
-import { HOST } from "@/shared/vars"
+import { HOST, RegistrationSection } from "@/shared/vars"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 
@@ -93,9 +93,9 @@ export interface Category {
     allow_multiple_purchases: boolean
 }
 
-export interface RegistrationSection {
+export interface ProductRegistrationSection {
     id: string
-    name: string
+    name: RegistrationSection
     description: string
     hide_from_registration: boolean
 }
@@ -114,7 +114,7 @@ export interface Product {
     description: string
     category: Category | null
     display_in_product_list: boolean
-    registration_section: RegistrationSection | null
+    registration_section: ProductRegistrationSection | null
     child_products: ChildProduct[]
     specific_products: Array<{
         unit_price: number
