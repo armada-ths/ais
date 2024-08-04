@@ -102,7 +102,7 @@ export interface RegistrationSection {
 
 export interface ChildProduct {
     quantity: number
-    child_product: Omit<Product, "child_products">
+    child_product: Omit<Product, "child_products" | "specific_products">
 }
 
 export interface Product {
@@ -116,6 +116,10 @@ export interface Product {
     display_in_product_list: boolean
     registration_section: RegistrationSection | null
     child_products: ChildProduct[]
+    specific_products: Array<{
+        unit_price: number
+        specific_product: Omit<Product, "child_products" | "specific_products">
+    }>
 }
 
 export interface SalesContact {
