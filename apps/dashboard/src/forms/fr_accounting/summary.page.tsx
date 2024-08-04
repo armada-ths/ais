@@ -73,8 +73,12 @@ export function SummaryFormPage() {
                 </h2>
             )}
             <div className="mb-5 flex gap-5">
-                {productPackage == null && (
+                {productPackage == null ? (
                     <p className="mb-1 text-sm">No package selected</p>
+                ) : (
+                    <p className="mb-1 text-sm">
+                        Make sure you have filled in your invoice information
+                    </p>
                 )}
                 {/*                 {unfilledFields.map(current => (
                     <Card key={current.page.id}>
