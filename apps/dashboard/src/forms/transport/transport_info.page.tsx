@@ -130,7 +130,7 @@ export function TransportInfoFormPage() {
                     <div className="mb-10 mt-8 flex flex-col gap-5 pl-5">
                         <ActionItem i={1}>
                             <LinkWithIcon
-                                href="/static/DHL_Form.pdf"
+                                href="/static/THS_Armada_2023_Logistics.pdf"
                                 icon={<DownloadIcon />}
                             >
                                 Download the DHL form
