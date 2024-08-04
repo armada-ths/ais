@@ -170,8 +170,8 @@ export function ProductOrderingCard({
                                 </Badge>
                             </div>
                         )}
-                        {product.max_quantity != null &&
-                            product.max_quantity > 1 &&
+                        {(product.max_quantity == null ||
+                            product.max_quantity > 1) &&
                             packageProductBaseQuantity > 0 && (
                                 <Tooltip>
                                     <TooltipTrigger>
