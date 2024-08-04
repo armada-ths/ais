@@ -33,8 +33,6 @@ def handle_response(request, company, fair, contact, exhibitor):
 
     serializer = get_serializer(request, registration)
 
-    print(order_is_allowed(fair, company))
-
     if request.method == "GET":
         return JsonResponse(serializer.data, safe=False)
     elif request.method == "PUT":
