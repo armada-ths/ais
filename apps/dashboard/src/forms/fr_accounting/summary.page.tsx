@@ -189,7 +189,7 @@ export function SummaryFormPage() {
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction onClick={submitRegistration}>
-                                    Complete registration
+                                    Final registration
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>

@@ -5,11 +5,11 @@
 	Hello {{ signature.company_contact }}!
 </p>
 <p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
-	Thank you for submitting the final registration for THS Armada {{ fair.year }}. The complete registration contract was
+	Thank you for submitting the final registration for THS Armada {{ fair.year }}. The final registration contract was
 	signed by {{ signature.company_contact }} on the {{ signature.timestamp|date:"Y-m-d (H:i)" }} for {{ signature.company }}.
 </p>
 <p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
-	The complete registration is binding and you will be liable for all additional services selected at the last date of the registration
+	The final registration is binding and you will be liable for all additional services selected at the last date of the registration
 	({{ deadline|date:"Y-m-d" }}), provided that THS Armada is able to supply your organization with your choices. To view your order, please visit the dashboard.
 </p>
 {% include 'email/button.html' with content="Go to dashboard" url="https://ais.armada.nu/register" %}

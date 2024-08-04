@@ -71,7 +71,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "complete_registration:::signed_cr:::pending": {
             title: "You have completed the final registration!",
             description:
-                "We are currently processing your application. In the meanwhile, please make sure to fill in the remaining cards.",
+                "We are currently processing your application. Meanwhile, please make sure to fill in the remaining cards.",
             variant: "success"
         },
         "complete_registration:::signed_cr:::accepted": {
@@ -83,11 +83,11 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "complete_registration:::signed_cr:::waitlist": {
             title: "You have completed the final registration!",
             description:
-                "You have been placed on the waitlist. In the meanwhile, please make sure to fill in the remaining cards.",
+                "You have been placed on the waitlist. Meanwhile, please make sure to fill in the remaining cards.",
             variant: "success"
         },
         "after_complete_registration:::!signed_cr:::*": {
-            title: "The complete registration is over",
+            title: "The final registration is over",
             description: (
                 <>
                     Please contact us at {salesEmail} if you want to participate
@@ -99,7 +99,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "after_complete_registration:::signed_cr:::pending": {
             title: "You have completed the final registration!",
             description:
-                "We are currently processing your application. In the meanwhile, please make sure to fill in the remaining cards.",
+                "We are currently processing your application. Meanwhile, please make sure to fill in the remaining cards.",
             variant: "success"
         },
         "after_complete_registration:::signed_cr:::accepted": {
@@ -111,7 +111,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "after_complete_registration:::signed_cr:::waitlist": {
             title: "You have completed the final registration!",
             description:
-                "You have been placed on the waitlist. In the meanwhile, please make sure to fill in the remaining cards.",
+                "You have been placed on the waitlist. Meanwhile, please make sure to fill in the remaining cards.",
             variant: "success"
         },
         "fair:::!signed_cr:::*": {
@@ -157,7 +157,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
             title: "We are currently processing your application",
             description: (
                 <>
-                    In the meanwhile, please fill out the available cards. If
+                    Meanwhile, please fill out the available cards. If
                     you have any questions please contact us at {salesEmail}.
                 </>
             ),
@@ -167,7 +167,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
             title: "You have been placed on the waitlist",
             description: (
                 <>
-                    In the meanwhile, please fill out the available cards. If
+                    Meanwhile, please fill out the available cards. If
                     you have any questions please contact us at {salesEmail}.
                 </>
             ),
@@ -176,7 +176,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "*:::*:::accepted": {
             title: "Congratulations! You've got a spot at the fair",
             description:
-                "We'll be in touch with more information, in the mean time, please fill out the available forms",
+                "We'll be in touch with more information. Meanwhile, please fill out the available forms",
             variant: "success"
         },
         "*:::!signed_ir:::*": {
