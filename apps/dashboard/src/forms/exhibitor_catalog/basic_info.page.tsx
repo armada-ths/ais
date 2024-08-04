@@ -94,7 +94,7 @@ export function BasicInfoFormPage() {
                 <div>
                     <InputLabel
                         htmlFor="catalogue_about"
-                        tooltip="Your organization number"
+                        tooltip="Short description about your company"
                         required
                     >
                         About company

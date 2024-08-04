@@ -287,10 +287,12 @@ export function InvoiceDetailsFormPage({
                         {...register("invoice_reference")}
                     />
                 </div>
-                <Button type="submit" className={cn("flex gap-4")}>
-                    {isPending && <Loader2Icon className="animate-spin" />}{" "}
-                    Submit
-                </Button>
+                {!readOnly && (
+                    <Button type="submit" className={cn("flex gap-4")}>
+                        {isPending && <Loader2Icon className="animate-spin" />}{" "}
+                        Submit
+                    </Button>
+                )}
             </form>
         </FormWrapper>
     )

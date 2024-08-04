@@ -52,7 +52,7 @@ export const OrderDetails = () => {
 
     return (
         <FormWrapper>
-            <div className={cx("flex flex-col gap-2")}>
+            <div className={cx("flex w-full flex-col gap-2")}>
                 {orders.map(order => (
                     <div
                         key={order.id}
@@ -75,7 +75,7 @@ export const OrderDetails = () => {
                     </div>
                 ))}
             </div>
-            <div className="mt-5 flex flex-col items-center justify-between rounded bg-slate-200 p-1 px-3">
+            <div className="mt-5 flex w-full flex-col items-center justify-between rounded bg-slate-200 p-1 px-3">
                 <div className="flex w-full justify-between">
                     <h2 className="text-lg">Net</h2>
                     <p className="text">{formatCurrency(totalPrice)} kr</p>

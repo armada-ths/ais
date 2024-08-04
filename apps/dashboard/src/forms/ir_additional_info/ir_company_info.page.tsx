@@ -15,57 +15,43 @@ import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { HOST } from "@/shared/vars"
 import { asOptionalField } from "@/utils/zod_optional_field"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
-import { useBlocker } from "@tanstack/react-router"
-import { useCallback } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useBlocker, useParams } from "@tanstack/react-router"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 const formSchema = z.object({
     orgName: z.string().min(2).max(50),
     identityNumber: z.string().min(2).max(50),
-    website: asOptionalField(z.string().url().nullable()),
-    corporateEmail: asOptionalField(z.string().email().nullable())
+    website: asOptionalField(z.string().url()),
+    corporateEmail: asOptionalField(z.string().email())
 })
 
-export default function IrAdditionalInfoPageWrapper() {
-    const { data: dataRegistration, isLoading } = useDashboard()
+export default function IrAdditionalInfoPage() {
+    const { companyId } = useParams({
+        from: "/$companyId"
+    })
+    const queryClient = useQueryClient()
+    const { data } = useDashboard()
 
-    if (isLoading) return null
-    if (!dataRegistration) return null
-
-    return <IrAdditionalInfoPage dataRegistration={dataRegistration} />
-}
-
-export function IrAdditionalInfoPage({
-    dataRegistration
-}: {
-    dataRegistration: NonNullable<
-        Awaited<ReturnType<typeof useDashboard>>
-    >["data"]
-}) {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            orgName: dataRegistration?.company.name ?? "",
-            identityNumber: dataRegistration?.company.identity_number ?? "",
-            website: dataRegistration?.company.website ?? "",
-            corporateEmail:
-                dataRegistration?.company.general_email_address ?? ""
-        }
+    const [defaultValues, setDefaultValues] = useState<
+        z.infer<typeof formSchema>
+    >({
+        orgName: data?.company.name ?? "",
+        identityNumber: data?.company.identity_number ?? "",
+        website: data?.company.website ?? "",
+        corporateEmail: data?.company.general_email_address ?? ""
     })
 
-    const { confirm } = useConfirmSaveAlert()
-
-    useBlocker(confirm, form.formState.isDirty)
-
-    const { mutateAsync, isPending } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: async ({
             orgName,
             identityNumber,
             website,
             corporateEmail
-        }: z.infer<typeof formSchema>) => {
-            const response = fetch(`${HOST}/api/dashboard/`, {
+        }: z.infer<typeof formSchema>) =>
+            fetch(`${HOST}/api/dashboard/`, {
                 method: "PUT",
                 body: JSON.stringify({
                     company: {
@@ -75,17 +61,30 @@ export function IrAdditionalInfoPage({
                         website: website ?? null
                     }
                 })
-            })
-            return await (await response).json()
+            }),
+        onSuccess: async response => {
+            if (response.status >= 200 || response.status < 300) {
+                toast.success("Successfully updated")
+            }
         }
     })
 
-    const onSubmit = useCallback(
-        async (values: z.infer<typeof formSchema>) => {
-            await mutateAsync(values)
-        },
-        [mutateAsync]
-    )
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues
+    })
+
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+        mutate(data)
+        queryClient.invalidateQueries({
+            queryKey: ["dashboard", companyId]
+        })
+        setDefaultValues(data)
+        form.reset(data)
+    }
+
+    const { confirm } = useConfirmSaveAlert()
+    useBlocker(confirm, form.formState.isDirty)
 
     return (
         <FormWrapper>
@@ -97,6 +96,7 @@ export function IrAdditionalInfoPage({
                     >
                         <FormField
                             name="orgName"
+                            control={form.control}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="org_name">
@@ -117,6 +117,7 @@ export function IrAdditionalInfoPage({
                         />
                         <FormField
                             name="identityNumber"
+                            control={form.control}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="identity_number">
@@ -137,6 +138,7 @@ export function IrAdditionalInfoPage({
                         />
                         <FormField
                             name="website"
+                            control={form.control}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="website">
@@ -157,6 +159,7 @@ export function IrAdditionalInfoPage({
                         />
                         <FormField
                             name="corporateEmail"
+                            control={form.control}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="corporateEmail">
