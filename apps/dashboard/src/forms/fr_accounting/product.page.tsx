@@ -10,7 +10,12 @@ import { FormWrapper } from "../FormWrapper"
 export function ProductFormPage({ section }: { section: RegistrationSection }) {
     const { data: allProducts } = useProducts()
     const products = useMemo(
-        () => allProducts.filter(product => belongsToSection(product, section)),
+        () =>
+            allProducts.filter(
+                product =>
+                    belongsToSection(product, section) &&
+                    product.display_in_product_list
+            ),
         [allProducts, section]
     )
 
