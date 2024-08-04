@@ -18,6 +18,7 @@ from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
 from .forms import (
+    ApplicationStatusForm,
     ExhibitorViewForm,
     ExhibitorCreateForm,
     ExhibitorCreateBypassedForm,
@@ -197,6 +198,8 @@ def exhibitors(request, year, template_name="exhibitors/exhibitors.html"):
                 value = e.fair_location
             if choice == "fair_location_special":
                 value = e.fair_location_special
+            if choice == "application_status":
+                value = e.application_status
 
             if choice == "count_lunch_tickets":
                 ordered = 0
@@ -372,9 +375,11 @@ def exhibitor(request, year, pk):
             {
                 "name": order.name if order.name is not None else order.product.name,
                 "comment": order.comment,
-                "unit_price": order.unit_price
-                if order.unit_price is not None
-                else order.product.unit_price,
+                "unit_price": (
+                    order.unit_price
+                    if order.unit_price is not None
+                    else order.product.unit_price
+                ),
                 "quantity": order.quantity,
             }
         )
@@ -424,9 +429,11 @@ def exhibitor(request, year, pk):
                 contact_persons.append(
                     {
                         "user": user,
-                        "role": application.delegated_role
-                        if application is not None
-                        else None,
+                        "role": (
+                            application.delegated_role
+                            if application is not None
+                            else None
+                        ),
                     }
                 )
 
@@ -570,6 +577,24 @@ def exhibitor_fair_location(request, year, pk):
     return render(
         request,
         "exhibitors/exhibitor_fair_location.html",
+        {"fair": fair, "exhibitor": exhibitor, "form": form},
+    )
+
+
+@permission_required("exhibitors.modify_application_status")
+def exhibitor_application_status(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+
+    form = ApplicationStatusForm(request.POST or None, instance=exhibitor)
+
+    if request.POST and form.is_valid():
+        form.save()
+        return redirect("exhibitor", fair.year, exhibitor.pk)
+
+    return render(
+        request,
+        "exhibitors/exhibitor_application_status.html",
         {"fair": fair, "exhibitor": exhibitor, "form": form},
     )
 

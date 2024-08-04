@@ -1,79 +1,191 @@
-import { RegistrationStatus } from "@/store/company/company_slice"
+import {
+    AccessDeclaration,
+    AccessDeclarationArgs,
+    parseAccessDeclaration
+} from "@/forms/access_declaration_logic"
+import { Hourglass } from "lucide-react"
 
-export const TIMELINE_STEPS: Partial<
-    Record<
-        RegistrationStatus,
-        {
-            title?: React.ReactNode
-            description: React.ReactNode
-            variant?: "info" | "success" | "warning" // Default info
-        }
-    >
-> = {
-    before_initial_registration: {
-        title: "This year's fair is still under development",
-        description:
-            "We're still working on the initial registration, come back later..."
-    },
-    initial_registration: {
-        title: "Welcome to Armada!",
-        description:
-            "To get a spot in this year's event, please complete the initial registration"
-    },
-    initial_registration_signed: {
-        title: "You have completed this year's initial registration",
-        description:
-            "We'll be in touch! Feel free to add additional information about your company",
-        variant: "success"
-    },
-    after_initial_registration: {
-        title: "You did not complete the initial registration",
-        description:
-            <>All hope is not lost! Please contact our sales team: <a href="mailto:sales@armada.nu" className="underline">sales@armada.nu</a></>,
-        variant: "warning"
-    },
-    after_initial_registration_signed: {
-        title: "You have completed this year's initial registration",
-        description: "We'll be in touch!",
-        variant: "success"
-    },
-    after_initial_registration_acceptance_accepted: {
-        title: "Congratulations! You've got a spot at the fair",
-        description: "We'll be in touch with more information",
-        variant: "success"
-    },
-    after_initial_registration_acceptance_rejected: {
-        title: "We are at full capacity",
-        description:
-            "Unfortunately, we are unable to offer you a spot at the fair, if any spot appears we will contact you",
-        variant: "warning"
-    },
-    after_initial_registration_acceptance_tentative: {
-        title: "Welcome!",
-        description: (
-            <>Please contact our sales team <a href="mailto:sales@armada.nu" className="underline">sales@armada.nu</a> for a spot on the fair.</>
-        ),
-        variant: "info"
-    },
-    complete_registration_ir_signed: {
-        title: "Welcome to the Armada final registration!",
-        description:
-            "Complete the registration to participate in this year's event"
-    },
-    complete_registration_ir_unsigned: {
-        title: "Welcome to the Armada final registration!",
-        description:
-            "You have not completed the initial registration, please contact our sales team",
-        variant: "warning"
-    },
-    complete_registration_signed: {
-        title: "You have completed the final registration",
-        description:
-            "Please make sure to fill in the remaining cards. See you at the fair!",
-        variant: "success"
-    }
+type TimelineStep = {
+    title?: React.ReactNode
+    description: React.ReactNode
+    variant?: "info" | "success" | "warning" // Default info
+    icon?: React.ReactNode
 }
 
-export function getTimelinePhaseMessage(status: RegistrationStatus) {
-    return TIMELINE_STEPS[status]
+const salesEmail = (
+    <a href="mailto:sales@armada.nu" className="underline">
+        sales@armada.nu
+    </a>
+)
+
+const newSignupForm = <a href="">Armada 2025 sign up form</a>
+
+export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
+    {
+        "fair:::signed_cr:::!accepted": {
+            title: "Welcome to Armada!",
+            description: (
+                <>
+                    Unfortunately we could not offer you a spot at this year's
+                    event. We're looking forward to seeing you at next year's
+                    event, make an early sign up at {newSignupForm}
+                </>
+            )
+        },
+        "after_fair:::*:::!accepted": {
+            title: "Welcome to Armada!",
+            description: (
+                <>
+                    We're looking forward to seeing you at next year's event,
+                    you can sign up here {newSignupForm}
+                </>
+            )
+        },
+        "*:::*:::rejected": {
+            title: "We are at full capacity",
+            description:
+                "Unfortunately, we are unable to offer you a spot at the fair, if any spot appears we will contact you.",
+            variant: "warning"
+        },
+        "before_initial_registration:::*:::*": {
+            title: "This year's fair is still under development",
+            description:
+                "We're still working on this year's initial registration, please come back later!"
+        },
+        "complete_registration:::!signed_cr:::accepted": {
+            title: "You've got a spot in the fair!",
+            description:
+                "Please complete the below registration to finalize your spot at the fair."
+        },
+        "complete_registration:::!signed_cr:::waitlist": {
+            title: "You have been placed in the waitlist!",
+            description:
+                "Please complete the below registration to finalize your request for a spot at the fair.",
+            icon: <Hourglass className="stroke-emerald-400" />
+        },
+        "complete_registration:::!signed_cr:::*": {
+            title: "Welcome to the Armada final registration!",
+            description:
+                "Please complete the below registration to finalize your request for a spot at the fair."
+        },
+        "complete_registration:::signed_cr:::pending": {
+            title: "You have completed the final registration!",
+            description:
+                "We are currently processing your application. In the meanwhile, please make sure to fill in the remaining cards.",
+            variant: "success"
+        },
+        "complete_registration:::signed_cr:::accepted": {
+            title: "You have completed the final registration!",
+            description:
+                "Your final registration is accepted! If you have any questions about your registration, contact sales@armada.nu. Otherwise, you can wait until the host assigned to you contacts you with more information closer to the fair. If you haven't filled in your company information in the dashboard yet, please do so.",
+            variant: "success"
+        },
+        "complete_registration:::signed_cr:::waitlist": {
+            title: "You have completed the final registration!",
+            description:
+                "You have been placed on the waitlist. In the meanwhile, please make sure to fill in the remaining cards.",
+            variant: "success"
+        },
+        "after_complete_registration:::!signed_cr:::*": {
+            title: "The complete registration is over",
+            description: (
+                <>
+                    Please contact us at {salesEmail} if you want to participate
+                    in this year's event.
+                </>
+            ),
+            variant: "warning"
+        },
+        "after_complete_registration:::signed_cr:::pending": {
+            title: "You have completed the final registration!",
+            description:
+                "We are currently processing your application. In the meanwhile, please make sure to fill in the remaining cards.",
+            variant: "success"
+        },
+        "after_complete_registration:::signed_cr:::accepted": {
+            title: "You have completed the final registration!",
+            description:
+                "You got a spot at the fair! Please make sure to fill in the remaining cards.",
+            variant: "success"
+        },
+        "after_complete_registration:::signed_cr:::waitlist": {
+            title: "You have completed the final registration!",
+            description:
+                "You have been placed on the waitlist. In the meanwhile, please make sure to fill in the remaining cards.",
+            variant: "success"
+        },
+        "fair:::!signed_cr:::*": {
+            title: "Welcome to Armada!",
+            description: (
+                <>
+                    This years fair is currently underway. We're looking forward
+                    to seeing you at next year's event again! If you have any
+                    questions, please contact {salesEmail}
+                </>
+            )
+        },
+        "fair:::signed_cr:::accepted": {
+            title: "See you at the fair!",
+            description: (
+                <>
+                    We're looking forward to seeing you at this year's event. If
+                    you have any questions, please contact {salesEmail}
+                </>
+            ),
+            variant: "success"
+        },
+        "after_fair:::!signed_cr:::*": {
+            title: "Welcome to Armada!",
+            description: (
+                <>
+                    We're looking forward to seeing you at next year's event
+                    which you can sign up for at {newSignupForm}
+                </>
+            )
+        },
+        "after_fair:::signed_cr:::accepted": {
+            title: "Thank you for coming to Armada!",
+            description: (
+                <>
+                    We're looking forward to seeing you at next year's event
+                    which you can sign up for at {newSignupForm}
+                </>
+            ),
+            variant: "success"
+        },
+        "*:::*:::pending": {
+            title: "We are currently processing your application",
+            description: (
+                <>
+                    In the meanwhile, please fill out the available cards. If
+                    you have any questions please contact us at {salesEmail}.
+                </>
+            ),
+            variant: "success"
+        },
+        "*:::*:::waitlist": {
+            title: "You have been placed on the waitlist",
+            description: (
+                <>
+                    In the meanwhile, please fill out the available cards. If
+                    you have any questions please contact us at {salesEmail}.
+                </>
+            ),
+            variant: "success"
+        },
+        "*:::*:::accepted": {
+            title: "Congratulations! You've got a spot at the fair",
+            description:
+                "We'll be in touch with more information, in the mean time, please fill out the available forms",
+            variant: "success"
+        },
+        "*:::!signed_ir:::*": {
+            title: "Welcome to Armada!",
+            description:
+                "To get a spot in this year's event, please complete the initial registration"
+        }
+    }
+
+export function getTimelinePhaseMessage(state: AccessDeclarationArgs | null) {
+    return parseAccessDeclaration(state, TIMELINE_STEPS)?.value
 }

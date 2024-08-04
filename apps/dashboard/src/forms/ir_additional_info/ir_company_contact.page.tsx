@@ -15,8 +15,9 @@ import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { HOST } from "@/shared/vars"
 import { asOptionalField } from "@/utils/zod_optional_field"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
-import { useBlocker } from "@tanstack/react-router"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useBlocker, useParams } from "@tanstack/react-router"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -25,46 +26,32 @@ const formSchema = z.object({
     firstName: z.string().min(2).max(50),
     lastName: z.string().min(2).max(50),
     email: z.string().email(),
-    alternativeEmail: asOptionalField(z.string().email().nullable()),
-    title: asOptionalField(z.string().min(2).max(50).nullable()),
-    mobileNumber: asOptionalField(z.string().min(2).max(50).nullable()),
-    workPhoneNumber: asOptionalField(z.string().min(2).max(50).nullable())
+    alternativeEmail: asOptionalField(z.string().email()),
+    title: asOptionalField(z.string().min(2).max(50)),
+    mobileNumber: asOptionalField(z.string().min(2).max(50)),
+    workPhoneNumber: asOptionalField(z.string().min(2).max(50))
 })
 
-export default function IrContactWrapper() {
-    const { data: dataRegistration, isLoading } = useDashboard()
+export default function IrContactPage() {
+    const { companyId } = useParams({
+        from: "/$companyId"
+    })
+    const queryClient = useQueryClient()
+    const { data } = useDashboard()
 
-    if (isLoading) return null
-    if (!dataRegistration) return null
-
-    return <IrContactPage dataRegistration={dataRegistration} />
-}
-
-export function IrContactPage({
-    dataRegistration
-}: {
-    dataRegistration: NonNullable<
-        Awaited<ReturnType<typeof useDashboard>>
-    >["data"]
-}) {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            firstName: dataRegistration?.contact?.first_name ?? "",
-            lastName: dataRegistration?.contact?.last_name ?? "",
-            email: dataRegistration?.contact?.email_address ?? "",
-            alternativeEmail:
-                dataRegistration?.contact?.alternative_email_address ?? "",
-            title: dataRegistration?.contact?.title ?? "",
-            mobileNumber: dataRegistration?.contact?.mobile_phone_number ?? "",
-            workPhoneNumber: dataRegistration?.contact?.work_phone_number ?? ""
-        }
+    const [defaultValues, setDefaultValues] = useState<
+        z.infer<typeof formSchema>
+    >({
+        firstName: data?.contact?.first_name ?? "",
+        lastName: data?.contact?.last_name ?? "",
+        email: data?.contact?.email_address ?? "",
+        alternativeEmail: data?.contact?.alternative_email_address ?? "",
+        title: data?.contact?.title ?? "",
+        mobileNumber: data?.contact?.mobile_phone_number ?? "",
+        workPhoneNumber: data?.contact?.work_phone_number ?? ""
     })
 
-    const { confirm } = useConfirmSaveAlert()
-    useBlocker(confirm, form.formState.isDirty)
-
-    const { mutateAsync, isPending } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: async ({
             firstName,
             lastName,
@@ -109,9 +96,22 @@ export function IrContactPage({
         }
     })
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        await mutateAsync(values)
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues
+    })
+
+    async function onSubmit(data: z.infer<typeof formSchema>) {
+        mutate(data)
+        queryClient.invalidateQueries({
+            queryKey: ["dashboard", companyId]
+        })
+        setDefaultValues(data)
+        form.reset(data)
     }
+
+    const { confirm } = useConfirmSaveAlert()
+    useBlocker(confirm, form.formState.isDirty)
 
     return (
         <FormWrapper>
@@ -123,6 +123,7 @@ export function IrContactPage({
                     >
                         <FormField
                             name="firstName"
+                            control={form.control}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="org_name">
@@ -137,6 +138,7 @@ export function IrContactPage({
                         />
                         <FormField
                             name="lastName"
+                            control={form.control}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="lastName">
@@ -155,6 +157,7 @@ export function IrContactPage({
                         <div className="flex flex-col gap-y-2">
                             <FormField
                                 name="email"
+                                control={form.control}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel htmlFor="website">
@@ -172,6 +175,7 @@ export function IrContactPage({
                             />
                             <FormField
                                 name="alternativeEmail"
+                                control={form.control}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel htmlFor="alternativeEmail">
@@ -190,6 +194,7 @@ export function IrContactPage({
                         </div>
                         <FormField
                             name="title"
+                            control={form.control}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor="title">Title</FormLabel>
@@ -204,6 +209,7 @@ export function IrContactPage({
                         <div className="flex flex-col gap-y-2">
                             <FormField
                                 name="mobileNumber"
+                                control={form.control}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel htmlFor="mobileNumber">
@@ -221,6 +227,7 @@ export function IrContactPage({
                             />
                             <FormField
                                 name="workPhoneNumber"
+                                control={form.control}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel htmlFor="workPhoneNumber">

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block nav-exhibitors %}<li role="presentation" class="active"><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>{% endblock %}
+
+{% block content %}
+	<ol class="breadcrumb">
+		<li><a href="{% url 'exhibitors' fair.year %}">Exhibitors</a></li>
+		<li><a href="{% url 'exhibitor' fair.year exhibitor.pk %}">{{ exhibitor.company }}</a></li>
+		<li class="active">Details</li>
+	</ol>
+	
+	<h1>Application status for {{ exhibitor.company }}</h1>
+	
+	<p>
+		{% if perms.exhibitors.transport %}<a href="{% url 'exhibitor_transport' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Transport</a>{% endif %}
+		{% if perms.exhibitors.modify_contact_persons %}<a href="{% url 'exhibitor_contact_persons' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Contact persons</a>{% endif %}
+		{% if perms.exhibitors.modify_check_in %}<a href="{% url 'exhibitor_check_in' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Check in</a>{% endif %}
+		{% if perms.exhibitors.modify_details %}<a href="{% url 'exhibitor_details' fair.year exhibitor.pk %}" type="button" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Details</a>{% endif %}
+		{% if perms.exhibitors.modify_coordinates %}<a href="{% url 'exhibitor_coordinates' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Coordinates</a>{% endif %}
+		{% if perms.exhibitors.modify_fair_location %}<a href="{% url 'exhibitor_fair_location' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Fair Location</a>{% endif %}
+		<a href="{% url 'exhibitor_fair_location' fair.year exhibitor.pk %}" class="btn btn-default"><span class="glyphicon glyphicon-th"></span> Fair Location</a>
+
+	</p>
+	
+	<form method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{ form | crispy }}
+		<button class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Save</button>
+	</form>
+{% endblock %}

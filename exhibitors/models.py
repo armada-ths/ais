@@ -164,6 +164,23 @@ class Exhibitor(models.Model):
             ("3", "Gold"),
         ],
     )
+
+    # Changes to these choices must be reflected in templates/exhibitors/application_status.html
+    application_statuses = [
+        ("0", "pending"),
+        ("1", "accepted"),
+        ("2", "rejected"),
+        ("3", "waitlist"),
+    ]
+
+    application_status = models.CharField(
+        blank=False,
+        null=False,
+        max_length=255,
+        default="0",
+        choices=application_statuses,
+    )
+
     booth_height = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Height of the booth (cm)"
     )
@@ -359,6 +376,7 @@ class Exhibitor(models.Model):
             ("people_count", "Count people in locations"),
             ("modify_coordinates", "Modify coordinates"),
             ("modify_fair_location", "Modify Fair Location"),
+            ("modify_application_status", "Modify application status"),
         ]
 
 
@@ -399,13 +417,14 @@ class ExhibitorView(models.Model):
         "fair_location": "Fair location",
         "fair_location_special": "Special Location",
         "coordinates": "Coordinates",
+        "application_status": "Application status",
     }
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     choices = models.TextField()
 
     def create(self):
-        self.choices = "contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets"
+        self.choices = "contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets application_status"
         self.save()
 
         return self

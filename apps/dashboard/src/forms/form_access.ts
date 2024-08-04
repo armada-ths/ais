@@ -1,176 +1,81 @@
+import {
+    AccessDeclaration,
+    AccessDeclarationArgs,
+    parseAccessDeclaration
+} from "@/forms/access_declaration_logic"
 import { FORMS } from "."
-import { RegistrationStatus } from "../store/company/company_slice"
 
-// If not specified hidden_locked is default
-export const FORM_ACCESS: Record<
-    RegistrationStatus,
-    Partial<
-        Record<keyof typeof FORMS, "shown" | "shown_locked" | "hidden_locked">
-    >
-> = {
-    before_initial_registration: {},
-    initial_registration: {
-        ir_signup: "shown"
+export enum CardStatus {
+    Shown = "shown",
+    ShownLocked = "shown_locked",
+    HiddenLocked = "hidden_locked"
+}
+
+type FormAccessDeclaration = Record<
+    keyof typeof FORMS,
+    Partial<Record<AccessDeclaration, CardStatus>>
+>
+
+// follows format
+// PERIOD:::EXHIBITOR_STATE
+export const FORM_ACCESS: FormAccessDeclaration = {
+    ir_signup: {
+        "initial_registration:::unsigned_ir:::*": CardStatus.Shown,
+        "between_ir_and_cr:::unsigned_ir:::*": CardStatus.Shown,
+        "complete_registration:::unsigned_ir:::*": CardStatus.Shown
     },
-    initial_registration_signed: {
-        ir_signup: "shown_locked",
-        ir_additional_info: "shown"
+    ir_additional_info: {
+        "before_initial_registration:::*:::*": CardStatus.HiddenLocked,
+        "*:::unsigned_ir:::*": CardStatus.HiddenLocked,
+        "*:::*:::!rejected": CardStatus.Shown
     },
-    after_initial_registration: {
-        ir_signup: "shown_locked"
+    exhibitor_catalog: {
+        "initial_registration:::!unsigned_ir:::*": CardStatus.Shown,
+        "between_ir_and_cr:::!unsigned_ir:::*": CardStatus.Shown,
+        "complete_registration:::!unsigned_ir:::*": CardStatus.Shown,
+        "after_complete_registration:::signed_cr:::*": CardStatus.Shown
     },
-    after_initial_registration_signed: {
-        ir_signup: "shown_locked",
-        ir_additional_info: "shown"
+    fr_accounting: {
+        "complete_registration:::signed_ir:::pending": CardStatus.Shown,
+        "complete_registration:::signed_ir:::waitlist": CardStatus.Shown,
+        "complete_registration:::signed_ir:::accepted": CardStatus.Shown
     },
-    after_initial_registration_acceptance_accepted: {
-        ir_signup: "shown_locked",
-        ir_additional_info: "shown"
+    receipt: {
+        "*:::signed_cr:::*": CardStatus.Shown
     },
-    after_initial_registration_acceptance_rejected: {
-        ir_signup: "shown_locked",
-        ir_additional_info: "shown"
+    core_values: {
+        "*:::signed_cr:::*": CardStatus.Shown
     },
-    before_complete_registration_ir_signed: {
-        lunch_tickets: "shown",
-        exhibitor_catalog: "shown",
-        core_values: "shown"
-    }, // FR "Active" but no contract exists
-    before_complete_registration_ir_unsigned: {
-        lunch_tickets: "shown",
-        exhibitor_catalog: "shown",
-        core_values: "shown"
-    }, // FR "Active" but no contract exists
-    complete_registration_ir_signed: {
-        fr_accounting: "shown",
-        lunch_tickets: "shown",
-        transport: "shown",
-        sture: "shown",
-        core_values: "shown"
+    transport: {
+        "*:::signed_cr:::accepted": CardStatus.Shown
     },
-    complete_registration_ir_unsigned: {
-        fr_accounting: "shown",
-        lunch_tickets: "shown",
-        transport: "shown",
-        sture: "shown",
-        core_values: "shown"
-    },
-    complete_registration_signed: {
-        receipt: "shown",
-        lunch_tickets: "shown",
-        exhibitor_catalog: "shown",
-        transport: "shown",
-        sture: "shown",
-        core_values: "shown"
-    },
-    after_complete_registration: {
-        lunch_tickets: "shown",
-        exhibitor_catalog: "shown",
-        transport: "shown",
-        sture: "shown",
-        core_values: "shown"
-    },
-    after_complete_registration_signed: {
-        lunch_tickets: "shown",
-        exhibitor_catalog: "shown",
-        transport: "shown",
-        sture: "shown",
-        core_values: "shown"
+    sture: {
+        "*:::signed_cr:::accepted": CardStatus.Shown
     }
 }
 
-/* export const FORM_OPEN_DURING: Record<
-    keyof typeof FORMS,
-    RegistrationStatus[]
-> = {
-    ir_signup: ["initial_registration"],
-    fr_accounting: ["complete_registration"],
-    receipt: [
-        "complete_registration_signed",
-        "after_complete_registration_signed"
-    ],
-    lunch_tickets: [
-        "complete_registration_signed",
-        "complete_registration",
-        "before_complete_registration",
-        "after_complete_registration",
-        "after_complete_registration_signed"
-    ],
-    exhibitor_catalog: [
-        "complete_registration_signed",
-        "complete_registration",
-        "before_complete_registration",
-        "after_complete_registration",
-        "after_complete_registration_signed"
-    ],
-    transport: [
-        "complete_registration",
-        "complete_registration_signed",
-        "after_complete_registration",
-        "after_complete_registration_signed"
-    ],
-    sture: [
-        "complete_registration",
-        "complete_registration_signed",
-        "after_complete_registration",
-        "after_complete_registration_signed"
-    ],
-    core_values: [
-        "before_complete_registration",
-        "complete_registration",
-        "complete_registration_signed",
-        "after_complete_registration",
-        "after_complete_registration_signed"
-    ]
-}
-
-export const FORM_HIDDEN_DURING: Partial<
-    Record<keyof typeof FORMS, RegistrationStatus[]>
-> = {
-    ir_signup: ["after_complete_registration"],
-    fr_accounting: [
-        "complete_registration_signed",
-        "after_complete_registration",
-        "after_complete_registration_signed"
-    ],
-    receipt: ["complete_registration"]
-} */
-
 export function isFormOpen(
+    state: AccessDeclarationArgs | null,
     form: keyof typeof FORMS,
-    status: RegistrationStatus | null
+    formAccessDeclaration?: FormAccessDeclaration
 ): boolean {
-    if (!status) return false
-    return FORM_ACCESS[status]?.[form] === "shown"
-}
-export function isFormVisible(
-    form: keyof typeof FORMS,
-    status: RegistrationStatus | null
-): boolean {
-    if (!status) return false
+    if (state == null) return false
+    const formDeclaration = (formAccessDeclaration ?? FORM_ACCESS)[form]
     return (
-        FORM_ACCESS[status]?.[form] === "shown" ||
-        FORM_ACCESS[status]?.[form] === "shown_locked"
+        parseAccessDeclaration(state, formDeclaration)?.value ===
+        CardStatus.Shown
     )
 }
-
-/**
- * Check if company is in a certain phase
- * @param match Match has two attributes, phase and search.
- * Phase is an array of "allowed" registration statuses,
- * search is a search string of partial matches, cor example
- * "complete_registration" will match "complete_registration_signed"
- * and "complete_registration_unsigned"
- * @param status The status of the company RegistrationStatus
- * @returns true/false
- */
-export function inPhase(
-    match: { phase?: RegistrationStatus[]; search?: string[] },
-    status?: RegistrationStatus | null
-) {
-    if (status == null) return false
+export function isFormVisible(
+    state: AccessDeclarationArgs | null,
+    form: keyof typeof FORMS
+): boolean {
+    if (state == null) return false
+    const formDeclaration = FORM_ACCESS[form]
     return (
-        match.phase?.includes(status) ||
-        match.search?.some(s => s.includes(status))
+        parseAccessDeclaration(state, formDeclaration)?.value ===
+            CardStatus.Shown ||
+        parseAccessDeclaration(state, formDeclaration)?.value ===
+            CardStatus.ShownLocked
     )
 }

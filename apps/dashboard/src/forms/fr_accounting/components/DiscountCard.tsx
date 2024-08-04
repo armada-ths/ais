@@ -1,4 +1,4 @@
-import { Product } from "@/store/products/products_slice"
+import { Product } from "@/shared/hooks/api/useDashboard"
 import { formatCurrency } from "@/utils/format_currency"
 
 export function DiscountCard({ product }: { product: Product }) {

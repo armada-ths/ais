@@ -1,5 +1,6 @@
+import { parseAccessDeclaration } from "@/forms/access_declaration_logic"
 import IrRegistrationPage from "@/forms/ir_signup/ir_registration.page"
-import { RegistrationStatus } from "@/store/company/company_slice"
+import { getSigningStep } from "@/shared/hooks/api/useAccessDeclaration"
 import { Form } from "../form_types"
 
 export const form = {
@@ -14,15 +15,16 @@ export const form = {
             fields: [],
             hasNextButton: false,
             isDone: ({ dashboard }) =>
-                (
-                    [
-                        "initial_registration_signed",
-                        "complete_registration_ir_signed",
-                        "complete_registration_signed",
-                        "after_initial_registration_signed",
-                        "complete_registration_ir_signed"
-                    ] as RegistrationStatus[]
-                ).includes(dashboard.type)
+                !!parseAccessDeclaration(
+                    {
+                        applicationStatus: dashboard.application_status,
+                        period: dashboard.period,
+                        signingStep: getSigningStep(dashboard)
+                    },
+                    {
+                        "*:::!unsigned_ir:::*": true
+                    }
+                )
         }
     ]
 } as const satisfies Form

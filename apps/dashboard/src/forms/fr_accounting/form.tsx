@@ -48,41 +48,14 @@ export const form = {
             id: "invoice",
             title: "Invoice Information",
             pageComponent: () => <InvoiceDetailsFormPage />,
-            isDone: null,
-            fields: [
-                {
-                    mapping: "company.invoice_name"
-                },
-                {
-                    mapping: "company.invoice_email_address"
-                },
-                {
-                    mapping: "company.identity_number"
-                },
-                {
-                    mapping: "company.invoice_address_line_1"
-                },
-                {
-                    mapping: "company.invoice_address_line_2",
-                    mandatory: false
-                },
-                {
-                    mapping: "company.invoice_address_line_3",
-                    mandatory: false
-                },
-                {
-                    mapping: "company.invoice_zip_code"
-                },
-                {
-                    mapping: "company.invoice_city"
-                },
-                {
-                    mapping: "company.invoice_country"
-                },
-                {
-                    mapping: "company.invoice_reference"
-                }
-            ]
+            isDone: ({ dashboard }) =>
+                dashboard.company.identity_number != null &&
+                dashboard.company.invoice_name != null &&
+                dashboard.company.invoice_email_address != null &&
+                dashboard.company.invoice_address_line_1 != null &&
+                dashboard.company.invoice_zip_code != null &&
+                dashboard.company.invoice_city != null &&
+                dashboard.company.invoice_country != null
         },
         {
             id: "summary",

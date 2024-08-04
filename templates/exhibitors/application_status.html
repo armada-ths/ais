@@ -1,0 +1,7 @@
+{% with status=exhibitor.get_application_status_display %}
+	{% if status == 'pending' %}   <span class="application-status bg-warning" title="The company's application to the fair is being processed.">{{ status }}</span>
+	{% elif status == 'accepted' %} <span class="application-status bg-success" title="The company's application to the fair has been accepted.">{{ status }}</span>
+	{% elif status == 'rejected' %} <span class="application-status bg-danger" title="The company's application to the fair has been rejected.">{{ status }}</span>
+	{% elif status == 'waitlist' %} <span class="application-status bg-info" title="The company's application to the fair has been processed and put on the waitlist.">{{ status }}</span>
+	{% else %}<span class="application-status ">unknown</span>{% endif %}
+{% endwith %}

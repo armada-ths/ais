@@ -1,9 +1,6 @@
 from django.db import models
-from django.db.models import DEFERRED
-from django.utils import timezone
 
 
-# A 'Contact' is a person working for a 'Company'
 class SignupContract(models.Model):
     name = models.CharField(max_length=30)
     contract = models.FileField(upload_to="contracts/%Y%m%d/")
@@ -11,6 +8,13 @@ class SignupContract(models.Model):
     types = [("INITIAL", "Initial"), ("COMPLETE", "Complete")]
     type = models.CharField(
         max_length=200, choices=types, null=False, blank=False, default=types[0]
+    )
+
+    # 2024, Didrik Munther: Used to determine prices during CR.
+    # Usually prices for packages are more expensive if the contract is signed after IR.
+    is_timely = models.BooleanField(
+        default=True,
+        help_text="(ONLY RELEVANT FOR IR) A contract is timely if it is signed before the IR period ends.",
     )
     contract_company_type = models.ForeignKey(
         "companies.CompanyType", null=False, blank=False, on_delete=models.CASCADE

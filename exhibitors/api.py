@@ -20,12 +20,14 @@ def serialize_booths(exhibitor):
         {
             "id": eib.booth.pk,
             "location": {
-                "parent": {
-                    "id": eib.booth.location.parent.pk,
-                    "name": eib.booth.location.parent.name,
-                }
-                if eib.booth.location.parent
-                else None,
+                "parent": (
+                    {
+                        "id": eib.booth.location.parent.pk,
+                        "name": eib.booth.location.parent.name,
+                    }
+                    if eib.booth.location.parent
+                    else None
+                ),
                 "id": eib.booth.location.pk,
                 "name": eib.booth.location.name,
             },
@@ -51,15 +53,19 @@ def serialize_exhibitor(exhibitor, request):
             ("purpose", exhibitor.catalogue_purpose),
             (
                 "logo_squared",
-                (exhibitor.catalogue_logo_squared.url)
-                if exhibitor.catalogue_logo_squared
-                else (MISSING_IMAGE if img_placeholder else None),
+                (
+                    (exhibitor.catalogue_logo_squared.url)
+                    if exhibitor.catalogue_logo_squared
+                    else (MISSING_IMAGE if img_placeholder else None)
+                ),
             ),
             (
                 "logo_freesize",
-                (exhibitor.catalogue_logo_freesize.url)
-                if exhibitor.catalogue_logo_freesize
-                else (MISSING_IMAGE if img_placeholder else None),
+                (
+                    (exhibitor.catalogue_logo_freesize.url)
+                    if exhibitor.catalogue_logo_freesize
+                    else (MISSING_IMAGE if img_placeholder else None)
+                ),
             ),
             (
                 "industries",
@@ -98,9 +104,11 @@ def serialize_exhibitor(exhibitor, request):
             ),
             (
                 "cities",
-                exhibitor.catalogue_cities
-                if exhibitor.catalogue_cities is not None
-                else "",
+                (
+                    exhibitor.catalogue_cities
+                    if exhibitor.catalogue_cities is not None
+                    else ""
+                ),
             ),
             (
                 "benefits",
@@ -130,9 +138,11 @@ def serialize_exhibitor(exhibitor, request):
             ),
             (
                 "location_special",
-                str(exhibitor.fair_location_special)
-                if exhibitor.fair_location_special
-                else "",
+                (
+                    str(exhibitor.fair_location_special)
+                    if exhibitor.fair_location_special
+                    else ""
+                ),
             ),
             ("climate_compensation", exhibitor.climate_compensation),
             ("flyer", (exhibitor.flyer.url) if exhibitor.flyer else ""),
@@ -181,9 +191,11 @@ def locations(request):
         data.append(
             {
                 "id": location.pk,
-                "parent": {"id": location.parent.pk, "name": location.parent.name}
-                if location.parent
-                else None,
+                "parent": (
+                    {"id": location.parent.pk, "name": location.parent.name}
+                    if location.parent
+                    else None
+                ),
                 "name": location.name,
                 "has_map": bool(location.background),
             }
@@ -223,17 +235,21 @@ def location(request, location_pk):
 
     data = {
         "id": location.pk,
-        "parent": {"id": location.parent.pk, "name": location.parent.name}
-        if location.parent
-        else None,
+        "parent": (
+            {"id": location.parent.pk, "name": location.parent.name}
+            if location.parent
+            else None
+        ),
         "name": location.name,
-        "map": {
-            "url": location.background.url,
-            "width": location.background.width,
-            "height": location.background.height,
-        }
-        if location.background
-        else None,
+        "map": (
+            {
+                "url": location.background.url,
+                "width": location.background.width,
+                "height": location.background.height,
+            }
+            if location.background
+            else None
+        ),
         "booths": booths,
     }
 

@@ -1,22 +1,81 @@
 import { HOST } from "@/shared/vars"
-import { RegistrationStatus } from "@/store/company/company_slice"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate, useParams } from "@tanstack/react-router"
 
+export enum RegistrationPeriod {
+    BeforeIr = "before_initial_registration",
+    InitialRegistration = "initial_registration",
+    BetweenIrAndCr = "between_ir_and_cr",
+    CompleteRegistration = "complete_registration",
+    AfterCompleteRegistration = "after_complete_registration",
+    Fair = "fair",
+    AfterFair = "after_fair"
+}
+export enum SigningStep {
+    UNSIGNED_IR = "unsigned_ir", // Unsigned, company has not yet signed the initial registration
+    SIGNED_IR = "signed_ir", // Company has signed the initial registration
+    SIGNED_CR = "signed_cr" // Company has signed the complete registration
+}
+export enum ApplicationStatus {
+    NONE = "none", // None, no application status (SingingStep.UNSIGNED_IR)
+    PENDING = "pending", //  Pending, company has not yet been accepted or rejected by armada
+    ACCEPTED = "accepted", // Accepted, company has explicitly been accepted by armada
+    REJECTED = "rejected", // Rejected, company has explicitly been rejected by armada
+    WAITLIST = "waitlist", // Company is on the waitlist as a backup
+    UNKNOWN = "unknown" // Unknown, there was an error on the backend (should not happen)
+}
+
 export interface DashboardResponse {
-    type: RegistrationStatus
+    period: RegistrationPeriod
+    application_status: ApplicationStatus
     deadline: string
-    has_signed_ir: boolean
     fair: RegistrationFair
     ir_contract: Contract
     cr_contract: Contract
+    ir_signature: Signature | null
+    cr_signature: Signature | null
     sales_contacts: SalesContact[]
     orders: Order[]
     contact: Contact | null
-    exhibitor: unknown
+    exhibitor: Exhibitor | null
     company: Company
     products: Product[]
     interested_in: Array<{ id: number }>
+}
+
+export interface Exhibitor {
+    catalogue_about: string | null
+    catalogue_cities: null
+    catalogue_contact_email_address: string
+    catalogue_contact_name: string | null
+    catalogue_contact_phone_number: string | null
+    catalogue_employments: Array<{
+        id: number
+        employment: string
+        include_in_form: boolean
+        selected: boolean
+    }>
+    catalogue_industries: Array<{
+        id: number
+        industry: string
+        include_in_form: boolean
+        selected: boolean
+        category: number
+    }>
+    catalogue_locations: Array<{
+        id: number
+        location: string
+        include_in_form: boolean
+        selected: boolean
+    }>
+    catalogue_logo_freesize: string | null
+    catalogue_logo_squared: string | null
+    deadline_complete_registration: null
+    id: number
+    transport_comment: string | null
+    transport_from: string
+    transport_information_read: boolean
+    transport_to: string
 }
 
 export interface Order {
@@ -43,20 +102,24 @@ export interface RegistrationSection {
 
 export interface ChildProduct {
     quantity: number
-    child_product: Omit<Product, "child_products">
+    child_product: Omit<Product, "child_products" | "specific_products">
 }
 
 export interface Product {
     id: number
     name: string
     short_name: string
-    max_quantity: number
+    max_quantity?: number
     unit_price: number
     description: string
     category: Category | null
     display_in_product_list: boolean
     registration_section: RegistrationSection | null
     child_products: ChildProduct[]
+    specific_products: Array<{
+        unit_price: number
+        specific_product: Omit<Product, "child_products" | "specific_products">
+    }>
 }
 
 export interface SalesContact {
@@ -77,6 +140,10 @@ export interface RegistrationFair {
 export interface Contract {
     name: string
     contract: string
+}
+
+export interface Signature {
+    timestamp: string
 }
 
 export interface Contact {

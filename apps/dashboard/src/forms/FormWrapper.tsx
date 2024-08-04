@@ -6,10 +6,10 @@ import { PrimaryFormHeader } from "./Header"
 
 export function FormWrapper({ children }: { children: React.ReactNode }) {
     return (
-        <>
+        <div className="flex flex-1 flex-col items-center">
             <ConfirmSaveAlert />
             <PrimaryFormHeader />
             {children}
-        </>
+        </div>
     )
 }

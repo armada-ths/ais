@@ -1,25 +1,29 @@
 import { Badge } from "@/components/ui/badge"
-import { RegistrationStatus } from "@/store/company/company_slice"
+import {
+    AccessDeclaration,
+    checkAccessDeclarations
+} from "@/forms/access_declaration_logic"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { cx } from "@/utils/cx"
+import { XIcon } from "lucide-react"
 
 export interface TimelineStage {
-    id: RegistrationStatus | RegistrationStatus[]
+    when: AccessDeclaration[]
     title: string
     badgeText?: string
+    stepIcon?: React.ReactNode
 }
 
 export function Timeline(
     props: {
         stages: TimelineStage[]
-        current: RegistrationStatus
     } & React.HTMLProps<HTMLDivElement>
 ) {
-    const { stages, current, className, ...rest } = props
+    const accessDeclarationArgs = useAccessDeclaration()
+    const { stages, className, ...rest } = props
 
-    const currentIndex = stages.findIndex(stage =>
-        Array.isArray(stage.id)
-            ? stage.id.includes(current)
-            : stage.id === current
+    const currentIndex = stages.findLastIndex(stage =>
+        checkAccessDeclarations(accessDeclarationArgs, stage.when)
     )
     const currentPercentage = currentIndex / (stages.length - 1)
 
@@ -33,24 +37,29 @@ export function Timeline(
                     className="absolute h-full rounded-3xl bg-emerald-400"
                 />
                 {stages.map((stage, index) => (
-                    <div
-                        key={
-                            Array.isArray(stage.id)
-                                ? stage.id.length <= 0
-                                    ? index
-                                    : stage.id.join("-")
-                                : stage.id
-                        }
-                        className="relative"
-                    >
+                    <div key={stage.when.join("-")} className="relative">
                         <div
                             className={cx(
-                                "aspect-square h-full scale-[1.7] rounded-full bg-emerald-400",
+                                "flex aspect-square h-full scale-[1.7] items-center justify-center rounded-full bg-stone-200 ",
                                 {
-                                    "bg-stone-200": index > currentIndex
+                                    "bg-emerald-400":
+                                        index <= currentIndex &&
+                                        checkAccessDeclarations(
+                                            accessDeclarationArgs,
+                                            stage.when
+                                        )
                                 }
                             )}
-                        ></div>
+                        >
+                            {stage.stepIcon ??
+                                (index < currentIndex &&
+                                    !checkAccessDeclarations(
+                                        accessDeclarationArgs,
+                                        stage.when
+                                    ) && (
+                                        <XIcon className="h-3 w-3 text-stone-800" />
+                                    ))}
+                        </div>
                         {stage.badgeText != null && (
                             <Badge
                                 variant={

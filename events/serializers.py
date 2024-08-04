@@ -19,9 +19,9 @@ def event(event, request):
         "event_end": int(event.date_end.strftime("%s")),
         "event_start_string": event.date_start.strftime("%Y-%m-%d %H:%M"),
         "registration_end": int(event.date_start.strftime("%s")),
-        "image_url": request.build_absolute_uri(event.picture.url)
-        if event.picture
-        else None,
+        "image_url": (
+            request.build_absolute_uri(event.picture.url) if event.picture else None
+        ),
         "fee": event.fee_s,
         "registration_required": True,
         "external_event_link": event.external_event_link,
