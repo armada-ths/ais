@@ -1,15 +1,17 @@
 import {
     ApplicationStatus,
-    RegistrationPeriod
+    RegistrationPeriod,
+    SigningStep
 } from "@/shared/hooks/api/useDashboard"
 
 export type AccessDeclaration = `${RegistrationPeriod | "*"}:::${
-    | (ApplicationStatus | `!${ApplicationStatus}`)
-    | "*"}`
+    | (SigningStep | `!${SigningStep}`)
+    | "*"}:::${(ApplicationStatus | `!${ApplicationStatus}`) | "*"}`
 
 export interface AccessDeclarationArgs {
     period: RegistrationPeriod
-    exhibitorStatus: ApplicationStatus | "unsigned_ir"
+    applicationStatus: ApplicationStatus
+    signingStep: SigningStep
 }
 
 function accessPropertyMatches(variable: string, property: string): boolean {
@@ -37,11 +39,12 @@ export function parseAccessDeclaration<TValue>(
     }> = []
 
     for (const [key, value] of Object.entries(declaration)) {
-        const [period, exhibitorStatus] = key.split(":::")
+        const [period, signingStep, applicationStatus] = key.split(":::")
 
         if (
             accessPropertyMatches(state.period, period) &&
-            accessPropertyMatches(state.exhibitorStatus, exhibitorStatus)
+            accessPropertyMatches(state.applicationStatus, applicationStatus) &&
+            accessPropertyMatches(state.signingStep, signingStep)
         ) {
             const result = {
                 accessDeclaration: key as AccessDeclaration,

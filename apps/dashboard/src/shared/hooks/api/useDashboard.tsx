@@ -11,6 +11,17 @@ export enum RegistrationPeriod {
     Fair = "fair",
     AfterFair = "after_fair"
 }
+export enum SigningStep {
+    UNSIGNED_IR = "unsigned_ir", // Unsigned, company has not yet signed the initial registration
+    SIGNED_IR = "signed_ir", // Company has signed the initial registration
+    SIGNED_CR = "signed_cr" // Company has signed the complete registration
+}
+export enum ApplicationStatus {
+    PENDING = "pending", //  Pending, company has not yet been accepted or rejected by armada
+    ACCEPTED = "accepted", // Accepted, company has explicitly been accepted by armada
+    REJECTED = "rejected", // Rejected, company has explicitly been rejected by armada
+    WAITLIST = "waitlist" // Company is on the waitlist as a backup
+}
 
 export interface DashboardResponse {
     period: RegistrationPeriod
@@ -28,15 +39,6 @@ export interface DashboardResponse {
     company: Company
     products: Product[]
     interested_in: Array<{ id: number }>
-}
-
-export enum ApplicationStatus {
-    UNSIGNED_IR = "unsigned_ir", // Unsigned, company has not yet signed the initial registration
-    ACCEPTED = "accepted", // Accepted, company has explicitly been accepted by armada
-    REJECTED = "rejected", // Rejected, company has explicitly been rejected by armada
-    PENDING = "pending", //  Pending, company has not yet been accepted or rejected by armada
-    WAITLIST = "waitlist", // Company is on the waitlist as a backup
-    SIGNED_CR = "signed_cr" // Company has signed the complete registration
 }
 
 export interface Exhibitor {
