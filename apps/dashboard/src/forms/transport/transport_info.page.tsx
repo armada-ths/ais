@@ -1,8 +1,14 @@
 import { FormWrapper } from "@/forms/FormWrapper"
 import { ReactNode } from "react"
-import { DHLForm } from "@/forms/transport/DHLForm"
+// import { DHLForm } from "@/forms/transport/DHLForm"
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckIcon, Loader2, MailIcon, PhoneIcon } from "lucide-react"
+import {
+    CheckIcon,
+    DownloadIcon,
+    Loader2,
+    MailIcon,
+    PhoneIcon
+} from "lucide-react"
 import { Alert } from "@/components/ui/alert"
 import { useMutation } from "@tanstack/react-query"
 import { useParams } from "@tanstack/react-router"
@@ -123,10 +129,15 @@ export function TransportInfoFormPage() {
                     <Title text="How to book transport" />
                     <div className="mb-10 mt-8 flex flex-col gap-5 pl-5">
                         <ActionItem i={1}>
-                            <DHLForm />
+                            <LinkWithIcon
+                                href="/static/DHL_Form.pdf"
+                                icon={<DownloadIcon />}
+                            >
+                                Download the DHL form
+                            </LinkWithIcon>
                         </ActionItem>
                         <ActionItem i={2}>
-                            Email the PDF to{" "}
+                            Email the filled out form to{" "}
                             <LinkWithIcon
                                 href="mailto:booking.armada@dhl.com"
                                 icon={<MailIcon />}
