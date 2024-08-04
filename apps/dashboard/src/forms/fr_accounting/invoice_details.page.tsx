@@ -290,7 +290,7 @@ export function InvoiceDetailsFormPage({
                 {!readOnly && (
                     <Button type="submit" className={cn("flex gap-4")}>
                         {isPending && <Loader2Icon className="animate-spin" />}{" "}
-                        Submit
+                        Save
                     </Button>
                 )}
             </form>
