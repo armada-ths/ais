@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0071_add_exhibitor_tier'),
+        ("exhibitors", "0071_add_exhibitor_tier"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exhibitor',
-            name='application_status',
-            field=models.CharField(blank=True, choices=[('1', 'accepted'), ('2', 'rejected'), ('3', 'reserve')], max_length=255, null=True),
+            model_name="exhibitor",
+            name="application_status",
+            field=models.CharField(
+                blank=True,
+                choices=[("1", "accepted"), ("2", "rejected"), ("3", "reserve")],
+                max_length=255,
+                null=True,
+            ),
         ),
     ]

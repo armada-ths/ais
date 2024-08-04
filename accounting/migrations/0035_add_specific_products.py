@@ -7,21 +7,39 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0034_change_exclusive_for_choices'),
+        ("accounting", "0034_change_exclusive_for_choices"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SpecificProduct',
+            name="SpecificProduct",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('unit_price', models.IntegerField()),
-                ('specific_product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounting.Product')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("unit_price", models.IntegerField()),
+                (
+                    "specific_product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="accounting.Product",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='product',
-            name='specific_products',
-            field=models.ManyToManyField(blank=True, help_text='(ONLY RELEVANT FOR PACKAGES AS ROOT PRODUCTS) These products will only be shown to the customer if they select the current package This feature was used in 2024 when silver and bronze packages lead to different prices on the same products', to='accounting.SpecificProduct'),
+            model_name="product",
+            name="specific_products",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="(ONLY RELEVANT FOR PACKAGES AS ROOT PRODUCTS) These products will only be shown to the customer if they select the current package This feature was used in 2024 when silver and bronze packages lead to different prices on the same products",
+                to="accounting.SpecificProduct",
+            ),
         ),
     ]

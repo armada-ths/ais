@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0036_add_specific_product_description'),
+        ("accounting", "0036_add_specific_product_description"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='childproduct',
-            name='description',
-            field=models.TextField(blank=True, help_text='Optional, describe why you created this child product. This will not be shown to the customer.', null=True),
+            model_name="childproduct",
+            name="description",
+            field=models.TextField(
+                blank=True,
+                help_text="Optional, describe why you created this child product. This will not be shown to the customer.",
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='specificproduct',
-            name='description',
-            field=models.TextField(blank=True, help_text='Optional, describe why you created this specific product. This will not be shown to the customer.', null=True),
+            model_name="specificproduct",
+            name="description",
+            field=models.TextField(
+                blank=True,
+                help_text="Optional, describe why you created this specific product. This will not be shown to the customer.",
+                null=True,
+            ),
         ),
     ]

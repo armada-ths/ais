@@ -7,13 +7,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0033_add_stock_model'),
+        ("accounting", "0033_add_stock_model"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='product',
-            name='exclusively_for',
-            field=accounting.models.ChoiceArrayField(base_field=models.CharField(choices=[('ir-timely', 'Companies who signed IR during the IR period.'), ('ir-late', 'Companies who signed IR after the IR period.')], max_length=31), blank=True, default=list, help_text='Show this product only to the selected company types. An empty selection means showing it to every company.', size=None),
+            model_name="product",
+            name="exclusively_for",
+            field=accounting.models.ChoiceArrayField(
+                base_field=models.CharField(
+                    choices=[
+                        ("ir-timely", "Companies who signed IR during the IR period."),
+                        ("ir-late", "Companies who signed IR after the IR period."),
+                    ],
+                    max_length=31,
+                ),
+                blank=True,
+                default=list,
+                help_text="Show this product only to the selected company types. An empty selection means showing it to every company.",
+                size=None,
+            ),
         ),
     ]

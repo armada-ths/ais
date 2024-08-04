@@ -6,17 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0073_add_default_value'),
+        ("exhibitors", "0073_add_default_value"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='exhibitor',
-            options={'default_permissions': [], 'ordering': ['company__name'], 'permissions': [('base', 'View the Exhibitors tab'), ('view_all', 'Always view all exhibitors'), ('create', 'Create new exhibitors'), ('modify_contact_persons', 'Modify contact persons'), ('modify_transport', 'Modify transport details'), ('modify_check_in', 'Modify check in'), ('modify_details', 'Modify details'), ('modify_booths', 'Modify booths'), ('people_count', 'Count people in locations'), ('modify_coordinates', 'Modify coordinates'), ('modify_fair_location', 'Modify Fair Location'), ('modify_application_status', 'Modify Application Status')]},
+            name="exhibitor",
+            options={
+                "default_permissions": [],
+                "ordering": ["company__name"],
+                "permissions": [
+                    ("base", "View the Exhibitors tab"),
+                    ("view_all", "Always view all exhibitors"),
+                    ("create", "Create new exhibitors"),
+                    ("modify_contact_persons", "Modify contact persons"),
+                    ("modify_transport", "Modify transport details"),
+                    ("modify_check_in", "Modify check in"),
+                    ("modify_details", "Modify details"),
+                    ("modify_booths", "Modify booths"),
+                    ("people_count", "Count people in locations"),
+                    ("modify_coordinates", "Modify coordinates"),
+                    ("modify_fair_location", "Modify Fair Location"),
+                    ("modify_application_status", "Modify Application Status"),
+                ],
+            },
         ),
         migrations.AlterField(
-            model_name='exhibitor',
-            name='application_status',
-            field=models.CharField(choices=[('0', 'pending'), ('1', 'accepted'), ('2', 'rejected'), ('3', 'reserve')], default='0', max_length=255),
+            model_name="exhibitor",
+            name="application_status",
+            field=models.CharField(
+                choices=[
+                    ("0", "pending"),
+                    ("1", "accepted"),
+                    ("2", "rejected"),
+                    ("3", "reserve"),
+                ],
+                default="0",
+                max_length=255,
+            ),
         ),
     ]

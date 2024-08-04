@@ -6,13 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0072_add_application_status'),
+        ("exhibitors", "0072_add_application_status"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='exhibitor',
-            name='application_status',
-            field=models.CharField(blank=True, choices=[('0', 'pending'), ('1', 'accepted'), ('2', 'rejected'), ('3', 'reserve')], default='0', max_length=255),
+            model_name="exhibitor",
+            name="application_status",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("0", "pending"),
+                    ("1", "accepted"),
+                    ("2", "rejected"),
+                    ("3", "reserve"),
+                ],
+                default="0",
+                max_length=255,
+            ),
         ),
     ]

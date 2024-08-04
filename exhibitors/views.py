@@ -375,9 +375,11 @@ def exhibitor(request, year, pk):
             {
                 "name": order.name if order.name is not None else order.product.name,
                 "comment": order.comment,
-                "unit_price": order.unit_price
-                if order.unit_price is not None
-                else order.product.unit_price,
+                "unit_price": (
+                    order.unit_price
+                    if order.unit_price is not None
+                    else order.product.unit_price
+                ),
                 "quantity": order.quantity,
             }
         )
@@ -427,9 +429,11 @@ def exhibitor(request, year, pk):
                 contact_persons.append(
                     {
                         "user": user,
-                        "role": application.delegated_role
-                        if application is not None
-                        else None,
+                        "role": (
+                            application.delegated_role
+                            if application is not None
+                            else None
+                        ),
                     }
                 )
 

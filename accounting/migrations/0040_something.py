@@ -6,21 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0039_remove_display_specific_boolean'),
+        ("accounting", "0039_remove_display_specific_boolean"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='specificproduct',
-            name='description',
+            model_name="specificproduct",
+            name="description",
         ),
         migrations.RemoveField(
-            model_name='specificproduct',
-            name='unit_price',
+            model_name="specificproduct",
+            name="unit_price",
         ),
         migrations.AlterField(
-            model_name='product',
-            name='specific_products',
-            field=models.ManyToManyField(blank=True, help_text='(ONLY RELEVANT FOR PACKAGES AS ROOT PRODUCTS) These products will only be shown to the customer if they select the current package This feature was used in 2024 when silver and bronze packages lead to different prices on the same products Neccessary is to set the "Display in product list" to false on for the specific product (otherwise it will be displayed with standard price, for any package).', to='accounting.SpecificProduct'),
+            model_name="product",
+            name="specific_products",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='(ONLY RELEVANT FOR PACKAGES AS ROOT PRODUCTS) These products will only be shown to the customer if they select the current package This feature was used in 2024 when silver and bronze packages lead to different prices on the same products Neccessary is to set the "Display in product list" to false on for the specific product (otherwise it will be displayed with standard price, for any package).',
+                to="accounting.SpecificProduct",
+            ),
         ),
     ]

@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0038_add_display_only_when_specific_for_packages'),
+        ("accounting", "0038_add_display_only_when_specific_for_packages"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='product',
-            name='display_only_when_specific_for_packages',
+            model_name="product",
+            name="display_only_when_specific_for_packages",
         ),
     ]
