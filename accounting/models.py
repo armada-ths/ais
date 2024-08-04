@@ -200,17 +200,6 @@ class Product(models.Model):
         ),
     )
 
-    display_only_when_specific_for_packages = models.BooleanField(
-        default=False,
-        help_text=" ".join(
-            [
-                "This product will only be shown to the customer if they select a package that has this product as a specific product.",
-                "When to use this: e.g. A package is gatekeeping this product, only show the product when the package is selected.",
-                "When not to use this: e.g. This product's price is only affected by one or more packages, but the product is still available for purchase without the package.",
-            ]
-        ),
-    )
-
     class Meta:
         verbose_name_plural = "Products"
         ordering = ["ordering"]

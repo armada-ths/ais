@@ -11,14 +11,9 @@ def get_products(fair, company):
 
     q = Q(exclusively_for=[])
 
-    print("timely", signature.contract.is_timely)
-
     if signature.contract.is_timely:
         q |= Q(exclusively_for__contains=["ir-timely"])
     else:
         q |= Q(exclusively_for__contains=["ir-late"])
 
-    return Product.objects.filter(
-        revenue__fair=fair,
-        display_only_when_specific_for_packages=False,
-    ).filter(q)
+    return Product.objects.filter(revenue__fair=fair).filter(q)
