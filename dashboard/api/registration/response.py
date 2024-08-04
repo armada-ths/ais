@@ -33,6 +33,8 @@ def handle_response(request, company, fair, contact, exhibitor):
 
     serializer = get_serializer(request, registration)
 
+    print(order_is_allowed(fair, company))
+
     if request.method == "GET":
         return JsonResponse(serializer.data, safe=False)
     elif request.method == "PUT":
@@ -41,35 +43,27 @@ def handle_response(request, company, fair, contact, exhibitor):
         return status.UNSUPPORTED_METHOD
 
 
-@require_POST
-def submit_cr(request, company, fair, contact, exhibitor):
-    try:
-        registration = get_registration(company, fair, contact, exhibitor)
-    except JSONError as error:
-        return error.status
+def order_is_allowed(fair, company):
+    orders = Order.objects.filter(
+        purchasing_company=company,
+        product__revenue__fair=fair,
+    )
 
-    # Currently will not happen, because you can only
-    # call submit on your own company
-    if registration.contact == None:
-        return status.COMPANY_DOES_NOT_EXIST
+    package = orders.filter(product__category__name="Package").first()
+    if package is None:
+        return False
 
-    if registration.cr_signature != None:
-        return status.EXHIBITOR_ALREADY_SIGNED
+    return True
 
-    if registration.ir_signature is None:
-        return status.COMPANY_NOT_SIGNED_IR
 
-    signature = SignupLog.objects.create(
-        company_contact=contact,
-        contract=registration.cr_contract,
-        company=company,
-        ip_address=get_client_ip(request),
+def handle_submitted_order(fair, company):
+    orders = Order.objects.filter(
+        purchasing_company=company,
+        product__revenue__fair=fair,
     )
 
     # Add package products
-    package_products = Order.objects.filter(
-        purchasing_company=company,
-        product__revenue__fair=fair,
+    package_products = orders.filter(
         product__category__name="Package",
     )
     for package in package_products:
@@ -81,6 +75,34 @@ def submit_cr(request, company, fair, contact, exhibitor):
                 unit_price=0,  # A package product is free
             )
 
+
+@require_POST
+def submit_cr(request, company, fair, contact, exhibitor):
+    try:
+        registration = get_registration(company, fair, contact, exhibitor)
+    except JSONError as error:
+        return error.status
+
+    if registration.contact == None:
+        return status.COMPANY_DOES_NOT_EXIST
+
+    if registration.cr_signature != None:
+        return status.EXHIBITOR_ALREADY_SIGNED
+
+    if registration.ir_signature is None:
+        return status.COMPANY_NOT_SIGNED_IR
+
+    if not order_is_allowed(fair, company):
+        return status.ORDER_NOT_ALLOWED
+
+    signature = SignupLog.objects.create(
+        company_contact=contact,
+        contract=registration.cr_contract,
+        company=company,
+        ip_address=get_client_ip(request),
+    )
+
+    handle_submitted_order(fair, company)
     send_cr_confirmation_email(request, fair, company, exhibitor, signature)
 
     try:
