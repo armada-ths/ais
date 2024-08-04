@@ -78,7 +78,7 @@ export function PackageSelectFormPage() {
                         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                         <AlertDialogDescription>
                             Your cart is not empty, changing the package will
-                            clear all your previous orders
+                            clear the cart. Do you want to continue?
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
