@@ -11,6 +11,7 @@ export interface TimelineStage {
     when: AccessDeclaration[]
     title: string
     badgeText?: string
+    stepIcon?: React.ReactNode
 }
 
 export function Timeline(
@@ -50,13 +51,14 @@ export function Timeline(
                                 }
                             )}
                         >
-                            {index < currentIndex &&
-                                !checkAccessDeclarations(
-                                    accessDeclarationArgs,
-                                    stage.when
-                                ) && (
-                                    <XIcon className="h-3 w-3 text-stone-800" />
-                                )}
+                            {stage.stepIcon ??
+                                (index < currentIndex &&
+                                    !checkAccessDeclarations(
+                                        accessDeclarationArgs,
+                                        stage.when
+                                    ) && (
+                                        <XIcon className="h-3 w-3 text-stone-800" />
+                                    ))}
                         </div>
                         {stage.badgeText != null && (
                             <Badge

@@ -3,11 +3,13 @@ import {
     AccessDeclarationArgs,
     parseAccessDeclaration
 } from "@/forms/access_declaration_logic"
+import { Hourglass } from "lucide-react"
 
 type TimelineStep = {
     title?: React.ReactNode
     description: React.ReactNode
     variant?: "info" | "success" | "warning" // Default info
+    icon?: React.ReactNode
 }
 
 const salesEmail = (
@@ -15,6 +17,8 @@ const salesEmail = (
         sales@armada.nu
     </a>
 )
+
+const newSignupForm = <a href="">Armada 2025 sign up form</a>
 
 export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
     {
@@ -24,14 +28,18 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
                 <>
                     Unfortunately we could not offer you a spot at this year's
                     event. We're looking forward to seeing you at next year's
-                    event
+                    event, make an early sign up at {newSignupForm}
                 </>
-            ),
+            )
         },
         "after_fair:::*:::!accepted": {
             title: "Welcome to Armada!",
-            description:
-                "We're looking forward to seeing you at next year's event"
+            description: (
+                <>
+                    We're looking forward to seeing you at next year's event,
+                    you can sign up here {newSignupForm}
+                </>
+            )
         },
         "*:::*:::rejected": {
             title: "We are at full capacity",
@@ -52,7 +60,8 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "complete_registration:::!signed_cr:::waitlist": {
             title: "You have been placed in the waitlist!",
             description:
-                "Please complete the below registration to finalize your request for a spot at the fair."
+                "Please complete the below registration to finalize your request for a spot at the fair.",
+            icon: <Hourglass className="stroke-emerald-400" />
         },
         "complete_registration:::!signed_cr:::*": {
             title: "Welcome to the Armada final registration!",
@@ -68,7 +77,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "complete_registration:::signed_cr:::accepted": {
             title: "You have completed the final registration!",
             description:
-                "Your final registration is accepted! Please make sure to fill in the remaining cards.",
+                "Your final registration is accepted! If you have any questions about your registration, contact sales@armada.nu. Otherwise, you can wait until the host assigned to you contacts you with more information closer to the fair. If you haven't filled in your company information in the dashboard yet, please do so.",
             variant: "success"
         },
         "complete_registration:::signed_cr:::waitlist": {
@@ -96,7 +105,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         "after_complete_registration:::signed_cr:::accepted": {
             title: "You have completed the final registration!",
             description:
-                "Your final registration is accepted! Please make sure to fill in the remaining cards.",
+                "You got a spot at the fair! Please make sure to fill in the remaining cards.",
             variant: "success"
         },
         "after_complete_registration:::signed_cr:::waitlist": {
@@ -110,7 +119,7 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
             description: (
                 <>
                     This years fair is currently underway. We're looking forward
-                    to seeing you at next year's event! If you have any
+                    to seeing you at next year's event again! If you have any
                     questions, please contact {salesEmail}
                 </>
             )
@@ -127,13 +136,21 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
         },
         "after_fair:::!signed_cr:::*": {
             title: "Welcome to Armada!",
-            description:
-                "We're looking forward to seeing you at next year's event."
+            description: (
+                <>
+                    We're looking forward to seeing you at next year's event
+                    which you can sign up for at {newSignupForm}
+                </>
+            )
         },
         "after_fair:::signed_cr:::accepted": {
             title: "Thank you for coming to Armada!",
-            description:
-                "We're looking forward to seeing you at next year's event.",
+            description: (
+                <>
+                    We're looking forward to seeing you at next year's event
+                    which you can sign up for at {newSignupForm}
+                </>
+            ),
             variant: "success"
         },
         "*:::*:::pending": {

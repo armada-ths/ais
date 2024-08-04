@@ -6,7 +6,10 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { FORMS } from "@/forms"
-import { AccessDeclarationArgs } from "@/forms/access_declaration_logic"
+import {
+    AccessDeclarationArgs,
+    checkAccessDeclarations
+} from "@/forms/access_declaration_logic"
 import { isFormOpen, isFormVisible } from "@/forms/form_access"
 import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
@@ -18,7 +21,12 @@ import { useDates } from "@/shared/hooks/api/useDates"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
 import clsx from "clsx"
-import { AlertTriangle, BadgeInfo, CheckCircle } from "lucide-react"
+import {
+    AlertTriangle,
+    BadgeInfo,
+    CheckCircle,
+    HourglassIcon
+} from "lucide-react"
 import { DateTime } from "luxon"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
@@ -94,14 +102,16 @@ export function DashboardScreen({
                         )}
                         {timelinePhaseAlert != null && (
                             <Alert className="mt-5 max-w-[700px]">
-                                {timelinePhaseAlert.variant == null ||
-                                timelinePhaseAlert.variant === "info" ? (
-                                    <BadgeInfo />
-                                ) : timelinePhaseAlert.variant === "success" ? (
-                                    <CheckCircle className="stroke-emerald-400" />
-                                ) : (
-                                    <AlertTriangle className="stroke-yellow-400" />
-                                )}
+                                {timelinePhaseAlert.icon ??
+                                    (timelinePhaseAlert.variant == null ||
+                                    timelinePhaseAlert.variant === "info" ? (
+                                        <BadgeInfo />
+                                    ) : timelinePhaseAlert.variant ===
+                                      "success" ? (
+                                        <CheckCircle className="stroke-emerald-400" />
+                                    ) : (
+                                        <AlertTriangle className="stroke-yellow-400" />
+                                    ))}
                                 <AlertTitle className="ml-3">
                                     <span className="font-bold">
                                         {timelinePhaseAlert?.title ?? (
@@ -163,7 +173,16 @@ export function DashboardScreen({
                                 title: "You got a spot at the fair",
                                 badgeText: DateTime.fromISO(
                                     dates.ir.acceptance
-                                ).toFormat("MMM d")
+                                ).toFormat("MMM d"),
+                                stepIcon: checkAccessDeclarations(
+                                    accessDeclaration,
+                                    ["*:::*:::accepted"]
+                                ) ? undefined : (
+                                    <HourglassIcon
+                                        size={10}
+                                        className="stroke-stone-800"
+                                    />
+                                )
                             },
                             {
                                 when: ["complete_registration:::*:::*"],

@@ -105,7 +105,7 @@ export function LogoFormPage() {
     return (
         <FormWrapper>
             <div className="flex flex-col items-center gap-10">
-                <Alert>
+                <Alert className="max-w-md">
                     <HelpCircleIcon size={20} />
                     <AlertTitle>Tip!</AlertTitle>
                     <AlertDescription>
@@ -116,7 +116,8 @@ export function LogoFormPage() {
                         >
                             https://armada.nu/student/exhibitors
                         </a>{" "}
-                        to see your presence
+                        to get a grasp of how your logo will be displayed. (We
+                        do not update this site in real-time)
                     </AlertDescription>
                 </Alert>
                 <div className="flex gap-2">

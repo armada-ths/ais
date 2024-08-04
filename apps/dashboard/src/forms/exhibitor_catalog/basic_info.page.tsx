@@ -184,7 +184,7 @@ export function BasicInfoFormPage() {
                 </div>
                 <Button type="submit" className={cn("flex gap-4")}>
                     {isPending && <Loader2Icon className="animate-spin" />}{" "}
-                    Submit
+                    Submit and save
                 </Button>
             </form>
         </FormWrapper>

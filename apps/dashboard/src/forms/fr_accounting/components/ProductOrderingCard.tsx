@@ -104,16 +104,20 @@ export function ProductOrderingCard({ product }: { product: Product }) {
                     <div className="!mt-0 flex flex-1 items-start justify-end">
                         {product.max_quantity != null &&
                         product.max_quantity <= 1 ? (
-                            <Switch
-                                onCheckedChange={value =>
-                                    onChange(value ? 1 : 0)
-                                }
-                                checked={
-                                    selected != null ||
-                                    packageProductBaseQuantity > 0
-                                }
-                                disabled={packageProductBaseQuantity > 0}
-                            />
+                            packageProductBaseQuantity <= 0 ? (
+                                <Switch
+                                    onCheckedChange={value =>
+                                        onChange(value ? 1 : 0)
+                                    }
+                                    checked={
+                                        selected != null ||
+                                        packageProductBaseQuantity > 0
+                                    }
+                                    disabled={packageProductBaseQuantity > 0}
+                                />
+                            ) : (
+                                <Badge>Included</Badge>
+                            )
                         ) : (
                             <Input
                                 placeholder="Quantity"
