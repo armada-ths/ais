@@ -22,11 +22,10 @@ export const FORM_ACCESS: FormAccessDeclaration = {
     ir_signup: {
         "initial_registration:::unsigned_ir:::*": CardStatus.Shown,
         "between_ir_and_cr:::unsigned_ir:::*": CardStatus.Shown,
-        "complete_registration:::unsigned_ir:::*": CardStatus.Shown,
+        "complete_registration:::unsigned_ir:::*": CardStatus.Shown
     },
     ir_additional_info: {
-        "initial_registration:::!unsigned_ir:::*": CardStatus.Shown,
-        "between_ir_and_cr:::!unsigned_ir:::*": CardStatus.Shown
+        "*:::*:::*": CardStatus.Shown
     },
     exhibitor_catalog: {
         "initial_registration:::!unsigned_ir:::*": CardStatus.Shown,
@@ -40,16 +39,16 @@ export const FORM_ACCESS: FormAccessDeclaration = {
         "complete_registration:::signed_ir:::accepted": CardStatus.Shown
     },
     receipt: {
-        // "*:::signed_cr": CardStatus.Shown
+        "*:::signed_cr:::*": CardStatus.Shown
     },
     core_values: {
-        // "*:::signed_cr": CardStatus.Shown
+        "*:::signed_cr:::*": CardStatus.Shown
     },
     transport: {
-        // "*:::signed_cr": CardStatus.Shown
+        "*:::signed_cr:::accepted": CardStatus.Shown
     },
     sture: {
-        // "*:::signed_cr": CardStatus.Shown
+        "*:::signed_cr:::accepted": CardStatus.Shown
     }
 }
 
