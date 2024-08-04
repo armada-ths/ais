@@ -54,12 +54,12 @@ def order_is_allowed(fair, company):
         print("No package")
         return False
 
-    for order in orders:
-        parent_products = order.product.specificproduct_set.all()
+    # for order in orders:
+    #     parent_products = order.product.specificproduct_set.all()
 
-        if parent_products.count() > 0 and not package in parent_products:
-            print(order.product, parent_products, "Parent not in package")
-            return False
+    #     if parent_products.count() > 0 and not package in parent_products:
+    #         print(order.product, parent_products, "Parent not in package")
+    #         return False
 
     return True
 
