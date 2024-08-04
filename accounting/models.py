@@ -120,9 +120,14 @@ class Product(models.Model):
         RegistrationSection, blank=True, null=True, on_delete=models.CASCADE
     )
 
+    # Currently, we can present two different products to the customer.
+    # One for companies who signed the IR during the IR period, and one for companies who signed it after.
+    # A better system would be for each product to have list of "ids" of company "types" that can see it.
+    # A company gets a type depending on time they signed IR, if they are a startup, non-profit, etc.
+    # Anyway ...
     EXCLUSIVELY_FOR_CHOICES = [
-        ("ir-signed", "Companies who have signed IR"),
-        ("ir-unsigned", "Companies who have NOT signed IR"),
+        ("ir-timely", "Companies who signed IR during the IR period."),
+        ("ir-late", "Companies who signed IR after the IR period."),
     ]
 
     exclusively_for = ChoiceArrayField(
