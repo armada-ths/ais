@@ -6,8 +6,8 @@ from dashboard.api.registration.types.cr import (
     CRRegistrationSerializer,
     CRSignedRegistrationSerializer,
 )
-from dashboard.api.registration.types.ir import IRRegistrationSerializer
 
+from dashboard.api.registration.types.serializer import RegistrationSerializer
 from fair.models import RegistrationPeriod
 
 from util import status, get_user
@@ -21,23 +21,22 @@ def get_serializer(request, registration, data=empty, context={}):
     if user != None:
         permission = UserPermission(user)
 
-    if registration.period in [
-        RegistrationPeriod.BEFORE_IR,
-        RegistrationPeriod.IR,
-        RegistrationPeriod.BETWEEN_IR_AND_CR,
-    ]:
-        Serializer = IRRegistrationSerializer
+    if (
+        registration.period
+        in [
+            RegistrationPeriod.BEFORE_IR,
+            RegistrationPeriod.IR,
+            RegistrationPeriod.BETWEEN_IR_AND_CR,
+        ]
+        or registration.ir_signature is None
+    ):
+        Serializer = RegistrationSerializer
     elif registration.period in [RegistrationPeriod.CR]:
-        Serializer = CRRegistrationSerializer
-
-        if registration.ir_signature == None:  # If IR has not been signed
-            Serializer = IRRegistrationSerializer
-        elif registration.cr_signature:
-            # If user is sales, they may change anything he likes
-            if permission == UserPermission.SALES:
-                Serializer = CRRegistrationSerializer
-            else:
-                Serializer = CRSignedRegistrationSerializer
+        # If user is sales, they may change anything he likes
+        if permission == UserPermission.SALES or registration.cr_signature is None:
+            Serializer = CRRegistrationSerializer
+        else:
+            Serializer = CRSignedRegistrationSerializer
 
     elif registration.period in [
         RegistrationPeriod.AFTER_CR,
