@@ -20,24 +20,24 @@ type FormAccessDeclaration = Record<
 // PERIOD:::EXHIBITOR_STATE
 export const FORM_ACCESS: FormAccessDeclaration = {
     ir_signup: {
-        // "initial_registration:::unsigned_ir": CardStatus.Shown,
-        // "between_ir_and_cr:::unsigned_ir": CardStatus.Shown,
-        // "complete_registration:::unsigned_ir": CardStatus.Shown
+        "initial_registration:::unsigned_ir:::*": CardStatus.Shown,
+        "between_ir_and_cr:::unsigned_ir:::*": CardStatus.Shown,
+        "complete_registration:::unsigned_ir:::*": CardStatus.Shown,
     },
     ir_additional_info: {
-        // "initial_registration:::!unsigned_ir": CardStatus.Shown,
-        // "between_ir_and_cr:::!unsigned_ir": CardStatus.Shown
+        "initial_registration:::!unsigned_ir:::*": CardStatus.Shown,
+        "between_ir_and_cr:::!unsigned_ir:::*": CardStatus.Shown
     },
     exhibitor_catalog: {
-        // "initial_registration:::!unsigned_ir": CardStatus.Shown,
-        // "between_ir_and_cr:::!unsigned_ir": CardStatus.Shown,
-        // "complete_registration:::!unsigned_ir": CardStatus.Shown,
-        // "after_complete_registration:::signed_cr": CardStatus.Shown
+        "initial_registration:::!unsigned_ir:::*": CardStatus.Shown,
+        "between_ir_and_cr:::!unsigned_ir:::*": CardStatus.Shown,
+        "complete_registration:::!unsigned_ir:::*": CardStatus.Shown,
+        "after_complete_registration:::signed_cr:::*": CardStatus.Shown
     },
     fr_accounting: {
-        // "complete_registration:::pending": CardStatus.Shown,
-        // "complete_registration:::waitlist": CardStatus.Shown,
-        // "complete_registration:::accepted": CardStatus.Shown
+        "complete_registration:::signed_ir:::pending": CardStatus.Shown,
+        "complete_registration:::signed_ir:::waitlist": CardStatus.Shown,
+        "complete_registration:::signed_ir:::accepted": CardStatus.Shown
     },
     receipt: {
         // "*:::signed_cr": CardStatus.Shown
