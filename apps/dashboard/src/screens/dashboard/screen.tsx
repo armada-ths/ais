@@ -139,7 +139,7 @@ export function DashboardScreen({
                         className="mb-10 mt-20 h-28 w-2/3"
                         stages={[
                             {
-                                when: ["initial_registration:::*"],
+                                when: ["initial_registration:::*:::*"],
                                 title: "Initial Registration",
                                 badgeText: `${DateTime.fromISO(
                                     dates.ir.start
@@ -147,47 +147,47 @@ export function DashboardScreen({
                                     dates.ir.end
                                 ).toFormat("MMM d")}`
                             },
-                            {
-                                when: ["between_ir_and_cr:::!accepted"],
-                                title: "You have completed initial registration"
-                            },
-                            {
-                                when: ["between_ir_and_cr:::accepted"],
-                                title: "You got a spot at the fair",
-                                badgeText: DateTime.fromISO(
-                                    dates.ir.acceptance
-                                ).toFormat("MMM d")
-                            },
-                            {
-                                when: ["complete_registration:::!signed_cr"],
-                                title: "Final registration",
-                                badgeText: `${DateTime.fromISO(
-                                    dates.fr.start
-                                ).toFormat("MMM d")} - ${DateTime.fromISO(
-                                    dates.fr.end
-                                ).toFormat("MMM d")}`
-                            },
-                            {
-                                when: [
-                                    "complete_registration:::signed_cr",
-                                    "after_complete_registration:::signed_cr"
-                                ],
-                                title: "You have completed final registration"
-                            },
-                            {
-                                when: ["fair:::*"],
-                                title: "The fair 🥳",
-                                badgeText: DateTime.fromISO(
-                                    dates.fair.days.reduce(
-                                        (acc, curr) =>
-                                            DateTime.fromISO(acc) <
-                                            DateTime.fromISO(curr)
-                                                ? acc
-                                                : curr,
-                                        dates.fair.days[0]
-                                    )
-                                ).toFormat("MMM d")
-                            }
+                            // {
+                            //     when: ["between_ir_and_cr:::!accepted"],
+                            //     title: "You have completed initial registration"
+                            // },
+                            // {
+                            //     when: ["between_ir_and_cr:::accepted"],
+                            //     title: "You got a spot at the fair",
+                            //     badgeText: DateTime.fromISO(
+                            //         dates.ir.acceptance
+                            //     ).toFormat("MMM d")
+                            // },
+                            // {
+                            //     when: ["complete_registration:::!signed_cr"],
+                            //     title: "Final registration",
+                            //     badgeText: `${DateTime.fromISO(
+                            //         dates.fr.start
+                            //     ).toFormat("MMM d")} - ${DateTime.fromISO(
+                            //         dates.fr.end
+                            //     ).toFormat("MMM d")}`
+                            // },
+                            // {
+                            //     when: [
+                            //         "complete_registration:::signed_cr",
+                            //         "after_complete_registration:::signed_cr"
+                            //     ],
+                            //     title: "You have completed final registration"
+                            // },
+                            // {
+                            //     when: ["fair:::*"],
+                            //     title: "The fair 🥳",
+                            //     badgeText: DateTime.fromISO(
+                            //         dates.fair.days.reduce(
+                            //             (acc, curr) =>
+                            //                 DateTime.fromISO(acc) <
+                            //                 DateTime.fromISO(curr)
+                            //                     ? acc
+                            //                     : curr,
+                            //             dates.fair.days[0]
+                            //         )
+                            //     ).toFormat("MMM d")
+                            // }
                         ]}
                     />
                     {companyContact != null && (

@@ -17,10 +17,12 @@ export enum SigningStep {
     SIGNED_CR = "signed_cr" // Company has signed the complete registration
 }
 export enum ApplicationStatus {
+    NONE = "none", // None, no application status (SingingStep.UNSIGNED_IR)
     PENDING = "pending", //  Pending, company has not yet been accepted or rejected by armada
     ACCEPTED = "accepted", // Accepted, company has explicitly been accepted by armada
     REJECTED = "rejected", // Rejected, company has explicitly been rejected by armada
-    WAITLIST = "waitlist" // Company is on the waitlist as a backup
+    WAITLIST = "waitlist", // Company is on the waitlist as a backup
+    UNKNOWN = "unknown" // Unknown, there was an error on the backend (should not happen)
 }
 
 export interface DashboardResponse {

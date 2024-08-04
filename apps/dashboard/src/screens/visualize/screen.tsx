@@ -14,17 +14,130 @@ import {
 } from "@/shared/hooks/api/useDashboard"
 import { useMemo, useState } from "react"
 
-const states: AccessDeclarationArgs[] = Object.values(
-    RegistrationPeriod
-).flatMap(period =>
-    Object.values(ApplicationStatus).flatMap(applicationStatus =>
-        Object.values(SigningStep).map(signingStep => ({
-            period,
-            applicationStatus,
-            signingStep
-        }))
-    )
-)
+function withPeriod(
+    period: RegistrationPeriod,
+    states: Pick<AccessDeclarationArgs, "applicationStatus" | "signingStep">[]
+) {
+    return states.map(({ applicationStatus, signingStep }) => ({
+        period,
+        applicationStatus,
+        signingStep
+    }))
+}
+
+function withSigned(
+    signingStep: SigningStep,
+    applicationStatuses: AccessDeclarationArgs["applicationStatus"][]
+) {
+    return applicationStatuses.map(applicationStatus => ({
+        applicationStatus,
+        signingStep
+    }))
+}
+
+const states: AccessDeclarationArgs[] = [
+    {
+        period: RegistrationPeriod.BeforeIr,
+        applicationStatus: ApplicationStatus.NONE,
+        signingStep: SigningStep.UNSIGNED_IR
+    },
+    ...withPeriod(RegistrationPeriod.InitialRegistration, [
+        {
+            applicationStatus: ApplicationStatus.NONE,
+            signingStep: SigningStep.UNSIGNED_IR
+        },
+        ...withSigned(SigningStep.SIGNED_IR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ])
+    ]),
+    ...withPeriod(RegistrationPeriod.BetweenIrAndCr, [
+        {
+            applicationStatus: ApplicationStatus.NONE,
+            signingStep: SigningStep.UNSIGNED_IR
+        },
+        ...withSigned(SigningStep.SIGNED_IR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ])
+    ]),
+    ...withPeriod(RegistrationPeriod.CompleteRegistration, [
+        {
+            applicationStatus: ApplicationStatus.NONE,
+            signingStep: SigningStep.UNSIGNED_IR
+        },
+        ...withSigned(SigningStep.SIGNED_IR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ]),
+        ...withSigned(SigningStep.SIGNED_CR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ])
+    ]),
+    ...withPeriod(RegistrationPeriod.AfterCompleteRegistration, [
+        {
+            applicationStatus: ApplicationStatus.NONE,
+            signingStep: SigningStep.UNSIGNED_IR
+        },
+        ...withSigned(SigningStep.SIGNED_IR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ]),
+        ...withSigned(SigningStep.SIGNED_CR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ])
+    ]),
+    ...withPeriod(RegistrationPeriod.Fair, [
+        {
+            applicationStatus: ApplicationStatus.NONE,
+            signingStep: SigningStep.UNSIGNED_IR
+        },
+        ...withSigned(SigningStep.SIGNED_IR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ]),
+        ...withSigned(SigningStep.SIGNED_CR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ])
+    ]),
+    ...withPeriod(RegistrationPeriod.AfterFair, [
+        {
+            applicationStatus: ApplicationStatus.NONE,
+            signingStep: SigningStep.UNSIGNED_IR
+        },
+        ...withSigned(SigningStep.SIGNED_IR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ]),
+        ...withSigned(SigningStep.SIGNED_CR, [
+            ApplicationStatus.PENDING,
+            ApplicationStatus.ACCEPTED,
+            ApplicationStatus.REJECTED,
+            ApplicationStatus.WAITLIST
+        ])
+    ])
+]
 
 export function VisualizeScreen() {
     const [registrationPeriod, setRegistrationPeriod] =

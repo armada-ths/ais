@@ -3,6 +3,7 @@ from util import (
     get_application_status,
     get_contract_signature,
     get_sales_contacts,
+    get_signing_status,
     status,
 )
 
@@ -20,22 +21,20 @@ class Registration:
         self.orders = orders
         self.products = get_products(fair, company)
 
-        ir_contract, ir_signature = get_contract_signature(company, fair, "INITIAL")
-        self.ir_contract = ir_contract
-        self.ir_signature = ir_signature
-
-        cr_contract, cr_signature = get_contract_signature(company, fair, "COMPLETE")
-        self.cr_contract = cr_contract
-        self.cr_signature = cr_signature
-
-        self.application_status = get_application_status(
-            exhibitor, ir_signature, cr_signature
+        self.ir_contract, self.ir_signature = get_contract_signature(
+            company, fair, "INITIAL"
         )
+
+        self.cr_contract, self.cr_signature = get_contract_signature(
+            company, fair, "COMPLETE"
+        )
+
+        self.period = fair.get_period()
+        self.application_status = get_application_status(exhibitor, self.ir_signature)
+        self.signing_status = get_signing_status(self.ir_signature, self.cr_signature)
 
         self.sales_contacts = get_sales_contacts(fair, company, exhibitor)
         self.interested_in = company.groups.filter(fair=fair, allow_registration=True)
-
-        self.period = fair.get_period()
 
         if self.period in [
             RegistrationPeriod.IR,

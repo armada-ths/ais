@@ -33,12 +33,19 @@ class JSONError(BaseException):
         self.status = status
 
 
-def get_application_status(exhibitor, ir_signature, cr_signature):
-    if ir_signature is None or exhibitor is None:
-        return "unsigned_ir"
-
+def get_signing_status(ir_signature, cr_signature):
     if cr_signature is not None:
         return "signed_cr"
+
+    if ir_signature is not None:
+        return "signed_ir"
+
+    return "unsigned_ir"
+
+
+def get_application_status(exhibitor, ir_signature):
+    if ir_signature is None or exhibitor is None:
+        return "none"
 
     return dict(Exhibitor.application_statuses).get(
         exhibitor.application_status, "unknown"

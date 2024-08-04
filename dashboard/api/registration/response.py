@@ -2,7 +2,7 @@ import datetime
 from ais.common import settings
 from dashboard.api.registration.types.registration import get_registration
 from exhibitors.models import Exhibitor
-from util import JSONError, get_contract_signature, get_exhibitor, get_user, status
+from util import JSONError, get_contract_signature, get_exhibitor, status
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -57,9 +57,6 @@ def submit_cr(request, company, fair, contact, exhibitor):
 
     if registration.ir_signature is None:
         return status.COMPANY_NOT_SIGNED_IR
-
-    if registration.application_status != "accepted":
-        return status.COMPANY_NOT_ACCEPTED
 
     signature = SignupLog.objects.create(
         company_contact=contact,

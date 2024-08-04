@@ -224,6 +224,7 @@ class RegistrationSerializer(serializers.Serializer):
     fair = FairSerializer(read_only=True)
     period = serializers.StringRelatedField(read_only=True)
     application_status = serializers.StringRelatedField(read_only=True)
+    signing_status = serializers.StringRelatedField(read_only=True)
 
     ir_contract = SignupContractSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
