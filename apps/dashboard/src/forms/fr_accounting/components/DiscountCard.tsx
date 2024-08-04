@@ -1,7 +1,11 @@
 import { Product } from "@/shared/hooks/api/useDashboard"
 import { formatCurrency } from "@/utils/format_currency"
 
-export function DiscountCard({ product }: { product: Product }) {
+export function DiscountCard({
+    product
+}: {
+    product: Omit<Product, "child_products" | "specific_products">
+}) {
     return (
         <div className="flex items-center justify-center">
             <div className="w-full rounded bg-gradient-to-r from-yellow-500 to-yellow-300 p-1">

@@ -26,7 +26,11 @@ import { cn } from "@/utils/cx"
 import { formatCurrency } from "@/utils/format_currency"
 import { cx } from "class-variance-authority"
 
-export function ProductOrderingCard({ product }: { product: Product }) {
+export function ProductOrderingCard({
+    product
+}: {
+    product: Omit<Product, "child_products" | "specific_products">
+}) {
     const { updateCache } = useDashboard()
     const { data: orders } = useOrders()
     const { data: products } = useProducts()
