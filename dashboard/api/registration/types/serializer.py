@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
+from companies.serializers import CompanySerializer
 from people.models import Profile
 from recruitment.models import RecruitmentApplication
 
@@ -238,6 +239,7 @@ class RegistrationSerializer(serializers.Serializer):
     orders = OrderSerializer(many=True)
     contact = CompanyContactSerializer()
     exhibitor = ExhibitorSerializer()
+    company = CompanySerializer()
     interested_in = InterestedInSerializer(many=True)
 
     # Add the 'fair' context to sales_contacts
@@ -257,6 +259,7 @@ class RegistrationSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         update_field(instance, validated_data, "contact", CompanyContactSerializer)
+        update_field(instance, validated_data, "exhibitor", ExhibitorSerializer)
 
         interested_in = validated_data.pop("interested_in", None)
         if interested_in != None:

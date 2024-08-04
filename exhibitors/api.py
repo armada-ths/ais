@@ -159,7 +159,10 @@ def exhibitors(request):
     )
 
     exhibitors = (
-        Exhibitor.objects.filter(fair__in=Fair.objects.filter(**fair_criteria))
+        Exhibitor.objects.filter(
+            fair__in=Fair.objects.filter(**fair_criteria),
+            application_status="accepted",
+        )
         .select_related(
             "company",
             "fair",
