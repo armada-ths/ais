@@ -81,7 +81,10 @@ export default function IrRegistrationPage() {
                 replace: true,
                 params: { companyId }
             })
+
+            return
         }
+        
         navigate({
             to: "/$companyId/form/$formKey/$formPageKey",
             replace: true,
