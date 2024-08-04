@@ -21,7 +21,7 @@ export function Timeline(
     const accessDeclarationArgs = useAccessDeclaration()
     const { stages, className, ...rest } = props
 
-    const currentIndex = stages.findIndex(stage =>
+    const currentIndex = stages.findLastIndex(stage =>
         checkAccessDeclarations(accessDeclarationArgs, stage.when)
     )
     const currentPercentage = currentIndex / (stages.length - 1)
