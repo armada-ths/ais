@@ -54,18 +54,12 @@ class RegistrationSection(models.Model):
 
 
 class SpecificProduct(models.Model):
-    unit_price = models.IntegerField(blank=False)
-    description = models.TextField(
-        blank=True,
-        null=True,
-        help_text="Optional, describe why you created this specific product. This will not be shown to the customer.",
-    )
     specific_product = models.ForeignKey(
         "Product", blank=False, on_delete=models.CASCADE
     )
 
     def __str__(self):
-        return "%s á %s SEK" % (self.specific_product, self.unit_price)
+        return "%s á %s SEK" % (self.specific_product, self.specific_product.unit_price)
 
 
 class ChildProduct(models.Model):
@@ -183,7 +177,7 @@ class Product(models.Model):
                 "(ONLY RELEVANT FOR PACKAGES AS ROOT PRODUCTS)",
                 "These products will only be shown to the customer if they select the current package",
                 "This feature was used in 2024 when silver and bronze packages lead to different prices on the same products",
-                'Neccessary is to toggle the "Display in product list" to false on for the specific product (otherwise it will be displayed with standard price).',
+                'Neccessary is to set the "Display in product list" to false on for the specific product (otherwise it will be displayed with standard price, for any package).',
             ]
         ),
     )

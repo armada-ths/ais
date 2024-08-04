@@ -74,7 +74,7 @@ class ChildProductSerializer(serializers.ModelSerializer):
 class SpecificProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecificProduct
-        read_only_fields = ("unit_price", "specific_product")
+        read_only_fields = ("specific_product",)
         fields = read_only_fields
 
     specific_product = ProductChildSerializer()

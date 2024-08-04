@@ -33,7 +33,7 @@ class ChildProductAdmin(ModelAdminImproved):
 
 @admin.register(SpecificProduct)
 class SpecificProductAdmin(ModelAdminImproved):
-    fields = ("specific_product", "description", "unit_price")
+    fields = ("specific_product",)
 
 
 class YearDescendingFilter(admin.SimpleListFilter):
