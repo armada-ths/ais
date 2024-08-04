@@ -102,7 +102,8 @@ export function ProductOrderingCard({ product }: { product: Product }) {
                         </CardTitle>
                     </div>
                     <div className="!mt-0 flex flex-1 items-start justify-end">
-                        {product.max_quantity <= 1 ? (
+                        {product.max_quantity != null &&
+                        product.max_quantity <= 1 ? (
                             <Switch
                                 onCheckedChange={value =>
                                     onChange(value ? 1 : 0)
@@ -135,7 +136,8 @@ export function ProductOrderingCard({ product }: { product: Product }) {
                     <div>
                         <p className="pb-1 text-xs">Total</p>
                         <Badge className="rounded bg-emerald-400 py-2 hover:bg-emerald-400">
-                            {product.max_quantity <= 1 &&
+                            {product.max_quantity != null &&
+                            product.max_quantity <= 1 &&
                             packageProductBaseQuantity > 0
                                 ? `Included In ${packageName}`
                                 : packageProductBaseQuantity > 0 &&
@@ -160,7 +162,8 @@ export function ProductOrderingCard({ product }: { product: Product }) {
                                 </Badge>
                             </div>
                         )}
-                        {product.max_quantity > 1 &&
+                        {product.max_quantity != null &&
+                            product.max_quantity > 1 &&
                             packageProductBaseQuantity > 0 && (
                                 <Tooltip>
                                     <TooltipTrigger>

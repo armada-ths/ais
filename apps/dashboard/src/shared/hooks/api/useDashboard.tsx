@@ -109,7 +109,7 @@ export interface Product {
     id: number
     name: string
     short_name: string
-    max_quantity: number
+    max_quantity?: number
     unit_price: number
     description: string
     category: Category | null
