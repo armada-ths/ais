@@ -84,7 +84,7 @@ export default function IrRegistrationPage() {
 
             return
         }
-        
+
         navigate({
             to: "/$companyId/form/$formKey/$formPageKey",
             replace: true,
@@ -118,17 +118,23 @@ export default function IrRegistrationPage() {
     )
     const frEndDate = DateTime.fromISO(dataDates.fr.end).toFormat("d MMMM yyyy")
 
+    // const overfillWarning = (
+    //     <>
+    //         In order not to overfill the event, we will confirm your spot before{" "}
+    //         {DateTime.fromISO(dataDates.ir.acceptance).toFormat("d MMMM")}.
+    //     </>
+    // )
+
     return (
         <div className="mt-6 flex max-w-[400px] flex-col items-center gap-y-5">
             <div className="rounded-lg bg-stone-200 p-2 px-4 ">
                 <p className="my-3 text-xs text-stone-600">
                     Here you apply to participate in Armada{" "}
-                    {DateTime.now().year}. In order not to overfill the event,
-                    we will confirm your spot before{" "}
-                    {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
-                        "d MMMM"
-                    )}
-                    . Contact sales@armada.nu if you have any questions
+                    {DateTime.now().year}. {/* {overfillWarning} */}
+                    Contact <a href="mailto:sales@armada.nu">
+                        sales@armada.nu
+                    </a>{" "}
+                    if you have any questions
                 </p>
             </div>
             <a href={`${HOST}${data?.ir_contract.contract}`} target="_blank">
