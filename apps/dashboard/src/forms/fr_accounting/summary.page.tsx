@@ -59,7 +59,13 @@ export function SummaryFormPage() {
         })
     }
 
-    const totalPrice = 0
+    const totalPrice = orders.reduce(
+        (acc, current) =>
+            acc +
+            (current.unit_price ??
+                current.quantity * current.product.unit_price),
+        0
+    )
 
     const grossPrice = formatCurrency(totalPrice * 1.25)
 
