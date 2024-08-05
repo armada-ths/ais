@@ -25,16 +25,19 @@ from fair.models import Fair
 from people.models import Profile
 from lib.KTH_Catalog import lookup_user_with_api, merge_user_info
 
+from django.db.models import Count
+
 
 @require_GET
 def index(request):
     """
-    Returns all published events for this years fair
+    Returns all published events for this year's fair
     """
-
     fair = Fair.objects.get(current=True)
-    events = Event.objects.filter(fair=fair, published=True).prefetch_related(
-        "signupquestion_set"
+    events = (
+        Event.objects.filter(fair=fair, published=True).prefetch_related(
+            "signupquestion_set"
+        )
     )
 
     data = [serializers.event(event, request) for event in events]
@@ -93,6 +96,9 @@ def signup(request, event_pk):
 
     if not event.open_for_signup:
         return JsonResponse({"error": "Event not open for sign ups."}, status=403)
+
+    if event.is_full():
+        return JsonResponse({"message": "Event is fully booked."}, status=400)
 
     participant, _created = Participant.objects.get_or_create(
         user_s=request.user, event=event

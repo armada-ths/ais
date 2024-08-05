@@ -41,7 +41,7 @@
         <form method="post" class="flex flex-col gap-y-2">
             {% csrf_token %}
               <a class="flex justify-center" href="/login{% if next %}?next={{ next }}{% endif %}"><img src="{% static "images/kth_login_button.png" %}" alt="Login with KTH"></a>
-            <p>If you don't have an KTH account log in <a href="/accounts/login">here</a>.</p>
+            <p>If you don't have a KTH account log in <a class="text-emerald-400" href="/accounts/login">here</a>.</p>
         </form>
       </div>
     </div>
