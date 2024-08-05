@@ -26,9 +26,36 @@ class RegistrationSectionAdmin(ModelAdminImproved):
     list_display = ["name"]
 
 
+class ChildProductDescendingFilter(admin.SimpleListFilter):
+    title = _("Year")
+    parameter_name = "product__revenue__fair__year"
+
+    def lookups(self, request, model_admin):
+        # Retrieve all unique years from the related model and sort them in descending order
+        years = (
+            model_admin.model.objects.order_by("-product__revenue__fair__year")
+            .values_list("product__revenue__fair__year", flat=True)
+            .distinct()
+        )
+        return [(year, year) for year in years]
+
+    # Default to current year selected
+    def value(self):
+        # Default to the current year if no specific value is selected
+        if not self.used_parameters.get(self.parameter_name):
+            return str(datetime.now().year)
+        return super().value()
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product__revenue__fair__year=self.value())
+        return queryset
+
+
 @admin.register(ChildProduct)
 class ChildProductAdmin(ModelAdminImproved):
     fields = ("child_product", "description", "quantity")
+    list_filter = [ChildProductDescendingFilter]
 
 
 @admin.register(SpecificProduct)
