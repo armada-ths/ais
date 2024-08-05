@@ -52,6 +52,11 @@ export const TIMELINE_STEPS: Partial<Record<AccessDeclaration, TimelineStep>> =
             description:
                 "We're still working on this year's initial registration, please come back later!"
         },
+        "complete_registration:::unsigned_ir:::*": {
+            title: "Welcome to Armada!",
+            description:
+                "To request a spot at the fair, please first complete the below initial registration. You will then be able to complete the final registration."
+        },
         "complete_registration:::!signed_cr:::accepted": {
             title: "You've got a spot in the fair!",
             description:
