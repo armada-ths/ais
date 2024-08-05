@@ -191,7 +191,7 @@ export function FormScreen() {
             </Tabs>
             <div
                 className={cx(
-                    "hidden min-h-[92vh] grid-cols-[1fr_3fr_1fr] lg:grid",
+                    "hidden min-h-[92vh] grid-cols-[1fr_3fr_1fr] lg:grid absolute w-full",
                     {
                         "grid-cols-[0_1fr_0]":
                             !SideBar && form.pages.length <= 1
