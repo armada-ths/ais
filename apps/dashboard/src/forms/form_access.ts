@@ -25,9 +25,7 @@ export const FORM_ACCESS: FormAccessDeclaration = {
         "complete_registration:::unsigned_ir:::*": CardStatus.Shown
     },
     ir_additional_info: {
-        "before_initial_registration:::*:::*": CardStatus.HiddenLocked,
-        "*:::unsigned_ir:::*": CardStatus.HiddenLocked,
-        "*:::*:::!rejected": CardStatus.Shown
+        "initial_registration:::!unsigned_ir:::*": CardStatus.Shown
     },
     exhibitor_catalog: {
         "initial_registration:::!unsigned_ir:::*": CardStatus.Shown,

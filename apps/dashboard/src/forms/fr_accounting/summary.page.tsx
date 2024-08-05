@@ -29,6 +29,7 @@ export function SummaryFormPage() {
     const [confirmTerms, setConfirmTerms] = useState<boolean>(false)
     const [confirmBinding, setConfirmBinding] = useState(false)
     const [confirmEligibility, setConfirmEligibility] = useState(false)
+    const [allowLateConfirmation, setAllowLateConfirmation] = useState(false)
 
     const { data } = useDashboard()
     const { data: orders, isLoading: isLoadingOrders } = useOrders()
@@ -39,7 +40,11 @@ export function SummaryFormPage() {
 
     const unfilledFields: Array<unknown> = []
 
-    const readyToSign = confirmTerms && confirmBinding && confirmEligibility
+    const readyToSign =
+        confirmTerms &&
+        confirmBinding &&
+        confirmEligibility &&
+        allowLateConfirmation
 
     async function submitRegistration() {
         const response = await fetch(`${HOST}/api/dashboard/submit`, {
@@ -136,6 +141,22 @@ export function SummaryFormPage() {
                         <i>{company?.name}</i> will be invoiced{" "}
                         <b>{grossPrice} kr</b> inc. VAT, by THS Armada, through
                         Tekniska Högskolans Studentkår, org. nr. 802005-9153
+                    </Label>
+                </div>
+                <div className="mt-2 flex items-center space-x-4">
+                    <Checkbox
+                        id="allow_late_confirmation"
+                        checked={allowLateConfirmation}
+                        onCheckedChange={x =>
+                            x != "indeterminate" && setAllowLateConfirmation(x)
+                        }
+                    />
+                    <Label
+                        htmlFor="allow_late_confirmation"
+                        className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        I understand that the event may be full and that THS
+                        Armada will confirm my spot as soon as possible.
                     </Label>
                 </div>
 
