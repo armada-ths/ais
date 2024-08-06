@@ -5,6 +5,7 @@ import { HOST } from "@/shared/vars"
 import { cx } from "@/utils/cx"
 import { formatCurrency } from "@/utils/format_currency"
 import { FormWrapper } from "../FormWrapper"
+import { useParams } from "@tanstack/react-router"
 
 type Order = {
     comment: string
@@ -24,18 +25,21 @@ const getOrderPrice = (order: Order) => {
 
 export const OrderDetails = () => {
     const [orders, setOrders] = useState<Order[] | undefined>()
+    const { companyId } = useParams({
+        from: "/$companyId/*"
+    })
 
     // Todo: Move to redux
     useEffect(() => {
         const update = async () => {
-            fetch(`${HOST}/api/dashboard/`, {}).then(async raw => {
+            fetch(`${HOST}/api/dashboard/${companyId}`, {}).then(async raw => {
                 const data = await raw.json()
                 setOrders(data.orders)
             })
         }
 
         update()
-    }, [setOrders])
+    }, [setOrders, companyId])
 
     if (!orders) {
         return <>Loading</>
