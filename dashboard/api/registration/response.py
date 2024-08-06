@@ -143,7 +143,9 @@ def submit_ir(request, company, fair, contact):
     )
 
     ensure_exhibitor_exists_after_ir_signup(fair, company)
-    send_ir_confirmation_email(request, fair, signature, company)
+
+    if registration.ir_contract.is_timely:
+        send_ir_confirmation_email(request, fair, signature, company)
 
     exhibitor = get_exhibitor(company)
 
