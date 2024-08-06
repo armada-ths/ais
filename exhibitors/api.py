@@ -152,7 +152,7 @@ def serialize_exhibitor(exhibitor, request):
     )
 
 
-@cache_page(60 * 5)
+@cache_page(60)
 def exhibitors(request):
     fair_criteria = (
         {"year": request.GET["year"]} if "year" in request.GET else {"current": True}
@@ -161,7 +161,7 @@ def exhibitors(request):
     exhibitors = (
         Exhibitor.objects.filter(
             fair__in=Fair.objects.filter(**fair_criteria),
-            application_status="accepted",
+            application_status="1",  # Accepted
         )
         .select_related(
             "company",
