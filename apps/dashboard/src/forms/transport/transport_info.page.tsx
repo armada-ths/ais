@@ -166,7 +166,7 @@ export function TransportInfoFormPage() {
                     </div>
 
                     <p className="mb-5">
-                        The deadline for booking is the <b>23rd of October</b>,
+                        The deadline for booking is the <b>21st of October</b>,
                         but do not wait until it is too late! The goods must be
                         packed prior to week 45 (<b>6th of november</b>). You
                         are responsible for packaging the goods, the goods must
@@ -292,10 +292,10 @@ export function TransportInfoFormPage() {
                     </p>
                     <p className="mb-3">
                         <LinkWithIcon
-                            href="mailto:sales@armada.nu"
+                            href="mailto:ellen.chen@armada.nu"
                             icon={<MailIcon />}
                         >
-                            sales@armada.nu
+                            ellen.chen@armada.nu
                         </LinkWithIcon>
                     </p>
                     <p>
