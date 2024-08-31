@@ -154,14 +154,35 @@ def serialize_exhibitor(exhibitor, request):
 
 @cache_page(60)
 def exhibitors(request):
-    fair_criteria = (
-        {"year": request.GET["year"]} if "year" in request.GET else {"current": True}
+    fair = (
+        Fair.objects.get(current=True)
+        if "year" not in request.GET
+        else Fair.objects.get(year=request.GET["year"])
     )
+
+    # Will get the string key for the accepted status.
+    # MUST exist, otherwise the server is in an invalid state.
+    ACCEPTED_STATUS_KEY = next(
+        status[0]
+        for status in Exhibitor.application_statuses
+        if status[1] == "accepted"
+    )
+
+    if ACCEPTED_STATUS_KEY is None:
+        return JsonResponse({"message": "No accepted status found"}, status=500)
+
+    # For the fair 2024 we introduced the exhibitor status system.
+    # During an IR signing, an exhibitor is created with the status "pending".
+    # Only "accepted" exhibitors are returned in this exhibitors endpoint.
+    # However, for all fairs before 2024, we haven't set the status to "accepted" for the exhibitors.
+    # This is an ugly hack to make sure that all exhibitors before 2024 are returned even though they are not "accepted".
+    # TODO: Remove this when we go into the production database and set all exhibitors prior to 2024 to accepted.
+    application_status = ACCEPTED_STATUS_KEY if fair.year >= 2024 else None
 
     exhibitors = (
         Exhibitor.objects.filter(
-            fair__in=Fair.objects.filter(**fair_criteria),
-            application_status="1",  # Accepted
+            fair=fair,
+            application_status=application_status,
         )
         .select_related(
             "company",
