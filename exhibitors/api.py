@@ -171,7 +171,7 @@ def exhibitors(request):
     if ACCEPTED_STATUS_KEY is None:
         return JsonResponse({"message": "No accepted status found"}, status=500)
 
-    # For the fair is 2024 we introduced the exhibitor status system.
+    # For the fair 2024 we introduced the exhibitor status system.
     # During an IR signing, an exhibitor is created with the status "pending".
     # Only "accepted" exhibitors are returned in this exhibitors endpoint.
     # However, for all fairs before 2024, we haven't set the status to "accepted" for the exhibitors.
