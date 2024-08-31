@@ -177,31 +177,31 @@ def exhibitors(request):
     # However, for all fairs before 2024, we haven't set the status to "accepted" for the exhibitors.
     # This is an ugly hack to make sure that all exhibitors before 2024 are returned even though they are not "accepted".
     # TODO: Remove this when we go into the production database and set all exhibitors prior to 2024 to accepted.
-    application_status = ACCEPTED_STATUS_KEY if fair.year >= 2024 else None
 
-    exhibitors = (
-        Exhibitor.objects.filter(
+    if fair.year >= 2024:
+        exhibitors = Exhibitor.objects.filter(
             fair=fair,
-            application_status=application_status,
+            application_status=ACCEPTED_STATUS_KEY,
         )
-        .select_related(
-            "company",
-            "fair",
-            "check_in_user",
-            "fair_location",
-        )
-        .prefetch_related(
-            "catalogue_industries",
-            "catalogue_values",
-            "catalogue_employments",
-            "catalogue_locations",
-            "catalogue_competences",
-            "catalogue_benefits",
-            "company__groups",
-            "exhibitorinbooth_set__booth__location__parent",
-            "exhibitorinbooth_set__booth__location",
-            "exhibitorinbooth_set__days",
-        )
+    else:
+        exhibitors = Exhibitor.objects.filter(fair=fair)
+
+    exhibitors = exhibitors.select_related(
+        "company",
+        "fair",
+        "check_in_user",
+        "fair_location",
+    ).prefetch_related(
+        "catalogue_industries",
+        "catalogue_values",
+        "catalogue_employments",
+        "catalogue_locations",
+        "catalogue_competences",
+        "catalogue_benefits",
+        "company__groups",
+        "exhibitorinbooth_set__booth__location__parent",
+        "exhibitorinbooth_set__booth__location",
+        "exhibitorinbooth_set__days",
     )
 
     data = [serialize_exhibitor(exhibitor, request) for exhibitor in exhibitors]
