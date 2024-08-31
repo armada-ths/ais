@@ -171,10 +171,12 @@ def exhibitors(request):
     if ACCEPTED_STATUS_KEY is None:
         return JsonResponse({"message": "No accepted status found"}, status=500)
 
-    # If the fair is 2024 or later, we will only show accepted exhibitors.
-    # This is because the application process is different from previous years.
-    # TODO: Remove this when we go into the production database and set all
-    # exhibitors prior to 2024 to accepted.
+    # For the fair is 2024 we introduced the exhibitor status system.
+    # During an IR signing, an exhibitor is created with the status "pending".
+    # Only "accepted" exhibitors are returned in this exhibitors endpoint.
+    # However, for all fairs before 2024, we haven't set the status to "accepted" for the exhibitors.
+    # This is an ugly hack to make sure that all exhibitors before 2024 are returned even though they are not "accepted".
+    # TODO: Remove this when we go into the production database and set all exhibitors prior to 2024 to accepted.
     application_status = ACCEPTED_STATUS_KEY if fair.year >= 2024 else None
 
     exhibitors = (
