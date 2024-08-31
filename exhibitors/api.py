@@ -154,13 +154,37 @@ def serialize_exhibitor(exhibitor, request):
 
 @cache_page(60)
 def exhibitors(request):
-    fair_criteria = (
-        {"year": request.GET["year"]} if "year" in request.GET else {"current": True}
+    fair = (
+        Fair.objects.get(current=True)
+        if "year" not in request.GET
+        else Fair.objects.get(year=request.GET["year"])
+    )
+
+    # Will get the string key for the accepted status.
+    # MUST exist, otherwise the server is in an invalid state.
+    ACCEPTED_STATUS_KEY = next(
+        status[0]
+        for status in Exhibitor.application_statuses
+        if status[1] == "accepted"
+    )
+
+    if ACCEPTED_STATUS_KEY is None:
+        return JsonResponse({"message": "No accepted status found"}, status=500)
+
+    # If the fair is 2024 or later, we will only show accepted exhibitors.
+    # This is because the application process is different from previous years.
+    # TODO: Remove this when we go into the production database and set all
+    # exhibitors prior to 2024 to accepted.
+    application_status = ACCEPTED_STATUS_KEY if fair.year >= 2024 else None
+
+    exhibitors = Exhibitor.objects.filter(
+        fair=fair,
+        application_status=application_status,
     )
 
     exhibitors = (
         Exhibitor.objects.filter(
-            fair__in=Fair.objects.filter(**fair_criteria),
+            fair=fair,
             application_status="1",  # Accepted
         )
         .select_related(
