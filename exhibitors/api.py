@@ -177,15 +177,10 @@ def exhibitors(request):
     # exhibitors prior to 2024 to accepted.
     application_status = ACCEPTED_STATUS_KEY if fair.year >= 2024 else None
 
-    exhibitors = Exhibitor.objects.filter(
-        fair=fair,
-        application_status=application_status,
-    )
-
     exhibitors = (
         Exhibitor.objects.filter(
             fair=fair,
-            application_status="1",  # Accepted
+            application_status=application_status,
         )
         .select_related(
             "company",
