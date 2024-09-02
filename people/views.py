@@ -1,15 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
-from django.utils import timezone
-from django import forms
-from django.core.exceptions import PermissionDenied
-from django.forms import ModelForm
-from django.contrib.auth.decorators import permission_required
-from django.db.models import F, Value, Prefetch, Q
-from django.contrib.postgres.aggregates import ArrayAgg
 
-from fair.models import Fair, OrganizationGroup
+from fair.models import Fair
 from recruitment.models import RecruitmentApplication, RecruitmentPeriod
 
 from .models import Profile
@@ -19,16 +12,17 @@ from .forms import ProfileForm
 def list_people(request, year):
     fair = get_object_or_404(Fair, year=year)
 
-    groups = OrganizationGroup.objects.filter(
-        fair=fair,
-        role__recruitmentapplication__status="accepted",
-    ).distinct()
-
     recruitment_applications = list(
         RecruitmentApplication.objects.filter(
-            delegated_role__organization_group__in=groups
+            recruitment_period__fair=fair,
+            status="accepted",
         )
-        .prefetch_related("user")
+        .prefetch_related(
+            "user",
+            "delegated_role",
+            "recruitment_period",
+            "delegated_role__organization_group",
+        )
         .order_by(
             "delegated_role__organizationgroup",
             "recruitment_period__startdate",
@@ -37,6 +31,14 @@ def list_people(request, year):
             "user__last_name",
         )
     )
+
+    groups = {
+        group
+        for group in [
+            application.delegated_role.organization_group
+            for application in recruitment_applications
+        ]
+    }
 
     organization_groups = [
         {
