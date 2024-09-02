@@ -27,5 +27,6 @@ django-cors-headers
 djangorestframework==3.9.3
 drf-writable-nested==0.7.0
 drf-extra-fields==3.7.0
+django-db-connection-pool==1.2.5
 django-magic-link==0.5.1
 django-autocomplete-light
