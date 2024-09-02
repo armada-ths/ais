@@ -1,177 +1,177 @@
-{% extends "base.html" %} {% load crispy_forms_tags %} {% block nav-banquet %}
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block nav-banquet %}
+
 <li role="presentation" class="active">
   <a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a>
 </li>
-{% endblock %} {% block content %}
+{% endblock %}
+
+{% block content %}
+
 <h1>{{ invitation.banquet.name }}</h1>
 
 {% if invitation.participant != None %}
-<a
-  style="font-size: xx-large; color: #fff"
-  href="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}"
->
-  <div
-    style="
-      margin-top: 3rem;
-      margin-bottom: 3rem;
-      text-align: center;
-      background-color: #00d790;
-      padding: 1rem 2rem;
-      border-radius: 1rem;
-    "
+  <a
+    style="font-size: xx-large; color: #fff"
+    href="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}"
   >
-    VIEW MY TICKET
-  </div>
-</a>
+    <div
+      style="
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        background-color: #00d790;
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+      "
+    >
+      VIEW MY TICKET
+    </div>
+  </a>
 {% endif %}
 
 <ul class="list-unstyled">
   {% if invitation.banquet.date %}
-  <li>
-    <span style="font-weight: bold">Time and date:</span> {{
-    invitation.banquet.date }}
-  </li>
-  {% endif %} {% if invitation.banquet.location %}
-  <li>
-    <span style="font-weight: bold">Location:</span> {{
-    invitation.banquet.location }}
-  </li>
-  {% endif %} {% if invitation.banquet.dress_code %}
-  <li>
-    <span style="font-weight: bold">Dress code:</span> {{
-    invitation.banquet.dress_code }}
-  </li>
+    <li>
+      <span style="font-weight: bold">Time and date:</span> {{ invitation.banquet.date }}
+    </li>
+  {% endif %}
+  {% if invitation.banquet.location %}
+    <li>
+      <span style="font-weight: bold">Location:</span> {{ invitation.banquet.location }}
+    </li>
+  {% endif %}
+  {% if invitation.banquet.dress_code %}
+    <li>
+      <span style="font-weight: bold">Dress code:</span> {{ invitation.banquet.dress_code }}
+    </li>
   {% endif %}
 </ul>
 
 <ul class="list-unstyled">
   {% if invitation.deadline_smart %}
-  <li>
-    <span style="font-weight: bold">Deadline for answering:</span> {{
-    invitation.deadline_smart }}
-  </li>
+    <li>
+      <span style="font-weight: bold">Deadline for answering:</span> {{ invitation.deadline_smart }}
+    </li>
   {% endif %}
   <li>
     <span style="font-weight: bold">Invitation status:</span>
-    {% if invitation.status == 'GOING' %}<span class="label label-success"
-      >You are going</span
-    >{% endif %} {% if invitation.status == 'HAS_NOT_PAID' %}<span
-      class="label label-warning"
-      >You have not paid</span
-    >{% endif %} {% if invitation.status == 'NOT_GOING' %}<span
-      class="label label-danger"
-      >You are not going</span
-    >{% endif %} {% if invitation.status == 'PENDING' %}<span
-      class="label label-default"
-      >Your invitation is pending response</span
-    >{% endif %}
+    {% if invitation.status == 'GOING' %}<span class="label label-success">You are going</span>{% endif %}
+    {% if invitation.status == 'HAS_NOT_PAID' %}<span class="label label-warning">You have not paid</span>{% endif %}
+    {% if invitation.status == 'NOT_GOING' %}<span class="label label-danger">You are not going</span>{% endif %}
+    {% if invitation.status == 'PENDING' %}<span class="label label-default">Your invitation is pending response</span>{% endif %}
   </li>
 </ul>
 
 <p><br /></p>
 
-{% if form %} {% if invitation.denied %}
-<h2>Not attending</h2>
-<p>
-  You have chosen not to attend. If you change your mind, please press the
-  button below.
-</p>
+{% if form %}
+  {% if invitation.denied %}
+    <h2>Not attending</h2>
+    <p>
+      You have chosen not to attend. If you change your mind, please press the
+      button below.
+    </p>
 
-<a
-  href="{% url 'banquet_invitation_maybe' fair.year invitation.token %}"
-  class="btn btn-default"
-  >I want to attend</a
->
-{% else %}
-<h2>Not attending?</h2>
-<p>If you wish not to attend the banquet, please push the button below.</p>
-
-<a
-  href="{% url 'banquet_invitation_no' fair.year invitation.token %}"
-  class="btn btn-default"
-  >I will not attend</a
->
-
-<h2>If you are attending</h2>
-{% if invitation.status == 'GOING' %}
-<p>
-  <span class="text-success"
-    >Your details have already been filled out and you have a spot on the
-    banquet.</span
-  >
-  If you wish to change your details, you can do so here.
-</p>
-{% else %}
-<p>
-  Please fill out your personal information as well as dietary preferences to
-  confirm your spot at the banquet.
-</p>
-{% endif %} {% if invitation.participant.has_paid %}
-<div class="alert alert-success">
-  We have received your payment of SEK {{ invitation.price }}.
-</div>
-{% endif %}
-<p>
-  <span style="font-weight: normal"
-    >By signing up you agree to THS Armada's </span
-  ><a
-    href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing"
-    target="_blank"
-    >Privacy Notice.</a
-  ><br />
-</p>
-<br />
-<form method="post">
-  {% csrf_token %} {{ form | crispy }} {% if form_catalogue_details and
-  invitation.part_of_matching %}
-  <h2>Seating</h2>
-  <p>
-    The seating at the banquet will be made to match your interests and academic
-    background to other participants at the banquet. The questions below are
-    optional but we encourage you to fill them out in order to let our table
-    matching algorithm do its magic! The collected data will only be used for
-    the banquet seating placement.
-  </p>
-  {{ form_catalogue_details | crispy }} {% endif %} {% if charge %}
-  <p>
-    <span style="font-weight: bold">Total to pay:</span> SEK {{ invitation.price
-    }}
-  </p>
-  <button type="submit" class="btn btn-lg btn-success center-block">
-    Proceed to Payment
-  </button>
+    <a href="{% url 'banquet_invitation_maybe' fair.year invitation.token %}" class="btn btn-default">I want to attend</a>
   {% else %}
-  <button type="submit" class="btn btn-lg btn-success center-block">
-    {% if invitation.participant %}Save changes{% else %}Submit{% endif %}
-  </button>
+    <h2>Not attending?</h2>
+    <p>If you wish not to attend the banquet, please push the button below.</p>
+
+    <a href="{% url 'banquet_invitation_no' fair.year invitation.token %}" class="btn btn-default">I will not attend</a>
+
+    <h2>If you are attending</h2>
+    {% if invitation.status == 'GOING' %}
+      <p>
+        <span class="text-success">Your details have already been filled out and you have a spot on the banquet.</span>
+        If you wish to change your details, you can do so here.
+      </p>
+    {% else %}
+      <p>
+        Please fill out your personal information as well as dietary preferences to
+        confirm your spot at the banquet.
+      </p>
+    {% endif %}
+
+    {% if invitation.participant.has_paid %}
+      <div class="alert alert-success">
+        We have received your payment of SEK {{ invitation.price }}.
+      </div>
+    {% endif %}
+
+    <p>
+      <span style="font-weight: normal">By signing up you agree to THS Armada's </span><a
+        href="https://docs.google.com/document/d/1lMu6VBf_v5O3vX5UirvoNRJzPJFPJzLASJNN6PYSu9Q/edit?usp=sharing"
+        target="_blank">Privacy Notice.</a><br />
+    </p>
+    <br />
+    <form method="post">
+      {% csrf_token %}
+      {{ form | crispy }}
+      {% if form_catalogue_details and invitation.part_of_matching %}
+        <h2>Seating</h2>
+        <p>
+          The seating at the banquet will be made to match your interests and academic
+          background to other participants at the banquet. The questions below are
+          optional but we encourage you to fill them out in order to let our table
+          matching algorithm do its magic! The collected data will only be used for
+          the banquet seating placement.
+        </p>
+        {{ form_catalogue_details | crispy }}
+      {% endif %}
+      {% if charge %}
+        <p>
+          <span style="font-weight: bold">Total to pay:</span> SEK {{ invitation.price }}
+        </p>
+        <button type="submit" class="btn btn-lg btn-success center-block">
+          Proceed to Payment
+        </button>
+      {% else %}
+        <button type="submit" class="btn btn-lg btn-success center-block">
+          {% if invitation.participant %}
+            Save changes
+          {% else %}
+            Submit
+          {% endif %}
+        </button>
+      {% endif %}
+    </form>
   {% endif %}
-</form>
-{% endif %} {% else %} {% if can_edit %}
-<h1>Thank you!</h1>
-<p>
-  Your response has been recorded. You can
-  <a href="{% url 'banquet_invitation' fair.year invitation.token %}"
-    >return to the form</a
-  >
-  if you would like to edit your details.
-</p>
-{% elif invitation.status == 'GOING' %}
-<ul class="list-unstyled">
-  <li>
-    <span style="font-weight: bold">Phone number:</span> {% if
-    invitation.participant.phone_number %} {{
-    invitation.participant.phone_number }} {% else %}
-    <span style="font-style: italic">not given</span> {% endif %}
-  </li>
-  <li>
-    <span style="font-weight: bold">Dietary restrictions:</span> {% if
-    invitation.participant.dietary_restrictions.all %} {{
-    invitation.participant.dietary_restrictions.all | join:', ' }} {% else %}
-    <span style="font-style: italic">none</span> {% endif %}
-  </li>
-  <li>
-    <span style="font-weight: bold">Alcohol:</span> {{
-    invitation.participant.get_alcohol_display }}
-  </li>
-</ul>
-{% endif %} {% endif %} {% endblock %}
+{% else %}
+  {% if can_edit %}
+    <h1>Thank you!</h1>
+    <p>
+      Your response has been recorded. You can
+      <a href="{% url 'banquet_invitation' fair.year invitation.token %}"
+        >return to the form</a
+      >
+      if you would like to edit your details.
+    </p>
+  {% elif invitation.status == 'GOING' %}
+    <ul class="list-unstyled">
+      <li>
+        <span style="font-weight: bold">Phone number:</span>
+        {% if invitation.participant.phone_number %}
+          {{ invitation.participant.phone_number }}
+        {% else %}
+          <span style="font-style: italic">not given</span>
+        {% endif %}
+      </li>
+      <li>
+        <span style="font-weight: bold">Dietary restrictions:</span>
+        {% if invitation.participant.dietary_restrictions.all %}
+          {{ invitation.participant.dietary_restrictions.all | join:', ' }}
+        {% else %}
+          <span style="font-style: italic">none</span>
+        {% endif %}
+      </li>
+      <li>
+        <span style="font-weight: bold">Alcohol:</span>
+        {{ invitation.participant.get_alcohol_display }}
+      </li>
+    </ul>
+  {% endif %}
+{% endif %}
+
+{% endblock %}
