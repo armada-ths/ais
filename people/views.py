@@ -6,6 +6,8 @@ from django import forms
 from django.core.exceptions import PermissionDenied
 from django.forms import ModelForm
 from django.contrib.auth.decorators import permission_required
+from django.db.models import F, Value, Prefetch, Q
+from django.contrib.postgres.aggregates import ArrayAgg
 
 from fair.models import Fair, OrganizationGroup
 from recruitment.models import RecruitmentApplication, RecruitmentPeriod
@@ -14,58 +16,42 @@ from .models import Profile
 from .forms import ProfileForm
 
 
-def list(request, year):
+def list_people(request, year):
     fair = get_object_or_404(Fair, year=year)
 
-    total = 0
+    groups = OrganizationGroup.objects.filter(
+        fair=fair,
+        role__recruitmentapplication__status="accepted",
+    ).distinct()
 
-    organization_groups = []
-
-    users = (
-        RecruitmentApplication.objects.select_related("user")
-        .filter(
-            delegated_role__organization_group=None,
-            status="accepted",
-            recruitment_period__fair=fair,
+    recruitment_applications = list(
+        RecruitmentApplication.objects.filter(
+            delegated_role__organization_group__in=groups
         )
+        .prefetch_related("user")
         .order_by(
-            "recruitment_period__start_date",
+            "delegated_role__organizationgroup",
+            "recruitment_period__startdate",
             "delegated_role",
             "user__first_name",
             "user__last_name",
         )
     )
 
-    total = len(users)
+    organization_groups = [
+        {
+            "i": i,
+            "name": group.name,
+            "users": [
+                recruitment_application
+                for recruitment_application in recruitment_applications
+                if group == recruitment_application.delegated_role.organization_group
+            ],
+        }
+        for i, group in enumerate(groups)
+    ]
 
-    if total > 0:
-        organization_groups.append({"name": None, "users": users})
-
-    i = 0
-
-    for organization_group in OrganizationGroup.objects.filter(fair=fair):
-        users = (
-            RecruitmentApplication.objects.select_related("user")
-            .filter(
-                delegated_role__organization_group=organization_group,
-                status="accepted",
-                recruitment_period__fair=fair,
-            )
-            .order_by(
-                "delegated_role__organization_group",
-                "recruitment_period__start_date",
-                "delegated_role",
-                "user__first_name",
-                "user__last_name",
-            )
-        )
-
-        organization_groups.append(
-            {"i": i, "name": organization_group.name, "users": users}
-        )
-
-        i += 1
-        total += len(users)
+    total = len(recruitment_applications)
 
     return render(
         request,
