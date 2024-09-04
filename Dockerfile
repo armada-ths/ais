@@ -24,7 +24,7 @@ RUN apk update \
   gdal-dev linux-headers g++ binutils geos-dev \
   tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
   libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
-  libxcb-dev libpng-dev libpq-dev
+  libxcb-dev libpng-dev
 RUN pip install --upgrade pip==21.3.1
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
