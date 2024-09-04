@@ -84,18 +84,12 @@ AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 
 DATABASES = {
     "default": {
-        "ENGINE": "dj_db_conn_pool.backends.postgresql",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": os.environ.get("DB_NAME", "ais_dev"),
         "USER": os.environ.get("DB_USER", "ais_dev"),
         "PASSWORD": os.environ.get("DB_PASSWORD", "ais_dev"),
         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
         "PORT": os.environ.get("DB_PORT", "5432"),
-        # https://pypi.org/project/django-db-connection-pool/
-        "POOL_OPTIONS": {
-            "POOL_SIZE": 5,
-            "MAX_OVERFLOW": 10,
-            "RECYCLE": -1,
-        },
     }
 }
 
