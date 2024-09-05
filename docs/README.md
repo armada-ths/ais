@@ -92,7 +92,11 @@ The web server will setup everything and connect itself to a postgis database. T
 
 #### Migrate the database and create a super user
 
-The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user. The server must be running in order to run this command.
+The database will not be up to date with the latest migrations. Run:
+
+1. `./init-dev-environment.sh`
+
+to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user. The server must be running in order to run this command.
 
 > `ais-web-1  | Starting development server at http://0.0.0.0:3000/`
 
