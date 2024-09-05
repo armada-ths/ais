@@ -50,7 +50,7 @@ In order to run the project locally, you need the following tools:
 <summary>All platforms with NVM</summary>
 
 1. `nvm install 20.12 && nvm use 20.12`
-2. `npm install -g pnpm`
+2. `npm install -g pnpm@9.6.0`
 
 </details>
 
