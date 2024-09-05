@@ -49,7 +49,7 @@ In order to run the project locally, you need the following tools:
 <details>
 <summary>All platforms with NVM</summary>
 
-1. `nvm install 20 && nvm use 20`
+1. `nvm install 20.12 && nvm use 20.12`
 2. `npm install -g pnpm`
 
 </details>
@@ -81,7 +81,7 @@ You can choose to use a copy of the production database for your local developme
 
 1. `nvm install 16 && nvm use 16 && npm install && npm run build` (compile the static files for e.g. the banquett and events systems).
 2. `cd apps/dashboard` (goto dashboard project).
-3. `nvm install 20 && nvm use 20 && pnpm install && pnpm build` (compile the the dashboard system).
+3. `nvm use 20.12 && pnpm install && pnpm build` (compile the the dashboard system).
 
 #### Run the server
 
