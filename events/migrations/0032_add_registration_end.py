@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0031_add_program_file_question_foreign_key'),
+        ("events", "0031_add_program_file_question_foreign_key"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='registration_end_date',
+            model_name="event",
+            name="registration_end_date",
             field=models.DateTimeField(null=True),
         ),
     ]
