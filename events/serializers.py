@@ -18,7 +18,11 @@ def event(event, request):
         "event_start": int(event.date_start.strftime("%s")),
         "event_end": int(event.date_end.strftime("%s")),
         "event_start_string": event.date_start.strftime("%Y-%m-%d %H:%M"),
-        "registration_end": int(event.date_start.strftime("%s")),
+        "registration_end": (
+            int(event.registration_end_date.strftime("%s"))
+            if event.registration_end_date
+            else None
+        ),
         "image_url": (
             request.build_absolute_uri(event.picture.url) if event.picture else None
         ),
@@ -31,7 +35,9 @@ def event(event, request):
         "signup_link": signup_url,
         "can_create_teams": event.teams_create_s,
         "can_join_teams": event.teams_participate_s,
-        "open_for_signup": event.open_for_signup and event.signup_s,
+        "open_for_signup_student": event.open_for_signup and event.signup_s,
+        "open_for_signup_company": event.open_for_signup and event.signup_cr,
+        "requires_invitation": event.requires_invitation,
     }
 
     return data

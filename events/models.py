@@ -16,6 +16,7 @@ class Event(models.Model):
     description = models.TextField(blank=True, null=True)
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
+    registration_end_date = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=75, blank=True, null=True)
     food = models.CharField(max_length=75, blank=True, null=True)
     signup_cr = models.BooleanField(
