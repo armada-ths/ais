@@ -16,6 +16,7 @@ class Event(models.Model):
     description = models.TextField(blank=True, null=True)
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
+    registration_end_date = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=75, blank=True, null=True)
     food = models.CharField(max_length=75, blank=True, null=True)
     signup_cr = models.BooleanField(
@@ -56,11 +57,6 @@ class Event(models.Model):
     )
     published = models.BooleanField(
         blank=False, null=False, verbose_name="The event is published on the website"
-    )
-    requires_invitation = models.BooleanField(
-        blank=False,
-        null=False,
-        verbose_name="Participants need an invitation to sign up",
     )
     contact_person = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE

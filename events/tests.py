@@ -20,7 +20,6 @@ class EventsTestCase(TestCase):
             teams_participate_cr=False,
             teams_participate_s=True,
             published=False,
-            requires_invitation=False,
         )
 
     def test_animals_can_speak(self):
