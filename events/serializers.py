@@ -37,7 +37,6 @@ def event(event, request):
         "can_join_teams": event.teams_participate_s,
         "open_for_signup_student": event.open_for_signup and event.signup_s,
         "open_for_signup_company": event.open_for_signup and event.signup_cr,
-        "requires_invitation": event.requires_invitation,
     }
 
     return data

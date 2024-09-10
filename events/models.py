@@ -58,11 +58,6 @@ class Event(models.Model):
     published = models.BooleanField(
         blank=False, null=False, verbose_name="The event is published on the website"
     )
-    requires_invitation = models.BooleanField(
-        blank=False,
-        null=False,
-        verbose_name="Participants need an invitation to sign up",
-    )
     contact_person = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE
     )
