@@ -7,25 +7,44 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0048_add_dietary_preferences'),
+        ("banquet", "0048_add_dietary_preferences"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DietaryPreference',
+            name="DietaryPreference",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('order', models.IntegerField(default=0)),
-                ('banquet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='banquet.Banquet')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("order", models.IntegerField(default=0)),
+                (
+                    "banquet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="banquet.Banquet",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['order', 'name'],
+                "ordering": ["order", "name"],
             },
         ),
         migrations.AlterField(
-            model_name='participant',
-            name='dietary_preference',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='banquet.DietaryPreference'),
+            model_name="participant",
+            name="dietary_preference",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="banquet.DietaryPreference",
+            ),
         ),
     ]

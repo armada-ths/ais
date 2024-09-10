@@ -7,14 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('people', '0014_add_dietary_preferences'),
-        ('banquet', '0047_has_sent_mail'),
+        ("people", "0014_add_dietary_preferences"),
+        ("banquet", "0047_has_sent_mail"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='participant',
-            name='dietary_preference',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='people.DietaryPreference'),
+            model_name="participant",
+            name="dietary_preference",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="people.DietaryPreference",
+            ),
         ),
     ]

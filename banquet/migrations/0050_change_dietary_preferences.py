@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('banquet', '0049_change_dietary_preferences'),
+        ("banquet", "0049_change_dietary_preferences"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='participant',
-            name='dietary_preference',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='banquet.DietaryPreference'),
+            model_name="participant",
+            name="dietary_preference",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="banquet.DietaryPreference",
+            ),
         ),
     ]

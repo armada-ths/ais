@@ -6,24 +6,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('people', '0013_add_armada_email'),
+        ("people", "0013_add_armada_email"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DietaryPreference',
+            name="DietaryPreference",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('order', models.IntegerField(default=0)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("order", models.IntegerField(default=0)),
             ],
             options={
-                'ordering': ['order', 'name'],
+                "ordering": ["order", "name"],
             },
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='no_dietary_restrictions',
+            model_name="profile",
+            name="no_dietary_restrictions",
             field=models.BooleanField(default=False),
         ),
     ]
