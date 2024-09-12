@@ -34,10 +34,8 @@ def index(request):
     Returns all published events for this year's fair
     """
     fair = Fair.objects.get(current=True)
-    events = (
-        Event.objects.filter(fair=fair, published=True).prefetch_related(
-            "signupquestion_set"
-        )
+    events = Event.objects.filter(fair=fair, published=True).prefetch_related(
+        "signupquestion_set"
     )
 
     data = [serializers.event(event, request) for event in events]
