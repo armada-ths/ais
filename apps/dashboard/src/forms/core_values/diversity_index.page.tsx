@@ -44,7 +44,7 @@ export function DiversityIndexPage() {
                 <div className="mt-8 text-center">
                     <a
                         className="text-bold rounded-md border-solid p-3 text-lg font-semibold text-blue-600 underline visited:text-purple-600 hover:text-blue-800"
-                        href="https://docs.google.com/forms/d/e/1FAIpQLSchB-z7m_V-buddrFIkWXZiFkn4QSEMjtipPhFVc21bCHO-tg/viewform"
+                        href="https://www.allcounted.com/t?sid=wji5h9zit2bna&lang=en_US"
                         target="_blank"
                     >
                         <Button className="inline-flex gap-2">

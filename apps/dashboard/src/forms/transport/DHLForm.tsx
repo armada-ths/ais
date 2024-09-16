@@ -37,7 +37,7 @@ import { ControllerRenderProps, useForm } from "react-hook-form"
 import { useReactToPrint } from "react-to-print"
 import { z } from "zod"
 
-// https://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_linkhttps://drive.google.com/file/d/1op7D51O0QpOljNQMBP-UscNRpWlRs31X/view?usp=drive_link
+// https://drive.google.com/file/d/1MkzZWKuD5rt9i7jsqrB61Zf35m9AlflS/view
 
 const PackageTypes = {
     TWO_PACKAGES: {
