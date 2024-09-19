@@ -106,6 +106,8 @@ class SignupForm extends Component {
     const {event, stripe_publishable, payment_url} = this.props;
     const {answers, errors, payed} = this.state;
 
+    const open_for_signup = event.open_for_signup_student || event.open_for_signup_company
+
     return (
         <Grid container spacing={16}>
         <div className='image-section' >
@@ -141,7 +143,7 @@ class SignupForm extends Component {
                                 <Stripe
                                     stripe_publishable={stripe_publishable}
 																		paymentUrl={this.props.paymentUrl}
-																		openForSignup={event.open_for_signup}
+																		openForSignup={open_for_signup}
 																		handleSubmit={this.handleSubmit}
 																		validator={this.validate}
 																		showErrors={this.showErrors}
@@ -159,13 +161,13 @@ class SignupForm extends Component {
 	          <Grid item sm={12}>
 							<Typography style={{marginTop: 8}}>By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
 	            <Button
-	                disabled={!event.open_for_signup}
+	                disabled={!open_for_signup}
 	                onClick={this.handleClick}
 	                variant="contained"
 	                color="primary"
 									style={{marginTop: 10}}
 	            >
-	              {event.open_for_signup ? "Sign Up" : "Not open for sign up"}
+	              {open_for_signup ? "Sign Up" : "Not open for sign up"}
 	            </Button>
 	          </Grid>
 					)}
