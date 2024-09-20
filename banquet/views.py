@@ -1212,6 +1212,7 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
             "email": email,
         },
     )
+
     send_invitation_mail(invitation, name, banquet.date, banquet.location, link, email)
 
     return render(

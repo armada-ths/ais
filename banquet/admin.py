@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (
     Banquet,
+    DietaryPreference,
     Participant,
     InvitationGroup,
     Invitation,
@@ -59,3 +60,8 @@ class AfterPartyInvitationAdmin(ModelAdminImproved):
 class AfterPartyTicketAdmin(ModelAdminImproved):
     list_filter = ["banquet", "has_paid"]
     list_display = ["name", "email_address", "has_paid"]
+
+
+@admin.register(DietaryPreference)
+class DietaryPreferenceAdmin(ModelAdminImproved):
+    pass

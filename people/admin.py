@@ -1,6 +1,3 @@
-from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-
 from django.contrib import admin
 from .models import Language, Programme, Profile, DietaryRestriction
 from improved_admin import ModelAdminImproved
