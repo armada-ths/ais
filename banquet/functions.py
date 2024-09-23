@@ -22,7 +22,7 @@ def send_invitation_mail(request, invitation, name, date, location, link, email,
         )
     except Exception as e:
         print("Failed to send email: ", e)
-        return
+        raise e
 
     invitation.has_sent_mail = True
     invitation.save()
