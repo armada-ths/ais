@@ -5,28 +5,6 @@ from util.email import send_mail
 
 def send_invitation_mail(request, invitation, name, date, location, link, email, fair):
     """Send banquet invitation mail"""
-    # send_mail(
-    #     "Your invite to the banquet",
-    #     "Hello "
-    #     + str(name)
-    #     + "!\n"
-    #     + "You have been invited to the Grand Banquet of THS Armada.\n"
-    #     + "The banquet takes place "
-    #     + str(date)
-    #     + " at "
-    #     + str(location)
-    #     + ". \nAccess your invitation with the following link:\n"
-    #     + link
-    #     + "\n\nSee you at the banquet!\n"
-    #     + "Best Regards,\n"
-    #     + "The Banquet Team of THS Armada 2023",
-    #     "Armada Banquet <noreply@armada.nu>",
-    #     [email],
-    # )
-
-    # invitation.has_sent_mail = True
-    # invitation.save()
-
     try:
         send_mail(
             request,
