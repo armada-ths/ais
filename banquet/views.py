@@ -753,7 +753,7 @@ def manage_import_invitations(request, year, banquet_pk):
 
                     if send_mail:
                         send_confirmation_email(
-                            request, invitation, invite["name"], invite["email"]
+                            request, invitation, invite["name"], invite["email"], fair
                         )
 
                         invitation.has_sent_mail = True
@@ -885,7 +885,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 
         # Automatically send invite email if it hasn't been sent before
         if send_mail and not has_sent_mail:
-            send_confirmation_email(request, invitation, name, email_address)
+            send_confirmation_email(request, invitation, name, email_address, fair)
             form.instance.has_sent_mail = True
             form.save()
 
@@ -907,8 +907,10 @@ def manage_participant(request, year, banquet_pk, participant_pk):
     participant = get_object_or_404(Participant, banquet=banquet, pk=participant_pk)
 
     try:
-        invitation_status = participant.invitation_set.first().status
+        invitation = participant.invitation_set.first()
+        invitation_status = invitation.status
     except:
+        invitation = None
         invitation_status = None
 
     return render(
@@ -917,6 +919,7 @@ def manage_participant(request, year, banquet_pk, participant_pk):
         {
             "fair": fair,
             "banquet": banquet,
+            "invitation": invitation,
             "participant": {
                 "pk": participant.pk,
                 "name": (
@@ -1213,7 +1216,9 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
         },
     )
 
-    send_invitation_mail(invitation, name, banquet.date, banquet.location, link, email)
+    send_invitation_mail(
+        request, invitation, name, banquet.date, banquet.location, link, email, fair
+    )
 
     return render(
         request,
@@ -1614,10 +1619,12 @@ def export_participants(request, year, banquet_pk):
             "Seat",
             "Dietary restrictions",
             "Other dietary restrictions",
+            "Dietary preferences",
             "invitation",
             "checked_in",
         ]
     )
+
     for participant in (
         Participant.objects.select_related("seat")
         .select_related("seat__table")
@@ -1633,6 +1640,7 @@ def export_participants(request, year, banquet_pk):
                 participant.seat,
                 ", ".join(str(x) for x in participant.dietary_restrictions.all()),
                 participant.other_dietary_restrictions,
+                participant.dietary_preference,
                 "https://ais.armada.nu/banquet/" + participant.token,
                 participant.ticket_scanned,
             ]
