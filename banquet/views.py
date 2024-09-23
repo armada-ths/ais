@@ -604,6 +604,7 @@ def manage_map(request, year, banquet_pk):
 def manage_invitations(request, year, banquet_pk):
     fair = get_object_or_404(Fair, year=year)
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+    did_error_email = request.GET.get("did_error_email", False)
 
     invitations = []
 
@@ -627,6 +628,7 @@ def manage_invitations(request, year, banquet_pk):
                 "price": invitation.price,
                 "deadline_smart": invitation.deadline_smart,
                 "matching_status": invitation.part_of_matching,
+                "has_sent_mail": invitation.has_sent_mail,
             }
         )
 
@@ -686,6 +688,7 @@ def manage_invitations(request, year, banquet_pk):
             "banquet": banquet,
             "invitiations": invitations_modified,
             "form": form,
+            "did_error_email": did_error_email,
         },
     )
 
@@ -734,6 +737,8 @@ def manage_import_invitations(request, year, banquet_pk):
                     "You must select a group to invite to the banquet.",
                 )
             else:
+                did_error_email = False
+
                 for invite in imported:
                     # Invite already exists
                     if Invitation.objects.filter(
@@ -752,17 +757,27 @@ def manage_import_invitations(request, year, banquet_pk):
                     invitation.save()
 
                     if send_mail:
-                        send_confirmation_email(
-                            request, invitation, invite["name"], invite["email"], fair
-                        )
+                        try:
+                            send_confirmation_email(
+                                request,
+                                invitation,
+                                invite["name"],
+                                invite["email"],
+                                fair,
+                            )
+                        except Exception as e:
+                            did_error_email = True
+                            continue
 
                         invitation.has_sent_mail = True
                         invitation.save()
 
                 return redirect(
-                    "banquet_manage_invitations",
-                    fair.year,
-                    banquet.pk,
+                    reverse(
+                        "banquet_manage_invitations",
+                        kwargs={"year": year, "banquet_pk": banquet.pk},
+                    )
+                    + ("?did_error_email=1" if did_error_email else "")
                 )
 
     return render(
