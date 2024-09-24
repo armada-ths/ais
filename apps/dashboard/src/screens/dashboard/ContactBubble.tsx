@@ -11,6 +11,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { Mail, MessageCircleQuestion, Phone, X } from "lucide-react"
+//giimport {Chat} from "@/screens/dashboard/ExibitorChat"
 
 export function ContactBubble() {
     const { data } = useDashboard()
@@ -19,7 +20,6 @@ export function ContactBubble() {
     const additionalCompanyContacts = data?.sales_contacts?.slice(1)
 
     if (companyContact == null) return null
-
     return (
         <Drawer>
             <DrawerTrigger>
@@ -69,7 +69,7 @@ export function ContactBubble() {
                                         </a>
                                     </p>
                                     <p className="text-sm text-stone-400">
-                                        //Chatten ska vara här</p>
+                                       </p>
                                 </div>
                             </DrawerDescription>
                         </div>

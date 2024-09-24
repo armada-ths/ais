@@ -21,4 +21,5 @@ urlpatterns = [
     url(r"^locations/(?P<location_pk>[0-9]+)/people_count$", api.people_count),
     url(r"^days$", api.days),
     url(r"^chats/(?P<exhibitor_pk>[0-9]+)$", api.chat_messages),
+    url(r"^chats/(?P<exhibitor_pk>[0-9]+)/send_message$", api.post_chat_message),
 ]
