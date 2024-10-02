@@ -29,6 +29,7 @@ class Programme(models.Model):
 
 class DietaryRestriction(models.Model):
     name = models.CharField(max_length=255)
+    show_in_banquet = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["name"]

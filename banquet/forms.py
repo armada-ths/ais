@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 import re
 import csv
 
+from people.models import DietaryRestriction
+
 from .models import (
     DietaryPreference,
     Participant,
@@ -65,6 +67,11 @@ class ParticipantForm(forms.ModelForm):
             self.fields["dietary_preference"].queryset = self.get_dietary_preferences(
                 banquet
             )
+
+        self.fields["dietary_restrictions"].queryset = self.get_dietary_restrictions()
+
+    def get_dietary_restrictions(self):
+        return DietaryRestriction.objects.filter(show_in_banquet=True)
 
     def get_dietary_preferences(self, banquet):
         # Custom function to retrieve dietary preferences for the given banquet

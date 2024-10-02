@@ -960,6 +960,13 @@ def manage_participant(request, year, banquet_pk, participant_pk):
     )
 
 
+def get_dietary_string(participant):
+    dietary_restrictions = participant.dietary_restrictions
+    if dietary_restrictions.count() == 0:
+        return participant.dietary_preference
+    return f"{participant.dietary_preference} ({', '.join(dietary_restrictions.values_list('name', flat=True))})"
+
+
 @permission_required("banquet.base")
 def manage_participants(request, year, banquet_pk):
     fair = get_object_or_404(Fair, year=year)
@@ -980,6 +987,7 @@ def manage_participants(request, year, banquet_pk):
                 if participant.user
                 else participant.email_address
             ),
+            "dietary": get_dietary_string(participant),
             "alcohol": participant.alcohol,
             "seat": participant.seat,
             "invitation": participant.invitation_set.first(),
@@ -1232,7 +1240,13 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
     )
 
     send_invitation_mail(
-        request, invitation, name, banquet.date, banquet.location, link, email, fair
+        request,
+        invitation,
+        name,
+        banquet,
+        link,
+        email,
+        fair,
     )
 
     return render(
