@@ -160,7 +160,7 @@
       </li>
       <li>
         <span style="font-weight: bold">Dietary restrictions:</span>
-        {% if invitation.participant.dietary_restrictions %}
+        {% if invitation.participant.dietary_restrictions.all %}
           {{ invitation.participant.dietary_restrictions.all | join:', ' }}
         {% else %}
           <span style="font-style: italic">none</span>
