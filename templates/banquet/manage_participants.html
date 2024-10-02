@@ -22,8 +22,9 @@
 					<th>Name</th>
 					<th>E-mail address</th>
 					<th>Alcohol?</th>
-					<th>Seat</th>
-					<th style="text-align: right;">Options</th>
+					<th>Preference (Restrictions)</th>
+					<!-- <th>Seat</th> -->
+					<th style="text-align: right; width: 0;">Options</th>
 				</tr>
 			</thead>
 
@@ -43,7 +44,8 @@
 						</td>
 						<td><a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></td>
 						<td>{% if participant.alcohol %} Yes {% else %} No {% endif %}</td>
-						<td style="white-space: nowrap;">{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td>
+						<td>{{ participant.dietary }}</td>
+						<!-- <td style="white-space: nowrap;">{% if participant.seat %} {{ participant.seat.table.name }} – {{ participant.seat.name }} {% endif %}</td> -->
 						<td><a href="{% url 'banquet_manage_participant' fair.year banquet.pk participant.pk %}" class="btn btn-sm btn-default">Details</a></td>
 					</tr>
 				{% endfor %}
