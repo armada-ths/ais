@@ -73,16 +73,6 @@
 				</div>
 				
 				<div class="panel-body">
-					{% if booths %}
-						<ul class="list-unstyled">
-							<span style="font-weight: 700;">Booths:</span>
-							{% for booth in booths %}
-								<li><a href="//maps.armada.nu/?location={{ booth.location.pk }}&booth={{ booth.pk }}" target="_blank">{% if booth.location.parent %}{{ booth.location.parent.name }} – {% endif %} {{ booth.location.name }} – {{ booth.name }}</a></li>
-							{% endfor %}
-						</ul>
-					{% else %}
-						<p><span style="font-weight: 700;">Booths:</span> No booth(s) assigned.</p>
-					{% endif %}
 					{%if fair_location %}
 						<p><span style="font-weight: 700;">Location:</span> {{fair_location}}</p>
 					{% else %}

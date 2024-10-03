@@ -63,16 +63,6 @@ class LocationAdmin(ModelAdminImproved):
     pass
 
 
-@admin.register(Booth)
-class BoothAdmin(ModelAdminImproved):
-    pass
-
-
-@admin.register(ExhibitorInBooth)
-class ExhibitorInBoothAdmin(ModelAdminImproved):
-    pass
-
-
 @admin.register(FairLocationSpecial)
 class FairLocationSpecialAdmin(ModelAdminImproved):
     pass
