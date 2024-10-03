@@ -6,30 +6,30 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exhibitors', '0075_change_exhibitor_application_status'),
+        ("exhibitors", "0075_change_exhibitor_application_status"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='exhibitorinbooth',
+            name="exhibitorinbooth",
             unique_together=None,
         ),
         migrations.RemoveField(
-            model_name='exhibitorinbooth',
-            name='booth',
+            model_name="exhibitorinbooth",
+            name="booth",
         ),
         migrations.RemoveField(
-            model_name='exhibitorinbooth',
-            name='days',
+            model_name="exhibitorinbooth",
+            name="days",
         ),
         migrations.RemoveField(
-            model_name='exhibitorinbooth',
-            name='exhibitor',
+            model_name="exhibitorinbooth",
+            name="exhibitor",
         ),
         migrations.DeleteModel(
-            name='Booth',
+            name="Booth",
         ),
         migrations.DeleteModel(
-            name='ExhibitorInBooth',
+            name="ExhibitorInBooth",
         ),
     ]

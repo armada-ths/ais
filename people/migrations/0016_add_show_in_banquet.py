@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('people', '0015_remove_dietary_preferences'),
+        ("people", "0015_remove_dietary_preferences"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dietaryrestriction',
-            name='show_in_banquet',
+            model_name="dietaryrestriction",
+            name="show_in_banquet",
             field=models.BooleanField(default=True),
         ),
     ]
