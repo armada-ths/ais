@@ -2,7 +2,6 @@ from django.db import models
 from django.forms import ValidationError
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
-from django.contrib.gis.db import models
 from django.utils.crypto import get_random_string
 
 from accounting.models import Order
@@ -439,30 +438,3 @@ class LocationTick(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     change = models.IntegerField()
     new_people_count = models.IntegerField()
-
-
-class Booth(models.Model):
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    name = models.CharField(blank=False, null=False, max_length=255)
-    boundaries = models.PolygonField(blank=True, null=True)
-
-    class Meta:
-        ordering = ["location", "name"]
-        unique_together = [["location", "name"]]
-
-    def __str__(self):
-        return str(self.location) + " -> " + self.name
-
-
-class ExhibitorInBooth(models.Model):
-    exhibitor = models.ForeignKey(Exhibitor, on_delete=models.CASCADE)
-    booth = models.ForeignKey(Booth, on_delete=models.CASCADE)
-    days = models.ManyToManyField(FairDay)
-    comment = models.CharField(max_length=255, null=True, blank=True)
-
-    class Meta:
-        ordering = ["exhibitor", "booth"]
-        unique_together = [["exhibitor", "booth"]]
-
-    def __str__(self):
-        return str(self.exhibitor) + " in " + str(self.booth)

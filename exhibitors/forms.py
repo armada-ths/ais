@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import inspect
 
 from companies.models import Company, CompanyCustomerComment
-from .models import ExhibitorView, Exhibitor, Booth, ExhibitorInBooth
+from .models import ExhibitorView, Exhibitor
 
 from dal import autocomplete
 
@@ -126,12 +126,6 @@ class CommentForm(forms.ModelForm):
         fields = ["comment"]
 
 
-class BoothForm(forms.ModelForm):
-    class Meta:
-        model = Booth
-        fields = ["location", "name"]
-
-
 class ExhibitorForm(forms.ModelForm):
     class Meta:
         model = Exhibitor
@@ -141,14 +135,6 @@ class ExhibitorForm(forms.ModelForm):
                 url="user-autocomplete", attrs={"data-html": True}
             )
         }
-
-
-class ExhibitorInBoothForm(forms.ModelForm):
-    class Meta:
-        model = ExhibitorInBooth
-        fields = ["exhibitor", "days", "comment"]
-
-        widgets = {"days": forms.CheckboxSelectMultiple()}
 
 
 class ExhibitorSearchForm(forms.Form):

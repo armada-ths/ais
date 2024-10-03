@@ -1,7 +1,6 @@
 import json
 from collections import OrderedDict
 
-from django.contrib.gis.geos import Polygon
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
@@ -9,34 +8,10 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 from exhibitors import serializers
-from exhibitors.models import Exhibitor, Location, Booth, ExhibitorInBooth, LocationTick
+from exhibitors.models import Exhibitor, Location, LocationTick
 from fair.models import Fair, FairDay
 
 MISSING_IMAGE = "/static/missing.png"
-
-
-def serialize_booths(exhibitor):
-    return [
-        {
-            "id": eib.booth.pk,
-            "location": {
-                "parent": (
-                    {
-                        "id": eib.booth.location.parent.pk,
-                        "name": eib.booth.location.parent.name,
-                    }
-                    if eib.booth.location.parent
-                    else None
-                ),
-                "id": eib.booth.location.pk,
-                "name": eib.booth.location.name,
-            },
-            "name": eib.booth.name,
-            "comment": eib.comment,
-            "days": [day.date for day in eib.days.all()],
-        }
-        for eib in exhibitor.exhibitorinbooth_set.all()
-    ]
 
 
 def serialize_exhibitor(exhibitor, request):
@@ -146,7 +121,6 @@ def serialize_exhibitor(exhibitor, request):
             ),
             ("climate_compensation", exhibitor.climate_compensation),
             ("flyer", (exhibitor.flyer.url) if exhibitor.flyer else ""),
-            ("booths", serialize_booths(exhibitor)),
             ("map_coordinates", exhibitor.map_coordinates),
         ]
     )
@@ -199,9 +173,6 @@ def exhibitors(request):
         "catalogue_competences",
         "catalogue_benefits",
         "company__groups",
-        "exhibitorinbooth_set__booth__location__parent",
-        "exhibitorinbooth_set__booth__location",
-        "exhibitorinbooth_set__days",
     )
 
     data = [serialize_exhibitor(exhibitor, request) for exhibitor in exhibitors]
@@ -228,58 +199,6 @@ def locations(request):
     return JsonResponse(data, safe=False)
 
 
-def location(request, location_pk):
-    location = get_object_or_404(Location, fair__current=True, pk=location_pk)
-
-    booths = []
-
-    for booth in Booth.objects.filter(location=location):
-        booths.append(
-            {
-                "id": booth.pk,
-                "name": booth.name,
-                "boundaries": booth.boundaries.coords[0],
-                "centroid": booth.boundaries.centroid.coords,
-                "exhibitors": [
-                    {
-                        "id": exhibitor_in_booth.exhibitor.pk,
-                        "name": exhibitor_in_booth.exhibitor.company.name,
-                        "comment": exhibitor_in_booth.comment,
-                        "days": [
-                            {"id": day.pk, "date": day.date}
-                            for day in exhibitor_in_booth.days.all()
-                        ],
-                    }
-                    for exhibitor_in_booth in ExhibitorInBooth.objects.filter(
-                        booth=booth
-                    )
-                ],
-            }
-        )
-
-    data = {
-        "id": location.pk,
-        "parent": (
-            {"id": location.parent.pk, "name": location.parent.name}
-            if location.parent
-            else None
-        ),
-        "name": location.name,
-        "map": (
-            {
-                "url": location.background.url,
-                "width": location.background.width,
-                "height": location.background.height,
-            }
-            if location.background
-            else None
-        ),
-        "booths": booths,
-    }
-
-    return JsonResponse(data, safe=False)
-
-
 def days(request):
     data = []
 
@@ -287,22 +206,6 @@ def days(request):
         data.append({"id": day.pk, "date": day.date})
 
     return JsonResponse(data, safe=False)
-
-
-@require_POST
-def create_booth(request, location_pk):
-    location_obj = get_object_or_404(Location, pk=location_pk)
-
-    if not request.user:
-        return JsonResponse({"message": "Authentication required."}, status=403)
-
-    data = json.loads(request.body)
-
-    booth = Booth.objects.create(
-        location=location_obj, name=data["name"], boundaries=Polygon(data["boundaries"])
-    )
-
-    return JsonResponse({"booth": serializers.booth(booth)}, status=201)
 
 
 @require_POST

@@ -15,7 +15,6 @@
 	<h1>Exhibitors ({{ exhibitors|length }})</h1>
 
 	<p>
-		{% if perms.exhibitors.modify_booths %}<a href="{% url 'booths' fair.year %}" class="btn btn-default">Booths</a>{% endif %}
 		<a href="{% url 'edit_view' fair.year %}" class="btn btn-default">Edit view</a>
 		{% if perms.exhibitors.create %}<a href="{% url 'create' fair.year %}" class="btn btn-default">Create exhibitor</a>{% endif %}
 		<a href="{% url 'export' fair.year %}" class="btn btn-default">Export exhibitors</a>
