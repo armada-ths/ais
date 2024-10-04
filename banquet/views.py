@@ -1239,7 +1239,7 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
         },
     )
 
-    send_invitation_mail(
+    if send_invitation_mail(
         request,
         invitation,
         name,
@@ -1247,14 +1247,19 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
         link,
         email,
         fair,
-    )
+    ):
+        return render(
+            request,
+            "banquet/invite_sent.html",
+            {
+                "fair": fair,
+            },
+        )
 
-    return render(
-        request,
-        "banquet/invite_sent.html",
-        {
-            "fair": fair,
-        },
+    return redirect(
+        "banquet_manage_invitations",
+        year,
+        banquet.pk,
     )
 
 

@@ -64,6 +64,9 @@ class ParticipantForm(forms.ModelForm):
         self.fields["dietary_preference"].empty_label = None
 
         if banquet:
+            self.fields["dietary_preference"].help_text = (
+                "We do not serve meat. Our options are exclusively fish, vegetarian, or vegan dishes."
+            )
             self.fields["dietary_preference"].queryset = self.get_dietary_preferences(
                 banquet
             )
