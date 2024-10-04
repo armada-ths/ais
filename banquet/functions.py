@@ -16,6 +16,7 @@ def send_invitation_mail(request, invitation, name, banquet, link, email, fair):
                 "dress_code": banquet.dress_code,
                 "link": link,
                 "year": fair.year,
+                "deadline": invitation.group.deadline,
             },
             subject="THS Armada Banquet Invitation",
             to=[email],
@@ -23,10 +24,12 @@ def send_invitation_mail(request, invitation, name, banquet, link, email, fair):
         )
     except Exception as e:
         print("Failed to send email: ", e)
-        raise e
+        return False
 
     invitation.has_sent_mail = True
     invitation.save()
+
+    return True
 
 
 def send_confirmation_email(request, invitation, name, email_address, fair):
@@ -61,7 +64,7 @@ def send_confirmation_email(request, invitation, name, email_address, fair):
             )
         )
 
-    send_invitation_mail(
+    return send_invitation_mail(
         request,
         invitation,
         name,
