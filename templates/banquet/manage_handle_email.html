@@ -19,18 +19,18 @@
 		">Failed to send some emails!</h1>
 	{% endif %}
 
-	<h1>{{ banquet.name }} – Invitations</h1>
+	<h1>{{ banquet.name }} – Unsent Email</h1>
 
 	<div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
 		<div>
 			<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
 			<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
-			{% if banquet.background %} <a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a> {% endif %}
 		</div>
 		<div>
-			<a class="btn btn-default" href="{% url 'banquet_handle_email' fair.year banquet.pk %}">Handle Emails</a>
-			<a class="btn btn-default" href="{% url 'banquet_import_invitations' fair.year banquet.pk %}">Import invitations</a>
-			<a class="btn btn-default" href="{% url 'banquet_manage_invitation_new' fair.year banquet.pk %}">New invitation</a>
+			<form method="post">
+				{% csrf_token %}
+				<button class="btn btn-danger">Send emails</button>
+			</form>
 		</div>
 	</div>
 
@@ -53,29 +53,6 @@
 		}
 	</style>
 
-	<form method="post" class="form_no_ul" enctype="multipart/form-data">
-		{% csrf_token %}
-
-		<div class="row">
-			<div class="col-md-6">
-				<label for="{{ form.statuses.id_for_label }}">{{ form.statuses.label }}</label>
-				{{ form.statuses }}
-			</div>
-
-			<div class="col-md-6">
-				<label for="{{ form.groups.id_for_label }}">{{ form.groups.label }}</label>
-				{{ form.groups }}
-			</div>
-
-			<div class="col-md-6">
-				<label for="{{ form.matching_statuses.id_for_label }}">{{ form.matching_statuses.label }}</label>
-				{{ form.matching_statuses }}
-			</div>
-		</div>
-
-		<input class="btn btn-primary" type="submit" value="Refine search" />
-	</form>
-
 	<div class="table-responsive">
 		<table class="table" id="invitation_table">
 			<thead>
@@ -92,7 +69,7 @@
 			</thead>
 
 			<tbody>
-				{% for invitation in invitiations %}
+				{% for invitation in invitations %}
 					<tr>
 						<td>{{ invitation.group }}</td>
 						<td>{% if invitation.deadline_smart is not None %} <span style="display: none;">{{ invitation.deadline_smart|date:"U" }}</span> {{ invitation.deadline_smart }} {% else %} <span style="font-style: italic;">no deadline</span> {% endif %}</td>

@@ -707,6 +707,60 @@ def manage_invitation(request, year, banquet_pk, invitation_pk):
 
 
 @permission_required("banquet.base")
+def manage_handle_email(request, year, banquet_pk):
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+    invitations = Invitation.objects.filter(banquet=banquet, has_sent_mail=False)
+
+    if request.POST:
+        did_error_email = False
+
+        for invitation in invitations:
+            invitation.save()
+
+            print(
+                invitation,
+                invitation.name,
+                invitation.email_address,
+                fair,
+            )
+
+            if not send_confirmation_email(
+                request,
+                invitation,
+                invitation.name,
+                invitation.email_address,
+                fair,
+            ):
+                did_error_email = True
+                continue
+
+            invitation.has_sent_mail = True
+            invitation.save()
+
+        return redirect(
+            reverse(
+                "banquet_handle_email",
+                kwargs={"year": year, "banquet_pk": banquet_pk},
+            )
+            + ("?did_error_email=1" if did_error_email else "")
+        )
+
+    print(invitations)
+
+    return render(
+        request,
+        "banquet/manage_handle_email.html",
+        {
+            "fair": fair,
+            "banquet": banquet,
+            "did_error_email": request.GET.get("did_error_email", False),
+            "invitations": invitations,
+        },
+    )
+
+
+@permission_required("banquet.base")
 def manage_import_invitations(request, year, banquet_pk):
     fair = get_object_or_404(Fair, year=year)
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
@@ -757,15 +811,13 @@ def manage_import_invitations(request, year, banquet_pk):
                     invitation.save()
 
                     if send_mail:
-                        try:
-                            send_confirmation_email(
-                                request,
-                                invitation,
-                                invite["name"],
-                                invite["email"],
-                                fair,
-                            )
-                        except Exception as e:
+                        if not send_confirmation_email(
+                            request,
+                            invitation,
+                            invite["name"],
+                            invite["email"],
+                            fair,
+                        ):
                             did_error_email = True
                             continue
 
@@ -1226,18 +1278,6 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
                 kwargs={"year": year, "token": invitation.token},
             )
         )
-
-    print(
-        "Sending invitation mail",
-        {
-            "invitation": invitation,
-            "name": name,
-            "banquet.date": banquet.date,
-            "banquet.location": banquet.location,
-            "link": link,
-            "email": email,
-        },
-    )
 
     if send_invitation_mail(
         request,
