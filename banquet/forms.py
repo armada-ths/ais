@@ -193,6 +193,7 @@ class ParticipantAdminForm(forms.ModelForm):
             "name",
             "email_address",
             "phone_number",
+            "dietary_preference",
             "dietary_restrictions",
             "other_dietary_restrictions",
             "alcohol",
