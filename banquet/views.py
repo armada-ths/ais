@@ -1082,6 +1082,7 @@ def manage_participant(request, year, banquet_pk, participant_pk):
                     else participant.email_address
                 ),
                 "phone_number": participant.phone_number,
+                "dietary_preference": participant.dietary_preference,
                 "dietary_restrictions": participant.dietary_restrictions,
                 "other_dietary_restrictions": participant.other_dietary_restrictions,
                 "alcohol": participant.get_alcohol_display,
@@ -1095,10 +1096,16 @@ def manage_participant(request, year, banquet_pk, participant_pk):
 
 
 def get_dietary_string(participant):
-    dietary_restrictions = participant.dietary_restrictions
-    if dietary_restrictions.count() == 0:
-        return participant.dietary_preference
-    return f"{participant.dietary_preference} ({', '.join(dietary_restrictions.values_list('name', flat=True))})"
+    other_preferences = list(
+        participant.dietary_restrictions.values_list("name", flat=True)
+    )
+
+    if participant.other_dietary_restrictions:
+        other_preferences += [participant.other_dietary_restrictions]
+
+    addition = "" if not other_preferences else f" ({', '.join(other_preferences)})"
+
+    return f"{participant.dietary_preference}{addition}"
 
 
 @permission_required("banquet.base")

@@ -20,6 +20,7 @@
 		<li><span style="font-weight: bold;">Name:</span> {{ participant.name }}</li>
 		<li><span style="font-weight: bold;">E-mail address:</span> <a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></li>
 		<li><span style="font-weight: bold;">Phone number:</span> <a href="tel:{{ participant.phone_number }}">{{ participant.phone_number }}</a></li>
+		<li><span style="font-weight: bold;">Dietary preference:</span> <span>{{ participant.dietary_preference }}</span></li>
 		<li><span style="font-weight: bold;">Dietary restrictions:</span> {% if participant.dietary_restrictions.all %}{{ participant.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
 		<li><span style="font-weight: bold;">Other dietary restrictions:</span> {% if participant.other_dietary_restrictions %}{{ participant.other_dietary_restrictions }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
 		<li><span style="font-weight: bold;">Alcohol:</span> {{ participant.alcohol }}</li>
