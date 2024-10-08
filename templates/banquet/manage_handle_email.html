@@ -38,18 +38,6 @@
 			<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
 			<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
 		</div>
-		<div>
-			<form method="post">
-				{% csrf_token %}
-				<select name="group">
-					<option value="">Select group</option>
-					{% for group in groups %}
-						<option value="{{ group.pk }}">{{ group.name }}</option>
-					{% endfor %}
-				</select>
-				<button class="btn btn-danger" type="submit" name="reminder">Send reminder emails</button>
-			</form>
-		</div>
 	</div>
 
 	<style type="text/css">
@@ -75,8 +63,35 @@
 
 	<form method="post">
 		{% csrf_token %}
-		<button class="btn btn-danger" type="submit" name="unsent">Send unsent emails</button>
+		{% if remindergroup is not None %}
+			<h3>About to send reminder emails to: {{ remindergroup.name }}</h3>
+			<div>
+				<input style="display: none;" name="group" value="{{ remindergroup.pk }}" />
+				<button class="btn btn-danger" type="submit" name="reminder">Send reminder emails</button>
+			</div>
+		{% else %}
+			<div style="margin-bottom: 10px;">
+				<select name="group">
+					<option value="">Select group</option>
+					{% for group in groups %}
+						<option value="{{ group.pk }}">{{ group.name }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div>
+				<button class="btn btn-success" type="submit" name="reminderpreview">Preview reminder emails</button>
+			</div>
+		{% endif %}
 	</form>
+
+	{% if remindergroup is None %}
+		<hr />
+
+		<form method="post">
+			{% csrf_token %}
+			<button class="btn btn-danger" type="submit" name="unsent">Send unsent emails</button>
+		</form>
+	{% endif %}
 
 	<div class="table-responsive">
 		<table class="table" id="invitation_table">
