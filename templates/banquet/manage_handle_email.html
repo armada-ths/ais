@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-	{% if did_error_email %}
+	{% if error %}
 		<h1 style="
 			background-color: #f2dede;
 			border-color: #ebccd1;
@@ -16,7 +16,19 @@
 			padding: 15px;
 			border: 1px solid transparent;
 			border-radius: 4px;
-		">Failed to send some emails!</h1>
+		">{{error}}</h1>
+	{% endif %}
+
+	{% if success %}
+		<h1 style="
+			background-color: #ccebcd;
+			border-color: #ccebcd;
+			color: #1c9237;
+			margin: 0 0 20px 0;
+			padding: 15px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		">{{success}}</h1>
 	{% endif %}
 
 	<h1>{{ banquet.name }} – Unsent Email</h1>
@@ -29,7 +41,13 @@
 		<div>
 			<form method="post">
 				{% csrf_token %}
-				<button class="btn btn-danger">Send emails</button>
+				<select name="group">
+					<option value="">Select group</option>
+					{% for group in groups %}
+						<option value="{{ group.pk }}">{{ group.name }}</option>
+					{% endfor %}
+				</select>
+				<button class="btn btn-danger" type="submit" name="reminder">Send reminder emails</button>
 			</form>
 		</div>
 	</div>
@@ -52,6 +70,13 @@
 			font-weight: 400;
 		}
 	</style>
+
+	<hr />
+
+	<form method="post">
+		{% csrf_token %}
+		<button class="btn btn-danger" type="submit" name="unsent">Send unsent emails</button>
+	</form>
 
 	<div class="table-responsive">
 		<table class="table" id="invitation_table">
