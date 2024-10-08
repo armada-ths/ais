@@ -774,6 +774,10 @@ def manage_handle_email(request, year, banquet_pk):
                 group=group,
             )
 
+            invitations = [
+                inv for inv in invitations if inv.status not in ["GOING", "NOT_GOING"]
+            ]
+
             return render(
                 request,
                 "banquet/manage_handle_email.html",
@@ -788,33 +792,15 @@ def manage_handle_email(request, year, banquet_pk):
             )
 
         if "reminder" in request.POST:
-            group_id = request.POST["group"]
-            if group_id == "":
-                return redirect(
-                    reverse(
-                        "banquet_handle_email",
-                        kwargs={"year": year, "banquet_pk": banquet_pk},
-                    )
-                    + "?error=Must select group"
-                )
+            group = InvitationGroup.objects.get(pk=request.POST["group"])
+            invitations = request.POST.getlist("invitations[]")
+            invitations = Invitation.objects.filter(pk__in=invitations)
 
-            group = InvitationGroup.objects.get(pk=group_id)
             did_error_email = False
-
-            if group is None:
-                return redirect(
-                    reverse(
-                        "banquet_handle_email",
-                        kwargs={"year": year, "banquet_pk": banquet_pk},
-                    )
-                    + "?error=Group does not exist"
-                )
-
             sent = 0
             failed = 0
-            for invitation in Invitation.objects.filter(
-                banquet=banquet, has_sent_mail=True, group=group
-            ):
+
+            for invitation in invitations:
                 if not send_confirmation_email(
                     request,
                     invitation,

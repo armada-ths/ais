@@ -66,7 +66,10 @@
 		{% if remindergroup is not None %}
 			<h3>About to send reminder emails to: {{ remindergroup.name }}</h3>
 			<div>
-				<input style="display: none;" name="group" value="{{ remindergroup.pk }}" />
+				<input type="hidden" name="group" value="{{ remindergroup.pk }}" />
+				{% for invitation in invitations %}
+					<input type="hidden" name="invitations[]" value="{{ invitation.pk }}" />
+				{% endfor %}
 				<button class="btn btn-danger" type="submit" name="reminder">Send reminder emails</button>
 			</div>
 		{% else %}
