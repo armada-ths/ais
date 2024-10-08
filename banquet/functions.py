@@ -3,12 +3,22 @@ from django.urls import reverse
 from util.email import send_mail
 
 
-def send_invitation_mail(request, invitation, name, banquet, link, email, fair):
+def send_invitation_mail(
+    request,
+    invitation,
+    name,
+    banquet,
+    link,
+    email,
+    fair,
+    template="banquet/email/invitation.html",
+    subject="THS Armada Banquet Invitation",
+):
     """Send banquet invitation mail"""
     try:
         send_mail(
             request,
-            template="banquet/email/invitation.html",
+            template=template,
             context={
                 "name": name,
                 "date": banquet.date,
@@ -18,7 +28,7 @@ def send_invitation_mail(request, invitation, name, banquet, link, email, fair):
                 "year": fair.year,
                 "deadline": invitation.group.deadline,
             },
-            subject="THS Armada Banquet Invitation",
+            subject=subject,
             to=[email],
             # file_paths=[settings.MEDIA_ROOT + signature.contract.contract.url[6:]],
         )
@@ -32,7 +42,15 @@ def send_invitation_mail(request, invitation, name, banquet, link, email, fair):
     return True
 
 
-def send_confirmation_email(request, invitation, name, email_address, fair):
+def send_confirmation_email(
+    request,
+    invitation,
+    name,
+    email_address,
+    fair,
+    template="banquet/email/invitation.html",
+    subject="THS Armada Banquet Confirmation",
+):
     """Send banquet confirmation mail"""
 
     if invitation.has_sent_mail:
@@ -72,4 +90,6 @@ def send_confirmation_email(request, invitation, name, email_address, fair):
         link,
         email_address,
         fair,
+        template=template,
+        subject=subject,
     )

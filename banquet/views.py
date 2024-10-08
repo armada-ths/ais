@@ -713,40 +713,88 @@ def manage_handle_email(request, year, banquet_pk):
     invitations = Invitation.objects.filter(banquet=banquet, has_sent_mail=False)
 
     if request.POST:
-        did_error_email = False
+        if "unsent" in request.POST:
+            did_error_email = False
+            sent = 0
 
-        for invitation in invitations:
-            invitation.save()
+            for invitation in invitations:
+                invitation.save()
 
-            print(
-                invitation,
-                invitation.name,
-                invitation.email_address,
-                fair,
+                if not send_confirmation_email(
+                    request,
+                    invitation,
+                    invitation.name,
+                    invitation.email_address,
+                    fair,
+                ):
+                    did_error_email = True
+                    continue
+
+                invitation.has_sent_mail = True
+                invitation.save()
+
+            return redirect(
+                reverse(
+                    "banquet_handle_email",
+                    kwargs={"year": year, "banquet_pk": banquet_pk},
+                )
+                + "?"
+                + ("&error=Failed to send some emails!" if did_error_email else "")
+                + f"&success={sent} emails sent!"
             )
 
-            if not send_confirmation_email(
-                request,
-                invitation,
-                invitation.name,
-                invitation.email_address,
-                fair,
-            ):
-                did_error_email = True
-                continue
+        if "reminder" in request.POST:
+            group_id = request.POST["group"]
+            if group_id == "":
+                return redirect(
+                    reverse(
+                        "banquet_handle_email",
+                        kwargs={"year": year, "banquet_pk": banquet_pk},
+                    )
+                    + "?error=Must%20select%20group"
+                )
 
-            invitation.has_sent_mail = True
-            invitation.save()
+            group = InvitationGroup.objects.get(pk=group_id)
+            did_error_email = False
 
-        return redirect(
-            reverse(
-                "banquet_handle_email",
-                kwargs={"year": year, "banquet_pk": banquet_pk},
+            if group is None:
+                return redirect(
+                    reverse(
+                        "banquet_handle_email",
+                        kwargs={"year": year, "banquet_pk": banquet_pk},
+                    )
+                    + "?error=Group does not exist"
+                )
+
+            sent = 0
+            for invitation in invitations.filter(group=group, has_sent_mail=True):
+                invitation.save()
+
+                if not send_confirmation_email(
+                    request,
+                    invitation,
+                    invitation.name,
+                    invitation.email_address,
+                    fair,
+                    template="banquet/email/reminder.html",
+                    subject="Reminder: THS Armada Banquet Confirmation",
+                ):
+                    did_error_email = True
+                    continue
+
+                sent += 1
+                invitation.has_sent_mail = True
+                invitation.save()
+
+            return redirect(
+                reverse(
+                    "banquet_handle_email",
+                    kwargs={"year": year, "banquet_pk": banquet_pk},
+                )
+                + "?"
+                + ("&error=Failed to send some emails!" if did_error_email else "")
+                + f'&success={sent} emails sent for group "{group}"!'
             )
-            + ("?did_error_email=1" if did_error_email else "")
-        )
-
-    print(invitations)
 
     return render(
         request,
@@ -754,8 +802,10 @@ def manage_handle_email(request, year, banquet_pk):
         {
             "fair": fair,
             "banquet": banquet,
-            "did_error_email": request.GET.get("did_error_email", False),
+            "error": request.GET.get("error", False),
+            "success": request.GET.get("success", False),
             "invitations": invitations,
+            "groups": InvitationGroup.objects.filter(banquet=banquet),
         },
     )
 
