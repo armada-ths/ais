@@ -15,6 +15,12 @@ def send_invitation_mail(
     subject="THS Armada Banquet Invitation",
 ):
     """Send banquet invitation mail"""
+
+    email = email or (invitation.user.email if invitation.user else None)
+
+    if not email:
+        return False
+
     try:
         send_mail(
             request,
@@ -53,19 +59,9 @@ def send_confirmation_email(
 ):
     """Send banquet confirmation mail"""
 
-    if invitation.has_sent_mail:
-        print(
-            "Tried sending banquet confirmation mail to: %s at address %s, but a mail has already been sent"
-            % (name, email_address)
-        )
-        return
-
-    print(
-        "Sending banquet confirmation mail to: %s at address %s" % (name, email_address)
-    )
-
     banquet = invitation.banquet
     token = invitation.token
+
     # External and internal user invitations look different
     if invitation.user is None:
         link = request.build_absolute_uri(
