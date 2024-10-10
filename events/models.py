@@ -52,6 +52,11 @@ class Event(models.Model):
     teams_default_max_capacity = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Default max number of team members"
     )  # None => no limit
+
+    event_max_capacity = models.PositiveIntegerField(
+        blank=True, null=True, verbose_name="Event max capacity"
+    )  # None => no limit
+
     fee_s = models.PositiveIntegerField(
         default=0, blank=False, null=False, verbose_name="Sign-up fee for students"
     )
@@ -65,6 +70,15 @@ class Event(models.Model):
     picture = models.ImageField(
         upload_to=UploadToDirUUID("events", "pictures"), blank=True, null=True
     )
+
+    def is_full(self):
+        if self.event_max_capacity is None:
+            return False
+
+        return self.number_of_signups() >= self.event_max_capacity
+
+    def number_of_signups(self):
+        return self.participant_set.count()
 
     class Meta:
         ordering = ["date_start", "name"]
