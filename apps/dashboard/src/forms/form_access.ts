@@ -49,6 +49,10 @@ export const FORM_ACCESS: FormAccessDeclaration = {
     },
     sture: {
         "*:::signed_cr:::accepted": CardStatus.Shown
+    },
+    lunch_tickets: {
+        "complete_registration:::signed_cr:::accepted": CardStatus.Shown,
+        "after_complete_registration:::signed_cr:::accepted": CardStatus.Shown
     }
 }
 
