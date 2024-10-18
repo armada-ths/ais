@@ -26,7 +26,8 @@ describe(isFormOpen.name, () => {
                     fr_accounting: {},
                     receipt: {},
                     transport: {},
-                    sture: {}
+                    sture: {},
+                    lunch_tickets: {}
                 }
             )
         ).toBe(true)
@@ -48,7 +49,8 @@ describe(isFormOpen.name, () => {
                     fr_accounting: {},
                     receipt: {},
                     transport: {},
-                    sture: {}
+                    sture: {},
+                    lunch_tickets: {}
                 }
             )
         ).toBe(true)
@@ -73,7 +75,8 @@ describe(isFormOpen.name, () => {
                     fr_accounting: {},
                     receipt: {},
                     transport: {},
-                    sture: {}
+                    sture: {},
+                    lunch_tickets: {}
                 }
             )
         ).toBe(false)
@@ -93,7 +96,8 @@ describe(isFormOpen.name, () => {
                     fr_accounting: {},
                     receipt: {},
                     transport: {},
-                    sture: {}
+                    sture: {},
+                    lunch_tickets: {}
                 }
             )
         ).toBe(false)
@@ -122,7 +126,8 @@ describe(isFormOpen.name, () => {
                     },
                     receipt: {},
                     transport: {},
-                    sture: {}
+                    sture: {},
+                    lunch_tickets: {}
                 }
             )
         ).toBe(true)
