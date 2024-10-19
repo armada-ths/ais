@@ -72,12 +72,9 @@ class Event(models.Model):
     )
 
     def is_full(self):
-<<<<<<< HEAD
-=======
         if self.event_max_capacity is None:
             return False
 
->>>>>>> 64277b44de30ed4365dc34a1151fc9faaf1f8217
         return self.number_of_signups() >= self.event_max_capacity
 
     def number_of_signups(self):

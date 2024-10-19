@@ -161,20 +161,12 @@ class SignupForm extends Component {
 	          <Grid item sm={12}>
 							<Typography style={{marginTop: 8}}>By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
 	            
-<<<<<<< HEAD
-                <Typography style={{marginTop: 16, color: "#B22222", fontSize: 20 }}>
-                  {event.fully_booked ? 'Sorry, this event is fully booked.': ''}</Typography>
-              
-              <Button
-	                disabled={event.fully_booked || !event.open_for_signup}
-=======
               <Typography style={{marginTop: 16, color: "#B22222", fontSize: 20 }}>
                 {event.fully_booked ? 'Sorry, this event is fully booked.': ''}
               </Typography>
               
               <Button
 	                disabled={!open_for_signup}
->>>>>>> 64277b44de30ed4365dc34a1151fc9faaf1f8217
 	                onClick={this.handleClick}
 	                variant="contained"
 	                color="primary"
