@@ -604,6 +604,7 @@ def manage_map(request, year, banquet_pk):
 def manage_invitations(request, year, banquet_pk):
     fair = get_object_or_404(Fair, year=year)
     banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+    did_error_email = request.GET.get("did_error_email", False)
 
     invitations = []
 
@@ -617,14 +618,17 @@ def manage_invitations(request, year, banquet_pk):
                 "pk": invitation.pk,
                 "group": invitation.group,
                 "user": invitation.user,
-                "name": invitation.user.get_full_name()
-                if invitation.user is not None
-                else invitation.name,
+                "name": (
+                    invitation.user.get_full_name()
+                    if invitation.user is not None
+                    else invitation.name
+                ),
                 "reason": invitation.reason,
                 "status": invitation.status,
                 "price": invitation.price,
                 "deadline_smart": invitation.deadline_smart,
                 "matching_status": invitation.part_of_matching,
+                "has_sent_mail": invitation.has_sent_mail,
             }
         )
 
@@ -684,6 +688,7 @@ def manage_invitations(request, year, banquet_pk):
             "banquet": banquet,
             "invitiations": invitations_modified,
             "form": form,
+            "did_error_email": did_error_email,
         },
     )
 
@@ -698,6 +703,142 @@ def manage_invitation(request, year, banquet_pk, invitation_pk):
         request,
         "banquet/manage_invitation.html",
         {"fair": fair, "banquet": banquet, "invitation": invitation},
+    )
+
+
+@permission_required("banquet.base")
+def manage_handle_email(request, year, banquet_pk):
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, fair=fair, pk=banquet_pk)
+
+    if request.POST:
+        if "unsent" in request.POST:
+            invitations = Invitation.objects.filter(
+                banquet=banquet, has_sent_mail=False
+            )
+
+            did_error_email = False
+            sent = 0
+            failed = 0
+
+            for invitation in invitations:
+                if not send_confirmation_email(
+                    request,
+                    invitation,
+                    invitation.name,
+                    invitation.email_address,
+                    fair,
+                ):
+                    did_error_email = True
+                    failed += 1
+                    continue
+
+                sent += 1
+
+            return redirect(
+                reverse(
+                    "banquet_handle_email",
+                    kwargs={"year": year, "banquet_pk": banquet_pk},
+                )
+                + "?"
+                + (f"&error=Failed to send {failed} emails!" if did_error_email else "")
+                + f"&success={sent} emails sent!"
+            )
+
+        if "reminderpreview" in request.POST:
+            group_id = request.POST["group"]
+            if group_id == "":
+                return redirect(
+                    reverse(
+                        "banquet_handle_email",
+                        kwargs={"year": year, "banquet_pk": banquet_pk},
+                    )
+                    + "?error=Must select group"
+                )
+
+            group = InvitationGroup.objects.get(pk=group_id)
+            did_error_email = False
+
+            if group is None:
+                return redirect(
+                    reverse(
+                        "banquet_handle_email",
+                        kwargs={"year": year, "banquet_pk": banquet_pk},
+                    )
+                    + "?error=Group does not exist"
+                )
+
+            invitations = Invitation.objects.filter(
+                banquet=banquet,
+                has_sent_mail=True,
+                group=group,
+            )
+
+            invitations = [
+                inv for inv in invitations if inv.status not in ["GOING", "NOT_GOING"]
+            ]
+
+            return render(
+                request,
+                "banquet/manage_handle_email.html",
+                {
+                    "fair": fair,
+                    "banquet": banquet,
+                    "error": False,
+                    "success": False,
+                    "remindergroup": group,
+                    "invitations": invitations,
+                },
+            )
+
+        if "reminder" in request.POST:
+            group = InvitationGroup.objects.get(pk=request.POST["group"])
+            invitations = request.POST.getlist("invitations[]")
+            invitations = Invitation.objects.filter(pk__in=invitations)
+
+            did_error_email = False
+            sent = 0
+            failed = 0
+
+            for invitation in invitations:
+                if not send_confirmation_email(
+                    request,
+                    invitation,
+                    invitation.name,
+                    invitation.email_address,
+                    fair,
+                    template="banquet/email/reminder.html",
+                    subject="Reminder: THS Armada Banquet Confirmation",
+                ):
+                    did_error_email = True
+                    failed += 1
+                    continue
+
+                sent += 1
+
+            return redirect(
+                reverse(
+                    "banquet_handle_email",
+                    kwargs={"year": year, "banquet_pk": banquet_pk},
+                )
+                + "?"
+                + (f"&error=Failed to send {failed} emails!" if did_error_email else "")
+                + f'&success={sent} emails sent for group "{group}"!'
+            )
+
+    invitations = Invitation.objects.filter(banquet=banquet, has_sent_mail=False)
+
+    return render(
+        request,
+        "banquet/manage_handle_email.html",
+        {
+            "fair": fair,
+            "banquet": banquet,
+            "error": request.GET.get("error", False),
+            "success": request.GET.get("success", False),
+            "invitations": invitations,
+            "groups": InvitationGroup.objects.filter(banquet=banquet),
+        },
     )
 
 
@@ -732,6 +873,8 @@ def manage_import_invitations(request, year, banquet_pk):
                     "You must select a group to invite to the banquet.",
                 )
             else:
+                did_error_email = False
+
                 for invite in imported:
                     # Invite already exists
                     if Invitation.objects.filter(
@@ -750,17 +893,25 @@ def manage_import_invitations(request, year, banquet_pk):
                     invitation.save()
 
                     if send_mail:
-                        send_confirmation_email(
-                            request, invitation, invite["name"], invite["email"]
-                        )
+                        if not send_confirmation_email(
+                            request,
+                            invitation,
+                            invite["name"],
+                            invite["email"],
+                            fair,
+                        ):
+                            did_error_email = True
+                            continue
 
                         invitation.has_sent_mail = True
                         invitation.save()
 
                 return redirect(
-                    "banquet_manage_invitations",
-                    fair.year,
-                    banquet.pk,
+                    reverse(
+                        "banquet_manage_invitations",
+                        kwargs={"year": year, "banquet_pk": banquet.pk},
+                    )
+                    + ("?did_error_email=1" if did_error_email else "")
                 )
 
     return render(
@@ -843,9 +994,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 
     if invitation is not None and invitation.participant is not None:
         form.fields["price"].disabled = True
-        form.fields[
-            "price"
-        ].help_text = (
+        form.fields["price"].help_text = (
             "The price cannot be changed as the invitation has already been accepted."
         )
 
@@ -885,7 +1034,7 @@ def manage_invitation_form(request, year, banquet_pk, invitation_pk=None):
 
         # Automatically send invite email if it hasn't been sent before
         if send_mail and not has_sent_mail:
-            send_confirmation_email(request, invitation, name, email_address)
+            send_confirmation_email(request, invitation, name, email_address, fair)
             form.instance.has_sent_mail = True
             form.save()
 
@@ -907,8 +1056,10 @@ def manage_participant(request, year, banquet_pk, participant_pk):
     participant = get_object_or_404(Participant, banquet=banquet, pk=participant_pk)
 
     try:
-        invitation_status = participant.invitation_set.first().status
+        invitation = participant.invitation_set.first()
+        invitation_status = invitation.status
     except:
+        invitation = None
         invitation_status = None
 
     return render(
@@ -917,15 +1068,21 @@ def manage_participant(request, year, banquet_pk, participant_pk):
         {
             "fair": fair,
             "banquet": banquet,
+            "invitation": invitation,
             "participant": {
                 "pk": participant.pk,
-                "name": participant.user.get_full_name()
-                if participant.user
-                else participant.name,
-                "email_address": participant.user.email
-                if participant.user
-                else participant.email_address,
+                "name": (
+                    participant.user.get_full_name()
+                    if participant.user
+                    else participant.name
+                ),
+                "email_address": (
+                    participant.user.email
+                    if participant.user
+                    else participant.email_address
+                ),
                 "phone_number": participant.phone_number,
+                "dietary_preference": participant.dietary_preference,
                 "dietary_restrictions": participant.dietary_restrictions,
                 "other_dietary_restrictions": participant.other_dietary_restrictions,
                 "alcohol": participant.get_alcohol_display,
@@ -938,6 +1095,19 @@ def manage_participant(request, year, banquet_pk, participant_pk):
     )
 
 
+def get_dietary_string(participant):
+    other_preferences = list(
+        participant.dietary_restrictions.values_list("name", flat=True)
+    )
+
+    if participant.other_dietary_restrictions:
+        other_preferences += [participant.other_dietary_restrictions]
+
+    addition = "" if not other_preferences else f" ({', '.join(other_preferences)})"
+
+    return f"{participant.dietary_preference}{addition}"
+
+
 @permission_required("banquet.base")
 def manage_participants(request, year, banquet_pk):
     fair = get_object_or_404(Fair, year=year)
@@ -948,12 +1118,17 @@ def manage_participants(request, year, banquet_pk):
             "pk": participant.pk,
             "company": participant.company,
             "user": participant.user,
-            "name": participant.user.get_full_name()
-            if participant.user
-            else participant.name,
-            "email_address": participant.user.email
-            if participant.user
-            else participant.email_address,
+            "name": (
+                participant.user.get_full_name()
+                if participant.user
+                else participant.name
+            ),
+            "email_address": (
+                participant.user.email
+                if participant.user
+                else participant.email_address
+            ),
+            "dietary": get_dietary_string(participant),
             "alcohol": participant.alcohol,
             "seat": participant.seat,
             "invitation": participant.invitation_set.first(),
@@ -1091,9 +1266,9 @@ def invitation(request, year, token):
     if invitation.banquet.caption_phone_number is not None:
         form.fields["phone_number"].help_text = invitation.banquet.caption_phone_number
     if invitation.banquet.caption_dietary_restrictions is not None:
-        form.fields[
-            "dietary_restrictions"
-        ].help_text = invitation.banquet.caption_dietary_restrictions
+        form.fields["dietary_restrictions"].help_text = (
+            invitation.banquet.caption_dietary_restrictions
+        )
 
     can_edit = (
         invitation.deadline_smart is None
@@ -1193,25 +1368,27 @@ def send_invitation_button(request, year, banquet_pk, invitation_pk):
             )
         )
 
-    print(
-        "Sending invitation mail",
-        {
-            "invitation": invitation,
-            "name": name,
-            "banquet.date": banquet.date,
-            "banquet.location": banquet.location,
-            "link": link,
-            "email": email,
-        },
-    )
-    send_invitation_mail(invitation, name, banquet.date, banquet.location, link, email)
-
-    return render(
+    if send_invitation_mail(
         request,
-        "banquet/invite_sent.html",
-        {
-            "fair": fair,
-        },
+        invitation,
+        name,
+        banquet,
+        link,
+        email,
+        fair,
+    ):
+        return render(
+            request,
+            "banquet/invite_sent.html",
+            {
+                "fair": fair,
+            },
+        )
+
+    return redirect(
+        "banquet_manage_invitations",
+        year,
+        banquet.pk,
     )
 
 
@@ -1297,9 +1474,9 @@ def external_invitation(request, token):
     if invitation.banquet.caption_phone_number is not None:
         form.fields["phone_number"].help_text = invitation.banquet.caption_phone_number
     if invitation.banquet.caption_dietary_restrictions is not None:
-        form.fields[
-            "dietary_restrictions"
-        ].help_text = invitation.banquet.caption_dietary_restrictions
+        form.fields["dietary_restrictions"].help_text = (
+            invitation.banquet.caption_dietary_restrictions
+        )
 
     can_edit = (
         invitation.deadline_smart is None
@@ -1605,10 +1782,12 @@ def export_participants(request, year, banquet_pk):
             "Seat",
             "Dietary restrictions",
             "Other dietary restrictions",
+            "Dietary preferences",
             "invitation",
             "checked_in",
         ]
     )
+
     for participant in (
         Participant.objects.select_related("seat")
         .select_related("seat__table")
@@ -1624,6 +1803,7 @@ def export_participants(request, year, banquet_pk):
                 participant.seat,
                 ", ".join(str(x) for x in participant.dietary_restrictions.all()),
                 participant.other_dietary_restrictions,
+                participant.dietary_preference,
                 "https://ais.armada.nu/banquet/" + participant.token,
                 participant.ticket_scanned,
             ]
@@ -1638,9 +1818,9 @@ def export_afterparty(request, year, banquet_pk):
     banquet = get_object_or_404(Banquet, pk=banquet_pk)
 
     response = HttpResponse(content_type="text/csv")
-    response[
-        "Content-Disposition"
-    ] = 'attachment; filename="afterparty_participants.csv"'
+    response["Content-Disposition"] = (
+        'attachment; filename="afterparty_participants.csv"'
+    )
 
     writer = csv.writer(response, delimiter=",", quoting=csv.QUOTE_ALL)
     writer.writerow(["Name", "Email Sent", "Email", "Inviter"])

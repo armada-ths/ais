@@ -6,30 +6,44 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import { FORMS } from "@/forms"
+import { AccessDeclarationArgs } from "@/forms/access_declaration_logic"
 import { isFormOpen, isFormVisible } from "@/forms/form_access"
 import { ContactBubble } from "@/screens/dashboard/ContactBubble"
 import { getTimelinePhaseMessage } from "@/screens/dashboard/timeline_steps"
 import { LogoutButton } from "@/shared/LogoutButton"
 import { Timeline } from "@/shared/Timeline"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useDates } from "@/shared/hooks/api/useDates"
-import { selectForms } from "@/store/form/form_selectors"
 import { cx } from "@/utils/cx"
 import LoadingAnimation from "@/utils/loading_animation/loading_animation"
+import clsx from "clsx"
 import { AlertTriangle, BadgeInfo, CheckCircle } from "lucide-react"
 import { DateTime } from "luxon"
-import { useSelector } from "react-redux"
 import { DashboardError } from "./DashboardError"
 import FormCard from "./FormCard"
 
-export function DashboardScreen() {
+export function DashboardScreen({
+    forceAccessDeclaration,
+    hideContactBubble,
+    hideName,
+    hideLogout
+}: {
+    forceAccessDeclaration?: AccessDeclarationArgs
+    hideContactBubble?: boolean
+    hideName?: boolean
+    hideLogout?: boolean
+}) {
     const {
         data: dates,
         isLoading: isLoadingDates,
         isError: isErrorDates
     } = useDates()
     const { data, isLoading, isError } = useDashboard()
-    const forms = useSelector(selectForms)
+    const forms = FORMS
+
+    const _accessDeclaration = useAccessDeclaration()
+    const accessDeclaration = forceAccessDeclaration ?? _accessDeclaration
 
     const companyContact = data?.sales_contacts?.[0]
 
@@ -43,20 +57,26 @@ export function DashboardScreen() {
     }
 
     const formCardsData = Object.entries(forms).filter(([, formMeta]) =>
-        isFormVisible(formMeta.key as keyof typeof FORMS, data.type ?? null)
+        isFormVisible(accessDeclaration, formMeta.key as keyof typeof FORMS)
     )
 
-    const timelinePhaseAlert = getTimelinePhaseMessage(data.type)
+    const timelinePhaseAlert = getTimelinePhaseMessage(accessDeclaration)
 
     return (
-        <div className="flex min-h-[100dvh] flex-col">
-            <div className="flex w-full justify-end">
-                <LogoutButton />
-            </div>
+        <div
+            className={clsx("flex flex-col", {
+                "min-h-[100dvh]": !hideContactBubble
+            })}
+        >
+            {!hideLogout && (
+                <div className="flex w-full justify-end">
+                    <LogoutButton />
+                </div>
+            )}
             <div className={cx("flex flex-col-reverse md:flex-row")}>
                 <div className="flex flex-1 flex-col items-center px-5">
                     <div className="flex flex-col items-center">
-                        {data.contact?.first_name != null && (
+                        {!hideName && data.contact?.first_name != null && (
                             <Card className="max-w-[700px]">
                                 <CardHeader>
                                     <CardTitle title={data.company.name}>
@@ -74,20 +94,21 @@ export function DashboardScreen() {
                         )}
                         {timelinePhaseAlert != null && (
                             <Alert className="mt-5 max-w-[700px]">
-                                {timelinePhaseAlert.variant == null ||
-                                timelinePhaseAlert.variant === "info" ? (
-                                    <BadgeInfo />
-                                ) : timelinePhaseAlert.variant === "success" ? (
-                                    <CheckCircle className="stroke-emerald-400" />
-                                ) : (
-                                    <AlertTriangle className="stroke-yellow-400" />
-                                )}
+                                {timelinePhaseAlert.icon ??
+                                    (timelinePhaseAlert.variant == null ||
+                                    timelinePhaseAlert.variant === "info" ? (
+                                        <BadgeInfo />
+                                    ) : timelinePhaseAlert.variant ===
+                                      "success" ? (
+                                        <CheckCircle className="stroke-emerald-400" />
+                                    ) : (
+                                        <AlertTriangle className="stroke-yellow-400" />
+                                    ))}
                                 <AlertTitle className="ml-3">
                                     <span className="font-bold">
                                         {timelinePhaseAlert?.title ?? (
                                             <span>
-                                                Current step:{" "}
-                                                {data.type.split("_").join(" ")}
+                                                Current step:{" unknown"}
                                             </span>
                                         )}
                                     </span>
@@ -104,8 +125,8 @@ export function DashboardScreen() {
                                     form={formMeta}
                                     locked={
                                         !isFormOpen(
-                                            formMeta.key as keyof typeof FORMS,
-                                            data.type ?? null
+                                            accessDeclaration,
+                                            formMeta.key as keyof typeof FORMS
                                         )
                                     }
                                 />
@@ -114,79 +135,67 @@ export function DashboardScreen() {
                     </div>
                 </div>
             </div>
-            <div className="relative flex flex-1 items-end justify-center">
-                <Timeline
-                    className="mb-10 mt-20 h-28 w-2/3"
-                    stages={[
-                        {
-                            id: [
-                                "initial_registration",
-                                "after_initial_registration"
-                            ],
-                            title: "Initial Registration",
-                            badgeText: `${DateTime.fromISO(
-                                dates.ir.start
-                            ).toFormat("MMM d")} - ${DateTime.fromISO(
-                                dates.ir.end
-                            ).toFormat("MMM d")}`
-                        },
-                        {
-                            id: [
-                                "after_initial_registration_signed",
-                                "initial_registration_signed"
-                            ],
-                            title: "You have completed initial registration"
-                        },
-                        {
-                            id: [
-                                "after_initial_registration_acceptance_accepted"
-                                /*                                 "after_initial_registration_acceptance_rejected" */
-                            ],
-                            title: "You got a spot at the fair",
-                            badgeText: DateTime.fromISO(
-                                dates.ir.acceptance
-                            ).toFormat("MMM d")
-                        },
-                        {
-                            id: [
-                                "complete_registration_ir_signed",
-                                "complete_registration_ir_unsigned",
-                                "complete_registration_signed"
-                            ],
-                            title: "Final registration",
-                            badgeText: `${DateTime.fromISO(
-                                dates.fr.start
-                            ).toFormat("MMM d")} - ${DateTime.fromISO(
-                                dates.fr.end
-                            ).toFormat("MMM d")}`
-                        },
-                        {
-                            id: [],
-                            title: "You have completed final registration"
-                        },
-                        {
-                            id: [],
-                            title: "The fair 🥳",
-                            badgeText: DateTime.fromISO(
-                                dates.fair.days.reduce(
-                                    (acc, curr) =>
-                                        DateTime.fromISO(acc) <
-                                        DateTime.fromISO(curr)
-                                            ? acc
-                                            : curr,
-                                    dates.fair.days[0]
-                                )
-                            ).toFormat("MMM d")
-                        }
-                    ]}
-                    current={data.type}
-                />
-                {companyContact != null && (
-                    <div className="absolute flex w-full justify-end p-4 lg:p-8">
-                        <ContactBubble />
-                    </div>
-                )}
-            </div>
+            {!hideContactBubble && (
+                <div className="relative flex flex-1 items-end justify-center">
+                    <Timeline
+                        className="mb-10 mt-20 h-28 w-2/3"
+                        stages={[
+                            {
+                                when: [
+                                    "initial_registration:::*:::*",
+                                    "*:::signed_ir:::*",
+                                    "*:::signed_cr:::*"
+                                ],
+                                title: "Initial Registration",
+                                badgeText: `${DateTime.fromISO(
+                                    dates.ir.start
+                                ).toFormat("MMM d")} - ${DateTime.fromISO(
+                                    dates.ir.end
+                                ).toFormat("MMM d")}`
+                            },
+                            {
+                                when: [
+                                    "*:::signed_ir:::*",
+                                    "*:::signed_cr:::*"
+                                ],
+                                title: "You have completed initial registration"
+                            },
+                            {
+                                when: ["complete_registration:::*:::*"],
+                                title: "Final registration",
+                                badgeText: `${DateTime.fromISO(
+                                    dates.fr.start
+                                ).toFormat("MMM d")} - ${DateTime.fromISO(
+                                    dates.fr.end
+                                ).toFormat("MMM d")}`
+                            },
+                            {
+                                when: ["*:::signed_cr:::*"],
+                                title: "You have completed final registration"
+                            },
+                            {
+                                when: ["fair:::*:::*"],
+                                title: "The fair 🥳",
+                                badgeText: DateTime.fromISO(
+                                    dates.fair.days.reduce(
+                                        (acc, curr) =>
+                                            DateTime.fromISO(acc) <
+                                            DateTime.fromISO(curr)
+                                                ? acc
+                                                : curr,
+                                        dates.fair.days[0]
+                                    )
+                                ).toFormat("MMM d")
+                            }
+                        ]}
+                    />
+                    {companyContact != null && (
+                        <div className="absolute flex w-full justify-end p-4 lg:p-8">
+                            <ContactBubble />
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

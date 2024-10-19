@@ -16,6 +16,7 @@ class Event(models.Model):
     description = models.TextField(blank=True, null=True)
     date_start = models.DateTimeField()
     date_end = models.DateTimeField()
+    registration_end_date = models.DateTimeField(blank=True, null=True)
     location = models.CharField(max_length=75, blank=True, null=True)
     food = models.CharField(max_length=75, blank=True, null=True)
     signup_cr = models.BooleanField(
@@ -62,11 +63,6 @@ class Event(models.Model):
     published = models.BooleanField(
         blank=False, null=False, verbose_name="The event is published on the website"
     )
-    requires_invitation = models.BooleanField(
-        blank=False,
-        null=False,
-        verbose_name="Participants need an invitation to sign up",
-    )
     contact_person = models.ForeignKey(
         User, blank=True, null=True, on_delete=models.CASCADE
     )
@@ -76,6 +72,12 @@ class Event(models.Model):
     )
 
     def is_full(self):
+<<<<<<< HEAD
+=======
+        if self.event_max_capacity is None:
+            return False
+
+>>>>>>> 64277b44de30ed4365dc34a1151fc9faaf1f8217
         return self.number_of_signups() >= self.event_max_capacity
 
     def number_of_signups(self):

@@ -6,18 +6,70 @@ from improved_admin import ModelAdminImproved
 from django.utils.translation import gettext_lazy as _
 
 
+class RevenueDescendingFilter(admin.SimpleListFilter):
+    title = _("Year")
+    parameter_name = "fair__year"
+
+    def lookups(self, request, model_admin):
+        # Retrieve all unique years from the related model and sort them in descending order
+        years = (
+            model_admin.model.objects.order_by("-fair__year")
+            .values_list("fair__year", flat=True)
+            .distinct()
+        )
+        return [(year, year) for year in years]
+
+    # Default to current year selected
+    def value(self):
+        # Default to the current year if no specific value is selected
+        if not self.used_parameters.get(self.parameter_name):
+            return str(datetime.now().year)
+        return super().value()
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(fair__year=self.value())
+        return queryset
+
+
 @admin.register(Revenue)
 class RevenueAdmin(ModelAdminImproved):
-    ordering = ["name"]
+    ordering = ["-fair__year"]
     list_display = ["name", "description", "fair"]
-    list_filter = ["fair__year"]
+    list_filter = [RevenueDescendingFilter]
+
+
+class CategoryDescendingFilter(admin.SimpleListFilter):
+    title = _("Year")
+    parameter_name = "fair__year"
+
+    def lookups(self, request, model_admin):
+        # Retrieve all unique years from the related model and sort them in descending order
+        years = (
+            model_admin.model.objects.order_by("-fair__year")
+            .values_list("fair__year", flat=True)
+            .distinct()
+        )
+        return [(year, year) for year in years]
+
+    # Default to current year selected
+    def value(self):
+        # Default to the current year if no specific value is selected
+        if not self.used_parameters.get(self.parameter_name):
+            return str(datetime.now().year)
+        return super().value()
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(fair__year=self.value())
+        return queryset
 
 
 @admin.register(Category)
 class CategoryAdmin(ModelAdminImproved):
     ordering = ["name"]
     list_display = ["name"]
-    list_filter = ["fair__year"]
+    list_filter = [CategoryDescendingFilter]
 
 
 @admin.register(RegistrationSection)
@@ -26,9 +78,41 @@ class RegistrationSectionAdmin(ModelAdminImproved):
     list_display = ["name"]
 
 
+class ChildProductDescendingFilter(admin.SimpleListFilter):
+    title = _("Year")
+    parameter_name = "product__revenue__fair__year"
+
+    def lookups(self, request, model_admin):
+        # Retrieve all unique years from the related model and sort them in descending order
+        years = (
+            model_admin.model.objects.order_by("-product__revenue__fair__year")
+            .values_list("product__revenue__fair__year", flat=True)
+            .distinct()
+        )
+        return [(year, year) for year in years]
+
+    # Default to current year selected
+    def value(self):
+        # Default to the current year if no specific value is selected
+        if not self.used_parameters.get(self.parameter_name):
+            return str(datetime.now().year)
+        return super().value()
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(product__revenue__fair__year=self.value())
+        return queryset
+
+
 @admin.register(ChildProduct)
 class ChildProductAdmin(ModelAdminImproved):
-    fields = ("child_product", "quantity")
+    fields = ("child_product", "description", "quantity")
+    list_filter = [ChildProductDescendingFilter]
+
+
+@admin.register(SpecificProduct)
+class SpecificProductAdmin(ModelAdminImproved):
+    fields = ("specific_product",)
 
 
 class YearDescendingFilter(admin.SimpleListFilter):
@@ -79,46 +163,25 @@ class ExportBatchAdmin(ModelAdminImproved):
     list_display = ["timestamp", "user"]
 
 
-class OrderAdminYearDescendingFilter(admin.SimpleListFilter):
-    title = _("Year")
-    parameter_name = "product__fair"
-
-    def lookups(self, request, model_admin):
-        # Retrieve all unique years from the related model and sort them in descending order
-        years = (
-            model_admin.model.objects.order_by("-product__fair")
-            .values_list("product__fair", flat=True)
-            .distinct()
-        )
-        print(years)
-        return [(year, year) for year in years]
-
-    # Default to current year selected
-    def value(self):
-        # Default to the current year if no specific value is selected
-        """if not self.used_parameters.get(self.parameter_name):
-        return str(datetime.now().year)"""
-        return super().value()
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(product__fair=self.value())
-        return queryset
-
-
 class OrderFairYearFilter(admin.SimpleListFilter):
     title = _("Category Fair Year")
     parameter_name = "fair_year"
 
     def lookups(self, request, model_admin):
-        # Get distinct years from the related fair model
-        years = set(
-            order.product.category.fair.year
-            for order in Order.objects.exclude(product__isnull=True).exclude(
-                product__category__isnull=True
-            )
+        # Get distinct years directly from the database
+        years = (
+            Order.objects.exclude(product__isnull=True)
+            .exclude(product__category__isnull=True)
+            .values_list("product__category__fair__year", flat=True)
+            .distinct()
         )
-        return [(year, year) for year in reversed(sorted(years))]
+        return [(year, year) for year in sorted(years, reverse=True)]
+
+    def value(self):
+        # Default to the current year if no specific value is selected
+        if not self.used_parameters.get(self.parameter_name):
+            return str(datetime.now().year)
+        return super().value()
 
     def queryset(self, request, queryset):
         if self.value():

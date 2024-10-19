@@ -5,24 +5,28 @@ import { isFormOpen } from "@/forms/form_access"
 import { IfProgressDone } from "@/shared/IfProgressDone"
 import { InfoScreen } from "@/shared/InfoScreen"
 import { Navbar } from "@/shared/Navbar"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
-import { remoteSaveChanges } from "@/store/form/async_actions"
-import { AppDispatch } from "@/store/store"
 import { useFormMeta } from "@/useFormMeta"
-import { cx } from "@/utils/cx"
+import { cn, cx } from "@/utils/cx"
 import { useNavigate } from "@tanstack/react-router"
-import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react"
-import { useDispatch } from "react-redux"
+import {
+    ArrowLeft,
+    ArrowLeftIcon,
+    ArrowRight,
+    ArrowRightIcon,
+    CheckCircle
+} from "lucide-react"
 import { FormPageView } from "./FormPageView"
 import PrimarySection from "./PrimarySection"
 import { FormSidebarProgressionSummary } from "./sidebar/FormSidebarProgressionSummary"
 
 export function FormScreen() {
-    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate({
         from: "/$companyId/form/$formKey/$formPageKey"
     })
     const { data: dashboardData } = useDashboard()
+    const accessDeclaration = useAccessDeclaration()
 
     const {
         form,
@@ -31,19 +35,14 @@ export function FormScreen() {
         params: { formKey }
     } = useFormMeta()
 
-    const companyStatus = dashboardData?.type
+    const period = dashboardData?.period
 
     const SideBar = form?.rightSidebar
 
     const formOpen = isFormOpen(
-        formKey as keyof typeof FORMS,
-        companyStatus ?? null
+        accessDeclaration,
+        formKey as keyof typeof FORMS
     )
-
-    async function saveChanges() {
-        const response = await dispatch(remoteSaveChanges())
-        return (response.payload as { success: boolean }).success
-    }
 
     async function handlePrevious() {
         if (!form) return
@@ -64,10 +63,7 @@ export function FormScreen() {
         })
     }
 
-    if (
-        (form != null && formPage == null && formOpen) ||
-        companyStatus == null
-    ) {
+    if ((form != null && formPage == null && formOpen) || period == null) {
         return null // We are still waiting for activeForm to be applied, hence show nothing to reduce flickering
     }
     if (form != null && formPage == null && !formOpen) {
@@ -104,7 +100,7 @@ export function FormScreen() {
             })}
         >
             <ArrowLeft className="pr-2" size={25} />
-            Previous
+            Back
         </Button>
     )
 
@@ -128,24 +124,24 @@ export function FormScreen() {
         </Button>
     )
 
+    const prevButtonDisabled = !(
+        formPageIndex > 0 && formPage.hasPrevButton !== false
+    )
+    const nextButtonDisabled = formPage.hasNextButton === false
+
     return (
         <div>
             <Navbar
                 titleLeft={
                     <PrevButton
                         variant="outline"
-                        disabled={
-                            !(
-                                formPageIndex > 0 &&
-                                formPage.hasPrevButton !== false
-                            )
-                        }
+                        disabled={prevButtonDisabled}
                     />
                 }
                 titleRight={
                     <NextButton
                         variant="outline"
-                        disabled={formPage.hasNextButton === false}
+                        disabled={nextButtonDisabled}
                     />
                 }
             />
@@ -158,7 +154,6 @@ export function FormScreen() {
                                 id={page.id} // Important to allow the tab to be clickable (see above comment)
                                 value={page.id}
                                 onClick={async () => {
-                                    await saveChanges()
                                     navigate({
                                         from: "/$companyId/form/$formKey/$formPageKey",
                                         to: "/$companyId/form/$formKey/$formPageKey",
@@ -196,7 +191,7 @@ export function FormScreen() {
             </Tabs>
             <div
                 className={cx(
-                    "hidden min-h-[92vh] grid-cols-[1fr_3fr_1fr] lg:grid",
+                    "hidden min-h-[92vh] grid-cols-[1fr_3fr_1fr] lg:grid absolute w-full",
                     {
                         "grid-cols-[0_1fr_0]":
                             !SideBar && form.pages.length <= 1
@@ -214,6 +209,30 @@ export function FormScreen() {
                         formId={form.key as keyof typeof FORMS}
                         page={formPage}
                     />
+                    <div className="flex-1" />
+                    <div className="flex w-full items-center gap-4 p-4">
+                        <Button
+                            onClick={handlePrevious}
+                            className={cn("flex gap-2", {
+                                "!opacity-0": prevButtonDisabled
+                            })}
+                            disabled={prevButtonDisabled}
+                        >
+                            <ArrowLeftIcon />
+                            Back
+                        </Button>
+                        <div className="flex-1" />
+                        <Button
+                            onClick={handleNext}
+                            className={cn("flex gap-2", {
+                                "!opacity-0": nextButtonDisabled
+                            })}
+                            disabled={nextButtonDisabled}
+                        >
+                            Next
+                            <ArrowRightIcon />
+                        </Button>
+                    </div>
                 </PrimarySection>
                 {SideBar != null && <SideBar />}
             </div>

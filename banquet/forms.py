@@ -14,7 +14,10 @@ from django.contrib.auth.models import User
 import re
 import csv
 
+from people.models import DietaryRestriction
+
 from .models import (
+    DietaryPreference,
     Participant,
     InvitationGroup,
     Invitation,
@@ -51,6 +54,32 @@ def fix_phone_number(n):
 
 
 class ParticipantForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        participant = kwargs.pop("instance", None)
+        banquet = participant.banquet
+
+        # Set empty_label to None to remove the default "------"
+        self.fields["dietary_preference"].empty_label = None
+
+        if banquet:
+            self.fields["dietary_preference"].help_text = (
+                "We do not serve meat. Our options are exclusively fish, vegetarian, or vegan dishes."
+            )
+            self.fields["dietary_preference"].queryset = self.get_dietary_preferences(
+                banquet
+            )
+
+        self.fields["dietary_restrictions"].queryset = self.get_dietary_restrictions()
+
+    def get_dietary_restrictions(self):
+        return DietaryRestriction.objects.filter(show_in_banquet=True)
+
+    def get_dietary_preferences(self, banquet):
+        # Custom function to retrieve dietary preferences for the given banquet
+        return DietaryPreference.objects.filter(banquet=banquet)
+
     def clean(self):
         super(ParticipantForm, self).clean()
 
@@ -83,6 +112,7 @@ class ParticipantForm(forms.ModelForm):
             "name",
             "email_address",
             "phone_number",
+            "dietary_preference",
             "dietary_restrictions",
             "other_dietary_restrictions",
             "alcohol",
@@ -91,6 +121,7 @@ class ParticipantForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(attrs={"readonly": "readonly"}),
             "email_address": forms.TextInput(attrs={"readonly": "readonly"}),
+            "dietary_preference": forms.RadioSelect(),
             "dietary_restrictions": forms.CheckboxSelectMultiple(),
             "other_dietary_restrictions": forms.TextInput(),
             "alcohol": forms.RadioSelect(),
@@ -162,6 +193,7 @@ class ParticipantAdminForm(forms.ModelForm):
             "name",
             "email_address",
             "phone_number",
+            "dietary_preference",
             "dietary_restrictions",
             "other_dietary_restrictions",
             "alcohol",

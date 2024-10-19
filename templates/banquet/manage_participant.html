@@ -20,6 +20,7 @@
 		<li><span style="font-weight: bold;">Name:</span> {{ participant.name }}</li>
 		<li><span style="font-weight: bold;">E-mail address:</span> <a href="mailto:{{ participant.email_address }}">{{ participant.email_address }}</a></li>
 		<li><span style="font-weight: bold;">Phone number:</span> <a href="tel:{{ participant.phone_number }}">{{ participant.phone_number }}</a></li>
+		<li><span style="font-weight: bold;">Dietary preference:</span> <span>{{ participant.dietary_preference }}</span></li>
 		<li><span style="font-weight: bold;">Dietary restrictions:</span> {% if participant.dietary_restrictions.all %}{{ participant.dietary_restrictions.all | join:', ' }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
 		<li><span style="font-weight: bold;">Other dietary restrictions:</span> {% if participant.other_dietary_restrictions %}{{ participant.other_dietary_restrictions }}{% else %}<span style="font-style: italic;">-</span>{% endif %}</li>
 		<li><span style="font-weight: bold;">Alcohol:</span> {{ participant.alcohol }}</li>
@@ -44,11 +45,21 @@
 	</p>
 
 	<h2>Ticket link</h2>
-	{% if banquet.background %}
-	<p>Give the following link to the participant.</p>
-	
-	<input type="text" value="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}" />
+
+	{% if invitation %}
+		{% if invitation.user is None %}
+			<p>Give the following link to the participant.</p>
+			<input type="text" value="https://ais.armada.nu{% url 'banquet_participant_display' participant.token %}" />
+		{% else %}
+			<p>This invitation is tied to a user account. Ask {{ invitation.user.get_full_name }} to sign in to the AIS and click Banquet in the menu.</p>
+		{% endif %}
+
+		{% if invitation.has_sent_mail %}
+			<a href="{% url 'banquet_send_invitation_button' fair.year banquet.pk invitation.pk %}" class="btn btn-default" onclick="return confirm('An invite mail has already been sent to this person. Send again?')">Send invitation mail (already sent)</a>
+		{% else %}
+			<a href="{% url 'banquet_send_invitation_button' fair.year banquet.pk invitation.pk %}" class="btn btn-default">Send invitation mail</a>
+		{% endif %}
 	{% else %}
-	<p>Before the generated links can work, a background image needs to be uploaded (ask an IT admin) for the banquet.</p>
+		<p class="text-danger">The participant has no invitation.</p>
 	{% endif %}
 {% endblock %}

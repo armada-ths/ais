@@ -1,54 +1,20 @@
+import { LunchTicketLink } from "@/forms/lunch_tickets/lunch_ticket_link"
 import { Form } from "../form_types"
-import { CreateLunchTicketsPage } from "./lunch_ticket_create.page"
-import { ViewLunchTicketsPage } from "./lunch_tickets.page"
 
 export const form = {
     key: "lunch_tickets",
-    name: "Lunch Tickets",
+    name: "Lunch tickets form",
     description:
-        "Lunch tickets give attendees access to the lunch area at the fair",
+        "Sign up for lunch tickets at the fair, assign dietary preferences and allergies.",
     progression: "none",
     pages: [
         {
-            id: "view_ticket",
-            title: "Company Lunch Tickets",
-            hasNextButton: false,
-            hasPrevButton: false,
+            id: "sture_contact_info",
+            title: "Lunch tickets form",
             isDone: null,
-            pageComponent: ViewLunchTicketsPage,
-            fields: [
-                {
-                    mapping: "assigned_lunch_tickets"
-                },
-                {
-                    mapping: "fair_days"
-                },
-                {
-                    mapping: "unassigned_lunch_tickets"
-                }
-            ]
-        },
-        {
-            id: "create_ticket",
-            title: "Create a new ticket",
+            pageComponent: LunchTicketLink,
             hasNextButton: false,
-            hasPrevButton: false,
-            isDone: null,
-            pageComponent: CreateLunchTicketsPage,
-            fields: [
-                {
-                    mapping: "unassigned_lunch_tickets"
-                },
-                {
-                    mapping: "fair_days"
-                },
-                {
-                    mapping: "lunch_times"
-                },
-                {
-                    mapping: "dietary_restrictions"
-                }
-            ]
+            fields: []
         }
     ]
 } as const satisfies Form

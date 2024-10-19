@@ -50,7 +50,6 @@ class CRRegistrationSerializer(RegistrationSerializer):
 
     def update(self, instance, validated_data):
         update_field(instance, validated_data, "company", CRCompanySerializer)
-        update_field(instance, validated_data, "exhibitor", ExhibitorSerializer)
 
         orders = validated_data.pop("orders", None)
         if orders != None:

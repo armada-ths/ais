@@ -32,6 +32,11 @@ export function FormSidebarCartSummary() {
         }
     )
 
+    const selectedProducts = productsWithAdjustedPrices
+        .filter(x => !belongsToSection(x, PACKAGE_SECTION_KEY))
+        // Free items should be listed in the package card instead
+        .filter(current => current.adjustedPrice >= 0)
+
     const totalPrice = productsWithAdjustedPrices.reduce(
         (acc, current) => acc + current.adjustedPrice,
         0
@@ -85,23 +90,14 @@ export function FormSidebarCartSummary() {
                         </div>
                     )}
                     <div className="flex flex-col gap-y-2">
-                        {productsWithAdjustedPrices.length > 0 && (
+                        {selectedProducts.length > 0 && (
                             <h2 className="mb-2 text-center text-xl">
                                 Selected products
                             </h2>
                         )}
-                        {productsWithAdjustedPrices
-                            .filter(
-                                x => !belongsToSection(x, PACKAGE_SECTION_KEY)
-                            )
-                            // Free items should be listed in the package card instead
-                            .filter(current => current.adjustedPrice >= 0)
-                            .map(current => (
-                                <ProductCard
-                                    key={current.id}
-                                    product={current}
-                                />
-                            ))}
+                        {selectedProducts.map(current => (
+                            <ProductCard key={current.id} product={current} />
+                        ))}
                     </div>
                     <div className="flex-1" />
                     <div className="mt-5 flex flex-col items-center justify-between rounded bg-slate-200 p-1 px-3">

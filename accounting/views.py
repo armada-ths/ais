@@ -348,9 +348,11 @@ def export_companys(request, year):
                 e.company.invoice_email_address,
                 e.company.ths_customer_id,
                 e.company.invoice_reference,
-                company_order_total.get(e.company.pk)
-                if company_order_total.get(e.company.pk)
-                else None,
+                (
+                    company_order_total.get(e.company.pk)
+                    if company_order_total.get(e.company.pk)
+                    else None
+                ),
             ]
         )
 

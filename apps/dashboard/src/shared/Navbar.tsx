@@ -1,8 +1,5 @@
 import { useFormMeta } from "@/useFormMeta"
 import { useNavigate } from "@tanstack/react-router"
-import { useDispatch } from "react-redux"
-import { remoteSaveChanges } from "../store/form/async_actions"
-import { AppDispatch } from "../store/store"
 
 export function Navbar({
     titleRight,
@@ -11,7 +8,6 @@ export function Navbar({
     titleRight?: React.ReactNode
     titleLeft?: React.ReactNode
 }) {
-    const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
 
     const {
@@ -20,7 +16,6 @@ export function Navbar({
     } = useFormMeta()
 
     async function closeForm() {
-        await dispatch(remoteSaveChanges())
         navigate({
             to: "/$companyId",
             params: { companyId }

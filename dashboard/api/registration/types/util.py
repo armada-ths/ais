@@ -6,8 +6,9 @@ from dashboard.api.registration.types.cr import (
     CRRegistrationSerializer,
     CRSignedRegistrationSerializer,
 )
-from dashboard.api.registration.types.ir import IRRegistrationSerializer
-from dashboard.api.registration.types.registration import RegistrationType
+
+from dashboard.api.registration.types.serializer import RegistrationSerializer
+from fair.models import RegistrationPeriod
 
 from util import status, get_user
 from util.permission import UserPermission
@@ -20,39 +21,32 @@ def get_serializer(request, registration, data=empty, context={}):
     if user != None:
         permission = UserPermission(user)
 
-    # IR
-    if registration.type == RegistrationType.BeforeInitialRegistration:
-        Serializer = IRRegistrationSerializer
-    elif registration.type == RegistrationType.InitialRegistration:
-        Serializer = IRRegistrationSerializer
-    elif registration.type == RegistrationType.InitialRegistrationSigned:
-        Serializer = IRRegistrationSerializer
-    elif registration.type == RegistrationType.AfterInitialRegistration:
-        Serializer = IRRegistrationSerializer
-    elif registration.type == RegistrationType.AfterInitialRegistrationSigned:
-        Serializer = IRRegistrationSerializer
-
-    # CR
-    elif registration.type == RegistrationType.BeforeCompleteRegistrationIRSigned:
-        Serializer = CRRegistrationSerializer
-    elif registration.type == RegistrationType.BeforeCompleteRegistrationIRUnsigned:
-        Serializer = CRRegistrationSerializer
-    elif registration.type == RegistrationType.CompleteRegistrationIRSigned:
-        Serializer = CRRegistrationSerializer
-    elif registration.type == RegistrationType.CompleteRegistrationIRUnsigned:
-        Serializer = CRRegistrationSerializer
-    elif registration.type == RegistrationType.CompleteRegistrationSigned:
+    if (
+        registration.period
+        in [
+            RegistrationPeriod.BEFORE_IR,
+            RegistrationPeriod.IR,
+            RegistrationPeriod.BETWEEN_IR_AND_CR,
+        ]
+        or registration.ir_signature is None
+    ):
+        Serializer = RegistrationSerializer
+    elif registration.period in [RegistrationPeriod.CR]:
         # If user is sales, they may change anything he likes
-        if permission != None and permission == UserPermission.SALES:
+        if permission == UserPermission.SALES or registration.cr_signature is None:
             Serializer = CRRegistrationSerializer
         else:
             Serializer = CRSignedRegistrationSerializer
-    elif registration.type == RegistrationType.AfterCompleteRegistration:
+
+    elif registration.period in [
+        RegistrationPeriod.AFTER_CR,
+        RegistrationPeriod.FAIR,
+        RegistrationPeriod.AFTER_FAIR,
+    ]:
         Serializer = CRSignedRegistrationSerializer
-    elif registration.type == RegistrationType.AfterCompleteRegistrationSigned:
-        Serializer = CRSignedRegistrationSerializer
+
     else:
-        raise ValueError(f"Unknown registration type: {registration.type}")
+        raise ValueError(f"Unhandled registration period: {registration.period}")
 
     return Serializer(
         registration,

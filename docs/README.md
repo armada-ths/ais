@@ -49,8 +49,8 @@ In order to run the project locally, you need the following tools:
 <details>
 <summary>All platforms with NVM</summary>
 
-1. `nvm install 20 && nvm use 20`
-2. `npm install -g pnpm`
+1. `nvm install 20.12 && nvm use 20.12`
+2. `npm install -g pnpm@9.6.0`
 
 </details>
 
@@ -79,9 +79,8 @@ You can choose to use a copy of the production database for your local developme
 
 #### Prepare static files
 
-1. `nvm install 16 && nvm use 16 && && npm install && npm run build` (compile the static files for e.g. the banquett and events systems).
-2. `cd apps/dashboard` (goto dashboard project).
-3. `nvm install 20 && nvm use 20 && pnpm install && pnpm build` (compile the the dashboard system).
+1. `nvm install 16 && nvm use 16 && npm install && npm run build`
+2. `cd apps/dashboard && nvm use 20.12 && pnpm install && pnpm build && cd ../../`
 
 #### Run the server
 
@@ -93,7 +92,11 @@ The web server will setup everything and connect itself to a postgis database. T
 
 #### Migrate the database and create a super user
 
-The database will not be up to date with the latest migrations. Run `./init-dev-environment.sh` to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user. The server must be running in order to run this command.
+The database will not be up to date with the latest migrations. Run:
+
+1. `./init-dev-environment.sh`
+
+to both migrate the database and to create a super user. The super user setup will guide you through giving the super user a name, email, and password. Enter whatever you feel is appropriate for your local development experience. If you only want to migrate the database, and not create a super user, simply exit the program using `ctrl+c` when it prompts you for the username for the super user. The server must be running in order to run this command.
 
 > `ais-web-1  | Starting development server at http://0.0.0.0:3000/`
 

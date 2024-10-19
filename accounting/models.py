@@ -53,9 +53,22 @@ class RegistrationSection(models.Model):
         return self.name
 
 
+class SpecificProduct(models.Model):
+    specific_product = models.ForeignKey(
+        "Product", blank=False, on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return "%s á %s SEK" % (self.specific_product, self.specific_product.unit_price)
+
+
 class ChildProduct(models.Model):
     quantity = models.PositiveIntegerField(blank=False)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Optional, describe why you created this child product. This will not be shown to the customer.",
+    )
     child_product = models.ForeignKey("Product", blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -120,9 +133,14 @@ class Product(models.Model):
         RegistrationSection, blank=True, null=True, on_delete=models.CASCADE
     )
 
+    # Currently, we can present two different products to the customer.
+    # One for companies who signed the IR during the IR period, and one for companies who signed it after.
+    # A better system would be for each product to have list of "ids" of company "types" that can see it.
+    # A company gets a type depending on time they signed IR, if they are a startup, non-profit, etc.
+    # Anyway ...
     EXCLUSIVELY_FOR_CHOICES = [
-        ("ir-signed", "Companies who have signed IR"),
-        ("ir-unsigned", "Companies who have NOT signed IR"),
+        ("ir-timely", "Companies who signed IR during the IR period."),
+        ("ir-late", "Companies who signed IR after the IR period."),
     ]
 
     exclusively_for = ChoiceArrayField(
@@ -147,6 +165,19 @@ class Product(models.Model):
                 "the child products in order to make the package automatically add packages",
                 "which can only be removed by a salesperson.",
                 "This feature was used in 2023 when selling gold, silver, and bronze packages.",
+            ]
+        ),
+    )
+
+    specific_products = models.ManyToManyField(
+        SpecificProduct,
+        blank=True,
+        help_text=" ".join(
+            [
+                "(ONLY RELEVANT FOR PACKAGES AS ROOT PRODUCTS)",
+                "These products will only be shown to the customer if they select the current package",
+                "This feature was used in 2024 when silver and bronze packages lead to different prices on the same products",
+                'Neccessary is to set the "Display in product list" to false on for the specific product (otherwise it will be displayed with standard price, for any package).',
             ]
         ),
     )

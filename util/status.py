@@ -43,6 +43,18 @@ COMPANY_ALREADY_SIGNED = JsonResponse(
     {"error": "company_already_signed", "message": "Company has already signed IR"},
     status=status.HTTP_403_FORBIDDEN,
 )
+COMPANY_NOT_SIGNED_IR = JsonResponse(
+    {"error": "company_did_not_sign_ir", "message": "Company has not signed IR"},
+    status=status.HTTP_403_FORBIDDEN,
+)
+ORDER_NOT_ALLOWED = JsonResponse(
+    {"error": "order_not_allowed", "message": "Order is not allowed"},
+    status=status.HTTP_403_FORBIDDEN,
+)
+COMPANY_NOT_ACCEPTED = JsonResponse(
+    {"error": "company_not_accepted", "message": "Company has not been accepted"},
+    status=status.HTTP_403_FORBIDDEN,
+)
 EXHIBITOR_ALREADY_SIGNED = JsonResponse(
     {"error": "exhibitor_already_signed", "message": "Exhibitor has already signed CR"},
     status=status.HTTP_403_FORBIDDEN,

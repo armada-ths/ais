@@ -45,3 +45,13 @@
 	font-weight: 700;
 	src: local(""), url(Inter-Bold.woff2) format("woff2"), url(Inter-Bold.woff) format("woff")
 }
+
+.only-print {
+	display: none;
+}
+
+@media print {
+	.only-print {
+		display: block;
+	}
+}

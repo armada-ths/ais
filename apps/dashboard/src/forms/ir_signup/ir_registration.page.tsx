@@ -9,6 +9,9 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
+import { FormIds } from "@/forms"
+import { checkAccessDeclarations } from "@/forms/access_declaration_logic"
+import { useAccessDeclaration } from "@/shared/hooks/api/useAccessDeclaration"
 import { useDashboard } from "@/shared/hooks/api/useDashboard"
 import { useDates } from "@/shared/hooks/api/useDates"
 import { HOST } from "@/shared/vars"
@@ -29,10 +32,16 @@ export default function IrRegistrationPage() {
 
     const { data: dataDates } = useDates()
     const { data, isLoading } = useDashboard()
+    const accessDeclarationArgs = useAccessDeclaration()
+
+    const isFinalRegistration = checkAccessDeclarations(accessDeclarationArgs, [
+        "complete_registration:::*:::*"
+    ])
 
     const [readTerms, setReadTerms] = useState(false)
     const [acceptedBinding, setAcceptedBinding] = useState(false)
     const [processData, setProcessData] = useState(false)
+    const [allowLateConfirmation, setAllowLateConfirmation] = useState(false)
 
     const {
         mutate: signIr,
@@ -43,28 +52,48 @@ export default function IrRegistrationPage() {
             await fetch(`${HOST}/api/dashboard/sign_ir`, {
                 method: "POST"
             }),
-        onSuccess: async () => {
+        onSuccess: async response => {
+            if (response.status < 200 || response.status >= 300)
+                return toast.error("Failed to sign up")
             await queryClient.invalidateQueries({
                 queryKey: ["dashboard"]
             })
             // Redirect back to the dashboard
-            toast.success("Signup complete", {
-                description: `You have successfully signed up for Armada ${
+            if (!isFinalRegistration) {
+                toast.success("Signup complete", {
+                    description: `You have successfully signed up for Armada ${
+                        DateTime.now().year
+                    }!`
+                })
+            }
+
+            toast.success("First step done", {
+                description: `You have completed the first step of the registration, continue to ordering ${
                     DateTime.now().year
-                }!`,
-                onAutoClose: exitView,
-                onDismiss: exitView
+                }!`
             })
         }
     })
 
     function exitView() {
-        if (companyId == null) return
-        // Redirect to the next step
+        if (!isFinalRegistration) {
+            navigate({
+                to: "/$companyId",
+                replace: true,
+                params: { companyId }
+            })
+
+            return
+        }
+
         navigate({
-            to: "/$companyId/form/$formKey",
+            to: "/$companyId/form/$formKey/$formPageKey",
             replace: true,
-            params: { companyId, formKey: "ir_additional_info" }
+            params: {
+                companyId,
+                formKey: "fr_accounting" as FormIds,
+                formPageKey: "packages"
+            }
         })
     }
 
@@ -80,7 +109,11 @@ export default function IrRegistrationPage() {
     }
 
     const signupDisabled =
-        !readTerms || !processData || !acceptedBinding || isPending
+        isPending ||
+        !readTerms ||
+        !processData ||
+        (!isFinalRegistration && !acceptedBinding) ||
+        (isFinalRegistration && !allowLateConfirmation)
 
     const acceptanceDate = DateTime.fromISO(dataDates.ir.acceptance).toFormat(
         "d MMMM yyyy"
@@ -90,17 +123,26 @@ export default function IrRegistrationPage() {
     )
     const frEndDate = DateTime.fromISO(dataDates.fr.end).toFormat("d MMMM yyyy")
 
+    const overfillWarning = isFinalRegistration ? (
+        <>
+            Please note that the event may be full. We will contact you with a
+            confirmation of your spot as soon as possible.
+        </>
+    ) : (
+        <>
+            In order not to overfill the event, we will confirm your spot before{" "}
+            {DateTime.fromISO(dataDates.ir.acceptance).toFormat("d MMMM")}.
+        </>
+    )
+
     return (
         <div className="mt-6 flex max-w-[400px] flex-col items-center gap-y-5">
             <div className="rounded-lg bg-stone-200 p-2 px-4 ">
                 <p className="my-3 text-xs text-stone-600">
                     Here you apply to participate in Armada{" "}
-                    {DateTime.now().year}. In order not to overfill the event,
-                    we will confirm your spot before{" "}
-                    {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
-                        "d MMMM"
-                    )}
-                    . Contact sales@armada.nu if you have any questions
+                    {DateTime.now().year}. {overfillWarning} Contact{" "}
+                    <a href="mailto:sales@armada.nu">sales@armada.nu</a> if you
+                    have any questions.
                 </p>
             </div>
             <a href={`${HOST}${data?.ir_contract.contract}`} target="_blank">
@@ -122,72 +164,95 @@ export default function IrRegistrationPage() {
                 >
                     I have read and accept the Terms and Conditions, and confirm
                     that I have the right to enter this agreement on behalf of{" "}
-                    <b>{data?.company.name}</b>
+                    <b>{data?.company.name}</b>.
                 </Label>
             </div>
-            <div className="mt-2 flex items-center space-x-4">
-                <Checkbox
-                    id="binding"
-                    checked={acceptedBinding}
-                    onCheckedChange={x =>
-                        x != "indeterminate" && setAcceptedBinding(x)
-                    }
-                />
-                <Label
-                    htmlFor="binding"
-                    className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                    I understand that this Initial Registration is binding after{" "}
-                    {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
-                        "d MMMM yyyy"
-                    )}{" "}
-                    and have read the{" "}
-                    <Drawer>
-                        <DrawerTrigger className="underline hover:no-underline">
-                            cancellation policy
-                        </DrawerTrigger>
-                        <DrawerContent className="mx-auto max-w-[500px] p-4">
-                            <DrawerHeader>
-                                <DrawerTitle>
-                                    Initial Registration - Cancellation Policy
-                                </DrawerTitle>
-                                <DrawerDescription className="mt-5">
-                                    <p className="italic">
-                                        This is an excerpt from the terms and
-                                        conditions (terms). In case of any
-                                        differences between this and the terms,
-                                        the terms apply.
-                                    </p>
-                                    <ul className="mt-4 list-disc space-y-1 px-3">
-                                        <li>
-                                            Cancellation before{" "}
-                                            <b>{acceptanceDate}</b> is free of
-                                            charge
-                                        </li>
-                                        <li>
-                                            Cancellation after{" "}
-                                            <b>{acceptanceDate}</b>, but before{" "}
-                                            <b>{frStartDate}</b> costs 25% of a
-                                            bronze kit
-                                        </li>
-                                        <li>
-                                            Cancellation after{" "}
-                                            <b>{frStartDate}</b>, but before{" "}
-                                            <b>{frEndDate}</b> costs 75% of a
-                                            bronze kit
-                                        </li>
-                                        <li>
-                                            Cancellation after{" "}
-                                            <b>{frEndDate}</b> costs the full
-                                            price of any ordered products.
-                                        </li>
-                                    </ul>
-                                </DrawerDescription>
-                            </DrawerHeader>
-                        </DrawerContent>
-                    </Drawer>
-                </Label>
-            </div>
+            {!isFinalRegistration && (
+                <div className="mt-2 flex items-center space-x-4">
+                    <Checkbox
+                        id="binding"
+                        checked={acceptedBinding}
+                        onCheckedChange={x =>
+                            x != "indeterminate" && setAcceptedBinding(x)
+                        }
+                    />
+                    <Label
+                        htmlFor="binding"
+                        className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        I understand that this initial registration is binding
+                        after{" "}
+                        {DateTime.fromISO(dataDates.ir.acceptance).toFormat(
+                            "d MMMM yyyy"
+                        )}{" "}
+                        and have read the{" "}
+                        <Drawer>
+                            <DrawerTrigger className="underline hover:no-underline">
+                                cancellation policy
+                            </DrawerTrigger>
+                            <DrawerContent className="mx-auto max-w-[500px] p-4">
+                                <DrawerHeader>
+                                    <DrawerTitle>
+                                        Initial Registration - Cancellation
+                                        Policy
+                                    </DrawerTitle>
+                                    <DrawerDescription className="mt-5">
+                                        <p className="italic">
+                                            This is an excerpt from the terms
+                                            and conditions (terms). In case of
+                                            any differences between this and the
+                                            terms, the terms apply.
+                                        </p>
+                                        <ul className="mt-4 list-disc space-y-1 px-3">
+                                            <li>
+                                                Cancellation before{" "}
+                                                <b>{acceptanceDate}</b> is free
+                                                of charge
+                                            </li>
+                                            <li>
+                                                Cancellation after{" "}
+                                                <b>{acceptanceDate}</b>, but
+                                                before <b>{frStartDate}</b>{" "}
+                                                costs 25% of a bronze kit
+                                            </li>
+                                            <li>
+                                                Cancellation after{" "}
+                                                <b>{frStartDate}</b>, but before{" "}
+                                                <b>{frEndDate}</b> costs 75% of
+                                                a bronze kit
+                                            </li>
+                                            <li>
+                                                Cancellation after{" "}
+                                                <b>{frEndDate}</b> costs the
+                                                full price of any ordered
+                                                products.
+                                            </li>
+                                        </ul>
+                                    </DrawerDescription>
+                                </DrawerHeader>
+                            </DrawerContent>
+                        </Drawer>
+                    </Label>
+                </div>
+            )}
+            {isFinalRegistration && (
+                <div className="mt-2 flex items-center space-x-4">
+                    <Checkbox
+                        id="allow_late_confirmation"
+                        checked={allowLateConfirmation}
+                        onCheckedChange={x =>
+                            x != "indeterminate" && setAllowLateConfirmation(x)
+                        }
+                    />
+                    <Label
+                        htmlFor="allow_late_confirmation"
+                        className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        I understand that the event may be full and that THS
+                        Armada will confirm my spot as soon as possible.
+                    </Label>
+                </div>
+            )}
             <div className="mt-2 flex items-center space-x-4">
                 <Checkbox
                     id="process_data"
@@ -201,13 +266,15 @@ export default function IrRegistrationPage() {
                     className="text-sm font-medium leading-5 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                     I consent to letting THS Armada store my personal
-                    information according to THS personal information policy
+                    information according to THS personal information policy.
                 </Label>
             </div>
             <div className="mt-5">
                 {mutationIsSuccess ? (
                     <Button variant="link" onClick={exitView}>
-                        Take the next step
+                        {isFinalRegistration
+                            ? "Continue to ordering"
+                            : "Take the next step"}
                     </Button>
                 ) : (
                     <Button

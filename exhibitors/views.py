@@ -18,6 +18,7 @@ from fair.models import Fair, FairDay, LunchTicket
 from recruitment.models import RecruitmentApplication
 from register.models import SignupLog
 from .forms import (
+    ApplicationStatusForm,
     ExhibitorViewForm,
     ExhibitorCreateForm,
     ExhibitorCreateBypassedForm,
@@ -27,12 +28,10 @@ from .forms import (
     CheckInForm,
     CommentForm,
     ExhibitorSearchForm,
-    BoothForm,
-    ExhibitorInBoothForm,
     CoordinatesForm,
     FairLocationForm,
 )
-from .models import Exhibitor, ExhibitorView, Booth, ExhibitorInBooth, Location, User
+from .models import Exhibitor, ExhibitorView, Location, User
 
 from dal import autocomplete
 from django.utils.html import format_html
@@ -119,14 +118,6 @@ def exhibitors(request, year, template_name="exhibitors/exhibitors.html"):
             banquet__in=Banquet.objects.filter(fair=fair).exclude(product=None)
         ).exclude(company=None)
 
-    if "booths" in choices:
-        eibs = [
-            eib
-            for eib in ExhibitorInBooth.objects.select_related("booth__location")
-            .select_related("booth__location__parent")
-            .filter(exhibitor__fair=fair)
-        ]
-
     exhibitors = []
 
     for exhibitor in (
@@ -197,6 +188,8 @@ def exhibitors(request, year, template_name="exhibitors/exhibitors.html"):
                 value = e.fair_location
             if choice == "fair_location_special":
                 value = e.fair_location_special
+            if choice == "application_status":
+                value = e.application_status
 
             if choice == "count_lunch_tickets":
                 ordered = 0
@@ -225,9 +218,6 @@ def exhibitors(request, year, template_name="exhibitors/exhibitors.html"):
                         created += 1
 
                 value = {"ordered": ordered, "created": created}
-
-            if choice == "booths":
-                value = [eib.booth for eib in eibs if eib.exhibitor == e]
 
             exhibitor["fields"].append({"field": choice, "value": value})
 
@@ -372,9 +362,11 @@ def exhibitor(request, year, pk):
             {
                 "name": order.name if order.name is not None else order.product.name,
                 "comment": order.comment,
-                "unit_price": order.unit_price
-                if order.unit_price is not None
-                else order.product.unit_price,
+                "unit_price": (
+                    order.unit_price
+                    if order.unit_price is not None
+                    else order.product.unit_price
+                ),
                 "quantity": order.quantity,
             }
         )
@@ -424,9 +416,11 @@ def exhibitor(request, year, pk):
                 contact_persons.append(
                     {
                         "user": user,
-                        "role": application.delegated_role
-                        if application is not None
-                        else None,
+                        "role": (
+                            application.delegated_role
+                            if application is not None
+                            else None
+                        ),
                     }
                 )
 
@@ -490,12 +484,6 @@ def exhibitor(request, year, pk):
             "banquets": banquets,
             "deadline_complete_registration": exhibitor.deadline_complete_registration
             or fair.complete_registration_close_date,
-            "booths": [
-                eib.booth
-                for eib in ExhibitorInBooth.objects.select_related("booth").filter(
-                    exhibitor=exhibitor
-                )
-            ],
             "fair_location": exhibitor.fair_location,
             "fair_location_special": exhibitor.fair_location_special,
         },
@@ -570,6 +558,24 @@ def exhibitor_fair_location(request, year, pk):
     return render(
         request,
         "exhibitors/exhibitor_fair_location.html",
+        {"fair": fair, "exhibitor": exhibitor, "form": form},
+    )
+
+
+@permission_required("exhibitors.modify_application_status")
+def exhibitor_application_status(request, year, pk):
+    fair = get_object_or_404(Fair, year=year)
+    exhibitor = get_object_or_404(Exhibitor, pk=pk)
+
+    form = ApplicationStatusForm(request.POST or None, instance=exhibitor)
+
+    if request.POST and form.is_valid():
+        form.save()
+        return redirect("exhibitor", fair.year, exhibitor.pk)
+
+    return render(
+        request,
+        "exhibitors/exhibitor_application_status.html",
         {"fair": fair, "exhibitor": exhibitor, "form": form},
     )
 
@@ -674,64 +680,6 @@ def exhibitor_comment_remove(request, year, pk, comment_pk):
     return redirect("exhibitor", fair.year, exhibitor.pk)
 
 
-@permission_required("exhibitors.modify_booths")
-def booths(request, year):
-    fair = get_object_or_404(Fair, year=year)
-
-    eibs = {}
-
-    for eib in (
-        ExhibitorInBooth.objects.select_related("exhibitor")
-        .select_related("booth")
-        .filter(exhibitor__fair=fair)
-    ):
-        if eib.booth in eibs:
-            eibs[eib.booth].append(eib.exhibitor)
-        else:
-            eibs[eib.booth] = [eib.exhibitor]
-
-    return render(
-        request,
-        "exhibitors/booths.html",
-        {
-            "fair": fair,
-            "booths": [
-                {
-                    "pk": booth.pk,
-                    "location": booth.location,
-                    "name": booth.name,
-                    "exhibitors": eibs[booth] if booth in eibs else [],
-                }
-                for booth in Booth.objects.filter(location__fair=fair)
-            ],
-        },
-    )
-
-
-@permission_required("exhibitors.modify_booths")
-def booth(request, year, booth_pk):
-    fair = get_object_or_404(Fair, year=year)
-    booth = get_object_or_404(Booth, location__fair=fair, pk=booth_pk)
-
-    form = BoothForm(request.POST or None, instance=booth)
-
-    form.fields["location"].queryset = Location.objects.exclude(background="")
-
-    if request.POST and form.is_valid():
-        form.save()
-
-    return render(
-        request,
-        "exhibitors/booth.html",
-        {
-            "fair": fair,
-            "booth": booth,
-            "form": form,
-            "eibs": ExhibitorInBooth.objects.filter(booth=booth),
-        },
-    )
-
-
 def people_count(request, year, location_pk):
     location = get_object_or_404(
         Location, fair__year=year, pk=location_pk, people_count_enabled=True
@@ -741,70 +689,4 @@ def people_count(request, year, location_pk):
         request,
         "exhibitors/people_count.html",
         {"fair": location.fair, "location": location},
-    )
-
-
-@permission_required("exhibitors.modify_booths")
-def exhibitor_in_booth_form(request, year, booth_pk, exhibitor_pk=None):
-    fair = get_object_or_404(Fair, year=year)
-    booth = get_object_or_404(Booth, pk=booth_pk, location__fair=fair)
-    exhibitor_in_booth = (
-        get_object_or_404(
-            ExhibitorInBooth,
-            booth=booth,
-            exhibitor__pk=exhibitor_pk,
-            exhibitor__fair=fair,
-        )
-        if exhibitor_pk
-        else None
-    )
-
-    form = ExhibitorInBoothForm(request.POST or None, instance=exhibitor_in_booth)
-
-    form.instance.booth = booth
-
-    form.fields["exhibitor"].queryset = Exhibitor.objects.filter(fair=fair)
-
-    if request.POST and form.is_valid():
-        form.save()
-        return redirect("booth", fair.year, booth.pk)
-
-    return render(
-        request,
-        "exhibitors/booth_exhibitor_form.html",
-        {"fair": fair, "booth": booth, "form": form, "eib": exhibitor_in_booth},
-    )
-
-
-@permission_required("exhibitors.modify_booths")
-def exhibitor_in_booth_remove(request, year, booth_pk, exhibitor_pk):
-    fair = get_object_or_404(Fair, year=year)
-    eib = get_object_or_404(
-        ExhibitorInBooth,
-        exhibitor__pk=exhibitor_pk,
-        exhibitor__fair=fair,
-        booth__pk=booth_pk,
-    )
-
-    eib.delete()
-
-    return redirect("booth", fair.year, booth_pk)
-
-
-@permission_required("exhibitors.base")
-def booth_placement(request, year):
-    fair = get_object_or_404(Fair, year=year)
-
-    locations_with_maps = Location.objects.exclude(background__exact="").all()
-
-    react_props = {
-        "locations": [
-            serializers.location(location) for location in locations_with_maps
-        ]
-    }
-
-    return render(
-        request,
-        "exhibitors/booth_placement.html",
-        {"fair": fair, "react_props": json.dumps(react_props)},
     )

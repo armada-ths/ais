@@ -2,7 +2,6 @@ from django.db import models
 from django.forms import ValidationError
 from lib.image import UploadToDirUUID
 from django.contrib.auth.models import User
-from django.contrib.gis.db import models
 from django.utils.crypto import get_random_string
 
 from accounting.models import Order
@@ -164,6 +163,23 @@ class Exhibitor(models.Model):
             ("3", "Gold"),
         ],
     )
+
+    # Changes to these choices must be reflected in templates/exhibitors/application_status.html
+    application_statuses = [
+        ("0", "pending"),
+        ("1", "accepted"),
+        ("2", "rejected"),
+        ("3", "waitlist"),
+    ]
+
+    application_status = models.CharField(
+        blank=False,
+        null=False,
+        max_length=255,
+        default="0",
+        choices=application_statuses,
+    )
+
     booth_height = models.PositiveIntegerField(
         blank=True, null=True, verbose_name="Height of the booth (cm)"
     )
@@ -359,6 +375,7 @@ class Exhibitor(models.Model):
             ("people_count", "Count people in locations"),
             ("modify_coordinates", "Modify coordinates"),
             ("modify_fair_location", "Modify Fair Location"),
+            ("modify_application_status", "Modify application status"),
         ]
 
 
@@ -399,13 +416,14 @@ class ExhibitorView(models.Model):
         "fair_location": "Fair location",
         "fair_location_special": "Special Location",
         "coordinates": "Coordinates",
+        "application_status": "Application status",
     }
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     choices = models.TextField()
 
     def create(self):
-        self.choices = "contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets"
+        self.choices = "contact_persons transport_from transport_to count_lunch_tickets count_banquet_tickets application_status"
         self.save()
 
         return self
@@ -420,30 +438,3 @@ class LocationTick(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     change = models.IntegerField()
     new_people_count = models.IntegerField()
-
-
-class Booth(models.Model):
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    name = models.CharField(blank=False, null=False, max_length=255)
-    boundaries = models.PolygonField(blank=True, null=True)
-
-    class Meta:
-        ordering = ["location", "name"]
-        unique_together = [["location", "name"]]
-
-    def __str__(self):
-        return str(self.location) + " -> " + self.name
-
-
-class ExhibitorInBooth(models.Model):
-    exhibitor = models.ForeignKey(Exhibitor, on_delete=models.CASCADE)
-    booth = models.ForeignKey(Booth, on_delete=models.CASCADE)
-    days = models.ManyToManyField(FairDay)
-    comment = models.CharField(max_length=255, null=True, blank=True)
-
-    class Meta:
-        ordering = ["exhibitor", "booth"]
-        unique_together = [["exhibitor", "booth"]]
-
-    def __str__(self):
-        return str(self.exhibitor) + " in " + str(self.booth)

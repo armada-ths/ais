@@ -12,30 +12,16 @@ export const form = {
         {
             id: "basic_info",
             title: "Basic Info",
-            isDone: null,
-            pageComponent: BasicInfoFormPage,
-            fields: [
-                {
-                    mapping: "exhibitor.catalogue_about"
-                },
-                {
-                    mapping: "exhibitor.catalogue_cities"
-                },
-                {
-                    mapping: "exhibitor.catalogue_contact_name"
-                },
-                {
-                    mapping: "exhibitor.catalogue_contact_email_address"
-                },
-                {
-                    mapping: "exhibitor.catalogue_contact_phone_number"
-                }
-            ]
+            isDone: ({ dashboard }) =>
+                dashboard.exhibitor?.catalogue_about != null,
+            pageComponent: BasicInfoFormPage
         },
         {
             id: "logo",
             title: "Logo",
-            isDone: null,
+            isDone: ({ dashboard }) =>
+                dashboard.exhibitor?.catalogue_logo_squared != null ||
+                dashboard.exhibitor?.catalogue_logo_freesize != null,
             pageComponent: LogoFormPage,
             fields: [
                 {
@@ -52,21 +38,7 @@ export const form = {
             title: "Exhibitor Specification",
             isDone: null,
             pageComponent: DetailedFormPage,
-            hasNextButton: false,
-            fields: [
-                {
-                    mapping: "exhibitor.catalogue_industries",
-                    isMultiSelect: true
-                },
-                {
-                    mapping: "exhibitor.catalogue_employments",
-                    isMultiSelect: true
-                },
-                {
-                    mapping: "exhibitor.catalogue_locations",
-                    isMultiSelect: true
-                }
-            ]
+            hasNextButton: false
         }
     ]
 } as const satisfies Form

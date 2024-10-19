@@ -1196,9 +1196,9 @@ def recruitment_application_interview(
     interview_planning_form = InterviewPlanningForm(
         request.POST or None, instance=application
     )
-    interview_planning_form.fields[
-        "recommended_role"
-    ].queryset = application.recruitment_period.recruitable_roles
+    interview_planning_form.fields["recommended_role"].queryset = (
+        application.recruitment_period.recruitable_roles
+    )
 
     used_slots = []
 
@@ -1282,9 +1282,9 @@ def recruitment_application_interview(
     if "interviewer" in interview_planning_form.fields:
         interview_planning_form.fields["interviewer"].choices = interviewers_by_language
     if "interviewer2" in interview_planning_form.fields:
-        interview_planning_form.fields[
-            "interviewer2"
-        ].choices = interviewers_by_language
+        interview_planning_form.fields["interviewer2"].choices = (
+            interviewers_by_language
+        )
 
     RoleDelegationForm = modelform_factory(
         RecruitmentApplication, fields=["delegated_role", "superior_user", "status"]
@@ -1293,9 +1293,9 @@ def recruitment_application_interview(
     role_delegation_form = RoleDelegationForm(
         request.POST or None, instance=application
     )
-    role_delegation_form.fields[
-        "delegated_role"
-    ].queryset = application.recruitment_period.recruitable_roles
+    role_delegation_form.fields["delegated_role"].queryset = (
+        application.recruitment_period.recruitable_roles
+    )
     role_delegation_form.fields["superior_user"].choices = [("", "---------")] + [
         (interviewer.pk, interviewer.get_full_name()) for interviewer in interviewers
     ]

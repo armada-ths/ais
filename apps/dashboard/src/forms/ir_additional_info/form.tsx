@@ -12,7 +12,7 @@ export const form = {
             id: "ir_additional_info_interested_in",
             title: "Preferences",
             pageComponent: IrInterestedInPage,
-            isDone: ({ dashboard }) => dashboard.interested_in.length > 0
+            isDone: null
         },
         {
             id: "ir_additional_info_company_details",

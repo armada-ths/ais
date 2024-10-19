@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from drf_writable_nested import WritableNestedModelSerializer
+from companies.serializers import CompanySerializer
 from people.models import Profile
 from recruitment.models import RecruitmentApplication
 
@@ -16,7 +17,7 @@ from exhibitors.models import (
 )
 from fair.models import Fair
 from companies.models import CompanyContactSerializer, Group
-from register.models import SignupContract
+from register.models import SignupContract, SignupLog
 
 from accounting.api import OrderSerializer, ProductSerializer
 
@@ -66,6 +67,13 @@ class SignupContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = SignupContract
         read_only_fields = ("name", "contract")
+        fields = read_only_fields
+
+
+class SignupLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SignupLog
+        read_only_fields = ("timestamp",)
         fields = read_only_fields
 
 
@@ -212,12 +220,18 @@ class InterestedInSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(serializers.Serializer):
+
     # Read only fields
-    type = serializers.StringRelatedField(read_only=True)
-    deadline = serializers.DateTimeField(read_only=True)
     fair = FairSerializer(read_only=True)
+    period = serializers.StringRelatedField(read_only=True)
+    application_status = serializers.StringRelatedField(read_only=True)
+    signing_status = serializers.StringRelatedField(read_only=True)
+
     ir_contract = SignupContractSerializer(read_only=True)
     cr_contract = SignupContractSerializer(read_only=True)
+    ir_signature = SignupLogSerializer(read_only=True)
+    cr_signature = SignupLogSerializer(read_only=True)
+
     sales_contacts = SalesCompanyContactSerializer(read_only=True, many=True)
     products = ProductSerializer(many=True)
 
@@ -225,6 +239,7 @@ class RegistrationSerializer(serializers.Serializer):
     orders = OrderSerializer(many=True)
     contact = CompanyContactSerializer()
     exhibitor = ExhibitorSerializer()
+    company = CompanySerializer()
     interested_in = InterestedInSerializer(many=True)
 
     # Add the 'fair' context to sales_contacts
@@ -244,6 +259,7 @@ class RegistrationSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         update_field(instance, validated_data, "contact", CompanyContactSerializer)
+        update_field(instance, validated_data, "exhibitor", ExhibitorSerializer)
 
         interested_in = validated_data.pop("interested_in", None)
         if interested_in != None:

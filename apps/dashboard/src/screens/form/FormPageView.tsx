@@ -1,8 +1,15 @@
 import { FORMS } from "@/forms"
 import { FormPage } from "@/forms/form_types"
 import { alertStore } from "@/shared/ConfirmSaveAlert"
-import { getPageComponent } from "@/store/form/form_slice"
 import { Provider } from "jotai"
+
+function getPageComponent(formId: keyof typeof FORMS, pageId: string) {
+    const form = FORMS[formId]
+    if (form == null) return null
+    const page = form.pages.find(page => page.id === pageId)
+    if (page == null) return null
+    return page.pageComponent
+}
 
 export function FormPageView({
     formId,

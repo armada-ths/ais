@@ -11,12 +11,16 @@ def exhibitor(request, exhibitor, company):
         "company_website": company.website,
         "about": exhibitor.catalogue_about,
         "purpose": exhibitor.catalogue_purpose,
-        "logo_squared": exhibitor.catalogue_logo_squared.url
-        if exhibitor.catalogue_logo_squared
-        else (MISSING_IMAGE if img_placeholder else None),
-        "logo_freesize": exhibitor.catalogue_logo_freesize.url
-        if exhibitor.catalogue_logo_freesize
-        else (MISSING_IMAGE if img_placeholder else None),
+        "logo_squared": (
+            exhibitor.catalogue_logo_squared.url
+            if exhibitor.catalogue_logo_squared
+            else (MISSING_IMAGE if img_placeholder else None)
+        ),
+        "logo_freesize": (
+            exhibitor.catalogue_logo_freesize.url
+            if exhibitor.catalogue_logo_freesize
+            else (MISSING_IMAGE if img_placeholder else None)
+        ),
         "contact_name": exhibitor.catalogue_contact_name,
         "contact_email_address": exhibitor.catalogue_contact_email_address,
         "contact_phone_number": exhibitor.catalogue_contact_phone_number,
@@ -40,9 +44,9 @@ def exhibitor(request, exhibitor, company):
             {"id": competence.pk, "name": competence.competence}
             for competence in exhibitor.catalogue_competences.all()
         ],
-        "cities": exhibitor.catalogue_cities
-        if exhibitor.catalogue_cities is not None
-        else "",
+        "cities": (
+            exhibitor.catalogue_cities if exhibitor.catalogue_cities is not None else ""
+        ),
         "benefits": [
             {"id": benefit.pk, "name": benefit.benefit}
             for benefit in exhibitor.catalogue_benefits.all()

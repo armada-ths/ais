@@ -44,3 +44,4 @@ def send_mail(
         email.send()
     except Exception as e:
         print("Failed to send email: ", e)
+        raise e

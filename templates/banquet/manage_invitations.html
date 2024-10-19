@@ -7,6 +7,18 @@
 {% endblock %}
 
 {% block content %}
+	{% if did_error_email %}
+		<h1 style="
+			background-color: #f2dede;
+			border-color: #ebccd1;
+			color: #a94442;
+			margin: 0 0 20px 0;
+			padding: 15px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		">Failed to send some emails!</h1>
+	{% endif %}
+
 	<h1>{{ banquet.name }} – Invitations</h1>
 
 	<div style="margin-bottom: 10px; display: flex; justify-content: space-between;">
@@ -16,6 +28,7 @@
 			{% if banquet.background %} <a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a> {% endif %}
 		</div>
 		<div>
+			<a class="btn btn-default" href="{% url 'banquet_handle_email' fair.year banquet.pk %}">Handle Emails</a>
 			<a class="btn btn-default" href="{% url 'banquet_import_invitations' fair.year banquet.pk %}">Import invitations</a>
 			<a class="btn btn-default" href="{% url 'banquet_manage_invitation_new' fair.year banquet.pk %}">New invitation</a>
 		</div>
@@ -72,6 +85,7 @@
 					<th>Name</th>
 					<th>Reason</th>
 					<th>Part of Matching</th>
+					<th>Email sent</th>
 					<th style="text-align: right; white-space: nowrap;">Price (SEK)</th>
 					<th></th>
 				</tr>
@@ -92,6 +106,7 @@
 						</td>
 						<td>{% if invitation.reason %}{{ invitation.reason }}{% endif %}</td>
 						<td>{% if invitation.matching_status %} Yes {% else %} No {% endif %}</td>
+						<td>{% if invitation.has_sent_mail %} Yes {% else %} No {% endif %}</td>
 						<td style="text-align: right;">{{ invitation.price }}</td>
 						<td style="text-align: right;"><a href="{% url 'banquet_manage_invitation' fair.year banquet.pk invitation.pk %}" class="btn btn-sm btn-default">Details</a></td>
 					</tr>
@@ -113,6 +128,7 @@
 				'paging': false,
 				"columns":
 				[
+					null,
 					null,
 					null,
 					null,

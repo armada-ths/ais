@@ -2,6 +2,8 @@ import { DashboardResponse, Order } from "@/shared/hooks/api/useDashboard"
 import { useOrders } from "@/shared/hooks/api/useOrders"
 import { HOST } from "@/shared/vars"
 import { useMutation } from "@tanstack/react-query"
+import { useParams } from "@tanstack/react-router"
+import { useCallback } from "react"
 import { toast } from "sonner"
 
 export type OrderMutation = Pick<Order, "quantity"> & {
@@ -27,12 +29,15 @@ export function useAccountingMutation<
         "mutationFn" | "mutationKey"
     >
 ) {
+    const { companyId } = useParams({
+        from: "/$companyId/*"
+    })
     const { data: orders } = useOrders()
 
     const mutation = useMutation<TData, TErr, TVar>({
         mutationKey: ["mutate_orders"],
         mutationFn: async orders => {
-            const response = await fetch(`${HOST}/api/dashboard/`, {
+            const response = await fetch(`${HOST}/api/dashboard/${companyId}`, {
                 method: "PUT",
                 body: JSON.stringify({
                     orders: getOrderMutationData(orders)
@@ -69,14 +74,17 @@ export function useAccountingMutation<
      * @param productId The id of the product you're picking
      * @param quantity How many instances of this product you want, 0 to remove it
      */
-    async function setProductOrder(productId: number, quantity: number) {
-        const newOrders = orders.filter(
-            order => order.product.id !== productId
-        ) as OrderMutation[] as TVar
-        if (quantity > 0)
-            newOrders.push({ product: { id: productId }, quantity })
-        await mutation.mutateAsync(newOrders)
-    }
+    const setProductOrder = useCallback(
+        async (productId: number, quantity: number) => {
+            const newOrders = orders.filter(
+                order => order.product.id !== productId
+            ) as OrderMutation[] as TVar
+            if (quantity > 0)
+                newOrders.push({ product: { id: productId }, quantity })
+            await mutation.mutateAsync(newOrders)
+        },
+        [mutation, orders]
+    )
 
     return {
         ...mutation,

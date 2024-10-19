@@ -22,6 +22,11 @@ urlpatterns = [
         name="exhibitor_fair_location",
     ),
     url(
+        r"^(?P<pk>\d+)/application_status$",
+        views.exhibitor_application_status,
+        name="exhibitor_application_status",
+    ),
+    url(
         r"^(?P<pk>\d+)/contact_persons$",
         views.exhibitor_contact_persons,
         name="exhibitor_contact_persons",
@@ -50,22 +55,4 @@ urlpatterns = [
         views.people_count,
         name="people_count",
     ),
-    url(r"^booths$", views.booths, name="booths"),
-    url(r"^booths/(?P<booth_pk>[0-9]+)$", views.booth, name="booth"),
-    url(
-        r"^booths/(?P<booth_pk>[0-9]+)/add$",
-        views.exhibitor_in_booth_form,
-        name="exhibitor_in_booth_add",
-    ),
-    url(
-        r"^booths/(?P<booth_pk>[0-9]+)/(?P<exhibitor_pk>[0-9]+)$",
-        views.exhibitor_in_booth_form,
-        name="exhibitor_in_booth_edit",
-    ),
-    url(
-        r"^booths/(?P<booth_pk>[0-9]+)/(?P<exhibitor_pk>[0-9]+)/remove$",
-        views.exhibitor_in_booth_remove,
-        name="exhibitor_in_booth_remove",
-    ),
-    url(r"^booth_placement$", views.booth_placement, name="booth_placement"),
 ]

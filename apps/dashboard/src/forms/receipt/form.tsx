@@ -7,14 +7,13 @@ export const form = {
     name: "Order & Invoice Details",
     description:
         "On this page you select products and entry of company invoice details. Once submitted, no changes are permitted.",
-    forceFormDone: true,
     pages: [
         {
             id: "details",
             title: "Order details",
             hasNextButton: false,
             hasPrevButton: false,
-            isDone: null,
+            isDone: () => true,
             pageComponent: OrderDetails
         },
         {
@@ -22,7 +21,7 @@ export const form = {
             title: "Invoice Information",
             hasNextButton: false,
             hasPrevButton: false,
-            isDone: null,
+            isDone: () => true,
             pageComponent: () => (
                 <div>
                     <div className="flex w-full justify-center">

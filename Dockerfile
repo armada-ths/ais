@@ -3,7 +3,7 @@ WORKDIR /usr/src/app
 
 FROM node:20.12-alpine as dashboard
 WORKDIR /usr/src/app
-RUN npm install pnpm@8.15 -g
+RUN npm install pnpm@9.6.0 -g
 COPY apps/dashboard/package.json apps/dashboard/pnpm-lock.yaml ./
 RUN pnpm install
 COPY apps/dashboard ./
@@ -24,7 +24,7 @@ RUN apk update \
   gdal-dev linux-headers g++ binutils geos-dev \
   tiff-dev jpeg-dev openjpeg-dev zlib-dev freetype-dev lcms2-dev \
   libwebp-dev tcl-dev tk-dev harfbuzz-dev fribidi-dev libimagequant-dev \
-  libxcb-dev libpng-dev
+  libxcb-dev libpng-dev libpq-dev
 RUN pip install --upgrade pip==21.3.1
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt

@@ -19,7 +19,7 @@ jobs:
           node-version: "20.12"
 
       - name: Install pnpm
-        run: npm install -g pnpm@8.15
+        run: npm install -g pnpm@9.6.0
 
       - name: Install dependencies
         run: cd apps/dashboard && pnpm install

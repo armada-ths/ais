@@ -15,7 +15,6 @@
 	<h1>Exhibitors ({{ exhibitors|length }})</h1>
 
 	<p>
-		{% if perms.exhibitors.modify_booths %}<a href="{% url 'booths' fair.year %}" class="btn btn-default">Booths</a>{% endif %}
 		<a href="{% url 'edit_view' fair.year %}" class="btn btn-default">Edit view</a>
 		{% if perms.exhibitors.create %}<a href="{% url 'create' fair.year %}" class="btn btn-default">Create exhibitor</a>{% endif %}
 		<a href="{% url 'export' fair.year %}" class="btn btn-default">Export exhibitors</a>
@@ -43,7 +42,6 @@
 				{% for exhibitor in exhibitors %}
 					<tr>
 						<td style="white-space: nowrap;"><a href="{% url 'exhibitor' fair.year exhibitor.id %}">{{ exhibitor.name }}</a></td>
-
 						{% for field in exhibitor.fields %}
 							{% if field.field == 'contact_persons' %}
 								<td style="white-space: nowrap;">
@@ -100,6 +98,10 @@
 										{% endfor %}
 									</ul>
 								</td>
+							{% elif field.field == 'application_status' %}
+								{% with exhibitor=exhibitor.exhibitor %}
+									<td style="white-space: nowrap;">{% include 'exhibitors/application_status.html' %}</td>
+								{% endwith %}
 							{% else %}
 								<td>
 									{% if field.value is not None %}{{ field.value }}{% endif %}

@@ -164,10 +164,12 @@ def lunchtickets(request, year):
 
             for lunchticket in lunchtickets_filtered:
                 lunchticket["drl"] = [
-                    True
-                    if dietary_restriction
-                    in lunchticket["t"].dietary_restrictions.all()
-                    else False
+                    (
+                        True
+                        if dietary_restriction
+                        in lunchticket["t"].dietary_restrictions.all()
+                        else False
+                    )
                     for dietary_restriction in dietary_restrictions_all
                 ]
 
@@ -339,9 +341,11 @@ def tickets(request, year):
             serializers.lunch_ticket(lunch_ticket=lunch_ticket)
             for lunch_ticket in lunch_tickets
         ],
-        "banquet_participant": serializers.banquet_participant(banquet_participant)
-        if banquet_participant
-        else None,
+        "banquet_participant": (
+            serializers.banquet_participant(banquet_participant)
+            if banquet_participant
+            else None
+        ),
     }
 
     return render(

@@ -129,6 +129,18 @@ class MatchingYear(models.Model):
         ordering = ["year"]
 
 
+class DietaryPreference(models.Model):
+    name = models.CharField(max_length=255)
+    order = models.IntegerField(default=0)
+    banquet = models.ForeignKey(Banquet, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["order", "name"]
+
+    def __str__(self):
+        return self.name
+
+
 class Participant(models.Model):
     token = models.CharField(
         max_length=32, unique=True, default=get_random_32_length_string
@@ -148,6 +160,9 @@ class Participant(models.Model):
         max_length=75, blank=True, null=True
     )  # None if a user is provided, required for others
     dietary_restrictions = models.ManyToManyField(DietaryRestriction, blank=True)
+    dietary_preference = models.ForeignKey(
+        DietaryPreference, null=True, on_delete=models.CASCADE
+    )
     other_dietary_restrictions = models.CharField(max_length=75, blank=True, null=True)
     alcohol = models.BooleanField(choices=[(True, "Yes"), (False, "No")], default=True)
     seat = models.OneToOneField(Seat, blank=True, null=True, on_delete=models.CASCADE)
