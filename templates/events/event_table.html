@@ -5,7 +5,8 @@
       <th>Name</th>
       <th>Date</th>
       {% if perms.events.base %}
-        <th class="text-center">Participants</th> {% endif %}
+        <th class="text-center">Participants</th> 
+      {% endif %}
       <th>Signup</th>
       {% if perms.events.base %}
         <th>Published</th> {% endif %}
@@ -25,7 +26,8 @@
         </td>
         <td>{{ event.date_start|date:"d M H:i" }} - {{ event.date_end|date:"d M H:i" }}</td>
         {% if perms.events.base %}
-          <td class="text-center">{{ event.num_participants }}</td> {% endif %}
+          <td class="text-center">{{ event.num_participants }}</td> 
+          {% endif %}
         <td>
           {% if not event.open_for_signup %}
             <span class="label label-default">Closed</span>
