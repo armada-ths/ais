@@ -34,6 +34,11 @@ urlpatterns = [
         name="update_team",
     ),
     url(
+        r"^(?P<event_pk>\d+)/deregister/(?P<participant_pk>\d+)$",
+        api.deregister,
+        name="deregister",
+    ),
+    url(
         r"^(?P<event_pk>\d+)/participants/fetch_details$",
         api.fetch_participants_details,
         name="fetch_participants_details",

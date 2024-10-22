@@ -4,6 +4,7 @@ import Button from "@material-ui/core/es/Button/Button";
 import Grid from "@material-ui/core/es/Grid/Grid";
 import Typography from "@material-ui/core/es/Typography/Typography";
 
+
 const styles = theme => ({
   root: {
     marginTop: theme.spacing.unit * 2,
@@ -14,12 +15,20 @@ const styles = theme => ({
 
 class Deregister extends Component {
 
-  handleClick() {
-    
-  };
+  constructor(props) {
+    super(props);
 
+    this.state = {
+      search: ''
+    };
+
+  };
+  
+
+ 
   render() {
-    const {event, classes} = this.props;
+    const {search} = this.state;
+    const {event, classes, handleDeregister} = this.props;
     
 
   
@@ -28,7 +37,7 @@ class Deregister extends Component {
           <Grid container justify="center" alignItems="center" direction="column" spacing={24}>
           <Button
 	                
-	                onClick={this.handleClick}
+	                onClick={() => handleDeregister()}
 	                variant="contained"
 	                color="primary"
 									style={{marginTop: 10}}
@@ -37,7 +46,8 @@ class Deregister extends Component {
 	            </Button>
             <Grid item>
               <Typography variant="subtitle1">
-                Click on this button to deregister from this event. Be aware that you will not be able to reverse the decision!
+                Click on this button to deregister from this event. You will lose your place. <br></br>
+                Be aware that you will not be able to reverse the decision!
               </Typography>
             </Grid>
           </Grid>

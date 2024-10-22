@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import * as API from "../api";
-import {joinTeam, leaveTeam, setTeams} from '../actions';
+import {joinTeam, leaveTeam, setTeams, deregister} from '../actions';
 import keyBy from 'lodash/keyBy';
 import QRCode from './QRCode';
 import Teams from './Teams';
@@ -82,8 +82,14 @@ class Manage extends Component {
   }
 
   handleDeregister(){
-    const {event} = this.props;
-    
+    const {event, dispatcher, participantId} = this.props;
+    console.log('Event:', event);
+    console.log('Participant:', participantId);
+    API.deregister(event.id, participantId)
+        .then(response => {
+          dispatcher(deregister(response.data.participant));
+
+    })
 
   }
 
@@ -126,7 +132,9 @@ class Manage extends Component {
                 />)
           },
       )
-    };
+    }
+
+  
 
     if (event.fee == 0){
       tabs.push(
@@ -137,13 +145,15 @@ class Manage extends Component {
           },
           content: (
             <Deregister
-            
+            participantId = {participantId}
+            handleDeregister = {this.handleDeregister}
+
         />)
-        }
+        },
 
       )
     }
-
+  
     return (
         <Fragment>
           <Tabs
