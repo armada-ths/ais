@@ -94,7 +94,7 @@ class RegisterSerializer(serializers.Serializer):
         return data
 
     def validate_contact(self, data):
-        email_address = data["email_address"]
+        email_address = data["email_address"].lower()
 
         if User.objects.filter(username=email_address).exists():
             raise ValidationError(
@@ -117,7 +117,7 @@ class RegisterSerializer(serializers.Serializer):
 
             contact_data["company"] = company
 
-        email_address = contact_data["email_address"]
+        email_address = contact_data["email_address"].lower()
         password = validated_data["password"]
 
         user = User.objects.create_user(
@@ -150,7 +150,7 @@ def create_company_contact(request):
             return status.COMPANY_DOES_NOT_EXIST
 
         user = authenticate(
-            username=serializer.validated_data["contact"]["email_address"],
+            username=serializer.validated_data["contact"]["email_address"].lower(),
             password=serializer.validated_data["password"],
         )
 
