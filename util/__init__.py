@@ -107,13 +107,23 @@ def update_field(
             serializer.save()
 
 
+def get_profile_roles(fair, user):
+    return RecruitmentApplication.objects.filter(
+        status="accepted",
+        user=user,
+        recruitment_period__fair=fair,
+    ).first()
+
+
 # Get the sales contacts for a company.
-# If the company is an exhibitor for this fair, return the contact persons.
+# If the company is an exhibitor for this fair:
+# -> If there is a non-"Head of Sales", return the contact persons.
+# -> If there are "Head of Sales", return those contact persons.
 # If the company has a responsible, return that person.
 # If no responsible, return the first person with a sales role.
 def get_sales_contacts(fair, company, exhibitor):
     # Present the roles in this order if there is no sales responsible
-    roles = ["Head of Sales", "Head of Business Relations", "Project Manager"]
+    role_names = ["Head of Sales", "Head of Business Relations", "Project Manager"]
 
     # Todo: test to see if exhibitor sort works
     if exhibitor is not None:
@@ -125,12 +135,7 @@ def get_sales_contacts(fair, company, exhibitor):
             profiles = [profile for profile in profiles if profile is not None]
 
             profile_roles = [
-                RecruitmentApplication.objects.filter(
-                    status="accepted",
-                    user=profile.user,
-                    recruitment_period__fair=fair,
-                ).first()
-                for profile in profiles
+                get_profile_roles(fair, profile.user) for profile in profiles
             ]
 
             # Sort such that the roles are in the order of the roles list
@@ -138,7 +143,9 @@ def get_sales_contacts(fair, company, exhibitor):
             profiles = sorted(
                 zip(profiles, profile_roles),
                 key=lambda x: (
-                    -1 if x[1] is None else roles.index(x[1].delegated_role.name)
+                    -1
+                    if x[1] is None or not x[1].delegated_role.name in role_names
+                    else role_names.index(x[1].delegated_role.name)
                 ),
             )
 
@@ -146,16 +153,51 @@ def get_sales_contacts(fair, company, exhibitor):
                 return [profile[0] for profile in profiles]
 
     responsibles = CompanyCustomerResponsible.objects.filter(
-        company=company, group__fair=fair, group__allow_responsibilities=True
-    ).first()
+        company=company,
+        group__fair=fair,
+        group__allow_responsibilities=True,
+    ).all()
 
     if responsibles is not None:
-        users = responsibles.users.all()
-        if len(users) > 0:
-            profiles = [Profile.objects.filter(user=user).first() for user in users]
-            return profiles
+        users = [
+            user for responsible in responsibles for user in responsible.users.all()
+        ]
 
-    for role in roles:
+        profiles = [Profile.objects.filter(user=user).first() for user in users]
+        roles = [get_profile_roles(fair, profile.user) for profile in profiles]
+
+        profiles = sorted(
+            zip(profiles, roles),
+            key=lambda x: (
+                -1
+                if x[1] is None or x[1].delegated_role.name not in role_names
+                else role_names.index(x[1].delegated_role.name)
+            ),
+        )
+
+        # If there are any "hosts" (that is, people not in the role_names list),
+        # remove all other people which are not "hosts".
+        any_hosts = any(
+            [
+                profile[1] is not None
+                and profile[1].delegated_role.name not in role_names
+            ]
+            for profile in profiles
+        )
+
+        if any_hosts:
+            profiles = list(
+                filter(
+                    lambda x: x[1] is not None
+                    and x[1].delegated_role.name not in role_names,
+                    profiles,
+                )
+            )
+
+        if len(profiles) > 0:
+            return [profile[0] for profile in profiles]
+
+    for role in role_names:
         for applicant in RecruitmentApplication.objects.filter(
             status="accepted",
             delegated_role__name=role,
