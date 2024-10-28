@@ -175,6 +175,8 @@ def get_sales_contacts(fair, company, exhibitor):
             ),
         )
 
+        # If there are any "hosts" (that is, people not in the role_names list),
+        # remove all other people which are not "hosts".
         any_hosts = any(
             [
                 profile[1] is not None
