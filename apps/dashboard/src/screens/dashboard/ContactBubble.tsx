@@ -96,7 +96,7 @@ export function ContactBubble() {
                                             </p>
                                             <DrawerDescription>
                                                 <a
-                                                    href={`mailto:${companyContact.email}`}
+                                                    href={`mailto:${contact.email}`}
                                                     className="text-stone-400 underline hover:cursor-pointer"
                                                 >
                                                     {companyContact.email}
