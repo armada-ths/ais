@@ -348,7 +348,7 @@ def check_out(request, event_pk, participant_pk):
 @require_POST
 def deregister(request, event_pk, participant_pk):
     """
-    Endpoint to deregister a participant
+    Endpoint to deregister a participant.
     """
     get_object_or_404(Event, pk=event_pk)
     if not request.user:

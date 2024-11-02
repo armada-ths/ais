@@ -34,8 +34,9 @@ class Deregister extends Component {
   
     return (
         <div className={classes.root}>
-          <Grid container justify="center" alignItems="center" direction="column" spacing={24}>
-          <Button
+          <Grid container justify="center" alignItems="center" direction="column" spacing={30}>
+            <Grid item>
+              <Button
 	                
 	                onClick={() => handleDeregister()}
 	                variant="contained"
@@ -44,10 +45,11 @@ class Deregister extends Component {
 	            >
 	              {"Deregister"}
 	            </Button>
-            <Grid item>
-              <Typography variant="subtitle1">
-                Click on this button to deregister from this event. You will lose your place. <br></br>
-                Be aware that you will not be able to reverse the decision!
+            </Grid>
+            <Grid item style={{ marginTop: 15 }}>
+              <Typography variant="subtitle1" align="center" topmargin >
+                Click to deregister from this event. <br></br>
+                This action is permanent and cannot be undone. You will lose your spot in the event. 
               </Typography>
             </Grid>
           </Grid>
