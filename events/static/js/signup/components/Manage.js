@@ -138,7 +138,7 @@ class Manage extends Component {
 
   
 
-    if (event.fee == 0){
+    if (event.fee <= 0){
       tabs.push(
         {
           tab: {
