@@ -1,14 +1,16 @@
 import React, {Component, Fragment} from 'react';
 import * as API from "../api";
-import {joinTeam, leaveTeam, setTeams} from '../actions';
+import {joinTeam, leaveTeam, setTeams, deregister} from '../actions';
 import keyBy from 'lodash/keyBy';
 import QRCode from './QRCode';
 import Teams from './Teams';
 import PeopleIcon from 'mdi-material-ui/AccountMultiple';
 import QrCodeIcon from 'mdi-material-ui/Qrcode';
+import CancelIcon from 'mdi-material-ui/AccountCancel';
 import Tabs from "@material-ui/core/es/Tabs/Tabs";
 import withWidth, {isWidthDown, isWidthUp} from "@material-ui/core/es/withWidth/withWidth";
 import Tab from "@material-ui/core/Tab/Tab";
+import Deregister from './Deregister';
 
 class Manage extends Component {
   constructor(props) {
@@ -25,6 +27,7 @@ class Manage extends Component {
     this.handleCreateTeam = this.handleCreateTeam.bind(this);
     this.handleUpdateTeam = this.handleUpdateTeam.bind(this);
     this.handleTabSwitch = this.handleTabSwitch.bind(this);
+    this.handleDeregister = this.handleDeregister.bind(this);
   }
 
   handleSelectTeam(id) {
@@ -78,6 +81,20 @@ class Manage extends Component {
     this.setState({tabIndex: value})
   }
 
+  handleDeregister(){
+    const {event, dispatcher, participantId} = this.props;
+    console.log('Event:', event);
+    console.log('Participant:', participantId);
+    
+    API.deregister(event.id, participantId)
+        .then(response => {
+          dispatcher(deregister(response.data.participant));
+          history.go(-1);
+
+    });
+    
+  }
+
   render() {
     const {teams, width, checkInToken, currentTeamId, isTeamLeader, participantId, event} = this.props;
     const {selectedTeamId, tabIndex} = this.state;
@@ -93,6 +110,7 @@ class Manage extends Component {
         content: <QRCode value={checkInToken}/>
       }
     ];
+    
 
     if (event.can_join_teams || event.can_create_teams) {
       tabs.push(
@@ -118,6 +136,26 @@ class Manage extends Component {
       )
     }
 
+  
+
+    if (event.fee <= 0){
+      tabs.push(
+        {
+          tab: {
+            icon: <CancelIcon/>,
+            label: "Deregister"
+          },
+          content: (
+            <Deregister
+            participantId = {participantId}
+            handleDeregister = {this.handleDeregister}
+
+        />)
+        },
+
+      )
+    }
+  
     return (
         <Fragment>
           <Tabs

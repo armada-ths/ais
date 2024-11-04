@@ -346,6 +346,21 @@ def check_out(request, event_pk, participant_pk):
 
 
 @require_POST
+def deregister(request, event_pk, participant_pk):
+    """
+    Endpoint to deregister a participant.
+    """
+    get_object_or_404(Event, pk=event_pk)
+    if not request.user:
+        return JsonResponse({"message": "Authentication required."}, status=403)
+    participant = get_object_or_404(Participant, pk=participant_pk)
+
+    participant.delete()
+
+    return HttpResponse(status=204)
+
+
+@require_POST
 def get_by_token(request, event_pk, check_in_token):
     """
     Endpoint to get a participant by their check in token
