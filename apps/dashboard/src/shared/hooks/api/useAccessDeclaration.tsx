@@ -6,7 +6,9 @@ import {
 } from "@/shared/hooks/api/useDashboard"
 
 export function getSigningStep(data: DashboardResponse) {
-    if (data?.ir_signature != null && data.cr_signature != null) {
+    if (data?.signing_status === "signed_cr") {
+        return SigningStep.SIGNED_CR
+    } else if (data?.ir_signature != null && data.cr_signature != null) {
         return SigningStep.SIGNED_CR
     } else if (data?.ir_signature != null) {
         return SigningStep.SIGNED_IR

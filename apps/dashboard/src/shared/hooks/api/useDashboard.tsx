@@ -32,6 +32,7 @@ export interface DashboardResponse {
     fair: RegistrationFair
     ir_contract: Contract
     cr_contract: Contract
+    signing_status: SigningStep
     ir_signature: Signature | null
     cr_signature: Signature | null
     sales_contacts: SalesContact[]
