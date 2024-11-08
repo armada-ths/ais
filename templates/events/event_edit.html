@@ -19,6 +19,11 @@
     </li>
 
     <li role="presentation"><a href="#emails" aria-controls="emails" role="tab" data-toggle="tab">E-mails</a></li>
+    
+    <li role="presentation"><a href="#waiting_list" aria-controls="waiting_list" role="tab" data-toggle="tab">Waiting List
+      ({{ event.participant_count}})</a>
+    </li>
+
 
   </ul>
 
@@ -37,6 +42,9 @@
     </div>
     <div role="tabpanel" class="tab-pane" id="emails">
         {% include 'events/emails.html' with participants=participants %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="waiting_list">
+      {% include 'events/waiting_list_list.html' with participants=participants questions=questions %}
     </div>
   </div>
 {% endblock %}

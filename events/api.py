@@ -87,7 +87,6 @@ def signup(request, event_pk):
     """
     Endpoint to signup to events
     """
-
     event = get_object_or_404(Event, pk=event_pk)
     if not request.user:
         return JsonResponse({"error": "Authentication required."}, status=403)
@@ -95,8 +94,11 @@ def signup(request, event_pk):
     if not event.open_for_signup:
         return JsonResponse({"error": "Event not open for sign ups."}, status=403)
 
+    waiting_list = False
     if event.is_full():
-        return JsonResponse({"message": "Event is fully booked."}, status=400)
+        waiting_list = True
+        if event.fee_s > 0:
+            return JsonResponse({"message": "Event is fully booked."}, status=400)
 
     participant, _created = Participant.objects.get_or_create(
         user_s=request.user, event=event
@@ -146,9 +148,12 @@ def signup(request, event_pk):
             file=file,
             defaults={"answer": answer},
         )
+    if waiting_list:
+        print("put in waiting list")
+        participant.in_waiting_list = True
 
     # TODO Check that all required questions have been answered
-
+    # participant.in_waiting_list = True
     participant.signup_complete = True
     participant.save()
 

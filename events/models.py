@@ -78,7 +78,8 @@ class Event(models.Model):
         return self.number_of_signups() >= self.event_max_capacity
 
     def number_of_signups(self):
-        return self.participant_set.count()
+        # return self.participant_set.count()
+        return self.participant_set.filter(in_waiting_list=False).count()
 
     class Meta:
         ordering = ["date_start", "name"]
@@ -159,6 +160,8 @@ class Participant(models.Model):
     )  # None for company representatives, filled in if the
     # student has payed using Stripe
     fee_payed_s = models.BooleanField(default=False)
+    # student is in waiting list
+    in_waiting_list = models.BooleanField(default=False)
     attended = models.NullBooleanField(
         blank=True, null=True, verbose_name="The participant showed up to the event"
     )

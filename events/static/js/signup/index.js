@@ -7,12 +7,14 @@ import theme from 'armada/theme';
 import MuiThemeProvider from "@material-ui/core/es/styles/MuiThemeProvider";
 import SignupForm from "./components/SignupForm";
 import Manage from './components/Manage';
+import WaitingListPage from './components/WaitingListPage';
 import Header from "./components/Header";
 import reducer from './reducer';
 import compose from 'recompose/compose';
 import {init} from './actions';
 import keyBy from 'lodash/keyBy';
 import withWidth from "@material-ui/core/es/withWidth/withWidth";
+
 
 const generateClassName = createGenerateClassName({
   dangerouslyUseGlobalCSS: false,
@@ -67,7 +69,7 @@ class App extends Component {
                   className={classes.root}
               >
                 <Header event={event}/>
-                {participant.signup_complete ? (
+                {(participant.signup_complete && !participant.in_waiting_list)? (
                     <Manage
                         participantId={participant.id}
                         checkInToken={participant.check_in_token}
@@ -76,6 +78,11 @@ class App extends Component {
                         event={event}
                         teams={teams}
                         dispatcher={this.dispatcher}
+                    />
+                ) : (participant.signup_complete && participant.in_waiting_list)? (
+                    <WaitingListPage
+                      event = {event}
+                      dispatcher = {this.dispatcher}
                     />
                 ) : (
                     <SignupForm

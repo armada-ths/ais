@@ -1,5 +1,5 @@
 <div>
-	<p style="margin-top: 16px">Synchronize participants' details with their KTH accounts. Only participants with 'kth_synchronize' enabled in their profiles will be updated.</p>
+	<p style="margin-top: 16px">Synchronize waiting list signees details with their KTH accounts. Only participants with 'kth_synchronize' enabled in their profiles will be updated.</p>
 	<button type="button" class="btn btn-default btn-updateparticipants" id="update_participants_button"
 		data-loading-text="<span class='glyphicon glyphicon-refresh glyphicon-refresh-animate'></span> Updating participants"
 		data-url="{% url 'events_api:fetch_participants_details' event.id %}">
@@ -25,7 +25,7 @@
 	
 		<tbody>
 			{% for participant in participants %}
-				{% if not participant.in_waiting_list %}
+				{% if participant.in_waiting_list %}
 					<tr>
 						<td style="white-space: nowrap;">
 							{% if participant.user_s %} <a href="{% url 'people:profile' fair.year participant.user_s.pk %}">{{ participant.assigned_name }}</a>
