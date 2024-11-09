@@ -95,6 +95,10 @@ class Fair(models.Model):
     def get_period(self):
         time = timezone.now()
 
+        fair_days = FairDay.objects.filter(fair=self).values_list("date", flat=True)
+        if not fair_days:
+            raise ValueError("No fair days found for fair %s" % self)
+
         if time < self.registration_start_date:
             return RegistrationPeriod.BEFORE_IR
         elif time >= self.registration_start_date and time < self.registration_end_date:
@@ -116,13 +120,15 @@ class Fair(models.Model):
             return RegistrationPeriod.CR
         elif (
             time >= self.complete_registration_close_date
-            and time < self.events_start_date
+            and min(fair_days) > time.date()
         ):
             return RegistrationPeriod.AFTER_CR
-        elif time >= self.events_start_date and time < self.events_end_date:
+        elif min(fair_days) <= time.date() <= max(fair_days):
             return RegistrationPeriod.FAIR
-        elif time >= self.events_end_date:
+        elif time.date() > max(fair_days):
             return RegistrationPeriod.AFTER_FAIR
+        else:
+            raise ValueError("No period found for time %s" % time)
 
     def is_member_of_fair(self, user):
         if user.is_superuser:

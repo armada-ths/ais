@@ -109,7 +109,10 @@ def submit_cr(request, company, fair, contact, exhibitor):
     )
 
     handle_submitted_order(fair, company)
-    send_cr_confirmation_email(request, fair, company, exhibitor, signature)
+    try:
+        send_cr_confirmation_email(request, fair, company, exhibitor, signature)
+    except Exception as e:
+        print("Failed to send email", e)
 
     try:
         registration = get_registration(company, fair, contact, exhibitor)
