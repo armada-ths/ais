@@ -161,7 +161,10 @@ export function DashboardScreen({
                                 title: "You have completed initial registration"
                             },
                             {
-                                when: ["complete_registration:::*:::*"],
+                                when: [
+                                    "*:::signed_cr:::*",
+                                    "complete_registration:::*:::*"
+                                ],
                                 title: "Final registration",
                                 badgeText: `${DateTime.fromISO(
                                     dates.fr.start
