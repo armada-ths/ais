@@ -6,12 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('companies', '0032_add_company_type_default'),
+        ("companies", "0032_add_company_type_default"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='company',
-            options={'ordering': ['name'], 'permissions': (('base', 'Companies'), ('host_representative', 'Can be host representative')), 'verbose_name_plural': 'Companies'},
+            name="company",
+            options={
+                "ordering": ["name"],
+                "permissions": (
+                    ("base", "Companies"),
+                    ("host_representative", "Can be host representative"),
+                ),
+                "verbose_name_plural": "Companies",
+            },
         ),
     ]
