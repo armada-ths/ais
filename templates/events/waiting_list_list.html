@@ -26,6 +26,7 @@
 		<tbody>
 			{% for participant in participants %}
 				{% if participant.in_waiting_list %}
+				
 					<tr>
 						<td style="white-space: nowrap;">
 							{% if participant.user_s %} <a href="{% url 'people:profile' fair.year participant.user_s.pk %}">{{ participant.assigned_name }}</a>

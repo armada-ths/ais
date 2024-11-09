@@ -37,10 +37,12 @@ def event(event, request):
         "can_join_teams": event.teams_participate_s,
         "open_for_signup_student": event.open_for_signup and event.signup_s,
         "open_for_signup_company": event.open_for_signup and event.signup_cr,
+        "allow_waitlist_signup_after_signup_closed": event.allow_waitlist_signup_after_signup_closed,
         "event_max_capacity": event.event_max_capacity,
-        "participant_count": event.participant_set.filter(
-            in_waiting_list=False
-        ).count(),
+        # "participant_count": event.participant_set.filter(
+        #    in_waiting_list=False
+        # ).count(),
+        "participant_count": event.number_of_signups(),
         "fully_booked": event.is_full(),
     }
 

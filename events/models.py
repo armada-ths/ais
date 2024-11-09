@@ -28,6 +28,12 @@ class Event(models.Model):
     open_for_signup = models.BooleanField(
         blank=False, null=False, verbose_name="Event is currently open for sign up"
     )
+    allow_waitlist_signup_after_signup_closed = models.BooleanField(
+        blank=False,
+        null=False,
+        default=False,
+        verbose_name="Allow people to join waiting list after the event sign up is closed",
+    )
     company_product = models.ForeignKey(
         Product,
         null=True,
@@ -138,6 +144,24 @@ def get_random_32_length_string():
     return get_random_string(32)
 
 
+class MyParticipantManager(models.Manager):
+    # for filtering only participants
+    def get_queryset(self):
+        return (
+            super(MyParticipantManager, self)
+            .get_queryset()
+            .filter(in_waiting_list=False)
+        )
+
+
+class MyWaitListManager(models.Manager):
+    # for filtering only waiting list
+    def get_queryset(self):
+        return (
+            super(MyWaitListManager, self).get_queryset().filter(in_waiting_list=True)
+        )
+
+
 class Participant(models.Model):
     event = models.ForeignKey(Event, blank=False, null=True, on_delete=models.CASCADE)
     name = models.CharField(
@@ -214,6 +238,10 @@ class Participant(models.Model):
             return self.user_cr.get_full_name()
         else:
             return self.name
+
+    objects = MyParticipantManager()
+    waitlist_objects = MyWaitListManager()
+    objects_all = models.Manager()
 
 
 class ParticipantCheckIn(models.Model):
