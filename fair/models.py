@@ -125,7 +125,7 @@ class Fair(models.Model):
             return RegistrationPeriod.AFTER_CR
         elif min(fair_days) <= time.date() <= max(fair_days):
             return RegistrationPeriod.FAIR
-        elif time > self.events_end_date:
+        elif time.date() > max(fair_days):
             return RegistrationPeriod.AFTER_FAIR
         else:
             raise ValueError("No period found for time %s" % time)
