@@ -747,6 +747,7 @@ def companies_edit(request, year, pk, group_pk=None, responsible_group_pk=None):
         for user in users
         if (responsible is not None and user in responsible.users.all())
         or user.has_perm("companies.base")
+        or user.has_perm("companies.host_representative")
     ]
 
     form_responsible.fields["users"].choices = [
