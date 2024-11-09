@@ -163,7 +163,10 @@ class Company(models.Model):
     class Meta:
         verbose_name_plural = "Companies"
         ordering = ["name"]
-        permissions = (("base", "Companies"),)
+        permissions = (
+            ("base", "Companies"),
+            ("host_representative", "Can be host representative"),
+        )
 
     def __str__(self):
         return self.name
