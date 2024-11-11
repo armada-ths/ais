@@ -168,14 +168,17 @@ class SignupForm extends Component {
 								)}
             </Grid>
           </Grid>
-					{event.fee == 0 && (
+					{event.fee <= 0 && (
 	          <Grid item sm={12}>
 							<Typography style={{marginTop: 8}}>By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
 	            
               <Typography style={{marginTop: 16, color: "#B22222", fontSize: 18 }}>
-                {event.fully_booked ? 'This event is fully booked. Join the <b> waiting list </b> to automatically get a spot if someone deregisters. Even if you do not get a spot, you can still come to the physical location of the event on the day of. If registered attendees do not show up, you will be given a spot on a first-come first-served basis for all who are on the waiting list.': ''}
+                {event.fully_booked ? 'This event is fully booked. Join the waiting list to automatically get a spot if someone deregisters. Even if you do not get a spot, you can still come to the physical location of the event on the day of. If registered attendees do not show up, you will be given a spot on a first-come first-served basis for all who are on the waiting list.': ''}
               </Typography>
-              
+
+              <Typography style={{marginTop: 16, color: "#B22222", fontSize: 18 }}>
+                {(!event.fully_booked) && (!event.open_for_signup) && event.allow_waitlist_signup_after_signup_closed ? 'Join the waiting list to automatically get a spot if someone deregisters. Even if you do not get a spot, you can still come to the physical location of the event on the day of. If registered attendees do not show up, you will be given a spot on a first-come first-served basis for all who are on the waiting list.': ''}
+              </Typography>
               <Button
 	                disabled={!open_for_signup}
 	                onClick={this.handleClick}
@@ -185,7 +188,7 @@ class SignupForm extends Component {
 	            >
 	              {open_for_signup ? "Sign Up" : "Not open for sign up"}
 	            </Button>
-              {event.fully_booked && (
+              { (event.fully_booked || event.allow_waitlist_signup_after_signup_closed ) && (
               <Button
 	                
 	                onClick={this.handleWaitingList}

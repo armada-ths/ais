@@ -95,11 +95,15 @@ def signup(request, event_pk):
     if not request.user:
         return JsonResponse({"error": "Authentication required."}, status=403)
 
-    if not event.open_for_signup:
+    if (not event.open_for_signup) and (
+        not event.allow_waitlist_signup_after_signup_closed
+    ):
         return JsonResponse({"error": "Event not open for sign ups."}, status=403)
 
     waiting_list = False
-    if event.is_full():
+    if event.is_full() or (
+        (not event.open_for_signup) and event.allow_waitlist_signup_after_signup_closed
+    ):
         waiting_list = True
         if event.fee_s > 0:
             return JsonResponse({"message": "Event is fully booked."}, status=400)

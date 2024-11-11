@@ -14,7 +14,4 @@ urlpatterns = [
         r"^(?P<event_pk>\d+)/teams/(?P<team_pk>\d+)$", views.team_edit, name="team_edit"
     ),
     url(r"^(?P<event_pk>\d+)/signup$", views.event_signup, name="event_signup"),
-    # url(
-    #   r"^(?P<event_pk>\d+)/test_email$", views.test_send_email, name="test_send_email"
-    # ),
 ]

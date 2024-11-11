@@ -45,12 +45,11 @@ def save_questions(questions_data, event):
 @permission_required("events.base")
 def event_list(request, year):
     fair = get_object_or_404(Fair, year=year)
-    events = Event.objects.annotate(
+    events = Event.objects.filter(fair=fair).annotate(
         num_participants=Count(
             "participant", filter=Q(participant__in_waiting_list=False)
         )
-    ).filter(fair=fair)
-
+    )
     return render(request, "events/event_list.html", {"fair": fair, "events": events})
 
 
@@ -98,7 +97,7 @@ def event_edit(request, year, pk):
         .select_related("user_s__profile")
         .all()
     )
-    print(Participant.waitlist_objects)
+
     signup_questions = event.signupquestion_set.all()
 
     react_props = {
@@ -237,20 +236,3 @@ def team_new(request, year, event_pk):
         return redirect("events:event_edit", fair.year, event.id)
 
     return render(request, "events/team_edit.html", {"fair": fair, "form": form})
-
-
-# def test_send_email(request, year, event_pk):
-#    print("fore")
-#    name = "lucia"
-#    link = "hsdjn.se"
-#    email = "cookie4lu@gmail.com"
-#    send_upgrade_email(
-#        request,
-#        event_pk,
-#        name,
-#        link,
-#        email,
-#        template="events/waitlist_upgrade_email.html",
-#        subject="Event Confirmation",
-#    )
-#    print("efter")

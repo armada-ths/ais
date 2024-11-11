@@ -29,7 +29,7 @@ class WaitingListPage extends Component {
                     <Typography style={{marginTop: 8}}>By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
         
         <Typography style={{marginTop: 16, color: "#d73030", fontSize: 18 }}>
-        {'You have already joined the waiting list for this event.'}
+        {'You have joined the waiting list for this event.'}
         </Typography>
         <Typography style={{marginTop: 16, fontSize: 18 }}>
         {'If a spot opens up for you, you will automatically be added to the event. Even if you do not get a spot, you can still come to the physical location of the event on the day of: if registered attendees do not show up, you (and all other people on the waiting list) will be given a spot on a first-come first-served basis.'}
