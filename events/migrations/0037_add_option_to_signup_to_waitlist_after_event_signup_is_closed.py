@@ -6,13 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0036_waiting_list'),
+        ("events", "0036_waiting_list"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='allow_waitlist_signup_after_signup_closed',
-            field=models.BooleanField(default=False, verbose_name='Allow people to join waiting list after the event sign up is closed'),
+            model_name="event",
+            name="allow_waitlist_signup_after_signup_closed",
+            field=models.BooleanField(
+                default=False,
+                verbose_name="Allow people to join waiting list after the event sign up is closed",
+            ),
         ),
     ]
