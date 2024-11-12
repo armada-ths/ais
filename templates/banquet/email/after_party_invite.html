@@ -1,0 +1,33 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Hello {{ name }}!
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	You have been invited to the Armada After Party by {{ inviter }}.
+</p>
+<ul>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		Time: {{ date|date:"Y-m-d" }} {{ date|date:"H:i" }}.
+	</li>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		Location: {{ location }}.
+	</li>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		Your ticket can be purchased at a discounted price of only {{ price }} SEK.
+	</li>
+</ul>
+{% include 'email/button.html' with content="Go to invitation" url=link %}
+{% include 'email/divider.html' %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Please note that this is an automatic email, and you cannot respond to this email.
+	You can always reach out to {% include 'email/link.html' with url='mailto:support@armada.nu' text='support@armada.nu' %} if you have any questions. 
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	See you at the After Party!
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	The Banquet Team of THS Armada {{ year }}
+</p>
+{% endblock %}
