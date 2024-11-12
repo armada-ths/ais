@@ -26,6 +26,7 @@ from banquet.functions import send_confirmation_email, send_invitation_mail
 from fair.models import Fair
 from people.models import Profile
 from recruitment.models import OrganizationGroup, RecruitmentApplication
+from util.email import send_mail as send_mail_util
 from .forms import (
     InternalParticipantForm,
     ExternalParticipantForm,
@@ -391,25 +392,28 @@ def dashboard(request, year):
                 price = str(current_banquet.afterparty_price_discount)
                 location = current_banquet.location
                 date = current_banquet.afterparty_date
-                send_mail(
-                    "Your invite to the After Party",
-                    "Hello "
-                    + invite.name
-                    + "! "
-                    + invite.inviter.get_full_name()
-                    + " has invited you to the After Party to the Grand Banquet of THS Armada. The After Party takes place "
-                    + str(date)
-                    + " at "
-                    + str(location)
-                    + ". Your ticket can be purchased at a discounted price of only "
-                    + price
-                    + " kr. \n\nThe discount is valid for this e-mail address only. Please note that you may see the full price at first, but the discounted price of "
-                    + price
-                    + " kr will appear at checkout.\n\nSee you at the party!",
-                    "noreply@armada.nu",
-                    [invite.email_address],
-                    fail_silently=True,
-                )
+
+                try:
+                    send_mail_util(
+                        request,
+                        "banquet/email/after_party_invite.html",
+                        context={
+                            "name": invite.name,
+                            "inviter": invite.inviter.get_full_name(),
+                            "date": date,
+                            "location": location,
+                            "price": price,
+                            "year": fair.year,
+                        },
+                        subject="Your invite to the Armada After Party",
+                        to=[invite.email_address],
+                    )
+                except Exception as e:
+                    invite_form.add_error(
+                        "email_address",
+                        "Failed to send e-mail (contact support@armada.nu for help)",
+                    )
+
             except IntegrityError as e:
                 # This will catch the uniqueness constraint between banquet/email
                 invite_form.add_error(
@@ -489,16 +493,20 @@ def dashboard(request, year):
     ):
         after_party_invites.append({"name": invite.name, "email": invite.email_address})
 
-    # Only people who are currently part of armada may invite other people
+    # Only people who are currently part of armada PM, PG or OT may invite other people
     auth_users = [
         recruitment_application.user
         for recruitment_application in RecruitmentApplication.objects.filter(
-            status="accepted", recruitment_period__fair=fair
+            status="accepted",
+            recruitment_period__fair=fair,
+        ).exclude(
+            recruitment_period__name__contains="Host",
         )
     ]
+
     invite_permission = request.user in auth_users
 
-    max_invites = 5
+    max_invites = 2
 
     # For using after party-invitations, change False to invitation_period
     return render(
