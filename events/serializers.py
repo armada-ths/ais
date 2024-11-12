@@ -37,8 +37,12 @@ def event(event, request):
         "can_join_teams": event.teams_participate_s,
         "open_for_signup_student": event.open_for_signup and event.signup_s,
         "open_for_signup_company": event.open_for_signup and event.signup_cr,
+        "allow_waitlist_signup_after_signup_closed": event.allow_waitlist_signup_after_signup_closed,
         "event_max_capacity": event.event_max_capacity,
-        "participant_count": event.participant_set.count(),
+        # "participant_count": event.participant_set.filter(
+        #    in_waiting_list=False
+        # ).count(),
+        "participant_count": event.number_of_signups(),
         "fully_booked": event.is_full(),
     }
 
@@ -86,6 +90,7 @@ def participant(participant):
         "name": participant.assigned_name(),
         "fee_payed": participant.fee_payed_s,
         "signup_complete": participant.signup_complete,
+        "in_waiting_list": participant.in_waiting_list,
         "team_id": participant.team().id if participant.team() else None,
         "team_name": participant.team().name if participant.team() else None,
         "is_team_leader": participant.teammember_set.first()

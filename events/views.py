@@ -3,12 +3,13 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required, login_required
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from events import serializers
+from events.api import send_upgrade_email
 from events.forms import EventForm, TeamForm
 from events.models import Event, Team, Participant, SignupQuestion
 from fair.models import Fair
@@ -44,10 +45,11 @@ def save_questions(questions_data, event):
 @permission_required("events.base")
 def event_list(request, year):
     fair = get_object_or_404(Fair, year=year)
-    events = Event.objects.annotate(num_participants=Count("participant")).filter(
-        fair=fair
+    events = Event.objects.filter(fair=fair).annotate(
+        num_participants=Count(
+            "participant", filter=Q(participant__in_waiting_list=False)
+        )
     )
-
     return render(request, "events/event_list.html", {"fair": fair, "events": events})
 
 
@@ -91,8 +93,11 @@ def event_edit(request, year, pk):
     event = get_object_or_404(Event, pk=pk, fair=fair)
 
     participants = (
-        Participant.objects.filter(event=event).select_related("user_s__profile").all()
+        Participant.objects_all.filter(event=event)
+        .select_related("user_s__profile")
+        .all()
     )
+
     signup_questions = event.signupquestion_set.all()
 
     react_props = {
@@ -151,7 +156,9 @@ def event_signup(request, year, event_pk):
     upload_url = reverse("events_api:upload", args=[event_pk])
 
     # Will be populated if user has completed signup before
-    participant = Participant.objects.filter(user_s=request.user, event=event).first()
+    participant = Participant.objects_all.filter(
+        user_s=request.user, event=event
+    ).first()
 
     open_student_teams = Team.objects.filter(event=event, allow_join_s=True)
 

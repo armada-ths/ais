@@ -18,7 +18,7 @@
         <td>
           {% if perms.events.change_event %}
             <a href="{% url 'events:event_edit' fair.year event.id %}">{{ event.name }}</a>
-          {% elif event.open_for_signup %}
+          {% elif event.open_for_signup or event.allow_waitlist_signup_after_signup_closed%}
             <a href="{% url 'events:event_signup' fair.year event.id %}">{{ event.name }}</a>
           {% else %}
             {{ event.name }}
@@ -26,15 +26,22 @@
         </td>
         <td>{{ event.date_start|date:"d M H:i" }} - {{ event.date_end|date:"d M H:i" }}</td>
         {% if perms.events.base %}
-          <td class="text-center">{{ event.num_participants }}</td> 
+          <td class="text-center">{{ event.participant_set.count }}</td> 
           {% endif %}
         <td>
-          {% if not event.open_for_signup %}
+
+          {% if not event.open_for_signup and event.allow_waitlist_signup_after_signup_closed %} 
+            <span class="label label-warning">Wait List</span>
+
+          {% elif not event.open_for_signup and not event.allow_waitlist_signup_after_signup_closed %}
             <span class="label label-default">Closed</span>
            
-          {% elif event.is_full%}
+          {% elif event.is_full and event.fee_s > 0%}
             <span class="label label-danger">Fully Booked</span>
-                    
+              
+          {% elif event.is_full and event.fee_s <= 0 %}
+            <span class="label label-warning">Wait List</span>
+            
           {% else %}
             <span class="label label-success">Open</span>
             

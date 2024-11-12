@@ -1,0 +1,33 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Hello {{ name }}!
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	You have gotten a spot at the {{event_name}} event!
+</p>
+<ul>
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		Time: {{ date|date:"Y-m-d" }} {{ date|date:"H:i" }}.
+	</li>
+
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		Location: {{ location }}.
+	</li>
+	
+	<li style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+		If you don't want to be a part of the event anymore, please deregister to open the spot to someone else on the waiting list! You can do this when viewing your ticket.
+	</li>
+</ul>
+{% include 'email/button.html' with content="View your event ticket" url=link %}
+{% include 'email/divider.html' %}
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	Please note that this is an automatic email, and you cannot respond to this email.
+	You can always reach out to {% include 'email/link.html' with url='mailto:support@armada.nu' text='support@armada.nu' %} if you have any questions. 
+</p>
+<p style="font-size:16px;line-height:24px;margin:16px 0;color:#525f7f;text-align:left">
+	See you at the event!
+</p>
+
+{% endblock %}

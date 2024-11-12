@@ -13,5 +13,5 @@
 </style>
 
 <textarea>
-{% for participant in participants|dictsort:"timestamp" %}{{ participant.assigned_name }} <{{ participant.assigned_email }}> {% if not forloop.last %}, {% endif %}{% endfor %}
+{% for participant in participants|dictsort:"timestamp" %}{% if not participant.in_waiting_list %}{{ participant.assigned_name }} <{{ participant.assigned_email }}> {% if not forloop.last %}, {% endif %} {% endif%} {% endfor %}
 </textarea>

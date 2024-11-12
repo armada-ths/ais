@@ -37,9 +37,10 @@ class SignupForm extends Component {
     this.handleChange = this.handleChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleWaitingList = this.handleWaitingList.bind(this);
     this.validate = this.validate.bind(this);
 		this.showErrors = this.showErrors.bind(this);
-
+    
   }
 
   handleChange(id, value) {
@@ -55,17 +56,18 @@ class SignupForm extends Component {
 	handleClick() {
 		this.handleSubmit("");
 	}
-
+  
   handleSubmit(intent_id) {
     const errors = this.validate();
     const {signupUrl, dispatcher} = this.props;
 
     const answers = mapValues(this.state.answers, answer => Array.isArray(answer) ? answer.join(',') : answer);
-
+    
     this.setState({
       errors: errors
     });
-
+    console.log("intent_id", intent_id);
+    console.log("answers", answers);
     if (isEmpty(errors)) {
       axios.post(signupUrl, {answers, intent_id}, {
         headers: {
@@ -73,11 +75,17 @@ class SignupForm extends Component {
         }
       }).then(response => {
             dispatcher(updateParticipant(response.data.participant));
+            console.log("participant data", response.data.participant);
           }
       )
     }
   }
 
+  handleWaitingList() {
+    this.handleSubmit("");
+  }
+
+  
   validate() {
 		const {answers, payed}=this.state;
     const {signup_questions, fee} = this.props.event;
@@ -153,18 +161,24 @@ class SignupForm extends Component {
                           </Fragment>
                       )}
                     </Typography>
+                    <Typography style={{marginTop: 16, color: "#B22222", fontSize: 20 }}>
+                      {event.fully_booked ? 'Sorry, this event is fully booked.': ''}
+                    </Typography>
                   </Grid>
 								)}
             </Grid>
           </Grid>
-					{event.fee == 0 && (
+					{event.fee <= 0 && (
 	          <Grid item sm={12}>
 							<Typography style={{marginTop: 8}}>By signing up you agree to THS Armada's <a href="https://docs.google.com/document/d/14_dUZHTL6QUNF9UeL7fghJXO1wZimbi_aKG5ttcGd1s/edit#heading=h.hpqg0xn5jl2q" target="_blank" rel="noopener noreferrer" style={{ color: "#00d790" }}>Privacy Notice</a>.</Typography>
 	            
-              <Typography style={{marginTop: 16, color: "#B22222", fontSize: 20 }}>
-                {event.fully_booked ? 'Sorry, this event is fully booked.': ''}
+              <Typography style={{marginTop: 16, color: "#B22222", fontSize: 18 }}>
+                {event.fully_booked ? 'This event is fully booked. Join the waiting list to automatically get a spot if someone deregisters. Even if you do not get a spot, you can still come to the physical location of the event on the day of. If registered attendees do not show up, you will be given a spot on a first-come first-served basis for all who are on the waiting list.': ''}
               </Typography>
-              
+
+              <Typography style={{marginTop: 16, color: "#B22222", fontSize: 18 }}>
+                {(!event.fully_booked) && (!event.open_for_signup) && event.allow_waitlist_signup_after_signup_closed ? 'Join the waiting list to automatically get a spot if someone deregisters. Even if you do not get a spot, you can still come to the physical location of the event on the day of. If registered attendees do not show up, you will be given a spot on a first-come first-served basis for all who are on the waiting list.': ''}
+              </Typography>
               <Button
 	                disabled={!open_for_signup}
 	                onClick={this.handleClick}
@@ -174,6 +188,19 @@ class SignupForm extends Component {
 	            >
 	              {open_for_signup ? "Sign Up" : "Not open for sign up"}
 	            </Button>
+              { (event.fully_booked || event.allow_waitlist_signup_after_signup_closed ) && (
+              <Button
+	                
+	                onClick={this.handleWaitingList}
+	                variant="contained"
+	                color="secondary"
+									style={{marginTop: 10, marginLeft: 20}}
+	            >
+	              {"Join Waiting List"}
+	            </Button>
+
+              
+              )}   
 	          </Grid>
 					)}
         </Grid>

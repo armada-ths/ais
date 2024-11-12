@@ -85,7 +85,6 @@ class Manage extends Component {
     const {event, dispatcher, participantId} = this.props;
     console.log('Event:', event);
     console.log('Participant:', participantId);
-    
     API.deregister(event.id, participantId)
         .then(response => {
           dispatcher(deregister(response.data.participant));

@@ -1,13 +1,15 @@
 import json
 from django import forms
+from django.urls import reverse
 
 import stripe
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.shortcuts import render
 from django.contrib.auth.decorators import permission_required, login_required
+
 
 from events import serializers
 from events.forms import SignupQuestionAnswerFileForm
@@ -26,6 +28,8 @@ from people.models import Profile
 from lib.KTH_Catalog import lookup_user_with_api, merge_user_info
 
 from django.db.models import Count
+
+from util.email import send_mail
 
 
 @require_GET
@@ -87,16 +91,22 @@ def signup(request, event_pk):
     """
     Endpoint to signup to events
     """
-
     event = get_object_or_404(Event, pk=event_pk)
     if not request.user:
         return JsonResponse({"error": "Authentication required."}, status=403)
 
-    if not event.open_for_signup:
+    if (not event.open_for_signup) and (
+        not event.allow_waitlist_signup_after_signup_closed
+    ):
         return JsonResponse({"error": "Event not open for sign ups."}, status=403)
 
-    if event.is_full():
-        return JsonResponse({"message": "Event is fully booked."}, status=400)
+    waiting_list = False
+    if event.is_full() or (
+        (not event.open_for_signup) and event.allow_waitlist_signup_after_signup_closed
+    ):
+        waiting_list = True
+        if event.fee_s > 0:
+            return JsonResponse({"message": "Event is fully booked."}, status=400)
 
     participant, _created = Participant.objects.get_or_create(
         user_s=request.user, event=event
@@ -146,9 +156,11 @@ def signup(request, event_pk):
             file=file,
             defaults={"answer": answer},
         )
+    if waiting_list:
+        participant.in_waiting_list = True
 
     # TODO Check that all required questions have been answered
-
+    # participant.in_waiting_list = True
     participant.signup_complete = True
     participant.save()
 
@@ -350,14 +362,88 @@ def deregister(request, event_pk, participant_pk):
     """
     Endpoint to deregister a participant.
     """
-    get_object_or_404(Event, pk=event_pk)
+    event = get_object_or_404(Event, pk=event_pk)
     if not request.user:
         return JsonResponse({"message": "Authentication required."}, status=403)
     participant = get_object_or_404(Participant, pk=participant_pk)
 
+    if (event.is_full and event.open_for_signup) or (
+        not event.open_for_signup and event.allow_waitlist_signup_after_signup_closed
+    ):
+        upgrade_from_waitlist(request, event_pk)
+
     participant.delete()
 
     return HttpResponse(status=204)
+
+
+def upgrade_from_waitlist(request, event_pk):
+    """
+    Remove first participant from the waiting list and upgrade them as full participant.
+    """
+    event = get_object_or_404(Event, pk=event_pk)
+    first_waitlist_participant = (
+        Participant.waitlist_objects.filter(event=event).order_by("timestamp").first()
+    )
+    if first_waitlist_participant is None:
+        return
+    first_waitlist_participant.in_waiting_list = False
+    first_waitlist_participant.save()
+    name = first_waitlist_participant.name
+    signup_location = reverse("events:event_signup", args=[event.fair.year, event.pk])
+    signup_url = request.build_absolute_uri(signup_location)
+    link = signup_url
+    email = first_waitlist_participant.email_address
+    send_upgrade_email(
+        request,
+        event_pk,
+        name,
+        link,
+        email,
+        template="events/waitlist_upgrade_email.html",
+        subject="Event Confirmation",
+    )
+
+    return
+
+
+def send_upgrade_email(
+    request,
+    event_pk,
+    name,
+    link,
+    email,
+    template="events/waitlist_upgrade_email.html",
+    subject="Event Confirmation",
+):
+    """Send email to confirm upgrade from waiting list to full participant at event"""
+    event = get_object_or_404(Event, pk=event_pk)
+
+    email = email
+
+    if not email:
+        return False
+
+    try:
+        send_mail(
+            request,
+            template=template,
+            context={
+                "name": name,
+                "event_name": event.name,
+                "date": event.date_start,
+                "location": event.location,
+                "link": link,
+            },
+            subject=subject,
+            to=[email],
+            file_paths=[],
+        )
+    except Exception as e:
+        print("Failed to send email: ", e)
+        return False
+
+    return True
 
 
 @require_POST
@@ -390,7 +476,7 @@ def fetch_participants_details(request, event_pk):
     """
     event = get_object_or_404(Event, pk=event_pk)
 
-    participants = Participant.objects.filter(event=event)
+    participants = Participant.objects_all.filter(event=event)
 
     for participant in participants:
         user = participant.user_s
