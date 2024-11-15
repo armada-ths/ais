@@ -471,7 +471,7 @@ def dashboard(request, year):
     ]
     invite_permission = request.user in auth_users
 
-    max_invites = 5  # The number of people someone may invite to the after party
+    max_invites = 2  # The number of people someone may invite to the after party
 
     # Any Armada member can invite friends to the after-party
     # during a time period before the current fair
@@ -505,8 +505,6 @@ def dashboard(request, year):
     ]
 
     invite_permission = request.user in auth_users
-
-    max_invites = 2
 
     # For using after party-invitations, change False to invitation_period
     return render(
