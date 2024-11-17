@@ -11,6 +11,7 @@
 		<a class="btn btn-default" href="{% url 'banquet_manage_invitations' fair.year banquet.pk %}">Invitations</a>
 		<a class="btn btn-default" href="{% url 'banquet_manage_participants' fair.year banquet.pk %}">Participants</a>
 		<a class="btn btn-default" href="{% url 'banquet_export_afterparty' fair.year banquet.pk %}">Export Afterparty</a>
+		<a class="btn btn-default" href="{% url 'afterparty' fair.year banquet.pk %}">Afterparty</a>
 		<a class="btn btn-default" href="{% url 'scan_tickets' banquet.pk %}">Scan tickets</a>
 		{% if banquet.background %} <a class="btn btn-default" href="{% url 'banquet_manage_map' fair.year banquet.pk %}">Map</a> {% endif %}
 	</p>

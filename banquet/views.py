@@ -1841,3 +1841,32 @@ def export_afterparty(request, year, banquet_pk):
         )
 
     return response
+
+
+@permission_required("banquet.base")
+def afterparty(request, year, banquet_pk):
+    fair = get_object_or_404(Fair, year=year)
+    banquet = get_object_or_404(Banquet, pk=banquet_pk)
+    invitations = AfterPartyInvitation.objects.filter(banquet=banquet)
+
+    invitations = [
+        {
+            "pk": invitation.pk,
+            "name": invitation.name,
+            "email_address": invitation.email_address,
+            "inviter": {
+                "user": invitation.inviter,
+                "profile": Profile.objects.filter(user=invitation.inviter).first(),
+                "total_invitations": AfterPartyInvitation.objects.filter(
+                    inviter=invitation.inviter
+                ).count(),
+            },
+        }
+        for invitation in invitations
+    ]
+
+    return render(
+        request,
+        "banquet/afterparty_list.html",
+        {"fair": fair, "banquet": banquet, "invitations": invitations},
+    )

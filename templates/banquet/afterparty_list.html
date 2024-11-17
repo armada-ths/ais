@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block nav-banquet %}<li role="presentation" class="active"><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <ol class="breadcrumb">
+	    <li><a href="{% url 'banquet_dashboard' fair.year %}">Banquet</a></li>
+        <li class="active">Afterparty</li>
+    </ol>
+    <div class="row">
+        <div class="col-md-12">
+		<h2>Invitations</h2>
+        <h4>Currently {{ invitations | length }} invitations</h4>
+                <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>E-mail Address</th>
+                        <th>Invited by</th>
+                    </tr>
+                    </thead>
+                    {% for invitation in invitations %}
+                        <tr>
+                            <td>{{ invitation.name }}</td>
+                            <td><a href="mailto:{{ invitation.email_address }}">{{ invitation.email_address }}</a></td>
+                            <td><a href="{% url 'people:profile' fair.year invitation.inviter.user.pk %}">{{ invitation.inviter.user }}</a> ({{ invitation.inviter.total_invitations }} invitations)</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+        </div>
+    </div>
+{% endblock %}

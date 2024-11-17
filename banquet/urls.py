@@ -58,6 +58,11 @@ urlpatterns = [
         name="banquet_manage_participants",
     ),
     url(
+        r"^(?P<banquet_pk>[0-9]+)/afterparty$",
+        views.afterparty,
+        name="afterparty",
+    ),
+    url(
         r"^(?P<banquet_pk>[0-9]+)/participants/exportafterparty$",
         views.export_afterparty,
         name="banquet_export_afterparty",
