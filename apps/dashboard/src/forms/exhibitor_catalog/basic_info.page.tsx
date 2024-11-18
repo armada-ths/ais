@@ -24,6 +24,7 @@ const formSchema: ZodType = z.object({
     catalogue_about: z.string().max(600),
     catalogue_cities: z.string().optional().nullable(),
     catalogue_contact_name: z.string().optional().nullable(),
+    catalogue_website_url: z.string().optional().nullable(),
     catalogue_contact_email_address: z.string().email().optional().nullable(),
     catalogue_contact_phone_number: z.string().max(20).optional().nullable()
 })
@@ -42,6 +43,7 @@ export function BasicInfoFormPage() {
         catalogue_about: data?.exhibitor?.catalogue_about,
         catalogue_cities: data?.exhibitor?.catalogue_cities,
         catalogue_contact_name: data?.exhibitor?.catalogue_contact_name,
+        catalogue_website_url: data?.company.website,
         catalogue_contact_email_address:
             data?.exhibitor?.catalogue_contact_email_address,
         catalogue_contact_phone_number:
@@ -49,13 +51,21 @@ export function BasicInfoFormPage() {
     })
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async (data: z.infer<typeof formSchema>) =>
-            fetch(`${HOST}/api/dashboard/${companyId}`, {
+        mutationFn: async (data: z.infer<typeof formSchema>) => {
+            const { catalogue_website_url, ...rest } = data
+
+            return await fetch(`${HOST}/api/dashboard/${companyId}`, {
                 method: "PUT",
                 body: JSON.stringify({
-                    exhibitor: data
+                    company: {
+                        website: catalogue_website_url ?? null
+                    },
+                    exhibitor: {
+                        ...rest
+                    }
                 })
-            }),
+            })
+        },
         onSuccess: response => {
             if (response.status >= 200 || response.status < 300) {
                 toast.success("Successfully updated")
@@ -144,6 +154,24 @@ export function BasicInfoFormPage() {
                         tabIndex={1}
                         id="catalogue_contact_name"
                         {...register("catalogue_contact_name")}
+                    />
+                </div>
+                <div>
+                    <InputLabel
+                        htmlFor="catalogue_website_url"
+                        tooltip="Company website"
+                    >
+                        Company website
+                    </InputLabel>
+                    <ErrorMessage
+                        errors={errors}
+                        name="catalogue_website_url"
+                        render={InputErrorMessageText}
+                    />
+                    <Input
+                        tabIndex={1}
+                        id="catalogue_website_url"
+                        {...register("catalogue_website_url")}
                     />
                 </div>
                 <div>
