@@ -471,7 +471,10 @@ def dashboard(request, year):
     ]
     invite_permission = request.user in auth_users
 
-    max_invites = 2  # The number of people someone may invite to the after party
+    max_total_invites = 160
+    total_invites = AfterPartyInvitation.objects.filter(banquet__fair=fair).count()
+    invites_are_full = total_invites >= max_total_invites
+    max_invites = 0 if invites_are_full else 2
 
     # Any Armada member can invite friends to the after-party
     # during a time period before the current fair
