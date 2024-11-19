@@ -31,7 +31,8 @@ export const FORM_ACCESS: FormAccessDeclaration = {
         "initial_registration:::!unsigned_ir:::*": CardStatus.Shown,
         "between_ir_and_cr:::!unsigned_ir:::*": CardStatus.Shown,
         "complete_registration:::!unsigned_ir:::*": CardStatus.Shown,
-        "after_complete_registration:::signed_cr:::*": CardStatus.Shown
+        "after_complete_registration:::signed_cr:::*": CardStatus.Shown,
+        "fair:::signed_cr:::*": CardStatus.Shown
     },
     fr_accounting: {
         "complete_registration:::signed_ir:::pending": CardStatus.Shown,
