@@ -18,4 +18,9 @@ then
 	exit 2
 fi
 
-docker exec -it $ID python manage.py makemigrations --name $1 $2 --settings=local_settings
+echo "Creating migration ..." &&
+docker exec -it $ID python manage.py makemigrations --name $1 $2 --settings=local_settings &&
+echo "Migration created ..." &&
+echo "Migrating database to latest state ..." &&
+docker exec -it $ID python manage.py migrate --settings=local_settings &&
+echo "... done migrating database to latest state"
