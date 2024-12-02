@@ -94,6 +94,7 @@ def event_edit(request, year, pk):
 
     participants = (
         Participant.objects_all.filter(event=event)
+        .order_by("timestamp")
         .select_related("user_s__profile")
         .all()
     )
